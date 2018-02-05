@@ -25,7 +25,7 @@ import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -34,12 +34,15 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
   class Setup {
     val testController = new TradingDetailsController {
-      override val authConnector: AuthConnector = mockAuthConnector
-      override val messagesApi: MessagesApi = mockMessagesAPI
       override val tradingDetailsService: TradingDetailsServiceImpl = mockTradingDetailsService
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      val authConnector: AuthConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
     }
+
     mockAllMessages
+    mockAuthenticated()
+    mockWithCurrentProfile(Some(currentProfile))
   }
 
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
@@ -54,8 +57,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       callAuthorised(testController.tradingNamePage) {
         result => {
           status(result) mustBe OK
@@ -66,8 +67,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
@@ -90,8 +89,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "tradingNameRadio" -> "false"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-services-with-countries-outside-uk")
@@ -106,8 +103,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "tradingNameRadio" -> "true",
         "tradingName" -> "some name"
       )
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 303
@@ -124,8 +119,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "tradingName" -> ""
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 400
       }
@@ -136,8 +129,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         .thenReturn(Future.successful(fullS4L))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 400
@@ -153,8 +144,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "tradingName" -> "$0M3 T3$T"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 400
       }
@@ -167,8 +156,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(euGoods = Some(true))))
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       callAuthorised(testController.euGoodsPage) {
         result => {
           status(result) mustBe OK
@@ -179,8 +166,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       callAuthorised(testController.euGoodsPage) {
         result => {
@@ -202,8 +187,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "euGoodsRadio" -> "true"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/apply-economic-operator-registration-identification-number")
@@ -218,8 +201,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "euGoodsRadio" -> "false"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
@@ -231,8 +212,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         .thenReturn(Future.successful(fullS4L))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 400
@@ -246,8 +225,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(applyEori = Some(true))))
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       callAuthorised(testController.applyEoriPage) {
         result => {
           status(result) mustBe OK
@@ -258,8 +235,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       callAuthorised(testController.applyEoriPage) {
         result => {
@@ -281,8 +256,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "applyEoriRadio" -> "true"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitApplyEori, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
@@ -297,8 +270,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         "applyEoriRadio" -> "false"
       )
 
-      mockWithCurrentProfile(Some(currentProfile))
-
       submitAuthorised(testController.submitApplyEori, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
@@ -310,8 +281,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         .thenReturn(Future.successful(fullS4L))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      mockWithCurrentProfile(Some(currentProfile))
 
       submitAuthorised(testController.submitApplyEori, request) { result =>
         status(result) mustBe 400

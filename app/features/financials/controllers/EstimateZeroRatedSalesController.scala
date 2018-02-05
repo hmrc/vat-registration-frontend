@@ -50,7 +50,7 @@ package controllers.vatFinancials {
   import models.view.vatFinancials.EstimateZeroRatedSales
   import play.api.mvc.{Action, AnyContent}
   import services.{RegistrationService, S4LService, SessionProfile}
-  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+  import uk.gov.hmrc.auth.core.AuthConnector
 
   @Singleton
   class EstimateZeroRatedSalesController @Inject()(ds: CommonPlayDependencies,
@@ -61,28 +61,22 @@ package controllers.vatFinancials {
 
     val form = EstimateZeroRatedSalesForm.form
 
-    def show: Action[AnyContent] = authorised.async {
-      implicit user =>
-        implicit request =>
-          withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
-                .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f)))
-            }
-          }
+    def show: Action[AnyContent] = isAuthorised {
+      implicit request => implicit profile =>
+        ivPassedCheck {
+          viewModel[EstimateZeroRatedSales]().fold(form)(form.fill)
+            .map(f => Ok(features.financials.views.html.estimate_zero_rated_sales(f)))
+        }
     }
 
-    def submit: Action[AnyContent] = authorised.async {
-      implicit user =>
-        implicit request =>
-          withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
-                view => save(view) map (_ => Redirect(features.returns.routes.ReturnsController.chargeExpectancyPage()))
-              )
-            }
-          }
+    def submit: Action[AnyContent] = isAuthorised {
+      implicit request => implicit profile =>
+        ivPassedCheck {
+          form.bindFromRequest().fold(
+            badForm => BadRequest(features.financials.views.html.estimate_zero_rated_sales(badForm)).pure,
+            view => save(view) map (_ => Redirect(features.returns.routes.ReturnsController.chargeExpectancyPage()))
+          )
+        }
     }
   }
 }

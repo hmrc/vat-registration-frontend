@@ -18,9 +18,8 @@ package controllers.test
 
 import javax.inject.Inject
 
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import config.AuthClientConnector
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils._
 
@@ -28,7 +27,7 @@ import scala.concurrent.Future
 
 class FeatureSwitchControllerImpl @Inject()(val featureManager: FeatureManager,
                                             val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                            val authConnector: AuthConnector) extends FeatureSwitchController
+                                            val authConnector: AuthClientConnector) extends FeatureSwitchController
 
 trait FeatureSwitchController extends FrontendController {
   val featureManager: FeatureManager

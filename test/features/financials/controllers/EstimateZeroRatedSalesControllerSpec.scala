@@ -30,7 +30,7 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
   object Controller extends EstimateZeroRatedSalesController(
     ds,
     mockKeystoreConnector,
-    mockAuthConnector,
+    mockAuthClientConnector,
     mockS4LService,
     mockVatRegistrationService
   )
@@ -39,6 +39,8 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   s"GET ${vatFinancials.routes.EstimateZeroRatedSalesController.show()}" should {
     "return HTML Estimate Zero Rated Sales page with no data in the form" in {
+      mockAuthenticated()
+
       save4laterReturnsViewModel(EstimateZeroRatedSales(100L))()
 
       mockGetCurrentProfile()
@@ -49,6 +51,8 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      mockAuthenticated()
+
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
@@ -60,6 +64,8 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      mockAuthenticated()
+
       save4laterReturnsNoViewModel[EstimateZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
@@ -75,6 +81,8 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with Empty data" should {
     "return 400" in {
+      mockAuthenticated()
+
       mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
@@ -83,6 +91,8 @@ class EstimateZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrati
 
   s"POST ${vatFinancials.routes.EstimateZeroRatedSalesController.submit()} with a valid turnover estimate entered" should {
     "return 303" in {
+      mockAuthenticated()
+
       save4laterExpectsSave[EstimateZeroRatedSales]()
 
       mockGetCurrentProfile()

@@ -29,6 +29,7 @@ private object CompileDependencies {
   private val timeVersion            = "3.1.0"
   private val whitelistFilterVersion = "2.0.0"
   private val catsVersion            = "1.0.0"
+  private val authClientVersion      = "2.5.0"
 
 
   private val compileDependencies: Seq[ModuleID] = Seq(
@@ -39,6 +40,7 @@ private object CompileDependencies {
     "uk.gov.hmrc"   %% "play-conditional-form-mapping" % formMappingVersion,
     "uk.gov.hmrc"   %% "time"                          % timeVersion,
     "uk.gov.hmrc"   %% "play-whitelist-filter"         % whitelistFilterVersion,
+    "uk.gov.hmrc"   %% "auth-client"                   % authClientVersion,
     "org.typelevel" %% "cats-core"                     % catsVersion
   )
 

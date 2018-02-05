@@ -30,6 +30,7 @@ import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDet
 import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
 import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
 import features.officer.controllers._
+import features.officer.controllers.test.{TestIVController, TestIVControllerImpl}
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
 import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
 import features.sicAndCompliance.controllers._
@@ -38,9 +39,9 @@ import features.sicAndCompliance.services.{SicAndComplianceService, SicAndCompli
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
 import services._
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{FeatureManager, FeatureSwitchManager, VATRegFeatureSwitch, VATRegFeatureSwitches}
 
 class Module extends AbstractModule {
@@ -61,7 +62,7 @@ class Module extends AbstractModule {
   }
 
   private def hmrcDependencyBindings(): Unit = {
-    bind(classOf[AuthConnector]).to(classOf[FrontendAuthConnector]).asEagerSingleton()
+    bind(classOf[AuthConnector]).to(classOf[AuthClientConnector]).asEagerSingleton()
     bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig]).asEagerSingleton()
     bind(classOf[SessionCache]).to(classOf[VatSessionCache]).asEagerSingleton()
     bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
@@ -87,6 +88,7 @@ class Module extends AbstractModule {
     bind(classOf[ApplicationSubmissionController]).to(classOf[ApplicationSubmissionControllerImpl]).asEagerSingleton()
     bind(classOf[SummaryController]).to(classOf[SummaryControllerImpl]).asEagerSingleton()
     bind(classOf[WelcomeController]).to(classOf[WelcomeControllerImpl]).asEagerSingleton()
+    bind(classOf[IdentityVerificationController]).to(classOf[IdentityVerificationControllerImpl]).asEagerSingleton()
   }
 
   private def bindTestControllers(): Unit = {
@@ -98,6 +100,7 @@ class Module extends AbstractModule {
     bind(classOf[TestSetupController]).to(classOf[TestSetupControllerImpl]).asEagerSingleton()
     bind(classOf[FeatureSwitchController]).to(classOf[FeatureSwitchControllerImpl]).asEagerSingleton()
     bind(classOf[TestWorkingDaysValidationController]).to(classOf[TestWorkingDaysValidationControllerImpl]).asEagerSingleton()
+    bind(classOf[TestIVController]).to(classOf[TestIVControllerImpl]).asEagerSingleton()
   }
 
   private def bindServices(): Unit = {

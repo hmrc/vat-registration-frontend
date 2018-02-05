@@ -32,7 +32,7 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     ds,
     mockS4LService,
     mockKeystoreConnector,
-    mockAuthConnector,
+    mockAuthClientConnector,
     mockVatRegistrationService
   )
 
@@ -40,6 +40,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"GET ${vatFinancials.routes.ZeroRatedSalesController.show()}" should {
     "return HTML when there's a Zero Rated Sales model in S4L" in {
+      mockAuthenticated()
+
       save4laterReturnsViewModel(ZeroRatedSales(ZERO_RATED_SALES_YES))()
 
       mockGetCurrentProfile()
@@ -50,6 +52,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in {
+      mockAuthenticated()
+
       save4laterReturnsNoViewModel[ZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(validVatScheme.pure)
 
@@ -61,6 +65,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains no data" in {
+      mockAuthenticated()
+
       save4laterReturnsNoViewModel[ZeroRatedSales]()
       when(mockVatRegistrationService.getVatScheme(any(), any())).thenReturn(emptyVatScheme.pure)
 
@@ -75,12 +81,16 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
 
   s"POST ${vatFinancials.routes.ZeroRatedSalesController.submit()}" should {
     "return 400 with Empty data" in {
+      mockAuthenticated()
+
       mockGetCurrentProfile()
 
       submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     "return 303 with Zero Rated Sales selected Yes" in {
+      mockAuthenticated()
+
       save4laterExpectsSave[ZeroRatedSales]()
 
       mockGetCurrentProfile()
@@ -92,6 +102,8 @@ class ZeroRatedSalesControllerSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return 303 with Zero Rated Sales selected No" in {
+      mockAuthenticated()
+
       save4laterExpectsSave[ZeroRatedSales]()
       save4laterReturns(S4LVatFinancials())
       when(mockS4LService.save(any())(any(), any(), any(), any()))

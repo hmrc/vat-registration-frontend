@@ -64,7 +64,7 @@ package controllers.vatFinancials {
   import models.view.vatFinancials.ZeroRatedSales
   import play.api.mvc.{Action, AnyContent}
   import services.{RegistrationService, S4LService, SessionProfile}
-  import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+  import uk.gov.hmrc.auth.core.AuthConnector
 
   @Singleton
   class ZeroRatedSalesController @Inject()(ds: CommonPlayDependencies,
@@ -76,35 +76,29 @@ package controllers.vatFinancials {
 
     val form = ZeroRatedSalesForm.form
 
-    def show: Action[AnyContent] = authorised.async {
-      implicit user =>
-        implicit request =>
-          withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              viewModel[ZeroRatedSales]().fold(form)(form.fill)
-                .map(f => Ok(features.financials.views.html.zero_rated_sales(f)))
-            }
-          }
+    def show: Action[AnyContent] = isAuthorised {
+      implicit request => implicit profile =>
+        ivPassedCheck {
+          viewModel[ZeroRatedSales]().fold(form)(form.fill)
+            .map(f => Ok(features.financials.views.html.zero_rated_sales(f)))
+        }
     }
 
-    def submit: Action[AnyContent] = authorised.async {
-      implicit user =>
-        implicit request =>
-          withCurrentProfile { implicit profile =>
-            ivPassedCheck {
-              form.bindFromRequest().fold(
-                badForm => BadRequest(features.financials.views.html.zero_rated_sales(badForm)).pure,
-                view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
-                  ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
-                  // delete any previous zeroRatedTurnoverEstimate by updating the container with None
-                  ifFalse =
-                    OptionT(s4lService.fetchAndGet[S4LVatFinancials])
-                      .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
-                      .map(_ => features.returns.routes.ReturnsController.chargeExpectancyPage())
-                ).map(Redirect)
-              )
-            }
-          }
+    def submit: Action[AnyContent] = isAuthorised {
+      implicit request => implicit profile =>
+        ivPassedCheck {
+          form.bindFromRequest().fold(
+            badForm => BadRequest(features.financials.views.html.zero_rated_sales(badForm)).pure,
+            view => save(view).map(_ => view.yesNo == ZeroRatedSales.ZERO_RATED_SALES_YES).ifM(
+              ifTrue = financialRoutes.EstimateZeroRatedSalesController.show().pure,
+              // delete any previous zeroRatedTurnoverEstimate by updating the container with None
+              ifFalse =
+                OptionT(s4lService.fetchAndGet[S4LVatFinancials])
+                  .semiflatMap(container => s4lService.save(container.copy(zeroRatedTurnoverEstimate = None))).value
+                  .map(_ => features.returns.routes.ReturnsController.chargeExpectancyPage())
+            ).map(Redirect)
+          )
+        }
     }
   }
 }

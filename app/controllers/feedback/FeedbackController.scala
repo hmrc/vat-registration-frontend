@@ -19,23 +19,23 @@ package controllers.feedback
 import java.net.URLEncoder
 import javax.inject.Inject
 
-import config.FrontendAppConfig
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.frontend.controller.UnauthorisedAction
 
-class FeedbackControllerImpl @Inject()(val authConnector: AuthConnector,
+import scala.concurrent.Future
+
+class FeedbackControllerImpl @Inject()(val authConnector: AuthClientConnector,
                                        val keystoreConnector: KeystoreConnect,
-                                       implicit val messagesApi: MessagesApi) extends FeedbackController {
+                                       val messagesApi: MessagesApi) extends FeedbackController {
   override lazy val contactFrontendPartialBaseUrl = FrontendAppConfig.contactFrontendPartialBaseUrl
   override lazy val contactFormServiceIdentifier  = FrontendAppConfig.contactFormServiceIdentifier
 }
 
-trait FeedbackController extends VatRegistrationControllerNoAux with SessionProfile {
+trait FeedbackController extends BaseController with SessionProfile {
   val contactFrontendPartialBaseUrl: String
   val contactFormServiceIdentifier: String
 
@@ -45,8 +45,9 @@ trait FeedbackController extends VatRegistrationControllerNoAux with SessionProf
     s"$contactFrontendPartialBaseUrl/contact/beta-feedback?backUrl=${urlEncode(contactFormReferrer)}" +
       s"&service=$contactFormServiceIdentifier}"
 
-  def feedbackShow: Action[AnyContent] = UnauthorisedAction {
-    implicit request => Redirect(feedbackFormPartialUrl)
+  def feedbackShow: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(feedbackFormPartialUrl))
   }
 
   private def urlEncode(value: String) = URLEncoder.encode(value, "UTF-8")

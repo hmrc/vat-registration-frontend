@@ -22,7 +22,8 @@ import common.enums.VatRegStatus
 import connectors.{Success, VatRegistrationConnector}
 import features.returns.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
 import org.mockito.ArgumentMatchers.any
@@ -34,17 +35,22 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
-  val testSummaryController = new SummaryController {
-    override val vrs                               = mockVatRegistrationService
-    override val lodgingOfficerService             = mockLodgingOfficerService
-    override val sicSrv                            = mockSicAndComplianceService
-    override val s4LService                        = mockS4LService
-    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
-    override protected val authConnector           = mockAuthConnector
-    override val keystoreConnector                 = mockKeystoreConnector
+  trait Setup {
+    val testSummaryController = new SummaryController {
+      override val vrs = mockVatRegistrationService
+      override val lodgingOfficerService = mockLodgingOfficerService
+      override val sicSrv = mockSicAndComplianceService
+      override val s4LService = mockS4LService
+      override val keystoreConnector = mockKeystoreConnector
+      val authConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
+    }
 
+    mockAllMessages
+    mockAuthenticated()
+    mockWithCurrentProfile(Some(currentProfile))
   }
 
   val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
@@ -55,7 +61,7 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
 
   "Calling summary to show the summary page" should {
 
-    "return HTML with a valid summary view pre-incorp" in {
+    "return HTML with a valid summary view pre-incorp" in new Setup {
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(validHttpResponse))
 
@@ -64,44 +70,40 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
 
-      mockGetCurrentProfile()
-
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
 
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
 
-      callAuthorised(testSummaryController.show)(_ includesText "Check and confirm your answers")
+      callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
-    "return HTML with a valid summary view post-incorp" in {
+    "return HTML with a valid summary view post-incorp" in new Setup {
       when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
       mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
-      mockGetCurrentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-      callAuthorised(testSummaryController.show)(_ includesText "Check and confirm your answers")
+      callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
-    "getRegistrationSummary maps a valid VatScheme object to a Summary object" in {
+    "getRegistrationSummary maps a valid VatScheme object to a Summary object" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
-      implicit val cp = currentProfile()
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
       testSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
     }
 
-    "registrationToSummary maps a valid VatScheme object to a Summary object" in {
+    "registrationToSummary maps a valid VatScheme object to a Summary object" in new Setup {
       testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
 
-    "registrationToSummary maps a valid empty VatScheme object to a Summary object" in {
+    "registrationToSummary maps a valid empty VatScheme object to a Summary object" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
       testSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
@@ -109,11 +111,9 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
   }
 
   "Calling submitRegistration" should {
-    "redirect to the confirmation page if the status of the document is in draft" in {
+    "redirect to the confirmation page if the status of the document is in draft" in new Setup {
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
-
-      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(Success))
@@ -124,11 +124,9 @@ class SummaryControllerSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
 
-    "have an internal server error if the document is not in draft" in {
+    "have an internal server error if the document is not in draft" in new Setup {
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.acknowledged))
-
-      mockGetCurrentProfile()
 
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(Success))

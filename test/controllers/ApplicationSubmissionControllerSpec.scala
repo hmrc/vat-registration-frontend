@@ -18,7 +18,8 @@ package controllers
 
 import features.returns.Returns
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -27,23 +28,27 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistrationFixture {
+class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   val testController = new ApplicationSubmissionController {
-    override val vatRegService                     = mockVatRegistrationService
-    override val returnsService                    = mockReturnsService
-    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
-    override val authConnector                     = mockAuthConnector
-    override val keystoreConnector                 = mockKeystoreConnector
+    override val vatRegService     = mockVatRegistrationService
+    override val returnsService    = mockReturnsService
+    override val keystoreConnector = mockKeystoreConnector
+    val authConnector              = mockAuthClientConnector
+    val messagesApi: MessagesApi   = mockMessagesAPI
   }
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
-      mockGetCurrentProfile()
+      mockAllMessages
+
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
       when(mockVatRegistrationService.getVatScheme(any(),any()))
-        .thenReturn(validVatScheme.pure)
+        .thenReturn(Future.successful(validVatScheme))
 
       when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("testAckRef"))
@@ -52,7 +57,7 @@ class ApplicationSubmissionControllerSpec extends VatRegSpec with VatRegistratio
         .thenReturn(Future.successful(Returns(None, None, None, None)))
 
       callAuthorised(testController.show) {
-        _ includesText "Application submitted"
+        _ includesText MOCKED_MESSAGE
       }
     }
   }

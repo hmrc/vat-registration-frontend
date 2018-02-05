@@ -22,7 +22,7 @@ import builders.AuthBuilder
 import common.enums.VatRegStatus
 import connectors.{ConfigConnector, KeystoreConnector}
 import features.sicAndCompliance.services.SicAndComplianceService
-import mocks.VatMocks
+import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -39,7 +39,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with AuthBuilder with BeforeAndAfterEach
+trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with AuthMock with AuthBuilder with BeforeAndAfterEach
   with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -56,8 +56,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   )
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
-                      (test: Future[Result] => Assertion)
-                      (implicit mockAuthConnector: AuthConnector): Unit =
+                      (test: Future[Result] => Assertion): Unit =
     submitWithAuthorisedUser(a, r)(test)
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =

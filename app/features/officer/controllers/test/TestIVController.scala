@@ -16,64 +16,58 @@
 
 package features.officer.controllers.test
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 
 import common.enums.IVResult
+import config.AuthClientConnector
 import connectors.KeystoreConnect
 import connectors.test.BusinessRegDynamicStubConnector
-import controllers.{CommonPlayDependencies, VatRegistrationController}
+import controllers.BaseController
 import forms.test.TestIVForm
 import models.CurrentProfile
 import models.view.test.TestIVResponse
-import play.api.libs.json.{JsObject, Json}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-@Singleton
-class TestIVController @Inject()(ds: CommonPlayDependencies,
-                                 busRegDynStub: BusinessRegDynamicStubConnector,
-                                 val s4lService: S4LService,
-                                 val authConnector: AuthConnector,
-                                 val keystoreConnector: KeystoreConnect) extends VatRegistrationController(ds) with SessionProfile {
+class TestIVControllerImpl @Inject()(val busRegDynStub: BusinessRegDynamicStubConnector,
+                                     val s4lService: S4LService,
+                                     val messagesApi: MessagesApi,
+                                     val authConnector: AuthClientConnector,
+                                     val keystoreConnector: KeystoreConnect) extends TestIVController
 
-  def setIVStatus(ivPassed: Boolean):Action[AnyContent] = authorised.async{
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(ivPassed = Some(ivPassed))) map {
-            _ => Ok(s"ivPassed set to $ivPassed in Current Profile (keystore)")
-          }
-        }
+trait TestIVController extends BaseController with SessionProfile {
+  val busRegDynStub: BusinessRegDynamicStubConnector
+  val s4lService: S4LService
+
+  def setIVStatus(ivPassed: Boolean):Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(ivPassed = Some(ivPassed))) map {
+        _ => Ok(s"ivPassed set to $ivPassed in Current Profile (keystore)")
+      }
   }
 
 
-  def show(journeyId:String): Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
-          Future.successful(Ok(features.officer.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
-        }
+  def show(journeyId:String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
+      Future.successful(Ok(features.officer.views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
   }
 
-  def submit: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          TestIVForm.form.bindFromRequest().fold(
-            badForm =>
-              Future.successful(BadRequest(features.officer.views.html.test.testIVResponse(badForm))),
-            success => for {
-              _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
-              _ <- s4lService.save("IVJourneyID", success.journeyId)
-            } yield success.ivResult match {
-              case IVResult.Success => Redirect(features.officer.controllers.routes.IdentityVerificationController.completedIVJourney())
-              case _                => Redirect(features.officer.controllers.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
-            }
-          )
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      TestIVForm.form.bindFromRequest().fold(
+        badForm =>
+          Future.successful(BadRequest(features.officer.views.html.test.testIVResponse(badForm))),
+        success => for {
+          _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
+          _ <- s4lService.save("IVJourneyID", success.journeyId)
+        } yield success.ivResult match {
+          case IVResult.Success => Redirect(features.officer.controllers.routes.IdentityVerificationController.completedIVJourney())
+          case _                => Redirect(features.officer.controllers.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
         }
+      )
   }
 }
