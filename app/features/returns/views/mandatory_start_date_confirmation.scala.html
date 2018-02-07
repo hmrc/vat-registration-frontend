@@ -8,8 +8,10 @@
         <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.start.date.confirmation.heading")</h1>
     </header>
 
-    <p>@messages("pages.start.date.confirmation.para1")</p>
-    <p>@messages("pages.start.date.confirmation.para2")</p>
+    <div class="form-group">
+        <p>@messages("pages.start.date.confirmation.para1")</p>
+        <p>@messages("pages.start.date.confirmation.para2")</p>
+    </div>
 
     @form(action = features.returns.routes.ReturnsController.submitMandatoryStart()) {
         <div class="form-group">

@@ -15,10 +15,10 @@
   </header>
 
   <p>@messages("pages.security.questions.p1")</p>
-  <h3 class="form-title heading-medium">@messages("pages.security.questions.date.of.birth.h3")</h3>
+  <h2 class="form-title heading-medium">@messages("pages.security.questions.date.of.birth.h3")</h2>
 
   @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitSecurityQuestions()) {
-  <div class="form-group-compound">
+  <div class="form-group">
       @defining(securityQuestionsForm("dob").errors.nonEmpty) { errorPresent =>
           <div class="form-date @if(errorPresent) { form-group-error }">
           <fieldset id="dobField">
@@ -62,24 +62,21 @@
           </fieldset>
           </div>
 
-          <h3 class="form-title heading-medium">@messages("pages.security.questions.nino.h3")</h3>
+          <h2 class="form-title heading-medium">@messages("pages.security.questions.nino.h3")</h2>
           <p>@messages("pages.security.questions.nino.p1")</p>
-          <div class="form-group">
-            <fieldset id="ninoField">
-              <legend></legend>
-              <span class="form-hint">@messages("pages.security.questions.nino.hint")</span>
-              @vatInput(
-                  securityQuestionsForm("nino"),
-                  '_divClass -> "form-group",
-                  '_inputClass -> "form-control",
-                  '_minlength -> 13,
-                  '_maxlength -> 13,
-                  '_label -> messages("pages.security.questions.nino.h3"),
-                  '_labelTextClass -> "hidden",
-                  '_labelClass -> "form-label"
-              )
-            </fieldset>
-          </div>
+          <fieldset id="ninoField">
+            <legend></legend>
+            <span class="form-hint">@messages("pages.security.questions.nino.hint")</span>
+            @vatInput(
+                securityQuestionsForm("nino"),
+                '_inputClass -> "form-control",
+                '_minlength -> 13,
+                '_maxlength -> 13,
+                '_label -> messages("pages.security.questions.nino.h3"),
+                '_labelTextClass -> "hidden",
+                '_labelClass -> "form-label"
+            )
+          </fieldset>
               
   }
   </div>

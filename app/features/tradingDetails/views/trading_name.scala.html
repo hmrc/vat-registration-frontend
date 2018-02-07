@@ -16,11 +16,11 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
-    <details role="group">
+    <details role="group" class="form-group">
         <summary role="button" aria-controls="details-content-0" aria-expanded="false">
             <span class="summary">@messages("pages.tradingName.panel.para1")</span>
         </summary>
-        <div class="panel panel-indent" id="details-content-0" aria-hidden="true">
+        <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
             <p>@messages("pages.tradingName.panel.para2")</p>
             <p>@messages("pages.tradingName.panel.para3")</p>
         </div>
@@ -40,7 +40,7 @@
                     '_labelClass -> "block-label"
                 )
 
-                <div class="panel panel-indent hidden @fieldSetClasses" id="trading_name_panel">
+                <div class="panel panel-border-narrow hidden @fieldSetClasses" id="trading_name_panel">
 
                     @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
                         @govHelpers.errorInline("tradingName", Messages(error.message))
