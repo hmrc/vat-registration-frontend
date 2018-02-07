@@ -30,7 +30,7 @@
                     '_labelClass -> "block-label"
                 )
 
-                <div class="panel panel-indent hidden @fieldSetClasses" id="former_name_panel">
+                <div class="panel panel-border-narrow hidden @fieldSetClasses" id="former_name_panel">
 
                     @formerNameForm.errors.find(_.args.contains("formerName")).map { error =>
                         @govHelpers.errorInline("formerName", Messages(error.message))

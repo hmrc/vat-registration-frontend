@@ -17,25 +17,23 @@
 
   <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.vat.turnover.heading")</h1>
 
-  <div class="form-group">
-      <div class="panel indent">
-          <p>@messages("pages.estimate.vat.turnover.info")</p>
-      </div>
+  <div class="panel panel-border-wide form-group">
+      <p>@messages("pages.estimate.vat.turnover.info")</p>
   </div>
 
-<details role="group">
-    <summary role="button" aria-controls="details-content-1" aria-expanded="false">
-          <span class="summary">
-            @Html(messages("pages.estimate.vat.turnover.include.title"))
-          </span>
-    </summary>
-    <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
-        <p>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</p>
-        <p>@messages("pages.estimate.vat.turnover.include.para1")
-            @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", messages("pages.estimate.vat.turnover.include.para1.1"))
-            @messages("pages.estimate.vat.turnover.include.para1.2")</p>
-    </div>
-</details>
+  <details role="group" class="form-group">
+      <summary role="button" aria-controls="details-content-1" aria-expanded="false">
+            <span class="summary">
+              @Html(messages("pages.estimate.vat.turnover.include.title"))
+            </span>
+      </summary>
+      <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
+          <p>@Html(messages("pages.estimate.vat.turnover.include.bullet1"))</p>
+          <p>@messages("pages.estimate.vat.turnover.include.para1")
+              @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", messages("pages.estimate.vat.turnover.include.para1.1"))
+              @messages("pages.estimate.vat.turnover.include.para1.2")</p>
+      </div>
+  </details>
 
   @govHelpers.form(action = features.turnoverEstimates.routes.TurnoverEstimatesController.submitEstimateVatTurnover) {
       <div class="form-group @fieldSetClasses">
@@ -46,7 +44,6 @@
 
               @vatInput(
                   estimateVatTurnoverForm("turnoverEstimate"),
-                  '_divClass -> "form-group",
                   '_inputClass -> "form-control",
                   '_label -> messages("app.common.gbp.symbol"),
                   '_labelClass -> "form-label"

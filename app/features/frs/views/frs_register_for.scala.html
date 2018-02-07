@@ -14,13 +14,11 @@
 
     <p>@messages("pages.frs.registerFor.p")</p>
 
-    <div class="form-group">
-        <div class="panel indent">
-            <p>@messages("pages.frs.registerFor.panel1.para")</p>
-        </div>
+    <div class="panel panel-border-wide form-group">
+        <p>@messages("pages.frs.registerFor.panel1.para")</p>
     </div>
 
-    <h3>@messages("pages.frs.registerFor.subheading1")</h3>
+    <h2>@messages("pages.frs.registerFor.subheading1")</h2>
 
     @govHelpers.form(action = controllers.routes.FlatRateController.submitRegisterForFrs()) {
         <div class="form-group">
