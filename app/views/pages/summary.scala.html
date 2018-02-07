@@ -21,8 +21,10 @@
       </section>
     }
   }
-  <h3 class="heading-medium">@messages("pages.summary.subheading")</h3>
-  <p>@messages("pages.summary.para1")</p>
+  <div class="form-group">
+    <h2 class="heading-medium">@messages("pages.summary.subheading")</h2>
+    <p>@messages("pages.summary.para1")</p>
+  </div>
 
   @form(action = controllers.routes.SummaryController.submitRegistration()) {
     <div class="form-group">

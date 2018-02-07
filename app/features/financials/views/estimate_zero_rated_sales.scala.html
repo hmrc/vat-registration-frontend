@@ -16,14 +16,15 @@
 
   <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.estimate.zero.rated.sales.heading")</h1>
 
-  <div class="panel panel-indent" id="details-content-1" aria-hidden="false">
+  <div class="panel panel-border-wide form-group" id="details-content-1" aria-hidden="false">
       <p>@messages("pages.estimate.zero.rated.sales.p1")</p>
   </div>
-  <details role="group">
+  <div class="form-group">
+    <details role="group">
       <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
       @Html(messages("pages.estimate.zero.rated.sales.include.title"))
       </span></summary>
-      <div class="panel panel-indent" id="details-content-1" aria-hidden="true">
+      <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
           <p>@messages("pages.estimate.zero.rated.sales.include.para1")</p>
           <p>@messages("pages.estimate.zero.rated.sales.include.para2")</p>
           <ul class="list list-bullet">
@@ -36,7 +37,8 @@
           <p>@Messages("pages.estimate.zero.rated.sales.include.para3")
               @newWindowLink("https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services", Messages("pages.estimate.zero.rated.sales.include.para3.1"))</p>
       </div>
-  </details>
+    </details>
+  </div>
   @govHelpers.form(action = controllers.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {
       <div class="form-group @fieldSetClasses">
           <fieldset>
@@ -47,7 +49,6 @@
 
                   @vatInput(
                       estimateZeroRatedSalesForm("zeroRatedTurnoverEstimate"),
-                      '_divClass -> "form-group",
                       '_inputClass -> "form-control",
                       '_label -> Messages("app.common.gbp.symbol"),
                       '_labelClass -> "form-label"
