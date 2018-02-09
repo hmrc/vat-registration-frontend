@@ -18,35 +18,35 @@
 
     @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitFormerName()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="formerNameRadio"/>
-                @vatInputRadioGroup(
-                    field = formerNameForm("formerNameRadio"),
-                    Seq(
-                        "true" -> Messages("app.common.yes"),
-                        "false" -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
+            @vatInputRadioGroup(
+                field = formerNameForm("formerNameRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.formerName.heading"),
+                '_legendClass -> "visually-hidden"
+            )
+
+            <div class="panel panel-border-narrow hidden @fieldSetClasses" id="former_name_panel">
+
+                @formerNameForm.errors.find(_.args.contains("formerName")).map { error =>
+                    @govHelpers.errorInline("formerName", Messages(error.message))
+                }
+
+                @vatInput(
+                    formerNameForm("formerName"),
+                    '_divClass -> "form-group",
+                    '_inputClass -> "form-control",
+                    '_label -> Messages("pages.formerName.fullName.label"),
+                    '_inputHint -> Messages("pages.formerName.fullName.hint"),
+                    '_labelClass -> "form-label"
                 )
 
-                <div class="panel panel-border-narrow hidden @fieldSetClasses" id="former_name_panel">
-
-                    @formerNameForm.errors.find(_.args.contains("formerName")).map { error =>
-                        @govHelpers.errorInline("formerName", Messages(error.message))
-                    }
-
-                    @vatInput(
-                        formerNameForm("formerName"),
-                        '_divClass -> "form-group",
-                        '_inputClass -> "form-control",
-                        '_label -> Messages("pages.formerName.fullName.label"),
-                        '_inputHint -> Messages("pages.formerName.fullName.hint"),
-                        '_labelClass -> "form-label"
-                    )
-
-                </div>
-            </fieldset>
+            </div>
         </div>
 
         <div class="form-group">

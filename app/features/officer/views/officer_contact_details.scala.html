@@ -21,7 +21,7 @@
   @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitContactDetails()) {
       <div class="form-group">
           <fieldset>
-
+            <legend class="visually-hidden">@messages("pages.officerContact.heading")</legend>
               @officerContactDetailsForm.errors.find(_.args.contains("officerContactDetails")).map { error =>
                   @govHelpers.errorInline("officerContactDetails", messages(error.message))
               }

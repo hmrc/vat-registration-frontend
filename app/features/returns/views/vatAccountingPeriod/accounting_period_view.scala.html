@@ -20,30 +20,28 @@
   <p>@Html(Messages("pages.accounting.period.para1"))</p>
 
   @govHelpers.form(action = features.returns.routes.ReturnsController.submitAccountPeriods()) {
-  <div class="form-group @fieldSetClasses">
-    <fieldset class="block">
-        <span id="accountingPeriodRadio">
-            @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
-                @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))
-            }
+    <div class="form-group @fieldSetClasses">
+      @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
+          @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))
+      }
 
-            @vatInputRadioGroup(
-                field = accountingPeriodForm("accountingPeriodRadio"),
-                Seq(
-                  jan.toString -> Messages("pages.accounting.period.radio.january"),
-                  feb.toString -> Messages("pages.accounting.period.radio.february"),
-                  mar.toString -> Messages("pages.accounting.period.radio.march")
-                ),
-                '_labelAfter -> true,
-                '_labelClass -> "block-label"
-            )
-        </span>
-    </fieldset>
-  </div>
+      @vatInputRadioGroup(
+          field = accountingPeriodForm("accountingPeriodRadio"),
+          Seq(
+            jan.toString -> Messages("pages.accounting.period.radio.january"),
+            feb.toString -> Messages("pages.accounting.period.radio.february"),
+            mar.toString -> Messages("pages.accounting.period.radio.march")
+          ),
+          '_labelAfter -> true,
+          '_labelClass -> "block-label",
+          '_legend -> messages("pages.accounting.period.heading"),
+          '_legendClass -> "visually-hidden"
+      )
+    </div>
 
-  <div class="form-group">
-    <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-  </div>
+    <div class="form-group">
+      <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+    </div>
 
   }
 }

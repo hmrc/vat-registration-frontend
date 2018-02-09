@@ -22,40 +22,39 @@
       @defining(securityQuestionsForm("dob").errors.nonEmpty) { errorPresent =>
           <div class="form-date @if(errorPresent) { form-group-error }">
           <fieldset id="dobField">
-              <label><span class="hidden">DOB input</span>
-                  @securityQuestionsForm.error("dob").map { error =>
-                      <span class="error-notification" role="tooltip">
-                          @messages(error.message, error.args: _*)
-                      </span>
-                  }
-              </label>
+            <legend class="visually-hidden">@messages("pages.security.questions.date.of.birth.h3")</legend>
+              @securityQuestionsForm.error("dob").map { error =>
+                  <span class="error-notification" role="tooltip">
+                      @messages(error.message, error.args: _*)
+                  </span>
+              }
               <span class="form-hint">@messages("pages.security.questions.date.of.birth.hint")</span>
 
               @vatInput(
                   securityQuestionsForm("dob.day"),
-                  '_divClass -> "form-group",
-                  '_inputClass -> "form-control",
-                  '_maxlength -> 2,
                   '_label -> messages("pages.security.questions.day.label"),
-                  '_labelClass -> "form-label"
+                  '_labelClass -> "form-group form-group-day",
+                  '_type -> "tel",
+                  '_inputClass -> s"form-control input--xsmall",
+                  '_maxlength -> "2"
               )
 
               @vatInput(
                   securityQuestionsForm("dob.month"),
-                  '_divClass -> "form-group",
-                  '_inputClass -> "form-control",
-                  '_maxlength -> 2,
                   '_label -> messages("pages.security.questions.month.label"),
-                  '_labelClass -> "form-label"
+                  '_labelClass -> "form-group form-group-month",
+                  '_type -> "tel",
+                  '_inputClass -> s"form-control input--xsmall",
+                  '_maxlength -> "2"
               )
 
               @vatInput(
                   securityQuestionsForm("dob.year"),
-                  '_divClass -> "form-group form-group-year",
-                  '_inputClass -> "form-control",
-                  '_maxlength -> 4,
                   '_label -> messages("pages.security.questions.year.label"),
-                  '_labelClass -> "form-label"
+                  '_labelClass -> "form-group form-group-year",
+                  '_type -> "tel",
+                  '_inputClass -> s"form-control input--xsmall",
+                  '_maxlength -> "4"
               )
               @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
               <input type="hidden" name="dob" value="" id="dob" class="hidden" />
@@ -65,7 +64,7 @@
           <h2 class="form-title heading-medium">@messages("pages.security.questions.nino.h3")</h2>
           <p>@messages("pages.security.questions.nino.p1")</p>
           <fieldset id="ninoField">
-            <legend></legend>
+            <legend class="visually-hidden">@messages("pages.security.questions.nino.h3")</legend>
             <span class="form-hint">@messages("pages.security.questions.nino.hint")</span>
             @vatInput(
                 securityQuestionsForm("nino"),

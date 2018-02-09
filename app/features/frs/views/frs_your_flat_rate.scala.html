@@ -35,20 +35,18 @@
 
     @govHelpers.form(action = controllers.routes.FlatRateController.submitYourFlatRate()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="registerForFrsWithSectorRadio"></span>
-                @vatInputRadioGroup(
-                    field = registerForFrsForm("registerForFrsWithSectorRadio"),
-                    Seq(
-                        "true" -> Messages("app.common.yes"),
-                        "false" -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label",
-                    '_legend -> messages("pages.frs.registerForWithSector.subheading1"),
-                    '_legendClass -> "hidden"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = registerForFrsForm("registerForFrsWithSectorRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.frs.registerForWithSector.subheading1"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

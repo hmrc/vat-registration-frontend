@@ -28,34 +28,34 @@
 
     @govHelpers.form(action = controllers.routes.TradingDetailsController.submitTradingName()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="tradingNameRadio"/>
-                @vatInputRadioGroup(
-                    field = tradingNameForm("tradingNameRadio"),
-                    Seq(
-                        "true" -> Messages("app.common.yes"),
-                        "false" -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
+            @vatInputRadioGroup(
+                field = tradingNameForm("tradingNameRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.tradingName.heading"),
+                '_legendClass -> "visually-hidden"
+            )
+
+            <div class="panel panel-border-narrow hidden @fieldSetClasses" id="trading_name_panel">
+
+                @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
+                    @govHelpers.errorInline("tradingName", Messages(error.message))
+                }
+
+                @vatInput(
+                    tradingNameForm("tradingName"),
+                    '_divClass -> "form-group",
+                    '_inputClass -> "form-control",
+                    '_label -> Messages("pages.tradingName.panels.tradingName"),
+                    '_labelClass -> "form-label"
                 )
 
-                <div class="panel panel-border-narrow hidden @fieldSetClasses" id="trading_name_panel">
-
-                    @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
-                        @govHelpers.errorInline("tradingName", Messages(error.message))
-                    }
-
-                    @vatInput(
-                        tradingNameForm("tradingName"),
-                        '_divClass -> "form-group",
-                        '_inputClass -> "form-control",
-                        '_label -> Messages("pages.tradingName.panels.tradingName"),
-                        '_labelClass -> "form-label"
-                    )
-
-                </div>
-            </fieldset>
+            </div>
         </div>
 
         <div class="form-group">
