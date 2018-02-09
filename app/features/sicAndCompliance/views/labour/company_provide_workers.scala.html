@@ -17,19 +17,18 @@
     </p>
     @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitProvideWorkers()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="companyProvideWorkersRadio"/>
-
-                @vatInputRadioGroup(
-                    field = companyProvideWorkersForm("companyProvideWorkersRadio"),
-                    Seq(
-                        CompanyProvideWorkers.PROVIDE_WORKERS_YES -> Messages("app.common.yes"),
-                        CompanyProvideWorkers.PROVIDE_WORKERS_NO -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = companyProvideWorkersForm("companyProvideWorkersRadio"),
+                Seq(
+                    CompanyProvideWorkers.PROVIDE_WORKERS_YES -> Messages("app.common.yes"),
+                    CompanyProvideWorkers.PROVIDE_WORKERS_NO -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.labourCompliance.companyProvideWorkers.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

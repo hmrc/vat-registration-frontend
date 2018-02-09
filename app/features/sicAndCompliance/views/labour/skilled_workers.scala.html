@@ -15,19 +15,18 @@
     <p>@messages("pages.labourCompliance.skilledWorkers.para")</p>
     @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitSkilledWorkers()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="skilledWorkersRadio"/>
-
-                @vatInputRadioGroup(
-                    field = skilledWorkersForm("skilledWorkersRadio"),
-                    Seq(
-                        SkilledWorkers.SKILLED_WORKERS_YES -> Messages("app.common.yes"),
-                        SkilledWorkers.SKILLED_WORKERS_NO -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = skilledWorkersForm("skilledWorkersRadio"),
+                Seq(
+                    SkilledWorkers.SKILLED_WORKERS_YES -> Messages("app.common.yes"),
+                    SkilledWorkers.SKILLED_WORKERS_NO -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.labourCompliance.skilledWorkers.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

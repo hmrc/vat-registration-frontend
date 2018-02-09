@@ -19,18 +19,17 @@
 
     @govHelpers.form(action = controllers.routes.TradingDetailsController.submitApplyEori()) {
         <div class="form-group">
-            <fieldset>
-                <span id="applyEoriRadio"/>
-                @vatInputRadioGroup(
-                    field = applyEoriForm("applyEoriRadio"),
-                    Seq(
-                        "true" -> Messages("pages.applyEori.number.yes"),
-                        "false" -> Messages("pages.applyEori.number.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = applyEoriForm("applyEoriRadio"),
+                Seq(
+                    "true" -> Messages("pages.applyEori.number.yes"),
+                    "false" -> Messages("pages.applyEori.number.no")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.applyEori.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

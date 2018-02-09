@@ -10,28 +10,24 @@
       annualCostsInclusiveForm
   )
 
-  <h1 class="form-title heading-xlarge" id="pageHeading">
-      @messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover))
-  </h1>
+  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover))</h1>
 
   <p>@Html(messages("pages.frs.costsLimited.p1"))</p>
 
   @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
   <div class="form-group">
-    <fieldset class="block">
-        <span id="annualCostsLimitedRadio"/>
-        @vatInputRadioGroup(
-            field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
-            Seq(
-                AnnualCosts.AlreadyDoesSpend.toString() -> messages("app.common.yes"),
-                AnnualCosts.WillSpend.toString() -> messages("pages.frs.costsLimited.radio2"),
-                AnnualCosts.DoesNotSpend.toString() -> messages("pages.frs.costsLimited.radio3")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-        )
-
-    </fieldset>
+      @vatInputRadioGroup(
+        field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
+        Seq(
+            AnnualCosts.AlreadyDoesSpend.toString() -> messages("app.common.yes"),
+            AnnualCosts.WillSpend.toString() -> messages("pages.frs.costsLimited.radio2"),
+            AnnualCosts.DoesNotSpend.toString() -> messages("pages.frs.costsLimited.radio3")
+        ),
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legend -> messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover)),
+        '_legendClass -> "visually-hidden"
+      )
   </div>
 
   <div class="form-group">
