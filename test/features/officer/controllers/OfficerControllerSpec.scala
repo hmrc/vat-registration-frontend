@@ -23,6 +23,7 @@ import features.officer.models.view._
 import features.officer.services.LodgingOfficerService
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -30,7 +31,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.{AddressLookupService, PrePopService}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -46,11 +47,12 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       override val prePopService: PrePopService = mockPPService
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
-      override val authConnector: AuthConnector = mockAuthConnector
+      override val authConnector: AuthConnector = mockAuthClientConnector
       override val addressLookupService: AddressLookupService = mockAddressService
     }
 
     mockAllMessages
+    mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 

@@ -18,9 +18,9 @@ package features.turnoverEstimates
 
 import javax.inject.Inject
 
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import forms.EstimateVatTurnoverForm
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -29,20 +29,20 @@ import services.SessionProfile
 import scala.concurrent.Future
 
 class TurnoverEstimatesControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                                val authConnector: FrontendAuthConnector,
+                                                val authConnector: AuthClientConnector,
                                                 val keystoreConnector: KeystoreConnect,
                                                 val service: TurnoverEstimatesService) extends TurnoverEstimatesController {
 
 }
 
-trait TurnoverEstimatesController extends VatRegistrationControllerNoAux with SessionProfile {
+trait TurnoverEstimatesController extends BaseController with SessionProfile {
 
   val service: TurnoverEstimatesService
 
   private val estimateVatTurnoverForm = EstimateVatTurnoverForm.form
 
-  def showEstimateVatTurnover: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def showEstimateVatTurnover: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         service.fetchTurnoverEstimates map { turnover =>
           val form = turnover match {
@@ -54,8 +54,8 @@ trait TurnoverEstimatesController extends VatRegistrationControllerNoAux with Se
       }
   }
 
-  def submitEstimateVatTurnover: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def submitEstimateVatTurnover: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         estimateVatTurnoverForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(views.html.estimate_vat_turnover(errors))),

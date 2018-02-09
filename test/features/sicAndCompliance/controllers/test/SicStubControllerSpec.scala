@@ -21,15 +21,14 @@ import features.sicAndCompliance.models.test.SicStub
 import features.sicAndCompliance.services.SicAndComplianceService
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import mocks.SicAndComplianceServiceMock
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.S4LService
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -38,15 +37,16 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
 
   trait Setup {
     val controller: SicStubController = new SicStubController {
-      override val messagesApi: MessagesApi = mockMessagesAPI
       override val configConnect: ConfigConnector = mockConfigConnector
-      override val authConnector: AuthConnector = mockAuthConnector
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
       override val s4LService: S4LService = mockS4LService
+      val authConnector: AuthConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
     }
 
     mockAllMessages
+    mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 

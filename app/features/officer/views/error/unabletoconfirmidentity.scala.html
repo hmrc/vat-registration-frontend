@@ -1,14 +1,14 @@
-@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 @import views.html.helpers.templates.newWindowLink
 
-@main_template(title = messagesApi("pages.cantconfirmidentity.title"), backEnabled = false) {
+@main_template(title = messages("pages.cantconfirmidentity.title"), backEnabled = false) {
     <header class="page-header">
-        <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.cantconfirmidentity.heading")</h1>
+        <h1 class="form-title heading-xlarge" id="main-heading">@messages("pages.cantconfirmidentity.heading")</h1>
     </header>
 
-     <p>@messagesApi("pages.cantconfirmidentity.body.one")</p>
+     <p>@messages("pages.cantconfirmidentity.body.one")</p>
     <div class="form-group">
-        <p>@messagesApi("pages.cantconfirmidentity.body.two")
+        <p>@messages("pages.cantconfirmidentity.body.two")
             @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed",messages("pages.cantconfirmidentity.body.link"))
             @messages("pages.cantconfirmidentity.body.three")</p>
     </div>

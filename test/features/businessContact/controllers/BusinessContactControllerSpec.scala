@@ -23,6 +23,7 @@ import features.businessContact.BusinessContactService
 import features.businessContact.models.CompanyContactDetails
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -30,7 +31,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import services.{AddressLookupService, PrePopService}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -43,9 +44,10 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       override val prepopService: PrePopService = mockPrePopService
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       val messagesApi: MessagesApi = mockMessagesAPI
-      val authConnector: AuthConnector = mockAuthConnector
+      val authConnector: AuthConnector = mockAuthClientConnector
     }
     mockAllMessages
+    mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
     def mockGetPpopAddressList = when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))

@@ -19,55 +19,37 @@ package controllers.internal
 import javax.inject.Inject
 
 import common.enums.RegistrationDeletion
-import config.FrontendAuthConnector
+import config.AuthClientConnector
 import connectors.{KeystoreConnect, RegistrationConnector, S4LConnect}
-import controllers.VatRegistrationControllerNoAux
-import org.slf4j.{Logger, LoggerFactory}
+import controllers.BaseController
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent}
 import services.{CancellationService, SessionProfile}
-import uk.gov.hmrc.play.HeaderCarrierConverter
 
-import scala.concurrent.Future
-
-class DeleteSessionItemsControllerImpl @Inject()(val authConnector: FrontendAuthConnector,
+class DeleteSessionItemsControllerImpl @Inject()(val authConnector: AuthClientConnector,
                                                  val vatRegistrationConnector: RegistrationConnector,
                                                  val keystoreConnector: KeystoreConnect,
                                                  val save4LaterConnector: S4LConnect,
                                                  val messagesApi: MessagesApi,
                                                  val cancellationService: CancellationService) extends DeleteSessionItemsController
 
-trait DeleteSessionItemsController extends VatRegistrationControllerNoAux with SessionProfile {
+trait DeleteSessionItemsController extends BaseController with SessionProfile {
   val vatRegistrationConnector: RegistrationConnector
   val keystoreConnector: KeystoreConnect
   val save4LaterConnector: S4LConnect
   val cancellationService: CancellationService
 
-  def deleteVatRegistration(regId: String): Action[AnyContent] = Action.async {
-    implicit request =>
-      implicit val hc = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-      authConnector.currentAuthority flatMap {
-        _.fold(unauthorisedResult) { _ =>
-          cancellationService.deleteVatRegistration(regId) map {
-            case RegistrationDeletion.deleted   => Ok
-            case RegistrationDeletion.forbidden =>
-              logger.warn(s"[deleteVatRegistration] - Requested document regId $regId to be deleted is not corresponding to the CurrentProfile regId")
-              BadRequest
-          } recover {
-            case ex =>
-              logger.error(s"[RegistrationController] [delete] - Received an error when deleting Registration regId: $regId - error: ${ex.getMessage}")
-              InternalServerError
-          }
-        }
+  def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      cancellationService.deleteVatRegistration(regId) map {
+        case RegistrationDeletion.deleted   => Ok
+        case RegistrationDeletion.forbidden =>
+          logger.warn(s"[deleteVatRegistration] - Requested document regId $regId to be deleted is not corresponding to the CurrentProfile regId")
+          BadRequest
       } recover {
-        case ex: Exception =>
-          logger.error(s"[deleteVatRegistration] - Received an error when retrieving Authority - error: ${ex.getMessage}")
+        case ex =>
+          logger.error(s"[RegistrationController] [delete] - Received an error when deleting Registration regId: $regId - error: ${ex.getMessage}")
           InternalServerError
       }
-  }
-
-  private def unauthorisedResult: Future[Result] = {
-    logger.warn(s"[deleteVatRegistration] - Can't get the Authority")
-    Future.successful(Unauthorized)
   }
 }

@@ -595,31 +595,19 @@ trait StubUtils {
 
     def isAuthorised(implicit requestHolder: RequestHolder): PreconditionBuilder = {
       requestHolder.request = requestWithSession(requestHolder.request, "anyUserId")
+
       stubFor(
-        get(urlPathEqualTo("/auth/authority"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "uri":"anyUserId",
-               |  "loggedInAt": "2014-06-09T14:57:09.522Z",
-               |  "previouslyLoggedInAt": "2014-06-09T14:48:24.841Z",
-               |  "credentials": {"gatewayId":"xxx2"},
-               |  "accounts": {},
-               |  "levelOfAssurance": "2",
-               |  "confidenceLevel" : 50,
-               |  "credentialStrength": "strong",
-               |  "legacyOid": "1234567890",
-               |  "userDetailsLink": "http://localhost:11111/auth/userDetails",
-               |  "ids": "/auth/ids"
-               |}""".stripMargin
-          )))
+        post(urlPathEqualTo("/auth/authorise"))
+          .willReturn(ok("""{}""")))
+
       builder
     }
 
     def isNotAuthorised  = {
       stubFor(
-        get(urlPathEqualTo("/auth/authority"))
-          .willReturn(forbidden()))
+        post(urlPathEqualTo("/auth/authorise"))
+          .willReturn(unauthorized()))
+
       builder
     }
   }

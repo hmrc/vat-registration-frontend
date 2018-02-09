@@ -18,34 +18,31 @@ package controllers
 
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
 import features.returns.ReturnsService
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.{RegistrationService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.application_submission_confirmation
 
 class ApplicationSubmissionControllerImpl @Inject()(val vatRegService: RegistrationService,
                                                     val returnsService:  ReturnsService,
-                                                    val authConnector: AuthConnector,
+                                                    val authConnector: AuthClientConnector,
                                                     val keystoreConnector: KeystoreConnect,
-                                                    implicit val messagesApi: MessagesApi) extends ApplicationSubmissionController
+                                                    val messagesApi: MessagesApi) extends ApplicationSubmissionController
 
-trait ApplicationSubmissionController extends VatRegistrationControllerNoAux with SessionProfile {
+trait ApplicationSubmissionController extends BaseController with SessionProfile {
   val vatRegService: RegistrationService
   val returnsService: ReturnsService
 
-  def show: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            for {
-              ackRef  <- vatRegService.getAckRef(profile.registrationId)
-              returns <- returnsService.getReturns
-            } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
-          }
-        }
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        for {
+          ackRef <- vatRegService.getAckRef(profile.registrationId)
+          returns <- returnsService.getReturns
+        } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
+      }
   }
 }

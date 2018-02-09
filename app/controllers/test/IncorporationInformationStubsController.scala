@@ -18,45 +18,41 @@ package controllers.test
 
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
 import connectors.test.TestRegistrationConnector
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{RegistrationService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 class IncorporationInformationStubsControllerImpl @Inject()(val vatRegService: RegistrationService,
                                                             val vatRegConnector: TestRegistrationConnector,
-                                                            implicit val messagesApi: MessagesApi,
-                                                            val authConnector: AuthConnector,
+                                                            val messagesApi: MessagesApi,
+                                                            val authConnector: AuthClientConnector,
                                                             val keystoreConnector: KeystoreConnect) extends IncorporationInformationStubsController
 
-trait IncorporationInformationStubsController extends VatRegistrationControllerNoAux with SessionProfile {
+trait IncorporationInformationStubsController extends BaseController with SessionProfile {
   val vatRegConnector: TestRegistrationConnector
   val vatRegService: RegistrationService
 
-  def postTestData(): Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        System.setProperty("feature.ivStubbed","true")
-        for {
-          _          <- vatRegConnector.setupCurrentProfile
-          (regId, _) <- vatRegService.createRegistrationFootprint
-          _          <- vatRegConnector.wipeTestData
-          _          <- vatRegConnector.postTestData(defaultTestData(regId))
-        } yield Ok("Data inserted")
+  def postTestData(): Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      System.setProperty("feature.ivStubbed","true")
+      for {
+        _          <- vatRegConnector.setupCurrentProfile
+        (regId, _) <- vatRegService.createRegistrationFootprint
+        _          <- vatRegConnector.wipeTestData
+        _          <- vatRegConnector.postTestData(defaultTestData(regId))
+      } yield Ok("Data inserted")
   }
 
-  def incorpCompany(): Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          vatRegConnector.incorpCompany.map {
-            _=> Ok("Company incorporated")
-          }
-        }
+  def incorpCompany(): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      vatRegConnector.incorpCompany.map {
+        _=> Ok("Company incorporated")
+      }
   }
 
   def defaultTestData(id: String): JsValue =

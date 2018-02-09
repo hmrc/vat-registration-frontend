@@ -28,7 +28,7 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vrefe.deleteVREFESession()

@@ -20,27 +20,31 @@ import java.util.concurrent.TimeUnit
 
 import akka.util.Timeout
 import common.enums.IVResult
-import helpers.VatRegSpec
-import models.CurrentProfile
+import connectors.KeystoreConnect
+import features.officer.services.IVService
+import helpers.{ControllerSpec, MockMessages}
+import mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.mvc.{Request, Result}
-import play.api.test.Helpers._
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-class IdentityVerificationControllerSpec extends VatRegSpec {
-  class Setup {
-    val testController = new IdentityVerificationController(
-      ds,
-      mockIVService,
-      mockAuthConnector,
-      mockKeystoreConnector
-    ) {
-      override def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = f(cp)
+class IdentityVerificationControllerSpec extends ControllerSpec with MockMessages {
+  trait Setup {
+    val testController = new IdentityVerificationController {
+      val ivService: IVService = mockIVService
+      val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
+      val authConnector: AuthConnector = mockAuthClientConnector
     }
+
+    mockAllMessages
+    mockAuthenticated()
+    mockWithCurrentProfile(Some(currentProfile.copy(ivPassed = None)))
   }
 
   "redirectToIV" should {
@@ -83,33 +87,34 @@ class IdentityVerificationControllerSpec extends VatRegSpec {
       }
     }
   }
+
   "GET timeoutIV" should {
     "display the timeout IV error page" in new Setup {
-      callAuthorised(testController.timeoutIV)(_ includesText "Your session has timed out due to inactivity")
+      callAuthorised(testController.timeoutIV)(contentAsString(_) must include(MOCKED_MESSAGE))
     }
   }
 
   "GET unableToConfirmIdentity" should {
-    "display the Unable to confirme identity error page" in new Setup{
-      callAuthorised(testController.unableToConfirmIdentity)(_ includesText "We won&#x27;t be able to confirm your identity")
+    "display the Unable to confirme identity error page" in new Setup {
+      callAuthorised(testController.unableToConfirmIdentity)(contentAsString(_) must include(MOCKED_MESSAGE))
     }
   }
 
   "GET failedIV" should {
-    "display the Failed IV error page" in new Setup{
-      callAuthorised(testController.failedIV)(_ includesText "We couldn&#x27;t confirm your identity")
+    "display the Failed IV error page" in new Setup {
+      callAuthorised(testController.failedIV)(contentAsString(_) must include(MOCKED_MESSAGE))
     }
   }
 
   "GET lockedOut" should {
-    "display the Locked out error page" in new Setup{
-      callAuthorised(testController.lockedOut)(_ includesText "You&#x27;ve been locked out")
+    "display the Locked out error page" in new Setup {
+      callAuthorised(testController.lockedOut)(contentAsString(_) must include(MOCKED_MESSAGE))
     }
   }
 
   "GET userAborted" should {
-    "display the User aborted error page" in new Setup{
-      callAuthorised(testController.userAborted)(_ includesText "You haven&#x27;t completed the identity check")
+    "display the User aborted error page" in new Setup {
+      callAuthorised(testController.userAborted)(contentAsString(_) must include(MOCKED_MESSAGE))
     }
   }
   "GET failedIVJourney" should {
