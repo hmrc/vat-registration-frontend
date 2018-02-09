@@ -18,32 +18,44 @@ package controllers
 
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
+import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.{CurrentProfileSrv, RegistrationService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.welcome
+
+import scala.concurrent.Future
 
 class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationService,
                                       val currentProfileService: CurrentProfileSrv,
-                                      val authConnector: AuthConnector,
+                                      val authConnector: AuthClientConnector,
                                       val keystoreConnector: KeystoreConnect,
-                                      implicit val messagesApi: MessagesApi) extends WelcomeController
+                                      val conf: Configuration,
+                                      val messagesApi: MessagesApi) extends WelcomeController {
+  val eligibilityFEUrl = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url").getOrElse("")
+  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
+}
 
-trait WelcomeController extends VatRegistrationControllerNoAux with SessionProfile {
+trait WelcomeController extends BaseController with SessionProfile {
   val vatRegistrationService: RegistrationService
   val currentProfileService: CurrentProfileSrv
-  val authConnector: AuthConnector
+
+  val eligibilityFE: Call
 
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 
-  def start: Action[AnyContent] = authorised.async {
-    implicit user =>
-      implicit request =>
-        for {
-          (regId, txId) <- vatRegistrationService.createRegistrationFootprint
-          _             <- currentProfileService.buildCurrentProfile(regId, txId)
-        } yield Ok(welcome())
+  def start: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      for {
+        (regId, txId) <- vatRegistrationService.createRegistrationFootprint
+        _             <- currentProfileService.buildCurrentProfile(regId, txId)
+      } yield Ok(welcome())
+  }
+
+  def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => _ =>
+      Future.successful(Redirect(eligibilityFE))
   }
 }

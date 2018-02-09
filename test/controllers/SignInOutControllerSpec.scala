@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.callbacks.SignInOutController
-import helpers.VatRegSpec
+import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import mocks.AuthMock
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
 
-class SignInOutControllerSpec extends VatRegSpec {
+class SignInOutControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
 
   val testController = new SignInOutController {
-    override val compRegFEURI                      = "/test/uri"
-    override val compRegFEURL                      = "/test/uri"
-    override implicit val messagesApi: MessagesApi = app.injector.instanceOf(classOf[MessagesApi])
-    override protected val authConnector           = mockAuthConnector
-    override val keystoreConnector                 = mockKeystoreConnector
+    override val compRegFEURI      = "/test/uri"
+    override val compRegFEURL      = "/test/uri"
+    override val keystoreConnector = mockKeystoreConnector
+    val authConnector              = mockAuthClientConnector
+    val messagesApi: MessagesApi   = mockMessagesAPI
   }
 
   "Post-sign-in" should {
@@ -72,12 +72,16 @@ class SignInOutControllerSpec extends VatRegSpec {
 
   "timeoutShow" should {
     "return 200" in {
+      mockAllMessages
+
       val res = testController.timeoutShow()(FakeRequest())
       status(res) mustBe 200
     }
   }
   "errorShow" should {
     "return 500" in {
+      mockAllMessages
+
       val res = testController.errorShow()(FakeRequest())
       status(res) mustBe 500
     }

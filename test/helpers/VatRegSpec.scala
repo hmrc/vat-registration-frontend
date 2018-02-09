@@ -24,7 +24,7 @@ import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import controllers.CommonPlayDependencies
 import fixtures.{LoginFixture, VatRegistrationFixture}
-import mocks.VatMocks
+import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatchers => Matchers}
@@ -42,7 +42,7 @@ import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Awaitable, Future}
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
+class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBuilder
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
@@ -76,8 +76,7 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthBuilder
   val enabledFeatureSwitch = BooleanFeatureSwitch("test",true)
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
-                      (test: Future[Result] => Assertion)
-                      (implicit mockAuthConnector: AuthConnector): Unit =
+                      (test: Future[Result] => Assertion): Unit =
     submitWithAuthorisedUser(a, r)(test)
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =

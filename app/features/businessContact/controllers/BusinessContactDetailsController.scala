@@ -18,30 +18,30 @@ package features.businessContact.controllers
 
 import javax.inject.Inject
 
-import controllers.VatRegistrationControllerNoAux
 import common.enums.AddressLookupJourneyIdentifier
+import config.AuthClientConnector
 import connectors.KeystoreConnect
+import controllers.BaseController
+import features.businessContact.BusinessContactService
 import features.businessContact.forms.{CompanyContactDetailsForm, PpobForm}
 import features.businessContact.models.CompanyContactDetails
 import features.businessContact.views.html.{business_contact_details, ppob}
-import features.businessContact.{BusinessContactService, controllers}
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call}
+import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, PrePopService, SessionProfile}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
-class BusinessContactDetailsControllerImpl @Inject()(implicit val messagesApi: MessagesApi,
-                                                     val authConnector: AuthConnector,
+class BusinessContactDetailsControllerImpl @Inject()(val messagesApi: MessagesApi,
+                                                     val authConnector: AuthClientConnector,
                                                      val keystoreConnector: KeystoreConnect,
                                                      val businessContactService: BusinessContactService,
                                                      val prepopService: PrePopService,
                                                      val addressLookupService: AddressLookupService) extends BusinessContactDetailsController
 
-trait BusinessContactDetailsController extends VatRegistrationControllerNoAux with SessionProfile {
+trait BusinessContactDetailsController extends BaseController with SessionProfile {
 
   val businessContactService: BusinessContactService
   val prepopService: PrePopService
@@ -50,8 +50,8 @@ trait BusinessContactDetailsController extends VatRegistrationControllerNoAux wi
   private val ppobForm            = PpobForm.form
   private val companyContactForm  = CompanyContactDetailsForm.form
 
-  def showPPOB: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def showPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         for {
           businessContact <- businessContactService.getBusinessContact
@@ -61,8 +61,8 @@ trait BusinessContactDetailsController extends VatRegistrationControllerNoAux wi
       }
   }
 
-  def submitPPOB: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def submitPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         ppobForm.bindFromRequest.fold(
           hasErrors => prepopService.getPpobAddressList map { addressList =>
@@ -83,8 +83,8 @@ trait BusinessContactDetailsController extends VatRegistrationControllerNoAux wi
       }
   }
 
-  def returnFromTxm(id: String): Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def returnFromTxm(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         for {
           address <- addressLookupService.getAddressById(id)
@@ -95,8 +95,8 @@ trait BusinessContactDetailsController extends VatRegistrationControllerNoAux wi
 
 
 
-  def showCompanyContactDetails: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def showCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         for {
           businessContact <- businessContactService.getBusinessContact
@@ -105,8 +105,8 @@ trait BusinessContactDetailsController extends VatRegistrationControllerNoAux wi
       }
   }
 
-  def submitCompanyContactDetails: Action[AnyContent] = authorisedWithCurrentProfile {
-    implicit user => implicit request => implicit profile =>
+  def submitCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
       ivPassedCheck {
         companyContactForm.bindFromRequest.fold(
           hasErrors => Future.successful(BadRequest(business_contact_details(hasErrors))),

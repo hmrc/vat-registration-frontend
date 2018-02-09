@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.KeystoreConnect
 import helpers.{S4LMockSugar, VatRegSpec}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -23,6 +24,9 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, _}
+import services.SessionProfile
+
+import scala.concurrent.Future
 
 case class TestClass(text: String, number: Int)
 
@@ -31,10 +35,12 @@ class VatRegistrationControllerSpec extends VatRegSpec with S4LMockSugar {
 
   import testHelpers.FormInspectors._
 
-  object TestController extends VatRegistrationController(ds) {
-    override val authConnector = mockAuthConnector
-    def authorisedActionGenerator: Action[AnyContent] = authorised { u => r => NoContent }
+  object TestController extends VatRegistrationController(ds) with SessionProfile {
+    override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+    val authConnector = mockAuthClientConnector
 
+    def authorisedActionGenerator: Action[AnyContent] = isAuthorised { r => p => Future.successful(NoContent) }
+    def authorisedFailedActionGenerator: Action[AnyContent] = isAuthorised { r => p => Future.failed(new Exception) }
   }
 
   val testConstraint: Constraint[TestClass] = Constraint {
@@ -49,15 +55,37 @@ class VatRegistrationControllerSpec extends VatRegSpec with S4LMockSugar {
     )(TestClass.apply)(TestClass.unapply).verifying(testConstraint)
   )
 
+  "unexpected error" should {
+    "return an exception" in {
+      mockAuthenticated()
+      mockGetCurrentProfile(Some(cp))
+
+      callAuthorised(TestController.authorisedFailedActionGenerator) {
+        _ failedWith classOf[Exception]
+      }
+    }
+  }
+
   "unauthorised access" should {
-    "redirect user to GG sign in page" in {
-      TestController.authorisedActionGenerator(FakeRequest()) redirectsTo authUrl
+    "redirect user to GG sign in page if user is not logged in" in {
+      mockNoActiveSession()
+
+      TestController.authorisedActionGenerator(FakeRequest()) isA SEE_OTHER
+    }
+
+    "return a 500 if an unexpected authorisation error occurred" in {
+      mockNotAuthenticated()
+
+      TestController.authorisedActionGenerator(FakeRequest()) isA INTERNAL_SERVER_ERROR
     }
   }
 
   "authorised access" should {
     "return success status" in {
-      callAuthorised(TestController.authorisedActionGenerator)(status(_) mustBe NO_CONTENT)
+      mockAuthenticated()
+      mockGetCurrentProfile(Some(cp))
+
+      callAuthorised(TestController.authorisedActionGenerator)(_ isA NO_CONTENT)
     }
   }
 

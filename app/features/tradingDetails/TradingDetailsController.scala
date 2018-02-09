@@ -18,128 +18,108 @@ package controllers
 
 import javax.inject.Inject
 
-import cats.instances.FutureInstances
-import cats.syntax.FlatMapSyntax
+import config.AuthClientConnector
 import connectors.KeystoreConnect
 import features.tradingDetails.TradingDetailsService
+import features.tradingDetails.views.html.{eori_apply => ApplyEoriPage, eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 import forms.{ApplyEoriForm, EuGoodsForm, TradingNameForm}
 import play.api.i18n.MessagesApi
 import services.SessionProfile
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import features.tradingDetails.views.html.{eori_apply => ApplyEoriPage, eu_goods => EuGoodsPage, trading_name => TradingNamePage}
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
 class TradingDetailsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
-                                             val authConnector: AuthConnector,
+                                             val authConnector: AuthClientConnector,
                                              val tradingDetailsService: TradingDetailsService,
                                              val messagesApi: MessagesApi) extends TradingDetailsController {
 
 }
 
-trait TradingDetailsController extends VatRegistrationControllerNoAux with SessionProfile with FlatMapSyntax with FutureInstances {
+trait TradingDetailsController extends BaseController with SessionProfile {
 
   val tradingDetailsService: TradingDetailsService
   val authConnector: AuthConnector
   val keystoreConnector: KeystoreConnect
 
-  val tradingNamePage = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-              _.tradingNameView match {
-                case Some(name) => Ok(TradingNamePage(TradingNameForm.form.fill(
-                  (name.yesNo, name.tradingName)
-                )))
-                case None => Ok(TradingNamePage(TradingNameForm.form))
-              }
+  val tradingNamePage = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
+          _.tradingNameView match {
+            case Some(name) => Ok(TradingNamePage(TradingNameForm.form.fill(
+              (name.yesNo, name.tradingName)
+            )))
+            case None => Ok(TradingNamePage(TradingNameForm.form))
+          }
+        }
+      }
+  }
+
+  val submitTradingName = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        TradingNameForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(TradingNamePage(errors))),
+          success => {
+            val (hasName, name) = success
+            tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
+              _ => Redirect(controllers.routes.TradingDetailsController.euGoodsPage())
             }
           }
-        }
+        )
+      }
   }
 
-  val submitTradingName = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            TradingNameForm.form.bindFromRequest.fold(
-              errors => Future.successful(BadRequest(TradingNamePage(errors))),
-              success => {
-                val (hasName, name) = success
-                tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
-                  _ => Redirect(controllers.routes.TradingDetailsController.euGoodsPage())
-                }
-              }
-            )
+  val euGoodsPage = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
+          _.euGoods match {
+            case Some(goods) => Ok(EuGoodsPage(EuGoodsForm.form.fill(goods)))
+            case None => Ok(EuGoodsPage(EuGoodsForm.form))
           }
         }
+      }
   }
 
-  val euGoodsPage = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-              _.euGoods match {
-                case Some(goods) => Ok(EuGoodsPage(EuGoodsForm.form.fill(goods)))
-                case None => Ok(EuGoodsPage(EuGoodsForm.form))
-              }
+  val submitEuGoods = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        EuGoodsForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(EuGoodsPage(errors))),
+          success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
+            if (success) {
+              Redirect(controllers.routes.TradingDetailsController.applyEoriPage())
+            } else {
+              Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
             }
           }
-        }
+        )
+      }
   }
 
-  val submitEuGoods = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            EuGoodsForm.form.bindFromRequest.fold(
-              errors => Future.successful(BadRequest(EuGoodsPage(errors))),
-              success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-                if (success) {
-                  Redirect(controllers.routes.TradingDetailsController.applyEoriPage())
-                } else {
-                  Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
-                }
-              }
-            )
+  val applyEoriPage = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
+          _.applyEori match {
+            case Some(eori) => Ok(ApplyEoriPage(ApplyEoriForm.form.fill(eori)))
+            case None => Ok(ApplyEoriPage(ApplyEoriForm.form))
           }
         }
+      }
   }
 
-  val applyEoriPage = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-              _.applyEori match {
-                case Some(eori) => Ok(ApplyEoriPage(ApplyEoriForm.form.fill(eori)))
-                case None => Ok(ApplyEoriPage(ApplyEoriForm.form))
-              }
-            }
+  val submitApplyEori = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        ApplyEoriForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(ApplyEoriPage(errors))),
+          success => tradingDetailsService.saveEori(profile.registrationId, success) map {
+            _ => Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
           }
-        }
+        )
+      }
   }
-
-  val submitApplyEori = authorised.async {
-    implicit user =>
-      implicit request =>
-        withCurrentProfile { implicit profile =>
-          ivPassedCheck {
-            ApplyEoriForm.form.bindFromRequest.fold(
-              errors => Future.successful(BadRequest(ApplyEoriPage(errors))),
-              success => tradingDetailsService.saveEori(profile.registrationId, success) map {
-                _ => Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
-              }
-            )
-          }
-        }
-  }
-
 }

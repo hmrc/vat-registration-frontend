@@ -27,9 +27,7 @@ GET         /ivFailure                                                          
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
-
-## SERVICE CRITERIA QUESTIONS
-GET         /use-this-service                                                                  controllers.TwirlViewController.renderViewAuthorised
+GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
 ## VOLUNTARY START DATE PAGE
 GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.voluntaryStartPage

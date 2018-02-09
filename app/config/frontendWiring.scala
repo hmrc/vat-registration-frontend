@@ -20,14 +20,15 @@ import javax.inject.Inject
 
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.mvc.Call
+import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.http.hooks.HttpHooks
+import uk.gov.hmrc.http.hooks.{HttpHook, HttpHooks}
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector => OldAuthConnector}
 import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
 import uk.gov.hmrc.play.frontend.filters.MicroserviceFilterSupport
 import uk.gov.hmrc.play.http.ws._
@@ -53,8 +54,8 @@ class Http @Inject()(config: ServicesConfig) extends WSHttp {
   override val hooks   = Seq(AuditingHook)
 }
 
-class FrontendAuthConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends AuthConnector {
-  val serviceUrl = config.baseUrl("auth")
+class AuthClientConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends PlayAuthConnector {
+  override val serviceUrl: String = config.baseUrl("auth")
 }
 
 class VatShortLivedHttpCaching @Inject()(val http: WSHttp, config: ServicesConfig) extends ShortLivedHttpCaching {

@@ -21,7 +21,6 @@ import features.businessContact.BusinessContactService
 import features.officer.services.IVServiceImpl
 import features.officer.services.LodgingOfficerService
 import features.returns.ReturnsService
-import features.sicAndCompliance.services.SicAndComplianceService
 import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
@@ -30,18 +29,16 @@ import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 trait VatMocks
   extends SaveForLaterMock
+    with AuthMock
     with KeystoreMock
     with WSHTTPMock
-    with SicAndComplianceServiceMock{
+    with SicAndComplianceServiceMock {
 
   this: MockitoSugar =>
 
-  implicit lazy val mockMessagesApi = mock[MessagesApi]
-  implicit lazy val mockAuthConnector = mock[AuthConnector]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockAudit = mock[Audit]
   implicit lazy val mockS4LService = mock[S4LService]
@@ -67,7 +64,6 @@ trait VatMocks
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
   implicit lazy val mockTurnoverEstimatesService = mock[TurnoverEstimatesService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
-  //TODO: Refactor
   implicit lazy val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   implicit lazy val mockPrePopService: PrePopService = mock[PrePopService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
@@ -80,7 +76,6 @@ trait VatMocks
       mockS4LConnector,
       mockS4LService,
       mockKeystoreConnector,
-      mockAuthConnector,
       mockSessionCache,
       mockAudit,
       mockVatRegistrationService,
@@ -104,7 +99,8 @@ trait VatMocks
       mockSicAndComplianceService,
       mockMessagesAPI,
       mockPrePopService,
-      mockBusinessContactService
+      mockBusinessContactService,
+      mockAuthClientConnector
     )
   }
 }

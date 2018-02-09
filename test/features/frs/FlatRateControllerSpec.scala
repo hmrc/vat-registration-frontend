@@ -21,6 +21,7 @@ import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import frs.{AnnualCosts, FRSDateChoice, FlatRateScheme}
 import helpers.{ControllerSpec, MockMessages}
+import mocks.AuthMock
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -29,27 +30,27 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.FlatRateService
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
   trait Setup {
     val controller: FlatRateController = new FlatRateController {
-      override val authConnector: AuthConnector = mockAuthConnector
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val messagesApi: MessagesApi = mockMessagesAPI
       override val flatRateService: FlatRateService = mockFlatRateService
+      val authConnector: AuthConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
     }
 
     mockAllMessages
+    mockAuthenticated()
+    mockWithCurrentProfile(Some(currentProfile))
   }
 
   s"GET ${routes.FlatRateController.annualCostsInclusivePage()}" should {
 
     "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
-
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -60,7 +61,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(FlatRateScheme.empty))
@@ -77,7 +77,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitAnnualInclusiveCosts())
 
     "return 400 with Empty data" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -88,7 +87,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return 303 with Annual Costs Inclusive selected Yes" in new Setup {
 
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -104,7 +102,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Annual Costs Inclusive selected within 12 months" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -120,7 +117,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "skip next question if 2% of estimated taxable turnover <= 1K and NO answered" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -138,7 +134,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "redirect to next question if 2% of estimated taxable turnover > 1K and NO answered" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveOverAnnualCosts(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -163,7 +158,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
 
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None)))
@@ -178,7 +172,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -198,7 +191,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return a 400 when the request is empty" in new Setup {
 
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRateSchemeThreshold(any(), any()))
         .thenReturn(Future.successful(1000L))
@@ -211,7 +203,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 303 when AnnualCostsLimitedView.selected is Yes" in new Setup{
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRateSchemeThreshold(any(), any()))
         .thenReturn(Future.successful(1000L))
@@ -230,7 +221,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 when AnnualCostsLimitedView.selected is Yes within 12 months" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRateSchemeThreshold(any(), any()))
         .thenReturn(Future.successful(1000L))
@@ -249,7 +239,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 303 and redirect to confirm business sector with Annual Costs Limited selected No" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveOverAnnualCostsPercent(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -273,7 +262,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
-      mockWithCurrentProfile(Some(currentProfile))
 
       callAuthorised(controller.confirmSectorFrsPage()){ result =>
         status(result) mustBe 200
@@ -285,7 +273,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitConfirmSectorFrs())
 
     "works with Empty data" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -305,7 +292,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${routes.FlatRateController.frsStartDatePage()}" should {
 
     "return HTML when there's a frs start date in S4L" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
         .thenReturn(Future.successful( (Some(FRSDateChoice.VATDate), None) ))
@@ -317,7 +303,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
         .thenReturn(Future.successful( (None, None) ))
@@ -335,7 +320,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitFrsStartDate())
 
     "return 400 when no data posted" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -348,7 +332,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -366,7 +349,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 400 with Different Date selected and date that is less than 2 working days in the future" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -384,7 +366,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with VAT Registration Date selected" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -491,7 +472,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${routes.FlatRateController.registerForFrsPage()}" should {
 
     "return a 200 and render the page" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -507,7 +487,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitRegisterForFrs())
 
     "return 400 with Empty data" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -517,7 +496,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -536,7 +514,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -558,7 +535,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${routes.FlatRateController.yourFlatRatePage()}" should {
 
     "return a 200 and render the page" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -576,7 +552,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitYourFlatRate())
 
     "return 400 with Empty data" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
@@ -588,7 +563,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -607,7 +581,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
-      mockWithCurrentProfile(Some(currentProfile))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))

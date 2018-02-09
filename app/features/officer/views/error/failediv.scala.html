@@ -1,15 +1,15 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 @import views.html.helpers.templates.newWindowLink
 
-@main_template(title = messagesApi("pages.failediv.title"), backEnabled = false) {
+@main_template(title = messages("pages.failediv.title"), backEnabled = false) {
     <header class="page-header">
-        <h1 class="form-title heading-xlarge" id="main-heading">@messagesApi("pages.failediv.heading")</h1>
+        <h1 class="form-title heading-xlarge" id="main-heading">@messages("pages.failediv.heading")</h1>
     </header>
 
-     <p>@messagesApi("pages.failediv.body.one")</p>
+     <p>@messages("pages.failediv.body.one")</p>
     <div class="form-group">
-        <p>@messagesApi("pages.failediv.body.url")
+        <p>@messages("pages.failediv.body.url")
             @newWindowLink("https://online.hmrc.gov.uk/registration/newbusiness/business-allowed", messages("pages.failediv.body.link"))</p>
     </div>
 

@@ -19,41 +19,42 @@ package controllers.callbacks
 import java.io.File
 import javax.inject.Inject
 
+import config.AuthClientConnector
 import connectors.KeystoreConnect
-import controllers.VatRegistrationControllerNoAux
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
 import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.Future
 
 class SignInOutControllerImpl @Inject()(config: ServicesConfig,
-                                        val authConnector: AuthConnector,
+                                        val authConnector: AuthClientConnector,
                                         val keystoreConnector: KeystoreConnect,
-                                        implicit val messagesApi: MessagesApi) extends SignInOutController {
+                                        val messagesApi: MessagesApi) extends SignInOutController {
   lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url", "")
   lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri", "")
 }
 
-trait SignInOutController extends VatRegistrationControllerNoAux with SessionProfile {
+trait SignInOutController extends BaseController with SessionProfile {
   val compRegFEURI: String
   val compRegFEURL: String
 
-  def postSignIn: Action[AnyContent] = authorised(implicit user => implicit request =>
-    Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in")
-  )
-
-  def signOut: Action[AnyContent] = authorised { implicit user => implicit request =>
-    Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession
+  def postSignIn: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in"))
   }
 
-  def renewSession: Action[AnyContent] = authorised {
-    implicit user =>
-      implicit request =>
-        Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg")
+  def signOut: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession)
+  }
+
+  def renewSession: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      Future.successful(Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg"))
   }
 
   def destroySession: Action[AnyContent] = Action.async {

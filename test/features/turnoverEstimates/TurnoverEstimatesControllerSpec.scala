@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -32,12 +32,13 @@ class TurnoverEstimatesControllerSpec extends ControllerSpec with MockMessages {
   trait Setup {
     val controller: TurnoverEstimatesController = new TurnoverEstimatesController {
       override val service: TurnoverEstimatesService = mockTurnoverEstimatesService
-      override val authConnector: AuthConnector = mockAuthConnector
-      override val messagesApi: MessagesApi = mockMessagesAPI
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      val authConnector: AuthConnector = mockAuthClientConnector
+      val messagesApi: MessagesApi = mockMessagesAPI
     }
 
     mockAllMessages
+    mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 

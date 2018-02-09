@@ -18,32 +18,55 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import auth.VatTaxRegime
+import auth.VatExternalUrls
 import cats.data.OptionT
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
+import config.Logging
 import models._
 import play.api.Configuration
 import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Format
-import services.{RegistrationService, S4LService}
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.{RegistrationService, S4LService, SessionProfile}
+import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.{AuthProviders, AuthorisationException, AuthorisedFunctions, ConfidenceLevel, NoActiveSession}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 abstract class VatRegistrationController(ds: CommonPlayDependencies) extends FrontendController
-  with I18nSupport with Actions with ApplicativeSyntax with FutureInstances {
+  with I18nSupport with ApplicativeSyntax with FutureInstances with Logging with AuthorisedFunctions {
+  self: SessionProfile =>
 
   implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val conf: Configuration = ds.conf
   implicit lazy val messagesApi: MessagesApi = ds.messagesApi
 
-  protected[controllers] def authorised: AuthenticatedBy = AuthorisedFor(taxRegime = VatTaxRegime, pageVisibility = GGConfidence)
+  protected[controllers] def isAuthorised(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised(AuthProviders(GovernmentGateway) and ConfidenceLevel.L50) {
+        withCurrentProfile { profile =>
+          f(request)(profile)
+        }
+      } recoverWith {
+        case _: NoActiveSession =>
+          Future.successful(Redirect(VatExternalUrls.loginUrl, Map(
+            "continue" -> Seq(VatExternalUrls.continueUrl),
+            "origin" -> Seq(VatExternalUrls.defaultOrigin)
+          )))
+        case ae: AuthorisationException =>
+          logger.info(s"User is not authorised - reason: ${ae.reason}")
+          Future.successful(InternalServerError)
+        case e =>
+          logger.warn(s"An exception occurred - err: ${e.getMessage}")
+          throw e
+      }
+  }
 
   protected[controllers] def viewModel[T] = new ViewModelLookupHelper[T]
 
