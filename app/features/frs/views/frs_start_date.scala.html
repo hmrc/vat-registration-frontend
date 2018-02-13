@@ -30,7 +30,8 @@
                         ).flatten,
                         '_labelAfter -> true,
                         '_labelClass -> "block-label",
-                        '_legend -> ""
+                        '_legend -> messages("pages.frs.startDate.heading"),
+                        '_legendClass -> "visually-hidden"
                     )
                 }
 
@@ -44,8 +45,8 @@
                         <div class="form-date @if(errorPresent) { form-group-error }">
 
                             <fieldset id="frs-start-date">
-                                <legend></legend>
-                                <label><span class="hidden">Frs Start date input</span>
+                                <legend class="visually-hidden">Frs Start date input</legend>
+                                <label><span class="hidden"></span>
                                 @frsStartDateForm.error("frsStartDate").map { error =>
                                     <span class="error-notification" role="tooltip">
                                         @messages(error.message, error.args: _*)

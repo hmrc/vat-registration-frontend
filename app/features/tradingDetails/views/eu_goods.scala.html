@@ -16,19 +16,18 @@
 
     @govHelpers.form(action = controllers.routes.TradingDetailsController.submitEuGoods()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="euGoodsRadio"/>
-
-                @vatInputRadioGroup(
-                    field = euGoodsForm("euGoodsRadio"),
-                    Seq(
-                        "true" -> Messages("app.common.yes"),
-                        "false" -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = euGoodsForm("euGoodsRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.euGoods.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

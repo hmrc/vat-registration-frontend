@@ -17,18 +17,19 @@
       <div>
 
           <fieldset>
-              <div class="char-counter" data-char-counter>
-            @vatTextArea(
-                    businessActivityDescriptionForm("description"),
-                    '_divClass -> "form-group",
-                    '_labelClass -> "form-label",
-                    '_inputClass -> "form-control fill-width",
-                    '_rows -> "4",
-                    '_maxlength -> "250",
-                    '_dataCharField -> "data_char_field",
-                    '_label -> messages("pages.business.activity.description.label")
-            )
-              </div>
+            <legend class="visually-hidden">pages.business.activity.description.heading</legend>
+            <div class="char-counter" data-char-counter>
+              @vatTextArea(
+                businessActivityDescriptionForm("description"),
+                '_divClass -> "form-group",
+                '_labelClass -> "form-label",
+                '_inputClass -> "form-control fill-width",
+                '_rows -> "4",
+                '_maxlength -> "250",
+                '_dataCharField -> "data_char_field",
+                '_label -> messages("pages.business.activity.description.label")
+              )
+            </div>
           </fieldset>
       </div>
 

@@ -14,19 +14,18 @@
 
     @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitPreviousAddress()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="previousAddressQuestionRadio"/>
-
-                @vatInputRadioGroup(
-                    field = previousAddressQuestionForm("previousAddressQuestionRadio"),
-                    Seq(
-                        "true" -> messages("app.common.yes"),
-                        "false" -> messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = previousAddressQuestionForm("previousAddressQuestionRadio"),
+                Seq(
+                    "true" -> messages("app.common.yes"),
+                    "false" -> messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.previousAddressQuestion.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

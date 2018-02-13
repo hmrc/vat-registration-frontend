@@ -19,6 +19,7 @@
     @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitWorkers()) {
         <div class="form-group @fieldSetClasses">
             <fieldset>
+                <legend class="visually-hidden">pages.labourCompliance.workers.heading</legend>
 
                 @workersForm.errors.find(_.args.contains("numberOfWorkers")).map { error =>
                     @govHelpers.errorInline("numberOfWorkers", Messages(error.message))
@@ -35,7 +36,7 @@
         </div>
 
         <div class="form-group">
-            <button class="btn button" type="submit" id="save-and-continue">Continue</button>
+            <button class="btn button" type="submit" id="save-and-continue">@messages("app.common.continue")</button>
         </div>
     }
 }
