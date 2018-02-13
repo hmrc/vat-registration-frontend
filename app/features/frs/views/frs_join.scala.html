@@ -18,15 +18,15 @@
         <li>@messages("pages.frs.join.list1.bullet3")</li>
     </ul>
     <div class="form-group">
-    <details role="group">
-          <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-          @Html(messages("pages.frs.join.title"))
-          </span></summary>
-          <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
-              <p>@messages("pages.frs.join.p2")</p>
-              <p>@messages("pages.frs.join.p3")</p>
-          </div>
-    </details>
+        <details role="group">
+              <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
+              @Html(messages("pages.frs.join.title"))
+              </span></summary>
+              <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
+                  <p>@messages("pages.frs.join.p2")</p>
+                  <p>@messages("pages.frs.join.p3")</p>
+              </div>
+        </details>
     </div>
     <h2>@messages("pages.frs.join.subheading2")</h2>
     <p>@messages("pages.frs.join.p4")</p>
@@ -42,18 +42,18 @@
 
     @govHelpers.form(action = controllers.routes.FlatRateController.submitJoinFRS()) {
         <div class="form-group">
-            <fieldset class="inline">
-                <span id="joinFrsRadio"></span>
-                @vatInputRadioGroup(
-                    field = joinFrsForm("joinFrsRadio"),
-                    Seq(
-                        "true" -> Messages("app.common.yes"),
-                        "false" -> Messages("app.common.no")
-                    ),
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label"
-                )
-            </fieldset>
+            @vatInputRadioGroup(
+                field = joinFrsForm("joinFrsRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.frs.join.heading"),
+                '_legendClass -> "visually-hidden"
+            )
         </div>
 
         <div class="form-group">

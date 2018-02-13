@@ -42,6 +42,7 @@
   @govHelpers.form(action = controllers.vatFinancials.routes.EstimateZeroRatedSalesController.submit()) {
       <div class="form-group @fieldSetClasses">
           <fieldset>
+            <legend class="visually-hidden">@messages("pages.estimate.zero.rated.sales.heading")</legend>
 
               @estimateZeroRatedSalesForm.errors.find(_.args.contains("zeroRatedTurnoverEstimate")).map { error =>
                   @govHelpers.errorInline("zeroRatedTurnoverEstimate", Messages(error.message))

@@ -38,6 +38,7 @@
   @govHelpers.form(action = features.turnoverEstimates.routes.TurnoverEstimatesController.submitEstimateVatTurnover) {
       <div class="form-group @fieldSetClasses">
           <fieldset>
+            <legend class="visually-hidden">@messages("pages.estimate.vat.turnover.heading")</legend>
               @estimateVatTurnoverForm.errors.find(_.args.contains("turnoverEstimate")).map { error =>
                   @govHelpers.errorInline("turnoverEstimate", messages(error.message))
               }

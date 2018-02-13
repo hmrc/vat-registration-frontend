@@ -36,19 +36,18 @@
 
   @govHelpers.form(action = controllers.vatFinancials.routes.ZeroRatedSalesController.submit()) {
   <div class="form-group">
-    <fieldset class="inline">
-        <span id="zeroRatedSalesRadio"/>
-        @vatInputRadioGroup(
-            field = zeroRatedSalesForm("zeroRatedSalesRadio"),
-            Seq(
-              ZeroRatedSales.ZERO_RATED_SALES_YES -> Messages("app.common.yes"),
-              ZeroRatedSales.ZERO_RATED_SALES_NO -> Messages("app.common.no")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
-        )
-    </fieldset>
-   
+      @vatInputRadioGroup(
+          field = zeroRatedSalesForm("zeroRatedSalesRadio"),
+          Seq(
+            ZeroRatedSales.ZERO_RATED_SALES_YES -> Messages("app.common.yes"),
+            ZeroRatedSales.ZERO_RATED_SALES_NO -> Messages("app.common.no")
+          ),
+          '_groupClass -> "inline",
+          '_labelAfter -> true,
+          '_labelClass -> "block-label",
+          '_legend -> messages("pages.zero.rated.sales.heading"),
+          '_legendClass -> "visually-hidden"
+      )
   </div>
 
   <div class="form-group">

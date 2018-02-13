@@ -16,25 +16,24 @@
   <p>@Html(messages("pages.frs.costsInclusive.p1"))</p>
 
   @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualInclusiveCosts()) {
-  <div class="form-group">
-    <fieldset class="block">
-        <span id="annualCostsInclusiveRadio"/>
+    <div class="form-group">
         @vatInputRadioGroup(
-            field = annualCostsInclusiveForm("annualCostsInclusiveRadio"),
-            Seq(
-              AnnualCosts.AlreadyDoesSpend.toString() -> messages("app.common.yes"),
-              AnnualCosts.WillSpend.toString() -> messages("pages.frs.costsInclusive.radio2"),
-              AnnualCosts.DoesNotSpend.toString() -> messages("pages.frs.costsInclusive.radio3")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label"
+          field = annualCostsInclusiveForm("annualCostsInclusiveRadio"),
+          Seq(
+            AnnualCosts.AlreadyDoesSpend.toString() -> messages("app.common.yes"),
+            AnnualCosts.WillSpend.toString() -> messages("pages.frs.costsInclusive.radio2"),
+            AnnualCosts.DoesNotSpend.toString() -> messages("pages.frs.costsInclusive.radio3")
+          ),
+          '_labelAfter -> true,
+          '_labelClass -> "block-label",
+          '_legend -> messages("pages.frs.costsInclusive.heading"),
+          '_legendClass -> "visually-hidden"
         )
-    </fieldset>
-  </div>
+    </div>
 
-  <div class="form-group">
-    <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
-  </div>
+    <div class="form-group">
+      <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+    </div>
 
   }
 }

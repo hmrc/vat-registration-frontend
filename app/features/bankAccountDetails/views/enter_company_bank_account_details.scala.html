@@ -37,13 +37,11 @@
                 @defining(bankDetailsForm("sortCodeAndAccountGroup").errors.nonEmpty) { invalidCombinationErrorFound =>
                     <div id="sortCodeAndAccountGroup" class="@if(invalidCombinationErrorFound) { form-group-error }">
 
-                        <label>
                         @bankDetailsForm("sortCodeAndAccountGroup").errors.map { error =>
                             <span class="error-notification" role="tooltip">
                                 @messages(error.message, error.args: _*)
                             </span>
                         }
-                        </label>
 
                         @vatInput(
                             bankDetailsForm("accountNumber"),
@@ -60,7 +58,7 @@
                             <div class="form-date @if(sortCodeErrorPresent) { form-group-error }">
 
                                 <fieldset id="sort-code">
-
+                                    <legend class="visually-hidden">Enter your sortcode</legend>
                                     <label>
                                         @bankDetailsForm("sortCode").errors.map { error =>
                                             <span class="error-notification" role="tooltip">

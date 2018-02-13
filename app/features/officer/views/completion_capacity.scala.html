@@ -20,16 +20,14 @@
 
     @govHelpers.form(action = features.officer.controllers.routes.OfficerController.submitCompletionCapacity()) {
         <div class="form-group" id="completionCapacityRadio">
-
-        @vatInputRadioGroup(
-            field = completionCapacityForm("completionCapacityRadio"),
-            officerList.map(officer => (officer.name.id, officer.name.asLabel)),
-            '_labelAfter -> true,
-            '_legend -> messages("pages.completionCapacity.heading"),
-            '_legendClass -> "hidden",
-            '_labelClass -> "block-label"
-        )
-
+            @vatInputRadioGroup(
+                field = completionCapacityForm("completionCapacityRadio"),
+                officerList.map(officer => (officer.name.id, officer.name.asLabel)),
+                '_labelAfter -> true,
+                '_legend -> messages("pages.completionCapacity.heading"),
+                '_legendClass -> "visually-hidden",
+                '_labelClass -> "block-label"
+            )
         </div>
         <details role="group" class="form-group">
             <summary role="button" aria-controls="details-content-0" aria-expanded="false">

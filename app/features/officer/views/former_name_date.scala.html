@@ -31,7 +31,7 @@
                         <div class="form-date @if(errorPresent) { form-group-error }">
 
                             <fieldset id="former-name-date">
-                                <legend></legend>
+                                <legend class="visually-hidden">Former name date change</legend>
                                 <label><span class="hidden">Former name date change</span>
                                 @formerNameDateForm.error("formerNameDate").map { error =>
                                     <span class="error-notification" role="tooltip">
