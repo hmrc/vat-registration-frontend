@@ -200,14 +200,15 @@ validation.startDate.missing                          = Enter a date
 ## Trading Name Page
 pages.tradingName.title                             = Trading Name
 pages.tradingName.heading                           = Does or will the company trade using a different name?
-pages.tradingName.panels.tradingName                = Trading name
+pages.tradingName.lede                              = Tell us if the company will use a trading name that''s different from
+pages.tradingName.tradingNameLabel                  = Enter the trading name
 pages.tradingName.panel.para1                       = What is a trading name?
 pages.tradingName.panel.para2                       = A company can trade using a name that''s different from its registered name. This is also known as a ''business name''.
 pages.tradingName.panel.para3                       = Some companies choose a different trading name to help with branding or getting a domain name for their website.
-
 validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.missing                      = Enter a trading name
 validation.tradingNameRadio.missing                 = Tell us if the company will trade under another name
+pages.tradingdetails.input.hint-text                = You can''t include ''limited'', ''Ltd'', ''limited liability partnership'', ''LLP'', ''public limited company'' or ''plc''
 
 ## Voluntary Registration Reason Summary
 pages.summary.voluntaryReason.sells                           = The company is already selling goods or services

@@ -16,6 +16,8 @@
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
 
+    <p id="lead-paragraph">@messages("pages.tradingName.lede")</p>
+
     <details role="group" class="form-group">
         <summary role="button" aria-controls="details-content-0" aria-expanded="false">
             <span class="summary">@messages("pages.tradingName.panel.para1")</span>
@@ -47,13 +49,14 @@
                     @govHelpers.errorInline("tradingName", Messages(error.message))
                 }
 
-                @vatInput(
-                    tradingNameForm("tradingName"),
-                    '_divClass -> "form-group",
-                    '_inputClass -> "form-control",
-                    '_label -> Messages("pages.tradingName.panels.tradingName"),
-                    '_labelClass -> "form-label"
-                )
+                    @vatInput(
+                        tradingNameForm("tradingName"),
+                        '_divClass -> "form-group",
+                        '_inputClass -> "form-control",
+                        '_label -> Messages("pages.tradingName.tradingNameLabel"),
+                        '_labelClass -> "form-label cascading",
+                        '_inputHint -> messages("pages.tradingdetails.input.hint-text")
+                    )
 
             </div>
         </div>
