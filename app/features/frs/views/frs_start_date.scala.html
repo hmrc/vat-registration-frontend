@@ -46,7 +46,6 @@
 
                             <fieldset id="frs-start-date">
                                 <legend class="visually-hidden">Frs Start date input</legend>
-                                <label><span class="hidden"></span>
                                 @frsStartDateForm.error("frsStartDate").map { error =>
                                     <span class="error-notification" role="tooltip">
                                         @messages(error.message, error.args: _*)
@@ -54,7 +53,6 @@
                                 }
                                     @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
                                     <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
-                                </label>
 
                                 @vatInput(
                                     frsStartDateForm("frsStartDate.day"),
