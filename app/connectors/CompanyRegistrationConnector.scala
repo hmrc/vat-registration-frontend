@@ -29,19 +29,31 @@ import scala.concurrent.Future
 class CompanyRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends CompanyRegistrationConnect {
   val companyRegistrationUrl: String = config.baseUrl("company-registration")
   val companyRegistrationUri: String = config.getConfString("company-registration.uri", "")
+  val stubUrl: String = config.baseUrl("incorporation-frontend-stub")
+  val stubUri: String = config.getConfString("incorporation-frontend-stub.uri", "")
 }
 
 trait CompanyRegistrationConnect {
 
   val companyRegistrationUrl: String
   val companyRegistrationUri: String
+  val stubUrl: String
+  val stubUri: String
   val http: WSHttp
 
   def getTransactionId(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration") map {
+    http.GET[JsValue](s"$stubUrl$stubUri/$regId/corporation-tax-registration") map {
       _.\("confirmationReferences").\("transaction-id").as[String]
     } recover {
       case e => throw logResponse(e,"getTransactionID")
+    }
+  }
+
+  def getCTStatus(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/corporation-tax-registration/$regId/corporation-tax-registration") map {
+      _.\("acknowledgementReferences").\("status").asOpt[String]
+    } recover {
+      case e => throw logResponse(e,"getCTStatus")
     }
   }
 }

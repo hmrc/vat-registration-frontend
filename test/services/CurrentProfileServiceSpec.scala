@@ -48,7 +48,8 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     transactionId         = "testTxId",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate     = Some(now),
-    ivPassed              = None
+    ivPassed              = None,
+    ctStatus              = Some("testCTStatus")
   )
 
   "buildCurrentProfile" should {
@@ -76,7 +77,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
+        val result = await(testService.buildCurrentProfile("testRegId", "testTxId", Some("testCTStatus")))
         result mustBe testCurrentProfile
       }
 
@@ -103,7 +104,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
+        val result = await(testService.buildCurrentProfile("testRegId", "testTxId", Some("testCTStatus")))
         result mustBe testCurrentProfile.copy(ivPassed = Some(true))
       }
     }

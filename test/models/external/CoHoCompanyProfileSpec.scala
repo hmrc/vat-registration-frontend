@@ -24,8 +24,19 @@ class CoHoCompanyProfileSpec extends UnitSpec {
   val reader = CoHoCompanyProfile.reader
   val writer = CoHoCompanyProfile.writer
 
-  val json: JsValue = Json.parse("""{"status":"held","confirmationReferences":{"transaction-id":"000-434-1"}}""")
-  val coHoCompanyProfile = CoHoCompanyProfile("held", "000-434-1")
+  val json: JsValue = Json.parse(
+    """
+      |{
+      |  "status":"held",
+      |  "confirmationReferences":{
+      |    "transaction-id":"000-434-1"
+      |  },
+      |  "acknowledgementReferences":{
+      |    "status":"04"
+      |  }
+      |}""".stripMargin)
+
+  val coHoCompanyProfile = CoHoCompanyProfile("held", "000-434-1", Some("04"))
 
     "CoHoCompanyProfile" should {
       "reads should return coHoCompanyProfile" in {

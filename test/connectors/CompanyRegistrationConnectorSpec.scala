@@ -50,4 +50,17 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
+  "Calling getCTStatus" should {
+    "return some CT status successfully" in new Setup {
+      mockHttpGET[JsValue]("tst-url", Json.toJson(validCoHoProfile))
+      await(connector.getCTStatus("id")) mustBe validCoHoProfile.ctStatus
+    }
+    "return the correct resonse when an Internal Server Error occurs" in new Setup {
+      when(mockWSHttp.GET[JsValue](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
+
+      intercept[NotFoundException](await(connector.getCTStatus("id")))
+    }
+  }
+
 }
