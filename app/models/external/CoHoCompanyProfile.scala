@@ -20,17 +20,19 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
-case class CoHoCompanyProfile(status: String, transactionId: String)
+case class CoHoCompanyProfile(status: String, transactionId: String, ctStatus: Option[String] = None)
 
 object CoHoCompanyProfile {
   implicit val reader: Reads[CoHoCompanyProfile] = (
     (__ \ "status").read[String] and
-      (__ \ "confirmationReferences" \ "transaction-id").read[String]
+    (__ \ "confirmationReferences" \ "transaction-id").read[String] and
+    (__ \ "acknowledgementReferences" \ "status").readNullable[String]
     )(CoHoCompanyProfile.apply _)
 
   implicit val writer: Writes[CoHoCompanyProfile] = (
     (__ \ "status").write[String] and
-      (__ \ "confirmationReferences" \ "transaction-id").write[String]
+    (__ \ "confirmationReferences" \ "transaction-id").write[String] and
+    (__ \ "acknowledgementReferences" \ "status").writeNullable[String]
     )(unlift(CoHoCompanyProfile.unapply))
 
 }

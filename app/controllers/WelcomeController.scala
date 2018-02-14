@@ -49,9 +49,17 @@ trait WelcomeController extends BaseController with SessionProfile {
   def start: Action[AnyContent] = isAuthenticated {
     implicit request =>
       for {
-        (regId, txId) <- vatRegistrationService.createRegistrationFootprint
-        _             <- currentProfileService.buildCurrentProfile(regId, txId)
-      } yield Ok(welcome())
+        (regId, txId, ctStatus) <- vatRegistrationService.createRegistrationFootprint
+        currentProfile             <- currentProfileService.buildCurrentProfile(regId, txId, ctStatus)
+      } yield {
+        println(currentProfile)
+        currentProfile.ctStatus.foldLeft(Ok(welcome())){ (default, status) =>
+          status match {
+            case "06" | "07" | "08" | "09" | "10" => Redirect(controllers.callbacks.routes.SignInOutController.postSignIn())
+            case _ => default
+          }
+        }
+      }
   }
 
   def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {

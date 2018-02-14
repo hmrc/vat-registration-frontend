@@ -41,27 +41,81 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
-  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None)
+  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, None)
+  val testRejectedCTProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, Some("06"))
+  val testNonRejectedCtProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, Some("04"))
 
   "GET /before-you-register-for-vat" should {
-    "return HTML when user is authorized to access" in {
+    "return HTML" when {
+      "user is authorized to access" in {
+        mockAllMessages
+        mockAuthenticated()
+
+        when(mockVatRegistrationService.createRegistrationFootprint(any()))
+          .thenReturn(Future.successful(("schemeId","txId",Some("testCTStatus"))))
+
+        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
+          .thenReturn(Future.successful(testCurrentProfile))
+
+        callAuthorised(testController.start) {
+          result =>
+            status(result) mustBe OK
+            contentType(result) mustBe Some("text/html")
+            charset(result) mustBe Some("utf-8")
+        }
+      }
+
+      "the current profile doesnt have a ct status" in {
+        mockAllMessages
+        mockAuthenticated()
+
+        when(mockVatRegistrationService.createRegistrationFootprint(any()))
+          .thenReturn(Future.successful(("schemeId","txId",None)))
+
+        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
+          .thenReturn(Future.successful(testCurrentProfile))
+
+        callAuthorised(testController.start) {
+          result =>
+            status(result) mustBe OK
+            contentType(result) mustBe Some("text/html")
+            charset(result) mustBe Some("utf-8")
+        }
+      }
+      "the current profile has a non rejected ct status" in {
+        mockAllMessages
+        mockAuthenticated()
+
+        when(mockVatRegistrationService.createRegistrationFootprint(any()))
+          .thenReturn(Future.successful(("schemeId","txId",None)))
+
+        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
+          .thenReturn(Future.successful(testNonRejectedCtProfile))
+
+        callAuthorised(testController.start) {
+          result =>
+            status(result) mustBe OK
+            contentType(result) mustBe Some("text/html")
+            charset(result) mustBe Some("utf-8")
+        }
+      }
+    }
+    "Redirect to post-sign-in when the ct status is 06 in the current profile" in {
       mockAllMessages
       mockAuthenticated()
 
       when(mockVatRegistrationService.createRegistrationFootprint(any()))
-        .thenReturn(Future.successful(("schemeId","txId")))
+        .thenReturn(Future.successful(("schemeId","txId",Some("06"))))
 
-      when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
-        .thenReturn(Future.successful(testCurrentProfile))
+      when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
+        .thenReturn(Future.successful(testRejectedCTProfile))
 
       callAuthorised(testController.start) {
         result =>
-          status(result) mustBe OK
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
+          status(result) mustBe 303
+          redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
       }
     }
-
   }
 
   "GET /" should {

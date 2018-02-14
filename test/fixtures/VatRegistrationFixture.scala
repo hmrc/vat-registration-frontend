@@ -145,7 +145,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
 
-  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
+  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId", Some("testCTStatus"))
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
