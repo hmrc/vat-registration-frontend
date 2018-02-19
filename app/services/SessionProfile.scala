@@ -35,8 +35,15 @@ trait SessionProfile {
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
   def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
-    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
-      _.fold(Future.successful(Redirect(routes.WelcomeController.show())))(profile => f(profile))
+    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
+      currentProfile.fold(
+        Future.successful(Redirect(routes.WelcomeController.show()))
+      ) {
+        profile => profile.ctStatus match {
+            case Some("06" | "07" | "08" | "09" | "10") => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+            case _ => f(profile)
+        }
+      }
     }
   }
 

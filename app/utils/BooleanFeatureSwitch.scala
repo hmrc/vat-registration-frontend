@@ -52,16 +52,20 @@ trait FeatureManager {
 class VATRegFeatureSwitch @Inject()(injManager: FeatureSwitchManager) extends VATRegFeatureSwitches {
   override val ivStubbed: String          = "ivStubbed"
   override val manager: FeatureManager    = injManager
+  override val crStubbed: String          = "crStubbed"
 }
 
 trait VATRegFeatureSwitches {
   val ivStubbed: String
+  val crStubbed: String
   val manager: FeatureManager
 
   def useIvStub: FeatureSwitch                  = manager.getProperty(ivStubbed)
+  def useCrStubbed: FeatureSwitch                  = manager.getProperty(crStubbed)
 
   def apply(name: String): Option[FeatureSwitch] = name match {
     case `ivStubbed`          => Some(useIvStub)
+    case `crStubbed`          => Some(useCrStubbed)
     case _                    => None
   }
 }

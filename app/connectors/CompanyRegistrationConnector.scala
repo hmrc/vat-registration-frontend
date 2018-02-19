@@ -23,25 +23,49 @@ import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-class CompanyRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends CompanyRegistrationConnect {
+class CompanyRegistrationConnector @Inject()(val http: WSHttp,
+                                             config: ServicesConfig,
+                                             val vatFeatureSwitches: VATRegFeatureSwitches) extends CompanyRegistrationConnect {
   val companyRegistrationUrl: String = config.baseUrl("company-registration")
-  val companyRegistrationUri: String = config.getConfString("company-registration.uri", "")
+  val companyRegistrationUri: String = config.getConfString("company-registration.uri",
+    throw new RuntimeException("[CompanyRegistrationConnector] Could not retrieve config for 'company-registration.uri'"))
+  val stubUrl: String = config.baseUrl("incorporation-frontend-stub")
+  val stubUri: String = config.getConfString("incorporation-frontend-stub.uri",
+    throw new RuntimeException("[CompanyRegistrationConnector] Could not retrieve config for 'incorporation-frontend-stub.uri'"))
 }
 
 trait CompanyRegistrationConnect {
 
   val companyRegistrationUrl: String
   val companyRegistrationUri: String
+  val stubUrl: String
+  val stubUri: String
   val http: WSHttp
+  val vatFeatureSwitches: VATRegFeatureSwitches
 
   def getTransactionId(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[JsValue](s"$companyRegistrationUrl$companyRegistrationUri/$regId/corporation-tax-registration") map {
+    http.GET[JsValue](s"$stubUrl$stubUri/$regId/corporation-tax-registration") map {
       _.\("confirmationReferences").\("transaction-id").as[String]
     } recover {
       case e => throw logResponse(e,"getTransactionID")
     }
   }
+
+  def getCTStatus(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    val url     = if(useCrStub) stubUrl else companyRegistrationUrl
+    val uri     = if(useCrStub) stubUri else companyRegistrationUri
+    val prefix  = if(useCrStub) ""      else "/corporation-tax-registration"
+
+    http.GET[JsValue](s"$url$uri$prefix/$regId/corporation-tax-registration") map {
+      _.\("acknowledgementReferences").\("status").asOpt[String]
+    } recover {
+      case e => throw logResponse(e,"getCTStatus")
+    }
+  }
+
+  private[connectors] def useCrStub = vatFeatureSwitches.useCrStubbed.enabled
 }

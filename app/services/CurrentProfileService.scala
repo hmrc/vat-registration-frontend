@@ -38,7 +38,7 @@ trait CurrentProfileSrv {
   val vatRegistrationService: RegistrationService
   val ivService: IVService
 
-  def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
+  def buildCurrentProfile(regId: String, txId: String, ctStatus: Option[String])(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
       companyName           <- incorpInfoService.getCompanyName(regId, txId)
       incorpInfo            <- incorpInfoService.getIncorporationInfo(txId)
@@ -51,7 +51,8 @@ trait CurrentProfileSrv {
         transactionId         = txId,
         vatRegistrationStatus = status,
         incorporationDate     = incorpDate,
-        ivPassed              = ivStatus
+        ivPassed              = ivStatus,
+        ctStatus              = ctStatus
       )
       _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile

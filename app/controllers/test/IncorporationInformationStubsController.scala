@@ -40,9 +40,10 @@ trait IncorporationInformationStubsController extends BaseController with Sessio
   def postTestData(): Action[AnyContent] = isAuthenticated {
     implicit request =>
       System.setProperty("feature.ivStubbed","true")
+      System.setProperty("feature.crStubbed","true")
       for {
         _          <- vatRegConnector.setupCurrentProfile
-        (regId, _) <- vatRegService.createRegistrationFootprint
+        (regId, _, _) <- vatRegService.createRegistrationFootprint
         _          <- vatRegConnector.wipeTestData
         _          <- vatRegConnector.postTestData(defaultTestData(regId))
       } yield Ok("Data inserted")

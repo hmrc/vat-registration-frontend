@@ -25,12 +25,12 @@ case class CoHoCompanyProfile(status: String, transactionId: String)
 object CoHoCompanyProfile {
   implicit val reader: Reads[CoHoCompanyProfile] = (
     (__ \ "status").read[String] and
-      (__ \ "confirmationReferences" \ "transaction-id").read[String]
+    (__ \ "confirmationReferences" \ "transaction-id").read[String]
     )(CoHoCompanyProfile.apply _)
 
   implicit val writer: Writes[CoHoCompanyProfile] = (
     (__ \ "status").write[String] and
-      (__ \ "confirmationReferences" \ "transaction-id").write[String]
+    (__ \ "confirmationReferences" \ "transaction-id").write[String]
     )(unlift(CoHoCompanyProfile.unapply))
 
 }
