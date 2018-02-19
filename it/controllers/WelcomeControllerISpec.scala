@@ -22,14 +22,18 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import support.AppAndStubs
+import utils.VATRegFeatureSwitch
 
 class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
+  val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
 
   "WelcomeController" must {
     "return an OK status" when {
       "user is authenticated and authorised to access the app" in {
+        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
+
         given()
           .user.isAuthorised
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))

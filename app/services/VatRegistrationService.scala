@@ -65,13 +65,14 @@ trait LegacyServiceToBeRefactored {
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
 
-  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[(String, String)] =
+  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[(String, String, Option[String])] =
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
       status    <- incorporationService.getIncorporationInfo(txId)
       _         =  status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
-    } yield (vatScheme.id, txId)
+      ctStatus  <- compRegConnector.getCTStatus(vatScheme.id)
+    } yield (vatScheme.id, txId, ctStatus)
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 

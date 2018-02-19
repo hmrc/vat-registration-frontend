@@ -70,6 +70,7 @@ trait CancellationService {
 
   private def buildNewProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = for {
     txId    <- companyRegistrationConnector.getTransactionId(regId)
-    profile <- currentProfileService.buildCurrentProfile(regId, txId)
+    ctStatus <- companyRegistrationConnector.getCTStatus(regId)
+    profile <- currentProfileService.buildCurrentProfile(regId, txId, ctStatus)
   } yield profile
 }
