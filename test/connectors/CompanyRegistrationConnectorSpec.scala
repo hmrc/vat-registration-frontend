@@ -24,16 +24,21 @@ import org.mockito.Mockito.when
 import play.api.http.Status.NOT_FOUND
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.NotFoundException
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
 class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
-  class Setup {
+  class Setup(stubbed : Boolean = true) {
     val connector = new CompanyRegistrationConnect {
       override val companyRegistrationUrl: String = "tst-url"
       override val companyRegistrationUri: String = "tst-url"
       override val http: WSHttp = mockWSHttp
+      override val stubUrl: String = "tst-url"
+      override val stubUri: String = "tst-url"
+      override val vatFeatureSwitches: VATRegFeatureSwitches = mockFeatureSwitches
+      override def useCrStub: Boolean = stubbed
     }
   }
 
@@ -47,6 +52,21 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
         .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
 
       intercept[NotFoundException](await(connector.getTransactionId("id")))
+    }
+  }
+
+  "Calling getCTStatus" should {
+    "return the correct resonse when an Internal Server Error occurs" in new Setup {
+      when(mockWSHttp.GET[JsValue](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
+
+      intercept[NotFoundException](await(connector.getCTStatus("id")))
+    }
+    "return the correct resonse when an Internal Server Error occurs when not stubbed" in new Setup(false) {
+      when(mockWSHttp.GET[JsValue](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
+
+      intercept[NotFoundException](await(connector.getCTStatus("id")))
     }
   }
 

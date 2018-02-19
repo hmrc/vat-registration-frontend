@@ -81,7 +81,10 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockCompanyRegConnector.getTransactionId(any())(any()))
         .thenReturn(Future.successful(validCoHoProfile.transactionId))
 
-      await(service.createRegistrationFootprint) mustBe (validVatScheme.id, "transactionId")
+      when(mockCompanyRegConnector.getCTStatus(any())(any()))
+        .thenReturn(Future.successful(Some("04")))
+
+      await(service.createRegistrationFootprint) mustBe (validVatScheme.id, "transactionId", Some("04"))
     }
   }
 
