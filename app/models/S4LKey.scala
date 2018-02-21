@@ -36,7 +36,6 @@ object S4LKey {
   }
 
   implicit val returns: S4LKey[Returns]               = S4LKey("returns")
-  implicit val tradingDetails: S4LKey[TradingDetails] = S4LKey("tradingDetails")
   implicit val bankAccountKey: S4LKey[BankAccount]    = S4LKey[BankAccount]("bankAccount")
   val flatRateScheme: S4LKey[FlatRateScheme]          = S4LKey[FlatRateScheme]("flatRateScheme")
 }

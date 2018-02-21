@@ -33,7 +33,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import services.{IncorporationInfoSrv, S4LService}
+import services.{IncorporationInformationService, S4LService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -55,7 +55,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
+      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
     }
 
@@ -71,7 +71,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class SetupForS4LSave(t: LodgingOfficer = emptyLodgingOfficer) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
+      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
@@ -86,7 +86,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class SetupForBackendSave(t: LodgingOfficer = validPartialLodgingOfficer) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInfoSrv = mockIncorpInfoService
+      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
