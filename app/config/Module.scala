@@ -106,7 +106,7 @@ class Module extends AbstractModule {
   private def bindServices(): Unit = {
     bind(classOf[CancellationService]).to(classOf[CancellationServiceImpl]).asEagerSingleton()
     bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
-    bind(classOf[IncorporationInfoSrv]).to(classOf[IncorporationInformationService]).asEagerSingleton()
+    bind(classOf[IncorporationInformationService]).to(classOf[IncorporationInformationServiceImpl]).asEagerSingleton()
     bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()
     bind(classOf[S4LService]).to(classOf[S4LServiceImpl]).asEagerSingleton()
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()

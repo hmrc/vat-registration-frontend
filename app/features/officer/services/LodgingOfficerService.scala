@@ -29,11 +29,11 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
 class LodgingOfficerServiceImpl @Inject()(val vatRegistrationConnector: RegistrationConnector,
-                                          val incorpInfoService: IncorporationInfoSrv,
+                                          val incorpInfoService: IncorporationInformationService,
                                           val s4LService: S4LService) extends LodgingOfficerService
 
 trait LodgingOfficerService extends Logging {
-  val incorpInfoService: IncorporationInfoSrv
+  val incorpInfoService: IncorporationInformationService
   val vatRegistrationConnector: RegistrationConnector
   val s4LService: S4LService
 

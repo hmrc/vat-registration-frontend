@@ -28,10 +28,10 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class IncorporationInformationService @Inject()(val iiConnector: IncorporationInformationConnect,
-                                                val vatRegConnector: RegistrationConnector) extends IncorporationInfoSrv
+class IncorporationInformationServiceImpl @Inject()(val iiConnector: IncorporationInformationConnect,
+                                                    val vatRegConnector: RegistrationConnector) extends IncorporationInformationService
 
-trait IncorporationInfoSrv {
+trait IncorporationInformationService {
   val iiConnector: IncorporationInformationConnect
   val vatRegConnector: RegistrationConnector
 

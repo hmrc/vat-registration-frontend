@@ -26,14 +26,14 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class CurrentProfileService @Inject()(val incorpInfoService: IncorporationInfoSrv,
+class CurrentProfileService @Inject()(val incorpInfoService: IncorporationInformationService,
                                       val vatRegistrationService: RegistrationService,
                                       val ivService: IVService,
                                       val keystoreConnector: KeystoreConnect) extends CurrentProfileSrv
 
 trait CurrentProfileSrv {
 
-  val incorpInfoService: IncorporationInfoSrv
+  val incorpInfoService: IncorporationInformationService
   val keystoreConnector: KeystoreConnect
   val vatRegistrationService: RegistrationService
   val ivService: IVService

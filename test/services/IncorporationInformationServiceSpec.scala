@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors with VatRegistrationFixture {
 
   private class Setup {
-    val service = new IncorporationInfoSrv {
+    val service = new IncorporationInformationService {
       override val iiConnector = mockIIConnector
       override val vatRegConnector = mockRegConnector
     }

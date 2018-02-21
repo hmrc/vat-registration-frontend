@@ -1,5 +1,5 @@
 @import forms.TradingNameForm
-@(tradingNameForm: Form[(Boolean, Option[String])])(implicit request: Request[_], messages: Messages)
+@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
@@ -15,6 +15,8 @@
     )
 
     <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.tradingName.heading")</h1>
+
+    <p id="lead-paragraph">@messages("pages.tradingName.lede", companyName)</p>
 
     <details role="group" class="form-group">
         <summary role="button" aria-controls="details-content-0" aria-expanded="false">
@@ -50,9 +52,10 @@
                 @vatInput(
                     tradingNameForm("tradingName"),
                     '_divClass -> "form-group",
-                    '_inputClass -> "form-control",
-                    '_label -> Messages("pages.tradingName.panels.tradingName"),
-                    '_labelClass -> "form-label"
+                    '_inputClass -> "form-control cascading",
+                    '_label -> Messages("pages.tradingName.tradingNameLabel"),
+                    '_labelClass -> "form-label",
+                    '_inputHint -> messages("pages.tradingdetails.input.hint-text")
                 )
 
             </div>
