@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
                                        val compRegConnector: CompanyRegistrationConnect,
-                                       val incorporationService: IncorporationInfoSrv,
+                                       val incorporationService: IncorporationInformationService,
                                        val keystoreConnector: KeystoreConnect,
                                        val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
 
@@ -44,7 +44,7 @@ trait RegistrationService extends FinancialsService with LegacyServiceToBeRefact
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
   val compRegConnector: CompanyRegistrationConnect
-  val incorporationService: IncorporationInfoSrv
+  val incorporationService: IncorporationInformationService
   val turnoverEstimatesService : TurnoverEstimatesService
 }
 
