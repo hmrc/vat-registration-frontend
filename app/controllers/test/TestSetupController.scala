@@ -25,6 +25,7 @@ import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import features.sicAndCompliance.models.SicAndCompliance
 import features.sicAndCompliance.models.test.SicStub
+import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
 import models.view.test._
@@ -65,7 +66,7 @@ trait TestSetupController extends BaseController with SessionProfile {
         flatRateScheme    <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
         returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
         turnoverEstimates <- turnoverService.fetchTurnoverEstimates
-        tradingDetails    <- s4LService.fetchAndGetNoAux(S4LKey.tradingDetails)
+        tradingDetails    <- s4LService.fetchAndGet[TradingDetails]
 
         testSetup = TestSetup(
           VatContactTestSetup(
@@ -163,7 +164,7 @@ trait TestSetupController extends BaseController with SessionProfile {
 
               _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
               _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
-              _ <- s4LService.saveNoAux(s4LBuilder.tradingDetailsFromData(data), S4LKey.tradingDetails)
+              _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
               _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
 
               lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)

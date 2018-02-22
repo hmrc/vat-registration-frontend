@@ -26,7 +26,7 @@ import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.CurrentProfile
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.{Application, Play}
-import services.{IncorporationInformationService, S4LService, VatRegistrationService}
+import services.{IncorporationInformationServiceImpl, S4LService, VatRegistrationService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.SessionId
 
@@ -38,7 +38,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
   lazy val vatRegistrationConnector = Play.current.injector.instanceOf[VatRegistrationConnector]
   lazy val s4lService = Play.current.injector.instanceOf[S4LService]
   lazy val companyRegistrationConnector = Play.current.injector.instanceOf[CompanyRegistrationConnector]
-  lazy val incorpInfoService = Play.current.injector.instanceOf[IncorporationInformationService]
+  lazy val incorpInfoService = Play.current.injector.instanceOf[IncorporationInformationServiceImpl]
   lazy val keystoreConnector = Play.current.injector.instanceOf[KeystoreConnector]
   lazy val turnoverEstimateService = Play.current.injector.instanceOf[TurnoverEstimatesService]
 

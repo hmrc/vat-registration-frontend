@@ -20,11 +20,13 @@ import connectors.KeystoreConnect
 import features.tradingDetails.{TradingNameView, _}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import services.IncorporationInformationService
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -36,6 +38,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     val testController = new TradingDetailsController {
       override val tradingDetailsService: TradingDetailsServiceImpl = mockTradingDetailsService
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
     }
@@ -45,6 +48,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     mockWithCurrentProfile(Some(currentProfile))
   }
 
+  val companyName = "Test Company Name Ltd"
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
   val fullS4L = TradingDetails(
     Some(tradingNameViewNo),
@@ -53,9 +57,13 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
   )
 
   "tradingNamePage" should {
+
     "return an Ok when there is a trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
+
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+          .thenReturn(Future.successful(companyName))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
@@ -67,6 +75,9 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
+
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+        .thenReturn(Future.successful(companyName))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
@@ -111,8 +122,8 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 without a provided trading name" in new Setup {
-      when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+        .thenReturn(Future.successful(companyName))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> "true",
@@ -125,8 +136,8 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 when no option is selected" in new Setup {
-      when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+        .thenReturn(Future.successful(companyName))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -136,8 +147,8 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 when the trading name they have provided is invalid" in new Setup {
-      when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+        .thenReturn(Future.successful(companyName))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> "true",

@@ -34,14 +34,14 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
 class PrePopulationService @Inject()(val ppConnector: PPConnector,
-                                     val incorpInfoService: IncorporationInfoSrv,
+                                     val incorpInfoService: IncorporationInformationService,
                                      val save4later: S4LService,
                                      implicit val vatRegService: RegistrationService) extends PrePopService
 
 trait PrePopService extends TraverseSyntax with ListInstances with FutureInstances {
 
   val ppConnector: PPConnector
-  val incorpInfoService: IncorporationInfoSrv
+  val incorpInfoService: IncorporationInformationService
   val vatRegService: RegistrationService
   val save4later: S4LService
 

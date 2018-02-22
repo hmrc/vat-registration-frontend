@@ -24,7 +24,7 @@ import features.tradingDetails.TradingDetailsService
 import features.tradingDetails.views.html.{eori_apply => ApplyEoriPage, eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 import forms.{ApplyEoriForm, EuGoodsForm, TradingNameForm}
 import play.api.i18n.MessagesApi
-import services.SessionProfile
+import services.{IncorporationInformationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -32,27 +32,24 @@ import scala.concurrent.Future
 class TradingDetailsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                              val authConnector: AuthClientConnector,
                                              val tradingDetailsService: TradingDetailsService,
-                                             val messagesApi: MessagesApi) extends TradingDetailsController {
-
-}
+                                             val messagesApi: MessagesApi,
+                                             val incorpInfoService: IncorporationInformationService) extends TradingDetailsController
 
 trait TradingDetailsController extends BaseController with SessionProfile {
 
   val tradingDetailsService: TradingDetailsService
   val authConnector: AuthConnector
   val keystoreConnector: KeystoreConnect
+  val incorpInfoService: IncorporationInformationService
 
   val tradingNamePage = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-          _.tradingNameView match {
-            case Some(name) => Ok(TradingNamePage(TradingNameForm.form.fill(
-              (name.yesNo, name.tradingName)
-            )))
-            case None => Ok(TradingNamePage(TradingNameForm.form))
-          }
-        }
+        for {
+          companyName <- incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId)
+          tradingName <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
+          form        =  tradingName.tradingNameView.fold(TradingNameForm.form)(name => TradingNameForm.form.fill(name.yesNo, name.tradingName))
+        } yield Ok(TradingNamePage(form, companyName))
       }
   }
 
@@ -60,7 +57,11 @@ trait TradingDetailsController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         TradingNameForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(TradingNamePage(errors))),
+          errors => {
+            incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId) map { companyName =>
+              BadRequest(TradingNamePage(errors, companyName))
+            }
+          },
           success => {
             val (hasName, name) = success
             tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
