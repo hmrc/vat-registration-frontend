@@ -34,22 +34,37 @@ class SignInOutControllerImpl @Inject()(config: ServicesConfig,
                                         val authConnector: AuthClientConnector,
                                         val keystoreConnector: KeystoreConnect,
                                         val messagesApi: MessagesApi) extends SignInOutController {
-  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url", "")
-  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri", "")
+
+  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url",
+    throw new Exception("Config: company-registration-frontend.www.url not found"))
+
+  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri",
+    throw new Exception("Config: company-registration-frontend.www.uri not found"))
+
+  lazy val compRegFEQuestionnaire = config.getConfString("company-registration-frontend.www.questionnaire",
+    throw new Exception("Config: company-registration-frontend.www.questionnaire not found"))
+
+  lazy val compRegFEPostSignIn = config.getConfString("company-registration-frontend.www.post-sign-in",
+    throw new Exception("Config: company-registration-frontend.www.post-sign-in not found"))
+
+
 }
 
 trait SignInOutController extends BaseController with SessionProfile {
-  val compRegFEURI: String
-  val compRegFEURL: String
+
+  val compRegFEURI           : String
+  val compRegFEURL           : String
+  val compRegFEQuestionnaire : String
+  val compRegFEPostSignIn    : String
 
   def postSignIn: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI/post-sign-in"))
+      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI$compRegFEPostSignIn"))
   }
 
   def signOut: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI/questionnaire").withNewSession)
+      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI$compRegFEQuestionnaire").withNewSession)
   }
 
   def renewSession: Action[AnyContent] = isAuthenticated {
