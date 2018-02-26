@@ -20,6 +20,7 @@ import features.returns.Returns
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import mocks.AuthMock
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -34,6 +35,8 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessag
     override val vatRegService     = mockVatRegistrationService
     override val returnsService    = mockReturnsService
     override val keystoreConnector = mockKeystoreConnector
+    override val dashboardUrl      = "/foo"
+
     val authConnector              = mockAuthClientConnector
     val messagesApi: MessagesApi   = mockMessagesAPI
   }
@@ -56,8 +59,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessag
       when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(Returns(None, None, None, None)))
 
-      callAuthorised(testController.show) {
-        _ includesText MOCKED_MESSAGE
+      callAuthorised(testController.show) {res =>
+        res includesText MOCKED_MESSAGE
+        val document = Jsoup.parse(contentAsString(res))
+        document.getElementById("save-and-continue").attr("href") mustBe "/foo"
       }
     }
   }
