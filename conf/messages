@@ -332,7 +332,7 @@ pages.application.submission.confirmation.whileWait.para1           = The compan
 pages.application.submission.confirmation.whileWait.para2           = To protect income:
 pages.application.submission.confirmation.whileWait.para3           = while the company doesn''t have a VAT number, it can temporarily increase its prices
 pages.application.submission.confirmation.whileWait.para4           = when it has the VAT number, it can reissue any unpaid invoices - splitting the price into sale amount and VAT
-pages.application.submission.confirmation.button                    = Finish
+pages.application.submission.confirmation.button                    = Continue
 
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details

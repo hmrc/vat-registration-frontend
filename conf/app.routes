@@ -168,7 +168,6 @@ GET         /post-sign-in                                                       
 ## APPLICATION SUBMISSION CONFIRMATION
 GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
 
-
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
