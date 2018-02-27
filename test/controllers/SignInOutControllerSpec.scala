@@ -25,17 +25,20 @@ import play.api.test.FakeRequest
 class SignInOutControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
 
   val testController = new SignInOutController {
-    override val compRegFEURI      = "/test/uri"
-    override val compRegFEURL      = "/test/uri"
-    override val keystoreConnector = mockKeystoreConnector
-    val authConnector              = mockAuthClientConnector
-    val messagesApi: MessagesApi   = mockMessagesAPI
+    override val compRegFEURI           = "/test/uri"
+    override val compRegFEURL           = "/test/uri"
+    override val compRegFEPostSignIn    = "/post-sign-test"
+    override val compRegFEQuestionnaire = "questionnaire-test"
+
+    override val keystoreConnector      = mockKeystoreConnector
+    val authConnector                   = mockAuthClientConnector
+    val messagesApi: MessagesApi        = mockMessagesAPI
   }
 
   "Post-sign-in" should {
     "redirect to CT post sign in" in {
       callAuthorised(testController.postSignIn) {
-        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}/post-sign-in"
+        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}${testController.compRegFEPostSignIn}"
       }
     }
   }
@@ -43,7 +46,7 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
   "signOut" should {
     "redirect to the exit questionnaire and clear the session" in {
       callAuthorised(testController.signOut) {
-        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}/questionnaire"
+        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}${testController.compRegFEQuestionnaire}"
       }
     }
   }
