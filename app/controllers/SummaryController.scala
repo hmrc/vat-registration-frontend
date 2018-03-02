@@ -20,13 +20,14 @@ import javax.inject.Inject
 
 import common.enums.VatRegStatus
 import config.AuthClientConnector
-import connectors.{KeystoreConnect, Success}
+import connectors.{ConfigConnector, KeystoreConnect, Success}
 import controllers.builders._
+import features.frs.services.FlatRateService
 import features.officer.services.LodgingOfficerService
 import features.sicAndCompliance.services.SicAndComplianceService
+import models.CurrentProfile
 import models.api._
 import models.view._
-import models.{CurrentProfile, MonthYearModel}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services._
@@ -40,13 +41,17 @@ class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val lodgingOfficerService: LodgingOfficerService,
                                       val sicSrv: SicAndComplianceService,
                                       val s4LService: S4LService,
-                                      val messagesApi: MessagesApi) extends SummaryController
+                                      val messagesApi: MessagesApi,
+                                      val flatRateService: FlatRateService,
+                                      val configConnector: ConfigConnector) extends SummaryController
 
 trait SummaryController extends BaseController with SessionProfile {
   val vrs: RegistrationService
   val lodgingOfficerService: LodgingOfficerService
   val sicSrv: SicAndComplianceService
   val s4LService: S4LService
+  val flatRateService: FlatRateService
+  val configConnector: ConfigConnector
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
@@ -54,8 +59,7 @@ trait SummaryController extends BaseController with SessionProfile {
         for {
           summary <- getRegistrationSummary()
           _       <- s4LService.clear
-          dateOfIncorporation = profile.incorporationDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y))
-        } yield Ok(views.html.pages.summary(summary, dateOfIncorporation))
+        } yield Ok(views.html.pages.summary(summary))
       }
   }
 
@@ -95,7 +99,10 @@ trait SummaryController extends BaseController with SessionProfile {
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryTaxableSalesSectionBuilder(vs.turnOverEstimates).section,
-      SummaryFrsSectionBuilder(vs.flatRateScheme).section
+      SummaryFrsSectionBuilder(vs.flatRateScheme,
+                               vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
+                               vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1))
+      ).section
     ))
   }
 

@@ -22,7 +22,7 @@ import features.returns.models.Stagger.Stagger
 import features.returns.models.{Returns, Start}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
-import frs.{AnnualCosts, FlatRateScheme}
+import frs.FlatRateScheme
 import models.view.test._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
@@ -97,10 +97,10 @@ object TestSetupForm {
 
   val flatRateSchemeMapping = mapping(
     "joinFrs" -> optional(boolean),
-    "annualCostsInclusive" -> optional(of[AnnualCosts.Value]),
-    "vatTaxableTurnover" -> optional(longNumber),
-    "annualCostsLimited" -> optional(of[AnnualCosts.Value]),
-    "registerForFrs" -> optional(boolean),
+    "overBusinessGoods" -> optional(boolean),
+    "estimateTotalSales" -> optional(longNumber),
+    "overBusinessGoodsPercent" -> optional(boolean),
+    "useThisRate" -> optional(boolean),
     "start" -> optional(mapping(
       "date" -> optional(localDate)
     )(Start.apply)(Start.unapply)),

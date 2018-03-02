@@ -21,6 +21,7 @@ import com.google.inject.name.Names
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
 import connectors.test.{BusinessRegDynamicStubConnector, BusinessRegDynamicStubConnectorImpl, TestRegistrationConnector, TestVatRegistrationConnector}
+import controllers._
 import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
 import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
@@ -31,6 +32,8 @@ import features.bankAccountDetails.services.{BankAccountDetailsService, BankAcco
 import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
 import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
+import features.frs.controllers.{FlatRateController, FlatRateControllerImpl}
+import features.frs.services.{FlatRateService, FlatRateServiceImpl}
 import features.officer.controllers._
 import features.officer.controllers.test.{TestIVController, TestIVControllerImpl}
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
@@ -141,6 +144,7 @@ class Module extends AbstractModule {
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
     bind(classOf[IncorporationInformationConnect]).to(classOf[IncorporationInformationConnector]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
+    bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
   }
 
   private def featureSwitches(): Unit = {

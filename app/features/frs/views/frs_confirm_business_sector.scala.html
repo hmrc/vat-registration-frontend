@@ -4,7 +4,7 @@
 
 @main_template(title = messages("pages.frs.confirmBusinessSector.title")) {
 
-  <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.confirmBusinessSector.heading")</h1>
+  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.confirmBusinessSector.heading")</h1>
 
   <div class="form-group notice">
      <i class="icon icon-important">
@@ -32,10 +32,10 @@
   </div>
 
   <div class="form-group">
-    <p><a id="changeBusinessType" href="#">@messages("pages.frs.confirmBusinessSector.changeLink")</a></p>
+    <p><a id="changeBusinessType" href="@features.frs.controllers.routes.FlatRateController.businessType()">@messages("pages.frs.confirmBusinessSector.changeLink")</a></p>
   </div>
 
-  @govHelpers.form(action = controllers.routes.FlatRateController.submitConfirmSectorFrs()) {
+  @govHelpers.form(action = features.frs.controllers.routes.FlatRateController.submitConfirmSectorFrs()) {
       <div class="form-group">
           <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.confirmAndContinue")</button>
       </div>

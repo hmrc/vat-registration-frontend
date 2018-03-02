@@ -16,16 +16,22 @@
 
 package connectors
 
-import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import java.util.MissingResourceException
+
+import mocks.VatMocks
 import models.api.SicCode
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 
-class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
 
   class Setup {
-    val connector = new ConfigConnector(mockConfig)
+    val connector = new ConfigConnector {
+      override val config: ServicesConfig = mockConfig
+    }
     val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
 
@@ -38,12 +44,28 @@ class ConfigConnectorSpec extends VatRegSpec with VatRegistrationFixture {
     }
   }
 
-  "Calling getBusinessSectorDetails" must {
-    "return a BusinessSectorView successfully" in new Setup {
+  "Calling getSicCodeFRSCategory" must {
+    "return a FRS Category ID" in new Setup {
       when(mockConfig.getString(ArgumentMatchers.any()))
-        .thenReturn("Farming or agriculture that is not listed elsewhere", "6.5")
+          .thenReturn("055")
 
-      connector.getBusinessSectorDetails("01490025") mustBe ("Farming or agriculture that is not listed elsewhere", 6.5)
+      connector.getSicCodeFRSCategory("01490025") mustBe "055"
+    }
+  }
+
+  "Calling getBusinessTypeDetails" must {
+    "return a BusinessSectorView successfully" in new Setup {
+      val id = "038"
+      val businessType = "Pubs"
+      val percent = 6.5
+
+      connector.getBusinessTypeDetails(id) mustBe (businessType, percent)
+    }
+
+    "does Not return a BusinessSectorView, instead throws an exception" in new Setup {
+      val id = "000"
+
+      a[MissingResourceException] mustBe thrownBy(connector.getBusinessTypeDetails(id))
     }
   }
 
