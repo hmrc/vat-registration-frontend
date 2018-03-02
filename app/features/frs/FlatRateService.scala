@@ -117,7 +117,7 @@ trait FlatRateService  {
             case (AnnualCosts.DoesNotSpend, Some(obg)) if annualCosts != obg => None
             case _ => storedData.frsStart
           },
-          vatTaxableTurnover = annualCosts match {
+          estimateTotalSales = annualCosts match {
             case AnnualCosts.DoesNotSpend => Some(taxable)
             case _ => None
           }
@@ -142,7 +142,7 @@ trait FlatRateService  {
       case FlatRateScheme(_, _, _, _, _, _, Some(sector), Some(pct)) if sector.nonEmpty => Future.successful((sector, pct))
       case _ => sicAndComplianceService.getSicAndCompliance map { sicAndCompliance =>
         sicAndCompliance.mainBusinessActivity match {
-          case Some(mainBusinessActivity) => configConnector.getBusinessSectorDetails(mainBusinessActivity.id)
+          case Some(mainBusinessActivity) => configConnector.getBusinessTypeDetails(configConnector.getSicCodeFRSCategory(mainBusinessActivity.id))
           case None => throw new IllegalStateException("[FlatRateService] [retrieveSectorPercent] Can't determine main business activity")
         }
       }
@@ -212,4 +212,12 @@ trait FlatRateService  {
   def isOverLimitedCostTraderThreshold(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
     getFlatRateSchemeThreshold map (_ > LIMITED_COST_TRADER_THRESHOLD)
   }
+
+  def saveEstimateTotalSales(estimate: Long)(implicit profile: CurrentProfile,  hc: HeaderCarrier): Future[FlatRateScheme] =
+    updateFlatRate (_.copy(estimateTotalSales = Some(estimate)))
+
+  def saveBusinessType(businessType: String)(implicit profile: CurrentProfile,  hc: HeaderCarrier): Future[FlatRateScheme] =
+    updateFlatRate { storedData =>
+      if (storedData.categoryOfBusiness.contains(businessType)) storedData else storedData.copy(categoryOfBusiness = Some(businessType), percent = None)
+    }
 }

@@ -1,0 +1,47 @@
+@(estimateTotalSalesForm: Form[Long])(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{errorSummary, newWindowLink, vatInput}
+
+@main_template(title = messages("pages.frs.estimateTotalSales.title")) {
+
+    @errorSummary(
+        messages("app.common.errorSummaryLabel"),
+        estimateTotalSalesForm,
+        Seq("turnoverEstimate")
+    )
+
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.estimateTotalSales.heading")</h1>
+
+    <div class="form-group">
+        <p>@messages("pages.frs.estimateTotalSales.info")</p>
+    </div>
+
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitEstimateTotalSales) {
+        <div class="form-group">
+            <fieldset>
+                <legend class="visually-hidden">@messages("pages.frs.estimateTotalSales.heading")</legend>
+                @estimateTotalSalesForm.errors.find(_.args.contains("totalSalesEstimate")).map { error =>
+                    @govHelpers.errorInline("totalSalesEstimate", messages(error.message))
+                }
+
+                @vatInput(
+                    estimateTotalSalesForm("totalSalesEstimate"),
+                    '_inputClass -> "form-control",
+                    '_label -> messages("app.common.gbp.symbol"),
+                    '_labelClass -> "form-label"
+                )
+            </fieldset>
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready($(function () {
+        EstimateTotalSalesPage.init()
+    }));
+</script>

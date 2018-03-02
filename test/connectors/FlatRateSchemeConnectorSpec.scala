@@ -42,7 +42,7 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
   val fullS4L = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(AnnualCosts.AlreadyDoesSpend),
-    vatTaxableTurnover = Some(12345678L),
+    estimateTotalSales = Some(12345678L),
     overBusinessGoodsPercent = Some(AnnualCosts.AlreadyDoesSpend),
     useThisRate = Some(true),
     frsStart = Some(start),

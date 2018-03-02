@@ -20,12 +20,13 @@ import java.text.DecimalFormat
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.{ConfigConnector, KeystoreConnect}
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import frs.AnnualCosts
 import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionProfile}
 
@@ -34,11 +35,13 @@ import scala.concurrent.Future
 class FlatRateControllerImpl @Inject()(val messagesApi: MessagesApi,
                                        val flatRateService: FlatRateService,
                                        val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnect) extends FlatRateController
+                                       val keystoreConnector: KeystoreConnect,
+                                       val configConnector: ConfigConnector) extends FlatRateController
 
 trait FlatRateController extends BaseController with SessionProfile {
 
   val flatRateService: FlatRateService
+  val configConnector: ConfigConnector
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
@@ -48,30 +51,41 @@ trait FlatRateController extends BaseController with SessionProfile {
   def overBusinessGoodsPercentForm(formPct : Long = 0L) = new OverBusinessGoodsPercentForm {
     override val pct: Long = formPct
   }.form
+  lazy val groupingBusinessTypesValues: Map[String, Seq[(String, String)]] = configConnector.businessTypes.map { jsObj =>
+    (
+      (jsObj \ "groupLabel").as[String],
+      (jsObj \ "categories").as[Seq[JsObject]].map(js => ((js \ "id").as[String], (js \ "businessType").as[String]))
+    )
+  } toMap
+  lazy val businessTypeIds: Seq[String] = groupingBusinessTypesValues.values.toSeq.flatMap(radioValues => radioValues map Function.tupled((id, _) => id))
 
   def joinFrsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      flatRateService.getFlatRate map { flatRateScheme =>
-        val form = flatRateScheme.joinFrs match {
-          case Some(joinFrs) => joinFrsForm.fill(YesOrNoAnswer(joinFrs))
-          case None => joinFrsForm
+      ivPassedCheck {
+        flatRateService.getFlatRate map { flatRateScheme =>
+          val form = flatRateScheme.joinFrs match {
+            case Some(joinFrs) => joinFrsForm.fill(YesOrNoAnswer(joinFrs))
+            case None => joinFrsForm
+          }
+          Ok(features.frs.views.html.frs_join(form))
         }
-        Ok(features.frs.views.html.frs_join(form))
       }
   }
 
   def submitJoinFRS: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      joinFrsForm.bindFromRequest().fold(
-        badForm => Future.successful(BadRequest(features.frs.views.html.frs_join(badForm))),
-        joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
-          if (joiningFRS.answer) {
-            Redirect(controllers.routes.FlatRateController.annualCostsInclusivePage())
-          } else {
-            Redirect(controllers.routes.SummaryController.show())
+      ivPassedCheck {
+        joinFrsForm.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(features.frs.views.html.frs_join(badForm))),
+          joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
+            if (joiningFRS.answer) {
+              Redirect(controllers.routes.FlatRateController.annualCostsInclusivePage())
+            } else {
+              Redirect(controllers.routes.SummaryController.show())
+            }
           }
-        }
-      )
+        )
+      }
   }
 
   def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -211,15 +225,17 @@ trait FlatRateController extends BaseController with SessionProfile {
 
   def yourFlatRatePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      flatRateService.getFlatRate flatMap { flatRateScheme =>
-        val form = flatRateScheme.useThisRate match {
-          case Some(useRate) => yourFlatRateForm.fill(YesOrNoAnswer(useRate))
-          case None => yourFlatRateForm
-        }
-        flatRateService.retrieveSectorPercent map { sectorInfo =>
-          val decimalFormat = new DecimalFormat("#0.##")
-          val (sector, pct) = sectorInfo
-          Ok(features.frs.views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), form))
+      ivPassedCheck {
+        flatRateService.getFlatRate flatMap { flatRateScheme =>
+          val form = flatRateScheme.useThisRate match {
+            case Some(useRate) => yourFlatRateForm.fill(YesOrNoAnswer(useRate))
+            case None => yourFlatRateForm
+          }
+          flatRateService.retrieveSectorPercent map { sectorInfo =>
+            val decimalFormat = new DecimalFormat("#0.##")
+            val (sector, pct) = sectorInfo
+            Ok(features.frs.views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), form))
+          }
         }
       }
   }
@@ -239,6 +255,51 @@ trait FlatRateController extends BaseController with SessionProfile {
             Redirect(controllers.routes.FlatRateController.frsStartDatePage())
           } else {
             Redirect(controllers.routes.SummaryController.show())
+          }
+        )
+      }
+  }
+
+  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        flatRateService.getFlatRate map { flatRateScheme =>
+          val form = flatRateScheme.estimateTotalSales.fold(EstimateTotalSalesForm.form)(v => EstimateTotalSalesForm.form.fill(v))
+          Ok(features.frs.views.html.estimateTotalSales(form))
+        }
+      }
+  }
+
+  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        EstimateTotalSalesForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(features.frs.views.html.estimateTotalSales(badForm))),
+          data => flatRateService.saveEstimateTotalSales(data) map {
+            _ => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
+          }
+        )
+      }
+  }
+
+  def businessType: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        for {
+          flatRateScheme <- flatRateService.getFlatRate
+          form           = ChooseBusinessTypeForm.form(businessTypeIds)
+          formFilled     = flatRateScheme.categoryOfBusiness.fold(form)(v => form.fill(v))
+        } yield Ok(features.frs.views.html.chooseBusinessType(formFilled, groupingBusinessTypesValues))
+      }
+  }
+
+  def submitBusinessType: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        ChooseBusinessTypeForm.form(businessTypeIds).bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(features.frs.views.html.chooseBusinessType(badForm, groupingBusinessTypesValues))),
+          data => flatRateService.saveBusinessType(data) map {
+            _ => Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
           }
         )
       }

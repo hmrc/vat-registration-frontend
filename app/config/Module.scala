@@ -138,6 +138,7 @@ class Module extends AbstractModule {
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
     bind(classOf[IncorporationInformationConnect]).to(classOf[IncorporationInformationConnector]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
+    bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
   }
 
   private def featureSwitches(): Unit = {

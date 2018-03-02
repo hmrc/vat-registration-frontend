@@ -649,6 +649,15 @@ pages.frs.costsInclusive.radio2                           = It will over the nex
 pages.frs.costsInclusive.radio3                           = No
 validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
 
+## Estimate Total Sales Page
+pages.frs.estimateTotalSales.title            = Estimate the company''s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.heading          = Estimate the company''s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.info             = Give figures that are as realistic as possible.
+validation.frs.estimateTotalSales.range.above = Enter an estimate which is less than £99,999,999,999
+validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 or more
+validation.frs.estimateTotalSales.missing     = Enter an estimate of the company''s total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.invalid     = Enter a valid number
+
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type for the Flat Rate Scheme
 pages.frs.confirmBusinessSector.heading                   = Confirm the company''s business type for the Flat Rate Scheme
@@ -657,6 +666,11 @@ pages.frs.confirmBusinessSector.table.row1.heading        = Business type
 pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal responsibility to check the company has the right business type.
 pages.frs.confirmBusinessSector.changeLink                = Change your business type
 validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
+
+## Choose business type
+pages.frs.chooseBusinessType.title   = Choose what type of business the company does
+pages.frs.chooseBusinessType.heading = Choose what type of business the company does
+pages.frs.chooseBusinessType.info    = Choose the one that''s closest to what the company does.
 
 ## Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.title                               = To join the Flat Rate Scheme the company must use the 16.5% flat rate

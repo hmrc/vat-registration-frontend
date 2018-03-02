@@ -258,7 +258,7 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(financialsWithEstimateVatTurnoverIs100000)))
 
       await(service.saveOverAnnualCosts(AnnualCosts.DoesNotSpend)) mustBe
-        incompleteS4l.copy(overBusinessGoods = Some(AnnualCosts.DoesNotSpend), vatTaxableTurnover = Some(2000L))
+        incompleteS4l.copy(overBusinessGoods = Some(AnnualCosts.DoesNotSpend), estimateTotalSales = Some(2000L))
     }
   }
 
@@ -329,7 +329,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
 
-      when(mockConfigConnector.getBusinessSectorDetails(any()))
+      when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(validBusinessSectorView)
 
       await(service.retrieveSectorPercent) mustBe (validBusinessSectorView._1, validBusinessSectorView._2)
@@ -342,7 +342,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(s4LVatSicAndComplianceNoMainBusinessActivity))
 
-      when(mockConfigConnector.getBusinessSectorDetails(any()))
+      when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(validBusinessSectorView)
 
       val exception: IllegalStateException = intercept[IllegalStateException](await(service.retrieveSectorPercent))
@@ -448,6 +448,40 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(HttpResponse(200)))
 
       await(service.resetFRS(newSicCode)) mustBe newSicCode
+    }
+  }
+
+  "saveEstimateTotalSales" should {
+    "save estimated total sales" in new Setup() {
+      when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incompleteS4l)))
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      await(service.saveEstimateTotalSales(30000L)) mustBe
+        incompleteS4l.copy(estimateTotalSales = Some(30000L))
+    }
+  }
+
+  "saveBusinessType" should {
+    "save business type and reset percent if different" in new Setup() {
+      when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incompleteS4l.copy(categoryOfBusiness = Some("001"), percent = Some(10.5)))))
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      await(service.saveBusinessType("003")) mustBe
+        incompleteS4l.copy(categoryOfBusiness = Some("003"), percent = None)
+    }
+
+    "does not change business type and does not reset percent if same as before" in new Setup() {
+      when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(incompleteS4l.copy(categoryOfBusiness = Some("001"), percent = Some(10.5)))))
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      await(service.saveBusinessType("001")) mustBe
+        incompleteS4l.copy(categoryOfBusiness = Some("001"), percent = Some(10.5))
     }
   }
 }

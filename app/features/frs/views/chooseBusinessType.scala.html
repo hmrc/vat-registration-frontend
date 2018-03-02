@@ -1,0 +1,44 @@
+@(chooseBusinessTypeForm: Form[String], groupingBusinessTypes: Map[String, Seq[(String, String)]])(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
+
+@fieldSetClasses = @{
+    if(chooseBusinessTypeForm.hasErrors && chooseBusinessTypeForm.errors.exists(_.args.nonEmpty)) "form-field--error" else ""
+}
+
+@main_template(title = messages("pages.frs.chooseBusinessType.title")) {
+    @errorSummary(
+        messages("app.common.errorSummaryLabel"),
+        chooseBusinessTypeForm,
+        Seq("businessType")
+    )
+
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.chooseBusinessType.heading")</h1>
+    <div class="panel panel-border-wide form-group">
+        <p>@messages("pages.frs.chooseBusinessType.info")</p>
+    </div>
+
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitBusinessType) {
+        <div class="form-group @fieldSetClasses">
+            @chooseBusinessTypeForm.errors.find(_.args.contains("businessType")).map { error =>
+                @govHelpers.errorInline("businessType", messages(error.message))
+            }
+
+            @for((sector, businessTypes) <- groupingBusinessTypes) {
+                @vatInputRadioGroup(
+                    field = chooseBusinessTypeForm("businessType"),
+                    businessTypes,
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label",
+                    '_legend -> messages("pages.frs.chooseBusinessType.heading"),
+                    '_legendClass -> "visually-hidden"
+                )
+            }
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
+}

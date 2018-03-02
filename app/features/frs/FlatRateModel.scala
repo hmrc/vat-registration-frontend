@@ -61,16 +61,14 @@ object FRSDateChoice extends Enumeration {
   implicit val format = Format(Reads.enumNameReads(FRSDateChoice), Writes.enumNameWrites)
 }
 
-case class FlatRateScheme(
-                           joinFrs : Option[Boolean] = None,
-                           overBusinessGoods : Option[AnnualCosts.Value] = None,
-                           vatTaxableTurnover : Option[Long] = None,
-                           overBusinessGoodsPercent : Option[AnnualCosts.Value] = None,
-                           useThisRate : Option[Boolean] = None,
-                           frsStart : Option[Start] = None,
-                           categoryOfBusiness : Option[String] = None,
-                           percent : Option[BigDecimal] = None
-                         )
+case class FlatRateScheme(joinFrs : Option[Boolean] = None,
+                          overBusinessGoods : Option[AnnualCosts.Value] = None,
+                          estimateTotalSales : Option[Long] = None,
+                          overBusinessGoodsPercent : Option[AnnualCosts.Value] = None,
+                          useThisRate : Option[Boolean] = None,
+                          frsStart : Option[Start] = None,
+                          categoryOfBusiness : Option[String] = None,
+                          percent : Option[BigDecimal] = None)
 
 object FlatRateScheme {
   val s4lkey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
@@ -100,10 +98,10 @@ object FlatRateScheme {
     override def writes(s4l: FlatRateScheme): JsValue = {
       val businessGoods = if(AnnualCosts.toBool(s4l.overBusinessGoods).contains(true)) {
         Some(Json.obj("businessGoods"   -> Json.obj(
-          "estimatedTotalSales"           -> s4l.vatTaxableTurnover,
+          "estimatedTotalSales"           -> s4l.estimateTotalSales,
           "overTurnover"                  -> AnnualCosts.toBool(s4l.overBusinessGoodsPercent)
         )))
-        } else None
+      } else None
 
       val details = Seq(
         s4l.categoryOfBusiness.map(c    => Json.obj("categoryOfBusiness" -> c)),
@@ -111,11 +109,7 @@ object FlatRateScheme {
         s4l.frsStart.map(_.date).map(d  => Json.obj("startDate" -> d)),
         businessGoods
       ).flatten
-     val frsDetails = if (details.isEmpty) {
-        Json.obj()
-      } else {
-        Json.obj("frsDetails" -> details.fold(Json.obj())((a,b) => a ++ b))
-      }
+      val frsDetails = Json.obj("frsDetails" -> details.fold(Json.obj())((a,b) => a ++ b))
 
       s4l.joinFrs.fold(throw new Exception("[FlatRateModel] [Writes] No value for joinFrs when expected on submission"))(bool =>
         Json.obj("joinFrs" -> bool) ++ frsDetails)

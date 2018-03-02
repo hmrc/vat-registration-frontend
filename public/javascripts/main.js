@@ -85,6 +85,13 @@ $(document).ready($(function () {
     }
 }(window.EstimateVatTurnoverPage = window.EstimateVatTurnoverPage || {}, jQuery));
 
+// Estimate Total Sales
+(function (EstimateTotalSalesPage, $, undefined) {
+    EstimateTotalSalesPage.init = function() {
+        var numericInputs = ["totalSalesEstimate"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.EstimateTotalSalesPage = window.EstimateTotalSalesPage || {}, jQuery));
 
 // Estimate Zero Rated Sales
 (function (EstimateZeroRatedSalesPage, $, undefined) {

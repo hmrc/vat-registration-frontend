@@ -116,7 +116,7 @@ class FlatRateSchemeSpec extends UnitSpec {
         )
 
         val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(AnnualCosts.DoesNotSpend), overBusinessGoodsPercent = None, vatTaxableTurnover = None))
+        res shouldBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(AnnualCosts.DoesNotSpend), overBusinessGoodsPercent = None, estimateTotalSales = None))
       }
 
       "joinFrs is false" in {

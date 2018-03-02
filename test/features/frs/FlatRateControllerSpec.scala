@@ -16,17 +16,18 @@
 
 package controllers
 
-import connectors.KeystoreConnector
+import connectors.{ConfigConnector, KeystoreConnector}
 import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import frs.{AnnualCosts, FRSDateChoice, FlatRateScheme}
 import helpers.{ControllerSpec, MockMessages}
-import mocks.AuthMock
 import models._
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.FlatRateService
@@ -35,10 +36,31 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import scala.concurrent.Future
 
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
+  val jsonBusinessTypes = Json.parse(
+    s"""
+       |[
+       |  {
+       |    "groupLabel": "Test 1",
+       |    "categories": [
+       |      {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
+       |      {"id": "019", "businessType": "Test BusinessType", "currentFRSPercent": 3},
+       |      {"id": "038", "businessType": "Pubs", "currentFRSPercent": "5"}
+       |    ]
+       |  },
+       |  {
+       |    "groupLabel": "Test 2",
+       |    "categories": [
+       |      {"id": "039", "businessType": "Cafes", "currentFRSPercent": "5"}
+       |    ]
+       |  }
+       |]
+        """.stripMargin).as[Seq[JsObject]]
+
   trait Setup {
     val controller: FlatRateController = new FlatRateController {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val flatRateService: FlatRateService = mockFlatRateService
+      override val configConnector: ConfigConnector = mockConfigConnector
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
     }
@@ -147,7 +169,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/spends-less-than-two-percent-of-turnover-a-year-on-goods")
+        redirectLocation(result) mustBe Some("/register-for-vat/company-spend-business-goods")
       }
     }
   }
@@ -284,7 +306,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitConfirmSectorFrs, request){ result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/your-flat-rate")
+        redirectLocation(result) mustBe Some("/register-for-vat/confirm-flat-rate")
       }
     }
   }
@@ -595,6 +617,208 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       submitAuthorised(controller.submitYourFlatRate(), request){ result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+      }
+    }
+  }
+
+  s"GET ${routes.FlatRateController.estimateTotalSales()}" should {
+    val validFlatRate = FlatRateScheme(
+      Some(true),
+      Some(AnnualCosts.AlreadyDoesSpend),
+      None,
+      None,
+      None,
+      None,
+      None,
+      None
+    )
+
+    "return a 200 and render the page without pre population" in new Setup {
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
+
+      callAuthorised(controller.estimateTotalSales()){ result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
+        val document = Jsoup.parse(contentAsString(result))
+        document.getElementById("totalSalesEstimate").attr("value") mustBe ""
+      }
+    }
+
+    "return a 200 and render the page with pre populated data" in new Setup {
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(30000L))))
+
+      callAuthorised(controller.estimateTotalSales()){ result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
+        val document = Jsoup.parse(contentAsString(result))
+        document.getElementById("totalSalesEstimate").attr("value") mustBe "30000"
+      }
+    }
+  }
+
+  s"POST ${routes.FlatRateController.submitEstimateTotalSales()}" should {
+    val fakeRequest = FakeRequest(routes.FlatRateController.submitEstimateTotalSales())
+
+    "return 400 with Empty data" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 400 with value set to 0" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "totalSalesEstimate" -> "0"
+      )
+
+      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 400 with value set to 100000000000" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "totalSalesEstimate" -> "100000000000"
+      )
+
+      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 400 with decimal numbers" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "totalSalesEstimate" -> "30000.36"
+      )
+
+      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 303" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "totalSalesEstimate" -> "30000"
+      )
+
+      val validFlatRate = FlatRateScheme(
+        Some(true),
+        Some(AnnualCosts.AlreadyDoesSpend),
+        Some(30000L),
+        None,
+        None,
+        None,
+        None,
+        None
+      )
+
+      when(mockFlatRateService.saveEstimateTotalSales(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
+
+      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/company-spend-business-goods")
+      }
+    }
+  }
+
+  s"GET ${routes.FlatRateController.businessType()}" should {
+    val validFlatRate = FlatRateScheme(
+      Some(true),
+      Some(AnnualCosts.AlreadyDoesSpend),
+      Some(30000L),
+      None,
+      None,
+      None,
+      Some("019"),
+      None
+    )
+
+    "return a 200 and render the page" in new Setup {
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate.copy(categoryOfBusiness = None)))
+
+      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+
+      callAuthorised(controller.businessType()){ result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
+        val document = Jsoup.parse(contentAsString(result))
+        document.getElementsByAttributeValue("checked", "checked").size mustBe 0
+      }
+    }
+
+    "return a 200 and render the page with radio pre selected" in new Setup {
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
+
+      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+
+      callAuthorised(controller.businessType()){ result =>
+        status(result) mustBe 200
+        contentAsString(result) must include(MOCKED_MESSAGE)
+        val document = Jsoup.parse(contentAsString(result))
+        val id = s"businessType-${validFlatRate.categoryOfBusiness.get}"
+        val elements = document.getElementsByAttributeValue("checked", "checked")
+        elements.size mustBe 1
+        elements.first.attr("id") mustBe id
+        document.getElementsByAttributeValue("for", id).first.text mustBe "Test BusinessType"
+      }
+    }
+  }
+
+  s"POST ${routes.FlatRateController.submitBusinessType()}" should {
+    val fakeRequest = FakeRequest(routes.FlatRateController.submitBusinessType())
+
+    "return 400 with Empty data" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+
+      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+
+      submitAuthorised(controller.submitBusinessType(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 400 with incorrect data" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "businessType" -> "000"
+      )
+
+      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+
+      submitAuthorised(controller.submitBusinessType(), request){ result =>
+        status(result) mustBe 400
+      }
+    }
+
+    "return 303" in new Setup {
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "businessType" -> "019"
+      )
+
+      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+
+      val validFlatRate = FlatRateScheme(
+        Some(true),
+        Some(AnnualCosts.AlreadyDoesSpend),
+        Some(30000L),
+        None,
+        None,
+        None,
+        Some("019"),
+        None
+      )
+
+      when(mockFlatRateService.saveBusinessType(any())(any(), any()))
+        .thenReturn(Future.successful(validFlatRate))
+
+      submitAuthorised(controller.submitBusinessType(), request) { result =>
+        status(result) mustBe 303
+        redirectLocation(result) mustBe Some("/register-for-vat/confirm-flat-rate")
       }
     }
   }

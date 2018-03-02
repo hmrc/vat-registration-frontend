@@ -118,3 +118,18 @@ object FRSStartDateForm {
     )
   )
 }
+
+object EstimateTotalSalesForm {
+  val totalSalesEstimateMissing = "validation.frs.estimateTotalSales.missing"
+  implicit val errorCode: ErrorCode = "frs.estimateTotalSales"
+
+  val form = Form(single("totalSalesEstimate" -> text
+    .verifying(mandatoryNumericText)
+    .transform[Long](_.toLong, _.toString)
+    .verifying(inRange[Long](1, 99999999999L))
+  ))
+}
+
+object ChooseBusinessTypeForm {
+  def form(validBusinessTypes: Seq[String]) = Form(single("businessType" -> text).verifying(id => validBusinessTypes.contains(id)))
+}
