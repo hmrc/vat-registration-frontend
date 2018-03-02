@@ -10,7 +10,7 @@
         registerForFrsForm
     )
 
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.registerFor.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.registerFor.heading")</h1>
 
     <p>@messages("pages.frs.registerFor.p")</p>
 
@@ -20,7 +20,7 @@
 
     <h2>@messages("pages.frs.registerFor.subheading1")</h2>
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitRegisterForFrs()) {
+    @govHelpers.form(action = features.frs.controllers.routes.FlatRateController.submitRegisterForFrs()) {
         <div class="form-group">
             @vatInputRadioGroup(
                 field = registerForFrsForm("registerForFrsRadio"),

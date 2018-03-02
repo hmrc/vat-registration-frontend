@@ -14,7 +14,7 @@
         Seq("numberOfWorkers")
     )
 
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.labourCompliance.workers.heading")</h1>
 
     @govHelpers.form(action = features.sicAndCompliance.controllers.routes.LabourComplianceController.submitWorkers()) {
         <div class="form-group @fieldSetClasses">

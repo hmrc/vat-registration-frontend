@@ -67,7 +67,7 @@ trait BankAccountDetailsController extends BaseController with SessionProfile {
             if(hasBankAccount){
               Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
             } else {
-              Redirect(controllers.routes.FlatRateController.joinFrsPage())
+              Redirect(features.frs.controllers.routes.FlatRateController.joinFrsPage())
             }
           }
         )
@@ -94,7 +94,7 @@ trait BankAccountDetailsController extends BaseController with SessionProfile {
           errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
           accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
             if(accountDetailsValid){
-              Redirect(controllers.routes.FlatRateController.joinFrsPage())
+              Redirect(features.frs.controllers.routes.FlatRateController.joinFrsPage())
             } else {
               val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
               Ok(views.html.enter_company_bank_account_details(invalidDetails))

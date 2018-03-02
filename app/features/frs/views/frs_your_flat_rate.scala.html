@@ -3,37 +3,26 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
-@main_template(title = messages("pages.frs.registerForWithSector.title")) {
+@main_template(title = messages("pages.frs.registerForWithSector.title", percentFormat)) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),
         registerForFrsForm
     )
 
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.registerForWithSector.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.registerForWithSector.heading", percentFormat)</h1>
 
-    <table class="form-group">
-        <tbody>
-            <tr>
-                <td>@messages("pages.frs.registerForWithSector.table.row1.heading")</td>
-                <td>@Html(sector)</td>
-            </tr>
-            <tr>
-                <td>@messages("pages.frs.registerForWithSector.table.row2.heading")</td>
-                <td>@Html(percentFormat)</td>
-            </tr>
-        </tbody>
-    </table>
+    <p>@messages("pages.frs.registerForWithSector.info")</p>
 
     <div class="form-group">
         <div class="panel panel-border-wide">
-            <p>@messages("pages.frs.registerForWithSector.panel1.para")</p>
+            <p>@messages("pages.frs.registerForWithSector.para")</p>
         </div>
     </div>
 
     <h2>@messages("pages.frs.registerForWithSector.subheading1")</h2>
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitYourFlatRate()) {
+    @govHelpers.form(action = features.frs.controllers.routes.FlatRateController.submitYourFlatRate()) {
         <div class="form-group">
             @vatInputRadioGroup(
                 field = registerForFrsForm("registerForFrsWithSectorRadio"),

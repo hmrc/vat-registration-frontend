@@ -17,15 +17,13 @@
 package connectors
 
 import java.time.LocalDate
-
 import config.WSHttp
 import features.returns.models.Start
 import fixtures.VatRegistrationFixture
-import frs.{AnnualCosts, FlatRateScheme}
+import frs.FlatRateScheme
 import helpers.VatRegSpec
-import play.api.libs.json.{JsBoolean, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
-
 import scala.language.postfixOps
 
 class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -41,9 +39,9 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
   val start = Start(Some(LocalDate.now().plusDays(5)))
   val fullS4L = FlatRateScheme(
     joinFrs = Some(true),
-    overBusinessGoods = Some(AnnualCosts.DoesNotSpend),
-    vatTaxableTurnover = Some(12345678L),
-    overBusinessGoodsPercent = Some(AnnualCosts.AlreadyDoesSpend),
+    overBusinessGoods = Some(true),
+    estimateTotalSales = Some(12345678L),
+    overBusinessGoodsPercent = Some(true),
     useThisRate = Some(true),
     frsStart = Some(start),
     categoryOfBusiness = Some("testCategory"),
@@ -74,14 +72,14 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
   "Calling getFlatRate" should {
     "return the correct VatResponse when the microservice completes and returns a FlatRateScheme model" in new Setup {
       val json: JsObject = Json.obj(
-        "joinFrs" -> true,
-        "frsDetails" -> Json.obj(
-          "overBusinessGoods" -> false,
-          "vatInclusiveTurnover" -> 12345678L,
-          "overBusinessGoodsPercent" -> true,
-          "start" -> start,
-          "categoryOfBusiness" -> "testCategory",
-          "percent" -> 15
+        "joinFrs"                   -> true,
+        "frsDetails"                -> Json.obj(
+          "businessGoods"           -> Json.obj(
+              "estimatedTotalSales" -> 12345678L,
+              "overTurnover"        -> true),
+          "startDate"               -> start.date,
+          "categoryOfBusiness"      -> "testCategory",
+          "percent"                 -> 15
         )
       )
       val resp = HttpResponse(200, Some(json))
