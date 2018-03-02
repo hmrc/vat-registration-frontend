@@ -41,7 +41,7 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
   val start = Start(Some(LocalDate.now().plusDays(5)))
   val fullS4L = FlatRateScheme(
     joinFrs = Some(true),
-    overBusinessGoods = Some(AnnualCosts.DoesNotSpend),
+    overBusinessGoods = Some(AnnualCosts.AlreadyDoesSpend),
     vatTaxableTurnover = Some(12345678L),
     overBusinessGoodsPercent = Some(AnnualCosts.AlreadyDoesSpend),
     useThisRate = Some(true),
@@ -75,13 +75,13 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
     "return the correct VatResponse when the microservice completes and returns a FlatRateScheme model" in new Setup {
       val json: JsObject = Json.obj(
         "joinFrs" -> true,
-        "frsDetails" -> Json.obj(
-          "overBusinessGoods" -> false,
-          "vatInclusiveTurnover" -> 12345678L,
-          "overBusinessGoodsPercent" -> true,
-          "start" -> start,
+        "frsDetails"           -> Json.obj(
+          "businessGoods"      -> Json.obj(
+              "estimatedTotalSales" -> 12345678L,
+            "overTurnover"        -> true),
+          "startDate"          -> start.date,
           "categoryOfBusiness" -> "testCategory",
-          "percent" -> 15
+          "percent"            -> 15
         )
       )
       val resp = HttpResponse(200, Some(json))

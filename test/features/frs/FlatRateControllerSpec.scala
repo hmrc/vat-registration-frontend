@@ -63,7 +63,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
-        .thenReturn(Future.successful(FlatRateScheme.empty))
+        .thenReturn(Future.successful(FlatRateScheme()))
 
       callAuthorised(controller.annualCostsInclusivePage) { result =>
         status(result) mustBe 200
@@ -393,7 +393,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
           .thenReturn(Future.successful(Some(currentProfile)))
 
         when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
-          .thenReturn(Future.successful(FlatRateScheme.empty))
+          .thenReturn(Future.successful(FlatRateScheme()))
 
         callAuthorised(controller.joinFrsPage()) { result =>
           status(result) mustBe 200

@@ -16,13 +16,13 @@
 
 package frs
 
+import java.time.LocalDate
+
 import features.returns.Start
 import models.S4LKey
 import play.api.data.FormError
 import play.api.data.format.Formatter
 import play.api.libs.json._
-
-import scala.util.control.NoStackTrace
 
 object AnnualCosts extends Enumeration {
   type AnnualCosts = Value
@@ -32,16 +32,12 @@ object AnnualCosts extends Enumeration {
 
   implicit def toString(f : AnnualCosts.Value) : String = f.toString
   implicit val format = Format(Reads.enumNameReads(AnnualCosts), Writes.enumNameWrites)
-  implicit def boolTo(bool : Option[Boolean]) = bool.map(if (_) AnnualCosts.AlreadyDoesSpend else AnnualCosts.DoesNotSpend)
 
-  def toBool(f : AnnualCosts.Value): Boolean = f match {
-    case AnnualCosts.DoesNotSpend => false
-    case _ => true
-  }
   def toBool(f : Option[AnnualCosts.Value]): Option[Boolean] = f map {
     case AnnualCosts.DoesNotSpend => false
     case _ => true
   }
+  def fromBool(bool : Boolean): AnnualCosts.Value = if (bool) AnnualCosts.AlreadyDoesSpend else AnnualCosts.DoesNotSpend
 
   implicit def formatter : Formatter[AnnualCosts] = new Formatter[AnnualCosts] {
     def bind(key: String, data: Map[String, String]) = {
@@ -81,46 +77,51 @@ object FlatRateScheme {
 
   val reads: Reads[FlatRateScheme] = new Reads[FlatRateScheme] {
     override def reads(json: JsValue): JsResult[FlatRateScheme] = {
-      val start = (json \ "frsDetails" \ "start").asOpt[Start]
-      val joinFrs = (json \ "joinFrs").asOpt[Boolean]
+
+      val joinFrs = (json \ "joinFrs").as[Boolean]
+      val details = (json \ "frsDetails").validateOpt[JsObject].get
+      val start = details.flatMap(js => (js \ "startDate").asOpt[LocalDate].map(date => Start(Some(date))))
+      val businessGoods = details.flatMap(js => (js \ "businessGoods").validateOpt[JsObject].get)
 
       JsSuccess(FlatRateScheme(
-        joinFrs,
-        (json \ "frsDetails" \ "overBusinessGoods").asOpt[Boolean],
-        (json \ "frsDetails" \ "vatInclusiveTurnover").asOpt[Long],
-        (json \ "frsDetails" \ "overBusinessGoodsPercent").asOpt[Boolean],
-        if (joinFrs.get) Some(start.fold(false)(_ => true)) else None,
+        Some(joinFrs),
+        if (!joinFrs && businessGoods.isEmpty) None else Some(AnnualCosts.fromBool(businessGoods.isDefined)),
+        businessGoods.map(js => (js \ "estimatedTotalSales").as[Long]),
+        businessGoods.map(js => AnnualCosts.fromBool((js \ "overTurnover").as[Boolean])),
+        if (details.isEmpty) None else Some(joinFrs),
         start,
-        (json \ "frsDetails" \ "categoryOfBusiness").asOpt[String],
-        (json \ "frsDetails" \ "percent").asOpt[BigDecimal]
+        details.flatMap(js => (js \ "categoryOfBusiness").asOpt[String]),
+        details.flatMap(js => (js \ "percent").asOpt[BigDecimal])
       ))
     }
   }
 
   val writes: Writes[FlatRateScheme] = new Writes[FlatRateScheme] {
     override def writes(s4l: FlatRateScheme): JsValue = {
-      def purgeNull(jsObj : JsObject) : JsObject =
-        JsObject(jsObj.value.filterNot {
-          case (_, value) => value == JsNull
-        })
-
-      s4l.joinFrs match {
-        case Some(false)    => Json.obj("joinFrs" -> false)
-        case Some(true)     => Json.obj("joinFrs" -> true, "frsDetails" -> purgeNull(Json.obj(
-          "overBusinessGoods" -> AnnualCosts.toBool(s4l.overBusinessGoods),
-          "categoryOfBusiness" -> s4l.categoryOfBusiness,
-          "percent" -> s4l.percent,
-          "overBusinessGoodsPercent" -> AnnualCosts.toBool(s4l.overBusinessGoodsPercent),
-          "vatInclusiveTurnover" -> s4l.vatTaxableTurnover,
-          "start" -> s4l.frsStart
+      val businessGoods = if(AnnualCosts.toBool(s4l.overBusinessGoods).contains(true)) {
+        Some(Json.obj("businessGoods"   -> Json.obj(
+          "estimatedTotalSales"           -> s4l.vatTaxableTurnover,
+          "overTurnover"                  -> AnnualCosts.toBool(s4l.overBusinessGoodsPercent)
         )))
-        case None           => throw new Exception("[FlatRateModel] [Writes] No value for joinFrs when expected on submission")
+        } else None
+
+      val details = Seq(
+        s4l.categoryOfBusiness.map(c    => Json.obj("categoryOfBusiness" -> c)),
+        s4l.percent.map(p               => Json.obj("percent" -> p)),
+        s4l.frsStart.map(_.date).map(d  => Json.obj("startDate" -> d)),
+        businessGoods
+      ).flatten
+     val frsDetails = if (details.isEmpty) {
+        Json.obj()
+      } else {
+        Json.obj("frsDetails" -> details.fold(Json.obj())((a,b) => a ++ b))
       }
+
+      s4l.joinFrs.fold(throw new Exception("[FlatRateModel] [Writes] No value for joinFrs when expected on submission"))(bool =>
+        Json.obj("joinFrs" -> bool) ++ frsDetails)
     }
   }
 
   val apiFormat = Format[FlatRateScheme](reads, writes)
   implicit val format = Json.format[FlatRateScheme]
-
-  def empty = FlatRateScheme()
 }

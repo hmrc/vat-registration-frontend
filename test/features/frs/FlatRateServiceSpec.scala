@@ -190,7 +190,7 @@ class FlatRateServiceSpec extends VatSpec {
     }
 
     "do not handle an empty S4L" in new Setup() {
-      service.handleView(FlatRateScheme.empty) mustBe Incomplete(FlatRateScheme.empty)
+      service.handleView(FlatRateScheme()) mustBe Incomplete(FlatRateScheme())
     }
   }
 
@@ -215,7 +215,7 @@ class FlatRateServiceSpec extends VatSpec {
   "saveJoiningFRS" should {
     "save joining the FRS" in new Setup() {
       when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(FlatRateScheme.empty)))
+        .thenReturn(Future.successful(Some(FlatRateScheme())))
       when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
@@ -224,7 +224,7 @@ class FlatRateServiceSpec extends VatSpec {
 
     "save not joining the FRS (and save to backend)" in new Setup() {
       when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(FlatRateScheme.empty)))
+        .thenReturn(Future.successful(Some(FlatRateScheme())))
       when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
       when(mockRegConnector.upsertFlatRate(any(), any())(any()))

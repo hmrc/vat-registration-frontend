@@ -59,7 +59,7 @@ trait FlatRateService  {
       case Some(s4l)  => Future.successful(s4l)
       case None       => vatRegConnector.getFlatRate(profile.registrationId) map {
         case Some(frs)    => frs
-        case None         => FlatRateScheme.empty
+        case None         => FlatRateScheme()
       }
     }
 

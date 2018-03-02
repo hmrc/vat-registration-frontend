@@ -54,15 +54,6 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None) exten
     Some(controllers.routes.FlatRateController.annualCostsLimitedPage())
   )
 
-  val useThisRateRow: SummaryRow = yesNoRow(
-    "registerForFrs",
-    vatFrs.flatMap(_.useThisRate),
-    vatFrs.flatMap(_.categoryOfBusiness) match {
-      case Some("") | None => controllers.routes.FlatRateController.registerForFrsPage()
-      case Some(_) => controllers.routes.FlatRateController.confirmSectorFrsPage()
-    }
-  )
-
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
     vatFrs.flatMap(_.frsStart).flatMap {
@@ -95,7 +86,6 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None) exten
       (costsLimitedRow, vatFrs.flatMap(_.overBusinessGoodsPercent).isDefined),
       (businessSectorRow, vatFrs.flatMap(_.categoryOfBusiness).exists(StringUtils.isNotBlank)),
       (flatRatePercentageRow, vatFrs.flatMap(_.percent).isDefined),
-      (useThisRateRow, vatFrs.flatMap(_.useThisRate).isDefined),
       (startDateRow, vatFrs.flatMap(_.frsStart).isDefined)
     ),
     vatFrs.isDefined
