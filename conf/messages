@@ -118,7 +118,7 @@ pages.timeoutiv.body.url                = You need to <a href="{0}">restart the 
 pages.cantconfirmidentity.title         = We won''t be able to confirm your identity
 pages.cantconfirmidentity.heading       = We won''t be able to confirm your identity
 pages.cantconfirmidentity.body.one      = We don''t hold enough information for us to check who you are.
-pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can
+pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can register for VAT
 pages.cantconfirmidentity.body.link     = using another HMRC service
 pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
@@ -242,7 +242,7 @@ pages.estimate.vat.turnover.info                            = Give an estimate r
 pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
 pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company''s UK sales of VAT-taxable goods and services. Include any zero-rated items.
 pages.estimate.vat.turnover.include.para1                   = Find out more about
-pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
+pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services (opens in a new window)
 pages.estimate.vat.turnover.include.para1.2                 = .
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
