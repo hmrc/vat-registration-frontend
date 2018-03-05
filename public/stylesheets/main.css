@@ -60,3 +60,6 @@ td {
 	width: 100%
 }
 
+.char-counter-text {
+    text-align: left;
+}
