@@ -16,16 +16,15 @@
 
 package models.view.test
 
-import features.returns.Returns
+import features.bankAccountDetails.models.BankAccount
+import features.returns.models.Returns
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
-import models.BankAccount
 import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(
                       vatContact: VatContactTestSetup,
-                      vatFinancials: VatFinancialsTestSetup,
                       sicAndCompliance: SicAndComplianceTestSetup,
                       officerHomeAddress: OfficerHomeAddressTestSetup,
                       officerPreviousAddress: OfficerPreviousAddressTestSetup,

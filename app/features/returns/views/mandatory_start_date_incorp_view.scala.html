@@ -1,7 +1,7 @@
 @import java.time.format.DateTimeFormatter
 @import java.time.LocalDate
-@import features.returns.DateSelection
-@import features.returns.DateSelection._
+@import features.returns.models.DateSelection
+@import features.returns.models.DateSelection._
 @(mandStartDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate : String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
@@ -24,7 +24,7 @@
 
     <p>@messages("pages.start.date.incorp.para1")</p>
 
-    @govHelpers.form(action = features.returns.routes.ReturnsController.submitMandatoryStart()) {
+    @govHelpers.form(action = features.returns.controllers.routes.ReturnsController.submitMandatoryStart()) {
         <div class="form-group">
 
             @defining(DateTimeFormatter

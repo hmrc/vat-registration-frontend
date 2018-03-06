@@ -17,7 +17,7 @@
 package controllers.builders
 
 import common.StringMasking.MaskedStringConverter
-import models.BankAccount
+import features.bankAccountDetails.models.BankAccount
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryBusinessBankDetailsSectionBuilder(bankAccount: Option[BankAccount]) extends SummarySectionBuilder {
@@ -27,25 +27,25 @@ case class SummaryBusinessBankDetailsSectionBuilder(bankAccount: Option[BankAcco
   val accountIsProvidedRow: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount",
     bankAccount.map(_.isProvided).fold("app.common.no")(if(_) "app.common.yes" else "app.common.no"),
-    Some(features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+    Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
   )
 
   val companyBankAccountNameRow: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount.name",
     bankAccount.flatMap(_.details).fold("app.common.no")(_.name),
-    Some(features.bankAccountDetails.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+    Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
   )
 
   val companyBankAccountNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount.number",
     bankAccount.flatMap(_.details).fold("app.common.no")(_.number.mask(4)),
-    Some(features.bankAccountDetails.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+    Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
   )
 
   val companyBankAccountSortCodeRow: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount.sortCode",
     bankAccount.flatMap(_.details).fold("app.common.no")(_.sortCode),
-    Some(features.bankAccountDetails.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+    Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
   )
 
 

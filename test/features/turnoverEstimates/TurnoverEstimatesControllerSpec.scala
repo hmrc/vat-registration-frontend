@@ -77,7 +77,7 @@ class TurnoverEstimatesControllerSpec extends ControllerSpec with MockMessages {
 
       requestWithAuthorisedUser(controller.submitEstimateVatTurnover, request){ result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show().url)
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage().url)
       }
     }
 

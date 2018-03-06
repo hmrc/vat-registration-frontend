@@ -18,11 +18,12 @@ package controllers.builders
 
 import java.time.LocalDate
 
-import features.returns.{Returns, Start}
+import features.returns.models.{Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.Threshold
 import models.view.SummaryRow
+
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -136,7 +137,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "21 March 2017",
-          Some(features.returns.routes.ReturnsController.voluntaryStartPage())
+          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -152,7 +153,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "pages.summary.vatDetails.mandatoryStartDate",
-          Some(features.returns.routes.ReturnsController.voluntaryStartPage())
+          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -177,7 +178,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "21 March 2017",
-          Some(features.returns.routes.ReturnsController.voluntaryStartPage())
+          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -193,7 +194,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "26 April 2017",
-          Some(features.returns.routes.ReturnsController.mandatoryStartPage())
+          Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -209,7 +210,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         builder.startDateRow mustBe SummaryRow(
           "vatDetails.startDate",
           "pages.summary.vatDetails.mandatoryStartDate",
-          Some(features.returns.routes.ReturnsController.mandatoryStartPage())
+          Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
         )
       }
     }

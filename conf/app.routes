@@ -30,12 +30,12 @@ GET         /before-you-register-for-vat                                        
 GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
 ## VOLUNTARY START DATE PAGE
-GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.voluntaryStartPage
-POST        /what-do-you-want-your-vat-start-date-to-be                                        features.returns.ReturnsController.submitVoluntaryStart
+GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.controllers.ReturnsController.voluntaryStartPage
+POST        /what-do-you-want-your-vat-start-date-to-be                                        features.returns.controllers.ReturnsController.submitVoluntaryStart
 
 ## MANDATORY START DATE PAGE
-GET         /vat-start-date                                                                    features.returns.ReturnsController.mandatoryStartPage
-POST        /vat-start-date                                                                    features.returns.ReturnsController.submitMandatoryStart
+GET         /vat-start-date                                                                    features.returns.controllers.ReturnsController.mandatoryStartPage
+POST        /vat-start-date                                                                    features.returns.controllers.ReturnsController.submitMandatoryStart
 
 ## TRADING NAME PAGE
 GET         /trading-name                                                                      controllers.TradingDetailsController.tradingNamePage
@@ -53,38 +53,27 @@ POST        /apply-economic-operator-registration-identification-number         
 GET         /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.showEstimateVatTurnover
 POST        /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.submitEstimateVatTurnover
 
-## ZERO RATED SALES PAGE
-GET         /sell-zero-rated-items-next-12-months                                              controllers.vatFinancials.ZeroRatedSalesController.show
-POST        /sell-zero-rated-items-next-12-months                                              controllers.vatFinancials.ZeroRatedSalesController.submit
-
-## ESTIMATE ZERO RATED SALES PAGE
-GET         /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.show
-POST        /estimate-zero-rated-sales-next-12-months                                          controllers.vatFinancials.EstimateZeroRatedSalesController.submit
-
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.ReturnsController.chargeExpectancyPage
-POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.ReturnsController.submitChargeExpectancy
+GET         /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.chargeExpectancyPage
+POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.submitChargeExpectancy
 
 ## ACCOUNTING PERIOD PAGE
-GET         /vat-return-periods-end                                                            features.returns.ReturnsController.accountPeriodsPage
-POST        /vat-return-periods-end                                                            features.returns.ReturnsController.submitAccountPeriods
-
-## ACCOUNTING PERIOD PAGE
-
+GET         /vat-return-periods-end                                                            features.returns.controllers.ReturnsController.accountPeriodsPage
+POST        /vat-return-periods-end                                                            features.returns.controllers.ReturnsController.submitAccountPeriods
 
 ## VAT RETURN FREQUENCY - OLD
-GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.returnsFrequencyPage
-POST        /how-often-do-you-want-to-submit-vat-returns                                       features.returns.ReturnsController.submitReturnsFrequency
+GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.controllers.ReturnsController.returnsFrequencyPage
+POST        /how-often-do-you-want-to-submit-vat-returns                                       features.returns.controllers.ReturnsController.submitReturnsFrequency
 
 ## VAT RETURN FREQUENCY
 
 ## COMPANY BANK ACCOUNT
-GET         /business-bank-account                                                             features.bankAccountDetails.BankAccountDetailsController.showHasCompanyBankAccountView
-POST        /business-bank-account                                                             features.bankAccountDetails.BankAccountDetailsController.submitHasCompanyBankAccount
+GET         /business-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.showHasCompanyBankAccountView
+POST        /business-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitHasCompanyBankAccount
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /business-bank-account-details                                                     features.bankAccountDetails.BankAccountDetailsController.showEnterCompanyBankAccountDetails
-POST        /business-bank-account-details                                                     features.bankAccountDetails.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
+GET         /business-bank-account-details                                                     features.bankAccountDetails.controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
+POST        /business-bank-account-details                                                     features.bankAccountDetails.controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
 ## BUSINESS ACTIVITY DESCRIPTION
 GET         /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.showBusinessActivityDescription

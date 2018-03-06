@@ -16,9 +16,9 @@
 
 package controllers.builders
 
+import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.{BankAccount, BankAccountDetails}
 import models.view.SummaryRow
 
 class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -28,7 +28,7 @@ class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRe
   val sortCode = "12-34-56"
 
   val bankAccountNotProvided = BankAccount(isProvided = false, None)
-  val bankAccount = BankAccount(
+  override val bankAccount = BankAccount(
     isProvided = true,
     Some(BankAccountDetails(accountName, sortCode, accountNumber))
   )
@@ -36,8 +36,8 @@ class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRe
   val bankAccountNotProvidedSection = SummaryBusinessBankDetailsSectionBuilder(Some(bankAccountNotProvided))
   val bankAccountProvidedSection = SummaryBusinessBankDetailsSectionBuilder(Some(bankAccount))
 
-  val hasCompanyBankAccountUrl = features.bankAccountDetails.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
-  val enterCompanyBankAccountDetailsUrl = features.bankAccountDetails.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()
+  val hasCompanyBankAccountUrl = features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
+  val enterCompanyBankAccountDetailsUrl = features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()
 
   "accountIsProvidedRow" should {
 

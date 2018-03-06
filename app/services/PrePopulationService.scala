@@ -20,8 +20,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-import cats.instances.{FutureInstances, ListInstances}
-import cats.syntax.TraverseSyntax
 import connectors.PPConnector
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
@@ -38,7 +36,7 @@ class PrePopulationService @Inject()(val ppConnector: PPConnector,
                                      val save4later: S4LService,
                                      implicit val vatRegService: RegistrationService) extends PrePopService
 
-trait PrePopService extends TraverseSyntax with ListInstances with FutureInstances {
+trait PrePopService {
 
   val ppConnector: PPConnector
   val incorpInfoService: IncorporationInformationService

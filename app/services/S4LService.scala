@@ -18,13 +18,11 @@ package services
 
 import javax.inject.Inject
 
-import cats.data.OptionT
 import connectors._
-import models.{CurrentProfile, S4LKey, ViewModelFormat}
+import models.{CurrentProfile, S4LKey}
 import play.api.libs.json._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
@@ -37,16 +35,6 @@ trait S4LService {
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
   }
 
-  def updateViewModel[T, G](data: T, container: Future[G])
-                           (implicit hc: HeaderCarrier,
-                            profile: CurrentProfile,
-                            vmf: ViewModelFormat.Aux[T, G],
-                            f: Format[G],
-                            k: S4LKey[G]): Future[CacheMap] = for {
-      group <- container
-      cm <- s4LConnector.save(profile.registrationId, k.key, vmf.update(data, Some(group)))
-    } yield cm
-
   def saveNoAux[T](data: T, s4LKey: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     s4LConnector.save(profile.registrationId, s4LKey.key, data)
   }
@@ -56,10 +44,6 @@ trait S4LService {
 
   def fetchAndGetNoAux[T](key: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
     s4LConnector.fetchAndGet[T](profile.registrationId, key.key)
-
-  def getViewModel[T, G](container: Future[G])(implicit r: ViewModelFormat.Aux[T, G], f: Format[G], hc: HeaderCarrier): OptionalResponse[T] = {
-    OptionT(container.map(r.read))
-  }
 
   def clear(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
     s4LConnector.clear(profile.registrationId)

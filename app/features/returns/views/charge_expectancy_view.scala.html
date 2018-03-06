@@ -14,7 +14,7 @@
   <p>@Html(Messages("pages.vat.charge.expectancy.para1"))</p>
   <p>@Html(Messages("pages.vat.charge.expectancy.para2"))</p>
 
-  @govHelpers.form(action = features.returns.routes.ReturnsController.submitChargeExpectancy()) {
+  @govHelpers.form(action = features.returns.controllers.routes.ReturnsController.submitChargeExpectancy()) {
     <div class="form-group">
       @vatInputRadioGroup(
         field = chargeExpectancyForm("chargeExpectancyRadio"),
