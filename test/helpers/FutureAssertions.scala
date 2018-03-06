@@ -16,7 +16,6 @@
 
 package helpers
 
-import cats.data.OptionT
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Assertion, TestSuite}
 import org.scalatestplus.play.PlaySpec
@@ -50,23 +49,12 @@ trait FutureAssertions extends ScalaFutures {
 
   }
 
+
   implicit class FutureOptionReturns[T](fo: Future[Option[T]]) {
 
     def returnsSome(o: T): Assertion = whenReady(fo)(_ mustBe Some(o))
 
     def returnsNone: Assertion = whenReady(fo)(_ mustBe Option.empty[T])
-
-  }
-
-  implicit class OptionTReturns[T](ot: OptionT[Future, T]) {
-
-    def returnsSome(t: T): Assertion = whenReady(ot.value)(_ mustBe Some(t))
-
-    def returnsNone: Assertion = whenReady(ot.value)(_ mustBe Option.empty[T])
-
-    def failedWith(e: Exception): Assertion = whenReady(ot.value.failed)(_ mustBe e)
-
-    def failedWith[F <: Throwable](exClass: Class[F]): Assertion = whenReady(ot.value.failed)(_.getClass mustBe exClass)
 
   }
 

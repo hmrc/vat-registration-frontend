@@ -18,7 +18,7 @@ package features.frs
 
 import java.time.LocalDate
 
-import features.returns.Start
+import features.returns.models.Start
 import frs.{AnnualCosts, FlatRateScheme}
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.play.test.UnitSpec

@@ -61,7 +61,7 @@ trait TurnoverEstimatesController extends BaseController with SessionProfile {
           errors => Future.successful(BadRequest(views.html.estimate_vat_turnover(errors))),
           estimatedVatTurnover =>
             service.saveTurnoverEstimates(TurnoverEstimates(estimatedVatTurnover)) map { _ =>
-              Redirect(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
+              Redirect(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage())
             }
         )
       }

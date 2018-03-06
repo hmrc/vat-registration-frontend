@@ -19,16 +19,16 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
 import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.fixtures.LodgingOfficerFixture
-import features.returns.{Frequency, Returns, Stagger}
+import features.returns.models.{Frequency, Returns, Stagger}
 import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
-import models.{BankAccount, BankAccountDetails}
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends LodgingOfficerFixture {
@@ -38,10 +38,6 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
     euGoods = Some(false)
-  )
-
-  val financials = VatFinancials(
-    zeroRatedTurnoverEstimate = None
   )
 
   val sicAndCompliance = SicAndCompliance(
@@ -119,7 +115,6 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     status              = VatRegStatus.draft,
     tradingDetails      = Some(tradingDetails),
     lodgingOfficer      = None,
-    financials          = Some(financials),
     sicAndCompliance    = Some(sicAndCompliance),
     businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(voluntaryThreshold),
@@ -134,9 +129,8 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     status              = VatRegStatus.draft,
     tradingDetails      = Some(tradingDetails),
     lodgingOfficer      = None,
-    financials          = Some(financials),
     sicAndCompliance    = Some(sicAndCompliance),
-    businessContact          = Some(validBusinessContactDetails),
+    businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(threshold),
     flatRateScheme      = Some(flatRateScheme),
     bankAccount         = Some(bankAccount)

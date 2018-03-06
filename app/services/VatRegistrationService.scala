@@ -40,7 +40,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val keystoreConnector: KeystoreConnect,
                                        val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
 
-trait RegistrationService extends FinancialsService with LegacyServiceToBeRefactored {
+trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
   val compRegConnector: CompanyRegistrationConnect

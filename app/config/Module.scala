@@ -26,13 +26,16 @@ import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test._
 import controllers._
-import features.bankAccountDetails.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
+import features.bankAccountDetails.connectors.{BankAccountReputationConnector, BankAccountReputationConnectorImpl}
+import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
+import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
 import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
 import features.officer.controllers._
 import features.officer.controllers.test.{TestIVController, TestIVControllerImpl}
 import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
-import features.returns.{ReturnsController, ReturnsControllerImpl, ReturnsService, ReturnsServiceImpl}
+import features.returns.controllers.{ReturnsController, ReturnsControllerImpl}
+import features.returns.services.{ReturnsService, ReturnsServiceImpl}
 import features.sicAndCompliance.controllers._
 import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
 import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
@@ -131,7 +134,7 @@ class Module extends AbstractModule {
     bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
-    bind(classOf[BankAccountReputationConnect]).to(classOf[BankAccountReputationConnector]).asEagerSingleton()
+    bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
     bind(classOf[CompanyRegistrationConnect]).to(classOf[CompanyRegistrationConnector]).asEagerSingleton()
     bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()
     bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()

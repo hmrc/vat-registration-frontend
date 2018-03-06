@@ -1,4 +1,5 @@
-@(bankDetailsForm: Form[models.BankAccountDetails])(implicit request: Request[_], messages: Messages)
+@import features.bankAccountDetails.models.BankAccountDetails
+@(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput}
@@ -19,7 +20,7 @@
         <strong class="bold-small">@messages("pages.bankDetails.info")</strong>
     </div>
 
-    @govHelpers.form(action = features.bankAccountDetails.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
+    @govHelpers.form(action = features.bankAccountDetails.controllers.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
         <div class="form-group">
             <div class="form-bank-details">
 

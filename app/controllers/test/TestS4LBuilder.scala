@@ -26,7 +26,6 @@ import models._
 import models.api._
 import models.external.{Name, Officer}
 import models.view.test.TestSetup
-import models.view.vatFinancials.{EstimateZeroRatedSales, ZeroRatedSales}
 
 object TestS4LBuilder {
 
@@ -35,18 +34,6 @@ object TestS4LBuilder {
       case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods, tdb.applyEori)
       case None      => TradingDetails()
     }
-  }
-
-  def vatFinancialsFromData(data: TestSetup): S4LVatFinancials = {
-    val fin = data.vatFinancials
-
-    val zeroRatedTurnover = fin.zeroRatedSalesChoice.map(ZeroRatedSales.apply)
-    val zeroRatedTurnoverEstimate = fin.zeroRatedTurnoverEstimate.map(x => EstimateZeroRatedSales(x.toLong))
-
-    S4LVatFinancials(
-      zeroRatedTurnover = zeroRatedTurnover,
-      zeroRatedTurnoverEstimate = zeroRatedTurnoverEstimate
-    )
   }
 
   def vatSicAndComplianceFromData(data: TestSetup): SicAndCompliance = {

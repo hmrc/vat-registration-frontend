@@ -17,9 +17,11 @@
 package mocks
 
 import connectors._
+import features.bankAccountDetails.connectors.BankAccountReputationConnectorImpl
+import features.bankAccountDetails.services.BankAccountReputationServiceImpl
 import features.businessContact.BusinessContactService
 import features.officer.services.{IVServiceImpl, LodgingOfficerService}
-import features.returns.ReturnsService
+import features.returns.services.ReturnsService
 import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
@@ -53,7 +55,7 @@ trait VatMocks
   implicit lazy val mockConfigConnector = mock[ConfigConnector]
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
   implicit lazy val mockIdentityVerificationConnector = mock[IVConnectorImpl]
-  implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
+  implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnectorImpl]
   implicit lazy val mockPPConnector = mock[PPConnector]
   //Services
   implicit lazy val mockCurrentProfile = mock[CurrentProfileService]

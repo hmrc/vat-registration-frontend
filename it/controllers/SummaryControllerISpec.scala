@@ -16,8 +16,8 @@
 
 package controllers
 
-import features.returns.{Frequency, Returns, Stagger}
 import features.officer.models.view.LodgingOfficer
+import features.returns.models.{Frequency, Returns, Stagger}
 import features.sicAndCompliance.models.SicAndCompliance
 import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup

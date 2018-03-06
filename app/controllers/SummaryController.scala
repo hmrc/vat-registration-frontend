@@ -94,7 +94,7 @@ trait SummaryController extends BaseController with SessionProfile {
       SummaryCompanyContactDetailsSectionBuilder(vs.businessContact).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
-      SummaryTaxableSalesSectionBuilder(vs.financials,vs.turnOverEstimates).section,
+      SummaryTaxableSalesSectionBuilder(vs.turnOverEstimates).section,
       SummaryFrsSectionBuilder(vs.flatRateScheme).section
     ))
   }

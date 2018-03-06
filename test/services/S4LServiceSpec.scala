@@ -16,99 +16,38 @@
 
 package services
 
+import features.officer.models.view.LodgingOfficer
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models._
-import models.view.vatFinancials.EstimateZeroRatedSales
-import org.mockito.ArgumentMatchers.{any, eq => =~=}
-import org.mockito.Mockito._
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
-
-  private final case class TestView(property: String)
-  private final case class TestGroup(testView: Option[TestView] = None)
-
-  private object TestView {
-    implicit val fmt = Json.format[TestView]
-    implicit val viewModelFormat = ViewModelFormat[TestView, TestGroup](
-      readF = (_: TestGroup).testView,
-      updateF = (v: TestView, g: Option[TestGroup]) => g.getOrElse(TestGroup()).copy(testView = Some(v))
-    )
-  }
-
-  private object TestGroup {
-    implicit val fmt = Json.format[TestGroup]
-    implicit val s4lKey = S4LKey[TestGroup]("testGroupKey")
-  }
 
   trait Setup {
     val service = new S4LService {
       override val s4LConnector = mockS4LConnector
     }
-
-    val key = TestGroup.s4lKey.key
   }
 
-  val zeroRatedTurnoverEstimates = EstimateZeroRatedSales(10000)
-
   "S4L Service" should {
-
     "save a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      mockS4LSaveForm[S4LVatFinancials](cacheMap)
-      service.save(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates))) returns cacheMap
+      mockS4LSaveForm[LodgingOfficer](cacheMap)
+      service.save(emptyLodgingOfficer) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-      mockS4LFetchAndGet(S4LKey[S4LVatFinancials].key, Some(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates))))
-      service.fetchAndGet[S4LVatFinancials] returns Some(S4LVatFinancials(zeroRatedTurnoverEstimate = Some(zeroRatedTurnoverEstimates)))
+      mockS4LFetchAndGet(S4LKey[LodgingOfficer].key, Some(emptyLodgingOfficer))
+      service.fetchAndGet[LodgingOfficer] returns Some(emptyLodgingOfficer)
     }
 
     "clear down S4L data" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LClear()
       service.clear.map(_.status) returns 200
-    }
-  }
-
-  "updating a View Model in Save 4 Later" should {
-
-    val cacheMap = CacheMap("id", Map())
-    val testView = TestView("test")
-    val testGroup = TestGroup()
-
-    "save test view in appropriate container object in Save 4 Later" when {
-      "no container in s4l" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any())).thenReturn(Option.empty.pure)
-        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
-
-        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
-      }
-
-      "container in s4l does not already contain the view" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any())).thenReturn(Option(TestGroup()).pure)
-        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
-
-        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
-      }
-
-      "container in s4l already contains the view" in new Setup {
-        mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-        when(mockS4LConnector.fetchAndGet[TestGroup](=~=(testRegId), =~=(key))(any(), any()))
-          .thenReturn(Option(TestGroup(Some(TestView("oldProperty")))).pure)
-        when(mockS4LConnector.save(=~=(testRegId), =~=(key), any())(any(), any())).thenReturn(cacheMap.pure)
-
-        service.updateViewModel[TestView, TestGroup](testView, testGroup.pure) returns cacheMap
-        verify(mockS4LConnector).save(testRegId, key, TestGroup(Some(testView)))
-      }
     }
   }
 }
