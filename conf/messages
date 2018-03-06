@@ -249,40 +249,6 @@ validation.estimate.vat.turnover.high                       = Enter an estimate 
 validation.estimate.vat.turnover.missing                    = Enter what the company''s VAT taxable turnover will be during the next 12 months
 validation.estimate.vat.turnover.invalid                    = Enter a valid number
 
-
-## Zero Rated Sales Page
-pages.zero.rated.sales.title                                = Zero-Rated sales
-pages.zero.rated.sales.heading                              = Will the company sell any zero-rated goods or services in the next 12 months?
-pages.zero.rated.sales.para1                                = ''Zero-rated'' goods and services are subject to VAT but the rate you''ll charge your customers will be at 0%.
-pages.zero.rated.sales.examples.title                       = Examples of zero-rated goods or services
-pages.zero.rated.sales.examples.p1                          = Most food and drink is zero-rated but some items are standard-rated, including alcoholic drinks, confectionery, crisps and savoury snacks, hot food, sports drinks, hot takeaways, ice cream, soft drinks and mineral water.
-pages.zero.rated.sales.examples.p2                          = Other zero-rated items include:
-pages.zero.rated.sales.examples.bullet1                     = books and newspapers
-pages.zero.rated.sales.examples.bullet2                     = children''s clothes and shoes
-pages.zero.rated.sales.examples.bullet3                     = motorcycle helmets
-pages.zero.rated.sales.examples.bullet4                     = most goods you export to non-EU countries
-pages.zero.rated.sales.examples.p3                          = Find out about
-pages.zero.rated.sales.examples.p3.1                        = VAT rates on different goods and services.
-validation.zero.rated.sales.missing                         = Tell us if the company will sell any zero-rated goods or services in the next 12 months
-
-## Estimate Zero-Rated Sales Page
-pages.estimate.zero.rated.sales.title                       = Estimate the value of the company''s zero-rated sales for the next 12 months
-pages.estimate.zero.rated.sales.heading                     = How much will the company take in sales of zero-rated goods and services over the next 12 months?
-pages.estimate.zero.rated.sales.p1                          = You must give an estimate that''s as realistic as possible.
-pages.estimate.zero.rated.sales.include.title               = What are zero-rated goods and services?
-pages.estimate.zero.rated.sales.include.para1               = Zero-rated goods and services are VAT taxable but the VAT rate on them is 0%.
-pages.estimate.zero.rated.sales.include.para2               = They include:
-pages.estimate.zero.rated.sales.include.bullet1             = most food and drink (but not things like alcoholic drinks, confectionary, crisps and savoury snacks, hot food, sports drinks, hot takeaways, ice cream, soft drinks and mineral water)
-pages.estimate.zero.rated.sales.include.bullet2             = books and newspapers
-pages.estimate.zero.rated.sales.include.bullet3             = printing services for brochures, leaflets or pamphlets
-pages.estimate.zero.rated.sales.include.bullet4             = children''s clothes and shoes
-pages.estimate.zero.rated.sales.include.bullet5             = most goods you export to non-EU countries
-pages.estimate.zero.rated.sales.include.para3               = Find out about
-pages.estimate.zero.rated.sales.include.para3.1             = VAT rates on different goods and services.
-validation.estimate.zero.rated.sales.low                    = Enter a positive estimate
-validation.estimate.zero.rated.sales.high                   = Enter an estimate which is less than 1,000,000,000,000,000
-validation.estimate.zero.rated.sales.missing                = Estimate the value of the company''s zero-rated sales for the next 12 months
-
 ## Vat Charge Expectancy Page
 pages.vat.charge.expectancy.title                           = VAT charge expectancy
 pages.vat.charge.expectancy.heading                         = Do you expect to reclaim more VAT than you charge?
@@ -400,8 +366,6 @@ pages.summary.bankDetails.companyBankAccount.sortCode        = Sort code
 ## Summary Page Taxable Sales
 pages.summary.taxableSales.sectionHeading                     = VAT taxable sales
 pages.summary.taxableSales.estimatedSalesValue                = Estimated VAT taxable sales
-pages.summary.taxableSales.zeroRatedSales                     = Will sell zero-rated goods or services
-pages.summary.taxableSales.zeroRatedSalesValue                = Estimated zero-rated sales
 
 ## Summary Page Director Addresses
 pages.summary.directorAddresses.sectionHeading                = Director addresses

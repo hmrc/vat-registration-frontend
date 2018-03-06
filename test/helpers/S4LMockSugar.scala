@@ -17,7 +17,7 @@
 package helpers
 
 import cats.data.OptionT
-import models.{S4LKey, ViewModelFormat}
+import models.S4LKey
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -36,33 +36,5 @@ trait S4LMockSugar {
 
   def save4laterReturns[T: S4LKey](t: T)(implicit s4l: S4LService, ec: ExecutionContext): Unit =
     when(s4l.fetchAndGet[T](ArgumentMatchers.eq(S4LKey[T]), any(), any(), any())).thenReturn(OptionT.pure(t).value)
-
-  final class S4LFetchHelper[T](private val t: Option[T]) {
-    def apply[G]()
-                (implicit
-                 viewModelFormat: ViewModelFormat.Aux[T, G],
-                 k: S4LKey[G],
-                 s4l: S4LService): Unit = {
-      when(s4l.fetchAndGet[G](any(), any(), any(), any())).thenReturn(None.pure)
-      when(s4l.getViewModel[T, G](any())(ArgumentMatchers.eq(viewModelFormat), any(), any())).thenReturn(OptionT.fromOption(t))
-    }
-  }
-
-  def save4laterReturnsNoViewModel[T] = new S4LFetchHelper[T](Option.empty[T])
-
-  def save4laterReturnsViewModel[T](t: T) = new S4LFetchHelper[T](Some(t))
-
-  final class S4LSaveHelper[T] {
-    def apply[G]()
-                (implicit
-                 viewModelFormat: ViewModelFormat.Aux[T, G],
-                 k: S4LKey[G],
-                 s4l: S4LService): Unit = {
-      when(s4l.fetchAndGet[G](any(), any(), any(), any())).thenReturn(None.pure)
-      when(s4l.updateViewModel[T, G](any(), any())(any(), any(), ArgumentMatchers.eq(viewModelFormat), any(), ArgumentMatchers.eq(k))).thenReturn(dummyCacheMap.pure)
-    }
-  }
-
-  def save4laterExpectsSave[T] = new S4LSaveHelper[T]()
 
 }

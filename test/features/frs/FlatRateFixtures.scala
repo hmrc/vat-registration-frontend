@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 
-import features.returns.Start
+import features.returns.models.Start
 import frs.{AnnualCosts, FlatRateScheme}
 
 trait FlatRateFixtures {

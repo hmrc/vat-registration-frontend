@@ -19,8 +19,10 @@ package connectors
 import java.time.LocalDate
 
 import config.WSHttp
+import features.bankAccountDetails.models.BankAccount
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.{LodgingOfficer, _}
+import features.returns.models.Returns
 import features.sicAndCompliance.models._
 import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
@@ -528,6 +530,82 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "throw an Exception if the call failed" in new Setup {
       mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
       connector.updateSicAndCompliance(sicAndCompliance) failedWith exception
+    }
+  }
+
+  "Calling getReturns" should {
+    "return the correct response when the microservice completes and returns a Returns model" in new Setup {
+      mockHttpGET[Returns]("tst-url", returns)
+      connector.getReturns("tstID") returns returns
+    }
+    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Returns]("tst-url", forbidden)
+      connector.getReturns("tstID") failedWith forbidden
+    }
+    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedGET[Returns]("tst-url", notFound)
+      connector.getReturns("tstID") failedWith notFound
+    }
+    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[Returns]("tst-url", internalServiceException)
+      connector.getReturns("tstID") failedWith internalServiceException
+    }
+  }
+
+  "Calling patchReturns" should {
+    "return the correct response when the microservice completes and returns a Returns model" in new Setup {
+      mockHttpPATCH[Returns, Returns]("tst-url", returns)
+      connector.patchReturns("tstID", returns) returns returns
+    }
+    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[Returns, Returns]("tst-url", forbidden)
+      connector.patchReturns("tstID", returns) failedWith forbidden
+    }
+    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[Returns, Returns]("tst-url", notFound)
+      connector.patchReturns("tstID", returns) failedWith notFound
+    }
+    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[Returns, Returns]("tst-url", internalServiceException)
+      connector.patchReturns("tstID", returns) failedWith internalServiceException
+    }
+  }
+
+  "Calling getBankAccount" should {
+    "return the correct response when the microservice completes and returns a BankAccount model" in new Setup {
+      mockHttpGET[BankAccount]("tst-url", bankAccount)
+      connector.getBankAccount("tstID") returns Some(bankAccount)
+    }
+    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[BankAccount]("tst-url", forbidden)
+      connector.getBankAccount("tstID") failedWith forbidden
+    }
+    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedGET[BankAccount]("tst-url", notFound)
+      connector.getBankAccount("tstID") returns None
+    }
+    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[BankAccount]("tst-url", internalServiceException)
+      connector.getBankAccount("tstID") failedWith internalServiceException
+    }
+  }
+
+  "Calling patchBankAccount" should {
+    "return the correct response when the microservice completes and returns a BankAccount model" in new Setup {
+      mockHttpPATCH[BankAccount, BankAccount]("tst-url", bankAccount)
+      connector.patchBankAccount("tstID", bankAccount) returns bankAccount
+    }
+    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", forbidden)
+      connector.patchBankAccount("tstID", bankAccount) failedWith forbidden
+    }
+    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
+      mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", notFound)
+      connector.patchBankAccount("tstID", bankAccount) failedWith notFound
+    }
+    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", internalServiceException)
+      connector.patchBankAccount("tstID", bankAccount) failedWith internalServiceException
     }
   }
 }

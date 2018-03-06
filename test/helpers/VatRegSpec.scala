@@ -22,12 +22,9 @@ import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
-import controllers.CommonPlayDependencies
 import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
-import org.mockito.Mockito.when
-import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -36,7 +33,6 @@ import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import utils.{BooleanFeatureSwitch, FeatureManager, VATRegFeatureSwitch}
 
 import scala.concurrent.duration._
@@ -54,10 +50,6 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBui
 
   val currentNonincorpProfile: CurrentProfile = currentProfile().copy(incorporationDate = None)
 
-  def mockGetCurrentProfile(cp: Option[CurrentProfile] = Some(currentProfile())) =
-  when(mockKeystoreConnector.fetchAndGet[CurrentProfile](Matchers.any())(Matchers.any(), Matchers.any()))
-    .thenReturn(Future.successful(cp))
-
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
   implicit val duration = 5.seconds
@@ -67,7 +59,6 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBui
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-  val ds: CommonPlayDependencies = app.injector.instanceOf[CommonPlayDependencies]
 
   val mockVATFeatureSwitch = mock[VATRegFeatureSwitch]
   val mockFeatureManager = mock[FeatureManager]

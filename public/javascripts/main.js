@@ -86,14 +86,6 @@ $(document).ready($(function () {
 }(window.EstimateVatTurnoverPage = window.EstimateVatTurnoverPage || {}, jQuery));
 
 
-// Estimate Zero Rated Sales
-(function (EstimateZeroRatedSalesPage, $, undefined) {
-    EstimateZeroRatedSalesPage.init = function() {
-        var numericInputs = ["zeroRatedTurnoverEstimate"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.EstimateZeroRatedSalesPage = window.EstimateZeroRatedSalesPage || {}, jQuery));
-
 // Labour Compliance - Workers
 (function (WorkersPage, $, undefined) {
     WorkersPage.init = function() {

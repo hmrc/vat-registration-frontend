@@ -20,16 +20,17 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
+import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
 import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.fixtures.LodgingOfficerFixtures
 import features.officer.models.view._
-import features.returns.{Frequency, Returns, Start}
+import features.returns.ReturnsFixture
+import features.returns.models.{Frequency, Returns, Start}
 import features.sicAndCompliance.models.{SicAndCompliance, _}
 import features.tradingDetails.TradingDetails
 import frs.FlatRateScheme
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.{BankAccount, BankAccountDetails}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
@@ -64,7 +65,9 @@ trait BaseFixture {
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
-  with FinancialsFixtures with LodgingOfficerFixtures {
+  with LodgingOfficerFixtures with ReturnsFixture {
+
+  val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
   val sicCode = SicCode("88888888", "description", "displayDetails")
 
@@ -168,7 +171,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    financials = Some(validVatFinancials),
     businessContact = Some(validBusinessContactDetails),
     lodgingOfficer = Some(validFullLodgingOfficer),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
@@ -183,11 +185,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     id = testRegId,
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     lodgingOfficer = Some(emptyLodgingOfficer),
-    financials = Some(
-      VatFinancials(
-        zeroRatedTurnoverEstimate = None
-      )
-    ),
     bankAccount = Some(validBankAccount)
   )
 

@@ -17,9 +17,9 @@
 package client
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import features.bankAccountDetails.routes
-import forms.EnterBankAccountDetailsForm._
-import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
+import features.bankAccountDetails.controllers.routes
+import features.bankAccountDetails.forms.EnterBankAccountDetailsForm._
+import features.bankAccountDetails.forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import helpers.ClientHelper
 import itutil.{IntegrationSpecBase, WiremockHelper}
 import org.jsoup.Jsoup

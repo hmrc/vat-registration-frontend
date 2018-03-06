@@ -29,7 +29,7 @@ import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimatesService
 import forms.test.TestSetupForm
 import models.view.test._
-import models.{S4LKey, S4LVatFinancials}
+import models.S4LKey
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
@@ -57,7 +57,6 @@ trait TestSetupController extends BaseController with SessionProfile {
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       for {
-        vatFinancials <- s4LService.fetchAndGet[S4LVatFinancials]
         sicStub <- s4LService.fetchAndGet[SicStub]
         vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
         lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
@@ -80,10 +79,6 @@ trait TestSetupController extends BaseController with SessionProfile {
             line4        = businessContact.flatMap(_.ppobAddress).flatMap(_.line4),
             postcode     = businessContact.flatMap(_.ppobAddress).flatMap(_.postcode),
             country      = businessContact.flatMap(_.ppobAddress).flatMap(_.country)
-          ),
-          VatFinancialsTestSetup(
-            vatFinancials.flatMap(_.zeroRatedTurnover).map(_.yesNo),
-            vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_.zeroRatedTurnoverEstimate.toString)
           ),
           SicAndComplianceTestSetup(
             businessActivityDescription = vatSicAndCompliance.flatMap(_.description.map(_.description)),
@@ -163,7 +158,6 @@ trait TestSetupController extends BaseController with SessionProfile {
               })
 
               _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
-              _ <- s4LService.save(s4LBuilder.vatFinancialsFromData(data))
               _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
               _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
 

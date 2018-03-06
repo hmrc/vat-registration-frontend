@@ -20,7 +20,9 @@ import javax.inject.Inject
 
 import common.enums.VatRegStatus
 import config.WSHttp
+import features.bankAccountDetails.models.BankAccount
 import features.officer.models.view.LodgingOfficer
+import features.returns.models.Returns
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
@@ -44,7 +46,7 @@ class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfi
   lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
 }
 
-trait RegistrationConnector extends FinancialsConnector {
+trait RegistrationConnector {
 
   val vatRegUrl: String
   val vatRegElUrl: String
@@ -212,6 +214,34 @@ trait RegistrationConnector extends FinancialsConnector {
   def upsertBusinessContact(businessContactJson: JsValue)(implicit cp: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[JsValue]): Future[JsValue] = {
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", businessContactJson) recover {
       case e: Exception => throw logResponse(e, "upsertBusinessContact")
+    }
+  }
+
+  def getReturns(regId: String)
+                (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
+    http.GET[Returns](s"$vatRegUrl/vatreg/$regId/returns") recover {
+      case e: Exception => throw logResponse(e, "getReturns")
+    }
+  }
+
+  def patchReturns(regId: String, returns: Returns)
+                  (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[HttpResponse] = {
+    http.PATCH[Returns, HttpResponse](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
+      case e: Exception => throw logResponse(e, "patchReturns")
+    }
+  }
+
+  def getBankAccount(regId: String)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] = {
+    http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") map (Some(_)) recover {
+      case _: NotFoundException => None
+      case e: Exception => throw logResponse(e, "getBankAccount")
+    }
+  }
+
+  def patchBankAccount(regId: String, bankAccount: BankAccount)
+                      (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[HttpResponse] = {
+    http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
+      case e: Exception => throw logResponse(e, "patchBankAccount")
     }
   }
 }
