@@ -16,7 +16,7 @@
 
 package controllers
 
-import features.returns.Returns
+import features.returns.models.Returns
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import mocks.AuthMock

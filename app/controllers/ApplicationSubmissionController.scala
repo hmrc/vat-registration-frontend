@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import config.AuthClientConnector
 import connectors.KeystoreConnect
-import features.returns.ReturnsService
+import features.returns.services.ReturnsService
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.{RegistrationService, SessionProfile}

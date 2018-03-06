@@ -19,7 +19,7 @@ package connectors
 import java.time.LocalDate
 
 import config.WSHttp
-import features.returns.Start
+import features.returns.models.Start
 import fixtures.VatRegistrationFixture
 import frs.{AnnualCosts, FlatRateScheme}
 import helpers.VatRegSpec

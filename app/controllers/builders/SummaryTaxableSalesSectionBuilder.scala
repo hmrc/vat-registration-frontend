@@ -17,10 +17,9 @@
 package controllers.builders
 
 import features.turnoverEstimates.TurnoverEstimates
-import models.api._
 import models.view.{SummaryRow, SummarySection}
 
-case class SummaryTaxableSalesSectionBuilder(vatFinancials: Option[VatFinancials] = None,turnoverEstimates: Option[TurnoverEstimates] = None) extends SummarySectionBuilder {
+case class SummaryTaxableSalesSectionBuilder(turnoverEstimates: Option[TurnoverEstimates] = None) extends SummarySectionBuilder {
   override val sectionId: String = "taxableSales"
 
   val estimatedSalesValueRow: SummaryRow = SummaryRow(
@@ -29,24 +28,11 @@ case class SummaryTaxableSalesSectionBuilder(vatFinancials: Option[VatFinancials
     Some(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
   )
 
-  val zeroRatedSalesRow: SummaryRow = yesNoRow(
-    "zeroRatedSales",
-    vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).map(_ > 0),
-    controllers.vatFinancials.routes.ZeroRatedSalesController.show()
-  )
-
-  val estimatedZeroRatedSalesRow: SummaryRow = SummaryRow(
-    s"$sectionId.zeroRatedSalesValue",
-    s"£${vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).fold("")(_.toString)}",
-    Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
-  )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (estimatedSalesValueRow, true),
-      (zeroRatedSalesRow, true),
-      (estimatedZeroRatedSalesRow, vatFinancials.flatMap(_.zeroRatedTurnoverEstimate).isDefined)
+      (estimatedSalesValueRow, true)
     )
   )
 }

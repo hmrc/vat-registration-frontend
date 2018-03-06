@@ -16,15 +16,14 @@
 
 package forms.test
 
-import features.returns.Frequency.Frequency
-import features.returns.Stagger.Stagger
-import features.returns.{Returns, Start}
+import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
+import features.returns.models.Frequency.Frequency
+import features.returns.models.Stagger.Stagger
+import features.returns.models.{Returns, Start}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
-import frs.AnnualCosts.AnnualCosts
 import frs.{AnnualCosts, FlatRateScheme}
 import models.view.test._
-import models.{BankAccount, BankAccountDetails}
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
 
@@ -57,11 +56,6 @@ object TestSetupForm {
     "postcode" -> optional(text),
     "country" -> optional(text)
   )(VatContactTestSetup.apply)(VatContactTestSetup.unapply)
-
-  val vatFinancialsTestSetupMapping = mapping(
-    "zeroRatedSalesChoice" -> optional(text),
-    "zeroRatedTurnoverEstimate" -> optional(text)
-  )(VatFinancialsTestSetup.apply)(VatFinancialsTestSetup.unapply)
 
   val vatLodgingOfficerTestSetup = mapping(
     "dobDay" -> optional(text),
@@ -147,7 +141,6 @@ object TestSetupForm {
 
   val form = Form(mapping(
     "vatContact" -> vatContactTestSetupMapping,
-    "vatFinancials" -> vatFinancialsTestSetupMapping,
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
     "officerHomeAddress" -> officeHomeAddressMapping,
     "officerPreviousAddress" -> officePreviousAddressMapping,

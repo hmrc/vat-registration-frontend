@@ -19,7 +19,7 @@ package controllers.builders
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import features.returns.Returns
+import features.returns.models.Returns
 import features.tradingDetails.TradingDetails
 import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
@@ -98,8 +98,8 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
       case Some(date) => date.format(presentationFormatter)
       case _ => s"pages.summary.$sectionId.mandatoryStartDate"
     },
-    if (voluntaryRegistration) Some(features.returns.routes.ReturnsController.voluntaryStartPage()) else incorpDate match {
-      case Some(_) => Some(features.returns.routes.ReturnsController.mandatoryStartPage())
+    if (voluntaryRegistration) Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage()) else incorpDate match {
+      case Some(_) => Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
       case None => None
     }
   )

@@ -54,64 +54,13 @@ class SummaryTaxableSalesSectionBuilderSpec extends VatRegSpec with VatRegistrat
       }
     }
 
-    "with zeroRatedSalesRow render" should {
-
-      "a 'No' value should be returned with an empty vat financials" in {
-        val builder = SummaryTaxableSalesSectionBuilder()
-        builder.zeroRatedSalesRow mustBe
-          SummaryRow(
-            "taxableSales.zeroRatedSales",
-            "app.common.no",
-            Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
-          )
-      }
-
-      "a 'Yes' value should be returned with a zero rated sales estimate in vat financials" in {
-        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
-        val turnoverEstimates = TurnoverEstimates(0L)
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
-        builder.zeroRatedSalesRow mustBe
-          SummaryRow(
-            "taxableSales.zeroRatedSales",
-            "app.common.yes",
-            Some(controllers.vatFinancials.routes.ZeroRatedSalesController.show())
-          )
-      }
-    }
-
-    "with estimatedZeroRatedSalesRow render" should {
-
-      "an empty value should be returned with an empty vat financials" in {
-        val builder = SummaryTaxableSalesSectionBuilder()
-        builder.estimatedZeroRatedSalesRow mustBe
-          SummaryRow(
-            "taxableSales.zeroRatedSalesValue",
-            "£",
-            Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
-          )
-      }
-
-      "a real value should be returned with a zero rated sales estimate in vat financials" in {
-        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
-        val turnoverEstimates = TurnoverEstimates(0L)
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
-        builder.estimatedZeroRatedSalesRow mustBe
-          SummaryRow(
-            "taxableSales.zeroRatedSalesValue",
-            "£10000",
-            Some(controllers.vatFinancials.routes.EstimateZeroRatedSalesController.show())
-          )
-      }
-    }
-
     "with section generate" should {
 
       "a valid summary section" in {
-        val financials = VatFinancials(zeroRatedTurnoverEstimate = Some(10000L))
         val turnoverEstimates = TurnoverEstimates(50000L)
-        val builder = SummaryTaxableSalesSectionBuilder(vatFinancials = Some(financials),turnoverEstimates = Some(turnoverEstimates))
+        val builder = SummaryTaxableSalesSectionBuilder(turnoverEstimates = Some(turnoverEstimates))
         builder.section.id mustBe "taxableSales"
-        builder.section.rows.length mustEqual 3
+        builder.section.rows.length mustEqual 1
       }
     }
 

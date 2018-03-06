@@ -16,8 +16,7 @@
 
 package models.view.vatContact.ppob
 
-import models.api.{ScrsAddress, VatScheme}
-import models.{ViewModelFormat, _}
+import models.api.ScrsAddress
 import play.api.libs.json.Json
 
 case class PpobView(addressId: String, address: Option[ScrsAddress] = None)

@@ -1,5 +1,5 @@
-@import features.returns.Stagger
-@import features.returns.Stagger._
+@import features.returns.models.Stagger
+@import features.returns.models.Stagger._
 @(accountingPeriodForm: Form[Stagger.Value])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @fieldSetClasses = @{
@@ -19,7 +19,7 @@
 
   <p>@Html(Messages("pages.accounting.period.para1"))</p>
 
-  @govHelpers.form(action = features.returns.routes.ReturnsController.submitAccountPeriods()) {
+  @govHelpers.form(action = features.returns.controllers.routes.ReturnsController.submitAccountPeriods()) {
     <div class="form-group @fieldSetClasses">
       @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
           @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))

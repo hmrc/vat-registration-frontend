@@ -17,14 +17,14 @@
 package models.api
 
 import common.enums.VatRegStatus
+import features.bankAccountDetails.models.BankAccount
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
-import features.returns.Returns
+import features.returns.models.Returns
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
-import models.BankAccount
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -33,7 +33,6 @@ case class VatScheme(
                       id: String,
                       lodgingOfficer: Option[LodgingOfficer] = None,
                       tradingDetails: Option[TradingDetails] = None,
-                      financials: Option[VatFinancials] = None,
                       sicAndCompliance: Option[SicAndCompliance] = None,
                       businessContact: Option[BusinessContact] = None,
                       threshold: Option[Threshold] = None,
@@ -49,7 +48,6 @@ object VatScheme {
       (__ \ "registrationId").format[String] and
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
-      (__ \ "financials").formatNullable[VatFinancials] and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance].inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
       (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
       (__ \ "threshold").formatNullable[Threshold] and

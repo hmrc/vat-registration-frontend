@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import connectors.{Success, VatRegistrationConnector}
-import features.returns.{Frequency, Returns, Start}
+import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import mocks.AuthMock
@@ -56,7 +56,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
   val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
 
   val fakeRequest = FakeRequest(routes.SummaryController.show())
-  val returns = Returns(Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
+  override val returns = Returns(Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
   val emptyReturns = Returns(None, None, None, None)
 
   "Calling summary to show the summary page" should {
