@@ -268,13 +268,13 @@ class OfficerFormsSpec extends UnitSpec {
 
   "ContactDetailsForm" should {
     val testForm = ContactDetailsForm.form
-    val testData = ContactDetailsView(Some("t@t.tt.co.tt"), Some("12345678901234567890"), Some("5678"))
+    val testData = ContactDetailsView(Some("t@t.tt.co.tt"), Some("12345678901234567890"), Some("5678912345"))
 
     "bind successfully with data" in {
       val data = Map(
         "email" -> "t@t.tt.co.tt",
-        "daytimePhone" -> "12345 678 901 23456 7890",
-        "mobile" -> "5678"
+        "daytimePhone" -> "12345678901234567890",
+        "mobile" -> "5678912345"
       )
 
       val result = testForm.bind(data).fold(
@@ -318,33 +318,77 @@ class OfficerFormsSpec extends UnitSpec {
       boundForm shouldHaveErrors Seq("email" -> "validation.officerContactDetails.email.maxlen")
     }
 
-    "have the correct error if invalid daytimePhone is provided" in {
+    "have the correct error if too short daytimePhone is provided" in {
       val data = Map(
         "email" -> "",
-        "daytimePhone" -> "123 4 5678 9012 3456 789 01",
+        "daytimePhone" -> "123 4 5678",
         "mobile" -> ""
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.officerContactDetails.daytimePhone.invalid")
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails.tooShort")
+    }
+
+    "have the correct error if too short mobile is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "",
+        "mobile" -> "123 4 56789"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails.tooShort")
+    }
+
+    "have the correct error if too long mobile is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "",
+        "mobile" -> "123456789012345678901"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails.tooLong")
+    }
+
+    "have the correct error if too long daytimePhone is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "123456789012345678912",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails.tooLong")
+    }
+
+    "have the correct error if invalid daytimePhone is provided" in {
+      val data = Map(
+        "email" -> "",
+        "daytimePhone" -> "123er",
+        "mobile" -> ""
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails")
     }
 
     "have the correct error if invalid mobile is provided" in {
       val data = Map(
         "email" -> "",
         "daytimePhone" -> "",
-        "mobile" -> "123 4 5678 9012 3456 789 01"
+        "mobile" -> "we123"
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("mobile" -> "validation.officerContactDetails.mobile.invalid")
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails")
     }
 
     "Unbind successfully with full data" in {
       val data = Map(
         "email" -> "t@t.tt.co.tt",
         "daytimePhone" -> "12345678901234567890",
-        "mobile" -> "5678"
+        "mobile" -> "5678912345"
       )
 
       testForm.fill(testData).data shouldBe data

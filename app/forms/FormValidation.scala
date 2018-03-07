@@ -225,6 +225,18 @@ object FormValidation {
       }
   }
 
+  def isValidPhoneNumber(formName:String): Constraint[String] = Constraint { phone: String =>
+
+    val isValidNumber:Option[Int] = if(phone.matches("^[0-9]*")) Some(phone.length) else None
+
+    isValidNumber match {
+      case Some(num) if(num > 20) => Invalid(s"validation.invalid.$formName.tooLong")
+      case Some(num) if(num < 10) => Invalid(s"validation.invalid.$formName.tooShort")
+      case Some(_) => Valid
+      case _ => Invalid(s"validation.invalid.$formName")
+    }
+  }
+
   def validDate(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = Try {

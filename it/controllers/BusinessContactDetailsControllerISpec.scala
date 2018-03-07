@@ -208,7 +208,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401")))
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
@@ -225,7 +225,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
@@ -239,7 +239,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].isEmpty
         .vatScheme.doesNotExistForKey("business-contact")
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 404
       }
@@ -252,7 +252,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("123"), "mobile" -> Seq("987654"), "website" -> Seq("/test/url")))
+      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 500
       }
