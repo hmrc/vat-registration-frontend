@@ -495,9 +495,10 @@ pages.businessContactDetails.website.label                   = Website address (
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address
 validation.businessContactDetails.email.maxlen               = Email address must not exceed 70 characters
-validation.businessContactDetails.mobile.invalid             = Enter a valid contact number
-validation.businessContactDetails.daytimePhone.invalid       = Enter a valid contact number
 validation.businessContactDetails.atLeastOneNumber.missing   = Enter at least one contact number
+validation.invalid.businessContactDetails                    = Enter a valid contact number
+validation.invalid.businessContactDetails.tooLong            = Enter a contact number using 20 digits or less
+validation.invalid.businessContactDetails.tooShort           = Enter a contact number using 10 digits or more
 
 
 ## Officer Home Address Page
@@ -547,11 +548,13 @@ pages.officerContact.emailAddress.label                  = Email address
 pages.officerContact.mobile.label                        = Mobile number
 pages.officerContact.daytimePhone.label                  = Phone number
 validation.officerContact.missing                        = Enter your contact details
-validation.officerContact.atLeastOneContact.missing                        = Enter your contact details
-validation.officerContactDetails.mobile.invalid          = Enter a valid contact number
-validation.officerContactDetails.daytimePhone.invalid    = Enter a valid contact number
+validation.officerContact.atLeastOneContact.missing      = Enter your contact details
 validation.officerContactDetails.email.invalid           = Enter a valid email address
 validation.officerContactDetails.email.maxlen            = Email address must not exceed 70 characters
+validation.invalid.officerContactDetails.tooLong         = Enter a contact number using 20 digits or less
+validation.invalid.officerContactDetails.tooShort        = Enter a contact number using 10 digits or more
+validation.invalid.officerContactDetails                 = Enter a valid contact number
+
 
 ## Former Name
 pages.formerName.title                                   = Have you ever changed your name?

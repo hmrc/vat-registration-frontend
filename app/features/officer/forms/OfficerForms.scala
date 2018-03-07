@@ -21,10 +21,10 @@ import java.time.LocalDate
 import features.officer.models.view._
 import forms.FormValidation
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, regexPattern, removeSpaces, textMapping}
+import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping, _}
 import models.DateModel
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, single, text}
+import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
@@ -108,7 +108,6 @@ object FormerNameDateForm {
 
 object ContactDetailsForm {
   val EMAIL_MAX_LENGTH      = 70
-  val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
 
   private val FORM_NAME = "officerContactDetails"
 
@@ -124,8 +123,8 @@ object ContactDetailsForm {
   val form = Form(
     mapping(
       EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
-      DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
-      MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE")))
+      DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
+      MOBILE        ->optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
     )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
   )
 
