@@ -91,13 +91,37 @@ class CompanyContactDetailsFormSpec extends UnitSpec {
       "invalid mobile phone number is provided and email" in {
         val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("invalid phone number"))
         val form = testForm.bindFromRequest(data)
-        form shouldHaveErrors Seq("mobile" -> "validation.businessContactDetails.mobile.invalid")
+        form shouldHaveErrors Seq("mobile" -> "validation.invalid.businessContactDetails")
       }
 
       "invalid daytime phone number is provided and email" in {
         val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("invalid phone number"))
         val form = testForm.bindFromRequest(data)
-        form shouldHaveErrors Seq("daytimePhone" -> "validation.businessContactDetails.daytimePhone.invalid")
+        form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails")
+      }
+
+      "too short daytime phone number is provided and email" in {
+        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("1234"))
+        val form = testForm.bindFromRequest(data)
+        form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails.tooShort")
+      }
+
+      "too short mobile phone number is provided and email" in {
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("12345"))
+        val form = testForm.bindFromRequest(data)
+        form shouldHaveErrors Seq("mobile" -> "validation.invalid.businessContactDetails.tooShort")
+      }
+
+      "too long mobile phone number is provided and email" in {
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("123456789012345678901"))
+        val form = testForm.bindFromRequest(data)
+        form shouldHaveErrors Seq("mobile" -> "validation.invalid.businessContactDetails.tooLong")
+      }
+
+      "too long daytime phone number is provided and email" in {
+        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("123456789012345678912"))
+        val form = testForm.bindFromRequest(data)
+        form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails.tooLong")
       }
 
       "no email is provided" in {
