@@ -341,51 +341,72 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val incorpDate = currentProfile.incorporationDate.get
     val testDate = LocalDate.of(2018, 1, 1)
 
-    "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
+    "show the page" when {
+      "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(!voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
-      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
-        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
+        when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+          .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
 
-      callAuthorised(testController.mandatoryStartPage) { result =>
-        status(result) mustBe OK
+        callAuthorised(testController.mandatoryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return OK when the company is not incorporated" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(!voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
+
+        when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+          .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
+
+        callAuthorised(testController.mandatoryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return an OK when returns are not present" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(!voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns))
+
+        when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+          .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
+
+        callAuthorised(testController.mandatoryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return an OK when the calc date does not equal the stored start date" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(!voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
+
+        when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
+          .thenReturn(Future.successful(MandatoryDateModel(LocalDate.of(2018, 1, 1), Some(testDate), Some(DateSelection.calculated_date))))
+
+        callAuthorised(testController.mandatoryStartPage) { result =>
+          status(result) mustBe OK
+        }
       }
     }
+    "redirect to a different page" when {
+      "redirect to the voluntary vat start page if they are on a voluntary journey" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
 
-    "return OK when the company is not incorporated" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
-
-      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
-        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
-
-      callAuthorised(testController.mandatoryStartPage) { result =>
-        status(result) mustBe OK
-      }
-    }
-
-    "return an OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns))
-
-      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
-        .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
-
-      callAuthorised(testController.mandatoryStartPage) { result =>
-        status(result) mustBe OK
-      }
-    }
-
-    "return an OK when the calc date does not equal the stored start date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
-
-      when(mockReturnsService.retrieveMandatoryDates(any(), any(), any()))
-        .thenReturn(Future.successful(MandatoryDateModel(LocalDate.of(2018, 1, 1), Some(testDate), Some(DateSelection.calculated_date))))
-
-      callAuthorised(testController.mandatoryStartPage) { result =>
-        status(result) mustBe OK
+        callAuthorised(testController.mandatoryStartPage) { result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
+        }
       }
     }
   }
@@ -465,78 +486,101 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val dateSelection = (DateSelection.calculated_date, Some(LocalDate.now()))
     val calcDate = LocalDate.now()
     val voluntaryViewModel = VoluntaryPageViewModel(Some(dateSelection),Some(calcDate))
-    "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
+    "show the page" when {
+      "return OK when the company is incorporated, returns are present and calc date equals stored date" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
 
-      when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
+        when(mockPrePopService.getCTActiveDate(any(), any()))
+          .thenReturn(Future.successful(currentProfile.incorporationDate))
 
-      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
-        .thenReturn(Future.successful(voluntaryViewModel))
+        when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+          .thenReturn(Future.successful(voluntaryViewModel))
 
-      callAuthorised(testController.voluntaryStartPage) { result =>
-        status(result) mustBe OK
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return OK when the company is not incorporated" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
+
+        when(mockPrePopService.getCTActiveDate(any(), any()))
+          .thenReturn(Future.successful(currentProfile.incorporationDate))
+
+        when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+          .thenReturn(Future.successful(voluntaryViewModel))
+
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return OK when the company is not incorporated and there is nothing to prepop" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = None)))
+
+        when(mockPrePopService.getCTActiveDate(any(), any()))
+          .thenReturn(Future.successful(currentProfile.incorporationDate))
+
+        when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+          .thenReturn(Future.successful(voluntaryViewModel))
+
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return an OK when returns are not present" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns))
+
+        when(mockPrePopService.getCTActiveDate(any(), any()))
+          .thenReturn(Future.successful(currentProfile.incorporationDate))
+
+        when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+          .thenReturn(Future.successful(voluntaryViewModel))
+
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return an OK when the specific date does not equal the incorp date" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(voluntary))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorpMinusTwo))))
+
+        when(mockPrePopService.getCTActiveDate(any(), any()))
+          .thenReturn(Future.successful(currentProfile.incorporationDate))
+
+        when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
+          .thenReturn(Future.successful(voluntaryViewModel))
+
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe OK
+        }
       }
     }
+    "redirect to a different page" when {
+      "redirect to the mandatory vat start page if they are on a mandatory journey" in new Setup {
+        when(mockReturnsService.getThreshold()(any(), any(), any()))
+          .thenReturn(Future.successful(!voluntary))
 
-    "return OK when the company is not incorporated" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorp))))
-
-      when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
-
-      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
-        .thenReturn(Future.successful(voluntaryViewModel))
-
-      callAuthorised(testController.voluntaryStartPage) { result =>
-        status(result) mustBe OK
-      }
-    }
-
-    "return OK when the company is not incorporated and there is nothing to prepop" in new Setup(Some(currentProfile.copy(incorporationDate = None))) {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = None)))
-
-      when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
-
-      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
-        .thenReturn(Future.successful(voluntaryViewModel))
-
-      callAuthorised(testController.voluntaryStartPage) { result =>
-        status(result) mustBe OK
-      }
-    }
-
-    "return an OK when returns are not present" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns))
-
-      when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
-
-      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
-        .thenReturn(Future.successful(voluntaryViewModel))
-
-      callAuthorised(testController.voluntaryStartPage) { result =>
-        status(result) mustBe OK
-      }
-    }
-
-    "return an OK when the specific date does not equal the incorp date" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(start = Some(startAtIncorpMinusTwo))))
-
-      when(mockPrePopService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(currentProfile.incorporationDate))
-
-      when(mockReturnsService.voluntaryStartPageViewModel(any())(any(), any(), any()))
-        .thenReturn(Future.successful(voluntaryViewModel))
-
-      callAuthorised(testController.voluntaryStartPage) { result =>
-        status(result) mustBe OK
+        callAuthorised(testController.voluntaryStartPage) { result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
+        }
       }
     }
   }
