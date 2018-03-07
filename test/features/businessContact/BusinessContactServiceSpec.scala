@@ -60,8 +60,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
           )),
           companyContactDetails = Some(CompanyContactDetails(
             email          = "test@test.com",
-            phoneNumber    = Some("0123456"),
-            mobileNumber   = Some("987654"),
+            phoneNumber    = Some("1234567890"),
+            mobileNumber   = Some("9876545678"),
             websiteAddress = Some("/test/url")
           ))
         )
@@ -71,8 +71,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
             |{
             | "digitalContact" : {
             |   "email" : "test@test.com",
-            |   "tel" : "0123456",
-            |   "mobile" : "987654"
+            |   "tel" : "1234567890",
+            |   "mobile" : "9876545678"
             | },
             | "website" : "/test/url",
             | "ppob" : {

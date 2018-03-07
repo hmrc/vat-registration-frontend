@@ -27,10 +27,7 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 object CompanyContactDetailsForm {
 
   val EMAIL_MAX_LENGTH      = 70
-  val PHONE_NUMBER_PATTERN  = """[\d]{1,20}""".r
-
   private val FORM_NAME     = "businessContactDetails"
-
   private val EMAIL         = "email"
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE        = "mobile"
@@ -40,12 +37,11 @@ object CompanyContactDetailsForm {
 
 
   implicit val errorCode: ErrorCode = "officerContactDetails.email"
-
   val form = Form(
     mapping(
       EMAIL         -> textMapping()(s"$FORM_NAME.$EMAIL").verifying(StopOnFirstFail(mandatoryText()(s"$FORM_NAME.$EMAIL"),FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH))),
-      DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$DAYTIME_PHONE"))),
-      MOBILE        -> optional(text.transform(removeSpaces, identity[String]).verifying(regexPattern(PHONE_NUMBER_PATTERN)(s"$FORM_NAME.$MOBILE"))),
+      DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
+      MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
       WEBSITE       -> optional(text)
     )(CompanyContactDetails.apply)(CompanyContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
