@@ -97,7 +97,7 @@ object EstimateTotalSalesForm {
 
   val form = Form(single("totalSalesEstimate" -> text
     .verifying(mandatoryNumericText)
-    .transform[Long](_.toLong, _.toString)
+    .transform[Long](taxEstimateTextToLong, _.toString)
     .verifying(inRange[Long](1, 99999999999L))
   ))
 }
