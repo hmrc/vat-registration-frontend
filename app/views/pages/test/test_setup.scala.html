@@ -3,7 +3,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.vatInput
 
-<h1 class="form-title heading-xlarge" id="pageHeading">Test Setup</h1>
+<h1 class="form-title heading-large" id="pageHeading">Test Setup</h1>
 
 @govHelpers.form(action = controllers.test.routes.TestSetupController.submit()) {
     <div class="form-group" id="vrfe-test-setup-form">
@@ -117,10 +117,10 @@
 
             <b>VAT FRS</b>
             <p>@vatInput(testSetupForm("flatRateScheme.joinFrs"), '_label -> "Join FRS (true or false)") </p>
-            <p>@vatInput(testSetupForm("flatRateScheme.annualCostsInclusive"), '_label -> "Annual costs inclusive (yes or yesWithin12months or no)")</p>
-            <p>@vatInput(testSetupForm("flatRateScheme.annualCostsLimited"), '_label -> "Annual costs limited (yes or yesWithin12months or no)")</p>
-            <p>@vatInput(testSetupForm("flatRateScheme.vatTaxableTurnover"), '_label -> "Vat taxable turnover")</p>
-            <p>@vatInput(testSetupForm("flatRateScheme.registerForFrs"), '_label -> "Register for FRS (true or false)") </p>
+            <p>@vatInput(testSetupForm("flatRateScheme.overBusinessGoods"), '_label -> "Over Business Goods (true or false)")</p>
+            <p>@vatInput(testSetupForm("flatRateScheme.estimateTotalSales"), '_label -> "Estimated sales (more than 1)")</p>
+            <p>@vatInput(testSetupForm("flatRateScheme.overBusinessGoodsPercent"), '_label -> "Over Business Goods Percent (true or false)")</p>
+            <p>@vatInput(testSetupForm("flatRateScheme.useThisRate"), '_label -> "Register for FRS - use this rate (true or false)") </p>
             <p>@vatInput(testSetupForm("flatRateScheme.start.date"), '_label -> "Frs Start date (empty for vat reg date)")</p>
             <p>@vatInput(testSetupForm("flatRateScheme.categoryOfBusiness"), '_label -> "Category of business")</p>
             <p>@vatInput(testSetupForm("flatRateScheme.percent"), '_label -> "Flat rate percent")</p>

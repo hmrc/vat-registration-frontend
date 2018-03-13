@@ -19,59 +19,32 @@ package forms
 import java.time.LocalDate
 
 import forms.FormValidation._
-import frs.{AnnualCosts, FRSDateChoice}
+import frs.FRSDateChoice
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-object OverBusinessGoodsForm {
+object OverBusinessGoodsForm extends RequiredBooleanForm {
   val RADIO_INCLUSIVE: String = "annualCostsInclusiveRadio"
 
-  implicit def formatter: Formatter[AnnualCosts.Value] = new Formatter[AnnualCosts.Value] {
-
-    override val format = Some(("format.string", Nil))
-
-    def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
-        case e if e == AnnualCosts.AlreadyDoesSpend.toString => Right(AnnualCosts.AlreadyDoesSpend)
-        case e if e == AnnualCosts.WillSpend.toString => Right(AnnualCosts.WillSpend)
-        case e if e == AnnualCosts.DoesNotSpend.toString => Right(AnnualCosts.DoesNotSpend)
-        case _ => Left(Seq(FormError(key, "validation.frs.costsInclusive.missing", Nil)))
-      }
-    }
-
-    def unbind(key: String, value: AnnualCosts.Value) = Map(key -> value.toString)
-  }
+  override val errorMsg: String = "validation.frs.costsInclusive.missing"
 
   val form = Form(
-    single(RADIO_INCLUSIVE -> Forms.of[AnnualCosts.Value])
+    single(RADIO_INCLUSIVE -> requiredBoolean)
   )
 }
 
-trait OverBusinessGoodsPercentForm {
+trait OverBusinessGoodsPercentForm extends RequiredBooleanForm {
   val RADIO_INCLUSIVE: String = "annualCostsLimitedRadio"
-  val pct : Long
+  val pct: Long
 
-  implicit def formatter: Formatter[AnnualCosts.Value] = new Formatter[AnnualCosts.Value] {
+  override val errorMsg: String = "validation.frs.costsLimited.missing"
+  override lazy val errorMsgArgs: Seq[Any] = Seq(pct)
 
-    override val format = Some(("format.string", Nil))
-
-    def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
-        case e if e == AnnualCosts.AlreadyDoesSpend.toString => Right(AnnualCosts.AlreadyDoesSpend)
-        case e if e == AnnualCosts.WillSpend.toString => Right(AnnualCosts.WillSpend)
-        case e if e == AnnualCosts.DoesNotSpend.toString => Right(AnnualCosts.DoesNotSpend)
-        case _ => Left(Seq(FormError(key, "validation.frs.costsLimited.missing", Seq(pct))))
-      }
-    }
-
-    def unbind(key: String, value: AnnualCosts.Value) = Map(key -> value.toString)
-  }
-
-  val form = Form(
-    single(RADIO_INCLUSIVE -> Forms.of[AnnualCosts.Value])
+  def form = Form(
+    single(RADIO_INCLUSIVE -> requiredBoolean)
   )
 }
 
@@ -117,4 +90,23 @@ object FRSStartDateForm {
       )
     )
   )
+}
+
+object EstimateTotalSalesForm {
+  implicit val errorCode: ErrorCode = "frs.estimateTotalSales"
+
+  val form = Form(single("totalSalesEstimate" -> text
+    .verifying(mandatoryNumericText)
+    .transform[Long](_.toLong, _.toString)
+    .verifying(inRange[Long](1, 99999999999L))
+  ))
+}
+
+object ChooseBusinessTypeForm {
+  implicit val errorCode: ErrorCode = "frs.chooseBusinessType"
+
+  def form(validBusinessTypes: Seq[String]) = Form(single("businessType" -> optional(text)
+    .transform[String](_.getOrElse(""), Some(_))
+    .verifying(matches(validBusinessTypes.toList, "validation.frs.chooseBusinessType.missing"))
+  ))
 }

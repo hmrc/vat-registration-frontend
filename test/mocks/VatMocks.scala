@@ -20,6 +20,7 @@ import connectors._
 import features.bankAccountDetails.connectors.BankAccountReputationConnectorImpl
 import features.bankAccountDetails.services.BankAccountReputationServiceImpl
 import features.businessContact.BusinessContactService
+import features.frs.services.FlatRateService
 import features.officer.services.{IVServiceImpl, LodgingOfficerService}
 import features.returns.services.ReturnsService
 import features.turnoverEstimates.TurnoverEstimatesService

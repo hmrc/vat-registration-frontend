@@ -13,9 +13,9 @@
        frsStartDateForm
     )
 
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitFrsStartDate()) {
+    @govHelpers.form(action = features.frs.controllers.routes.FlatRateController.submitFrsStartDate()) {
         <div class="form-group">
 
             @defining(DateTimeFormatter

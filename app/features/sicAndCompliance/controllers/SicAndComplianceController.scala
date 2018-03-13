@@ -21,6 +21,7 @@ import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.KeystoreConnect
 import controllers.BaseController
+import features.frs.services.FlatRateService
 import features.sicAndCompliance.forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
 import features.sicAndCompliance.models.MainBusinessActivityView
 import features.sicAndCompliance.services.SicAndComplianceService
@@ -29,7 +30,7 @@ import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile}
+import services.SessionProfile
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future

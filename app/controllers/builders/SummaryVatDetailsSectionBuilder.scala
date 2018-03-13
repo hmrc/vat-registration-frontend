@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter
 
 import features.returns.models.Returns
 import features.tradingDetails.TradingDetails
+import models.MonthYearModel
 import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
@@ -48,15 +49,14 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
     thresholdBlock.overThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"turnover-over-threshold"))
+    Some(getUrl(serviceName,"turnover-over-threshold")),
+    Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)))
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
-    thresholdBlock.overThresholdDate
-      .map(_.format(monthYearPresentationFormatter))
-      .getOrElse(""),
-      Some(getUrl(serviceName,"turnover-over-threshold"))
+    thresholdBlock.overThresholdDate.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
+    Some(getUrl(serviceName,"turnover-over-threshold"))
   )
 
   val expectedOverThresholdSelectionRow: SummaryRow = SummaryRow(
@@ -67,9 +67,7 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
 
   val expectedOverThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.expectedOverThresholdDate",
-    thresholdBlock.expectedOverThresholdDate
-      .map(_.format(presentationFormatter))
-      .getOrElse(""),
+    thresholdBlock.expectedOverThresholdDate.map(_.format(presentationFormatter)).getOrElse(""),
     Some(getUrl(serviceName,"thought-over-threshold"))
   )
 
