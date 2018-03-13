@@ -16,6 +16,7 @@
 
 package connectors
 
+import java.io.File
 import java.util.MissingResourceException
 
 import mocks.VatMocks
@@ -24,13 +25,31 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.Environment
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
+  val mockEnvironment: Environment = mock[Environment]
 
   class Setup {
     val connector = new ConfigConnector {
       override val config: ServicesConfig = mockConfig
+      override val environment: Environment = mockEnvironment
+
+      override lazy val businessTypes: Seq[JsObject] = Seq(
+        Json.parse(
+          """
+            |{
+            |  "groupLabel": "Accommodation and food service activities",
+            |  "categories": [
+            |    {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
+            |    {"id": "008", "businessType": "Catering services including restaurants and takeaways", "currentFRSPercent": 12.5},
+            |    {"id": "038", "businessType": "Pubs", "currentFRSPercent": 6.5}
+            |  ]
+            |}
+          """.stripMargin).as[JsObject]
+      )
     }
     val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
