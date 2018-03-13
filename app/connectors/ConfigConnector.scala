@@ -20,22 +20,25 @@ import java.util.MissingResourceException
 import javax.inject.Inject
 
 import models.api.SicCode
+import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.io.Source
 
-class ConfigConnectorImpl @Inject()(val config: ServicesConfig) extends ConfigConnector
+class ConfigConnectorImpl @Inject()(val config: ServicesConfig,
+                                    val environment: Environment) extends ConfigConnector
 
 trait ConfigConnector {
   val config: ServicesConfig
+  val environment: Environment
 
   private val sicCodePrefix = "sic.codes"
 
   lazy val businessTypes: Seq[JsObject] = {
     val frsBusinessTypesFile = "conf/frs-business-types.json"
 
-    val bufferedSource = Source.fromFile(frsBusinessTypesFile)
+    val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
     val fileContents = bufferedSource.getLines.mkString
     bufferedSource.close
 
