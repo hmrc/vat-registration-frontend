@@ -1,7 +1,7 @@
 @import helpers.templates.summaryRow
 @import models.view.Summary
 @import uk.gov.hmrc.play.views.html.helpers.form
-@(summaryModel: Summary, questionArg: String)(implicit request: Request[_], messages: Messages)
+@(summaryModel: Summary)(implicit request: Request[_], messages: Messages)
 
 @main_template(title = messages("pages.summary.title")) {
 
@@ -14,7 +14,7 @@
         <dl class="govuk-check-your-answers cya-questions-long">
           @for((row, doDisplayRow) <- section.rows) {
             @if(doDisplayRow) {
-                @summaryRow(row, questionArg)
+                @summaryRow(row)
             }
           }
         </dl>

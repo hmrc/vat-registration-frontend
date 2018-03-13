@@ -1,0 +1,138 @@
+{
+  "businessTypes": [
+    {
+      "groupLabel": "Accommodation and food service activities",
+      "categories": [
+        {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
+        {"id": "008", "businessType": "Catering services including restaurants and takeaways", "currentFRSPercent": 12.5},
+        {"id": "038", "businessType": "Pubs", "currentFRSPercent": 6.5}
+      ]
+    },
+    {
+      "groupLabel": "Administrative and support service activities",
+      "categories": [
+        {"id": "019", "businessType": "Hiring or renting goods", "currentFRSPercent": 9.5},
+        {"id": "050", "businessType": "Travel agency", "currentFRSPercent": 10.5},
+        {"id": "021", "businessType": "Investigation or security", "currentFRSPercent": 12},
+        {"id": "046", "businessType": "Secretarial services", "currentFRSPercent": 13},
+        {"id": "033", "businessType": "Packaging", "currentFRSPercent": 9}
+      ]
+    },
+    {
+      "groupLabel": "Agriculture, Forestry and fishing",
+      "categories": [
+        {"id": "003", "businessType": "Agricultural services", "currentFRSPercent": 11},
+        {"id": "016", "businessType": "Forestry or fishing", "currentFRSPercent": 10.5},
+        {"id": "006", "businessType": "Boarding or care of animals", "currentFRSPercent": 12},
+        {"id": "013", "businessType": "Farming or agriculture not listed elsewhere", "currentFRSPercent": 6.5}
+      ]
+    },
+    {
+      "groupLabel": "Arts, entertainment and recreation",
+      "categories": [
+        {"id": "048", "businessType": "Sport or recreation", "currentFRSPercent": 8.5},
+        {"id": "025", "businessType": "Library, archive, museum or other cultural activity", "currentFRSPercent": 9.5}
+      ]
+    },
+    {
+      "groupLabel": "Construction",
+      "categories": [
+        {"id": "017", "businessType": "General building or construction services", "currentFRSPercent": 9.5},
+        {"id": "022", "businessType": "Labour-only building or construction services", "currentFRSPercent": 14.5}
+      ]
+    },
+    {
+      "groupLabel": "Financial and insurance activities",
+      "categories": [
+        {"id": "015", "businessType": "Financial services", "currentFRSPercent": 13.5},
+        {"id": "001", "businessType": "Accountancy or book-keeping", "currentFRSPercent": 14.5},
+        {"id": "007", "businessType": "Business services not listed elsewhere", "currentFRSPercent": 12}
+      ]
+    },
+    {
+      "groupLabel": "Human health and social work activities",
+      "categories": [
+        {"id": "047", "businessType": "Social work", "currentFRSPercent": 11}
+      ]
+    },
+    {
+      "groupLabel": "Information and communication",
+      "categories": [
+        {"id": "014", "businessType": "Film, radio, television or video production", "currentFRSPercent": 13},
+        {"id": "037", "businessType": "Publishing", "currentFRSPercent": 11},
+        {"id": "009", "businessType": "Computer and IT consultancy or data processing", "currentFRSPercent": 14.5},
+        {"id": "011", "businessType": "Entertainment or journalism", "currentFRSPercent": 12.5}
+      ]
+    },
+    {
+      "groupLabel": "Manufacturing",
+      "categories": [
+        {"id": "028", "businessType": "Manufacturing food", "currentFRSPercent": 9},
+        {"id": "030", "businessType": "Manufacturing yarn, textiles or clothing", "currentFRSPercent": 9},
+        {"id": "027", "businessType": "Manufacturing fabricated metal products", "currentFRSPercent": 10.5},
+        {"id": "036", "businessType": "Printing", "currentFRSPercent": 8.5},
+        {"id": "029", "businessType": "Manufacturing not listed elsewhere", "currentFRSPercent": 9.5}
+      ]
+    },
+    {
+      "groupLabel": "Mining and quarrying",
+      "categories": [
+        {"id": "032", "businessType": "Mining or quarrying", "currentFRSPercent": 10}
+      ]
+    },
+    {
+      "groupLabel": "Other service activities",
+      "categories": [
+        {"id": "031", "businessType": "Membership organisation", "currentFRSPercent": 8},
+        {"id": "010", "businessType": "Computer repair services", "currentFRSPercent": 10.5},
+        {"id": "023", "businessType": "Laundry or dry-cleaning services", "currentFRSPercent": 12},
+        {"id": "018", "businessType": "Hairdressing or other beauty treatment services", "currentFRSPercent": 13},
+        {"id": "004", "businessType": "Any other activity not listed elsewhere", "currentFRSPercent": 12},
+        {"id": "040", "businessType": "Repairing personal or household goods", "currentFRSPercent": 10}
+      ]
+    },
+    {
+      "groupLabel": "Professional, scientific and technical activities",
+      "categories": [
+        {"id": "024", "businessType": "Lawyer or legal services", "currentFRSPercent": 14.5},
+        {"id": "026", "businessType": "Management consultancy", "currentFRSPercent": 14},
+        {"id": "005", "businessType": "Architect, civil and structural engineer or surveyor", "currentFRSPercent": 14.5},
+        {"id": "002", "businessType": "Advertising", "currentFRSPercent": 11},
+        {"id": "034", "businessType": "Photography", "currentFRSPercent": 11},
+        {"id": "051", "businessType": "Veterinary medicine", "currentFRSPercent": 11}
+      ]
+    },
+    {
+      "groupLabel": "Real estate activities",
+      "categories": [
+        {"id": "012", "businessType": "Estate agency or property management services", "currentFRSPercent": 12},
+        {"id": "039", "businessType": "Real estate activity not listed elsewhere", "currentFRSPercent": 14}
+      ]
+    },
+    {
+      "groupLabel": "Repair of motor vehicles and motorcycles",
+      "categories": [
+        {"id": "041", "businessType": "Repairing vehicles", "currentFRSPercent": 8.5}
+      ]
+    },
+    {
+      "groupLabel": "Transportation and storage",
+      "categories": [
+        {"id": "049", "businessType": "Transport or storage, including couriers, freight, removals and taxis", "currentFRSPercent": 10},
+        {"id": "035", "businessType": "Post offices", "currentFRSPercent": 5}
+      ]
+    },
+    {
+      "groupLabel": "Wholesale and retail trade",
+      "categories": [
+        {"id": "052", "businessType": "Wholesaling agricultural products", "currentFRSPercent": 8},
+        {"id": "053", "businessType": "Wholesaling food", "currentFRSPercent": 7.5},
+        {"id": "042", "businessType": "Retailing food, confectionery, tobacco, newspapers or children's clothing", "currentFRSPercent": 4},
+        {"id": "043", "businessType": "Retailing pharmaceuticals, medical goods, cosmetics or toiletries", "currentFRSPercent": 8},
+        {"id": "045", "businessType": "Retailing vehicles or fuel", "currentFRSPercent": 6.5},
+        {"id": "044", "businessType": "Retailing not listed elsewhere", "currentFRSPercent": 7.5},
+        {"id": "054", "businessType": "Wholesaling not listed elsewhere", "currentFRSPercent": 8.5}
+      ]
+    }
+  ]
+}

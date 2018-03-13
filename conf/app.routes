@@ -160,32 +160,40 @@ GET         /submission-confirmation                                            
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
-GET         /join-flat-rate-scheme                                                             controllers.FlatRateController.joinFrsPage
-POST        /join-flat-rate-scheme                                                             controllers.FlatRateController.submitJoinFRS
+GET         /join-flat-rate                                                                    features.frs.controllers.FlatRateController.joinFrsPage
+POST        /join-flat-rate                                                                    features.frs.controllers.FlatRateController.submitJoinFRS
 
 ##Do you spend less than £1000 a year Page
-GET         /spends-less-including-vat-on-goods                                                controllers.FlatRateController.annualCostsInclusivePage
-POST        /spends-less-including-vat-on-goods                                                controllers.FlatRateController.submitAnnualInclusiveCosts
+GET         /company-spend-less-business-goods                                                 features.frs.controllers.FlatRateController.annualCostsInclusivePage
+POST        /company-spend-less-business-goods                                                 features.frs.controllers.FlatRateController.submitAnnualInclusiveCosts
+
+## Estimate Total Sales
+GET         /estimate-total-sales                                                              features.frs.controllers.FlatRateController.estimateTotalSales
+POST        /estimate-total-sales                                                              features.frs.controllers.FlatRateController.submitEstimateTotalSales
 
 ## Do you want to register for FRS page
-GET         /use-limited-cost-business-flat-rate                                               controllers.FlatRateController.registerForFrsPage
-POST        /use-limited-cost-business-flat-rate                                               controllers.FlatRateController.submitRegisterForFrs
+GET         /use-flat-rate                                                                     features.frs.controllers.FlatRateController.registerForFrsPage
+POST        /use-flat-rate                                                                     features.frs.controllers.FlatRateController.submitRegisterForFrs
 
 ## Do you want to register for FRS page - Business Sector selected
-GET         /your-flat-rate                                                                    controllers.FlatRateController.yourFlatRatePage
-POST        /your-flat-rate                                                                    controllers.FlatRateController.submitYourFlatRate
+GET         /confirm-flat-rate                                                                 features.frs.controllers.FlatRateController.yourFlatRatePage
+POST        /confirm-flat-rate                                                                 features.frs.controllers.FlatRateController.submitYourFlatRate
 
 ##Do you spend less than 2% of turnover a year Page
-GET         /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.FlatRateController.annualCostsLimitedPage
-POST        /spends-less-than-two-percent-of-turnover-a-year-on-goods                          controllers.FlatRateController.submitAnnualCostsLimited
+GET         /company-spend-business-goods                                                      features.frs.controllers.FlatRateController.annualCostsLimitedPage
+POST        /company-spend-business-goods                                                      features.frs.controllers.FlatRateController.submitAnnualCostsLimited
+
+## Choose business type
+GET         /choose-business-type                                                              features.frs.controllers.FlatRateController.businessType(sendGA: Boolean ?= false)
+POST        /choose-business-type                                                              features.frs.controllers.FlatRateController.submitBusinessType
 
 ## FRS Confirm business sector page
-GET         /confirm-business-type                                                             controllers.FlatRateController.confirmSectorFrsPage
-POST        /confirm-business-type                                                             controllers.FlatRateController.submitConfirmSectorFrs
+GET         /confirm-business-type                                                             features.frs.controllers.FlatRateController.confirmSectorFrsPage
+POST        /confirm-business-type                                                             features.frs.controllers.FlatRateController.submitConfirmSectorFrs
 
 ## When do you want to join the Flat Rate Scheme?
-GET         /flat-rate-scheme-join-date                                                        controllers.FlatRateController.frsStartDatePage
-POST        /flat-rate-scheme-join-date                                                        controllers.FlatRateController.submitFrsStartDate
+GET         /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.frsStartDatePage
+POST        /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.submitFrsStartDate
 
 
 

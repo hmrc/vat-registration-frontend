@@ -19,7 +19,8 @@ package controllers
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import connectors.{Success, VatRegistrationConnector}
+import connectors.{ConfigConnector, Success, VatRegistrationConnector}
+import features.frs.services.FlatRateService
 import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
@@ -46,6 +47,8 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       override val keystoreConnector = mockKeystoreConnector
       val authConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
+      override val flatRateService: FlatRateService = mockFlatRateService
+      override val configConnector: ConfigConnector = mockConfigConnector
     }
 
     mockAllMessages
@@ -76,6 +79,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
 
+      when(mockConfigConnector.getBusinessTypeDetails(any()))
+        .thenReturn(("test business type", BigDecimal(6.5)))
+
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
@@ -88,6 +94,8 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
         .thenReturn(Future.successful(validFullLodgingOfficer))
       when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockConfigConnector.getBusinessTypeDetails(any()))
+        .thenReturn(("test business type", BigDecimal(6.5)))
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
@@ -100,6 +108,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
     }
 
     "registrationToSummary maps a valid VatScheme object to a Summary object" in new Setup {
+      when(mockConfigConnector.getBusinessTypeDetails(any()))
+        .thenReturn(("test business type", BigDecimal(6.32)))
+
       testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
     }
 

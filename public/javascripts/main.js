@@ -1,5 +1,5 @@
 $(document).ready($(function () {
-
+    noSectorForSICCodeToGA();
 }));
 
 
@@ -85,6 +85,13 @@ $(document).ready($(function () {
     }
 }(window.EstimateVatTurnoverPage = window.EstimateVatTurnoverPage || {}, jQuery));
 
+// Estimate Total Sales
+(function (EstimateTotalSalesPage, $, undefined) {
+    EstimateTotalSalesPage.init = function() {
+        var numericInputs = ["totalSalesEstimate"];
+        UI.preventNonNumericInput(numericInputs);
+    }
+}(window.EstimateTotalSalesPage = window.EstimateTotalSalesPage || {}, jQuery));
 
 // Labour Compliance - Workers
 (function (WorkersPage, $, undefined) {
@@ -152,3 +159,12 @@ $(document).ready($(function () {
     }
 }(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
 
+var noSectorForSICCodeToGA = function() {
+    if($("#noSectorForSICCode").length) {
+        ga('send', 'event', {
+            'eventCategory': 'vat_register',
+            'eventAction': 'no_sector_for_sic_code',
+            'eventLabel': $('#noSectorForSICCode').text()
+        });
+    }
+};

@@ -19,7 +19,7 @@ package fixtures
 import java.time.LocalDate
 
 import features.returns.models.Start
-import frs.{AnnualCosts, FlatRateScheme}
+import frs.FlatRateScheme
 
 trait FlatRateFixtures {
 
@@ -30,7 +30,7 @@ trait FlatRateFixtures {
 
   val validFlatRate = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.AlreadyDoesSpend),
+    Some(true),
     None,
     None,
     Some(true),
@@ -43,18 +43,18 @@ trait FlatRateFixtures {
 
   val frs1KReg = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.AlreadyDoesSpend),
-    None,
-    None,
+    Some(true),
+    Some(1000L),
+    Some(true),
     Some(true),
     frsDate,
-    Some("test"),
+    Some("frsId"),
     Some(defaultFlatRate)
   )
 
   val frs1KNreg = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.AlreadyDoesSpend),
+    Some(true),
     None,
     None,
     Some(false),
@@ -65,9 +65,9 @@ trait FlatRateFixtures {
 
   val frsPerReg = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
     Some(1000000L),
-    Some(AnnualCosts.AlreadyDoesSpend),
+    Some(true),
     Some(true),
     frsDate,
     Some(""),
@@ -76,9 +76,9 @@ trait FlatRateFixtures {
 
   val frsPerNconf = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
     Some(1000000L),
-    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
     Some(true),
     frsDate,
     Some(""),
@@ -87,9 +87,9 @@ trait FlatRateFixtures {
 
   val frsPerNconfN = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
     Some(1000000L),
-    Some(AnnualCosts.DoesNotSpend),
+    Some(false),
     Some(false),
     None,
     Some(""),
@@ -100,8 +100,19 @@ trait FlatRateFixtures {
     Some(false)
   )
 
+  val frsNoJoinWithDetails = FlatRateScheme(
+    Some(false),
+    Some(true),
+    Some(1000000L),
+    Some(true),
+    Some(false),
+    None,
+    Some("frsId"),
+    Some(defaultFlatRate)
+  )
+
   val incompleteS4l = FlatRateScheme(
     Some(true),
-    Some(AnnualCosts.AlreadyDoesSpend)
+    Some(true)
   )
 }

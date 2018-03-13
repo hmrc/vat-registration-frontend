@@ -5,7 +5,7 @@
 
 @(testForm: Form[TestIVResponse])(implicit request: Request[_], messages: Messages)
 
-<h1 class="form-title heading-xlarge" id="pageHeading">Test IV Response</h1>
+<h1 class="form-title heading-large" id="pageHeading">Test IV Response</h1>
 
 @govHelpers.form(action = features.officer.controllers.test.routes.TestIVController.submit()) {
     <div class="form-group">

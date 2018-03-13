@@ -9,18 +9,23 @@
         Messages("app.common.errorSummaryLabel"),
         joinFrsForm
     )
-    <h1 class="form-title heading-xlarge" id="pageHeading">@messages("pages.frs.join.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.join.heading")</h1>
 
     <p>@messages("pages.frs.join.p1")</p>
+
+    <p>@messages("pages.frs.join.listHead")</p>
+
     <ul class="list list-bullet">
         <li>@messages("pages.frs.join.list1.bullet1")</li>
         <li>@messages("pages.frs.join.list1.bullet2")</li>
         <li>@messages("pages.frs.join.list1.bullet3")</li>
     </ul>
+    <p>@messages("pages.frs.join.list.bottom")</p>
+
     <div class="form-group">
         <details role="group">
               <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-              @Html(messages("pages.frs.join.title"))
+              @Html(messages("pages.frs.join.info"))
               </span></summary>
               <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
                   <p>@messages("pages.frs.join.p2")</p>
@@ -40,7 +45,7 @@
     <p>@messages("pages.frs.join.para2")
         @newWindowLink("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1"))@messages("pages.frs.join.para3")</p>
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitJoinFRS()) {
+    @govHelpers.form(action = features.frs.controllers.routes.FlatRateController.submitJoinFRS()) {
         <div class="form-group">
             @vatInputRadioGroup(
                 field = joinFrsForm("joinFrsRadio"),

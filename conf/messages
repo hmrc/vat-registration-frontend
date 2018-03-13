@@ -11,8 +11,8 @@ app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = This page has errors
 app.common.change                       = Change
 app.common.gbp.symbol                   = £
-app.common.newHiddenHelperText          = (link opens in a new tab)
 app.common.back                         = Back
+app.common.openInNewWindow              = (opens in a new window)
 error.required                          = Select an option
 error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
@@ -591,13 +591,16 @@ validation.ppob.missing                                 = Tell us where the comp
 
 ## Are you interested in FRS Page
 pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
-pages.frs.join.p1                               = Companies on the Flat Rate Scheme:
-pages.frs.join.list1.bullet1                    = pay a fixed rate of VAT (based on their business type), which is lower than the standard 20% VAT rate
-pages.frs.join.list1.bullet2                    = keep the difference between what they charge customers and what they pay to HMRC
-pages.frs.join.list1.bullet3                    = can take an extra 1% off their flat rate in their first year
-pages.frs.join.title                            = Show me an example
-pages.frs.join.p2                               = A company that develops computer software does £10,000 consultancy work for a client. It can add 20% VAT when it charges the client, which is £2,000.
-pages.frs.join.p3                               = However, if this type of company is on the Flat Rate Scheme, it only needs to pay 14.5% VAT back to HMRC, which is £1450. It can keep the extra £550.
+pages.frs.join.title                            = Do you want to join the Flat Rate Scheme?
+pages.frs.join.p1                               = Companies on the Flat Rate Scheme pay a fixed rate of VAT depending on their business type.
+pages.frs.join.listHead                         = They:
+pages.frs.join.list1.bullet1                    = charge customers 20% VAT and pay back less than this to HMRC
+pages.frs.join.list1.bullet2                    = keep the difference between the VAT they charge and the VAT they pay to HMRC
+pages.frs.join.list1.bullet3                    = usually have simpler VAT records than companies on the standard rate scheme
+pages.frs.join.list.bottom                      = They can also take an extra 1% off their fixed rate in the first year of VAT registration.
+pages.frs.join.info                             = Show me an example
+pages.frs.join.p2                               = A dry cleaners does £20,000 worth of work in a quarter and charges 20% VAT. Its sales, including £4,000 for VAT, total £24,000.
+pages.frs.join.p3                               = If this type of company is on the Flat Rate Scheme, its VAT payment to HMRC will be 12% of total sales, including VAT. So 12% of £24,000, which is £2,880. This is less than what it charged for VAT and it can keep the £1,120 difference.
 pages.frs.join.subheading2                      = Before you decide
 pages.frs.join.p4                               = You''ll need to have an idea how much the company will:
 pages.frs.join.list2.bullet1                    = spend on goods to run the business over the next 3 months
@@ -609,12 +612,30 @@ pages.frs.join.para3                            = .
 validation.frs.join.missing                     = Tell us if you want to join the Flat Rate Scheme
 
 ## Do you spend less than £1000 Page
-pages.frs.costsInclusive.title                            = Will the company spend more than £1,000 a year (including VAT) on business goods?
-pages.frs.costsInclusive.heading                          = Will the company spend more than £1,000 a year (including VAT) on business goods?
-pages.frs.costsInclusive.p1                               = Business goods are moveable items or materials used exclusively to run a business. They include gas and electricity.
-pages.frs.costsInclusive.radio2                           = It will over the next 12 months
-pages.frs.costsInclusive.radio3                           = No
-validation.frs.costsInclusive.missing                     = Tell us if you spend less than £1,000 a year (including VAT) on business goods
+pages.frs.costsInclusive.title                            = Will the company spend more than £250 over the next 3 months on ''relevant goods''?
+pages.frs.costsInclusive.heading                          = Will the company spend more than £250 over the next 3 months on ''relevant goods''?
+pages.frs.costsInclusive.p1                               = ''Relevant goods'' are moveable items or materials used exclusively to run a business. They include gas and electricity.
+pages.frs.costsInclusive.list.head                        = You cannot include:
+pages.frs.costsInclusive.list.bullet1                     = travel and accommodation expenses
+pages.frs.costsInclusive.list.bullet2                     = food and drink consumed by yourself or your staff
+pages.frs.costsInclusive.list.bullet3                     = vehicle costs including fuel, unless you''re in the transport business and using your own or a leased vehicle
+pages.frs.costsInclusive.list.bullet4                     = rent, internet, phone bill
+pages.frs.costsInclusive.list.bullet5                     = accountancy fees
+pages.frs.costsInclusive.list.bullet6                     = gifts, promotional items and donations
+pages.frs.costsInclusive.list.bullet7                     = goods you will resell or hire out unless this is your main business activity
+pages.frs.costsInclusive.list.bullet8                     = training and memberships
+pages.frs.costsInclusive.list.bullet9                     = capital items, for example office equipment, laptops, mobile phones and tablets
+pages.frs.costsInclusive.list.bullet10                    = services - that is, anything not classified as ''goods''
+validation.frs.costsInclusive.missing                     = Tell us if the company will spend more than £250 over the next 3 months on ''relevant goods''
+
+## Estimate Total Sales Page
+pages.frs.estimateTotalSales.title            = Estimate the company''s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.heading          = Estimate the company''s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.info             = Give figures that are as realistic as possible.
+validation.frs.estimateTotalSales.range.above = Enter an estimate which is less than £99,999,999,999
+validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 or more
+validation.frs.estimateTotalSales.missing     = Enter an estimate of the company''s total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.invalid     = Enter a valid number
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.title                     = Confirm the company''s business type for the Flat Rate Scheme
@@ -625,6 +646,12 @@ pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal res
 pages.frs.confirmBusinessSector.changeLink                = Change your business type
 validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
 
+## Choose business type
+pages.frs.chooseBusinessType.title        = Choose what type of business the company does
+pages.frs.chooseBusinessType.heading      = Choose what type of business the company does
+pages.frs.chooseBusinessType.info         = Choose the one that''s closest to what the company does.
+validation.frs.chooseBusinessType.missing = Tell us what type of business the company does
+
 ## Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.title                               = To join the Flat Rate Scheme the company must use the 16.5% flat rate
 pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the company must use the 16.5% flat rate
@@ -634,21 +661,17 @@ pages.frs.registerFor.subheading1                         = Do you want the comp
 validation.frs.registerFor.missing                        = Tell us if you want to use the 16.5% flat rate
 
 ## Do you want to register for FRS Page business sector rate
-pages.frs.registerForWithSector.title                     = Your flat rate
-pages.frs.registerForWithSector.heading                   = Your flat rate
-pages.frs.registerForWithSector.table.row1.heading        = Business sector
-pages.frs.registerForWithSector.table.row2.heading        = VAT flat rate (%)
-pages.frs.registerForWithSector.panel1.para               = You can add a 1% discount to this rate in your first year as a VAT-registered business.
-pages.frs.registerForWithSector.subheading1               = Do you want to use this rate?
-validation.frs.registerForWithSector.missing              = Tell us if you want to use this rate
+pages.frs.registerForWithSector.title                     = The company''s VAT flat rate is {0}%
+pages.frs.registerForWithSector.heading                   = The company''s VAT flat rate is {0}%
+pages.frs.registerForWithSector.info                      = This is the VAT rate for the company''s business type.
+pages.frs.registerForWithSector.para                      = Companies in their first year of VAT registration can take an extra 1% off their flat rate.
+pages.frs.registerForWithSector.subheading1               = Do you want the company to join the Flat Rate Scheme with this rate?
+validation.frs.registerForWithSector.missing              = Tell us if you want the company to join the Flat Rate Scheme with this rate
 
 ## Do you spend less than 2% of your turn over Page
-pages.frs.costsLimited.title                            = Do you spend less than 2% of turnover a year including VAT on goods for the business?
-pages.frs.costsLimited.heading1                         = Will the company spend more than £{0} a year (including VAT) on business goods?
-pages.frs.costsLimited.p1                               = Business goods are moveable items or materials used exclusively to run a business. They include gas and electricity.
-pages.frs.costsLimited.radio2                           = It will over the next 12 months
-pages.frs.costsLimited.radio3                           = No
-validation.frs.costsLimited.missing                     = Tell us if you spend less than £{0} a year (including VAT) on business goods
+pages.frs.costsLimited.title                            = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.frs.costsLimited.heading1                         = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+validation.frs.costsLimited.missing                     = Tell us if the company will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 
 ## When do you want to join the Flat Rate Scheme?
 pages.frs.startDate.title                                 = When do you want to join the Flat Rate Scheme?
@@ -667,13 +690,11 @@ validation.frs.startDate.range.below                      = Enter a date that is
 
 ## FRS SUMMARY SECTION
 pages.summary.frs.sectionHeading                        = Flat Rate Scheme
-pages.summary.frs.joinFrs                               = Do you want to join the FRS scheme
-pages.summary.frs.costsInclusive                        = Will spend less than £1,000 a year on business goods
-pages.summary.frs.yes12Months                           = No - but I will over the next 12 months
-pages.summary.frs.no                                    = No - and I don''t expect to
-pages.summary.frs.costsLimited                          = Will spend less than 2% total turnover a year on business goods
-pages.summary.frs.registerForFrs                        = Applied
-pages.summary.frs.businessSector                        = Business sector
-pages.summary.frs.flatRate                              = Your flat rate (%)
-pages.summary.frs.startDate                             = Start date
+pages.summary.frs.joinFrs                               = Do you want to join the Flat Rate Scheme?
+pages.summary.frs.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ''relevant goods''?
+pages.summary.frs.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
+pages.summary.frs.costsLimited                          = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.summary.frs.businessSector                        = Business type for the Flat Rate Scheme
+pages.summary.frs.flatRate                              = Do you want to use the {0}% flat rate?
+pages.summary.frs.startDate                             = When do you want to join the Flat Rate Scheme?
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration

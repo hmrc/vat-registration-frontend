@@ -17,6 +17,7 @@
 package features.sicAndCompliance.controllers
 
 import connectors.KeystoreConnect
+import features.frs.services.FlatRateService
 import features.sicAndCompliance.models.SicAndCompliance
 import features.sicAndCompliance.services.SicAndComplianceService
 import fixtures.VatRegistrationFixture
@@ -28,7 +29,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.FlatRateService
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future

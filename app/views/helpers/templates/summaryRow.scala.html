@@ -1,13 +1,13 @@
 @import models.view.SummaryRow
 
-@(row: SummaryRow, questionArg: String = "")(implicit messages: Messages)
+@(row: SummaryRow)(implicit messages: Messages)
 
 @displayAnswer(ans: String) = {
    @messages(ans)<br>
 }
 
 <div id="@{row.id}">
-  <dt class="cya-question" id="@{row.id}Question">@messages(s"pages.summary.${row.id}", questionArg)</dt>
+  <dt class="cya-question" id="@{row.id}Question">@messages(s"pages.summary.${row.id}", row.questionArgs:_*)</dt>
   <dd class="cya-answer" id="@{row.id}Answer">
     @for(answer <- row.answerMessageKeys) {
         @displayAnswer(answer)
@@ -15,7 +15,7 @@
   </dd>
   <dd class="cya-change">
     @row.changeLink.map { linkLocation =>
-        <a href="@linkLocation" id="@{row.id}ChangeLink">@messages("app.common.change") <span class="visuallyhidden">&nbsp; @messages(s"pages.summary.${row.id}", questionArg)</span></a>
+        <a href="@linkLocation" id="@{row.id}ChangeLink">@messages("app.common.change") <span class="visuallyhidden">&nbsp; @messages(s"pages.summary.${row.id}", row.questionArgs:_*)</span></a>
     }
   </dd>
 </div>
