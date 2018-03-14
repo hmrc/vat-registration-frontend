@@ -29,12 +29,13 @@ import features.returns.views.html.vatAccountingPeriod.{accounting_period_view =
 import features.returns.views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDateIncorpPage, start_date_view => VoluntaryStartDatePage}
 import models.{CurrentProfile, MonthYearModel}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
+import scala.language.postfixOps
 
 class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val authConnector: AuthClientConnector,
@@ -91,15 +92,17 @@ trait ReturnsController extends BaseController with SessionProfile {
       }
   }
 
-  private def vatStartDatePage()(implicit hc : HeaderCarrier, currentProfile : CurrentProfile) =
-    returnsService.getThreshold.map(if (_) Redirect(ReturnsController.voluntaryStartPage()) else  Redirect(ReturnsController.mandatoryStartPage()))
+  private def correctVatStartDatePage()(implicit hc : HeaderCarrier, currentProfile : CurrentProfile): Future[Result] =
+    returnsService.getThreshold map { voluntary =>
+      if (voluntary) Redirect(ReturnsController.voluntaryStartPage()) else Redirect(ReturnsController.mandatoryStartPage())
+    }
 
   val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(AccountingPeriodPage(errors))),
-          success => returnsService.saveStaggerStart(success) flatMap {_ => vatStartDatePage()}
+          success => returnsService.saveStaggerStart(success) flatMap {_ => correctVatStartDatePage()}
         )
       }
   }
@@ -123,7 +126,7 @@ trait ReturnsController extends BaseController with SessionProfile {
           errors => Future.successful(BadRequest(ReturnFrequencyPage(errors))),
           success => returnsService.saveFrequency(success) flatMap { _ =>
             if (success == Frequency.monthly) {
-              vatStartDatePage()
+              correctVatStartDatePage()
             } else {
               Future.successful(Redirect(ReturnsController.accountPeriodsPage()))
             }
@@ -132,18 +135,35 @@ trait ReturnsController extends BaseController with SessionProfile {
       }
   }
 
+  private def startDateGuard(pageVoluntary: Boolean)(intendedLocation : => Future[Result])
+                            (implicit hc : HeaderCarrier, currentProfile : CurrentProfile): Future[Result] = {
+    returnsService.getThreshold flatMap {documentVoluntary =>
+      if (documentVoluntary == pageVoluntary) {
+        intendedLocation
+      } else {Future.successful(
+        if (documentVoluntary) {
+          Redirect(ReturnsController.voluntaryStartPage())
+        } else {
+          Redirect(ReturnsController.mandatoryStartPage())
+        }
+      )}
+    }
+  }
+
   val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        returnsService.voluntaryStartPageViewModel(profile.incorporationDate) map { viewModel =>
-          val form = profile.incorporationDate.fold(VoluntaryDateForm.form)(VoluntaryDateFormIncorp.form)
-          val filledForm = viewModel.form.fold(form)(data => form.fill(
-            (data._1, data._2)
-          ))
-          Ok(profile.incorporationDate match {
-            case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive)
-            case None => VoluntaryStartDatePage(filledForm, viewModel.ctActive)
-          })
+        startDateGuard(pageVoluntary = true) {
+          returnsService.voluntaryStartPageViewModel(profile.incorporationDate) map { viewModel =>
+            val form = profile.incorporationDate.fold(VoluntaryDateForm.form)(VoluntaryDateFormIncorp.form)
+            val filledForm = viewModel.form.fold(form)(data => form.fill(
+              (data._1, data._2)
+            ))
+            Ok(profile.incorporationDate match {
+              case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive)
+              case None => VoluntaryStartDatePage(filledForm, viewModel.ctActive)
+            })
+          }
         }
       }
   }
@@ -169,16 +189,18 @@ trait ReturnsController extends BaseController with SessionProfile {
   val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        profile.incorporationDate.fold(Future.successful(Ok(MandatoryStartDateConfirmationPage()))) {
-          incorpDate =>
-            returnsService.retrieveMandatoryDates map { dateModel =>
-              val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
-              Ok(MandatoryStartDateIncorpPage(
-                dateModel.selected.fold(form) { selection =>
-                  form.fill((selection, dateModel.startDate))
-                },
-                dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
-              ))
+        startDateGuard(pageVoluntary = false) {
+          profile.incorporationDate.fold(Future.successful(Ok(MandatoryStartDateConfirmationPage()))) {
+            incorpDate =>
+              returnsService.retrieveMandatoryDates map { dateModel =>
+                val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
+                Ok(MandatoryStartDateIncorpPage(
+                  dateModel.selected.fold(form) { selection =>
+                    form.fill((selection, dateModel.startDate))
+                  },
+                  dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
+                ))
+              }
           }
         }
       }
