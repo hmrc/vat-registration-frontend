@@ -18,7 +18,6 @@ package controllers
 
 import controllers.callbacks.SignInOutController
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import mocks.AuthMock
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 
@@ -45,7 +44,7 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
 
   "signOut" should {
     "redirect to the exit questionnaire and clear the session" in {
-      callAuthorised(testController.signOut) {
+      callAuthorisedOrg(testController.signOut) {
         _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}${testController.compRegFEQuestionnaire}"
       }
     }
@@ -53,7 +52,7 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
 
   "renewSession" should {
     "return 200 when hit with Authorised User" in {
-      callAuthorised(testController.renewSession()){ a =>
+      callAuthorisedOrg(testController.renewSession()){ a =>
         status(a) mustBe 200
         contentType(a) mustBe Some("image/jpeg")
         await(a).body.dataStream.toString.contains("""renewSession.jpg""")  mustBe true

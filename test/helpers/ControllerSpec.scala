@@ -20,8 +20,6 @@ import java.time.LocalDate
 
 import builders.AuthBuilder
 import common.enums.VatRegStatus
-import connectors.{ConfigConnector, KeystoreConnector}
-import features.sicAndCompliance.services.SicAndComplianceService
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
@@ -35,7 +33,6 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, ResultExtractors}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 import scala.concurrent.Future
 
@@ -61,6 +58,9 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
 
   def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     withAuthorisedUser(a)(test)
+
+  def callAuthorisedOrg(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
+    withAuthorisedOrgUser(a)(test)
 
   def mockWithCurrentProfile(currentProfile: Option[CurrentProfile]): OngoingStubbing[Future[Option[CurrentProfile]]] = {
     when(mockKeystoreConnector.fetchAndGet[CurrentProfile](any())(any(), any()))

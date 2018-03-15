@@ -21,9 +21,9 @@ import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.http.Status.NOT_FOUND
+import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
 import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
@@ -55,18 +55,15 @@ class CompanyRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFi
     }
   }
 
-  "Calling getCTStatus" should {
-    "return the correct resonse when an Internal Server Error occurs" in new Setup {
-      when(mockWSHttp.GET[JsValue](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
-
-      intercept[NotFoundException](await(connector.getCTStatus("id")))
+  "Calling getCompanyProfile" should {
+    "return a CompanyRegistrationProfile successfully" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(OK, Some(validCompRegProfileJson)))
+      await(connector.getCompanyProfile("id")) mustBe validCompanyRegistrationProfile
     }
-    "return the correct resonse when an Internal Server Error occurs when not stubbed" in new Setup(false) {
-      when(mockWSHttp.GET[JsValue](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.failed(new NotFoundException(NOT_FOUND.toString)))
 
-      intercept[NotFoundException](await(connector.getCTStatus("id")))
+    "return a None when the response was a Not found" in new Setup {
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(NOT_FOUND, None))
+      await(connector.getCompanyProfile("id")) mustBe None
     }
   }
 

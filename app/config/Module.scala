@@ -26,10 +26,9 @@ import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
 import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test._
-import controllers._
 import features.bankAccountDetails.connectors.{BankAccountReputationConnector, BankAccountReputationConnectorImpl}
-import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
 import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
+import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
 import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
 import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
 import features.frs.controllers.{FlatRateController, FlatRateControllerImpl}
@@ -138,6 +137,7 @@ class Module extends AbstractModule {
     bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
+    bind(classOf[BusinessRegistrationConnect]).to(classOf[BusinessRegistrationConnector]).asEagerSingleton()
     bind(classOf[CompanyRegistrationConnect]).to(classOf[CompanyRegistrationConnector]).asEagerSingleton()
     bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()
     bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()

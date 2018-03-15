@@ -19,7 +19,7 @@ package services
 import connectors._
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
-import models.external.IncorporationInfo
+import models.external.{CompanyRegistrationProfile, IncorporationInfo}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -36,6 +36,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     val service = new VatRegistrationService(
       mockS4LService,
       mockRegConnector,
+      mockBrConnector,
       mockCompanyRegConnector,
       mockIIService,
       mockKeystoreConnector,
@@ -66,25 +67,73 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
        |}
         """.stripMargin)
 
-  "Calling createNewRegistration" should {
-    "return a success response when the Registration is successfully created" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
+  "assertFootprintNeeded" should {
+    "create a footprint" when {
+      "if there is a BR regID and a CT document in the correct state" in new Setup {
+        when(mockBrConnector.getBusinessRegistrationID(any()))
+          .thenReturn(Future.successful(Some("regId")))
 
-      when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]()))
-        .thenReturn(Future.successful(Some(testIncorporationInfo)))
-      when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
+        when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
+          .thenReturn(Future.successful(Some(CompanyRegistrationProfile("test", Some("04")))))
 
-      mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
+        mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
 
-      mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
+        when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(Some(testIncorporationInfo)))
+        when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
 
-      when(mockCompanyRegConnector.getTransactionId(any())(any()))
-        .thenReturn(Future.successful(validCoHoProfile.transactionId))
+        mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
 
-      when(mockCompanyRegConnector.getCTStatus(any())(any()))
-        .thenReturn(Future.successful(Some("04")))
+        mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
 
-      await(service.createRegistrationFootprint) mustBe (validVatScheme.id, "transactionId", Some("04"))
+        when(mockCompanyRegConnector.getTransactionId(any())(any()))
+          .thenReturn(Future.successful(validCoHoProfile.transactionId))
+
+        await(service.assertFootprintNeeded) mustBe Some(validVatScheme.id, "transactionId")
+      }
+    }
+
+    "do not create a footprint" when {
+      "if there is no BR regID" in new Setup {
+        when(mockBrConnector.getBusinessRegistrationID(any()))
+          .thenReturn(Future.successful(None))
+
+        await(service.assertFootprintNeeded) mustBe None
+      }
+
+      "if there is no CT document" in new Setup {
+        when(mockBrConnector.getBusinessRegistrationID(any()))
+          .thenReturn(Future.successful(Some("regId")))
+
+        when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
+          .thenReturn(Future.successful(None))
+
+        await(service.assertFootprintNeeded) mustBe None
+      }
+
+      "if the document is ETMP rejected with a ETMP status of 06" in new Setup {
+        when(mockBrConnector.getBusinessRegistrationID(any()))
+          .thenReturn(Future.successful(Some("regId")))
+
+        when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
+          .thenReturn(Future.successful(Some(CompanyRegistrationProfile("submitted", Some("06")))))
+
+        await(service.assertFootprintNeeded) mustBe None
+      }
+
+      Seq(
+        "draft", "locked", "rejected"
+      ) foreach { status =>
+        s"if the document is $status" in new Setup {
+          when(mockBrConnector.getBusinessRegistrationID(any()))
+            .thenReturn(Future.successful(Some("regId")))
+
+          when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
+            .thenReturn(Future.successful(Some(CompanyRegistrationProfile(status, None))))
+
+          await(service.assertFootprintNeeded) mustBe None
+        }
+      }
     }
   }
 
