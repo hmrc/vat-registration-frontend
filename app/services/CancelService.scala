@@ -19,7 +19,7 @@ package services
 import javax.inject.Inject
 
 import common.enums.RegistrationDeletion
-import connectors.{CompanyRegistrationConnect, KeystoreConnect, RegistrationConnector, S4LConnect}
+import connectors._
 import models.CurrentProfile
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -69,8 +69,7 @@ trait CancellationService {
   }
 
   private def buildNewProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = for {
-    txId    <- companyRegistrationConnector.getTransactionId(regId)
-    ctStatus <- companyRegistrationConnector.getCTStatus(regId)
-    profile <- currentProfileService.buildCurrentProfile(regId, txId, ctStatus)
+    txId            <- companyRegistrationConnector.getTransactionId(regId)
+    profile         <- currentProfileService.buildCurrentProfile(regId, txId)
   } yield profile
 }

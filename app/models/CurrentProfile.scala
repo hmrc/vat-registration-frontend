@@ -27,8 +27,7 @@ case class CurrentProfile(companyName: String,
                           transactionId: String,
                           vatRegistrationStatus: VatRegStatus.Value,
                           incorporationDate: Option[LocalDate],
-                          ivPassed: Option[Boolean] = None,
-                          ctStatus: Option[String] = None)
+                          ivPassed: Option[Boolean] = None)
 
 object CurrentProfile {
   val reads: Reads[CurrentProfile] = (
@@ -37,8 +36,7 @@ object CurrentProfile {
     (__ \ "transactionID").read[String] and
     (__ \ "vatRegistrationStatus").read[VatRegStatus.Value] and
     (__ \ "incorporationDate").readNullable[LocalDate] and
-    (__ \ "ivPassed").readNullable[Boolean] and
-    (__ \ "ctStatus").readNullable[String]
+    (__ \ "ivPassed").readNullable[Boolean]
   )(CurrentProfile.apply _)
 
   val writes: Writes[CurrentProfile] = (
@@ -47,8 +45,7 @@ object CurrentProfile {
     (__ \ "transactionID").write[String] and
     (__ \ "vatRegistrationStatus").write[VatRegStatus.Value] and
     (__ \ "incorporationDate").writeNullable[LocalDate] and
-    (__ \ "ivPassed").writeNullable[Boolean] and
-    (__ \ "ctStatus").writeNullable[String]
+    (__ \ "ivPassed").writeNullable[Boolean]
   )(unlift(CurrentProfile.unapply))
 
   implicit val format: Format[CurrentProfile] = Format(reads, writes)

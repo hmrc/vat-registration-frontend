@@ -65,6 +65,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       "auth",
       "auth.company-auth",
       "vat-registration",
+      "business-registration",
       "company-registration",
       "company-registration-frontend",
       "incorporation-frontend-stub",
@@ -89,6 +90,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       ("microservice.services.vat-registration-eligibility-frontend.www.host" -> s"http://$wiremockHost:$wiremockPort") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> "/vat-eligibility-uri") +
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
+      ("microservice.services.business-registration.uri" -> "/business-registration") +
       ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +

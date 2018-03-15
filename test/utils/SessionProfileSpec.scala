@@ -23,8 +23,8 @@ import models.CurrentProfile
 import play.api.mvc.Result
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
-import services.SessionProfile
 import play.api.test.Helpers._
+import services.SessionProfile
 
 import scala.concurrent.Future
 
@@ -38,7 +38,7 @@ class SessionProfileSpec extends VatRegSpec {
   def testFunc : Future[Result] = Future.successful(Ok)
   implicit val request = FakeRequest()
 
-  def validProfile(status: Option[String]) = CurrentProfile("testName", "testRegId", "testTransId", VatRegStatus.draft, None, Some(true), status)
+  val validProfile = CurrentProfile("testName", "testRegId", "testTransId", VatRegStatus.draft, None, Some(true))
 
   "calling withCurrentProfile" should {
     "redirect to the welcome show if the current profile was not fetched from keystore" in {
@@ -49,21 +49,15 @@ class SessionProfileSpec extends VatRegSpec {
     }
     "perform the passed in function" when {
       "the ct status is not present in the current profile" in {
-        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile(None)))
+        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
         val result = TestSession.withCurrentProfile { _ => testFunc }
         status(result) mustBe OK
       }
       "the ct status does not equal a status 06" in {
-        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile(Some("04"))))
+        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
         val result = TestSession.withCurrentProfile { _ => testFunc }
         status(result) mustBe OK
       }
-    }
-    "Redirect to the post sign in page if the ct status equals 06" in {
-      mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile(Some("06"))))
-      val result = TestSession.withCurrentProfile { _ => testFunc }
-      status(result) mustBe 303
-      redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
     }
   }
 }

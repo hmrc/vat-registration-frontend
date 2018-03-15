@@ -25,6 +25,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
 import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.crypto.json.JsonEncryptor
 import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
 
@@ -95,6 +96,12 @@ trait WiremockHelper extends WiremockS4LHelper {
           withBody(responseBody)
       )
     )
+
+  def stubAuthWithAffinity(affinity: AffinityGroup): StubMapping = {
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(ok(s"${affinity.toJson}")))
+  }
 
   def stubKeystoreFetchCurrentProfile(session: String, regId: String): StubMapping = {
     val keystoreUrl = s"/keystore/vat-registration-frontend/$session"

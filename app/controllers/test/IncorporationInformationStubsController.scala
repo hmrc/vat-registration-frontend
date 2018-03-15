@@ -43,7 +43,7 @@ trait IncorporationInformationStubsController extends BaseController with Sessio
       System.setProperty("feature.crStubbed","true")
       for {
         _          <- vatRegConnector.setupCurrentProfile
-        (regId, _, _) <- vatRegService.createRegistrationFootprint
+        (regId, _) <- vatRegService.createRegistrationFootprint
         _          <- vatRegConnector.wipeTestData
         _          <- vatRegConnector.postTestData(defaultTestData(regId))
       } yield Ok("Data inserted")

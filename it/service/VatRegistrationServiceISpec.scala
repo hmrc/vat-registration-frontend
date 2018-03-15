@@ -38,6 +38,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
   lazy val vatRegistrationConnector = Play.current.injector.instanceOf[VatRegistrationConnector]
   lazy val s4lService = Play.current.injector.instanceOf[S4LService]
   lazy val companyRegistrationConnector = Play.current.injector.instanceOf[CompanyRegistrationConnector]
+  lazy val brConnector = Play.current.injector.instanceOf[BusinessRegistrationConnector]
   lazy val incorpInfoService = Play.current.injector.instanceOf[IncorporationInformationServiceImpl]
   lazy val keystoreConnector = Play.current.injector.instanceOf[KeystoreConnector]
   lazy val turnoverEstimateService = Play.current.injector.instanceOf[TurnoverEstimatesService]
@@ -73,7 +74,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
 
-      val vatRegistrationService = new VatRegistrationService(s4lService, vatRegistrationConnector, companyRegistrationConnector, incorpInfoService, keystoreConnector, turnoverEstimateService)
+      val vatRegistrationService = new VatRegistrationService(s4lService, vatRegistrationConnector, brConnector, companyRegistrationConnector, incorpInfoService, keystoreConnector, turnoverEstimateService)
       val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
 
       await(response) shouldBe Success

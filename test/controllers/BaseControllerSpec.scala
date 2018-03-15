@@ -18,7 +18,6 @@ package controllers
 
 import connectors.KeystoreConnect
 import helpers.ControllerSpec
-import mocks.AuthMock
 import play.api.test.FakeRequest
 import services.SessionProfile
 
@@ -54,12 +53,20 @@ class BaseControllerSpec extends ControllerSpec {
   }
 
   "isAuthenticated" should {
-    "return 200 if user is Authenticated" in {
-      mockAuthenticated()
+    "return 200 if user is Authenticated and has org account" in {
+      mockAuthenticatedOrg()
 
       val result = TestController.callAuthenticated(FakeRequest())
       status(result) mustBe OK
       contentAsString(result) mustBe "ALL GOOD"
+    }
+
+    "return 303 to post sign in if the user does not have an org affinity" in {
+      mockAuthenticatedNonOrg()
+
+      val result = TestController.callAuthenticated(FakeRequest())
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
     }
 
     "return 303 to GG login if user has No Active Session" in {
@@ -111,7 +118,7 @@ class BaseControllerSpec extends ControllerSpec {
     }
 
     "return an Exception if something went wrong" in {
-      mockAuthenticated()
+      mockAuthenticatedOrg()
       mockWithCurrentProfile(Some(currentProfile))
 
       val result = TestController.callAuthenticatedWithProfileButError(FakeRequest())
