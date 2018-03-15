@@ -48,14 +48,12 @@ trait WelcomeController extends BaseController with SessionProfile {
 
   def start: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      for {
-        (regId, txId, ctStatus) <- vatRegistrationService.createRegistrationFootprint
-        currentProfile             <- currentProfileService.buildCurrentProfile(regId, txId, ctStatus)
-      } yield {
-        currentProfile.ctStatus match {
-          case Some("06" | "07" | "08" | "09" | "10") => Redirect(controllers.callbacks.routes.SignInOutController.postSignIn())
-          case _ => Ok(welcome())
-        }
+      vatRegistrationService.assertFootprintNeeded flatMap {
+        case Some((regId, txID)) =>
+          currentProfileService.buildCurrentProfile(regId, txID) map { _ =>
+            Ok(welcome())
+          }
+        case None => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
       }
   }
 

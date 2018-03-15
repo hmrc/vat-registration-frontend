@@ -23,9 +23,10 @@ import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
 import models.api.VatScheme
 import models.external.{CoHoRegisteredOfficeAddress, Officer}
-import play.api.libs.json.{Format, JsArray, JsObject, JsValue, Json}
+import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
 
 trait StubUtils {
@@ -51,6 +52,8 @@ trait StubUtils {
     def alfeJourney = JourneyStub()
 
     def vatRegistrationFootprint = VatRegistrationFootprintStub()
+
+    def businessRegistration = BusinessRegistrationStub()
 
     def vatScheme = VatSchemeStub()
 
@@ -602,6 +605,27 @@ trait StubUtils {
     }
   }
 
+  case class BusinessRegistrationStub()(implicit builder: PreconditionBuilder) extends KeystoreStubScenarioWrapper {
+
+    def exists(): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo("/business-registration/business-tax-registration"))
+          .willReturn(ok(
+            s"""{ "registrationID" : "1"}"""
+          )))
+
+      builder
+    }
+
+    def fails: PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo("/business-registration/business-tax-registration"))
+          .willReturn(serverError()))
+
+      builder
+    }
+  }
+
   case class UserStub
   ()
   (implicit builder: PreconditionBuilder) extends SessionBuilder {
@@ -611,7 +635,7 @@ trait StubUtils {
 
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))
-          .willReturn(ok("""{}""")))
+          .willReturn(ok(s"""${Organisation.toJson}""")))
 
       builder
     }

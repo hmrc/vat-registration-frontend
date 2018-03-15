@@ -18,7 +18,6 @@ package services
 
 import java.time.LocalDate
 
-import cats.data.OptionT
 import common.enums.VatRegStatus
 import features.officer.services.IVService
 import helpers.VatRegSpec
@@ -48,8 +47,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
     transactionId         = "testTxId",
     vatRegistrationStatus = VatRegStatus.draft,
     incorporationDate     = Some(now),
-    ivPassed              = None,
-    ctStatus              = Some("testCTStatus")
+    ivPassed              = None
   )
 
   "buildCurrentProfile" should {
@@ -77,7 +75,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId", Some("testCTStatus")))
+        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile
       }
 
@@ -104,7 +102,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId", Some("testCTStatus")))
+        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile.copy(ivPassed = Some(true))
       }
     }

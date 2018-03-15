@@ -20,7 +20,8 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
-import uk.gov.hmrc.auth.core.{AuthConnector, InsufficientConfidenceLevel, InvalidBearerToken}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector, InsufficientConfidenceLevel, InvalidBearerToken}
 
 import scala.concurrent.Future
 
@@ -30,8 +31,9 @@ trait AuthMock {
   lazy val mockAuthClientConnector = mock[AuthConnector]
 
   def mockAuthenticated(): OngoingStubbing[Future[Unit]] = {
-    when(mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful({}))
+    when(
+      mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ) thenReturn Future.successful({})
   }
 
   def mockNotAuthenticated(): OngoingStubbing[Future[Unit]] = {
@@ -42,5 +44,17 @@ trait AuthMock {
   def mockNoActiveSession(): OngoingStubbing[Future[Unit]] = {
     when(mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.failed(new InvalidBearerToken))
+  }
+
+  def mockAuthenticatedOrg(): OngoingStubbing[Future[Option[AffinityGroup]]] = {
+    when(
+      mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ) thenReturn Future.successful(Some(Organisation))
+  }
+
+  def mockAuthenticatedNonOrg(): OngoingStubbing[Future[Option[AffinityGroup]]] = {
+    when(
+      mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ) thenReturn Future.successful(Some(Individual))
   }
 }

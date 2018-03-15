@@ -19,7 +19,6 @@ package services
 import connectors.KeystoreConnect
 import controllers.routes
 import models.CurrentProfile
-import play.api.Logger
 import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
@@ -39,10 +38,7 @@ trait SessionProfile {
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show()))
       ) {
-        profile => profile.ctStatus match {
-            case Some("06" | "07" | "08" | "09" | "10") => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
-            case _ => f(profile)
-        }
+        profile => f(profile)
       }
     }
   }

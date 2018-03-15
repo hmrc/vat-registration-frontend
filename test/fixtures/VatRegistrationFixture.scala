@@ -32,7 +32,7 @@ import frs.FlatRateScheme
 import models.api._
 import models.external.{IncorporationInfo, _}
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -149,6 +149,18 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
 
   val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
+
+  val validCompanyRegistrationProfile = Some(CompanyRegistrationProfile("submitted", Some("04")))
+
+  val validCompRegProfileJson: JsObject = Json.parse(
+    """
+      |{
+      |  "status":"submitted",
+      |  "acknowledgementReferences":{
+      |    "status":"04"
+      |  }
+      |}
+    """.stripMargin).as[JsObject]
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
