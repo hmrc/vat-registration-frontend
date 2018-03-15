@@ -18,14 +18,14 @@ package services
 
 import javax.inject.Inject
 
-import common.ErrorUtil.fail
 import common.enums.VatRegStatus
 import connectors._
 import features.turnoverEstimates.TurnoverEstimatesService
 import models.ModelKeys._
 import models._
 import models.api._
-import models.external.IncorporationInfo
+import models.external.{CompanyRegistrationProfile, IncorporationInfo}
+import play.api.Logger
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -35,6 +35,7 @@ import scala.concurrent.Future
 
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
+                                       val brConnector : BusinessRegistrationConnect,
                                        val compRegConnector: CompanyRegistrationConnect,
                                        val incorporationService: IncorporationInformationService,
                                        val keystoreConnector: KeystoreConnect,
@@ -43,6 +44,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
+  val brConnector: BusinessRegistrationConnect
   val compRegConnector: CompanyRegistrationConnect
   val incorporationService: IncorporationInformationService
   val turnoverEstimatesService : TurnoverEstimatesService
@@ -53,6 +55,8 @@ trait LegacyServiceToBeRefactored {
   self : RegistrationService =>
 
   val keystoreConnector: KeystoreConnect
+
+  type RegistrationFootprint = (String, String)
 
   private[services] def s4l[T: Format : S4LKey](implicit hc: HeaderCarrier, profile: CurrentProfile) =
     s4LService.fetchAndGet[T]
@@ -65,14 +69,29 @@ trait LegacyServiceToBeRefactored {
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
 
-  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[(String, String, Option[String])] =
+  def assertFootprintNeeded(implicit hc : HeaderCarrier) : Future[Option[RegistrationFootprint]] = {
+    brConnector.getBusinessRegistrationID flatMap {
+      case Some(regId) => compRegConnector.getCompanyProfile(regId) flatMap {
+        case Some(CompanyRegistrationProfile("draft" | "locked" | "rejected", _)) |
+             Some(CompanyRegistrationProfile(_, Some("06" | "07" | "08" | "09" | "10"))) |
+             None => Future.successful(None)
+        case _ => createRegistrationFootprint map Some.apply
+      }
+      case None => Future.successful(None)
+    }
+  }
+
+  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[RegistrationFootprint] = {
+    Logger.info("[createRegistrationFootprint] Creating registration footprint")
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
       status    <- incorporationService.getIncorporationInfo(txId)
       _         =  status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
-      ctStatus  <- compRegConnector.getCTStatus(vatScheme.id)
-    } yield (vatScheme.id, txId, ctStatus)
+    } yield {
+      (vatScheme.id, txId)
+    }
+  }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 

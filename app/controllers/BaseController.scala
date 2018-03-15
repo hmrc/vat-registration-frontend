@@ -23,8 +23,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.CompositePredicate
-import uk.gov.hmrc.auth.core.{AuthProviders, AuthorisationException, AuthorisedFunctions, ConfidenceLevel, NoActiveSession}
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
@@ -43,6 +44,9 @@ trait BaseController extends FrontendController with I18nSupport with Logging wi
             "continue" -> Seq(VatExternalUrls.continueUrl),
             "origin" -> Seq(VatExternalUrls.defaultOrigin)
           )))
+        case uag: UnsupportedAffinityGroup =>
+          logger.warn(s"User tried to access with a non organisation account", uag)
+          Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
         case ae: AuthorisationException =>
           logger.info(s"User is not authorised - reason: ${ae.reason}")
           Future.successful(InternalServerError)
@@ -57,7 +61,11 @@ trait BaseController extends FrontendController with I18nSupport with Logging wi
 
   def isAuthenticated(f: Request[AnyContent] => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised(authPredicate)(f(request)) handleErrorResult
+      authorised(authPredicate).retrieve(affinityGroup) {
+        case Some(AffinityGroup.Organisation) =>
+          f(request)
+        case _ => throw new UnsupportedAffinityGroup
+      } handleErrorResult
   }
 
   def isAuthenticatedWithProfile(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {

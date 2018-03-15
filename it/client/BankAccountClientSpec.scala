@@ -15,7 +15,6 @@
  */
 
 package client
-
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import features.bankAccountDetails.controllers.routes
 import features.bankAccountDetails.forms.EnterBankAccountDetailsForm._
@@ -28,6 +27,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 
 class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
@@ -76,6 +76,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
     "return a 200 and render the page with nothing pre-popped when it's the first time on the page" in new Setup {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
+      stubAuthWithAffinity(Organisation)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
@@ -87,6 +88,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
     "return a 200 and render the page with the 'yes' radio pre-popped from save4later" in new Setup {
       stubS4LFetchBankAccount(regId, Some(bankAccountProvidedJson))
+      stubAuthWithAffinity(Organisation)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
@@ -99,6 +101,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
     "return a 200 and render the page with the 'yes' radio pre-popped from VAT Backend" in new Setup {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, Some(bankAccountProvidedJson))
+      stubAuthWithAffinity(Organisation)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
@@ -119,6 +122,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
       stubS4LSaveBankAccount(regId)
+      stubAuthWithAffinity(Organisation)
 
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> true)
       val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
@@ -131,6 +135,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       Given("There is no bank account details in S4L or VAT backend")
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
+
+      And("The user is logged in with an Organisation account")
+      stubAuthWithAffinity(Organisation)
 
       And("The form data will be saved to both S4L and VAT backend")
       stubS4LSaveBankAccount(regId)
@@ -154,6 +161,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
     "return a 200 and render the page with nothing pre-popped when it's the first time on the page" in new Setup {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
+      stubAuthWithAffinity(Organisation)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
 
@@ -170,6 +178,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       "return a 303 and redirect to the 'join frs' page" in new Setup {
       Given("The 'has bank account' value is saved in S4L from the previous page")
       stubS4LFetchBankAccount(regId, Some(bankAccountProvidedPartialJson))
+      stubAuthWithAffinity(Organisation)
 
       And("The bank details form data will be valid")
       stubBankReputationCheck(valid = true)

@@ -19,11 +19,13 @@ package connectors
 import javax.inject.Inject
 
 import config.WSHttp
+import models.external.CompanyRegistrationProfile
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.VATRegFeatureSwitches
+import play.api.http.Status._
 
 import scala.concurrent.Future
 
@@ -55,15 +57,19 @@ trait CompanyRegistrationConnect {
     }
   }
 
-  def getCTStatus(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getCompanyProfile(regId: String)(implicit hc: HeaderCarrier): Future[Option[CompanyRegistrationProfile]] = {
     val url     = if(useCrStub) stubUrl else companyRegistrationUrl
     val uri     = if(useCrStub) stubUri else companyRegistrationUri
     val prefix  = if(useCrStub) ""      else "/corporation-tax-registration"
 
-    http.GET[JsValue](s"$url$uri$prefix/$regId/corporation-tax-registration") map {
-      _.\("acknowledgementReferences").\("status").asOpt[String]
+    http.GET[HttpResponse](s"$url$uri$prefix/$regId/corporation-tax-registration") map { response =>
+      if(response.status == NOT_FOUND) None else {
+        val incorpStatus = (response.json \ "status").as[String]
+        val ctStatus = (response.json \ "acknowledgementReferences" \ "status").asOpt[String]
+        Some(CompanyRegistrationProfile(incorpStatus, ctStatus))
+      }
     } recover {
-      case e => throw logResponse(e,"getCTStatus")
+      case e => None
     }
   }
 

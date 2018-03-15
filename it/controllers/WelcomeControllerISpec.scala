@@ -37,6 +37,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .user.isAuthorised
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
+          .businessRegistration.exists()
           .corporationTaxRegistration.existsWithStatus("held")
           .company.isIncorporated
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
@@ -45,6 +46,34 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .audit.writesAuditMerged()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
+      }
+    }
+
+    "return a redirect to CR post sign in" when {
+      "the user has no business registration" in {
+        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
+
+        given()
+          .user.isAuthorised
+          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
+          .businessRegistration.fails
+          .corporationTaxRegistration.existsWithStatus("held")
+          .audit.writesAuditMerged()
+
+        whenReady(controller.start(request))(res => res.header.status mustBe 303)
+      }
+
+      "the user has a BR but an unfinished CT registration" in {
+        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
+
+        given()
+          .user.isAuthorised
+          .businessRegistration.exists()
+          .corporationTaxRegistration.existsWithStatus("draft")
+          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
+          .audit.writesAuditMerged()
+
+        whenReady(controller.start(request))(res => res.header.status mustBe 303)
       }
     }
   }

@@ -18,7 +18,6 @@ package controllers
 
 import common.enums.VatRegStatus
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import mocks.AuthMock
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -41,9 +40,9 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
-  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, None)
-  val testRejectedCTProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, Some("06"))
-  val testNonRejectedCtProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None, Some("04"))
+  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
+  val testRejectedCTProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
+  val testNonRejectedCtProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
 
   "GET /before-you-register-for-vat" should {
     "return HTML" when {
@@ -51,48 +50,13 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
         mockAllMessages
         mockAuthenticated()
 
-        when(mockVatRegistrationService.createRegistrationFootprint(any()))
-          .thenReturn(Future.successful(("schemeId","txId",Some("testCTStatus"))))
+        when(mockVatRegistrationService.assertFootprintNeeded(any()))
+          .thenReturn(Future.successful(Some("schemeId","txId")))
 
-        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
+        when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
 
-        callAuthorised(testController.start) {
-          result =>
-            status(result) mustBe OK
-            contentType(result) mustBe Some("text/html")
-            charset(result) mustBe Some("utf-8")
-        }
-      }
-
-      "the current profile doesnt have a ct status" in {
-        mockAllMessages
-        mockAuthenticated()
-
-        when(mockVatRegistrationService.createRegistrationFootprint(any()))
-          .thenReturn(Future.successful(("schemeId","txId",None)))
-
-        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
-          .thenReturn(Future.successful(testCurrentProfile))
-
-        callAuthorised(testController.start) {
-          result =>
-            status(result) mustBe OK
-            contentType(result) mustBe Some("text/html")
-            charset(result) mustBe Some("utf-8")
-        }
-      }
-      "the current profile has a non rejected ct status" in {
-        mockAllMessages
-        mockAuthenticated()
-
-        when(mockVatRegistrationService.createRegistrationFootprint(any()))
-          .thenReturn(Future.successful(("schemeId","txId",Some("04"))))
-
-        when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
-          .thenReturn(Future.successful(testNonRejectedCtProfile))
-
-        callAuthorised(testController.start) {
+        callAuthorisedOrg(testController.start) {
           result =>
             status(result) mustBe OK
             contentType(result) mustBe Some("text/html")
@@ -100,20 +64,19 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
         }
       }
     }
-    "Redirect to post-sign-in when the ct status is 06 in the current profile" in {
-      mockAllMessages
-      mockAuthenticated()
+    "Redirect to post-sign-in" when {
+      "if we couldn't make a footprint" in {
+        mockAllMessages
+        mockAuthenticated()
 
-      when(mockVatRegistrationService.createRegistrationFootprint(any()))
-        .thenReturn(Future.successful(("schemeId","txId",Some("06"))))
+        when(mockVatRegistrationService.assertFootprintNeeded(any()))
+          .thenReturn(Future.successful(None))
 
-      when(mockCurrentProfile.buildCurrentProfile(any(),any(),any())(any()))
-        .thenReturn(Future.successful(testRejectedCTProfile))
-
-      callAuthorised(testController.start) {
-        result =>
-          status(result) mustBe 303
-          redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
+        callAuthorisedOrg(testController.start) {
+          result =>
+            status(result) mustBe 303
+            redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
+        }
       }
     }
   }

@@ -49,6 +49,13 @@ trait AuthBuilder extends SessionBuilder with AuthMock {
     test(result)
   }
 
+  def withAuthorisedOrgUser(action: Action[AnyContent])(test: Future[Result] => Any): Unit = {
+    val userId = "testUserId"
+    mockAuthenticatedOrg()
+    val result = action(buildRequestWithSession(userId))
+    test(result)
+  }
+
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
                                 (test: Future[Result] => Any) {
     mockNotAuthenticated()
