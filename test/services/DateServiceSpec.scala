@@ -35,7 +35,7 @@ import scala.language.postfixOps
 import scala.reflect.ClassTag
 
 
-class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
+class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
 
   private case class Test(date: LocalDate, daysToAdd: Int, expected: LocalDate)
 
@@ -71,7 +71,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
             .returns(Future.successful(fixedHolidaySet)).once()
 
           //must setup mocks prior to calling new constructor, as one mock is called during construction
-          val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+          val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
           service.addWorkingDays(test.date, test.daysToAdd) shouldBe test.expected
         }
       }
@@ -92,7 +92,7 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
         .returns(Future.successful(fixedHolidaySet)).noMoreThanTwice()
 
       //must setup mocks prior to calling new constructor, as one mock is called during construction
-      val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
 
       val date = d(2017, 3, 23)
       service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
@@ -124,12 +124,43 @@ class WorkingDaysServiceSpec extends UnitSpec with MockFactory with Inspectors {
       }
 
       //must setup mocks prior to calling new constructor, as one mock is called during construction
-      val service = new WorkingDaysService(mockConnector, mockCache, mockConnector)
+      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
 
       val date = d(2017, 3, 23)
       service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
     }
 
+  }
+
+  "dynamicDateExample" must {
+    "return a date 10 calendar days in the future" in new Setup {
+      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+        .expects("england-and-wales", *)
+        .returns(Future.successful(fixedHolidaySet))
+
+      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
+
+      val testCases = Seq(
+        d(2016,1,1)   ->  "11 1 2016",
+        d(2016,2,19)  ->  "29 2 2016",
+        d(2017,2,19)  ->  "1 3 2017",
+        d(2016,12,22) ->  "1 1 2017"
+      )
+
+      testCases foreach { case (testInput, expectedOutput) =>
+        service.dynamicFutureDateExample(testInput) shouldBe expectedOutput
+      }
+
+    }
+    "return a date which is a specified number of calendar days in the future" in new Setup {
+      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+        .expects("england-and-wales", *)
+        .returns(Future.successful(fixedHolidaySet))
+
+      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
+
+      service.dynamicFutureDateExample(d(2016,1,1), 22) shouldBe "23 1 2016"
+    }
   }
 
 }

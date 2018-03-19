@@ -2,7 +2,7 @@
 @import java.time.LocalDate
 @import features.returns.models.DateSelection
 @import features.returns.models.DateSelection._
-@(mandStartDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate : String)(implicit request: Request[_], messages: Messages)
+@(mandStartDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate : String, dateExample: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
@@ -50,23 +50,22 @@
                     <li>@messages("pages.start.date.incorp.bullet2")</li>
                 </ul>
 
-                <span class="form-hint">@messages("pages.start.date.incorp.earlierHint")</span>
+                <span class="form-hint">@messages("pages.startDate.panels.specificDate.hint", dateExample)</span>
 
 
                 @defining(mandStartDateForm("startDate").errors.nonEmpty) { errorPresent =>
                 <div class="form-date @if(errorPresent) { form-group-error }">
 
                     <fieldset id="start-date">
-                        <legend class="visually-hidden">Start date input</legend>
-                        <label><span class="hidden">Start date input</span>
+                        <legend class="visually-hidden">@messages("pages.start.date.incorp.title")</legend>
+                        <label>
                             @mandStartDateForm.error("startDate").map { error =>
                             <span class="error-notification" role="tooltip">
                                                     @messages(error.message, error.args: _*)
                                                 </span>
                             }
-                            @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                            <input type="hidden" name="startDate" value="" id="startDate" class="hidden" />
                         </label>
+                        <input type="hidden" name="startDate" value="" id="startDate" class="hidden" />
 
                         @vatInput(
                             mandStartDateForm("startDate.day"),

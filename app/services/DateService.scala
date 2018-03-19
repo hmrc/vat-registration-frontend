@@ -16,7 +16,9 @@
 
 package services
 
+import java.time.LocalDate.now
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Named}
 
 import common.DateConversions._
@@ -30,9 +32,9 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
 
-class WorkingDaysService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
-                                   val cache: CacheApi,
-                                   @Named("fallback") val fallbackBHConnector: BankHolidaysConnector) extends DateService
+class DateServiceImpl @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
+                                val cache: CacheApi,
+                                @Named("fallback") val fallbackBHConnector: BankHolidaysConnector) extends DateService
 
 trait DateService {
   val cache: CacheApi
@@ -55,6 +57,10 @@ trait DateService {
     }
 
     (date: org.joda.time.LocalDate).plusWorkingDays(days)
+  }
+
+  def dynamicFutureDateExample(anchor: LocalDate = now, displacement: Long = 10): String = {
+    anchor plusDays displacement format DateTimeFormatter.ofPattern("d M yyyy")
   }
 
 }
