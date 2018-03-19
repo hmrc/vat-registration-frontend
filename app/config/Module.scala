@@ -112,7 +112,7 @@ class Module extends AbstractModule {
     bind(classOf[CancellationService]).to(classOf[CancellationServiceImpl]).asEagerSingleton()
     bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
     bind(classOf[IncorporationInformationService]).to(classOf[IncorporationInformationServiceImpl]).asEagerSingleton()
-    bind(classOf[DateService]).to(classOf[WorkingDaysService]).asEagerSingleton()
+    bind(classOf[DateService]).to(classOf[DateServiceImpl]).asEagerSingleton()
     bind(classOf[S4LService]).to(classOf[S4LServiceImpl]).asEagerSingleton()
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
     bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()

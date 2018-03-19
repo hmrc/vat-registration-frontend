@@ -43,6 +43,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
+      val dateService = mockDateService
     }
 
     mockAllMessages
