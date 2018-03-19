@@ -32,7 +32,7 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{DateService, DateServiceImpl, SessionProfile}
 
 import scala.collection.immutable.ListMap
 import scala.concurrent.Future
@@ -43,6 +43,7 @@ class FlatRateControllerImpl @Inject()(val messagesApi: MessagesApi,
                                        val authConnector: AuthClientConnector,
                                        val keystoreConnector: KeystoreConnect,
                                        val configConnector: ConfigConnector,
+                                       val dateService: DateServiceImpl,
                                        val sicAndComplianceService: SicAndComplianceService) extends FlatRateController
 
 trait FlatRateController extends BaseController with SessionProfile {
@@ -51,6 +52,7 @@ trait FlatRateController extends BaseController with SessionProfile {
   val turnoverEstimatesService: TurnoverEstimatesService
   val configConnector: ConfigConnector
   val sicAndComplianceService: SicAndComplianceService
+  val dateService: DateService
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
@@ -188,8 +190,9 @@ trait FlatRateController extends BaseController with SessionProfile {
       ivPassedCheck {
         flatRateService.getPrepopulatedStartDate map { prepop =>
           val (choOpt, date) = prepop
+          val dynamicDate = dateService.dynamicFutureDateExample()
           val viewForm = choOpt.fold(startDateForm)(choice => startDateForm.fill((choice, date)))
-          Ok(features.frs.views.html.frs_start_date(viewForm))
+          Ok(features.frs.views.html.frs_start_date(viewForm, dynamicDate))
         }
       }
   }
@@ -198,7 +201,10 @@ trait FlatRateController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         startDateForm.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm))),
+          badForm => {
+            val dynamicDate = dateService.dynamicFutureDateExample()
+            Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm, dynamicDate)))
+          },
           view => {
             val (choice, date) = view
             flatRateService.saveStartDate(choice, date) map { _ =>

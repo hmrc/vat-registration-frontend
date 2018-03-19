@@ -30,7 +30,7 @@ import features.returns.views.html.{charge_expectancy_view => ChargeExpectancyPa
 import models.{CurrentProfile, MonthYearModel}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Result}
-import services.SessionProfile
+import services.{DateService, DateServiceImpl, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -40,6 +40,7 @@ import scala.language.postfixOps
 class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val authConnector: AuthClientConnector,
                                       val returnsService: ReturnsService,
+                                      val dateService: DateServiceImpl,
                                       val messagesApi: MessagesApi) extends ReturnsController {
 
 }
@@ -49,6 +50,7 @@ trait ReturnsController extends BaseController with SessionProfile {
   val returnsService: ReturnsService
   val authConnector: AuthConnector
   val keystoreConnector: KeystoreConnect
+  val dateService: DateService
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
@@ -159,9 +161,10 @@ trait ReturnsController extends BaseController with SessionProfile {
             val filledForm = viewModel.form.fold(form)(data => form.fill(
               (data._1, data._2)
             ))
+            val dynamicDate = dateService.dynamicFutureDateExample()
             Ok(profile.incorporationDate match {
-              case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive)
-              case None => VoluntaryStartDatePage(filledForm, viewModel.ctActive)
+              case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive, dynamicDate)
+              case None => VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate)
             })
           }
         }
@@ -174,10 +177,13 @@ trait ReturnsController extends BaseController with SessionProfile {
         val form = profile.incorporationDate.fold(VoluntaryDateForm.form)(VoluntaryDateFormIncorp.form)
         returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
           form.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(profile.incorporationDate match {
-              case Some(incorpDate) => VoluntaryStartDateIncorpPage(errors, incorpDate, ctActiveDate)
-              case None => VoluntaryStartDatePage(errors, ctActiveDate)
-            })),
+            errors => {
+              val dynamicDate = dateService.dynamicFutureDateExample()
+              Future.successful(BadRequest(profile.incorporationDate match {
+                case Some(incorpDate) => VoluntaryStartDateIncorpPage(errors, incorpDate, ctActiveDate, dynamicDate)
+                case None => VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)
+              }))
+            },
             success => returnsService.saveVoluntaryStartDate(success._1, success._2, profile.incorporationDate, ctActiveDate) map { _ =>
               Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
             }
@@ -194,11 +200,13 @@ trait ReturnsController extends BaseController with SessionProfile {
             incorpDate =>
               returnsService.retrieveMandatoryDates map { dateModel =>
                 val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
+                val dynamicDate = dateService.dynamicFutureDateExample()
                 Ok(MandatoryStartDateIncorpPage(
                   dateModel.selected.fold(form) { selection =>
                     form.fill((selection, dateModel.startDate))
                   },
-                  dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
+                  dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y),
+                  dynamicDate
                 ))
               }
           }
@@ -213,7 +221,10 @@ trait ReturnsController extends BaseController with SessionProfile {
           case Some(incorpDate) =>
             returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
                 MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
-                  errors => Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y)))),
+                  errors => {
+                    val dynamicDate = dateService.dynamicFutureDateExample()
+                    Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
+                  },
                   success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map {
                     _ => Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
                   }

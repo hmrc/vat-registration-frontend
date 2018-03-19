@@ -2,7 +2,7 @@
 @import java.time.LocalDate
 @import frs.FRSDateChoice
 
-@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])])(implicit request: Request[_], messages: Messages)
+@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
@@ -38,21 +38,20 @@
                 <div class="panel panel-border-narrow hidden" id="different_date_panel">
                     <p>@messages("pages.frs.startDate.para1")</p>
 
-                    <span class="form-hint">@messages("pages.frs.startDate.hint1")</span>
+                    <span class="form-hint">@messages("pages.frs.startDate.hint1", dateExample)</span>
 
 
                     @defining(frsStartDateForm("frsStartDate").errors.nonEmpty) { errorPresent =>
                         <div class="form-date @if(errorPresent) { form-group-error }">
 
                             <fieldset id="frs-start-date">
-                                <legend class="visually-hidden">Frs Start date input</legend>
+                                <legend class="visually-hidden">@messages("pages.frs.startDate.heading")</legend>
                                 @frsStartDateForm.error("frsStartDate").map { error =>
                                     <span class="error-notification" role="tooltip">
                                         @messages(error.message, error.args: _*)
                                     </span>
                                 }
-                                    @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                    <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
+                                <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
 
                                 @vatInput(
                                     frsStartDateForm("frsStartDate.day"),
