@@ -29,14 +29,14 @@ import scala.concurrent.Future
 
 class CancellationServiceImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                         val currentProfileService: CurrentProfileSrv,
-                                        val companyRegistrationConnector: CompanyRegistrationConnect,
+                                        val companyRegistrationConnector: CompanyRegistrationConnector,
                                         val save4LaterConnector: S4LConnect,
                                         val vatRegistrationConnector: RegistrationConnector) extends CancellationService
 
 trait CancellationService {
   val keystoreConnector: KeystoreConnect
   val currentProfileService: CurrentProfileSrv
-  val companyRegistrationConnector: CompanyRegistrationConnect
+  val companyRegistrationConnector: CompanyRegistrationConnector
   val save4LaterConnector: S4LConnect
   val vatRegistrationConnector: RegistrationConnector
 

@@ -23,6 +23,7 @@ import features.officer.services.IVService
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
@@ -31,7 +32,7 @@ class CurrentProfileService @Inject()(val incorpInfoService: IncorporationInform
                                       val ivService: IVService,
                                       val keystoreConnector: KeystoreConnect) extends CurrentProfileSrv
 
-trait CurrentProfileSrv {
+trait CurrentProfileSrv extends RegistrationWhitelist {
 
   val incorpInfoService: IncorporationInformationService
   val keystoreConnector: KeystoreConnect
@@ -41,9 +42,11 @@ trait CurrentProfileSrv {
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
       companyName           <- incorpInfoService.getCompanyName(regId, txId)
-      incorpInfo            <- incorpInfoService.getIncorporationInfo(txId)
+      incorpInfo            <- incorpInfoService.getIncorporationInfo(regId, txId)
       status                <- vatRegistrationService.getStatus(regId)
-      ivStatus              <- ivService.getIVStatus(regId)
+      ivStatus              <-  ifRegIdNotWhitelisted(regId) {
+                                  ivService.getIVStatus(regId)
+                                }(returnDefaultPassedIV)
       incorpDate            =  if(incorpInfo.isDefined) incorpInfo.get.statusEvent.incorporationDate else None
       profile               =  CurrentProfile(
         companyName           = companyName,

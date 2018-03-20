@@ -24,9 +24,11 @@ import features.frs.services.FlatRateService
 import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import play.api.mvc.Results.Ok
 import mocks.AuthMock
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -139,8 +141,6 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.acknowledged))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any()))
-        .thenReturn(Future.successful(Success))
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>

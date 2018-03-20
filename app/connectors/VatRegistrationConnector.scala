@@ -35,18 +35,19 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
 sealed trait DESResponse
 object Success extends DESResponse
 
-class VatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends RegistrationConnector {
-  lazy val vatRegUrl   = config.baseUrl("vat-registration")
-  lazy val vatRegElUrl = config.baseUrl("vat-registration-eligibility-frontend")
+class VatRegistrationConnector @Inject()(val http: WSHttp, conf: ServicesConfig) extends RegistrationConnector {
+  lazy val vatRegUrl   = conf.baseUrl("vat-registration")
+  lazy val vatRegElUrl = conf.baseUrl("vat-registration-eligibility-frontend")
 }
 
-trait RegistrationConnector {
+trait RegistrationConnector extends RegistrationWhitelist {
 
   val vatRegUrl: String
   val vatRegElUrl: String
@@ -65,9 +66,11 @@ trait RegistrationConnector {
   }
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover{
-      case e: Exception => throw logResponse(e, "getAckRef")
-    }
+    ifRegIdNotWhitelisted(regId) {
+      http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover {
+        case e: Exception => throw logResponse(e, "getAckRef")
+      }
+    }(returnDefaultAckRef)
   }
 
   def getLodgingOfficer(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
@@ -105,10 +108,12 @@ trait RegistrationConnector {
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
-  def getIncorporationInfo(transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
-    http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
-      case _ => Option.empty[IncorporationInfo]
-    }
+  def getIncorporationInfo(regId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
+    ifRegIdNotWhitelisted[Option[IncorporationInfo]](regId) {
+      http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
+        case _ => Option.empty[IncorporationInfo]
+      }
+    }(returnDefaultIncorpInfo)
   }
 
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
@@ -144,11 +149,13 @@ trait RegistrationConnector {
   }
 
   def submitRegistration(regId:String)(implicit hc:HeaderCarrier) : Future[DESResponse] = {
-    http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
-      _.status match {
-        case OK => Success
+    ifRegIdNotWhitelisted[DESResponse](regId) {
+      http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
+        _.status match {
+          case OK => Success
+        }
       }
-    }
+    }(preventSubmissionForWhitelist)
   }
 
   def getTradingDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
