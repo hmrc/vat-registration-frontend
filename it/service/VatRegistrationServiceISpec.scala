@@ -37,7 +37,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
   lazy val vatRegistrationConnector = Play.current.injector.instanceOf[VatRegistrationConnector]
   lazy val s4lService = Play.current.injector.instanceOf[S4LService]
-  lazy val companyRegistrationConnector = Play.current.injector.instanceOf[CompanyRegistrationConnector]
+  lazy val companyRegistrationConnector = Play.current.injector.instanceOf[CompanyRegistrationConnectorImpl]
   lazy val brConnector = Play.current.injector.instanceOf[BusinessRegistrationConnector]
   lazy val incorpInfoService = Play.current.injector.instanceOf[IncorporationInformationServiceImpl]
   lazy val keystoreConnector = Play.current.injector.instanceOf[KeystoreConnector]

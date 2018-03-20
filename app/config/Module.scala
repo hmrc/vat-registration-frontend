@@ -138,11 +138,11 @@ class Module extends AbstractModule {
     bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegistrationConnect]).to(classOf[BusinessRegistrationConnector]).asEagerSingleton()
-    bind(classOf[CompanyRegistrationConnect]).to(classOf[CompanyRegistrationConnector]).asEagerSingleton()
+    bind(classOf[CompanyRegistrationConnector]).to(classOf[CompanyRegistrationConnectorImpl]).asEagerSingleton()
     bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()
     bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
-    bind(classOf[IncorporationInformationConnect]).to(classOf[IncorporationInformationConnector]).asEagerSingleton()
+    bind(classOf[IncorporationInformationConnector]).to(classOf[IncorporationInformationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
     bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
   }

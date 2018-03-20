@@ -38,8 +38,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
           .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("held")
-          .company.isIncorporated
+          .corporationTaxRegistration.existsWithStatus("held","04")
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
           .vatScheme.contains(vatRegIncorporated)
           .vatScheme.has("officer", Json.obj())
@@ -57,7 +56,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .user.isAuthorised
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
           .businessRegistration.fails
-          .corporationTaxRegistration.existsWithStatus("held")
+          .corporationTaxRegistration.existsWithStatus("held", "04")
           .audit.writesAuditMerged()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 303)
@@ -69,7 +68,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .user.isAuthorised
           .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("draft")
+          .corporationTaxRegistration.existsWithStatus("draft", "04")
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
           .audit.writesAuditMerged()
 
