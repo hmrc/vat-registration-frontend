@@ -20,18 +20,19 @@ import javax.inject.Inject
 
 import config.WSHttp
 import models.external.CompanyRegistrationProfile
+import play.api.Logger
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import utils.VATRegFeatureSwitches
 import play.api.http.Status._
+import utils.{RegistrationWhitelist, VATRegFeatureSwitches}
 
 import scala.concurrent.Future
 
-class CompanyRegistrationConnector @Inject()(val http: WSHttp,
-                                             config: ServicesConfig,
-                                             val vatFeatureSwitches: VATRegFeatureSwitches) extends CompanyRegistrationConnect {
+class CompanyRegistrationConnectorImpl @Inject()(val http: WSHttp,
+                                                 config: ServicesConfig,
+                                                 val vatFeatureSwitches: VATRegFeatureSwitches) extends CompanyRegistrationConnector {
   val companyRegistrationUrl: String = config.baseUrl("company-registration")
   val companyRegistrationUri: String = config.getConfString("company-registration.uri",
     throw new RuntimeException("[CompanyRegistrationConnector] Could not retrieve config for 'company-registration.uri'"))
@@ -40,7 +41,7 @@ class CompanyRegistrationConnector @Inject()(val http: WSHttp,
     throw new RuntimeException("[CompanyRegistrationConnector] Could not retrieve config for 'incorporation-frontend-stub.uri'"))
 }
 
-trait CompanyRegistrationConnect {
+trait CompanyRegistrationConnector extends RegistrationWhitelist {
 
   val companyRegistrationUrl: String
   val companyRegistrationUri: String
@@ -50,27 +51,32 @@ trait CompanyRegistrationConnect {
   val vatFeatureSwitches: VATRegFeatureSwitches
 
   def getTransactionId(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[JsValue](s"$stubUrl$stubUri/$regId/corporation-tax-registration") map {
-      _.\("confirmationReferences").\("transaction-id").as[String]
-    } recover {
-      case e => throw logResponse(e,"getTransactionID")
-    }
+    ifRegIdNotWhitelisted[String](regId) {
+      http.GET[JsValue](s"$stubUrl$stubUri/$regId/corporation-tax-registration") map {
+        _.\("confirmationReferences").\("transaction-id").as[String]
+      } recover {
+        case e => throw logResponse(e, "getTransactionID")
+      }
+    }(returnDefaultTransId)
   }
 
   def getCompanyProfile(regId: String)(implicit hc: HeaderCarrier): Future[Option[CompanyRegistrationProfile]] = {
-    val url     = if(useCrStub) stubUrl else companyRegistrationUrl
-    val uri     = if(useCrStub) stubUri else companyRegistrationUri
-    val prefix  = if(useCrStub) ""      else "/corporation-tax-registration"
+    ifRegIdNotWhitelisted(regId) {
+      val url = if (useCrStub) stubUrl else companyRegistrationUrl
+      val uri = if (useCrStub) stubUri else companyRegistrationUri
+      val prefix = if (useCrStub) "" else "/corporation-tax-registration"
 
-    http.GET[HttpResponse](s"$url$uri$prefix/$regId/corporation-tax-registration") map { response =>
-      if(response.status == NOT_FOUND) None else {
-        val incorpStatus = (response.json \ "status").as[String]
-        val ctStatus = (response.json \ "acknowledgementReferences" \ "status").asOpt[String]
-        Some(CompanyRegistrationProfile(incorpStatus, ctStatus))
+      http.GET[HttpResponse](s"$url$uri$prefix/$regId/corporation-tax-registration") map { response =>
+        if (response.status == NOT_FOUND) None else {
+          val incorpStatus = (response.json \ "status").as[String]
+          val ctStatus = (response.json \ "acknowledgementReferences" \ "status").asOpt[String]
+          Some(CompanyRegistrationProfile(incorpStatus, ctStatus))
+        }
+      } recover {
+        case e => Logger.warn(s"[CompanyRegistrationConnector][getCompanyProfile] had an exception ${e.getMessage} for regId: $regId")
+          None
       }
-    } recover {
-      case e => None
-    }
+    }(returnDefaultCompRegProfile)
   }
 
   private[connectors] def useCrStub = vatFeatureSwitches.useCrStubbed.enabled

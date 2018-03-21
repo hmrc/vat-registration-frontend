@@ -246,12 +246,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return a IncorporationInfo when it can be retrieved from the microservice" in new Setup {
       mockHttpGET[IncorporationInfo]("tst-url", testIncorporationInfo)
-      connector.getIncorporationInfo("tstID") returnsSome testIncorporationInfo
+      connector.getIncorporationInfo("tstRegId","tstID") returnsSome testIncorporationInfo
     }
 
     "fail when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[IncorporationInfo]("test-url", notFound)
-      connector.getIncorporationInfo("tstID") returnsNone
+      connector.getIncorporationInfo("tstRegId","tstID") returnsNone
     }
   }
 

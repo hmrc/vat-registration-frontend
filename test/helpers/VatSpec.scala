@@ -19,12 +19,15 @@ package helpers
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import config.AppConfig
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models.CurrentProfile
+import models.external._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -50,5 +53,36 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
 
   override protected def beforeEach() {
     resetMocks()
+  }
+
+  //TODO: Complete this function to create the config
+  def generateConfig(newAnalyticsToken: String                    = "",
+                     newAnalyticsHost: String                     = "",
+                     newReportAProblemPartialUrl: String          = "",
+                     newReportAProblemNonJSUrl: String            = "",
+                     newTimeoutInSeconds: String                  = "",
+                     newContactFrontendPartialBaseUrl: String     = "",
+                     newWhitelistedPostIncorpRegIds: Seq[String]  = Seq(),
+                     newWhitelistedPreIncorpRegIds: Seq[String]   = Seq(),
+                     newWhitelistedOfficersList: Seq[Officer]     = Seq(),
+                     newWhitelistedCompanyName: JsValue           = Json.obj() ) = new AppConfig {
+    val analyticsToken: String                      = newAnalyticsToken
+    val analyticsHost: String                       = newAnalyticsHost
+    val reportAProblemPartialUrl: String            = newReportAProblemPartialUrl
+    val reportAProblemNonJSUrl: String              = newReportAProblemNonJSUrl
+    val timeoutInSeconds: String                    = newTimeoutInSeconds
+    val contactFrontendPartialBaseUrl: String       = newContactFrontendPartialBaseUrl
+    val whitelistedPostIncorpRegIds: Seq[String]    = newWhitelistedPostIncorpRegIds
+    val whitelistedPreIncorpRegIds: Seq[String]     = newWhitelistedPreIncorpRegIds
+    val defaultCompanyName: JsValue                 = newWhitelistedCompanyName
+    val defaultCohoROA: CoHoRegisteredOfficeAddress = CoHoRegisteredOfficeAddress("premises",
+      "line1",
+      Some("line2"),
+      "locality",
+      Some("UK"),
+      Some("po_box"),
+      Some("XX XX"),
+      Some("region"))
+    val defaultOfficerList: OfficerList             = OfficerList(newWhitelistedOfficersList)
   }
 }

@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
                                        val brConnector : BusinessRegistrationConnect,
-                                       val compRegConnector: CompanyRegistrationConnect,
+                                       val compRegConnector: CompanyRegistrationConnector,
                                        val incorporationService: IncorporationInformationService,
                                        val keystoreConnector: KeystoreConnect,
                                        val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
@@ -45,7 +45,7 @@ trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
   val brConnector: BusinessRegistrationConnect
-  val compRegConnector: CompanyRegistrationConnect
+  val compRegConnector: CompanyRegistrationConnector
   val incorporationService: IncorporationInformationService
   val turnoverEstimatesService : TurnoverEstimatesService
 }
@@ -86,7 +86,7 @@ trait LegacyServiceToBeRefactored {
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
-      status    <- incorporationService.getIncorporationInfo(txId)
+      status    <- incorporationService.getIncorporationInfo(vatScheme.id, txId)
       _         =  status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
     } yield {
       (vatScheme.id, txId)

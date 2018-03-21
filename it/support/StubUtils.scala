@@ -57,6 +57,8 @@ trait StubUtils {
 
     def vatScheme = VatSchemeStub()
 
+    def incorpInformation = ???
+
 
     def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
@@ -345,7 +347,7 @@ trait StubUtils {
   case class IncorporationStub()(implicit builder: PreconditionBuilder) extends KeystoreStub {
     def isIncorporated: PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo("/incorporation-information/000-434-1"))
+        get(urlPathEqualTo("/vatreg/incorporation-information/000-434-1"))
           .willReturn(ok(
             s"""
                |{
@@ -417,11 +419,14 @@ trait StubUtils {
   }
 
   case class CorporationTaxRegistrationStub()(implicit builder: PreconditionBuilder) {
-    def existsWithStatus(status: String): PreconditionBuilder = {
+    def existsWithStatus(status: String, ackRef: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/incorporation-frontend-stubs/1/corporation-tax-registration"))
           .willReturn(ok(
-            s"""{ "confirmationReferences": { "transaction-id": "000-434-1" }, "status": "$status" }"""
+            s"""{
+               | "status":"$status",
+               | "confirmationReferences": { "transaction-id": "000-434-1" },
+               | "acknowledgementReferences": {"status": "$ackRef"} }""".stripMargin
           )))
       builder
     }
@@ -560,6 +565,13 @@ trait StubUtils {
           .willReturn(aResponse().withStatus(202).withBody(json.toString)))
       builder
     }
+    def isSubmittedSuccessfully(regId:String = "1"): PreconditionBuilder = {
+      stubFor(
+        put(urlPathMatching(s"/vatreg/$regId/submit-registration"))
+          .willReturn(aResponse().withStatus(200).withBody("fooBar")))
+      builder
+    }
+
   }
 
   case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) extends KeystoreStubScenarioWrapper {
