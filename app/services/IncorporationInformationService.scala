@@ -28,11 +28,11 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class IncorporationInformationServiceImpl @Inject()(val iiConnector: IncorporationInformationConnect,
+class IncorporationInformationServiceImpl @Inject()(val iiConnector: IncorporationInformationConnector,
                                                     val vatRegConnector: RegistrationConnector) extends IncorporationInformationService
 
 trait IncorporationInformationService {
-  val iiConnector: IncorporationInformationConnect
+  val iiConnector: IncorporationInformationConnector
   val vatRegConnector: RegistrationConnector
 
   def getRegisteredOfficeAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[ScrsAddress]] = {
@@ -51,7 +51,7 @@ trait IncorporationInformationService {
     iiConnector.getCompanyName(regId, txId) map(_.\("company_name").as[String])
   }
 
-  def getIncorporationInfo(txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[IncorporationInfo]] = {
-    vatRegConnector.getIncorporationInfo(txId)
+  def getIncorporationInfo(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[IncorporationInfo]] = {
+    vatRegConnector.getIncorporationInfo(regId, txId)
   }
 }

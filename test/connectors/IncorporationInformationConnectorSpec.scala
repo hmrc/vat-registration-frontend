@@ -24,7 +24,7 @@ import org.joda.time.DateTime
 class IncorporationInformationConnectorSpec extends VatRegSpec {
 
   class Setup {
-    val connector = new IncorporationInformationConnect {
+    val connector = new IncorporationInformationConnector {
       override val incorpInfoUrl: String = "tst-url"
       override val incorpInfoUri: String = "tst-url"
       override val http: WSHttp = mockWSHttp

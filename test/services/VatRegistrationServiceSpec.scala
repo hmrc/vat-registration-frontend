@@ -47,7 +47,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorporationInfo(any())(any()))
+    when(mockIIService.getIncorporationInfo(any(), any())(any()))
       .thenReturn(Future.successful(None))
   }
   val json = Json.parse(
@@ -78,7 +78,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
         mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
 
-        when(mockIIService.getIncorporationInfo(any())(any[HeaderCarrier]()))
+        when(mockIIService.getIncorporationInfo(any(), any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(Some(testIncorporationInfo)))
         when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
 
@@ -111,9 +111,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
         await(service.assertFootprintNeeded) mustBe None
       }
 
+
       "if the document is ETMP rejected with a ETMP status of 06" in new Setup {
         when(mockBrConnector.getBusinessRegistrationID(any()))
           .thenReturn(Future.successful(Some("regId")))
+      when(mockIIService.getIncorporationInfo(any(), any())(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(Some(testIncorporationInfo)))
+      when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
 
         when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
           .thenReturn(Future.successful(Some(CompanyRegistrationProfile("submitted", Some("06")))))

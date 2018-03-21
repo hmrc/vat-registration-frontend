@@ -33,6 +33,9 @@ import scala.concurrent.Future
 class CurrentProfileServiceSpec extends VatRegSpec {
 
   val testService = new CurrentProfileSrv {
+    override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
+      if(regId == "99") Future.successful(default(regId)) else f
+
     override val vatRegistrationService = mockVatRegistrationService
     override val keystoreConnector = mockKeystoreConnector
     override val incorpInfoService = mockIIService
@@ -58,7 +61,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
 
-        when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
+        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(Some(
             IncorporationInfo(
               IncorpSubscription("","","",""),
@@ -85,7 +88,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
 
-        when(mockIIService.getIncorporationInfo(Matchers.any())(Matchers.any()))
+        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(Some(
             IncorporationInfo(
               IncorpSubscription("","","",""),
@@ -104,6 +107,29 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
         val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile.copy(ivPassed = Some(true))
+      }
+      "the currentProfile is created if the regId is whitelisted setting the ivPassed to true by default" in {
+        implicit val hc = HeaderCarrier()
+
+        when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful("testCompanyName"))
+
+        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(Some(
+            IncorporationInfo(
+              IncorpSubscription("","","",""),
+              IncorpStatusEvent("", None, Some(now), None)
+            )
+          )))
+
+        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(VatRegStatus.draft))
+
+        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
+
+        val result = await(testService.buildCurrentProfile("99", "testTxId"))
+        result mustBe testCurrentProfile.copy(registrationId = "99", ivPassed = Some(true))
       }
     }
   }

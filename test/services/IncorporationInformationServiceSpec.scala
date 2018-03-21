@@ -87,9 +87,9 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
 
   "getIncorporationInfo" must {
     "return an incorporation info object" in new Setup {
-      when(mockRegConnector.getIncorporationInfo(currentProfile().transactionId))
+      when(mockRegConnector.getIncorporationInfo(currentProfile().registrationId, currentProfile().transactionId))
         .thenReturn(Future.successful(Some(testIncorporationInfo)))
-      service.getIncorporationInfo(currentProfile().transactionId) returnsSome testIncorporationInfo
+      service.getIncorporationInfo(currentProfile().registrationId, currentProfile().transactionId) returnsSome testIncorporationInfo
     }
   }
 }

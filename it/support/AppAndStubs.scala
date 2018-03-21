@@ -17,6 +17,8 @@
 package support
 
 
+import java.util.Base64
+
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
@@ -57,7 +59,13 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
     ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
-  val additionalConfig: Map[String, String] = Map()
+  val encryptedRegIdList1  = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
+
+  def additionalConfig: Map[String, String] =     Map(
+    "regIdWhitelist" -> s"OTgsOTk="
+  )
+
+
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure(replaceWithWiremock(Seq(
@@ -76,7 +84,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       "bank-account-reputation",
       "identity-verification-proxy",
       "identity-verification-frontend"
-    )))
+    )) ++ additionalConfig)
     .build()
 
   private def replaceWithWiremock(services: Seq[String]) =

@@ -16,6 +16,7 @@
 
 package mocks
 
+import config.AppConfig
 import connectors._
 import features.bankAccountDetails.connectors.BankAccountReputationConnectorImpl
 import features.bankAccountDetails.services.BankAccountReputationServiceImpl
@@ -48,10 +49,11 @@ trait VatMocks
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockConfig = mock[ServicesConfig]
+
   implicit lazy val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   //Connectors
-  implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnect]
-  implicit lazy val mockIIConnector = mock[IncorporationInformationConnector]
+  implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnectorImpl]
+  implicit lazy val mockIIConnector = mock[IncorporationInformationConnectorImpl]
   implicit lazy val mockRegConnector = mock[VatRegistrationConnector]
   implicit lazy val mockConfigConnector = mock[ConfigConnector]
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
@@ -75,7 +77,6 @@ trait VatMocks
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockPrePopService: PrePopService = mock[PrePopService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
-
 
   def resetMocks() {
     reset(

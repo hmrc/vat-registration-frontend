@@ -19,7 +19,10 @@ package config
 import java.nio.charset.Charset
 import java.util.Base64
 
+import common.enums.VatRegStatus
+import models.external.{CoHoRegisteredOfficeAddress, IncorporationInfo, OfficerList}
 import play.api.Play.{configuration, current}
+import play.api.libs.json.{JsObject, JsValue, Json, Reads}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
@@ -29,6 +32,12 @@ trait AppConfig {
   val reportAProblemNonJSUrl: String
   val timeoutInSeconds: String
   val contactFrontendPartialBaseUrl: String
+  val defaultCompanyName: JsValue
+  val defaultCohoROA: CoHoRegisteredOfficeAddress
+  val defaultOfficerList: OfficerList
+  val whitelistedPreIncorpRegIds: Seq[String]
+  val whitelistedPostIncorpRegIds: Seq[String]
+  lazy val whitelistedRegIds: Seq[String] = whitelistedPostIncorpRegIds ++ whitelistedPreIncorpRegIds
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -46,7 +55,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override val timeoutInSeconds = loadConfig("timeoutInSeconds")
 
   private def whitelistConfig(key: String): Seq[String] = {
-    Some(new String(Base64.getDecoder.decode(loadConfig(key)), "UTF-8"))
+    Some(new String(Base64.getDecoder.decode(configuration.getString(key).getOrElse("")), "UTF-8"))
       .map(_.split(",")).getOrElse(Array.empty).toSeq
   }
 
@@ -54,9 +63,26 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
     new String(Base64.getDecoder.decode(configuration.getString(key).getOrElse("")), Charset.forName("UTF-8"))
   }
 
+  private def loadJsonConfigBase64[T](key: String)(implicit reads: Reads[T]): T = {
+    val json = Json.parse(Base64.getDecoder.decode(configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))))
+    json.validate[T].fold(
+      errors => throw new Exception(s"Incorrect data for the key: $key and ##  $errors"),
+      valid  => valid
+    )
+  }
+
   lazy val whitelist          = whitelistConfig("whitelist")
   lazy val whitelistExcluded  = whitelistConfig("whitelist-excluded")
 
   lazy val uriWhiteList     = configuration.getStringSeq("csrfexceptions.whitelist").getOrElse(Seq.empty).toSet
   lazy val csrfBypassValue  = loadStringConfigBase64("Csrf-Bypass-value")
+
+  // Defaulted Values for default regId
+  lazy val defaultCompanyName :JsValue                 = loadJsonConfigBase64[JsValue]("default-company-name")
+  lazy val defaultCohoROA: CoHoRegisteredOfficeAddress = loadJsonConfigBase64[CoHoRegisteredOfficeAddress]("default-coho-registered-office-address")
+  lazy val defaultOfficerList: OfficerList             = loadJsonConfigBase64[OfficerList]("default-officer-list")(OfficerList.reads)
+
+  lazy val whitelistedPreIncorpRegIds:Seq[String]  = whitelistConfig("regIdPreIncorpWhitelist")
+  lazy val whitelistedPostIncorpRegIds:Seq[String] = whitelistConfig("regIdPostIncorpWhitelist")
+
 }
