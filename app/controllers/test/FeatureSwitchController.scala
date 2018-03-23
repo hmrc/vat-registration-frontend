@@ -36,8 +36,10 @@ trait FeatureSwitchController extends FrontendController {
   def switcher(name: String, state: String): Action[AnyContent] = Action.async{
     implicit request =>
       def feature: FeatureSwitch = state match {
-        case "true" => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
-        case _      => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
+        case "true"                                           => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
+        case x if x.matches(featureManager.datePatternRegex)  => featureManager.setSystemDate(ValueSetFeatureSwitch(name, state))
+        case x@"time-clear"                                   => featureManager.clearSystemDate(ValueSetFeatureSwitch(name, x))
+        case _                                                => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
       }
 
       vatRegFeatureSwitch(name) match {
