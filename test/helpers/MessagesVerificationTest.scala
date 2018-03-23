@@ -39,7 +39,5 @@ class MessagesVerificationTest extends PlaySpec {
         if line.matches("""^.+=.+=\s*[{].*$""")
       } fail(s"Found an open brace not preceded by double quotes, but preceded by an equals sign: ${key(line)}")
     }
-
   }
-
 }

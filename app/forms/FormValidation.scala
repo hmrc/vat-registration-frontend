@@ -28,6 +28,7 @@ import play.api.data.validation.{Constraint, _}
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
 import play.api.libs.json.Reads.email
 import play.api.libs.json.{JsString, JsSuccess}
+import uk.gov.hmrc.time.workingdays.{BankHolidaySet, LocalDateWithHolidays}
 
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
@@ -248,12 +249,12 @@ object FormValidation {
       }
   }
 
-  def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String): Constraint[(String, String, String)] = Constraint {
+  def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String, args: List[String]): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
       if(date.isEqual(minDate) || date.isAfter(minDate))
-        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, maxDate))
-      else Invalid(ValidationError(beforeMinErr, minDate))
+        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, args:_*))
+      else Invalid(ValidationError(beforeMinErr, args:_*))
   }
 
   def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
@@ -291,7 +292,5 @@ object FormValidation {
 
     def validPartialMonthYearModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
       Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
-
   }
-
 }

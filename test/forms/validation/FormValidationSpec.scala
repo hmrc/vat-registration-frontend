@@ -18,12 +18,14 @@ package forms.validation
 
 import java.time.LocalDate
 
+import org.joda.time.{LocalDate => JodaLocalDate}
 import forms.FormValidation
 import forms.FormValidation.ErrorCode
 import models.DateModel
 import org.scalatest.{Inside, Inspectors}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 class FormValidationSpec extends UnitSpec with Inside with Inspectors {
 
@@ -375,20 +377,10 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
   }
 
-  /*
-  def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String): Constraint[(String, String, String)] = Constraint {
-    input: (String, String, String) =>
-      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
-      if(date.isEqual(minDate) || date.isAfter(minDate))
-        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, maxDate))
-      else Invalid(ValidationError(beforeMinErr, minDate))
-  }
-   */
-
   "withinRange" should {
     val minDate = LocalDate.of(2018, 1, 1)
     val maxDate = LocalDate.of(2018, 12, 31)
-    val constraint = FormValidation.withinRange(minDate, maxDate, "beforeMinErrMsg", "afterMaxErrMsg")
+    val constraint = FormValidation.withinRange(minDate, maxDate, "beforeMinErrMsg", "afterMaxErrMsg", List(minDate.toString, maxDate.toString))
 
     "return Valid if the date is after the min date and before the max date" in {
       constraint("15", "6", "2018") shouldBe Valid
@@ -403,11 +395,11 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
     }
 
     "return Invalid if the date is before the minumum date with the correct error message" in {
-      constraint("31", "12", "2017") shouldBe Invalid(ValidationError("beforeMinErrMsg", minDate))
+      constraint("31", "12", "2017") shouldBe Invalid(ValidationError("beforeMinErrMsg", minDate.toString, maxDate.toString))
     }
 
     "return Invalid if the date is after the maximum date with the correct error message" in {
-      constraint("1", "1", "2019") shouldBe Invalid(ValidationError("afterMaxErrMsg", maxDate))
+      constraint("1", "1", "2019") shouldBe Invalid(ValidationError("afterMaxErrMsg", minDate.toString, maxDate.toString))
     }
   }
 
@@ -429,5 +421,4 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
       constraint(s"${moreThan4.getDayOfMonth}", s"${moreThan4.getMonthValue}", s"${moreThan4.getYear}") shouldBe Invalid(ValidationError("testErrMsg"))
     }
   }
-
 }

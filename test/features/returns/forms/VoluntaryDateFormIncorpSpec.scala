@@ -18,66 +18,76 @@ package features.returns.forms
 
 import java.time.LocalDate
 
-import features.returns.models.DateSelection._
-import MandatoryDateForm.{MANDATORY_DATE, MANDATORY_SELECTION}
-import VoluntaryDateFormIncorp._
 import features.returns.models.DateSelection
+import features.returns.models.DateSelection._
 import helpers.VatRegSpec
+import org.joda.time.{LocalDate => JodaLocalDate}
 import play.api.data.Form
+import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 class VoluntaryDateFormIncorpSpec extends VatRegSpec {
-
   val incorpDate: LocalDate = LocalDate.of(2018, 1, 1)
+
+  implicit val bhs: BankHolidaySet = BankHolidaySet("england-and-wales", List(
+    BankHoliday(title = "Good Friday",            date = new JodaLocalDate(2017, 4, 14)),
+    BankHoliday(title = "Easter Monday",          date = new JodaLocalDate(2017, 4, 17)),
+    BankHoliday(title = "Early May bank holiday", date = new JodaLocalDate(2017, 5, 1)),
+    BankHoliday(title = "Spring bank holiday",    date = new JodaLocalDate(2017, 5, 29)),
+    BankHoliday(title = "Summer bank holiday",    date = new JodaLocalDate(2017, 8, 28)),
+    BankHoliday(title = "Christmas Day",          date = new JodaLocalDate(2017, 12, 25)),
+    BankHoliday(title = "Boxing Day",             date = new JodaLocalDate(2017, 12, 26)),
+    BankHoliday(title = "New Year's Day",         date = new JodaLocalDate(2018, 1, 1))
+  ))
 
   val form: Form[(DateSelection.Value, Option[LocalDate])] = VoluntaryDateFormIncorp.form(incorpDate)
 
   "Binding MandatoryDateForm" should {
     "Bind successfully for an incorp date selection" in {
       val data = Map(
-        VOLUNTARY_SELECTION -> "company_registration_date",
-        VOLUNTARY_DATE -> ""
+        "startDateRadio"  -> "company_registration_date",
+        "startDate"       -> ""
       )
       form.bind(data).get mustBe (company_registration_date, None)
     }
 
     "Bind successfully for a business start date selection" in {
       val data = Map(
-        VOLUNTARY_SELECTION -> "business_start_date",
-        VOLUNTARY_DATE -> ""
+        "startDateRadio"  -> "business_start_date",
+        "startDate"       -> ""
       )
       form.bind(data).get mustBe (business_start_date, None)
     }
 
     "Bind successfully for a valid specific date selection" in {
       val data = Map(
-        MANDATORY_SELECTION -> "specific_date",
-        s"$MANDATORY_DATE.day" -> "5",
-        s"$MANDATORY_DATE.month" -> "1",
-        s"$MANDATORY_DATE.year" -> "2018"
+        "startDateRadio"  -> "specific_date",
+        "startDate.day"   -> "5",
+        "startDate.month" -> "1",
+        "startDate.year"  -> "2018"
       )
       form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 1, 5)))
     }
 
     "Fail to bind successfully for no selection" in {
       val data = Map(
-        VOLUNTARY_SELECTION -> "",
-        VOLUNTARY_DATE -> ""
+        "startDateRadio"  -> "",
+        "startDate"       -> ""
       )
       val bound = form.bind(data)
-      bound.errors.size mustBe 1
-      bound.errors.head.key mustBe VOLUNTARY_SELECTION
-      bound.errors.head.message mustBe voluntarySelectionInvalidKey
+      bound.errors.size         mustBe 1
+      bound.errors.head.key     mustBe "startDateRadio"
+      bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
 
     "Fail to bind successfully for an invalid selection" in {
       val data = Map(
-        VOLUNTARY_SELECTION -> "invalidSelection",
-        VOLUNTARY_DATE -> ""
+        "startDateRadio"  -> "invalidSelection",
+        "startDate"       -> ""
       )
       val bound = form.bind(data)
-      bound.errors.size mustBe 1
-      bound.errors.head.key mustBe VOLUNTARY_SELECTION
-      bound.errors.head.message mustBe voluntarySelectionInvalidKey
+      bound.errors.size         mustBe 1
+      bound.errors.head.key     mustBe "startDateRadio"
+      bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
   }
 }

@@ -58,9 +58,4 @@ trait DateService {
 
     (date: org.joda.time.LocalDate).plusWorkingDays(days)
   }
-
-  def dynamicFutureDateExample(anchor: LocalDate = now, displacement: Long = 10): String = {
-    anchor plusDays displacement format DateTimeFormatter.ofPattern("d M yyyy")
-  }
-
 }

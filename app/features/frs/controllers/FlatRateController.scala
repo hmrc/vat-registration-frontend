@@ -32,7 +32,7 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
-import services.{DateService, DateServiceImpl, SessionProfile}
+import services.{SessionProfile, TimeService}
 
 import scala.collection.immutable.ListMap
 import scala.concurrent.Future
@@ -43,7 +43,7 @@ class FlatRateControllerImpl @Inject()(val messagesApi: MessagesApi,
                                        val authConnector: AuthClientConnector,
                                        val keystoreConnector: KeystoreConnect,
                                        val configConnector: ConfigConnector,
-                                       val dateService: DateServiceImpl,
+                                       val timeService: TimeService,
                                        val sicAndComplianceService: SicAndComplianceService) extends FlatRateController
 
 trait FlatRateController extends BaseController with SessionProfile {
@@ -52,7 +52,7 @@ trait FlatRateController extends BaseController with SessionProfile {
   val turnoverEstimatesService: TurnoverEstimatesService
   val configConnector: ConfigConnector
   val sicAndComplianceService: SicAndComplianceService
-  val dateService: DateService
+  val timeService: TimeService
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
@@ -190,7 +190,7 @@ trait FlatRateController extends BaseController with SessionProfile {
       ivPassedCheck {
         flatRateService.getPrepopulatedStartDate map { prepop =>
           val (choOpt, date) = prepop
-          val dynamicDate = dateService.dynamicFutureDateExample()
+          val dynamicDate = timeService.dynamicFutureDateExample()
           val viewForm = choOpt.fold(startDateForm)(choice => startDateForm.fill((choice, date)))
           Ok(features.frs.views.html.frs_start_date(viewForm, dynamicDate))
         }
@@ -202,7 +202,7 @@ trait FlatRateController extends BaseController with SessionProfile {
       ivPassedCheck {
         startDateForm.bindFromRequest().fold(
           badForm => {
-            val dynamicDate = dateService.dynamicFutureDateExample()
+            val dynamicDate = timeService.dynamicFutureDateExample()
             Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm, dynamicDate)))
           },
           view => {
