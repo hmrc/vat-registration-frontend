@@ -27,43 +27,43 @@ class AccountingPeriodFormSpec extends VatRegSpec {
   "Binding AccountingPeriodForm" should {
     "Bind successfully for a jan, apr, jul, oct selection" in {
       val data = Map(
-        ACCOUNTING_PERIOD -> "jan"
+        "accountingPeriodRadio" -> "jan"
       )
       form.bind(data).get mustBe jan
     }
 
     "Bind successfully for a feb, may, aug, nov selection" in {
       val data = Map(
-        ACCOUNTING_PERIOD -> "feb"
+        "accountingPeriodRadio" -> "feb"
       )
       form.bind(data).get mustBe feb
     }
 
     "Bind successfully for a mar, jun, sep, dec selection" in {
       val data = Map(
-        ACCOUNTING_PERIOD -> "mar"
+        "accountingPeriodRadio" -> "mar"
       )
       form.bind(data).get mustBe mar
     }
 
     "Fail to bind successfully for an invalid selection" in {
       val data = Map(
-        ACCOUNTING_PERIOD -> "invalidSelection"
+        "accountingPeriodRadio" -> "invalidSelection"
       )
       val bound = form.bind(data)
-      bound.errors.size mustBe 1
-      bound.errors.head.key mustBe ACCOUNTING_PERIOD
-      bound.errors.head.message mustBe accountingPeriodInvalidKey
+      bound.errors.size         mustBe 1
+      bound.errors.head.key     mustBe "accountingPeriodRadio"
+      bound.errors.head.message mustBe "validation.accounting.period.missing"
     }
 
     "Fail to bind successfully if empty" in {
       val data = Map(
-        ACCOUNTING_PERIOD -> ""
+        "accountingPeriodRadio" -> ""
       )
       val bound = form.bind(data)
-      bound.errors.size mustBe 1
-      bound.errors.head.key mustBe ACCOUNTING_PERIOD
-      bound.errors.head.message mustBe accountingPeriodInvalidKey
+      bound.errors.size         mustBe 1
+      bound.errors.head.key     mustBe "accountingPeriodRadio"
+      bound.errors.head.message mustBe "validation.accounting.period.missing"
     }
   }
 }

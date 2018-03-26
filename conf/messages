@@ -179,7 +179,7 @@ pages.startDate.radio.wasRegistered                   = The date the company was
 pages.startDate.radio.whenTrading                     = The date the company starts doing business: {0}
 pages.startDate.radio.specificDate                    = A different date
 pages.startDate.panels.specificDate.para1             = This must be:
-pages.startDate.panels.specificDate.bullet.2days      = more than 2 working days in the future
+pages.startDate.panels.specificDate.bullet.2days      = more than 3 working days in the future
 pages.startDate.panels.specificDate.bullet.3months    = within the next 3 months
 pages.startDate.panels.specificDate.bullet.onafter    = on or after the date the company was registered
 pages.startDate.panels.specificDate.bullet.3monthsf   = no more than 3 months in the future
@@ -190,10 +190,8 @@ pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 pages.startDate.warning                               = Once the company is successfully registered for VAT you cannot change its VAT start date.
 validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
-validation.startDate.range.below                      = Date must be more than 2 working days in the future
 validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past
-validation.startDate.range.belowIncorp                = Enter a date which is not before the date of incorporation
-validation.startDate.range.above                      = Date must be within the next 3 months
+validation.startDate.range                            = Enter a date between {0} and {1}
 validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
 
@@ -231,8 +229,6 @@ pages.start.date.incorp.earlierHead                          = This must be:
 pages.start.date.incorp.bullet1                              = on or after the date of incorporation
 pages.start.date.incorp.bullet2                              = within the last 4 years
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
-validation.startDateManIncorp.range.belowIncorp              = Enter a date which is not before the date of incorporation
-validation.startDateManIncorp.range.above                    = Enter a date which is not after {0}
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
@@ -278,7 +274,6 @@ pages.summary.title                                         = Summary
 pages.summary.heading                                       = Check and confirm your answers
 pages.summary.subheading                                    = Now send your application
 pages.summary.para1                                         = By submitting this application you''re confirming that the details you''re providing are correct and reflect the company''s current position.
-pages.summary.para1                                         = By submitting this application you’re confirming that the details you’re providing are correct and reflect the company’s current position.
 pages.summary.continue                                      = Confirm and send application
 pages.summary.print                                         = Print Page
 
