@@ -58,8 +58,8 @@ GET         /expect-to-reclaim-more-vat-than-you-charge                         
 POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.submitChargeExpectancy
 
 ## ACCOUNTING PERIOD PAGE
-GET         /vat-return-periods-end                                                            features.returns.controllers.ReturnsController.accountPeriodsPage
-POST        /vat-return-periods-end                                                            features.returns.controllers.ReturnsController.submitAccountPeriods
+GET         /submit-vat-returns                                                                features.returns.controllers.ReturnsController.accountPeriodsPage
+POST        /submit-vat-returns                                                                features.returns.controllers.ReturnsController.submitAccountPeriods
 
 ## VAT RETURN FREQUENCY - OLD
 GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.controllers.ReturnsController.returnsFrequencyPage
@@ -68,12 +68,12 @@ POST        /how-often-do-you-want-to-submit-vat-returns                        
 ## VAT RETURN FREQUENCY
 
 ## COMPANY BANK ACCOUNT
-GET         /business-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.showHasCompanyBankAccountView
-POST        /business-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitHasCompanyBankAccount
+GET         /companys-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.showHasCompanyBankAccountView
+POST        /companys-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitHasCompanyBankAccount
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /business-bank-account-details                                                     features.bankAccountDetails.controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
-POST        /business-bank-account-details                                                     features.bankAccountDetails.controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
+GET         /bank-account-details                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
+POST        /bank-account-details                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
 ## BUSINESS ACTIVITY DESCRIPTION
 GET         /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.showBusinessActivityDescription
