@@ -11,7 +11,7 @@
 
     <div class="govuk-box-highlight">
         <h1 id="heading-application-submitted" class="heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
-        <p class="font-large">
+        <p class="font-small">
             @messages("pages.application.submission.confirmation.reference.number")
             <br>
             <strong class="heading-medium">@refNo</strong>
@@ -25,17 +25,12 @@
             <li>@messages("pages.application.submission.confirmation.whatNext.para2")</li>
             <li>@messages("pages.application.submission.confirmation.whatNext.para3")</li>
         </ul>
-        <p>@messages("pages.application.submission.confirmation.whatNext.para4")</p>
         <p>@messages("pages.application.submission.confirmation.whatNext.para5")</p>
-    <br>
-        <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whileWait.sub.heading")</h2>
-        <p>@messages("pages.application.submission.confirmation.whileWait.para1")</p>
-        <p>@messages("pages.application.submission.confirmation.whileWait.para2")</p>
-        <ul class="list list-bullet">
-            <li>@messages("pages.application.submission.confirmation.whileWait.para3")</li>
-            <li>@messages("pages.application.submission.confirmation.whileWait.para4")</li>
-        </ul>
-    </div>
+
+        <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
+            <p>@messages("pages.application.submission.confirmation.panel.para")</p>
+        </div>
+        </details>
 
         <a class="btn button" href="@dashBoardUrl" id="save-and-continue">@messages("pages.application.submission.confirmation.button")</a>
 
