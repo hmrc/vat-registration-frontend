@@ -153,7 +153,7 @@ pages.welcome.heading                   = Register for VAT
 pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
 
 pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
-pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £85,000)
+pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently [£85,000])
 
 pages.welcome.h2                        = Mandatory registration
 pages.welcome.p2                        = You must register a company for VAT if any of these apply:
@@ -165,6 +165,7 @@ pages.welcome.h3                        = Voluntary registration
 pages.welcome.p3                        = You can still register voluntarily if the company doesn''t meet these criteria if the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
 pages.welcome.button.start              = Start now
 pages.welcome.p4                        = You''ll need:
+pages.welcome.h4                        = Before you start
 pages.welcome.bullet6                   = to be a company director or company secretary
 pages.welcome.bullet7                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
 pages.welcome.bullet8                   = your UK National Insurance number
@@ -261,9 +262,10 @@ pages.vat.return.frequency.radio.quarterly                 = Every 3 months
 validation.vat.return.frequency.missing                    = Tell us when you want to submit VAT Returns
 
 ## Accounting Period Page
-pages.accounting.period.title                               = Account period
-pages.accounting.period.heading                             = When do you want your VAT Return periods to end?
-pages.accounting.period.para1                               = You usually submit a VAT Return to HMRC every 3 months. This period of time is known as your ''accounting period.''
+pages.accounting.period.title                               = When do you want to submit VAT Returns?
+pages.accounting.period.heading                             = When do you want to submit VAT Returns?
+pages.accounting.period.para1                               = VAT Returns are usually submitted quarterly. The quarters you choose are known as the VAT ''stagger''.
+pages.accounting.period.para2                               = You can choose any stagger, but you won''t be able to change it later.
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
@@ -284,14 +286,9 @@ pages.application.submission.confirmation.reference.number          = Your refer
 pages.application.submission.confirmation.whatNext.sub.heading      = What happens next?
 pages.application.submission.confirmation.whatNext.para1            = You''ll receive:
 pages.application.submission.confirmation.whatNext.para2            = an email now with your application reference number
-pages.application.submission.confirmation.whatNext.para3            = another email within 7 working days letting you know the outcome of your application
-pages.application.submission.confirmation.whatNext.para4            = If your application is successful, we''ll send a message to the company''s Business Tax Account with it''s VAT number.
+pages.application.submission.confirmation.whatNext.para3            = another email within 7 working days with a link to check the outcome of your application (if you''re successful, you''ll get the company''s VAT number)
 pages.application.submission.confirmation.whatNext.para5            = We''ll also send an activation code to do VAT online.
-pages.application.submission.confirmation.whileWait.sub.heading     = When the company can start charging VAT
-pages.application.submission.confirmation.whileWait.para1           = The company can''t charge customers for VAT until it has its VAT number. However, it must start paying VAT from the start date you gave in this application.
-pages.application.submission.confirmation.whileWait.para2           = To protect income:
-pages.application.submission.confirmation.whileWait.para3           = while the company doesn''t have a VAT number, it can temporarily increase its prices
-pages.application.submission.confirmation.whileWait.para4           = when it has the VAT number, it can reissue any unpaid invoices - splitting the price into sale amount and VAT
+pages.application.submission.confirmation.panel.para                = The company can''t charge customers for VAT until it has its VAT number.
 pages.application.submission.confirmation.button                    = Continue
 
 ## Summary Page VAT details
@@ -351,11 +348,11 @@ pages.summary.businessActivities.businessDescription           = Business descri
 pages.summary.businessActivities.mainBusinessActivity          = Main business activity
 
 ## Summary Page Business Bank Details
-pages.summary.bankDetails.sectionHeading                     = Business bank details
+pages.summary.bankDetails.sectionHeading                     = What are the company''s bank account details?
 pages.summary.bankDetails.companyBankAccount                 = Bank account
-pages.summary.bankDetails.companyBankAccount.name            = Account name
-pages.summary.bankDetails.companyBankAccount.number          = Account number
-pages.summary.bankDetails.companyBankAccount.sortCode        = Sort code
+pages.summary.bankDetails.companyBankAccount.name            = Enter account name
+pages.summary.bankDetails.companyBankAccount.number          = Enter account number
+pages.summary.bankDetails.companyBankAccount.sortCode        = Enter sort code
 
 ## Summary Page Taxable Sales
 pages.summary.taxableSales.sectionHeading                     = VAT taxable sales
@@ -377,7 +374,7 @@ pages.summary.annualAccountingScheme.sectionHeading                     = Annual
 pages.summary.annualAccountingScheme.reclaimMoreVat                     = VAT claims and charges
 pages.summary.annualAccountingScheme.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
 pages.summary.annualAccountingScheme.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
-pages.summary.annualAccountingScheme.accountingPeriod                   = Accounting period
+pages.summary.annualAccountingScheme.accountingPeriod                   = When do you want to submit VAT Returns?
 pages.summary.annualAccountingScheme.accountingPeriod.monthly           = Once a month
 pages.summary.annualAccountingScheme.accountingPeriod.jan               = January, April, July and October
 pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
@@ -402,19 +399,20 @@ errorPages.restart.para3.2              = GOV.UK page
 error.restart.tryagain                  = Try again
 
 ## Company Bank Account
-pages.company.bank.account.title                = Does the company have a bank or building society account in the UK?
-pages.company.bank.account.heading              = Does the company have a bank or building society account in the UK?
-pages.company.bank.account.para1                = The bank account must be in the name of the company.
-validation.company.bank.account.missing         = Tell us if the company has a bank or building society account in the UK
+pages.company.bank.account.title                = Does the company have a UK bank account in its own name?
+pages.company.bank.account.heading              = Does the company have a UK bank account in its own name?
+pages.company.bank.account.para                 = We''ll use this account to send any VAT repayments.
+pages.company.bank.account.panel.title          = What if the company doesn''t have one?
+pages.company.bank.account.panel.para           = Tell HMRC if the company gets a UK bank account. If we don''t have these details, we''ll send any VAT repayments by cheque.
+validation.company.bank.account.missing         = Tell us if the company has a bank account in its own name
 
 ## Bank Details page
-pages.bankDetails.title = Bank details
-pages.bankDetails.heading = What are the company''s bank or building society account details?
-pages.bankDetails.info = The only money we''ll take from this account is what you declare on the company''s VAT Returns.
-pages.bankDetails.accountName.label = Business account name
-pages.bankDetails.accountName.hint = For example, Company Name Limited
-pages.bankDetails.accountNumber.label = Business account number
-pages.bankDetails.sortCode.label = Sort code
+pages.bankDetails.title = What are the company''s bank account details?
+pages.bankDetails.heading = What are the company''s bank account details?
+pages.bankDetails.info = HMRC will only use this account to send VAT repayments. We won''t take money from it.
+pages.bankDetails.accountName.label = Enter business account name
+pages.bankDetails.accountNumber.label = Enter business account number
+pages.bankDetails.sortCode.label = Enter sort code
 validation.companyBankAccount.name.missing = Enter a business account name
 validation.companyBankAccount.name.invalid = Enter a valid business account name
 validation.companyBankAccount.number.missing = Enter a business account number
