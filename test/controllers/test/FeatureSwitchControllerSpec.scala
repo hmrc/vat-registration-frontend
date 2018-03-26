@@ -30,12 +30,15 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
       val vatRegFeatureSwitch = mockVATFeatureSwitch
       override val featureManager = mockFeatureManager
     }
+
+    when(mockFeatureManager.datePatternRegex)
+      .thenReturn("""([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))(T(0[0-9]|1[0-9]|2[0-3]):([0-59]\d):([0-59]\d)Z?)?""")
   }
 
 
   "switcher" should {
-    "enable the addressService feature switch and return an OK" when {
-      "addressService and addressLookUpFrontend are passed in the url" in new Setup{
+    "enable the feature switch and return an OK" when {
+      "the feature name and value are passed in the url" in new Setup{
         when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(Some(enabledFeatureSwitch))
 

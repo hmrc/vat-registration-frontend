@@ -35,7 +35,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.DateService
+import services.TimeService
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -70,7 +70,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
-      val dateService: DateService = mockDateService
+      val timeService: TimeService = mockTimeService
     }
 
     mockAllMessages

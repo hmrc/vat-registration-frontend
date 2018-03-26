@@ -17,6 +17,7 @@
 package features.returns.forms
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import features.returns.models.DateSelection.{specific_date, _}
 import features.returns.models.{DateSelection, Frequency, Stagger}
@@ -26,12 +27,47 @@ import play.api.data.Forms.{single, tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+import scala.language.implicitConversions
+
+trait StartDateForm {
+  protected val START_DATE_SELECTION = "startDateRadio"
+  protected val START_DATE           = "startDate"
+
+  protected val startDateChoiceMissing  = "validation.startDate.choice.missing"
+
+  protected val dateEmptyKey    = "validation.startDate.missing"
+  protected val dateInvalidKey  = "validation.startDate.invalid"
+  protected val dateRange       = "validation.startDate.range"
+
+  protected val dateFormat = DateTimeFormatter
+    .ofLocalizedDate(java.time.format.FormatStyle.LONG)
+    .withLocale(java.util.Locale.UK)
+
+  implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
+
+    override val format = Some(("format.string", Nil))
+
+    def bind(key: String, data: Map[String, String]) = {
+      Right(data.getOrElse(key,"")).right.flatMap {
+        case e if e == DateSelection.company_registration_date.toString => Right(DateSelection.company_registration_date)
+        case e if e == DateSelection.business_start_date.toString       => Right(DateSelection.business_start_date)
+        case e if e == DateSelection.specific_date.toString             => Right(DateSelection.specific_date)
+        case e if e == DateSelection.calculated_date.toString           => Right(DateSelection.calculated_date)
+        case _                                                          => Left(Seq(FormError(key, startDateChoiceMissing, Nil)))
+      }
+    }
+
+    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
+  }
+}
 
 object AccountingPeriodForm {
 
-  val accountingPeriodInvalidKey = "validation.accounting.period.missing"
-  val ACCOUNTING_PERIOD: String = "accountingPeriodRadio"
+  private val accountingPeriodInvalidKey = "validation.accounting.period.missing"
+  private val ACCOUNTING_PERIOD          = "accountingPeriodRadio"
 
   implicit def formatter: Formatter[Stagger.Value] = new Formatter[Stagger.Value] {
 
@@ -55,51 +91,26 @@ object AccountingPeriodForm {
 }
 
 object ChargeExpectancyForm extends RequiredBooleanForm {
-  override val errorMsg = "validation.vat.charge.expectancy.missing"
-  val EXPECT_CHARGE_MORE_VAT: String = "chargeExpectancyRadio"
+  override val errorMsg      = "validation.vat.charge.expectancy.missing"
+  val EXPECT_CHARGE_MORE_VAT = "chargeExpectancyRadio"
 
   val form = Form(
     single(EXPECT_CHARGE_MORE_VAT -> requiredBoolean)
   )
 }
 
-object MandatoryDateForm {
+object MandatoryDateForm extends StartDateForm {
+  private val dateWithinFourYears = "validation.startDateManIncorp.range.below4y"
 
-  val mandatorySelectionInvalidKey = "validation.startDate.choice.missing"
-  val dateEmptyKey = "validation.startDate.missing"
-  val dateInvalidKey = "validation.startDate.invalid"
-  val dateBelowIncorp = "validation.startDateManIncorp.range.belowIncorp"
-  val dateAboveCalculated = "validation.startDateManIncorp.range.above"
-  val dateWithinFourYears = "validation.startDateManIncorp.range.below4y"
-
-  val MANDATORY_SELECTION: String = "startDateRadio"
-  val MANDATORY_DATE: String = "startDate"
-
-  implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
-
-    override val format = Some(("format.string", Nil))
-
-    def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
-        case e if e == DateSelection.calculated_date.toString => Right(DateSelection.calculated_date)
-        case e if e == DateSelection.business_start_date.toString => Right(DateSelection.business_start_date)
-        case e if e == DateSelection.specific_date.toString => Right(DateSelection.specific_date)
-        case _ => Left(Seq(FormError(key, mandatorySelectionInvalidKey, Nil)))
-      }
-    }
-
-    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
-  }
-
-  def form(incorpDate: LocalDate, calculatedDate: LocalDate) = Form(
+  def form(incorpDate: LocalDate, calculatedDate: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
-      MANDATORY_SELECTION -> Forms.of[DateSelection.Value],
-      MANDATORY_DATE      -> mandatoryIf(
-        isEqual(MANDATORY_SELECTION, specific_date),
+      START_DATE_SELECTION -> Forms.of[DateSelection.Value],
+      START_DATE           -> mandatoryIf(
+        isEqual(START_DATE_SELECTION, specific_date),
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          withinRange(incorpDate, calculatedDate, dateBelowIncorp, dateAboveCalculated),
+          withinRange(incorpDate, calculatedDate, dateRange, dateRange, List(incorpDate.format(dateFormat), calculatedDate.format(dateFormat))),
           withinFourYearsPast(dateWithinFourYears)
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
@@ -113,8 +124,8 @@ object MandatoryDateForm {
 
 object ReturnFrequencyForm {
 
-  val returnFrequencyEmptyKey = "validation.vat.return.frequency.missing"
-  val RETURN_FREQUENCY: String = "returnFrequencyRadio"
+  private val returnFrequencyEmptyKey = "validation.vat.return.frequency.missing"
+  private val RETURN_FREQUENCY        = "returnFrequencyRadio"
 
   implicit def formatter: Formatter[Frequency.Value] = new Formatter[Frequency.Value] {
 
@@ -133,47 +144,19 @@ object ReturnFrequencyForm {
 
   val form = Form(
     single(RETURN_FREQUENCY -> Forms.of[Frequency.Value]
-    ))
+  ))
 }
 
-object VoluntaryDateForm {
-
-  val voluntarySelectionEmptyKey = "validation.startDate.choice.missing"
-  val voluntarySelectionInvalidKey = "validation.startDate.choice.missing"
-
-  val dateEmptyKey = "validation.startDate.missing"
-  val dateInvalidKey = "validation.startDate.invalid"
-  val dateBelow = "validation.startDate.range.below"
-  val dateAfter = "validation.startDate.range.above"
-
-  val VOLUNTARY_SELECTION: String = "startDateRadio"
-  val VOLUNTARY_DATE: String = "startDate"
-
-  implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
-
-    override val format = Some(("format.string", Nil))
-
-    def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
-        case e if e == DateSelection.company_registration_date.toString => Right(DateSelection.company_registration_date)
-        case e if e == DateSelection.business_start_date.toString => Right(DateSelection.business_start_date)
-        case e if e == DateSelection.specific_date.toString => Right(DateSelection.specific_date)
-        case _ => Left(Seq(FormError(key, voluntarySelectionInvalidKey, Nil)))
-      }
-    }
-
-    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
-  }
-
-  val form = Form(
+object VoluntaryDateForm extends StartDateForm {
+  def form(dateRangeMin: LocalDate, dateRangeMax: LocalDate)(implicit bhs: BankHolidaySet): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
-      VOLUNTARY_SELECTION -> Forms.of[DateSelection.Value],
-      VOLUNTARY_DATE -> mandatoryIf(
-        isEqual(VOLUNTARY_SELECTION, specific_date),
+      START_DATE_SELECTION -> Forms.of[DateSelection.Value],
+      START_DATE -> mandatoryIf(
+        isEqual(START_DATE_SELECTION, specific_date),
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          withinRange(LocalDate.now().plusDays(2), LocalDate.now().plusMonths(3), dateBelow, dateAfter)
+          withinRange(dateRangeMin, dateRangeMax, dateRange, dateRange, List(dateRangeMin.format(dateFormat), dateRangeMax.format(dateFormat)))
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
           date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
@@ -183,44 +166,21 @@ object VoluntaryDateForm {
   )
 }
 
-object VoluntaryDateFormIncorp {
+object VoluntaryDateFormIncorp extends StartDateForm {
+  private val dateWithinFourYears = "validation.startDate.range.below4y"
+  private val dateIsWeekend       = "validation.startDate.isWeekend"
 
-  val voluntarySelectionInvalidKey = "validation.startDate.choice.missing"
-  val voluntaryDateEmptyKey = "validation.startDate.missing"
-  val voluntaryDateInvalidKey = "validation.startDate.invalid"
+  private val now3MonthsLater = LocalDate.now().plusMonths(3)
 
-  val dateBelowIncorp = "validation.startDate.range.belowIncorp"
-  val dateAboveThree = "validation.startDate.range.above"
-  val dateWithinFourYears = "validation.startDate.range.below4y"
-
-  val VOLUNTARY_SELECTION: String = "startDateRadio"
-  val VOLUNTARY_DATE: String = "startDate"
-
-  implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
-
-    override val format = Some(("format.string", Nil))
-    
-    def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
-        case e if e == DateSelection.company_registration_date.toString => Right(DateSelection.company_registration_date)
-        case e if e == DateSelection.business_start_date.toString => Right(DateSelection.business_start_date)
-        case e if e == DateSelection.specific_date.toString => Right(DateSelection.specific_date)
-        case _ => Left(Seq(FormError(key, voluntarySelectionInvalidKey, Nil)))
-      }
-    }
-
-    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
-  }
-
-  def form(incorpDate: LocalDate) = Form(
+  def form(incorpDate: LocalDate)(implicit bhs: BankHolidaySet) = Form(
     tuple(
-      VOLUNTARY_SELECTION -> Forms.of[DateSelection.Value],
-      VOLUNTARY_DATE      -> mandatoryIf(
-        isEqual(VOLUNTARY_SELECTION, specific_date),
+      START_DATE_SELECTION -> Forms.of[DateSelection.Value],
+      START_DATE           -> mandatoryIf(
+        isEqual(START_DATE_SELECTION, specific_date),
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
-          nonEmptyDate(voluntaryDateEmptyKey),
-          validDate(voluntaryDateInvalidKey),
-          withinRange(incorpDate, LocalDate.now().plusMonths(3), dateBelowIncorp, dateAboveThree),
+          nonEmptyDate(dateEmptyKey),
+          validDate(dateInvalidKey),
+          withinRange(incorpDate, now3MonthsLater, dateRange, dateRange, List(incorpDate.format(dateFormat), now3MonthsLater.format(dateFormat))),
           withinFourYearsPast(dateWithinFourYears)
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),

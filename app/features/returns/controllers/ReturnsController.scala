@@ -21,7 +21,6 @@ import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.KeystoreConnect
 import controllers.BaseController
-import features.returns.controllers.routes.ReturnsController
 import features.returns.forms._
 import features.returns.models.{DateSelection, Frequency}
 import features.returns.services.ReturnsService
@@ -30,9 +29,10 @@ import features.returns.views.html.{charge_expectancy_view => ChargeExpectancyPa
 import models.{CurrentProfile, MonthYearModel}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Result}
-import services.{DateService, DateServiceImpl, SessionProfile}
+import services.{SessionProfile, TimeService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.time.workingdays.BankHolidaySet
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -40,17 +40,15 @@ import scala.language.postfixOps
 class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val authConnector: AuthClientConnector,
                                       val returnsService: ReturnsService,
-                                      val dateService: DateServiceImpl,
-                                      val messagesApi: MessagesApi) extends ReturnsController {
-
-}
+                                      val messagesApi: MessagesApi,
+                                      val timeService: TimeService) extends ReturnsController
 
 trait ReturnsController extends BaseController with SessionProfile {
 
   val returnsService: ReturnsService
   val authConnector: AuthConnector
   val keystoreConnector: KeystoreConnect
-  val dateService: DateService
+  val timeService: TimeService
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
@@ -72,9 +70,9 @@ trait ReturnsController extends BaseController with SessionProfile {
           success => {
             returnsService.saveReclaimVATOnMostReturns(success) map { _ =>
               if (success) {
-                Redirect(ReturnsController.returnsFrequencyPage())
+                Redirect(routes.ReturnsController.returnsFrequencyPage())
               } else {
-                Redirect(ReturnsController.accountPeriodsPage())
+                Redirect(routes.ReturnsController.accountPeriodsPage())
               }
             }
           }
@@ -96,7 +94,7 @@ trait ReturnsController extends BaseController with SessionProfile {
 
   private def correctVatStartDatePage()(implicit hc : HeaderCarrier, currentProfile : CurrentProfile): Future[Result] =
     returnsService.getThreshold map { voluntary =>
-      if (voluntary) Redirect(ReturnsController.voluntaryStartPage()) else Redirect(ReturnsController.mandatoryStartPage())
+      if (voluntary) Redirect(routes.ReturnsController.voluntaryStartPage()) else Redirect(routes.ReturnsController.mandatoryStartPage())
     }
 
   val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -130,7 +128,7 @@ trait ReturnsController extends BaseController with SessionProfile {
             if (success == Frequency.monthly) {
               correctVatStartDatePage()
             } else {
-              Future.successful(Redirect(ReturnsController.accountPeriodsPage()))
+              Future.successful(Redirect(routes.ReturnsController.accountPeriodsPage()))
             }
           }
         )
@@ -144,41 +142,44 @@ trait ReturnsController extends BaseController with SessionProfile {
         intendedLocation
       } else {Future.successful(
         if (documentVoluntary) {
-          Redirect(ReturnsController.voluntaryStartPage())
+          Redirect(routes.ReturnsController.voluntaryStartPage())
         } else {
-          Redirect(ReturnsController.mandatoryStartPage())
+          Redirect(routes.ReturnsController.mandatoryStartPage())
         }
       )}
     }
   }
 
-  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        startDateGuard(pageVoluntary = true) {
-          returnsService.voluntaryStartPageViewModel(profile.incorporationDate) map { viewModel =>
-            val form = profile.incorporationDate.fold(VoluntaryDateForm.form)(VoluntaryDateFormIncorp.form)
-            val filledForm = viewModel.form.fold(form)(data => form.fill(
-              (data._1, data._2)
-            ))
-            val dynamicDate = dateService.dynamicFutureDateExample()
-            Ok(profile.incorporationDate match {
-              case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive, dynamicDate)
-              case None => VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate)
-            })
+  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    ivPassedCheck {
+      startDateGuard(pageVoluntary = true) {
+        returnsService.voluntaryStartPageViewModel(profile.incorporationDate) map { viewModel =>
+          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+          val vdf = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
+          val form = profile.incorporationDate.fold(vdf)(VoluntaryDateFormIncorp.form)
+          val filledForm = viewModel.form.fold(form){
+            case (dateSelection, date) => form.fill((dateSelection, date))
           }
+          val dynamicDate = timeService.dynamicFutureDateExample()
+          Ok(profile.incorporationDate match {
+            case Some(incorp) => VoluntaryStartDateIncorpPage(filledForm, incorp, viewModel.ctActive, dynamicDate)
+            case None         => VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate)
+          })
         }
       }
+    }
   }
 
   val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        val form = profile.incorporationDate.fold(VoluntaryDateForm.form)(VoluntaryDateFormIncorp.form)
+        implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+        val vdf = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
+        val form = profile.incorporationDate.fold(vdf)(VoluntaryDateFormIncorp.form)
         returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
           form.bindFromRequest.fold(
             errors => {
-              val dynamicDate = dateService.dynamicFutureDateExample()
+              val dynamicDate = timeService.dynamicFutureDateExample()
               Future.successful(BadRequest(profile.incorporationDate match {
                 case Some(incorpDate) => VoluntaryStartDateIncorpPage(errors, incorpDate, ctActiveDate, dynamicDate)
                 case None => VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)
@@ -200,7 +201,7 @@ trait ReturnsController extends BaseController with SessionProfile {
             incorpDate =>
               returnsService.retrieveMandatoryDates map { dateModel =>
                 val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
-                val dynamicDate = dateService.dynamicFutureDateExample()
+                val dynamicDate = timeService.dynamicFutureDateExample()
                 Ok(MandatoryStartDateIncorpPage(
                   dateModel.selected.fold(form) { selection =>
                     form.fill((selection, dateModel.startDate))
@@ -222,7 +223,7 @@ trait ReturnsController extends BaseController with SessionProfile {
             returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
                 MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
                   errors => {
-                    val dynamicDate = dateService.dynamicFutureDateExample()
+                    val dynamicDate = timeService.dynamicFutureDateExample()
                     Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
                   },
                   success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map {

@@ -54,12 +54,12 @@ class Module extends AbstractModule {
   override def configure(): Unit = {
     startupBindings()
     hmrcDependencyBindings()
-    bindControllers()
+    bindConnectors()
+    bindServices()
+    featureSwitches()
     bindTestControllers()
     bindInternalRoutes()
-    bindServices()
-    bindConnectors()
-    featureSwitches()
+    bindControllers()
   }
 
   private def startupBindings(): Unit = {
@@ -127,6 +127,7 @@ class Module extends AbstractModule {
     bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
     bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
     bind(classOf[BusinessContactService]).to(classOf[BusinessContactServiceImpl]).asEagerSingleton()
+    bind(classOf[TimeService]).to(classOf[TimeServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

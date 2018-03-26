@@ -131,36 +131,4 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
     }
 
   }
-
-  "dynamicDateExample" must {
-    "return a date 10 calendar days in the future" in new Setup {
-      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
-        .expects("england-and-wales", *)
-        .returns(Future.successful(fixedHolidaySet))
-
-      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
-
-      val testCases = Seq(
-        d(2016,1,1)   ->  "11 1 2016",
-        d(2016,2,19)  ->  "29 2 2016",
-        d(2017,2,19)  ->  "1 3 2017",
-        d(2016,12,22) ->  "1 1 2017"
-      )
-
-      testCases foreach { case (testInput, expectedOutput) =>
-        service.dynamicFutureDateExample(testInput) shouldBe expectedOutput
-      }
-
-    }
-    "return a date which is a specified number of calendar days in the future" in new Setup {
-      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
-        .expects("england-and-wales", *)
-        .returns(Future.successful(fixedHolidaySet))
-
-      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
-
-      service.dynamicFutureDateExample(d(2016,1,1), 22) shouldBe "23 1 2016"
-    }
-  }
-
 }
