@@ -93,7 +93,7 @@ trait SicAndComplianceController extends BaseController with SessionProfile {
               Future.successful(BadRequest(main_business_activity(MainBusinessActivityForm.form.fill(data), sicCodeList)))
             )(selected => for {
               _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
-              _ <- frsService.resetFRS(selected)
+              _ <- frsService.resetFRSForSAC(selected)
             } yield {
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
                 Redirect(routes.SicAndComplianceController.showComplianceIntro())

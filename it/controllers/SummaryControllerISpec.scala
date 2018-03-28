@@ -84,6 +84,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           val document = Jsoup.parse(res.body)
           document.title() mustBe "Summary"
 
+          document.getElementById("frs.joinFrsAnswer").text mustBe "No"
           document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
           document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-sales-over-threshold"
           document.getElementById("vatDetails.necessityAnswer").text mustBe "Yes"
@@ -101,7 +102,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .user.isAuthorised
           .currentProfile.withProfileAndIncorpDate()
-          .vatScheme.contains(vatRegIncorporated)
+          .vatScheme.contains(vatRegIncorporated.copy(flatRateScheme = None))
           .s4lContainer[SicAndCompliance].isEmpty
           .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
           .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
