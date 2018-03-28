@@ -32,14 +32,12 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class FlatRateServiceImpl @Inject()(val turnoverEstimateService: TurnoverEstimatesService,
-                                    val s4LService: S4LService,
+class FlatRateServiceImpl @Inject()(val s4LService: S4LService,
                                     val sicAndComplianceService: SicAndComplianceService,
                                     val configConnector : ConfigConnector,
                                     val vatRegConnector: RegistrationConnector) extends FlatRateService
 
 trait FlatRateService  {
-  protected val turnoverEstimateService : TurnoverEstimatesService
   val s4LService: S4LService
   val sicAndComplianceService: SicAndComplianceService
   val configConnector: ConfigConnector
@@ -152,16 +150,17 @@ trait FlatRateService  {
       ))
     }
 
-  def resetFRS(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
+  def clearFrs (implicit cp:CurrentProfile, hc:HeaderCarrier): Future[Boolean] = {
+      s4LService.saveNoAux(FlatRateScheme(), FlatRateScheme.s4lkey) flatMap ( _ =>
+        vatRegConnector.clearFlatRate(cp.registrationId).map(_ => true))
+  }
+
+  def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
     for {
       mainSic          <- sicAndComplianceService.getSicAndCompliance.map(_.mainBusinessActivity)
-      selectionChanged = mainSic.exists(_.id != sicCode.id)
-    } yield {
-      if (selectionChanged) s4LService.saveNoAux(FlatRateScheme(), FlatRateScheme.s4lkey) flatMap {
-        _ => vatRegConnector.clearFlatRate(cp.registrationId)
-      }
-      sicCode
-    }
+      selectionChanged =  mainSic.exists(_.id != sicCode.id)
+      _                <- if(selectionChanged) clearFrs else Future.successful(true)
+    } yield sicCode
   }
 
   def saveStartDate(dateChoice : FRSDateChoice.Value, date : Option[LocalDate])(implicit hc : HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =

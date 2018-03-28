@@ -99,9 +99,11 @@ trait SummaryController extends BaseController with SessionProfile {
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
       SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryTaxableSalesSectionBuilder(vs.turnOverEstimates).section,
-      SummaryFrsSectionBuilder(vs.flatRateScheme,
-                               vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
-                               vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1))
+      SummaryFrsSectionBuilder(
+        vs.flatRateScheme,
+        vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
+        vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
+        vs.turnOverEstimates
       ).section
     ))
   }

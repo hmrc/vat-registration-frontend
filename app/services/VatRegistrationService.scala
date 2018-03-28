@@ -32,14 +32,13 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
                                        val brConnector : BusinessRegistrationConnect,
                                        val compRegConnector: CompanyRegistrationConnector,
                                        val incorporationService: IncorporationInformationService,
-                                       val keystoreConnector: KeystoreConnect,
-                                       val turnoverEstimatesService: TurnoverEstimatesService) extends RegistrationService
+                                       val keystoreConnector: KeystoreConnect
+                                      ) extends RegistrationService
 
 trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
@@ -47,7 +46,6 @@ trait RegistrationService extends LegacyServiceToBeRefactored {
   val brConnector: BusinessRegistrationConnect
   val compRegConnector: CompanyRegistrationConnector
   val incorporationService: IncorporationInformationService
-  val turnoverEstimatesService : TurnoverEstimatesService
 }
 
 // TODO refactor in a similar way to FRS

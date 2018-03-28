@@ -28,6 +28,7 @@ import features.returns.ReturnsFixture
 import features.returns.models.{Frequency, Returns, Start}
 import features.sicAndCompliance.models.{SicAndCompliance, _}
 import features.tradingDetails.TradingDetails
+import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
 import models.api._
 import models.external.{IncorporationInfo, _}
@@ -189,7 +190,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validBankAccount),
     returns = Some(validReturns),
-    status = VatRegStatus.draft
+    status = VatRegStatus.draft,
+    turnOverEstimates = Some(TurnoverEstimates(100L))
   )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
@@ -197,7 +199,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     id = testRegId,
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     lodgingOfficer = Some(emptyLodgingOfficer),
-    bankAccount = Some(validBankAccount)
+    bankAccount = Some(validBankAccount),
+    turnOverEstimates = Some(TurnoverEstimates(100L))
   )
 
   val testIncorporationInfo = IncorporationInfo(
