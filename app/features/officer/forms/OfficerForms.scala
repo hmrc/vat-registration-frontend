@@ -130,7 +130,7 @@ object ContactDetailsForm {
 
   def atLeastOneContactDetail: Constraint[ContactDetailsView] = Constraint {
     case ContactDetailsView(None, None, None) => Invalid(validationError(PROVIDE_ONE_CONTACT))
-    case _                                           => Valid
+    case _                                    => Valid
   }
 }
 
