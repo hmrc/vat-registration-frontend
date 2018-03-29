@@ -153,7 +153,7 @@ pages.welcome.heading                   = Register for VAT
 pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
 
 pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
-pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently [£85,000])
+pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £85,000)
 
 pages.welcome.h2                        = Mandatory registration
 pages.welcome.p2                        = You must register a company for VAT if any of these apply:
@@ -190,7 +190,7 @@ pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 pages.startDate.warning                               = Once the company is successfully registered for VAT you cannot change its VAT start date.
-validation.startDate.choice.missing                   = Tell us when you want your VAT start date to be
+validation.startDate.choice.missing                   = Tell us what you want the company''s VAT registration date to be
 validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past
 validation.startDate.range                            = Enter a date between {0} and {1}
 validation.startDate.invalid                          = Enter a valid date
@@ -472,7 +472,7 @@ validation.applyEori.missing                   = Tell us if you want to apply fo
 pages.euGoods.title                         = Will the company trade VAT taxable goods or services with countries outside the EU?
 pages.euGoods.heading                       = Will the company trade VAT taxable goods or services with countries outside the EU?
 pages.euGoods.p1                            = This includes imports from and exports to non-EU countries.
-validation.euGoods.missing                  = Tell us if the company will trade VAT taxable goods with countries outside the EU
+validation.euGoods.missing                  = Tell us if the company will trade VAT taxable goods or services with countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Company contact details
@@ -553,8 +553,8 @@ pages.formerName.title                                   = Have you ever changed
 pages.formerName.heading                                 = Have you ever changed your name?
 pages.formerName.fullName.label                          = Enter your former name
 pages.formerName.fullName.hint                           = First name and surname
-validation.formerName.missing                            = Tell us if you have a former name
-validation.formerName.selected.missing                   = Enter a name
+validation.formerName.missing                            = Tell us if you have ever changed your name
+validation.formerName.selected.missing                   = Enter your former name
 validation.formerName.selected.invalid                   = Enter a valid name
 
 ## Former Name Date
@@ -563,10 +563,12 @@ pages.formerNameDate.heading1                            = When did you change i
 pages.formerNameDate.heading2                            = ?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 validation.formerNameDate.invalid                        = Enter a valid date
-validation.formerNameDate.missing                        = Enter a valid date
+validation.formerNameDate.missing                        = Enter a date
 validation.formerNameDate.day.invalid                    = Day
 validation.formerNameDate.month.invalid                  = Month
 validation.formerNameDate.year.invalid                   = Year
+validation.formerNameDate.range.below                    = Enter a date after 1900
+validation.formerNameDate.range.above                    = Enter a date that''s in the past
 
 ## Previous Address Question
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
@@ -677,7 +679,7 @@ pages.frs.startDate.month                                 = Month
 pages.frs.startDate.year                                  = Year
 validation.frs.startDate.invalid                          = Enter a valid date
 validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
-validation.frs.startDate.missing                          = Enter the date you want to join the Flat Rate Scheme
+validation.frs.startDate.missing                          = Enter a date
 validation.frs.startDate.range.below                      = Enter a date that is more than 2 working days in the future
 
 ## FRS SUMMARY SECTION
