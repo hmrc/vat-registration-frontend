@@ -39,8 +39,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockBrConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnector,
-      mockTurnoverEstimatesService
+      mockKeystoreConnector
     )
   }
 

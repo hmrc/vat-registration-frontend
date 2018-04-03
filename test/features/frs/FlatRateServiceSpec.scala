@@ -40,7 +40,6 @@ class FlatRateServiceSpec extends VatSpec {
       override val s4LService: S4LService = mockS4LService
       override val vatRegConnector: VatRegistrationConnector = mockRegConnector
       override val configConnector: ConfigConnector = mockConfigConnector
-      override val turnoverEstimateService : TurnoverEstimatesService = mockTurnoverEstimatesService
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
     }
   }
@@ -50,7 +49,6 @@ class FlatRateServiceSpec extends VatSpec {
       override val s4LService: S4LService = mockS4LService
       override val vatRegConnector: VatRegistrationConnector = mockRegConnector
       override val configConnector: ConfigConnector = mockConfigConnector
-      override val turnoverEstimateService : TurnoverEstimatesService = mockTurnoverEstimatesService
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
     }
   }
@@ -461,7 +459,19 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockRegConnector.clearFlatRate(any())(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      await(service.resetFRS(newSicCode)) mustBe newSicCode
+      await(service.resetFRSForSAC(newSicCode)) mustBe newSicCode
+    }
+  }
+  "clearFrs" should {
+    "reset Flat Rate Scheme and return true" in new Setup {
+      when(mockS4LService.saveNoAux[FlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+      when(mockRegConnector.clearFlatRate(any())(any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      await(service.clearFrs) mustBe true
+      verify(mockS4LService, times(1)).saveNoAux(any(), any())(any(), any(), any())
+      verify(mockRegConnector,times(1)).clearFlatRate(any())(any())
     }
   }
 

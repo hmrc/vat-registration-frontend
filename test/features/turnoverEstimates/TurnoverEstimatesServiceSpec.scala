@@ -17,7 +17,9 @@
 package features.turnoverEstimates
 
 import connectors.VatRegistrationConnector
+import features.frs.services.FlatRateService
 import helpers.VatSpec
+import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.HttpResponse
@@ -29,6 +31,7 @@ class TurnoverEstimatesServiceSpec extends VatSpec {
   trait Setup {
     val service: TurnoverEstimatesService = new TurnoverEstimatesService {
       override val vatRegConnector: VatRegistrationConnector = mockRegConnector
+      override val frsService: FlatRateService = mockFlatRateService
     }
   }
 
@@ -47,12 +50,38 @@ class TurnoverEstimatesServiceSpec extends VatSpec {
 
   "saveTurnoverEstimates" should {
 
-    "return a TurnoverEstimates case class after a successful call to the connector" in new Setup {
+    "return a TurnoverEstimates from connector estimate is > 150k so FRS is cleared and updated with false" in new Setup {
+      val toe = TurnoverEstimates(150001L)
       when(mockRegConnector.patchTurnoverEstimates(any())(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      val result: TurnoverEstimates = await(service.saveTurnoverEstimates(turnoverEstimates))
-      result mustBe turnoverEstimates
+      when(mockFlatRateService.clearFrs(any(),any()))
+        .thenReturn(Future.successful(true))
+
+      when(mockFlatRateService.saveJoiningFRS(any())(any(),any())).thenReturn(Future.successful(validFlatRate))
+
+      val result: TurnoverEstimates = await(service.saveTurnoverEstimates(toe))
+      result mustBe toe
+      verify(mockFlatRateService, times(1)).saveJoiningFRS(any())(any(),any())
+    }
+    "return a TurnoverEstimates from connector estimate is <= 150k so FRS is NOT cleared and no call is made to save it" in new Setup {
+      val toe = TurnoverEstimates(150000L)
+      when(mockRegConnector.patchTurnoverEstimates(any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      val result: TurnoverEstimates = await(service.saveTurnoverEstimates(toe))
+      result mustBe toe
+      verify(mockFlatRateService, times(0)).saveJoiningFRS(any())(any(),any())
+    }
+    "return future failed if TurnoverEstimates > 150k but delete clear frs returns failure" in new Setup {
+      val toe = TurnoverEstimates(150001L)
+      when(mockRegConnector.patchTurnoverEstimates(any())(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      when(mockFlatRateService.clearFrs(any(),any()))
+        .thenReturn(Future.failed(new Exception("foo")))
+
+      an[Exception] mustBe thrownBy(await(service.saveTurnoverEstimates(toe)))
     }
   }
 }

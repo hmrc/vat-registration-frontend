@@ -59,7 +59,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     expectedOverThresholdDate = Some(LocalDate.of(2016, 9, 30))
   )
 
-  val flatRateScheme  = FlatRateScheme(joinFrs = Some(false))
+  val flatRateScheme     = FlatRateScheme(joinFrs = Some(false))
 
   val turnOverEstimates = TurnoverEstimates(vatTaxable = 30000)
   val bankAccount     = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))

@@ -155,7 +155,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
 
 
-      when(mockFlatRateService.resetFRS(any())(any(), any()))
+      when(mockFlatRateService.resetFRSForSAC(any())(any(), any()))
         .thenReturn(Future.successful(sicCode))
 
       when(mockSicAndComplianceService.needComplianceQuestions(any()))
@@ -174,7 +174,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
 
 
-      when(mockFlatRateService.resetFRS(any())(any(), any()))
+      when(mockFlatRateService.resetFRSForSAC(any())(any(), any()))
         .thenReturn(Future.successful(sicCode))
 
       when(mockSicAndComplianceService.needComplianceQuestions(any()))

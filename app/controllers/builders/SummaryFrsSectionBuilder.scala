@@ -19,14 +19,15 @@ package controllers.builders
 import java.text.DecimalFormat
 
 import features.returns.models.Start
+import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
-import play.api.i18n.Messages
 
 case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
                                     calculatedOnEstimatedSales: Option[Long],
-                                    businessType: Option[String]) extends SummarySectionBuilder {
+                                    businessType: Option[String],
+                                    turnoverEstimates:Option[TurnoverEstimates]) extends SummarySectionBuilder {
   override val sectionId: String = "frs"
 
   private val decimalFormat = new DecimalFormat("#0.##")
@@ -55,8 +56,6 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
     Some(features.frs.controllers.routes.FlatRateController.annualCostsLimitedPage()),
     Seq(calculatedOnEstimatedSales.map("%,d".format(_)).getOrElse("0"))
   )
-
-  Messages
 
   val startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
@@ -100,7 +99,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
       (flatRatePercentageRow, joinFrsContainsTrue && vatFrs.flatMap(_.useThisRate).isDefined),
       (startDateRow, isflatRatePercentYes && vatFrs.flatMap(_.frsStart).isDefined)
     ),
-    vatFrs.isDefined
+      turnoverEstimates.exists(toe => if(toe.vatTaxable > 150000L) false else vatFrs.isDefined)
   )}
 
 }
