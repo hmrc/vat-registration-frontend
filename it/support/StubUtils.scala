@@ -62,6 +62,8 @@ trait StubUtils {
 
     def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
+    def vatRegistration = VatRegistrationStub()
+
     def currentProfile = CurrentProfile()
 
     def company = IncorporationStub()
@@ -431,6 +433,23 @@ trait StubUtils {
       builder
     }
 
+  }
+
+  case class VatRegistrationStub()(implicit builder: PreconditionBuilder) {
+    def threshold(url: String, threshold: String): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(url))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "taxable-threshold":"$threshold",
+               |  "since":"2018-1-1"
+               |}
+             """.stripMargin
+          ))
+      )
+      builder
+    }
   }
 
   case class CurrentProfile()(implicit builder: PreconditionBuilder) extends KeystoreStubScenarioWrapper {

@@ -16,9 +16,12 @@
 
 package services
 
+import java.time.LocalDate
+
 import connectors._
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
+import models.TaxableThreshold
 import models.external.{CompanyRegistrationProfile, IncorporationInfo}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -169,6 +172,15 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       when(mockRegConnector.submitRegistration(any())(any()))
         .thenReturn(Future.successful(Success))
       await(service.submitRegistration()) mustBe Success
+    }
+  }
+
+  "Calling getTaxableThreshold" must {
+    val taxableThreshold = TaxableThreshold("50000", LocalDate.of(2018, 1, 1).toString)
+
+    "return a taxable threshold" in new Setup {
+      when(mockRegConnector.getTaxableThreshold(any())(any())) thenReturn Future.successful(taxableThreshold)
+      await(service.getTaxableThreshold(date)) mustBe formattedThreshold
     }
   }
 }

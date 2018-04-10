@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import it.fixtures.ITRegistrationFixtures
 import org.scalatest.concurrent.ScalaFutures
@@ -28,6 +30,9 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
   val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
+
+  val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
+  val currentThreshold = "50000"
 
   "WelcomeController" must {
     "return an OK status" when {
@@ -43,6 +48,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatRegIncorporated)
           .vatScheme.has("officer", Json.obj())
           .audit.writesAuditMerged()
+          .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }
