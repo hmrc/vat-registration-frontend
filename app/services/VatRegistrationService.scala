@@ -16,11 +16,11 @@
 
 package services
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import common.enums.VatRegStatus
 import connectors._
-import features.turnoverEstimates.TurnoverEstimatesService
 import models.ModelKeys._
 import models._
 import models.api._
@@ -63,6 +63,12 @@ trait LegacyServiceToBeRefactored {
     vatRegConnector.getRegistration(profile.registrationId)
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = vatRegConnector.getAckRef(regId)
+
+  def getTaxableThreshold(date: LocalDate = LocalDate.now())(implicit hc: HeaderCarrier): Future[String] = {
+    vatRegConnector.getTaxableThreshold(date) map { taxableThreshold =>
+      "%,d".format(taxableThreshold.threshold.toInt)
+    }
+  }
 
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)

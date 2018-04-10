@@ -1,4 +1,4 @@
-@()(implicit request: Request[_], messages: Messages)
+@(threshold: String)(implicit request: Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 
@@ -13,7 +13,7 @@
     <div class="form-group">
         <ul class="list list-bullet">
             <li>@messages("pages.welcome.bullet1")</li>
-            <li>@messages("pages.welcome.bullet2")</li>
+            <li>@messages("pages.welcome.bullet2", threshold)</li>
         </ul>
     </div>
 

@@ -30,6 +30,7 @@ import features.sicAndCompliance.models.{SicAndCompliance, _}
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
+import models.TaxableThreshold
 import models.api._
 import models.external.{IncorporationInfo, _}
 import play.api.http.Status._
@@ -71,6 +72,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
   val sicCode = SicCode("88888888", "description", "displayDetails")
+
+  val currentThreshold = "50000"
+  val taxableThreshold = TaxableThreshold(currentThreshold, "2018-1-1")
+  val formattedThreshold = "50,000"
 
   //Responses
   val IM_A_TEAPOT = 418

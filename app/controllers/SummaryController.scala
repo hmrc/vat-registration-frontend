@@ -67,7 +67,8 @@ trait SummaryController extends BaseController with SessionProfile {
     for {
       officer <- lodgingOfficerService.getLodgingOfficer
       sac     <- sicSrv.getSicAndCompliance
-      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac))))
+      taxableThreshold <- vrs.getTaxableThreshold()
+      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac)), taxableThreshold))
     } yield summary
   }
 
@@ -82,13 +83,14 @@ trait SummaryController extends BaseController with SessionProfile {
       }
   }
 
-  def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {
+  def registrationToSummary(vs: VatScheme, taxableThreshold: String)(implicit profile : CurrentProfile): Summary = {
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(
         vs.tradingDetails,
         vs.threshold,
         vs.returns,
-        profile.incorporationDate
+        profile.incorporationDate,
+        taxableThreshold
       ).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,

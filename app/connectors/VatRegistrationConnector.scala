@@ -16,6 +16,7 @@
 
 package connectors
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import common.enums.VatRegStatus
@@ -27,9 +28,9 @@ import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
-import models.CurrentProfile
 import models.api._
 import models.external.IncorporationInfo
+import models.{CurrentProfile, TaxableThreshold}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
@@ -71,6 +72,12 @@ trait RegistrationConnector extends RegistrationWhitelist {
         case e: Exception => throw logResponse(e, "getAckRef")
       }
     }(returnDefaultAckRef)
+  }
+
+  def getTaxableThreshold(date: LocalDate)(implicit hc: HeaderCarrier): Future[TaxableThreshold] = {
+    http.GET[TaxableThreshold](s"$vatRegUrl/vatreg/threshold/$date") recover {
+      case e => throw logResponse(e, "getTaxableThreshold")
+    }
   }
 
   def getLodgingOfficer(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {

@@ -24,11 +24,8 @@ import features.frs.services.FlatRateService
 import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import play.api.mvc.Results.Ok
-import mocks.AuthMock
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -84,6 +81,8 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.5)))
 
+      when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
@@ -98,6 +97,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.5)))
+
+      when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
@@ -113,13 +115,13 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.32)))
 
-      testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
+      testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration), formattedThreshold).sections.length mustEqual 11
     }
 
     "registrationToSummary maps a valid empty VatScheme object to a Summary object" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
-      testSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration)).sections.length mustEqual 11
+      testSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration), formattedThreshold).sections.length mustEqual 11
     }
   }
 
