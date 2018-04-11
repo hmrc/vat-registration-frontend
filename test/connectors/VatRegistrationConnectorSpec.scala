@@ -27,6 +27,7 @@ import features.sicAndCompliance.models._
 import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
+import models.TaxableThreshold
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
 import play.api.http.Status.{NO_CONTENT, OK}
@@ -110,6 +111,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "fail when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[Option[String]]("test-url", internalServiceException)
       connector.getAckRef("tstID") failedWith internalServiceException
+    }
+  }
+
+  "Calling getTaxableThreshold" must {
+    "return a turnover threshold model" in new Setup {
+      val taxableThreshold = TaxableThreshold("100000", "2018-01-01")
+      mockHttpGET[TaxableThreshold]("tst-url", taxableThreshold)
+      connector.getTaxableThreshold(date) returns taxableThreshold
+    }
+
+    "fail when an exception is returned" in new Setup {
+      mockHttpFailedGET("tst-url", exception)
+      connector.getTaxableThreshold(date) failedWith exception
     }
   }
 

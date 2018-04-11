@@ -153,7 +153,7 @@ pages.welcome.heading                   = Register for VAT
 pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
 
 pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
-pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £85,000)
+pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £{0})
 
 pages.welcome.h2                        = Mandatory registration
 pages.welcome.p2                        = You must register a company for VAT if any of these apply:
@@ -238,7 +238,7 @@ pages.estimate.vat.turnover.info                            = Give an estimate r
 pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
 pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company''s UK sales of VAT-taxable goods and services. Include any zero-rated items.
 pages.estimate.vat.turnover.include.para1                   = Find out more about
-pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services (opens in a new window)
+pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
 pages.estimate.vat.turnover.include.para1.2                 = .
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
@@ -293,10 +293,10 @@ pages.application.submission.confirmation.button                    = Continue
 
 ## Summary Page VAT details
 pages.summary.vatDetails.sectionHeading                 = VAT details
-pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £85,000 in the 30 days after company is registered
+pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £{0} in the 30 days after company is registered
 pages.summary.vatDetails.necessity                      = Register voluntarily
-pages.summary.vatDetails.overThresholdSelection         = Since {0} has the company''s VAT taxable turnover gone over £85,000?
-pages.summary.vatDetails.overThresholdDate              = Month turnover went over £85,000
+pages.summary.vatDetails.overThresholdSelection         = Since {0} has the company''s VAT taxable turnover gone over £{1}?
+pages.summary.vatDetails.overThresholdDate              = Month turnover went over £{0}
 pages.summary.vatDetails.expectedOverThresholdSelection = Thought turnover would go over VAT registration in a single 30-day period
 pages.summary.vatDetails.expectedOverThresholdDate      = Date you first thought sales would go over threshold
 pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason

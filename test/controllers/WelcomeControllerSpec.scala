@@ -17,6 +17,7 @@
 package controllers
 
 import common.enums.VatRegStatus
+import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
@@ -27,7 +28,7 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.Future
 
-class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
+class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   val testController = new WelcomeController {
     override val currentProfileService  = mockCurrentProfile
@@ -55,6 +56,8 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
 
         when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
+
+        when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
 
         callAuthorisedOrg(testController.start) {
           result =>

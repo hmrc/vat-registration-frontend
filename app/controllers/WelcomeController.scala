@@ -50,8 +50,11 @@ trait WelcomeController extends BaseController with SessionProfile {
     implicit request =>
       vatRegistrationService.assertFootprintNeeded flatMap {
         case Some((regId, txID)) =>
-          currentProfileService.buildCurrentProfile(regId, txID) map { _ =>
-            Ok(welcome())
+          for{
+            _ <- currentProfileService.buildCurrentProfile(regId, txID)
+            taxableThreshold <- vatRegistrationService.getTaxableThreshold()
+          } yield {
+            Ok(welcome(taxableThreshold))
           }
         case None => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
       }
