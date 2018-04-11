@@ -32,7 +32,9 @@ import uk.gov.hmrc.play.config.ServicesConfig
 case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetails] = None,
                                             threshold: Option[Threshold],
                                             returnsBlock : Option[Returns],
-                                            incorpDate: Option[LocalDate] = None) extends SummarySectionBuilder with ServicesConfig {
+                                            incorpDate: Option[LocalDate] = None,
+                                            taxableThreshold: String
+                                           ) extends SummarySectionBuilder with ServicesConfig {
   override val sectionId: String      = "vatDetails"
   val monthYearPresentationFormatter  = DateTimeFormatter.ofPattern("MMMM y")
   val serviceName                     = "vat-registration-eligibility-frontend"
@@ -43,20 +45,22 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
   val taxableTurnoverRow: SummaryRow = SummaryRow(
     s"$sectionId.taxableTurnover",
     s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
-    Some(getUrl(serviceName,"sales-over-threshold"))
+    Some(getUrl(serviceName,"sales-over-threshold")),
+    Seq(taxableThreshold)
   )
 
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
     thresholdBlock.overThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
     Some(getUrl(serviceName,"turnover-over-threshold")),
-    Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)))
+    Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)), taxableThreshold)
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
     thresholdBlock.overThresholdDate.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
-    Some(getUrl(serviceName,"turnover-over-threshold"))
+    Some(getUrl(serviceName,"turnover-over-threshold")),
+    Seq(taxableThreshold)
   )
 
   val expectedOverThresholdSelectionRow: SummaryRow = SummaryRow(

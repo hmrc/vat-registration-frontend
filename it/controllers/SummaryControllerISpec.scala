@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import features.officer.models.view.LodgingOfficer
 import features.returns.models.{Frequency, Returns, Stagger}
 import features.sicAndCompliance.models.SicAndCompliance
@@ -27,6 +29,9 @@ import play.api.libs.json.Json
 import support.AppAndStubs
 
 class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
+
+  val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
+  val currentThreshold = "50000"
 
   val officerJson = Json.parse(
     s"""
@@ -64,6 +69,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
   "GET Summary page" should {
     "display the summary page correctly" when {
       "the company is NOT incorporated" in {
+
         given()
           .user.isAuthorised
           .currentProfile.withProfile()
@@ -77,6 +83,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
@@ -111,6 +118,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[SicAndCompliance].cleared
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
