@@ -103,7 +103,8 @@ trait LegacyServiceToBeRefactored {
     vatRegConnector.submitRegistration(profile.registrationId)
   }
 
-  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
+  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] = {
     vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))
+  }
 
 }
