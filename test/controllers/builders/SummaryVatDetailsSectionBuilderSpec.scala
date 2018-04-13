@@ -74,7 +74,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       }
     }
 
-    "with overThresholdDate render" should {
+    "with overThresholdOccuredTwelveMonthDate render" should {
 
       "a month and year displayed if a date is entered and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
@@ -83,7 +83,15 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold
         )
-        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"turnover-over-threshold")),List(taxableThreshold.threshold))
+        builder.overThresholdOccuredTwelveMonthDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"turnover-over-threshold")),List(taxableThreshold.threshold))
+      }
+    }
+
+    "with overThresholdDateThirtyDays" should {
+
+      "a month and year displayed if a date is entered and eligibility frontend if switch is on" in {
+
+
       }
 
     }

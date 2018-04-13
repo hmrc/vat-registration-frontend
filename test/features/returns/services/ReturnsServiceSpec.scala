@@ -232,7 +232,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
           true,
           None,
           Some(vatThresholdPostIncorpDate),
-          Some(vatExpectedThresholdPostIncorpDate)
+          Some(vatExpectedThresholdPostIncorpDate),
+          None
         )
 
 
@@ -244,7 +245,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
     "return a date when just the vatThresholdPostIncorp is present" in new Setup {
 
-      val thresholdFirstDateOnly = Threshold(true, None, Some(vatThresholdPostIncorpDate), None)
+      val thresholdFirstDateOnly = Threshold(true, None, Some(vatThresholdPostIncorpDate), None, None)
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdFirstDateOnly))
@@ -506,20 +507,4 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       )) mustBe expected
     }
   }
-
-  /*
-  def saveVoluntaryStartDate
-  (dateChoice : DateSelection.Value, startDate : Option[LocalDate], incorpDate : Option[LocalDate], ctActive : Option[LocalDate])
-  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
-    saveVatStartDate((dateChoice, startDate, incorpDate, ctActive) match {
-      case (DateSelection.company_registration_date, _, Some(icd), _)   => Some(icd)
-      case (DateSelection.company_registration_date, _, _, _)           => None
-      case (DateSelection.business_start_date,       _, _, Some(cta))   => Some(cta)
-      case (DateSelection.specific_date,             Some(vsd), _, _)   => Some(vsd)
-      case _                                                            => None
-    })
-  }
-   */
-
-
 }

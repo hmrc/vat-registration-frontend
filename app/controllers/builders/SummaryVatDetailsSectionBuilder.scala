@@ -49,29 +49,43 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
     Seq(taxableThreshold)
   )
 
-  val overThresholdSelectionRow: SummaryRow = SummaryRow(
-    s"$sectionId.overThresholdSelection",
-    thresholdBlock.overThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
+  val overThresholdOccuredTwelveMonthSelectionRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdOccuredTwelveMonthSelection",
+    thresholdBlock.overThresholdOccuredTwelveMonth.fold("app.common.no")(_ => "app.common.yes"),
     Some(getUrl(serviceName,"turnover-over-threshold")),
     Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)), taxableThreshold)
   )
 
-  val overThresholdDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.overThresholdDate",
-    thresholdBlock.overThresholdDate.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
+  val overThresholdOccuredTwelveMonthDateRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdOccuredTwelveMonthDate",
+    thresholdBlock.overThresholdOccuredTwelveMonth.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
     Some(getUrl(serviceName,"turnover-over-threshold")),
+    Seq(taxableThreshold)
+  )
+
+  val overThresholdDateThirtyDaysSelectionRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdDateThirtyDaysSelection",
+    thresholdBlock.overThresholdDateThirtyDays.fold("app.common.no")(_ => "app.common.yes"),
+    Some(getUrl(serviceName,"/make-more-taxable-sales")),
+    Seq(taxableThreshold)
+  )
+
+  val overThresholdDateThirtyDaysRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdDateThirtyDaysDate",
+    thresholdBlock.overThresholdDateThirtyDays.map(_.format(presentationFormatter)).getOrElse(""),
+    Some(getUrl(serviceName,"/make-more-taxable-sales")),
     Seq(taxableThreshold)
   )
 
   val expectedOverThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.expectedOverThresholdSelection",
-    thresholdBlock.expectedOverThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
+    thresholdBlock.overThresholdOccuredTwelveMonth.fold("app.common.no")(_ => "app.common.yes"),
     Some(getUrl(serviceName,"thought-over-threshold"))
   )
 
   val expectedOverThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.expectedOverThresholdDate",
-    thresholdBlock.expectedOverThresholdDate.map(_.format(presentationFormatter)).getOrElse(""),
+    thresholdBlock.overThresholdOccuredTwelveMonth.map(_.format(presentationFormatter)).getOrElse(""),
     Some(getUrl(serviceName,"thought-over-threshold"))
   )
 
@@ -117,10 +131,12 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
       sectionId,
       rows = Seq(
         (taxableTurnoverRow, incorpDate.isEmpty),
-        (overThresholdSelectionRow, incorpDate.isDefined),
-        (overThresholdDateRow, incorpDate.isDefined && thresholdBlock.overThresholdDate.isDefined),
-        (expectedOverThresholdSelectionRow, incorpDate.isDefined ),
-        (expectedOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.expectedOverThresholdDate.isDefined),
+        (overThresholdDateThirtyDaysSelectionRow, incorpDate.isDefined), // NEW DATE [YES/NO]
+        (overThresholdDateThirtyDaysRow, incorpDate.isDefined && thresholdBlock.overThresholdDateThirtyDays.isDefined), // NEW DATE [DATE]
+        (expectedOverThresholdSelectionRow, incorpDate.isDefined),
+        (expectedOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.pastOverThresholdDateThirtyDays.isDefined),
+        (overThresholdOccuredTwelveMonthSelectionRow, incorpDate.isDefined),
+        (overThresholdOccuredTwelveMonthDateRow, incorpDate.isDefined && thresholdBlock.overThresholdOccuredTwelveMonth.isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),

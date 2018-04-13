@@ -292,17 +292,19 @@ pages.application.submission.confirmation.panel.para                = The compan
 pages.application.submission.confirmation.button                    = Continue
 
 ## Summary Page VAT details
-pages.summary.vatDetails.sectionHeading                 = VAT details
-pages.summary.vatDetails.taxableTurnover                = VAT taxable sales over £{0} in the 30 days after company is registered
-pages.summary.vatDetails.necessity                      = Register voluntarily
-pages.summary.vatDetails.overThresholdSelection         = Since {0} has the company''s VAT taxable turnover gone over £{1}?
-pages.summary.vatDetails.overThresholdDate              = Month turnover went over £{0}
-pages.summary.vatDetails.expectedOverThresholdSelection = Thought turnover would go over VAT registration in a single 30-day period
-pages.summary.vatDetails.expectedOverThresholdDate      = Date you first thought sales would go over threshold
-pages.summary.vatDetails.voluntaryRegistrationReason    = Voluntary registration reason
-pages.summary.vatDetails.startDate                      = VAT start date
-pages.summary.vatDetails.mandatoryStartDate             = The date the company is registered with Companies House
-pages.summary.vatDetails.tradingName                    = Other trading name
+pages.summary.vatDetails.sectionHeading                             = VAT details
+pages.summary.vatDetails.taxableTurnover                            = VAT taxable sales over £{0} in the 30 days after company is registered
+pages.summary.vatDetails.necessity                                  = Register voluntarily
+pages.summary.vatDetails.overThresholdOccuredTwelveMonthSelection   = In any 12-month period has the company gone over the VAT-registration threshold?
+pages.summary.vatDetails.overThresholdOccuredTwelveMonthDate        = Month turnover went over £{0}
+pages.summary.vatDetails.expectedOverThresholdSelection             = In the past, have you ever thought the company’s VAT-taxable sales would go over the threshold in a 30-day period?
+pages.summary.vatDetails.expectedOverThresholdDate                  = Date you first thought sales would go over threshold
+pages.summary.vatDetails.voluntaryRegistrationReason                = Voluntary registration reason
+pages.summary.vatDetails.overThresholdDateThirtyDaysSelection       = Over the next 30 days, do you think the company will make more than £{0} in VAT-taxable sales?
+pages.summary.vatDetails.overThresholdDateThirtyDaysDate            = Date you thought sales would exceed £{0}
+pages.summary.vatDetails.startDate                                  = VAT start date
+pages.summary.vatDetails.mandatoryStartDate                         = The date the company is registered with Companies House
+pages.summary.vatDetails.tradingName                                = Other trading name
 
 ## Summary Page Director contact details
 pages.summary.directorContactDetails.sectionHeading    = Director contact details

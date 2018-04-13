@@ -17,8 +17,9 @@
 package features.returns.services
 
 import java.time.LocalDate
-import javax.inject.Inject
+import java.util.Collections
 
+import javax.inject.Inject
 import connectors.RegistrationConnector
 import features.returns.models._
 import models._
@@ -63,20 +64,46 @@ trait ReturnsService {
   }
 
   //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
-  def calculateMandatoryStartDate(overThresholdDate : Option[LocalDate], expectedOverThresholdDate : Option[LocalDate]): LocalDate = {
+  def calculateMandatoryStartDate(overThresholdDate : Option[LocalDate], expectedOverThresholdDate : Option[LocalDate], expectedOverThirtyDays: Option[LocalDate]): LocalDate = {
     def calculatedCrossedThresholdDate(thresholdDate : LocalDate) = thresholdDate.withDayOfMonth(1).plusMonths(2)
-
-    (overThresholdDate, expectedOverThresholdDate) match {
-      case (Some(td), Some(ed)) =>
-        val calculatedThresholdDate = calculatedCrossedThresholdDate(td)
-        if (calculatedThresholdDate.isBefore(ed)) calculatedThresholdDate else ed
-      case (Some(td), None) => calculatedCrossedThresholdDate(td)
-      case (None, Some(ed)) => ed
+    (overThresholdDate, expectedOverThresholdDate, expectedOverThirtyDays) match {
+      case (Some(thresholdDate), Some(expectedDate), Some(overThresholdDate)) =>
+        val calculatedThresholdDate = calculatedCrossedThresholdDate(thresholdDate)
+        if (calculatedThresholdDate.isBefore(expectedDate) && calculatedThresholdDate.isBefore(overThresholdDate)){
+          calculatedThresholdDate
+        } else if (expectedDate.isBefore(overThresholdDate)){
+          expectedDate
+        } else {
+          overThresholdDate
+        }
+      case (Some(thresholdDate), Some(expectedDate), None) => {
+        if (calculatedCrossedThresholdDate(thresholdDate).isBefore(expectedDate)){
+          calculatedCrossedThresholdDate(thresholdDate)
+        } else {
+          expectedDate
+        }
+      }
+      case (Some(thresholdDate), None, Some(overThresholdDate)) => {
+        if (calculatedCrossedThresholdDate(thresholdDate).isBefore(overThresholdDate)){
+          calculatedCrossedThresholdDate(thresholdDate)
+        } else {
+          overThresholdDate
+        }
+      }
+      case (Some(thresholdDate), None, None) => {
+        calculatedCrossedThresholdDate(thresholdDate)
+      }
+      case (None, Some(expectedDate), None) => {
+        expectedDate
+      }
+      case (None, None, Some(overThresholdDate)) => {
+        overThresholdDate
+      }
       case _ =>
         Logger.error("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
         throw new RuntimeException("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
-
     }
+
   }
 
   def getVatStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[Option[LocalDate]] = {
@@ -100,7 +127,7 @@ trait ReturnsService {
   //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
   def retrieveCalculatedStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[LocalDate] = {
     vatService.getThreshold(profile.registrationId).map( threshold =>
-      calculateMandatoryStartDate(threshold.overThresholdDate, threshold.expectedOverThresholdDate)
+      calculateMandatoryStartDate(threshold.overThresholdOccuredTwelveMonth, threshold.pastOverThresholdDateThirtyDays, threshold.overThresholdDateThirtyDays)
     )
   }
 
