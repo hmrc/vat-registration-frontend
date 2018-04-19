@@ -54,4 +54,11 @@ trait ErrorController extends BaseController with SessionProfile {
         Future.successful(Ok(views.html.pages.error.submissionTimeout()))
     }
   }
+
+  def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        Future.successful(Ok(views.html.pages.error.submissionFailed()))
+      }
+  }
 }

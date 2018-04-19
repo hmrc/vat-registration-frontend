@@ -77,8 +77,8 @@ trait SummaryController extends BaseController with SessionProfile {
         invalidSubmissionGuard() {
           vrs.submitRegistration() map {
             case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
-            case SubmissionFailed => Redirect(controllers.routes.ErrorController.submissionRetryable())
-            case SubmissionFailedRetryable => Redirect(controllers.routes.ApplicationSubmissionController.show())
+            case SubmissionFailed => Redirect(controllers.routes.ErrorController.submissionFailed())
+            case SubmissionFailedRetryable => Redirect(controllers.routes.ErrorController.submissionRetryable())
           }
         }
       }
