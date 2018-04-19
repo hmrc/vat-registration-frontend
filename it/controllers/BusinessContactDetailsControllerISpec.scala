@@ -47,7 +47,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
         val document = Jsoup.parse(res.body)
         val elems = document.getElementsByAttributeValue("name","ppobRadio")
-        elems.size() mustBe 3
+        elems.size() mustBe 4
 
 
       }
@@ -70,7 +70,8 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
         val elems = document.getElementsByAttributeValue("name","ppobRadio")
         elems.first().attr("value") mustBe "other"
-        elems.size() mustBe 1
+        elems.get(1).attr("value") mustBe "non-uk"
+        elems.size() mustBe 2
       }
     }
     "return 500 when not authorised" in {

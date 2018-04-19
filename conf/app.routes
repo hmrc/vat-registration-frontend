@@ -104,7 +104,10 @@ POST        /provides-skilled-workers                                           
 ## PPOB ADDRESS
 GET         /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.showPPOB
 POST        /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
-GET         /carry-out-business-activities/acceptFromTxm                                        features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+GET         /carry-out-business-activities/acceptFromTxm                                       features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+
+## PPOB ADDRESS Drop out page
+GET         /cant-register-vat                                                                 features.businessContact.controllers.BusinessContactDetailsController.showPPOBDropOut
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /company-contact-details                                                           features.businessContact.controllers.BusinessContactDetailsController.showCompanyContactDetails
