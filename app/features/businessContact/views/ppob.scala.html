@@ -23,7 +23,8 @@
             @vatInputRadioGroup(
                 field = ppobform("ppobRadio"),
                 addresses.map( a => (a.id, a.asLabel)) :+
-                        ("other" -> messages("pages.ppob.different.address")),
+                        ("other" -> messages("pages.ppob.different.address")) :+
+                        ("non-uk" -> messages("pages.ppob.nonuk.address")),
                 '_legend -> messages("pages.ppob.heading"),
                 '_legendClass -> "visually-hidden",
                 '_labelAfter -> true,

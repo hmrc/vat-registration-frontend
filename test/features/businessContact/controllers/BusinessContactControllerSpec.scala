@@ -27,6 +27,7 @@ import mocks.AuthMock
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -45,6 +46,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       val messagesApi: MessagesApi = mockMessagesAPI
       val authConnector: AuthConnector = mockAuthClientConnector
+      val dropoutUrl: String = "test otrs URL"
     }
     mockAllMessages
     mockAuthenticated()
@@ -156,6 +158,15 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
           _ redirectsTo routes.BusinessContactDetailsController.showCompanyContactDetails().url
         }
       }
+
+      "user selects non-uk and redirect to drop out page address" in new SubmissionSetup {
+        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(scrsAddress))
+        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "non-uk")){
+          _ redirectsTo routes.BusinessContactDetailsController.showPPOBDropOut().url
+        }
+      }
+
     }
 
     "return an exception" when {
@@ -166,6 +177,15 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       }
     }
   }
+
+  "show ppob dropout page" should {
+    "return a 200" in new SubmissionSetup{
+      callAuthorised(controller.showPPOBDropOut){
+        _ isA 200
+      }
+    }
+  }
+
 
   "showing the company contact details page" should {
     "return a 200" when {
