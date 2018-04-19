@@ -25,9 +25,10 @@ import controllers.BaseController
 import features.businessContact.BusinessContactService
 import features.businessContact.forms.{CompanyContactDetailsForm, PpobForm}
 import features.businessContact.models.CompanyContactDetails
-import features.businessContact.views.html.{business_contact_details, ppob}
+import features.businessContact.views.html.{business_contact_details, ppob, ppob_drop_out}
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
+import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, PrePopService, SessionProfile}
@@ -39,13 +40,17 @@ class BusinessContactDetailsControllerImpl @Inject()(val messagesApi: MessagesAp
                                                      val keystoreConnector: KeystoreConnect,
                                                      val businessContactService: BusinessContactService,
                                                      val prepopService: PrePopService,
-                                                     val addressLookupService: AddressLookupService) extends BusinessContactDetailsController
+                                                     val addressLookupService: AddressLookupService,
+                                                     val conf: Configuration) extends BusinessContactDetailsController {
+  val dropoutUrl = conf.getString("microservice.services.otrs.url").getOrElse("")
+}
 
 trait BusinessContactDetailsController extends BaseController with SessionProfile {
 
   val businessContactService: BusinessContactService
   val prepopService: PrePopService
   val addressLookupService: AddressLookupService
+  val dropoutUrl: String
 
   private val ppobForm            = PpobForm.form
   private val companyContactForm  = CompanyContactDetailsForm.form
@@ -61,6 +66,7 @@ trait BusinessContactDetailsController extends BaseController with SessionProfil
       }
   }
 
+
   def submitPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
@@ -73,13 +79,22 @@ trait BusinessContactDetailsController extends BaseController with SessionProfil
               AddressLookupJourneyIdentifier.businessActivities,
               routes.BusinessContactDetailsController.returnFromTxm()
             ) map Redirect
+          } else if (address.addressId.equals("non-uk")) {
+            Future.successful(Redirect(routes.BusinessContactDetailsController.showPPOBDropOut()))
           } else {
-            for {
+        for {
               addressList <- prepopService.getPpobAddressList
               _           <- businessContactService.updateBusinessContact[ScrsAddress](addressList.find(_.id == address.addressId).get)
             } yield Redirect(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
           }
         )
+      }
+  }
+
+  def showPPOBDropOut: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      ivPassedCheck {
+        Future.successful(Ok(ppob_drop_out(dropoutUrl)))
       }
   }
 

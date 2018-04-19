@@ -581,7 +581,15 @@ pages.ppob.heading                                      = What is the company''s
 pages.ppob.p1                                           = This is where the company carries out most of its business activities.
 pages.ppob.p2                                           = If the company does business in different places or contract work on client premises, it''s where the company keeps its financial and business records.
 pages.ppob.different.address                            = A different UK address
+pages.ppob.nonuk.address                                = A non-UK address
 validation.ppob.missing                                 = Tell us where the company will carry out most of its business activities
+
+## PPOB Drop Out page
+pages.ppobdropout.title                                 = Must be a UK address
+pages.ppobdropout.heading                               = You can''t register for VAT with this service
+pages.ppobdropout.p1                                    = To use this service, the address where the company carries out most its business activities (its ''principal place of business'') must be in the UK.
+pages.ppobdropout.p2                                    = Please
+pages.ppobdropout.url                                   = register with another service
 
 ## Are you interested in FRS Page
 pages.frs.join.heading                          = Do you want to join the Flat Rate Scheme?
