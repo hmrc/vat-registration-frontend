@@ -42,6 +42,8 @@ import scala.concurrent.Future
 
 sealed trait DESResponse
 object Success extends DESResponse
+object SubmissionFailed extends DESResponse
+object SubmissionFailedRetryable extends DESResponse
 
 class VatRegistrationConnector @Inject()(val http: WSHttp, conf: ServicesConfig) extends RegistrationConnector {
   lazy val vatRegUrl   = conf.baseUrl("vat-registration")
@@ -161,6 +163,9 @@ trait RegistrationConnector extends RegistrationWhitelist {
         _.status match {
           case OK => Success
         }
+      } recover {
+        case e: Upstream4xxResponse => SubmissionFailed
+        case _ => SubmissionFailedRetryable
       }
     }(preventSubmissionForWhitelist)
   }

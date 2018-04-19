@@ -198,5 +198,6 @@ POST        /confirm-business-type                                              
 GET         /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.frsStartDatePage
 POST        /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.submitFrsStartDate
 
-
+## Errors
+GET         /error/submission-timeout                                                          controllers.ErrorController.submissionRetryable
 
