@@ -199,5 +199,5 @@ GET         /when-join-flat-rate                                                
 POST        /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.submitFrsStartDate
 
 ## Errors
-GET         /error/submission-timeout                                                          controllers.ErrorController.submissionRetryable
-
+GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
+GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed

@@ -30,10 +30,13 @@ import helpers.VatRegSpec
 import models.TaxableThreshold
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
+import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.Mockito.when
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http._
 
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -274,6 +277,18 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
 
       await(connector.submitRegistration("tstID")) mustBe Success
+    }
+    "return a SubmissionFailed" in new Setup {
+      when(mockWSHttp.PUT[String, HttpResponse](anyString(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.failed(new Upstream4xxResponse("400", 400, 400)))
+
+      await(connector.submitRegistration("tstID")) mustBe SubmissionFailed
+    }
+    "return a SubmissionFailedRetryable" in new Setup {
+      when(mockWSHttp.PUT[String, HttpResponse](anyString(), any())(any(), any(), any(), any()))
+        .thenReturn(Future.failed(new Upstream5xxResponse("502", 502, 502)))
+
+      await(connector.submitRegistration("tstID")) mustBe SubmissionFailedRetryable
     }
   }
 

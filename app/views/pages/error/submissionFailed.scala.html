@@ -19,14 +19,11 @@
 
 @main_template(title = messagesApi("pages.retrySubmission.title"), backEnabled = false) {
 
-    <h1 class="heading-large">@Messages("pages.retrySubmission.heading")</h1>
+    <h1 id="submissionFailedReportAProblem" class="heading-xlarge">@Messages("pages.failedSubmission.description")</h1>
 
-    <p>@Messages("pages.retrySubmission.p1")</p>
+    <div class="spaced-below">
+        <p>@Messages("pages.failedSubmission.p1")</p>
 
-    <p class="spaced-below">@Messages("pages.retrySubmission.p2")</p>
-
-     @govHelpers.form(action = controllers.routes.SummaryController.submitRegistration) {
-        <input class="button" type="submit" id="continue" name="action" value="@Messages("pages.retrySubmission.button")">
-    }
-
+        <p>@Messages("pages.failedSubmission.p2")</p>
+    </div>
 }
