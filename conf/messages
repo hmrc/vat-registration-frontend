@@ -114,6 +114,14 @@ pages.timeoutiv.title                   = Your session has timed out
 pages.timeoutiv.heading                 = Your session has timed out due to inactivity
 pages.timeoutiv.body.url                = You need to <a href="{0}">restart the identity check</a>.
 
+##Submission Timeout Page
+pages.retrySubmission.title             = We couldn''t process your application
+pages.retrySubmission.heading           = We couldn''t process your application
+pages.retrySubmission.p1                = Sorry, there is a technical problem and we couldn''t process your application. Any details you entered have been saved.
+pages.retrySubmission.p2                = Please resend your application.
+pages.retrySubmission.button            = Resend
+
+
 ## Unable to confirm identity page
 pages.cantconfirmidentity.title         = We won''t be able to confirm your identity
 pages.cantconfirmidentity.heading       = We won''t be able to confirm your identity

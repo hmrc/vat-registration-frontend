@@ -17,10 +17,9 @@
 package controllers
 
 import javax.inject.Inject
-
 import common.enums.VatRegStatus
 import config.AuthClientConnector
-import connectors.{ConfigConnector, KeystoreConnect, Success}
+import connectors._
 import controllers.builders._
 import features.frs.services.FlatRateService
 import features.officer.services.LodgingOfficerService
@@ -78,6 +77,8 @@ trait SummaryController extends BaseController with SessionProfile {
         invalidSubmissionGuard() {
           vrs.submitRegistration() map {
             case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
+            case SubmissionFailed => Redirect(controllers.routes.ErrorController.submissionRetryable())
+            case SubmissionFailedRetryable => Redirect(controllers.routes.ApplicationSubmissionController.show())
           }
         }
       }
