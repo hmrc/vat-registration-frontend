@@ -164,8 +164,8 @@ trait RegistrationConnector extends RegistrationWhitelist {
           case OK => Success
         }
       } recover {
-        case e: Upstream4xxResponse => SubmissionFailed
-        case _ => SubmissionFailedRetryable
+        case e: Upstream5xxResponse => SubmissionFailedRetryable
+        case _ => SubmissionFailed
       }
     }(preventSubmissionForWhitelist)
   }
