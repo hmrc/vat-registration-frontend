@@ -22,14 +22,14 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val bootstrapVersion       = "8.17.0"
+  private val bootstrapVersion       = "8.20.0"
   private val partialsVersion        = "6.1.0"
   private val cachingClientVersion   = "7.1.0"
   private val formMappingVersion     = "0.2.0"
   private val timeVersion            = "3.1.0"
   private val whitelistFilterVersion = "2.0.0"
   private val catsVersion            = "1.0.0"
-  private val authClientVersion      = "2.5.0"
+  private val authClientVersion      = "2.6.0"
 
 
   private val compileDependencies: Seq[ModuleID] = Seq(

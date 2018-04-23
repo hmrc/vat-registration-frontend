@@ -40,7 +40,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
           optVoluntaryRegistration,
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold)
-        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.no", Some(builder.getUrl(serviceName,"sales-over-threshold")), List(taxableThreshold.threshold))
+        builder.overThresholdThirtySelectionRow mustBe SummaryRow("vatDetails.overThresholdThirtySelection", "app.common.no", Some(builder.getUrl(serviceName,"make-more-taxable-sales")), List(taxableThreshold.threshold))
       }
 
       "a 'Yes' if it's a mandatory registration and point to eligibility frontend if switch is on" in {
@@ -49,7 +49,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
           optMandatoryRegistration,
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold)
-        builder.taxableTurnoverRow mustBe SummaryRow("vatDetails.taxableTurnover", "app.common.yes", Some(builder.getUrl(serviceName,"sales-over-threshold")), List(taxableThreshold.threshold))
+        builder.overThresholdThirtySelectionRow mustBe SummaryRow("vatDetails.overThresholdThirtySelection", "app.common.yes", Some(builder.getUrl(serviceName,"make-more-taxable-sales")), List(taxableThreshold.threshold))
       }
     }
 
@@ -79,57 +79,57 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a month and year displayed if a date is entered and point to eligibility frontend if switch is on" in {
         val builder = SummaryVatDetailsSectionBuilder(
           tradingDetails = Some(generateTradingDetails()),
-          threshold = optMandatoryRegistration,
+          threshold = optMandatoryRegistrationTwelve,
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold
         )
-        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"turnover-over-threshold")),List(taxableThreshold.threshold))
+        builder.overThresholdDateRow mustBe SummaryRow("vatDetails.overThresholdDate", testDate.format(testMonthYearPresentationFormatter), Some(builder.getUrl(serviceName,"gone-over-threshold")),List(taxableThreshold.threshold))
       }
 
     }
 
-    "with expectedOverThresholdSelectionRow render" should {
+    "with pastOverThresholdSelectionRow render" should {
 
-      "a 'No' if the expectedOverThresholdSelection is false" in {
+      "a 'No' if the pastOverThresholdSelectionRow is false" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
           optMandatoryRegistration,
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold)
 
-        builder.expectedOverThresholdSelectionRow mustBe
-          SummaryRow("vatDetails.expectedOverThresholdSelection",
+        builder.pastOverThresholdSelectionRow mustBe
+          SummaryRow("vatDetails.expectationOverThresholdSelection",
             "app.common.no",
-            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+            Some(builder.getUrl(serviceName,"gone-over-threshold-period")))
       }
 
-      "a 'Yes' if the expectedOverThresholdSelection is true" in {
+      "a 'Yes' if the pastOverThresholdSelectionRow is true" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
           generateOptionalThreshold(expectedOverThreshold = validExpectedOverTrue),
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold)
 
-        builder.expectedOverThresholdSelectionRow mustBe
-          SummaryRow("vatDetails.expectedOverThresholdSelection",
+        builder.pastOverThresholdSelectionRow mustBe
+          SummaryRow("vatDetails.expectationOverThresholdSelection",
             "app.common.yes",
-            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+            Some(builder.getUrl(serviceName,"gone-over-threshold-period")))
       }
     }
 
-    "with expectedOverThresholdDateRow render" should {
+    "with pastOverThresholdDateRow render" should {
 
-      "a 'date' if the expectedOverThresholdDate is present" in {
+      "a 'date' if the pastOverThresholdDateRow is present" in {
         val builder = SummaryVatDetailsSectionBuilder(
           Some(generateTradingDetails()),
           generateOptionalThreshold(expectedOverThreshold = validExpectedOverTrue),
           returnsBlock = returnsWithStartDate(),
           taxableThreshold = currentThreshold)
 
-        builder.expectedOverThresholdDateRow mustBe
-          SummaryRow("vatDetails.expectedOverThresholdDate",
+        builder.pastOverThresholdDateRow mustBe
+          SummaryRow("vatDetails.expectationOverThresholdDate",
             testDate.format(testPresentationFormatter),
-            Some(builder.getUrl(serviceName,"thought-over-threshold")))
+            Some(builder.getUrl(serviceName,"gone-over-threshold-period")))
       }
     }
 
