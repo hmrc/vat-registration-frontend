@@ -1,5 +1,6 @@
 $(document).ready($(function () {
     noSectorForSICCodeToGA();
+    showDeskproForm();
 }));
 
 
@@ -168,3 +169,10 @@ var noSectorForSICCodeToGA = function() {
         });
     }
 };
+
+var showDeskproForm =  function () {
+    $("#submissionFailedReportAProblem").each(function(){
+        $(".report-error__toggle").click();
+        $(".report-error__toggle").hide();
+    });
+}
