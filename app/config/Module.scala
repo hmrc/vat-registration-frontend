@@ -26,6 +26,7 @@ import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
 import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test._
+import controllers.{ErrorController, ErrorControllerImpl}
 import features.bankAccountDetails.connectors.{BankAccountReputationConnector, BankAccountReputationConnectorImpl}
 import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
@@ -94,6 +95,7 @@ class Module extends AbstractModule {
     bind(classOf[SummaryController]).to(classOf[SummaryControllerImpl]).asEagerSingleton()
     bind(classOf[WelcomeController]).to(classOf[WelcomeControllerImpl]).asEagerSingleton()
     bind(classOf[IdentityVerificationController]).to(classOf[IdentityVerificationControllerImpl]).asEagerSingleton()
+    bind(classOf[ErrorController]).to(classOf[ErrorControllerImpl]).asEagerSingleton()
   }
 
   private def bindTestControllers(): Unit = {
