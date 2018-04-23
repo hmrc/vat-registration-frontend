@@ -141,7 +141,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       }
     }
 
-    "redirect to the Submission Failed page when Submission Fails" in new Setup {
+    "redirect to the Submission Failed Retryable page when Submission Fails but is Retryable" in new Setup {
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
@@ -151,12 +151,12 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result.redirectsTo(s"/register-for-vat/submission-failure")
+          result redirectsTo controllers.routes.ErrorController.submissionRetryable().url
 
       }
     }
 
-    "redirect to the Submission Failed Retryable page when Submission Fails but is Retryable" in new Setup {
+    "redirect to the Submission Failed page when Submission Fails" in new Setup {
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
@@ -166,7 +166,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result.redirectsTo(s"/register-for-vat/something-went-wrong")
+          result redirectsTo controllers.routes.ErrorController.submissionFailed().url
       }
     }
 

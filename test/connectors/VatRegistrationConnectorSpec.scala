@@ -37,7 +37,6 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
