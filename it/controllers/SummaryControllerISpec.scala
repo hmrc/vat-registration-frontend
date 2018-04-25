@@ -92,8 +92,8 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           document.title() mustBe "Summary"
 
           document.getElementById("frs.joinFrsAnswer").text mustBe "No"
-          document.getElementById("vatDetails.taxableTurnoverAnswer").text mustBe "No"
-          document.getElementById("vatDetails.taxableTurnoverChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-sales-over-threshold"
+          document.getElementById("vatDetails.overThresholdThirtySelectionAnswer").text mustBe "No"
+          document.getElementById("vatDetails.overThresholdThirtySelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/make-more-taxable-sales"
           document.getElementById("vatDetails.necessityAnswer").text mustBe "Yes"
           document.getElementById("vatDetails.necessityChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/register-voluntarily"
           document.getElementById("vatDetails.voluntaryRegistrationReasonAnswer").text mustBe "The company is already selling goods or services"
@@ -128,13 +128,13 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           a[NullPointerException] mustBe thrownBy(document.getElementById("vatDetails.taxableTurnoverQuestion").text)
           document.getElementById("vatDetails.overThresholdSelectionQuestion").text must include("05 August 2016")
           document.getElementById("vatDetails.overThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-turnover-gone-over"
-          document.getElementById("vatDetails.overThresholdDateAnswer").text mustBe "September 2016"
-          document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/vat-taxable-turnover-gone-over"
-          document.getElementById("vatDetails.expectedOverThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.expectedOverThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/go-over-vat-threshold-period"
-          document.getElementById("vatDetails.expectedOverThresholdDateAnswer").text mustBe "30 September 2016"
-          document.getElementById("vatDetails.expectedOverThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/go-over-vat-threshold-period"
+          document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold"
+          document.getElementById("vatDetails.overThresholdDateAnswer").text mustBe "January 2017"
+          document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold"
+          document.getElementById("vatDetails.expectationOverThresholdSelectionAnswer").text mustBe "Yes"
+          document.getElementById("vatDetails.expectationOverThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
+          document.getElementById("vatDetails.expectationOverThresholdDateAnswer").text mustBe "30 September 2016"
+          document.getElementById("vatDetails.expectationOverThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
         }
       }
     }

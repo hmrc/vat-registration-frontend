@@ -22,6 +22,7 @@ import javax.inject.Inject
 import connectors.RegistrationConnector
 import features.returns.models._
 import models._
+import models.api.Threshold
 import play.api.Logger
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -62,16 +63,18 @@ trait ReturnsService {
     }
   }
 
-  //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
-  def calculateMandatoryStartDate(overThresholdDate : Option[LocalDate], expectedOverThresholdDate : Option[LocalDate]): LocalDate = {
-    def calculatedCrossedThresholdDate(thresholdDate : LocalDate) = thresholdDate.withDayOfMonth(1).plusMonths(2)
+  def calculateMandatoryStartDate(threshold : Threshold): LocalDate = {
+    def calculatedCrossedThresholdDate(thresholdDate : Option[LocalDate]) = thresholdDate.map(_.withDayOfMonth(1).plusMonths(2))
 
-    (overThresholdDate, expectedOverThresholdDate) match {
-      case (Some(td), Some(ed)) =>
-        val calculatedThresholdDate = calculatedCrossedThresholdDate(td)
-        if (calculatedThresholdDate.isBefore(ed)) calculatedThresholdDate else ed
-      case (Some(td), None) => calculatedCrossedThresholdDate(td)
-      case (None, Some(ed)) => ed
+    List[Option[LocalDate]](
+      calculatedCrossedThresholdDate(threshold.overThresholdDateThirtyDays),
+      threshold.overThresholdOccuredTwelveMonth,
+      threshold.pastOverThresholdDateThirtyDays
+    )
+      .flatten
+      .sortWith((date1, date2) => date1.isBefore(date2))
+      .headOption match {
+      case Some(earliest) => earliest
       case _ =>
         Logger.error("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
         throw new RuntimeException("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
@@ -97,11 +100,8 @@ trait ReturnsService {
     }
   }
 
-  //TODO: Refactor this to use the eligibility functions once this has been rebased onto it.
   def retrieveCalculatedStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[LocalDate] = {
-    vatService.getThreshold(profile.registrationId).map( threshold =>
-      calculateMandatoryStartDate(threshold.overThresholdDate, threshold.expectedOverThresholdDate)
-    )
+    vatService.getThreshold(profile.registrationId) map calculateMandatoryStartDate
   }
 
   def retrieveCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext) : Future[Option[LocalDate]] = {

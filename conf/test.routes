@@ -13,7 +13,7 @@ GET         /ct-registration                   controllers.test.TestCTController
 
 GET         /setup-vat-user                    controllers.test.IncorporationInformationStubsController.postTestData()
 
-GET         /incorp-company                    controllers.test.IncorporationInformationStubsController.incorpCompany()
+GET         /incorp-company/:incorpDate        controllers.test.IncorporationInformationStubsController.incorpCompany(incorpDate: String)
 
 GET         /feature-flag/:name/:state         controllers.test.FeatureSwitchController.switcher(name:String,state: String)
 

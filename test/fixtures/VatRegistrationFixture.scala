@@ -45,13 +45,14 @@ trait BaseFixture {
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validExpectedOverTrue = Some(testDate)
-  def generateThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) =
-    (reason, overThreshold, expectedOverThreshold) match {
-      case (r@Some(_), _, _)            => Threshold(false,r)
-      case (_, od@Some(_), eod@Some(_)) => Threshold(true, None, od, eod)
-      case (_, od@Some(_), _)           => Threshold(true, None, od, None)
-      case (_, _, eod@Some(_))          => Threshold(true, None, None, eod)
-      case _                            => Threshold(false)
+  def generateThreshold(reason: Option[String] = None,
+                        overThreshold: Option[LocalDate] = None,
+                        expectedOverThreshold: Option[LocalDate] = None,
+                        overThresholdTwelve: Option[LocalDate] = None) =
+    (reason, overThreshold, expectedOverThreshold, overThresholdTwelve) match {
+      case (r@Some(_), _, _, _)                                    => Threshold(false,r)
+      case (None, o, eo, ott) if List(o, eo, ott).flatten.nonEmpty => Threshold(true, None, o, eo, ott)
+      case _                                                       => Threshold(false)
     }
   def generateOptionalThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) = {
     Some(generateThreshold(reason, overThreshold, expectedOverThreshold))
@@ -60,10 +61,12 @@ trait BaseFixture {
   val validVoluntaryRegistrationWithReason  = generateThreshold(reason = Some(Threshold.INTENDS_TO_SELL))
   val validMandatoryRegistration            = generateThreshold(overThreshold = Some(testDate))
   val validMandatoryRegistrationBothDates   = generateThreshold(overThreshold = Some(testDate), expectedOverThreshold = Some(testDate))
+  val validMandatoryRegistrationTwelve      = generateThreshold(overThresholdTwelve = Some(testDate))
   val optVoluntaryRegistration              = Some(validVoluntaryRegistration)
   val optVoluntaryRegistrationWithReason    = Some(validVoluntaryRegistrationWithReason)
   val optMandatoryRegistration              = Some(validMandatoryRegistration)
   val optMandatoryRegistrationBothDates     = Some(validMandatoryRegistrationBothDates)
+  val optMandatoryRegistrationTwelve        = Some(validMandatoryRegistrationTwelve)
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures

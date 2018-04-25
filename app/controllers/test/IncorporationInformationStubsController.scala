@@ -49,9 +49,9 @@ trait IncorporationInformationStubsController extends BaseController with Sessio
       } yield Ok("Data inserted")
   }
 
-  def incorpCompany(): Action[AnyContent] = isAuthenticatedWithProfile {
+  def incorpCompany(incorpDate: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      vatRegConnector.incorpCompany.map {
+      vatRegConnector.incorpCompany(incorpDate).map {
         _=> Ok("Company incorporated")
       }
   }

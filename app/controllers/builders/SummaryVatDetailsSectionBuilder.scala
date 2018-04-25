@@ -42,37 +42,41 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
   private val thresholdBlock        = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
 
-  val taxableTurnoverRow: SummaryRow = SummaryRow(
-    s"$sectionId.taxableTurnover",
-    s"app.common.${if (voluntaryRegistration) "no" else "yes"}",
-    Some(getUrl(serviceName,"sales-over-threshold")),
-    Seq(taxableThreshold)
-  )
-
   val overThresholdSelectionRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdSelection",
-    thresholdBlock.overThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"turnover-over-threshold")),
+    thresholdBlock.overThresholdOccuredTwelveMonth.fold("app.common.no")(_ => "app.common.yes"),
+    Some(getUrl(serviceName,"gone-over-threshold")),
     Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)), taxableThreshold)
   )
 
   val overThresholdDateRow: SummaryRow = SummaryRow(
     s"$sectionId.overThresholdDate",
-    thresholdBlock.overThresholdDate.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
-    Some(getUrl(serviceName,"turnover-over-threshold")),
+    thresholdBlock.overThresholdOccuredTwelveMonth.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
+    Some(getUrl(serviceName,"gone-over-threshold")),
     Seq(taxableThreshold)
   )
 
-  val expectedOverThresholdSelectionRow: SummaryRow = SummaryRow(
-    s"$sectionId.expectedOverThresholdSelection",
-    thresholdBlock.expectedOverThresholdDate.fold("app.common.no")(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"thought-over-threshold"))
+  val dayMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
+
+  val pastOverThresholdSelectionRow: SummaryRow = SummaryRow(
+    s"$sectionId.expectationOverThresholdSelection",
+    thresholdBlock.pastOverThresholdDateThirtyDays.fold("app.common.no")(_ => "app.common.yes"),
+    Some(getUrl(serviceName,"gone-over-threshold-period"))
   )
 
-  val expectedOverThresholdDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.expectedOverThresholdDate",
-    thresholdBlock.expectedOverThresholdDate.map(_.format(presentationFormatter)).getOrElse(""),
-    Some(getUrl(serviceName,"thought-over-threshold"))
+  val pastOverThresholdDateRow: SummaryRow = SummaryRow(
+    s"$sectionId.expectationOverThresholdDate",
+    thresholdBlock.pastOverThresholdDateThirtyDays.map(_.format(dayMonthYearPresentationFormatter)).getOrElse(""),
+    Some(getUrl(serviceName,"gone-over-threshold-period"))
+  )
+
+  val overThresholdThirtySelectionRow: SummaryRow = SummaryRow(
+    s"$sectionId.overThresholdThirtySelection",
+    thresholdBlock.overThresholdDateThirtyDays.fold(
+      if(thresholdBlock.mandatoryRegistration && incorpDate.isEmpty) "app.common.yes" else "app.common.no"
+    )(_ => "app.common.yes"),
+    Some(getUrl(serviceName,"make-more-taxable-sales")),
+    Seq(taxableThreshold)
   )
 
   val necessityRow: SummaryRow = SummaryRow(
@@ -116,11 +120,11 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
     SummarySection(
       sectionId,
       rows = Seq(
-        (taxableTurnoverRow, incorpDate.isEmpty),
+        (overThresholdThirtySelectionRow, true),
+        (pastOverThresholdSelectionRow, incorpDate.isDefined ),
+        (pastOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.pastOverThresholdDateThirtyDays.isDefined),
         (overThresholdSelectionRow, incorpDate.isDefined),
-        (overThresholdDateRow, incorpDate.isDefined && thresholdBlock.overThresholdDate.isDefined),
-        (expectedOverThresholdSelectionRow, incorpDate.isDefined ),
-        (expectedOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.expectedOverThresholdDate.isDefined),
+        (overThresholdDateRow, incorpDate.isDefined && thresholdBlock.overThresholdOccuredTwelveMonth.isDefined),
         (necessityRow, voluntaryRegistration),
         (voluntaryReasonRow, voluntaryRegistration),
         (startDateRow, true),
