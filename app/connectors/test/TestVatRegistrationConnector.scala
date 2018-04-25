@@ -47,8 +47,8 @@ trait TestRegistrationConnector {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
   }
 
-  def incorpCompany(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/${currentProfile.transactionId}")
+  def incorpCompany(incorpDate: String)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/${currentProfile.transactionId}/$incorpDate")
   }
 
   def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] = {

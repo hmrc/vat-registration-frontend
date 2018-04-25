@@ -55,8 +55,9 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
   val threshold = Threshold(
     mandatoryRegistration     = true,
     voluntaryReason           = None,
-    overThresholdDate         = Some(LocalDate.of(2016, 9, 30)),
-    expectedOverThresholdDate = Some(LocalDate.of(2016, 9, 30))
+    overThresholdDateThirtyDays         = Some(LocalDate.of(2016, 9, 30)),
+    pastOverThresholdDateThirtyDays = Some(LocalDate.of(2016, 9, 30)),
+    overThresholdOccuredTwelveMonth = Some(LocalDate.of(2017, 1, 1))
   )
 
   val flatRateScheme     = FlatRateScheme(joinFrs = Some(false))
