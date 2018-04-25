@@ -223,43 +223,54 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
   "retrieveCalculatedStartDate" should {
 
-    val vatThresholdPostIncorpDate = LocalDate.of(2017, 6, 6)
-    val vatExpectedThresholdPostIncorpDate = LocalDate.of(2017, 12, 12)
+    val overTwelveMonthDate = LocalDate.of(2017, 6, 6)
+    val pastThirtyDayDate = LocalDate.of(2017, 12, 12)
+    val overThirtyDayDate = LocalDate.of(2017, 10, 10)
 
     "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
 
-      val thresholdBothDates = Threshold(
-          true,
-          None,
-          Some(vatThresholdPostIncorpDate),
-          Some(vatExpectedThresholdPostIncorpDate)
-        )
+      val thresholdDates = Threshold(
+        true,
+        None,
+        None,
+        Some(pastThirtyDayDate),
+        Some(overTwelveMonthDate)
+      )
 
 
       when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdBothDates))
+        .thenReturn(Future.successful(thresholdDates))
 
-      await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
+      await(service.retrieveCalculatedStartDate) mustBe overTwelveMonthDate.withDayOfMonth(1).plusMonths(2)
     }
 
-    "return a date when just the vatThresholdPostIncorp is present" in new Setup {
+    "return a date when just the overTwelveMonthDate is present" in new Setup {
 
-      val thresholdFirstDateOnly = Threshold(true, None, Some(vatThresholdPostIncorpDate), None)
+      val thresholdFirstDateOnly = Threshold(true, None, None, None, Some(overTwelveMonthDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdFirstDateOnly))
 
-      await(service.retrieveCalculatedStartDate) mustBe vatThresholdPostIncorpDate.withDayOfMonth(1).plusMonths(2)
+      await(service.retrieveCalculatedStartDate) mustBe overTwelveMonthDate.withDayOfMonth(1).plusMonths(2)
     }
 
-    "return a date when just the vatExpectedThresholdPostIncorp is present" in new Setup {
+    "return a date when just the pastThirtyDayDate is present" in new Setup {
 
-      val thresholdSecondDateOnly = generateThreshold(expectedOverThreshold = Some(vatExpectedThresholdPostIncorpDate))
+      val thresholdSecondDateOnly = generateThreshold(expectedOverThreshold = Some(pastThirtyDayDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdSecondDateOnly))
 
-      await(service.retrieveCalculatedStartDate) mustBe vatExpectedThresholdPostIncorpDate
+      await(service.retrieveCalculatedStartDate) mustBe pastThirtyDayDate
+    }
+
+    "return a date when just the overThirtyDayDate is present" in new Setup {
+
+      val thresholdThirdDateOnly = generateThreshold(overThreshold = Some(overThirtyDayDate))
+
+      when(service.vatService.getThreshold(any())(any())) thenReturn Future.successful(thresholdThirdDateOnly)
+
+      await(service.retrieveCalculatedStartDate) mustBe overThirtyDayDate
     }
 
     "throw a RuntimeException when no dates are present" in new Setup {
