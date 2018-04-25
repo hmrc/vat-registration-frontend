@@ -67,9 +67,9 @@ trait ReturnsService {
     def calculatedCrossedThresholdDate(thresholdDate : Option[LocalDate]) = thresholdDate.map(_.withDayOfMonth(1).plusMonths(2))
 
     List[Option[LocalDate]](
-      calculatedCrossedThresholdDate(threshold.overThresholdDateThirtyDays),
-      threshold.overThresholdOccuredTwelveMonth,
-      threshold.pastOverThresholdDateThirtyDays
+      calculatedCrossedThresholdDate(threshold.overThresholdOccuredTwelveMonth),
+      threshold.pastOverThresholdDateThirtyDays,
+      threshold.overThresholdDateThirtyDays
     )
       .flatten
       .sortWith((date1, date2) => date1.isBefore(date2))
