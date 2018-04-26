@@ -266,6 +266,8 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
     "return 303 with Former name Date selected" in new Setup {
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any()))
+        .thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerNameDate(), fakeRequest.withFormUrlEncodedBody(
           "formerNameDate.day" -> "1",
