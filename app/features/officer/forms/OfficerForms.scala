@@ -92,10 +92,9 @@ object FormerNameDateForm {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
 
-  val minDate: LocalDate = LocalDate.of(1900, 1, 1)
   val maxDate: LocalDate = LocalDate.now()
 
-  val form = Form(
+  def form(minDate: LocalDate) = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,

@@ -216,14 +216,14 @@ class OfficerFormsSpec extends UnitSpec {
   }
 
   "FormerNameDateForm" should {
-    val testForm = FormerNameDateForm.form
-    val testData = FormerNameDateView(LocalDate.of(1998, 7, 12))
+    val testForm = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
+    val testData = FormerNameDateView(LocalDate.of(2000, 1, 1))
 
     "bind successfully with data" in {
       val data = Map(
-        "formerNameDate.day" -> "12",
-        "formerNameDate.month" -> "7",
-        "formerNameDate.year" -> "1998"
+        "formerNameDate.day" -> "1",
+        "formerNameDate.month" -> "1",
+        "formerNameDate.year" -> "2000"
       )
 
       val result = testForm.bind(data).fold(
@@ -232,6 +232,18 @@ class OfficerFormsSpec extends UnitSpec {
       )
 
       result shouldBe testData
+    }
+
+    "bind unsuccessfully with data" in {
+      val data = Map(
+        "formerNameDate.day" -> "31",
+        "formerNameDate.month" -> "12",
+        "formerNameDate.year" -> "1999"
+      )
+
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("formerNameDate" -> "validation.formerNameDate.range.below")
     }
 
     "have the correct error if no formerNameDate month is provided" in {
@@ -257,9 +269,9 @@ class OfficerFormsSpec extends UnitSpec {
 
     "Unbind successfully with full data" in {
       val data = Map(
-        "formerNameDate.day" -> "12",
-        "formerNameDate.month" -> "7",
-        "formerNameDate.year" -> "1998"
+        "formerNameDate.day" -> "1",
+        "formerNameDate.month" -> "1",
+        "formerNameDate.year" -> "2000"
       )
 
       testForm.fill(testData).data shouldBe data

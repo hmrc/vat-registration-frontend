@@ -579,8 +579,8 @@ validation.formerNameDate.missing                        = Enter a date
 validation.formerNameDate.day.invalid                    = Day
 validation.formerNameDate.month.invalid                  = Month
 validation.formerNameDate.year.invalid                   = Year
-validation.formerNameDate.range.below                    = Enter a date after 1900
-validation.formerNameDate.range.above                    = Enter a date that''s in the past
+validation.formerNameDate.range.below                    = Enter a date which is on or after your date of birth
+validation.formerNameDate.range.above                    = Enter a date which is not in the future
 
 ## Previous Address Question
 pages.previousAddressQuestion.title                      = Have you lived at your current address for 3 years or more?
