@@ -17,6 +17,8 @@
 package controllers
 
 import javax.inject.Inject
+
+import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import config.AuthClientConnector
 import connectors._
@@ -44,7 +46,7 @@ class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val flatRateService: FlatRateService,
                                       val configConnector: ConfigConnector) extends SummaryController
 
-trait SummaryController extends BaseController with SessionProfile {
+trait SummaryController extends BaseController with SessionProfile with ApplicativeSyntax {
   val vrs: RegistrationService
   val lodgingOfficerService: LodgingOfficerService
   val sicSrv: SicAndComplianceService
@@ -75,13 +77,25 @@ trait SummaryController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         invalidSubmissionGuard() {
-          vrs.submitRegistration() map {
-            case Success => Redirect(controllers.routes.ApplicationSubmissionController.show())
-            case SubmissionFailed => Redirect(controllers.routes.ErrorController.submissionFailed())
-            case SubmissionFailedRetryable => Redirect(controllers.routes.ErrorController.submissionRetryable())
+          for {
+            _        <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+            response <- vrs.submitRegistration()
+            result   <- submissionRedirectLocation(response)
+          } yield {
+            result
           }
         }
       }
+  }
+
+  private def submissionRedirectLocation(response: DESResponse)(implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
+    response match {
+      case Success => keystoreConnector.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
+        _ => Redirect(controllers.routes.ApplicationSubmissionController.show())
+      }
+      case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed()))
+      case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable()))
+    }
   }
 
   def registrationToSummary(vs: VatScheme, taxableThreshold: String)(implicit profile : CurrentProfile): Summary = {

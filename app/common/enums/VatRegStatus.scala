@@ -22,6 +22,7 @@ object VatRegStatus extends Enumeration {
   val draft         = Value
   val held          = Value
   val submitted     = Value
+  val locked        = Value
   val acknowledged  = Value
   val rejected      = Value
   val cancelled     = Value
