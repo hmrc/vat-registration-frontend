@@ -16,6 +16,7 @@
 
 package features.officer.controllers
 
+import java.time.LocalDate
 import javax.inject.Inject
 
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
@@ -119,24 +120,27 @@ trait OfficerController extends BaseController with SessionProfile {
         for {
           officer <- lodgingOfficerService.getLodgingOfficer
           formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
-          filledForm = officer.formerNameDate.fold(FormerNameDateForm.form)(FormerNameDateForm.form.fill)
+          dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
+          filledForm = officer.formerNameDate.fold(FormerNameDateForm.form(dateOfBirth))(FormerNameDateForm.form(dateOfBirth).fill)
         } yield Ok(features.officer.views.html.former_name_date(filledForm, formerName))
       }
   }
 
-
   def submitFormerNameDate: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        FormerNameDateForm.form.bindFromRequest().fold(
-          badForm => for {
-            officer <- lodgingOfficerService.getLodgingOfficer
-            formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
-          } yield BadRequest(features.officer.views.html.former_name_date(badForm, formerName)),
-          data => lodgingOfficerService.saveLodgingOfficer(data) map {
-            _ => Redirect(routes.OfficerController.showContactDetails())
-          }
-        )
+        lodgingOfficerService.getLodgingOfficer flatMap { officer =>
+          val dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
+          FormerNameDateForm.form(dateOfBirth).bindFromRequest().fold(
+            badForm => for {
+              officer <- lodgingOfficerService.getLodgingOfficer
+              formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
+            } yield BadRequest(features.officer.views.html.former_name_date(badForm, formerName)),
+            data => lodgingOfficerService.saveLodgingOfficer(data) map {
+              _ => Redirect(routes.OfficerController.showContactDetails())
+            }
+          )
+        }
       }
   }
 

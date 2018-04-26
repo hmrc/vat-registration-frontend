@@ -32,7 +32,7 @@ class FormerNameDatePageSpec extends UnitSpec with WithFakeApplication with I18n
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
 
-  lazy val form = FormerNameDateForm.form
+  lazy val form = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
 
   "Former Name Date Page" should {
     "display the page without pre populated data" in {
