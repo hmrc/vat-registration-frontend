@@ -25,6 +25,7 @@ import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import support.AppAndStubs
 
@@ -135,6 +136,30 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           document.getElementById("vatDetails.expectationOverThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
           document.getElementById("vatDetails.expectationOverThresholdDateAnswer").text mustBe "30 September 2016"
           document.getElementById("vatDetails.expectationOverThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
+        }
+      }
+    }
+  }
+
+  "POST Summary Page" should {
+    "redirect to the confirmation page" when {
+      "the user is in draft with a vat ready submission" in {
+        given()
+          .user.isAuthorised
+          .currentProfile.withProfileAndIncorpDate()
+          .vatScheme.contains(vatReg)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
+          .currentProfile.putProfile(nextState = Some("Updated current profile"))
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
+
+        val response = buildClient("/check-your-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/submission-confirmation")
+
+
         }
       }
     }
