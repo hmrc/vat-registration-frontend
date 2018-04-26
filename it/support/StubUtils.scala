@@ -128,7 +128,7 @@ trait StubUtils {
   }
 
   trait KeystoreStub {
-    def stubKeystorePut(key: String, data: String): MappingBuilder =
+    def stubKeystorePut(key: String, data: String): MappingBuilder = {
       put(urlPathMatching(s"/keystore/vat-registration-frontend/session-[a-z0-9-]+/data/$key"))
         .willReturn(ok(
           s"""
@@ -140,6 +140,7 @@ trait StubUtils {
              |      "lastUpdated": { "$$date": 1502265526026 }}}
           """.stripMargin
         ))
+    }
 
     def stubKeystoreGet(key: String, data: String): MappingBuilder =
       get(urlPathMatching("/keystore/vat-registration-frontend/session-[a-z0-9-]+"))
@@ -450,6 +451,26 @@ trait StubUtils {
       )
       builder
     }
+    def status(url: String, status: String): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(url))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "status":"$status"
+               |}
+             """.stripMargin
+          ))
+      )
+      builder
+    }
+    def submit(url: String): PreconditionBuilder = {
+      stubFor(
+        put(urlPathEqualTo(url))
+          .willReturn(ok())
+      )
+      builder
+    }
   }
 
   case class CurrentProfile()(implicit builder: PreconditionBuilder) extends KeystoreStubScenarioWrapper {
@@ -492,6 +513,25 @@ trait StubUtils {
                              | "vatRegistrationStatus" : "draft",
                              | "ivPassed": true
                              |}
+                           """.stripMargin
+
+      (currentState, nextState) match {
+        case (None, None) => putKeyStoreValue("CurrentProfile", currentProfile)
+        case _ => putKeyStoreValue("CurrentProfile", currentProfile, currentState, nextState)
+      }
+
+      builder
+    }
+
+    def putProfile(currentState : Option[String] = None, nextState : Option[String] = None) = {
+      val currentProfile = s"""
+                              |{
+                              | "companyName" : "testCompanyName",
+                              | "registrationID" : "1",
+                              | "transactionID" : "000-434-1",
+                              | "vatRegistrationStatus" : "draft",
+                              | "ivPassed": true
+                              |}
                            """.stripMargin
 
       (currentState, nextState) match {

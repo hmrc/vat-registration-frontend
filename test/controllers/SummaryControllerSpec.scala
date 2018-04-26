@@ -24,14 +24,17 @@ import features.frs.services.FlatRateService
 import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
+import models.CurrentProfile
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
@@ -134,6 +137,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(Success))
 
+      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
@@ -147,6 +153,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
 
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
+
+      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
@@ -163,6 +172,9 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(SubmissionFailed))
 
+      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
@@ -173,7 +185,6 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
     "have an internal server error if the document is not in draft" in new Setup {
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.acknowledged))
-
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
