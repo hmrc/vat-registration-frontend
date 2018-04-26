@@ -71,7 +71,16 @@ trait BaseController extends FrontendController with I18nSupport with Logging wi
   def isAuthenticatedWithProfile(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
       authorised(authPredicate) {
-        withCurrentProfile { profile =>
+        withCurrentProfile() { profile =>
+          f(request)(profile)
+        }
+      } handleErrorResult
+  }
+
+  def isAuthenticatedWithProfileNoStatusCheck(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised(authPredicate) {
+        withCurrentProfile(checkStatus = false) { profile =>
           f(request)(profile)
         }
       } handleErrorResult

@@ -51,13 +51,11 @@ trait ApplicationSubmissionController extends BaseController with SessionProfile
   val returnsService      : ReturnsService
   val dashboardUrl        : String
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          ackRef <- vatRegService.getAckRef(profile.registrationId)
-          returns <- returnsService.getReturns
-        } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart,dashboardUrl))
-      }
+      for {
+        ackRef <- vatRegService.getAckRef(profile.registrationId)
+        returns <- returnsService.getReturns
+      } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart,dashboardUrl))
   }
 }
