@@ -16,28 +16,14 @@
 
 package controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+
 import config.AuthClientConnector
 import connectors.KeystoreConnect
 import play.api.i18n.MessagesApi
-import play.api.mvc.Result
-import services.{SessionProfile, VatRegistrationService}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import javax.inject.Inject
-import common.enums.VatRegStatus
-import config.AuthClientConnector
-import connectors._
-import controllers.builders._
-import features.frs.services.FlatRateService
-import features.officer.services.LodgingOfficerService
-import features.sicAndCompliance.services.SicAndComplianceService
-import models.CurrentProfile
-import models.api._
-import models.view._
-import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services._
-import uk.gov.hmrc.http.HeaderCarrier
+import services.SessionProfile
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.concurrent.Future
 
@@ -48,17 +34,13 @@ class ErrorControllerImpl @Inject()(config: ServicesConfig,
 }
 
 trait ErrorController extends BaseController with SessionProfile {
-  def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
-      ivPassedCheck {
-        Future.successful(Ok(views.html.pages.error.submissionTimeout()))
-    }
+      Future.successful(Ok(views.html.pages.error.submissionTimeout()))
   }
 
-  def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
-      ivPassedCheck {
-        Future.successful(Ok(views.html.pages.error.submissionFailed()))
-      }
+      Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
 }

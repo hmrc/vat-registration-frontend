@@ -16,6 +16,7 @@
 
 package services
 
+import common.enums.VatRegStatus
 import connectors.KeystoreConnect
 import controllers.routes
 import models.CurrentProfile
@@ -33,12 +34,17 @@ trait SessionProfile {
 
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
-  def withCurrentProfile(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
+  def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show()))
       ) {
-        profile => f(profile)
+        profile => profile.vatRegistrationStatus match {
+          case VatRegStatus.draft                                       => f(profile)
+          case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
+          case (VatRegStatus.held | VatRegStatus.locked) if !checkStatus => f(profile)
+          case _                        => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+        }
       }
     }
   }

@@ -125,4 +125,40 @@ class BaseControllerSpec extends ControllerSpec {
       an[Exception] mustBe thrownBy(await(result))
     }
   }
+
+  "isAuthenticatedWithProfileNoStatusCheck" should {
+    "return 200 with a profile if user is Authenticated" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
+      status(result) mustBe OK
+      contentAsString(result) mustBe s"ALL GOOD with profile: ${currentProfile.registrationId}"
+    }
+
+    "return 303 to GG login if user has No Active Session" in {
+      mockNoActiveSession()
+
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("http://localhost:9025/gg/sign-in?accountType=organisation&continue=http%3A%2F%2Flocalhost%3A9895%2Fregister-for-vat%2Fpost-sign-in&origin=vat-registration-frontend")
+    }
+
+    "return 500 if user is Not Authenticated" in {
+      mockNotAuthenticated()
+
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
+      status(result) mustBe INTERNAL_SERVER_ERROR
+    }
+
+    "return an Exception if something went wrong" in {
+      mockAuthenticatedOrg()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      val result = TestController.callAuthenticatedWithProfileButError(FakeRequest())
+      an[Exception] mustBe thrownBy(await(result))
+    }
+  }
+
+
 }
