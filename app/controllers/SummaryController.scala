@@ -73,17 +73,15 @@ trait SummaryController extends BaseController with SessionProfile with Applicat
     } yield summary
   }
 
-  def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
-      ivPassedCheck {
-        invalidSubmissionGuard() {
-          for {
-            _        <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-            response <- vrs.submitRegistration()
-            result   <- submissionRedirectLocation(response)
-          } yield {
-            result
-          }
+      invalidSubmissionGuard() {
+        for {
+          _        <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+          response <- vrs.submitRegistration()
+          result   <- submissionRedirectLocation(response)
+        } yield {
+          result
         }
       }
   }
@@ -127,7 +125,7 @@ trait SummaryController extends BaseController with SessionProfile with Applicat
 
   private[controllers] def invalidSubmissionGuard()(f: => Future[Result])(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
     vrs.getStatus(profile.registrationId) flatMap {
-      case VatRegStatus.draft => f
+      case VatRegStatus.draft | VatRegStatus.locked => f
       case _ => Future.successful(InternalServerError)
     }
   }
