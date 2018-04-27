@@ -182,13 +182,15 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       }
     }
 
-    "have an internal server error if the document is not in draft" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any()))
-        .thenReturn(Future.successful(VatRegStatus.acknowledged))
+    "have an internal server error" when {
+      "the document is not draft or locked" in new Setup {
+        when(mockVatRegistrationService.getStatus(any())(any()))
+          .thenReturn(Future.successful(VatRegStatus.held))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
-        (result: Future[Result]) =>
-          await(result).header.status mustBe Status.INTERNAL_SERVER_ERROR
+        submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
+          (result: Future[Result]) =>
+            await(result).header.status mustBe Status.INTERNAL_SERVER_ERROR
+        }
       }
     }
   }
