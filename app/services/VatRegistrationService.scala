@@ -37,7 +37,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val brConnector : BusinessRegistrationConnect,
                                        val compRegConnector: CompanyRegistrationConnector,
                                        val incorporationService: IncorporationInformationService,
-                                       val keystoreConnector: KeystoreConnect
+                                       val keystoreConnector: KeystoreConnect,
+                                       val iiConnector: IncorporationInformationConnector
                                       ) extends RegistrationService
 
 trait RegistrationService extends LegacyServiceToBeRefactored {
@@ -46,6 +47,7 @@ trait RegistrationService extends LegacyServiceToBeRefactored {
   val brConnector: BusinessRegistrationConnect
   val compRegConnector: CompanyRegistrationConnector
   val incorporationService: IncorporationInformationService
+  val iiConnector: IncorporationInformationConnector
 }
 
 // TODO refactor in a similar way to FRS
@@ -100,7 +102,11 @@ trait LegacyServiceToBeRefactored {
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
-    vatRegConnector.submitRegistration(profile.registrationId)
+    iiConnector.cancelSubscription(profile.transactionId) flatMap { _ =>
+      vatRegConnector.submitRegistration(profile.registrationId)
+    } recover {
+      case _ => SubmissionFailedRetryable
+    }
   }
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =

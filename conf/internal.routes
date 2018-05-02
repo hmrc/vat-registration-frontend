@@ -1,1 +1,2 @@
 DELETE         /:regId/delete                   controllers.internal.DeleteSessionItemsController.deleteVatRegistration(regId)
+POST           /incorp-update                   controllers.internal.DeleteSessionItemsController.deleteIfRejected()

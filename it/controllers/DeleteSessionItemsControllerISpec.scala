@@ -19,6 +19,7 @@ import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import features.sicAndCompliance.models.test.SicStub
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsObject, Json}
 import support.AppAndStubs
 
 class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
@@ -42,6 +43,53 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
 
       whenReady(response) {
         _.status mustBe 200
+      }
+    }
+  }
+
+  "deleteIfRejected" should {
+    "return an OK" when {
+      "the incorp update is accepted" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val json = Json.parse(
+          """
+            |{
+            |  "_id":"1",
+            |  "transaction_status":"accepted"
+            |}
+          """.stripMargin).as[JsObject]
+
+        val response = buildInternalClient("/incorp-update").post(json)
+
+        whenReady(response) {
+          _.status mustBe 200
+        }
+      }
+
+      "the incorp update is not accepted" in {
+        val txId: String = "000-434-1"
+
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatRegistration.clearsUserData()
+
+        val json = Json.parse(
+          s"""
+            |{
+            |  "_id":"$txId",
+            |  "transaction_status":"rejected"
+            |}
+          """.stripMargin).as[JsObject]
+
+        val response = buildInternalClient("/incorp-update").post(json)
+
+        whenReady(response) {
+          _.status mustBe 200
+        }
       }
     }
   }

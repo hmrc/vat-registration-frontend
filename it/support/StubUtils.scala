@@ -57,8 +57,7 @@ trait StubUtils {
 
     def vatScheme = VatSchemeStub()
 
-    def incorpInformation = ???
-
+    def incorpInformation = IIStub()
 
     def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
@@ -468,6 +467,52 @@ trait StubUtils {
       stubFor(
         put(urlPathEqualTo(url))
           .willReturn(ok())
+      )
+      builder
+    }
+    def savesTransactionId(regId: String = "1"): PreconditionBuilder = {
+      stubFor(
+        patch(urlPathEqualTo(s"/vatreg/$regId/transaction-id"))
+          .willReturn(ok())
+      )
+      builder
+    }
+    def clearsUserData(txId: String = "000-434-1"): PreconditionBuilder = {
+      stubFor(
+        patch(urlPathEqualTo(s"/vatreg/$txId/clear-scheme"))
+          .willReturn(ok())
+      )
+      builder
+    }
+  }
+
+  case class IIStub()(implicit builder: PreconditionBuilder) {
+    def hasSubscription(txId: String = "000-434-1"): PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo(s"/incorporation-information/subscribe/$txId/regime/vatfe/subscriber/scrs"))
+          .willReturn(aResponse.withStatus(202))
+      )
+      builder
+    }
+    def returnsRejectedIncorpUpdate(txId: String = "000-434-1"): PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo(s"/incorporation-information/subscribe/$txId/regime/vatfe/subscriber/scrs"))
+          .willReturn(ok(
+            s"""
+              |{
+              | "_id": "$txId",
+              | "transaction_status": "rejected"
+              |}
+            """.stripMargin
+          ))
+      )
+      builder
+    }
+    def cancelsSubscription(txId: String = "000-434-1"): PreconditionBuilder = {
+      stubFor(
+        delete(urlPathEqualTo(s"/incorporation-information/subscribe/$txId/regime/vatfe/subscriber/scrs"))
+          .willReturn(ok(
+          ))
       )
       builder
     }

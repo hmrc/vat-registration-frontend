@@ -150,16 +150,16 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.contains(vatReg)
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .incorpInformation.cancelsSubscription()
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .currentProfile.putProfile(nextState = Some("Updated current profile"))
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
+
 
         val response = buildClient("/check-your-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/submission-confirmation")
-
-
         }
       }
     }

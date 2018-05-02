@@ -27,7 +27,6 @@ import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import models.CurrentProfile
 import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -35,7 +34,6 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
 
