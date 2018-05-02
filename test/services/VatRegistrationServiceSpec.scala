@@ -28,7 +28,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, Upstream4xxResponse}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -42,7 +42,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockBrConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnector
+      mockKeystoreConnector,
+      mockIIConnector
     )
   }
 
@@ -171,7 +172,21 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a Success DES response" in new Setup {
       when(mockRegConnector.submitRegistration(any())(any()))
         .thenReturn(Future.successful(Success))
+
+      when(mockIIConnector.cancelSubscription(any())(any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
       await(service.submitRegistration()) mustBe Success
+    }
+
+    "return a submission retryable on cancel failure" in new Setup {
+      when(mockRegConnector.submitRegistration(any())(any()))
+        .thenReturn(Future.successful(Success))
+
+      when(mockIIConnector.cancelSubscription(any())(any()))
+        .thenReturn(Future.failed(Upstream4xxResponse("400", 400, 400)))
+
+      await(service.submitRegistration()) mustBe SubmissionFailedRetryable
     }
   }
 

@@ -18,7 +18,6 @@ package services
 
 import javax.inject.Inject
 
-import cats.instances.future._
 import connectors._
 import models.CurrentProfile
 import models.api.ScrsAddress
@@ -53,5 +52,15 @@ trait IncorporationInformationService {
 
   def getIncorporationInfo(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[IncorporationInfo]] = {
     vatRegConnector.getIncorporationInfo(regId, txId)
+  }
+
+  def registerInterest(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
+    iiConnector.registerInterest(regId, txId) flatMap { _.fold (
+        rejected => vatRegConnector.saveTransactionId(regId, txId) flatMap (_ =>
+          vatRegConnector.clearVatScheme(txId) map (_ => true)
+        ),
+        accepted => vatRegConnector.saveTransactionId(regId, txId) map (_ => true)
+      )
+    }
   }
 }

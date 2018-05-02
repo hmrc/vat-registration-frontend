@@ -20,24 +20,28 @@ import javax.inject.Inject
 
 import common.enums.RegistrationDeletion
 import config.AuthClientConnector
-import connectors.{KeystoreConnect, RegistrationConnector, S4LConnect}
+import connectors.{KeystoreConnect, S4LConnect, VatRegistrationConnector}
 import controllers.BaseController
 import play.api.i18n.MessagesApi
+import play.api.libs.json.{JsPath, JsValue, Json, OFormat}
 import play.api.mvc.{Action, AnyContent}
-import services.{CancellationService, SessionProfile}
+import services.{CancellationService, SessionProfile, VatRegistrationService}
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 class DeleteSessionItemsControllerImpl @Inject()(val authConnector: AuthClientConnector,
-                                                 val vatRegistrationConnector: RegistrationConnector,
+                                                 val vatRegistrationService: VatRegistrationService,
                                                  val keystoreConnector: KeystoreConnect,
                                                  val save4LaterConnector: S4LConnect,
                                                  val messagesApi: MessagesApi,
-                                                 val cancellationService: CancellationService) extends DeleteSessionItemsController
+                                                 val cancellationService: CancellationService,
+                                                 val regConnector : VatRegistrationConnector) extends DeleteSessionItemsController
 
 trait DeleteSessionItemsController extends BaseController with SessionProfile {
-  val vatRegistrationConnector: RegistrationConnector
-  val keystoreConnector: KeystoreConnect
-  val save4LaterConnector: S4LConnect
   val cancellationService: CancellationService
+  val vatRegistrationService: VatRegistrationService
+  val regConnector : VatRegistrationConnector
 
   def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
@@ -52,4 +56,22 @@ trait DeleteSessionItemsController extends BaseController with SessionProfile {
           InternalServerError
       }
   }
+
+  def deleteIfRejected(): Action[JsValue] = Action.async[JsValue](parse.json) {
+    implicit request =>
+      withJsonBody { incorpUpdate =>
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+        if(incorpUpdate.transaction_status == "rejected") {
+          regConnector.clearVatScheme(incorpUpdate.`_id`) map { _ => Ok }
+        } else {
+          Future.successful(Ok)
+        }
+      }
+    }
+}
+
+case class IncorpUpdate(`_id`: String, transaction_status: String)
+
+object IncorpUpdate {
+  implicit val format: OFormat[IncorpUpdate] = Json.format[IncorpUpdate]
 }

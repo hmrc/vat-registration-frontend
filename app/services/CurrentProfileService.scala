@@ -18,7 +18,7 @@ package services
 
 import javax.inject.Inject
 
-import connectors.KeystoreConnect
+import connectors.{IncorporationInformationConnector, KeystoreConnect}
 import features.officer.services.IVService
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
@@ -56,6 +56,7 @@ trait CurrentProfileSrv extends RegistrationWhitelist {
         incorporationDate     = incorpDate,
         ivPassed              = ivStatus
       )
+      _                     <- incorpInfoService.registerInterest(regId, txId)
       _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile
   }

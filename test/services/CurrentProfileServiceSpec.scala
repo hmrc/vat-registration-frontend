@@ -25,7 +25,7 @@ import models.CurrentProfile
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import org.mockito.Mockito.when
 import org.mockito.{ArgumentMatchers => Matchers}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
@@ -75,6 +75,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
             .thenReturn(Future.successful(None))
 
+        when(mockIIService.registerInterest(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
+
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
@@ -102,6 +105,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(Some(true)))
 
+        when(mockIIService.registerInterest(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
+
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
@@ -124,6 +130,9 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
         when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
+
+        when(mockIIService.registerInterest(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
 
         when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
