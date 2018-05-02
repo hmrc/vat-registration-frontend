@@ -44,6 +44,7 @@ import features.sicAndCompliance.controllers.test.{SicStubController, SicStubCon
 import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
+import repositories.SessionRepository
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
