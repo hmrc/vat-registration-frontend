@@ -44,7 +44,7 @@ trait IncorporationInformationStubsController extends BaseController with Sessio
       for {
         _          <- vatRegConnector.setupCurrentProfile
         (regId, _) <- vatRegService.createRegistrationFootprint
-        _          <- vatRegConnector.wipeTestData
+//        _          <- vatRegConnector.wipeTestData
         _          <- vatRegConnector.postTestData(defaultTestData(regId))
       } yield Ok("Data inserted")
   }
