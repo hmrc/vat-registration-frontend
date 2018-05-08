@@ -42,6 +42,29 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         given()
           .user.isAuthorised
           .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
+          .incorpInformation.hasIncorpUpdate
+          .incorpInformation.registeredFrontendSubscription()
+          .businessRegistration.exists()
+          .corporationTaxRegistration.existsWithStatus("held", "04")
+          .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
+          .vatScheme.contains(vatRegIncorporated)
+          .vatScheme.has("officer", Json.obj())
+          .audit.writesAuditMerged()
+          .vatRegistration.threshold(thresholdUrl, currentThreshold)
+          .vatRegistration.savesTransactionId()
+
+        whenReady(controller.start(request))(res => res.header.status mustBe 200)
+      }
+    }
+    "delete users registration" when {
+      "incorporation update is rejected" in {
+        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
+
+        given()
+          .user.isAuthorised
+          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
+          .incorpInformation.hasIncorpUpdateWithNoDate
+          .incorpInformation.returnsRejectedIncorpUpdate()
           .businessRegistration.exists()
           .corporationTaxRegistration.existsWithStatus("held","04")
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
@@ -49,6 +72,8 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatScheme.has("officer", Json.obj())
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
+          .vatRegistration.savesTransactionId()
+          .vatRegistration.clearsUserData()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }

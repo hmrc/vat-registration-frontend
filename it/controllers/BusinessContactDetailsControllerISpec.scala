@@ -22,16 +22,41 @@ import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import models.api.VatScheme
 import org.jsoup.Jsoup
-
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
+import play.api.libs.json.{JsValue, Json}
+import repositories.ReactiveMongoRepository
 import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.mongo.MongoSpecSupport
 
-class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+
+class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures with MongoSpecSupport {
+
+  class Setup {
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
 
   "show PPOB" should {
-    "return 200 when S4l returns view model" in {
+    "return 200 when S4l returns view model" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -41,18 +66,19 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
+      insertCurrentProfileIntoDb(currentProfile.copy(incorporationDate = None), sessionId)
+
       val response = buildClient("/carry-out-business-activities").get()
       whenReady(response) { res =>
         res.status mustBe 200
 
         val document = Jsoup.parse(res.body)
         val elems = document.getElementsByAttributeValue("name","ppobRadio")
+
         elems.size() mustBe 4
-
-
       }
     }
-    "return 200 when s4l returns None and II returns a company that has an address not in the UK" in {
+    "return 200 when s4l returns None and II returns a company that has an address not in the UK" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -63,6 +89,9 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .company.hasROAddress(coHoRegisteredOfficeAddress.copy(country = Some("foo BAR land")))
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities").get()
       whenReady(response) { res =>
         res.status mustBe 200
@@ -74,7 +103,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         elems.size() mustBe 2
       }
     }
-    "return 500 when not authorised" in {
+    "return 500 when not authorised" in new Setup {
       given()
         .user.isNotAuthorised
         .audit.writesAudit()
@@ -88,7 +117,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     }
   }
   "submit PPOB" should {
-    "return 303 to Address Lookup frontend" in {
+    "return 303 to Address Lookup frontend" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -97,13 +126,15 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .company.hasROAddress(coHoRegisteredOfficeAddress)
         .alfeJourney.initialisedSuccessfully()
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("other")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
       }
     }
-    "return 303 to company contact details page (full model)" in {
+    "return 303 to company contact details page (full model)" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -115,17 +146,19 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
-      json mustBe validBusinessContactDetailsJson
+        json mustBe validBusinessContactDetailsJson
 
       }
     }
-    "return 500 when model is complete and vat reg returns 500 (s4l is not cleared)" in {
+    "return 500 when model is complete and vat reg returns 500 (s4l is not cleared)" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -135,6 +168,8 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 500
@@ -142,8 +177,8 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     }
   }
 
-"returnFromTxm GET" should {
-    "return 303 save to vat as model is complete" in {
+  "returnFromTxm GET" should {
+    "return 303 save to vat as model is complete" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -153,6 +188,9 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
       whenReady(response) { res =>
         res.status mustBe 303
@@ -163,7 +201,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
       }
 
     }
-    "returnFromTxm should return 303 save to s4l as model is incomplete" in {
+    "returnFromTxm should return 303 save to s4l as model is incomplete" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -175,6 +213,8 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.doesNotHave("business-contact")
         .s4lContainer[BusinessContact].isUpdatedWith(validBusinessContactDetails.copy(companyContactDetails = None))
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
       whenReady(response) { res =>
         res.status mustBe 303
@@ -183,13 +223,15 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     }
   }
   "showCompanyContactDetails" should {
-    "return 200" in {
+    "return 200" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/company-contact-details").get()
       whenReady(response) { res =>
@@ -199,7 +241,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
   }
   "submitCompanyContactDetails" should {
-    "return 303 and submit to s4l because the model is incomplete" in {
+    "return 303 and submit to s4l because the model is incomplete" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -209,6 +251,8 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe 303
@@ -216,7 +260,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       }
     }
-    "return 303 and submit to vat reg because the model is complete" in {
+    "return 303 and submit to vat reg because the model is complete" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -226,13 +270,15 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
       }
     }
-    "return 404 when vat returns a 404" in {
+    "return 404 when vat returns a 404" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -240,12 +286,15 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].isEmpty
         .vatScheme.doesNotExistForKey("business-contact")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 404
       }
     }
-    "return 500 when update to vat reg returns an error (s4l is not cleared)" in {
+    "return 500 when update to vat reg returns an error (s4l is not cleared)" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -253,6 +302,9 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 500

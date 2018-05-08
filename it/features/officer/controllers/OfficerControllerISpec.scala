@@ -26,8 +26,13 @@ import models.external.{CoHoRegisteredOfficeAddress, Name, Officer}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import repositories.ReactiveMongoRepository
 import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val keyBlock = "officer"
@@ -55,8 +60,27 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
+  class Setup {
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
+
   "POST Completion Capacity page" should {
-    "save Lodging Officer in S4L" in {
+    "save Lodging Officer in S4L" in new Setup {
       val emptyS4LData = LodgingOfficer(None, None, None, None, None, None, None)
       val updatedS4LData = LodgingOfficer(Some(CompletionCapacityView(officer.name.id, Some(officer))), None, None, None, None, None, None)
 
@@ -69,6 +93,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/who-is-registering-the-company-for-vat").post(Map("completionCapacityRadio" -> Seq(officer.name.id)))
       whenReady(response) { res =>
         res.status mustBe 303
@@ -76,7 +102,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       }
     }
 
-    "patch Lodging Officer in backend" in {
+    "patch Lodging Officer in backend" in new Setup {
       val s4lDataPreIV = LodgingOfficer(
         completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
         securityQuestions = Some(SecurityQuestionsView(dob, nino)),
@@ -130,6 +156,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/who-is-registering-the-company-for-vat").post(Map("completionCapacityRadio" -> Seq(officer2.name.id)))
       whenReady(response) { res =>
         res.status mustBe 303
@@ -157,7 +185,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       previousAddress = Some(PreviousAddressView(true, None))
     )
 
-    "patch Lodging Officer in backend without former name" in {
+    "patch Lodging Officer in backend without former name" in new Setup {
       val validJson = Json.parse(
         s"""
            |{
@@ -192,6 +220,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/changed-name").post(Map("formerNameRadio" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe 303
@@ -214,7 +244,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       }
     }
 
-    "patch Lodging Officer in backend with former name" in {
+    "patch Lodging Officer in backend with former name" in new Setup {
       val validJson = Json.parse(
         s"""
            |{
@@ -257,6 +287,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val response = buildClient("/changed-name").post(Map(
         "formerNameRadio" -> Seq("true"),
         "formerName" -> Seq("New Name Cosmo")
@@ -273,7 +305,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       }
     }
 
-    "save Lodging Officer to S4L if user needs to provide a former name date" in {
+    "save Lodging Officer to S4L if user needs to provide a former name date" in new Setup {
       val updatedS4LData = s4lData.copy(formerNameDate = None)
 
       given()
@@ -283,6 +315,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/changed-name").post(Map(
         "formerNameRadio" -> Seq("true"),
@@ -350,7 +384,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
          |  }
          |}""".stripMargin)
 
-    "patch Lodging Officer in backend" in {
+    "patch Lodging Officer in backend" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -360,6 +394,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/your-home-address").post(Map("homeAddressRadio" -> Seq(currentAddress.id)))
       whenReady(response) { res =>
@@ -385,7 +421,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       previousAddress = Some(PreviousAddressView(true, None))
     )
 
-    "patch Lodging Officer with ALF address in backend" in {
+    "patch Lodging Officer with ALF address in backend" in new Setup {
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
       val addressLine2 = "Holland road"
@@ -426,6 +462,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(s"/your-home-address/acceptFromTxm?id=$addressId").get()
       whenReady(response) { res =>
@@ -485,7 +523,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
          |  }
          |}""".stripMargin)
 
-    "patch Lodging Officer in backend" in {
+    "patch Lodging Officer in backend" in new Setup {
       given()
         .user.isAuthorised
         .currentProfile.withProfile()
@@ -494,6 +532,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/current-address-three-years-or-more").post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
@@ -531,7 +571,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       previousAddress = None
     )
 
-    "patch Lodging Officer with ALF address in backend" in {
+    "patch Lodging Officer with ALF address in backend" in new Setup {
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
       val addressLine2 = "Holland road"
@@ -578,6 +618,8 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
         .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(s"/current-address-three-years-or-more/acceptFromTxm?id=$addressId").get()
       whenReady(response) { res =>

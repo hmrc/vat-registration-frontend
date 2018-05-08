@@ -56,7 +56,7 @@ class CompanyRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         .corporationTaxRegistration.existsWithStatus("draft", "01")
 
       val res = companyRegConnector.getTransactionId("1")(hc)
-      await(res) shouldBe "000-434-1"
+      await(res) shouldBe "000-431-TEST"
     }
   }
 }

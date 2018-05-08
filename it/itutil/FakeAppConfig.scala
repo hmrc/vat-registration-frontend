@@ -15,7 +15,9 @@
  */
 package itutil
 
-trait FakeAppConfig {
+import uk.gov.hmrc.mongo.MongoSpecSupport
+
+trait FakeAppConfig extends MongoSpecSupport {
 
   val mockHost: String
   val mockPort: Int
@@ -40,7 +42,8 @@ trait FakeAppConfig {
       "microservice.services.vat-registration.host" -> s"$mockHost",
       "microservice.services.vat-registration.port" -> s"$mockPort",
       "microservice.services.bank-account-reputation.host" -> s"$mockHost",
-      "microservice.services.bank-account-reputation.port" -> s"$mockPort"
+      "microservice.services.bank-account-reputation.port" -> s"$mockPort",
+      "mongodb.uri" -> s"$mongoUri"
     ) ++ extraConfig
   }
 }

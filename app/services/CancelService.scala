@@ -27,17 +27,17 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class CancellationServiceImpl @Inject()(val keystoreConnector: KeystoreConnect,
-                                        val currentProfileService: CurrentProfileSrv,
+class CancellationServiceImpl @Inject()(val keystoreConnector: KeystoreConnector,
+                                        val currentProfileService: CurrentProfileService,
                                         val companyRegistrationConnector: CompanyRegistrationConnector,
-                                        val save4LaterConnector: S4LConnect,
+                                        val save4LaterConnector: S4LConnector,
                                         val vatRegistrationConnector: RegistrationConnector) extends CancellationService
 
 trait CancellationService {
-  val keystoreConnector: KeystoreConnect
-  val currentProfileService: CurrentProfileSrv
+  val keystoreConnector: KeystoreConnector
+  val currentProfileService: CurrentProfileService
   val companyRegistrationConnector: CompanyRegistrationConnector
-  val save4LaterConnector: S4LConnect
+  val save4LaterConnector: S4LConnector
   val vatRegistrationConnector: RegistrationConnector
 
   private val CURRENT_PROFILE_KEY = "CurrentProfile"

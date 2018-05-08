@@ -19,7 +19,7 @@ package features.sicAndCompliance.controllers.test
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.{ConfigConnector, KeystoreConnect}
+import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import features.sicAndCompliance.forms.test.SicStubForm
 import features.sicAndCompliance.models.test.SicStub
@@ -34,14 +34,14 @@ import scala.concurrent.Future
 
 class SicStubControllerImpl @Inject()(val messagesApi: MessagesApi,
                                       val configConnect: ConfigConnector,
-                                      val keystoreConnector: KeystoreConnect,
+                                      val keystoreConnector: KeystoreConnector,
                                       val s4LService: S4LService,
                                       val sicAndCompService: SicAndComplianceService,
                                       val authConnector: AuthClientConnector) extends SicStubController
 
 trait SicStubController extends BaseController with SessionProfile {
   val configConnect: ConfigConnector
-  val keystoreConnector: KeystoreConnect
+  val keystoreConnector: KeystoreConnector
   val s4LService: S4LService
   val sicAndCompService: SicAndComplianceService
 

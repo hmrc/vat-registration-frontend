@@ -19,7 +19,7 @@ package controllers.test
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.{KeystoreConnect, S4LConnect}
+import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
@@ -39,9 +39,9 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.Future
 
 class TestSetupControllerImpl @Inject()(implicit val s4LService: S4LService,
-                                        val s4lConnector: S4LConnect,
+                                        val s4lConnector: S4LConnector,
                                         val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnect,
+                                        val keystoreConnector: KeystoreConnector,
                                         val turnoverService: TurnoverEstimatesService,
                                         val messagesApi: MessagesApi) extends TestSetupController
 
@@ -49,7 +49,7 @@ trait TestSetupController extends BaseController with SessionProfile {
   val s4LBuilder = TestS4LBuilder
 
   val s4LService: S4LService
-  val s4lConnector: S4LConnect
+  val s4lConnector: S4LConnector
   val turnoverService: TurnoverEstimatesService
 
   private val empty = Future.successful(CacheMap("", Map.empty))
