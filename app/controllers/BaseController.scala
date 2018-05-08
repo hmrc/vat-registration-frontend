@@ -18,8 +18,9 @@ package controllers
 
 import auth.VatExternalUrls
 import config.Logging
-import models.CurrentProfile
+import models.{CurrentProfile, IncorpUpdate}
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
@@ -30,6 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 trait BaseController extends FrontendController with I18nSupport with Logging with AuthorisedFunctions {
   self: SessionProfile =>
@@ -85,4 +87,11 @@ trait BaseController extends FrontendController with I18nSupport with Logging wi
         }
       } handleErrorResult
   }
+
+  protected def withJsonBody(f: (IncorpUpdate) => Future[Result])(implicit request: Request[JsValue]) =
+    Try(request.body.validate[IncorpUpdate]) match {
+      case Success(JsSuccess(payload, _)) => f(payload)
+      case Success(JsError(errs)) => Future.successful(BadRequest(s"Invalid payload: $errs"))
+      case Failure(e) => Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
+    }
 }

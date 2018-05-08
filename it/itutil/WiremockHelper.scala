@@ -103,31 +103,6 @@ trait WiremockHelper extends WiremockS4LHelper {
         .willReturn(ok(s"${affinity.toJson}")))
   }
 
-  def stubKeystoreFetchCurrentProfile(session: String, regId: String): StubMapping = {
-    val keystoreUrl = s"/keystore/vat-registration-frontend/$session"
-    stubFor(get(urlMatching(keystoreUrl))
-      .willReturn(
-        aResponse().
-          withStatus(200).
-          withBody(
-            s"""{
-               |  "id": "$session",
-               |  "data": {
-               |    "CurrentProfile":{
-               |      "registrationID": "$regId",
-               |      "companyName":"Test Me",
-               |      "transactionID":"000-434-1",
-               |      "vatRegistrationStatus":"draft",
-               |      "incorporationDate":"2017-12-21",
-               |      "ivPassed":true
-               |    }
-               |  }
-               |}""".stripMargin
-          )
-      )
-    )
-  }
-
   def stubBankReputationCheck(valid: Boolean): StubMapping = {
     val response = Json.obj("accountNumberWithSortCodeIsValid" -> valid)
     stubFor(post(urlMatching("/modcheck"))

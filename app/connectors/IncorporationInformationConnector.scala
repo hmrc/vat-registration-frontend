@@ -21,8 +21,8 @@ import javax.inject.Inject
 import config.WSHttp
 import models.CurrentProfile
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import play.api.libs.json.{JsObject, JsValue, Json}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.RegistrationWhitelist
@@ -32,11 +32,13 @@ import scala.concurrent.Future
 class IncorporationInformationConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) extends IncorporationInformationConnector {
   val incorpInfoUrl = config.baseUrl("incorporation-information")
   val incorpInfoUri = config.getConfString("incorporation-information.uri", "")
+  val vatRegFEUrl   = config.baseUrl("vat-registration-frontend.internal")
 }
 
 trait IncorporationInformationConnector extends RegistrationWhitelist {
   val incorpInfoUrl: String
   val incorpInfoUri: String
+  val vatRegFEUrl: String
   val http: WSHttp
 
   def getRegisteredOfficeAddress(transactionId: String)(implicit hc: HeaderCarrier, cp:CurrentProfile): Future[Option[CoHoRegisteredOfficeAddress]] = {
@@ -75,5 +77,38 @@ trait IncorporationInformationConnector extends RegistrationWhitelist {
           throw e
       }
     }(returnDefaultCompanyName)
+  }
+
+  def getIncorpUpdate(regId : String, transID : String)(implicit hc : HeaderCarrier) : Future[Option[JsValue]] = {
+    ifRegIdNotWhitelisted[Option[JsValue]](regId) {
+      http.GET[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/$transID/incorporation-update").map(res => res.status match {
+        case 200  => Some(res.json)
+        case 204  => None
+      })
+    }(_ => Some(Json.obj()))
+  }
+
+  def registerInterest(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[Either[String, HttpResponse]] = {
+    val callbackUrl = s"$vatRegFEUrl/internal/incorp-update"
+    val js = Json.parse(
+      s"""{
+         | "SCRSIncorpSubscription": {
+         |   "callbackUrl" : "$callbackUrl"
+         | }
+         |}""".stripMargin
+    ).as[JsObject]
+
+    http.POST[JsObject, HttpResponse](s"$incorpInfoUrl$incorpInfoUri/subscribe/$txId/regime/vatfe/subscriber/scrs", js) map {res =>
+      val incorpStatus = (res.json \ "IncorpStatusEvent" \ "transaction_status").asOpt[String]
+
+      (res.status, incorpStatus) match {
+        case (200, Some("rejected"))  => Left("Incorp rejected")
+        case _                        => Right(res)
+      }
+    }
+  }
+
+  def cancelSubscription(txId : String)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
+    http.DELETE[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/subscribe/$txId/regime/vatfe/subscriber/scrs")
   }
 }

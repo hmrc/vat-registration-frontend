@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import common.enums.IVResult
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.BaseController
 import forms.test.TestIVForm
@@ -36,7 +36,7 @@ class TestIVControllerImpl @Inject()(val busRegDynStub: BusinessRegDynamicStubCo
                                      val s4lService: S4LService,
                                      val messagesApi: MessagesApi,
                                      val authConnector: AuthClientConnector,
-                                     val keystoreConnector: KeystoreConnect) extends TestIVController
+                                     val keystoreConnector: KeystoreConnector) extends TestIVController
 
 trait TestIVController extends BaseController with SessionProfile {
   val busRegDynStub: BusinessRegDynamicStubConnector

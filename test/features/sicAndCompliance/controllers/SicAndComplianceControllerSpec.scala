@@ -16,7 +16,7 @@
 
 package features.sicAndCompliance.controllers
 
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.models.SicAndCompliance
 import features.sicAndCompliance.services.SicAndComplianceService
@@ -38,7 +38,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
   trait Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController {
-      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
       override val frsService: FlatRateService = mockFlatRateService
       val messagesApi: MessagesApi = mockMessagesAPI

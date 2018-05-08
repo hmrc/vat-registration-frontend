@@ -26,8 +26,13 @@ import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
+import repositories.ReactiveMongoRepository
 import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
@@ -67,9 +72,28 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
        |  }
        |}""".stripMargin)
 
+  class Setup {
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
+
   "GET Summary page" should {
     "display the summary page correctly" when {
-      "the company is NOT incorporated" in {
+      "the company is NOT incorporated" in new Setup {
 
         given()
           .user.isAuthorised
@@ -85,6 +109,8 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
@@ -106,7 +132,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         }
       }
 
-      "the company is incorporated" in {
+      "the company is incorporated" in new Setup {
         given()
           .user.isAuthorised
           .currentProfile.withProfileAndIncorpDate()
@@ -120,6 +146,8 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response = buildClient("/check-your-answers").get()
         whenReady(response) { res =>
@@ -143,23 +171,24 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   "POST Summary Page" should {
     "redirect to the confirmation page" when {
-      "the user is in draft with a vat ready submission" in {
+      "the user is in draft with a vat ready submission" in new Setup {
         given()
           .user.isAuthorised
           .currentProfile.withProfileAndIncorpDate()
           .vatScheme.contains(vatReg)
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .incorpInformation.cancelsSubscription()
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .currentProfile.putProfile(nextState = Some("Updated current profile"))
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response = buildClient("/check-your-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/submission-confirmation")
-
-
         }
       }
     }

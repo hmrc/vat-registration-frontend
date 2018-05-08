@@ -16,15 +16,10 @@
 
 package models
 
-trait ModelKeys {
+import play.api.libs.json.{Json, OFormat}
 
-}
-object ModelKeys {
+case class IncorpUpdate(`_id`: String, transaction_status: String)
 
-  implicit val OFFICER_LIST_KEY = "OfficerList"
-  implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
-  implicit val SIC_CODES_KEY = "SicCodes"
-  implicit val FORMER_NAME = "FormerName"
-  implicit val REGISTRATION_ID = "RegistrationId"
-
+object IncorpUpdate {
+  implicit val format: OFormat[IncorpUpdate] = Json.format[IncorpUpdate]
 }

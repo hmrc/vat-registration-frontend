@@ -18,7 +18,7 @@ package features.officer.controllers
 
 import java.time.LocalDate
 
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import features.officer.models.view._
 import features.officer.services.LodgingOfficerService
 import fixtures.VatRegistrationFixture
@@ -45,7 +45,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     val controller: OfficerController = new OfficerController {
       override val lodgingOfficerService: LodgingOfficerService = mockLodgingOfficerService
       override val prePopService: PrePopService = mockPPService
-      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val messagesApi: MessagesApi = mockMessagesAPI
       override val authConnector: AuthConnector = mockAuthClientConnector
       override val addressLookupService: AddressLookupService = mockAddressService
