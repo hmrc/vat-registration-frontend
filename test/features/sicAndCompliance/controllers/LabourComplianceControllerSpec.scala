@@ -16,7 +16,7 @@
 
 package features.sicAndCompliance.controllers
 
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import features.sicAndCompliance.models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
 import features.sicAndCompliance.services.SicAndComplianceService
 import fixtures.VatRegistrationFixture
@@ -34,7 +34,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
   trait Setup {
     val controller: LabourComplianceController = new LabourComplianceController {
-      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI

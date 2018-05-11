@@ -19,7 +19,7 @@ package features.sicAndCompliance.controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import features.sicAndCompliance.forms.{CompanyProvideWorkersForm, SkilledWorkersForm, TemporaryContractsForm, WorkersForm}
 import features.sicAndCompliance.models.CompanyProvideWorkers.PROVIDE_WORKERS_YES
@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class LabourComplianceControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                val authConnector: AuthClientConnector,
-                                               val keystoreConnector: KeystoreConnect,
+                                               val keystoreConnector: KeystoreConnector,
                                                val sicAndCompService: SicAndComplianceService) extends LabourComplianceController
 
 trait LabourComplianceController extends BaseController with SessionProfile {

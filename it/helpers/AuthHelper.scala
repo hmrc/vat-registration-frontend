@@ -32,7 +32,7 @@ trait AuthHelper extends SessionCookieBaker {
   private[helpers] val defaultUser = "/foo/bar"
   //  private val defaultUser = "/auth/oid/1234567890"
 
-  val sessionId = s"stubbed-${UUID.randomUUID}"
+  val sessionId = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
 
   private def cookieData(additionalData: Map[String, String], userId: String = defaultUser): Map[String, String] = {
     Map(
@@ -68,7 +68,7 @@ trait AuthHelper extends SessionCookieBaker {
     stubFor(post(urlMatching("/write/audit"))
       .willReturn(
         aResponse().
-          withStatus(200).
+          withStatus(204).
           withBody("""{"x":2}""")
       )
     )

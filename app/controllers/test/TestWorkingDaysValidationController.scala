@@ -20,7 +20,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Request}
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 
 class TestWorkingDaysValidationControllerImpl @Inject()(val dateService: DateService,
                                                         val authConnector: AuthClientConnector,
-                                                        val keystoreConnector: KeystoreConnect,
+                                                        val keystoreConnector: KeystoreConnector,
                                                         val messagesApi: MessagesApi) extends TestWorkingDaysValidationController
 
 trait TestWorkingDaysValidationController extends BaseController with SessionProfile {

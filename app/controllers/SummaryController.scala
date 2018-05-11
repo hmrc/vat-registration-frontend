@@ -36,7 +36,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
+class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
                                       val authConnector: AuthClientConnector,
                                       val vrs: RegistrationService,
                                       val lodgingOfficerService: LodgingOfficerService,

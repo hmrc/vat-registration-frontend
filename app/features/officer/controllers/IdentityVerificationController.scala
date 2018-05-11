@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import common.enums.IVResult
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import features.officer.services.IVService
 import play.api.Logger
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 class IdentityVerificationControllerImpl @Inject()(val ivService: IVService,
                                                    val messagesApi: MessagesApi,
                                                    val authConnector: AuthClientConnector,
-                                                   val keystoreConnector: KeystoreConnect) extends IdentityVerificationController
+                                                   val keystoreConnector: KeystoreConnector) extends IdentityVerificationController
 
 trait IdentityVerificationController extends BaseController with SessionProfile {
   val ivService: IVService

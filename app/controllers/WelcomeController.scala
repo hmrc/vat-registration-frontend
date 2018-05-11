@@ -19,19 +19,19 @@ package controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services.{CurrentProfileSrv, RegistrationService, SessionProfile}
+import services.{CurrentProfileService, RegistrationService, SessionProfile}
 import views.html.pages.welcome
 
 import scala.concurrent.Future
 
 class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationService,
-                                      val currentProfileService: CurrentProfileSrv,
+                                      val currentProfileService: CurrentProfileService,
                                       val authConnector: AuthClientConnector,
-                                      val keystoreConnector: KeystoreConnect,
+                                      val keystoreConnector: KeystoreConnector,
                                       val conf: Configuration,
                                       val messagesApi: MessagesApi) extends WelcomeController {
   val eligibilityFEUrl = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url").getOrElse("")
@@ -40,7 +40,7 @@ class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationSe
 
 trait WelcomeController extends BaseController with SessionProfile {
   val vatRegistrationService: RegistrationService
-  val currentProfileService: CurrentProfileSrv
+  val currentProfileService: CurrentProfileService
 
   val eligibilityFE: Call
 
@@ -51,7 +51,7 @@ trait WelcomeController extends BaseController with SessionProfile {
       vatRegistrationService.assertFootprintNeeded flatMap {
         case Some((regId, txID)) =>
           for{
-            _ <- currentProfileService.buildCurrentProfile(regId, txID)
+            _                <- currentProfileService.buildCurrentProfile(regId, txID)
             taxableThreshold <- vatRegistrationService.getTaxableThreshold()
           } yield {
             Ok(welcome(taxableThreshold))

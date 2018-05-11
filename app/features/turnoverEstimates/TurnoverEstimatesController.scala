@@ -19,7 +19,7 @@ package features.turnoverEstimates
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EstimateVatTurnoverForm
 import play.api.i18n.MessagesApi
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class TurnoverEstimatesControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                 val authConnector: AuthClientConnector,
-                                                val keystoreConnector: KeystoreConnect,
+                                                val keystoreConnector: KeystoreConnector,
                                                 val service: TurnoverEstimatesService) extends TurnoverEstimatesController {
 
 }

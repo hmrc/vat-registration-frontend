@@ -16,9 +16,9 @@
 
 package services
 
+import java.time.LocalDate
 import javax.inject.Inject
 
-import cats.instances.future._
 import connectors._
 import models.CurrentProfile
 import models.api.ScrsAddress
@@ -51,7 +51,20 @@ trait IncorporationInformationService {
     iiConnector.getCompanyName(regId, txId) map(_.\("company_name").as[String])
   }
 
-  def getIncorporationInfo(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[IncorporationInfo]] = {
-    vatRegConnector.getIncorporationInfo(regId, txId)
+  def getIncorpDate(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Option[LocalDate]] = {
+    iiConnector.getIncorpUpdate(regId, txId) map {
+      case Some(json) => (json \ "incorporationDate").asOpt[LocalDate]
+      case _          => None
+    }
+  }
+
+  def registerInterest(regId: String, txId: String)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
+    iiConnector.registerInterest(regId, txId) flatMap { _.fold (
+        rejected => vatRegConnector.saveTransactionId(regId, txId) flatMap (_ =>
+          vatRegConnector.clearVatScheme(txId) map (_ => true)
+        ),
+        accepted => vatRegConnector.saveTransactionId(regId, txId) map (_ => true)
+      )
+    }
   }
 }
