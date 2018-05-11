@@ -18,7 +18,7 @@ package services
 
 import javax.inject.Inject
 
-import connectors.KeystoreConnect
+import connectors.{IncorporationInformationConnector, KeystoreConnector}
 import features.officer.services.IVService
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,27 +27,26 @@ import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
-class CurrentProfileService @Inject()(val incorpInfoService: IncorporationInformationService,
-                                      val vatRegistrationService: RegistrationService,
-                                      val ivService: IVService,
-                                      val keystoreConnector: KeystoreConnect) extends CurrentProfileSrv
+class CurrentProfileServiceImpl @Inject()(val incorpInfoService: IncorporationInformationService,
+                                          val vatRegistrationService: RegistrationService,
+                                          val ivService: IVService,
+                                          val keystoreConnector: KeystoreConnector) extends CurrentProfileService
 
-trait CurrentProfileSrv extends RegistrationWhitelist {
+trait CurrentProfileService extends RegistrationWhitelist {
 
   val incorpInfoService: IncorporationInformationService
-  val keystoreConnector: KeystoreConnect
+  val keystoreConnector: KeystoreConnector
   val vatRegistrationService: RegistrationService
   val ivService: IVService
 
   def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
       companyName           <- incorpInfoService.getCompanyName(regId, txId)
-      incorpInfo            <- incorpInfoService.getIncorporationInfo(regId, txId)
+      incorpDate            <- incorpInfoService.getIncorpDate(regId, txId)
       status                <- vatRegistrationService.getStatus(regId)
       ivStatus              <-  ifRegIdNotWhitelisted(regId) {
-                                  ivService.getIVStatus(regId)
-                                }(returnDefaultPassedIV)
-      incorpDate            =  if(incorpInfo.isDefined) incorpInfo.get.statusEvent.incorporationDate else None
+        ivService.getIVStatus(regId)
+      }(returnDefaultPassedIV)
       profile               =  CurrentProfile(
         companyName           = companyName,
         registrationId        = regId,
@@ -56,7 +55,12 @@ trait CurrentProfileSrv extends RegistrationWhitelist {
         incorporationDate     = incorpDate,
         ivPassed              = ivStatus
       )
+      _                     <- incorpInfoService.registerInterest(regId, txId)
       _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile
+  }
+
+  def addRejectionFlag(txId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    keystoreConnector.addRejectionFlag(txId)
   }
 }

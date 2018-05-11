@@ -22,9 +22,9 @@ import common.enums.VatRegStatus
 import features.officer.services.IVService
 import helpers.VatRegSpec
 import models.CurrentProfile
-import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.{ArgumentMatchers => Matchers}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -32,14 +32,16 @@ import scala.concurrent.Future
 
 class CurrentProfileServiceSpec extends VatRegSpec {
 
-  val testService = new CurrentProfileSrv {
-    override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
-      if(regId == "99") Future.successful(default(regId)) else f
+  class Setup {
+    val service = new CurrentProfileService {
+      override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
+        if(regId == "99") Future.successful(default(regId)) else f
 
-    override val vatRegistrationService = mockVatRegistrationService
-    override val keystoreConnector = mockKeystoreConnector
-    override val incorpInfoService = mockIIService
-    override val ivService: IVService = mockIVService
+      override val vatRegistrationService = mockVatRegistrationService
+      override val keystoreConnector = mockKeystoreConnector
+      override val incorpInfoService = mockIIService
+      override val ivService: IVService = mockIVService
+    }
   }
 
   val now = LocalDate.now()
@@ -55,81 +57,115 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
   "buildCurrentProfile" should {
     "return a CurrentProfile" when {
-      "the a CurrentProfile has been cached in Keystore" in {
+      "the a CurrentProfile has been cached in Keystore" in new Setup {
         implicit val hc = HeaderCarrier()
 
-        when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockIIService.getCompanyName(any(), any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
 
-        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(Some(
-            IncorporationInfo(
-              IncorpSubscription("","","",""),
-              IncorpStatusEvent("", None, Some(now), None)
-            )
-          )))
+        when(mockIIService.getIncorpDate(any(), any())(any()))
+          .thenReturn(Future.successful(Some(now)))
 
-        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
 
-        when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockIVService.getIVStatus(any())(any[HeaderCarrier]()))
             .thenReturn(Future.successful(None))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockIIService.registerInterest(any(), any())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
+
+        when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
+        val result = await(service.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile
       }
 
-      "the a CurrentProfile has been cached in Keystore with ivPassed set to true" in {
+      "the a CurrentProfile has been cached in Keystore with ivPassed set to true" in new Setup {
         implicit val hc = HeaderCarrier()
 
-        when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockIIService.getCompanyName(any(), any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
 
-        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(Some(
-            IncorporationInfo(
-              IncorpSubscription("","","",""),
-              IncorpStatusEvent("", None, Some(now), None)
-            )
-          )))
+        when(mockIIService.getIncorpDate(any(), any())(any()))
+          .thenReturn(Future.successful(Some(now)))
 
-        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
 
-        when(mockIVService.getIVStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockIVService.getIVStatus(any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(Some(true)))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockIIService.registerInterest(any(), any())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
+
+        when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("testRegId", "testTxId"))
+        val result = await(service.buildCurrentProfile("testRegId", "testTxId"))
         result mustBe testCurrentProfile.copy(ivPassed = Some(true))
       }
-      "the currentProfile is created if the regId is whitelisted setting the ivPassed to true by default" in {
+      "the currentProfile is created if the regId is whitelisted setting the ivPassed to true by default" in new Setup {
         implicit val hc = HeaderCarrier()
 
-        when(mockIIService.getCompanyName(Matchers.any(), Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockIIService.getCompanyName(any(), any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful("testCompanyName"))
 
-        when(mockIIService.getIncorporationInfo(Matchers.any(), Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(Some(
-            IncorporationInfo(
-              IncorpSubscription("","","",""),
-              IncorpStatusEvent("", None, Some(now), None)
-            )
-          )))
+        when(mockIIService.getIncorpDate(any(), any())(any()))
+          .thenReturn(Future.successful(Some(now)))
 
-        when(mockVatRegistrationService.getStatus(Matchers.any())(Matchers.any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockIIService.registerInterest(any(), any())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(true))
+
+        when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(testService.buildCurrentProfile("99", "testTxId"))
+        val result = await(service.buildCurrentProfile("99", "testTxId"))
         result mustBe testCurrentProfile.copy(registrationId = "99", ivPassed = Some(true))
+      }
+    }
+  }
+
+  "addRejectionFlag" should {
+
+    val exisitingProfile = CurrentProfile(
+      "companyName",
+      "registrationID",
+      "transactionID",
+      VatRegStatus.draft,
+      None
+    )
+
+
+    "return some registration id" when {
+
+      val expectedProfile = CurrentProfile(
+        "companyName",
+        "registrationID",
+        "transactionID",
+        VatRegStatus.draft,
+        None,
+        None,
+        Some(true)
+      )
+
+      "current profile successfully updated with flag" in new Setup {
+        when(mockKeystoreConnector.addRejectionFlag(any())(any()))
+          .thenReturn(Future.successful(Some("RegId")))
+
+        await(service.addRejectionFlag("transactionID")) mustBe Some("RegId")
+      }
+    }
+    "return none" when {
+      "there is no current profile" in new Setup {
+        when(mockKeystoreConnector.addRejectionFlag(any())(any()))
+          .thenReturn(Future.successful(None))
+
+        await(service.addRejectionFlag("transactionID")) mustBe None
       }
     }
   }
