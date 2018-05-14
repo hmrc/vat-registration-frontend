@@ -26,7 +26,8 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.concurrent.Future
@@ -64,6 +65,7 @@ trait DeleteSessionItemsController extends BaseController with SessionProfile {
 
   def deleteIfRejected(): Action[JsValue] = Action.async[JsValue](parse.json) {
     implicit request =>
+      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
       withJsonBody { incorpUpdate =>
         if(incorpUpdate.transaction_status == "rejected") {
           for {
