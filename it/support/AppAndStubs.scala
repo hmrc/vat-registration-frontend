@@ -17,10 +17,8 @@
 package support
 
 
-import java.time.LocalDate
 import java.util.Base64
 
-import common.enums.VatRegStatus
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
@@ -33,19 +31,14 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mongo.MongoSpecSupport
 import uk.gov.hmrc.play.it.Port
 
-trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration with MongoSpecSupport {
+trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val portNum: Int = port
   implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest().withFormUrlEncodedBody())
-
-  val sessionId: String = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
-  val currentProfile = models.CurrentProfile("testingCompanyName", "1", "000-431-TEST", VatRegStatus.draft, None, Some(true))
-  val currentProfileIncorp = models.CurrentProfile("testingCompanyName", "1", "000-431-TEST", VatRegStatus.draft, Some(LocalDate.of(2016, 8, 5)), Some(true))
 
   def request: FakeRequest[AnyContentAsFormUrlEncoded] = requestHolder.request
 
@@ -58,7 +51,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
 
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
-  def buildClient(path: String)(implicit headers:(String,String) =  HeaderNames.COOKIE -> getSessionCookie()) = {
+  def buildClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
     ws.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
@@ -69,8 +62,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
   val encryptedRegIdList1  = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
 
   def additionalConfig: Map[String, String] =     Map(
-    "regIdWhitelist" -> s"OTgsOTk=",
-    "mongodb.uri" -> s"$mongoUri"
+    "regIdWhitelist" -> s"OTgsOTk="
   )
 
 

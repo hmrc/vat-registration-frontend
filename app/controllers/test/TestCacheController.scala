@@ -19,7 +19,7 @@ package controllers.test
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -27,7 +27,7 @@ import services.{S4LService, SessionProfile}
 
 class TestCacheControllerImpl @Inject()(val s4LService: S4LService,
                                         val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnector,
+                                        val keystoreConnector: KeystoreConnect,
                                         val messagesApi: MessagesApi) extends TestCacheController
 
 

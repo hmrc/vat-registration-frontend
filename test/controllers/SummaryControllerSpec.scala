@@ -25,7 +25,9 @@ import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import models.CurrentProfile
+import models.ModelKeys.INCORPORATION_STATUS
 import models.external.IncorporationInfo
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -33,6 +35,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
 
@@ -68,6 +71,8 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(validHttpResponse))
 
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, Some(testIncorporationInfo))
+
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
 
@@ -87,6 +92,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
 
     "return HTML with a valid summary view post-incorp" in new Setup {
       when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      mockKeystoreFetchAndGet[IncorporationInfo](INCORPORATION_STATUS, None)
       when(mockVatRegistrationService.getVatScheme(any(),any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))

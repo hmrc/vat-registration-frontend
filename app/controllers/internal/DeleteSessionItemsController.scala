@@ -20,34 +20,24 @@ import javax.inject.Inject
 
 import common.enums.RegistrationDeletion
 import config.AuthClientConnector
-import connectors.{KeystoreConnector, S4LConnector, VatRegistrationConnector}
+import connectors.{KeystoreConnect, RegistrationConnector, S4LConnect}
 import controllers.BaseController
 import play.api.i18n.MessagesApi
-import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent}
-import services._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-
-import scala.concurrent.Future
+import services.{CancellationService, SessionProfile}
 
 class DeleteSessionItemsControllerImpl @Inject()(val authConnector: AuthClientConnector,
-                                                 val vatRegistrationService: VatRegistrationService,
-                                                 val keystoreConnector: KeystoreConnector,
-                                                 val currentProfileService: CurrentProfileService,
-                                                 val s4LConnector: S4LConnector,
+                                                 val vatRegistrationConnector: RegistrationConnector,
+                                                 val keystoreConnector: KeystoreConnect,
+                                                 val save4LaterConnector: S4LConnect,
                                                  val messagesApi: MessagesApi,
-                                                 val config: ServicesConfig,
-                                                 val cancellationService: CancellationService,
-                                                 val regConnector : VatRegistrationConnector) extends DeleteSessionItemsController
+                                                 val cancellationService: CancellationService) extends DeleteSessionItemsController
 
 trait DeleteSessionItemsController extends BaseController with SessionProfile {
+  val vatRegistrationConnector: RegistrationConnector
+  val keystoreConnector: KeystoreConnect
+  val save4LaterConnector: S4LConnect
   val cancellationService: CancellationService
-  val vatRegistrationService: VatRegistrationService
-  val regConnector: VatRegistrationConnector
-  val currentProfileService: CurrentProfileService
-  val s4LConnector: S4LConnector
 
   def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
@@ -62,20 +52,4 @@ trait DeleteSessionItemsController extends BaseController with SessionProfile {
           InternalServerError
       }
   }
-
-  def deleteIfRejected(): Action[JsValue] = Action.async[JsValue](parse.json) {
-    implicit request =>
-      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-      withJsonBody { incorpUpdate =>
-        if(incorpUpdate.transaction_status == "rejected") {
-          for {
-            deleteData <- regConnector.clearVatScheme(incorpUpdate.`_id`)
-            optRegId <- currentProfileService.addRejectionFlag(incorpUpdate.`_id`)
-            clearS4L <- optRegId.map(id => s4LConnector.clear(id)).getOrElse(Future.successful(HttpResponse(200)))
-          } yield Ok
-        } else {
-          Future.successful(Ok)
-        }
-      }
-    }
 }

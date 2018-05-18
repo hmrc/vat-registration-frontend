@@ -16,7 +16,6 @@
 
 package client
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.enums.VatRegStatus
 import features.bankAccountDetails.controllers.routes
 import features.bankAccountDetails.forms.EnterBankAccountDetailsForm._
 import features.bankAccountDetails.forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
@@ -26,48 +25,25 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
-import repositories.ReactiveMongoRepository
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
   override val mockHost: String = WiremockHelper.wiremockHost
   override val mockPort: Int = WiremockHelper.wiremockPort
 
-  val regId = "reg-12345"
-
-  val currentProfile = models.CurrentProfile("testingCompanyName", regId, "000-431-TEST", VatRegStatus.draft, None, Some(true))
   val userId = "user-id-12345"
+  val regId = "reg-12345"
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(fakeConfig())
     .build()
 
-  class Setup {
+  trait Setup {
     stubSuccessfulLogin(userId)
-
-    import scala.concurrent.duration._
-
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) shouldBe preawait + 1
-      res
-    }
+    stubKeystoreFetchCurrentProfile(sessionId, regId)
   }
 
   def stubS4LFetchBankAccount(regId: String, response: Option[JsObject])(implicit app: Application): StubMapping =
@@ -102,8 +78,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubVATFetchBankAccount(regId, None)
       stubAuthWithAffinity(Organisation)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
 
@@ -115,8 +89,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
     "return a 200 and render the page with the 'yes' radio pre-popped from save4later" in new Setup {
       stubS4LFetchBankAccount(regId, Some(bankAccountProvidedJson))
       stubAuthWithAffinity(Organisation)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
@@ -130,8 +102,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, Some(bankAccountProvidedJson))
       stubAuthWithAffinity(Organisation)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
       response.status shouldBe 200
@@ -154,8 +124,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubS4LSaveBankAccount(regId)
       stubAuthWithAffinity(Organisation)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> true)
       val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
 
@@ -170,7 +138,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
       And("The user is logged in with an Organisation account")
       stubAuthWithAffinity(Organisation)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       And("The form data will be saved to both S4L and VAT backend")
       stubS4LSaveBankAccount(regId)
@@ -195,7 +162,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
       stubAuthWithAffinity(Organisation)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: WSResponse = client.withSessionCookieHeader(userId).get()
 
@@ -213,7 +179,6 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       Given("The 'has bank account' value is saved in S4L from the previous page")
       stubS4LFetchBankAccount(regId, Some(bankAccountProvidedPartialJson))
       stubAuthWithAffinity(Organisation)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       And("The bank details form data will be valid")
       stubBankReputationCheck(valid = true)

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 
 import akka.util.Timeout
 import common.enums.IVResult
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import features.officer.services.IVService
 import helpers.{ControllerSpec, MockMessages}
 import mocks.AuthMock
@@ -37,7 +37,7 @@ class IdentityVerificationControllerSpec extends ControllerSpec with MockMessage
   trait Setup {
     val testController = new IdentityVerificationController {
       val ivService: IVService = mockIVService
-      val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       val messagesApi: MessagesApi = mockMessagesAPI
       val authConnector: AuthConnector = mockAuthClientConnector
     }

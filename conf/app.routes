@@ -201,4 +201,3 @@ POST        /when-join-flat-rate                                                
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
-GET         /redirect-to-rejection                                                             controllers.ErrorController.redirectToCR

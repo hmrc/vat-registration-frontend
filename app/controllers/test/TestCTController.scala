@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -29,7 +29,7 @@ import services.{PrePopService, SessionProfile}
 
 class TestCTControllerImpl @Inject()(val prePopService: PrePopService,
                                      val authConnector: AuthClientConnector,
-                                     val keystoreConnector: KeystoreConnector,
+                                     val keystoreConnector: KeystoreConnect,
                                      val messagesApi: MessagesApi) extends TestCTController
 
 trait TestCTController extends BaseController with SessionProfile {

@@ -26,10 +26,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class S4LServiceImpl @Inject()(val s4LConnector: S4LConnector) extends S4LService
+class S4LServiceImpl @Inject()(val s4LConnector: S4LConnect) extends S4LService
 
 trait S4LService {
-  val s4LConnector: S4LConnector
+  val s4LConnector: S4LConnect
 
   def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)

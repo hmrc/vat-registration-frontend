@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 import common.enums.AddressLookupJourneyIdentifier
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.BaseController
 import features.businessContact.BusinessContactService
 import features.businessContact.forms.{CompanyContactDetailsForm, PpobForm}
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class BusinessContactDetailsControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                      val authConnector: AuthClientConnector,
-                                                     val keystoreConnector: KeystoreConnector,
+                                                     val keystoreConnector: KeystoreConnect,
                                                      val businessContactService: BusinessContactService,
                                                      val prepopService: PrePopService,
                                                      val addressLookupService: AddressLookupService,

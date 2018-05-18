@@ -16,7 +16,7 @@
 
 package features.sicAndCompliance.controllers.test
 
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.{ConfigConnector, KeystoreConnect}
 import features.sicAndCompliance.models.test.SicStub
 import features.sicAndCompliance.services.SicAndComplianceService
 import fixtures.VatRegistrationFixture
@@ -38,7 +38,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
   trait Setup {
     val controller: SicStubController = new SicStubController {
       override val configConnect: ConfigConnector = mockConfigConnector
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
       override val s4LService: S4LService = mockS4LService
       val authConnector: AuthConnector = mockAuthClientConnector
