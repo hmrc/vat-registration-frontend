@@ -19,52 +19,19 @@ package connectors
 import javax.inject.Inject
 
 import play.api.libs.json.Format
-import repositories.SessionRepository
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import utils.CascadeUpsert
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class KeystoreConnectorImpl @Inject()(val sessionCache: SessionCache, val sessionRepository: SessionRepository, val cascadeUpsert: CascadeUpsert) extends KeystoreConnector
+class KeystoreConnector @Inject()(val sessionCache: SessionCache) extends KeystoreConnect
 
-trait KeystoreConnector {
+trait KeystoreConnect {
   val sessionCache: SessionCache
-  val sessionRepository: SessionRepository
-  val cascadeUpsert: CascadeUpsert
 
-  def sessionID(implicit hc:HeaderCarrier): String = hc.sessionId.getOrElse(throw new RuntimeException("Active User had no Session ID")).value
-
-  def cache[T](formId: String, body : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    sessionRepository().get(sessionID).flatMap { optionalCacheMap =>
-      val updatedCacheMap = cascadeUpsert(formId, body, optionalCacheMap.getOrElse(new CacheMap(sessionID, Map())))
-      sessionRepository().upsert(updatedCacheMap).map { _ => updatedCacheMap }
-    }
-  }
-
-  def fetch(implicit hc : HeaderCarrier) : Future[Option[CacheMap]] = {
-    sessionRepository().get(sessionID)
-  }
-
-  def fetchAndGet[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    fetch.map { optionalCacheMap =>
-      optionalCacheMap.flatMap { cacheMap => cacheMap.getEntry(key)}
-    }
-  }
-
-  def remove(implicit hc : HeaderCarrier) : Future[Boolean] = {
-    sessionRepository().get(sessionID).flatMap { optionalCacheMap =>
-      optionalCacheMap.fold(Future(false)) { _ =>
-        sessionRepository().removeDocument(sessionID)
-      }
-    }
-  }
-
-  def addRejectionFlag(txId: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
-    for {
-      reject <- sessionRepository().addRejectionFlag(txId)
-      regId <- sessionRepository().getRegistrationID(txId)
-    } yield regId
-  }
+  def cache[T](formId: String, body : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = sessionCache.cache[T](formId, body)
+  def fetch(implicit hc : HeaderCarrier) : Future[Option[CacheMap]]                                       = sessionCache.fetch()
+  def fetchAndGet[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]]      = sessionCache.fetchAndGetEntry(key)
+  def remove(implicit hc : HeaderCarrier) : Future[HttpResponse]                                          = sessionCache.remove()
 }

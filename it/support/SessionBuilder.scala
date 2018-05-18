@@ -31,14 +31,14 @@ object SessionBuilder extends SessionBuilder {}
 trait SessionBuilder extends SessionCookieBaker {
   def cookieData(userId: String = "anyUserId"): Map[String, String] = {
     Map(
-      SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
       SessionKeys.token -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)
   }
 
   def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     req.withSession(
-      SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
       SessionKeys.token     -> "RANDOMTOKEN",
       SessionKeys.userId    -> userId)
 

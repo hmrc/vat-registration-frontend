@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import features.returns.services.ReturnsService
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -30,7 +30,7 @@ import views.html.pages.application_submission_confirmation
 class ApplicationSubmissionControllerImpl @Inject()(val vatRegService: RegistrationService,
                                                     val returnsService:  ReturnsService,
                                                     val authConnector: AuthClientConnector,
-                                                    val keystoreConnector: KeystoreConnector,
+                                                    val keystoreConnector: KeystoreConnect,
                                                     val messagesApi: MessagesApi,
                                                     val config: ServicesConfig) extends ApplicationSubmissionController {
 

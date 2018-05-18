@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import helpers.ControllerSpec
 import play.api.test.FakeRequest
 import services.SessionProfile
@@ -26,7 +26,7 @@ import scala.concurrent.Future
 class BaseControllerSpec extends ControllerSpec {
 
   object TestController extends BaseController with SessionProfile {
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
 
     val messagesApi = mockMessagesAPI
     val authConnector = mockAuthClientConnector

@@ -19,7 +19,7 @@ package controllers.test
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import connectors.test.TestRegistrationConnector
 import controllers.BaseController
 import play.api.i18n.MessagesApi
@@ -31,7 +31,7 @@ class IncorporationInformationStubsControllerImpl @Inject()(val vatRegService: R
                                                             val vatRegConnector: TestRegistrationConnector,
                                                             val messagesApi: MessagesApi,
                                                             val authConnector: AuthClientConnector,
-                                                            val keystoreConnector: KeystoreConnector) extends IncorporationInformationStubsController
+                                                            val keystoreConnector: KeystoreConnect) extends IncorporationInformationStubsController
 
 trait IncorporationInformationStubsController extends BaseController with SessionProfile {
   val vatRegConnector: TestRegistrationConnector

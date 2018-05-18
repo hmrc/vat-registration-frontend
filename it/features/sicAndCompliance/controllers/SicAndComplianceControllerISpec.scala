@@ -22,20 +22,14 @@ import features.sicAndCompliance.models._
 import features.sicAndCompliance.models.test.SicStub
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
-import models.ModelKeys
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsString, JsValue, Json}
-import repositories.ReactiveMongoRepository
+import play.api.libs.json.JsString
 import support.AppAndStubs
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val sicCodeId = "81300003"
@@ -74,46 +68,14 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
   )
 
-  class Setup {
-    import scala.concurrent.duration._
-
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-
-    def insertCurrentProfileSicCodeIntoDb(sessionId : String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val sicCodeMapping: Map[String, JsValue] = Map(
-        "CurrentProfile"        -> Json.toJson(currentProfile),
-        ModelKeys.SIC_CODES_KEY -> Json.parse(jsonListSicCode)
-      )
-      val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-  }
-
-
-  "MainBusinessActivity on show returns 200" in new Setup {
+  "MainBusinessActivity on show returns 200" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .keystoreInScenario.hasKeyStoreValue(SIC_CODES_KEY, jsonListSicCode, Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileSicCodeIntoDb(sessionId)
 
     val response = buildClient("/main-source-of-income").get()
     whenReady(response) { res =>
@@ -121,7 +83,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "MainBusinessActivity on submit returns 303 vat Scheme is upserted because the model is NOW complete" in new Setup {
+  "MainBusinessActivity on submit returns 303 vat Scheme is upserted because the model is NOW complete" in {
 
     val incompleteModelWithoutSicCode = fullModel.copy(
       mainBusinessActivity = None,
@@ -133,13 +95,12 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .keystoreInScenario.hasKeyStoreValue(SIC_CODES_KEY, jsonListSicCode, Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
       .s4lContainer.cleared
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileSicCodeIntoDb(sessionId)
 
     val response = buildClient("/main-source-of-income").post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
     whenReady(response) { res =>
@@ -154,7 +115,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "CompanyProvideWorkers should return 200 on Show AND users answer is prepopped on page" in new Setup {
+  "CompanyProvideWorkers should return 200 on Show AND users answer is prepopped on page" in {
 
     given()
       .user.isAuthorised
@@ -162,9 +123,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-workers-to-other-employers").get()
     whenReady(response) { res =>
       res.status mustBe 200
@@ -172,7 +130,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       document.getElementById("companyProvideWorkersRadio-provide_workers_yes").attr("checked") mustBe "checked"
     }
   }
-  "CompanyProvideWorkers should return 500 if not authorised on show" in new Setup {
+  "CompanyProvideWorkers should return 500 if not authorised on show" in {
 
     given()
       .user.isNotAuthorised
@@ -186,7 +144,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   }
 
 
-  "CompanyProvideWorkers return 303 on submit to populate S4l not vat as model is incomplete" in new Setup {
+  "CompanyProvideWorkers return 303 on submit to populate S4l not vat as model is incomplete" in {
 
     val incompleteModel = fullModel.copy(
       description = None
@@ -201,9 +159,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-workers-to-other-employers").post(
       Map("companyProvideWorkersRadio" -> Seq(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))
 
@@ -213,16 +168,13 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "SkilledWorkers should return 200 on show and users answer is prepopped on page" in new Setup {
+  "SkilledWorkers should return 200 on show and users answer is prepopped on page" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-skilled-workers").get()
     whenReady(response) { res =>
       res.status mustBe 200
@@ -231,7 +183,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     }
   }
-  "SkilledWorkers should return 303 on submit whereby model was already complete so vat backend is updated instead of s4l" in new Setup {
+  "SkilledWorkers should return 303 on submit whereby model was already complete so vat backend is updated instead of s4l" in {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -241,8 +193,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
       .s4lContainer[SicAndCompliance].cleared
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
       res.status mustBe 303
@@ -250,7 +200,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     }
   }
-  "SkilledWorkers should return 500 where user is unauthorised on post" in new Setup {
+  "SkilledWorkers should return 500 where user is unauthorised on post" in {
     given()
       .user.isNotAuthorised
       .audit.writesAudit()
@@ -262,7 +212,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     }
   }
-  "SkilledWorkers should return 500 whereby vat backend returns a 500" in new Setup {
+  "SkilledWorkers should return 500 whereby vat backend returns a 500" in {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -271,8 +221,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isNotUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
       res.status mustBe 500
@@ -280,15 +228,13 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "TemporaryContracts should return 200 on show and users answer is prepopped on page" in new Setup {
+  "TemporaryContracts should return 200 on show and users answer is prepopped on page" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
 
     val response = buildClient("/provides-workers-on-temporary-contracts").get()
     whenReady(response) { res =>
@@ -298,7 +244,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     }
   }
-  "TemporaryContracts should return 303 on submit" in new Setup {
+  "TemporaryContracts should return 303 on submit" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
@@ -308,8 +254,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/provides-workers-on-temporary-contracts").post(Map("temporaryContractsRadio" -> Seq(TemporaryContracts.TEMP_CONTRACTS_YES)))
     whenReady(response) { res =>
       res.status mustBe 303
@@ -318,15 +262,13 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "Workers should return 200 on show and users answer is prepopped on page" in new Setup {
+  "Workers should return 200 on show and users answer is prepopped on page" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
 
     val response = buildClient("/how-many-workers-does-company-provide-at-one-time").get()
     whenReady(response) { res =>
@@ -336,7 +278,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     }
   }
-  "Workers should return 303 on submit" in new Setup {
+  "Workers should return 303 on submit" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
@@ -346,8 +288,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("200")))
     whenReady(response) { res =>
       res.status mustBe 303
@@ -356,15 +296,13 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "BusinessActivityDescription should return 200 on show and users answer is prepopped on page" in new Setup {
+  "BusinessActivityDescription should return 200 on show and users answer is prepopped on page" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
 
     val response = buildClient("/describe-what-company-does").get()
     whenReady(response) { res =>
@@ -373,7 +311,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       document.getElementById("description").html() mustBe fullModel.description.get.description
     }
   }
-  "BusinessActivityDescription should return 303 on submit" in new Setup {
+  "BusinessActivityDescription should return 303 on submit" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
@@ -383,8 +321,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
     val response = buildClient("/describe-what-company-does").post(Map("description" -> Seq("foo")))
     whenReady(response) { res =>
       res.status mustBe 303
@@ -393,14 +329,12 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "ComplianceIntroduction should return 200 on show" in new Setup {
+  "ComplianceIntroduction should return 200 on show" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
 
     val response = buildClient("/tell-us-more-about-the-company").get()
     whenReady(response) { res =>
@@ -408,15 +342,13 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
+  "ComplianceIntroduction should return 303 for labour sic code on submit" in {
     given()
       .user.isAuthorised
       .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
       .audit.writesAudit()
       .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
 
     val response = buildClient("/tell-us-more-about-the-company").post(Map("" -> Seq("")))
     whenReady(response) { res =>

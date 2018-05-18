@@ -37,8 +37,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val brConnector : BusinessRegistrationConnect,
                                        val compRegConnector: CompanyRegistrationConnector,
                                        val incorporationService: IncorporationInformationService,
-                                       val keystoreConnector: KeystoreConnector,
-                                       val iiConnector: IncorporationInformationConnector
+                                       val keystoreConnector: KeystoreConnect
                                       ) extends RegistrationService
 
 trait RegistrationService extends LegacyServiceToBeRefactored {
@@ -47,14 +46,13 @@ trait RegistrationService extends LegacyServiceToBeRefactored {
   val brConnector: BusinessRegistrationConnect
   val compRegConnector: CompanyRegistrationConnector
   val incorporationService: IncorporationInformationService
-  val iiConnector: IncorporationInformationConnector
 }
 
 // TODO refactor in a similar way to FRS
 trait LegacyServiceToBeRefactored {
   self : RegistrationService =>
 
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector: KeystoreConnect
 
   type RegistrationFootprint = (String, String)
 
@@ -92,6 +90,8 @@ trait LegacyServiceToBeRefactored {
     for {
       vatScheme <- vatRegConnector.createNewRegistration
       txId      <- compRegConnector.getTransactionId(vatScheme.id)
+      status    <- incorporationService.getIncorporationInfo(vatScheme.id, txId)
+      _         =  status map(x => keystoreConnector.cache[IncorporationInfo](INCORPORATION_STATUS, x))
     } yield {
       (vatScheme.id, txId)
     }
@@ -100,11 +100,7 @@ trait LegacyServiceToBeRefactored {
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
-    iiConnector.cancelSubscription(profile.transactionId) flatMap { _ =>
-      vatRegConnector.submitRegistration(profile.registrationId)
-    } recover {
-      case _ => SubmissionFailedRetryable
-    }
+    vatRegConnector.submitRegistration(profile.registrationId)
   }
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =

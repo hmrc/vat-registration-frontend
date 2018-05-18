@@ -17,7 +17,7 @@
 package services
 
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.routes
 import models.CurrentProfile
 import play.api.i18n.Messages
@@ -30,7 +30,8 @@ import scala.concurrent.Future
 
 trait SessionProfile {
 
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector: KeystoreConnect
+
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
   def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
@@ -38,12 +39,11 @@ trait SessionProfile {
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show()))
       ) {
-        profile => (profile.vatRegistrationStatus, profile.incorpRejected) match {
-          case (VatRegStatus.draft, None)                                        => f(profile)
-          case (VatRegStatus.locked, None) if checkStatus                        => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
-          case ((VatRegStatus.held | VatRegStatus.locked), None) if !checkStatus => f(profile)
-          case (_, Some(_)) => Future.successful(Redirect(controllers.routes.ErrorController.redirectToCR()))
-          case _            => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+        profile => profile.vatRegistrationStatus match {
+          case VatRegStatus.draft                                       => f(profile)
+          case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
+          case (VatRegStatus.held | VatRegStatus.locked) if !checkStatus => f(profile)
+          case _                        => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
         }
       }
     }

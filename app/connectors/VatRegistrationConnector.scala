@@ -117,10 +117,6 @@ trait RegistrationConnector extends RegistrationWhitelist {
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
-  def clearVatScheme(transId: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[HttpResponse] = {
-    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$transId/clear-scheme", Json.obj())
-  }
-
   def getIncorporationInfo(regId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
     ifRegIdNotWhitelisted[Option[IncorporationInfo]](regId) {
       http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
@@ -266,10 +262,5 @@ trait RegistrationConnector extends RegistrationWhitelist {
     http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
       case e: Exception => throw logResponse(e, "patchBankAccount")
     }
-  }
-
-  def saveTransactionId(regId: String, transactionId: String)(implicit hc : HeaderCarrier): Future[HttpResponse] = {
-    val js = Json.parse(s"""{"transactionID": "$transactionId"}""").as[JsObject]
-    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/transaction-id", js)
   }
 }

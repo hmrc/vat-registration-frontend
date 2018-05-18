@@ -22,13 +22,13 @@ import connectors._
 import fixtures.VatRegistrationFixture
 import helpers.{S4LMockSugar, VatRegSpec}
 import models.TaxableThreshold
-import models.external.CompanyRegistrationProfile
+import models.external.{CompanyRegistrationProfile, IncorporationInfo}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -42,15 +42,14 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       mockBrConnector,
       mockCompanyRegConnector,
       mockIIService,
-      mockKeystoreConnector,
-      mockIIConnector
+      mockKeystoreConnector
     )
   }
 
   override def beforeEach() {
     super.beforeEach()
     mockFetchRegId(testRegId)
-    when(mockIIService.getIncorpDate(any(), any())(any()))
+    when(mockIIService.getIncorporationInfo(any(), any())(any()))
       .thenReturn(Future.successful(None))
   }
   val json = Json.parse(
@@ -81,9 +80,11 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
         mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
 
-        when(mockIIService.getIncorpDate(any(), any())(any[HeaderCarrier]()))
-          .thenReturn(Future.successful(testIncorporationInfo.statusEvent.incorporationDate))
+        when(mockIIService.getIncorporationInfo(any(), any())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(Some(testIncorporationInfo)))
         when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
+
+        mockKeystoreCache[IncorporationInfo]("INCORPORATION_STATUS", CacheMap("INCORPORATION_STATUS", Map("INCORPORATION_STATUS" -> json)))
 
         mockKeystoreCache[String]("CompanyProfile", CacheMap("", Map.empty))
 
@@ -116,9 +117,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       "if the document is ETMP rejected with a ETMP status of 06" in new Setup {
         when(mockBrConnector.getBusinessRegistrationID(any()))
           .thenReturn(Future.successful(Some("regId")))
-        when(mockIIService.getIncorpDate(any(), any())(any[HeaderCarrier]()))
-          .thenReturn(Future.successful(testIncorporationInfo.statusEvent.incorporationDate))
-        when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
+      when(mockIIService.getIncorporationInfo(any(), any())(any[HeaderCarrier]()))
+        .thenReturn(Future.successful(Some(testIncorporationInfo)))
+      when(mockRegConnector.createNewRegistration(any(), any())).thenReturn(validVatScheme.pure)
 
         when(mockCompanyRegConnector.getCompanyProfile(any())(any()))
           .thenReturn(Future.successful(Some(CompanyRegistrationProfile("submitted", Some("06")))))
@@ -170,21 +171,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     "return a Success DES response" in new Setup {
       when(mockRegConnector.submitRegistration(any())(any()))
         .thenReturn(Future.successful(Success))
-
-      when(mockIIConnector.cancelSubscription(any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
-
       await(service.submitRegistration()) mustBe Success
-    }
-
-    "return a submission retryable on cancel failure" in new Setup {
-      when(mockRegConnector.submitRegistration(any())(any()))
-        .thenReturn(Future.successful(Success))
-
-      when(mockIIConnector.cancelSubscription(any())(any()))
-        .thenReturn(Future.failed(Upstream4xxResponse("400", 400, 400)))
-
-      await(service.submitRegistration()) mustBe SubmissionFailedRetryable
     }
   }
 

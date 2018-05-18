@@ -18,7 +18,7 @@ package features.bankAccountDetails.controllers
 
 import javax.inject.Inject
 
-import _root_.connectors.KeystoreConnector
+import _root_.connectors.KeystoreConnect
 import services.SessionProfile
 import config.AuthClientConnector
 import controllers.BaseController
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class BankAccountDetailsControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                  val authConnector: AuthClientConnector,
                                                  val bankAccountDetailsService: BankAccountDetailsService,
-                                                 val keystoreConnector: KeystoreConnector) extends BankAccountDetailsController {
+                                                 val keystoreConnector: KeystoreConnect) extends BankAccountDetailsController {
 }
 
 trait BankAccountDetailsController extends BaseController with SessionProfile {

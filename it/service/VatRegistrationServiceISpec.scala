@@ -40,10 +40,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
     "microservice.services.vat-registration.port" -> s"$mockPort",
     "microservice.services.cachable.session-cache.host" -> s"$mockHost",
     "microservice.services.cachable.session-cache.port" -> s"$mockPort",
-    "application.router" -> "testOnlyDoNotUseInAppConf.Routes",
-    "microservice.services.incorporation-information.uri" -> "/test-incorporation-information",
-    "microservice.services.incorporation-information.host" -> s"$mockHost",
-    "microservice.services.incorporation-information.port" -> s"$mockPort"
+    "application.router" -> "testOnlyDoNotUseInAppConf.Routes"
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -66,30 +63,14 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
     "get a Success response if submitted successfully" in {
       val regId = "12345"
-      val transId = "40-123456"
 
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
-
-      stubDelete(s"/test-incorporation-information/subscribe/$transId/regime/vatfe/subscriber/scrs", 200, "")
 
       val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
       val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
 
       await(response) shouldBe Success
-    }
 
-    "handle unexpected responses from cancelling a subscription" in {
-      val regId = "12345"
-      val transId = "40-123456"
-
-      stubPut(s"/vatreg/$regId/submit-registration", 200, "")
-
-      stubDelete(s"/test-incorporation-information/subscribe/$transId/regime/vatfe/subscriber/scrs", 404, "")
-
-      val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
-      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
-
-      await(response) shouldBe SubmissionFailedRetryable
     }
   }
 }

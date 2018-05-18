@@ -20,7 +20,7 @@ class IncorporationInformationConnectorISpec extends UnitSpec with AppAndStubs {
       |{"company_name": "Normal User LTD"}
     """.stripMargin
   val nonWhitelistedRegId         = "normalUser"
-  val transactionID               = "000-431-TEST"
+  val transactionID               = "000-434-1"
   val registeredOfficerAddressRaw =
     """
       |{
@@ -141,22 +141,6 @@ class IncorporationInformationConnectorISpec extends UnitSpec with AppAndStubs {
       res shouldBe Json.parse("""{"company_name": "Foo Bar Wizz Bang"}""")
     }
   }
-
-//  "getIncorpUpdate" should {
-//    "return an incorporation update" in {
-//      val res = await(iiConnector.get("99",transactionID)(hc))
-//      res shouldBe Json.parse(companyNameRaw)
-//
-//    }
-//
-//    "return data from II when the regId is not whitelisted" in {
-//      given()
-//        .company.nameIs("Foo Bar Wizz Bang")
-//
-//      val res = await(iiConnector.getCompanyName(nonWhitelistedRegId, transactionID)(hc))
-//      res shouldBe Json.parse("""{"company_name": "Foo Bar Wizz Bang"}""")
-//    }
-//  }
 
   "getOfficerList" should {
     "return default data from config for a whitelisted regId" in {

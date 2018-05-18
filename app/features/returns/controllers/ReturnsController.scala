@@ -19,7 +19,7 @@ package features.returns.controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import controllers.BaseController
 import features.returns.forms._
 import features.returns.models.{DateSelection, Frequency}
@@ -37,7 +37,7 @@ import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
+class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
                                       val authConnector: AuthClientConnector,
                                       val returnsService: ReturnsService,
                                       val messagesApi: MessagesApi,
@@ -47,7 +47,7 @@ trait ReturnsController extends BaseController with SessionProfile {
 
   val returnsService: ReturnsService
   val authConnector: AuthConnector
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector: KeystoreConnect
   val timeService: TimeService
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {

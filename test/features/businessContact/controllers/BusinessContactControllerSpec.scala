@@ -18,7 +18,7 @@ package features.businessContact.controllers
 
 import java.util.NoSuchElementException
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import features.businessContact.BusinessContactService
 import features.businessContact.models.CompanyContactDetails
 import fixtures.VatRegistrationFixture
@@ -43,7 +43,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       override val addressLookupService: AddressLookupService = mockAddressService
       override val businessContactService: BusinessContactService = mockBusinessContactService
       override val prepopService: PrePopService = mockPrePopService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       val messagesApi: MessagesApi = mockMessagesAPI
       val authConnector: AuthConnector = mockAuthClientConnector
       val dropoutUrl: String = "test otrs URL"

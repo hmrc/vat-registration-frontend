@@ -25,9 +25,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class S4LConnectorImpl @Inject()(val shortCache : ShortLivedCache) extends S4LConnector
+class S4LConnector @Inject()(val shortCache : ShortLivedCache) extends S4LConnect
 
-trait S4LConnector {
+trait S4LConnect {
   val shortCache : ShortLivedCache
 
   def save[T](Id: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = shortCache.cache[T](Id, formId, data)

@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
@@ -28,27 +28,12 @@ import uk.gov.hmrc.play.config.inject.ServicesConfig
 import scala.concurrent.Future
 
 class ErrorControllerImpl @Inject()(config: ServicesConfig,
-                                    val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector,
-                                    val messagesApi: MessagesApi) extends ErrorController {
-
-  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url",
-    throw new Exception("Config: company-registration-frontend.www.url not found"))
-
-  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri",
-    throw new Exception("Config: company-registration-frontend.www.uri not found"))
-
-  lazy val compRegFERejected = config.getConfString("company-registration-frontend.www.rejected",
-    throw new Exception("Config: company-registration-frontend.www.rejected not found"))
-
-  override lazy val rejectedUrl = s"$compRegFEURL$compRegFEURI$compRegFERejected"
-
+                                        val authConnector: AuthClientConnector,
+                                        val keystoreConnector: KeystoreConnect,
+                                        val messagesApi: MessagesApi) extends ErrorController {
 }
 
 trait ErrorController extends BaseController with SessionProfile {
-
-  val rejectedUrl: String
-
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
       Future.successful(Ok(views.html.pages.error.submissionTimeout()))
@@ -58,6 +43,4 @@ trait ErrorController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
-
-  def redirectToCR() = Action(Redirect(rejectedUrl))
 }

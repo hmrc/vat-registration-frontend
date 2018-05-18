@@ -27,7 +27,6 @@ class ErrorControllerSpec extends ControllerSpec with MockMessages with FutureAs
       override val keystoreConnector = mockKeystoreConnector
       val authConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
-      val rejectedUrl = "rejection-url"
     }
     mockAllMessages
     mockAuthenticated()

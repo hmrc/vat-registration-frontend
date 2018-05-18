@@ -28,12 +28,11 @@ import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
-import repositories.SessionRepository
 import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.inject.ServicesConfig
-import utils.{CascadeUpsert, VATRegFeatureSwitch, VATRegFeatureSwitches}
+import utils.{VATRegFeatureSwitch, VATRegFeatureSwitches}
 
 trait VatMocks
   extends SaveForLaterMock
@@ -47,8 +46,6 @@ trait VatMocks
   implicit lazy val mockFeatureSwitch = mock[VATRegFeatureSwitch]
   implicit lazy val mockFeatureSwitches  = mock[VATRegFeatureSwitches]
   implicit lazy val mockAudit = mock[Audit]
-  implicit lazy val mockSessionRepository = mock[SessionRepository]
-  implicit lazy val mockCascadeUpsert = mock[CascadeUpsert]
   implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockConfig = mock[ServicesConfig]
@@ -65,8 +62,7 @@ trait VatMocks
   implicit lazy val mockPPConnector = mock[PPConnector]
   implicit lazy val mockBrConnector = mock[BusinessRegistrationConnector]
   //Services
-  implicit lazy val mockCurrentProfile = mock[CurrentProfileServiceImpl]
-  implicit lazy val mockCancellationService = mock[CancellationService]
+  implicit lazy val mockCurrentProfile = mock[CurrentProfileService]
   implicit lazy val mockAddressService = mock[AddressLookupService]
   implicit lazy val mockPPService = mock[PrePopulationService]
   implicit lazy val mockIIService = mock[IncorporationInformationServiceImpl]
@@ -91,8 +87,6 @@ trait VatMocks
       mockS4LService,
       mockKeystoreConnector,
       mockSessionCache,
-      mockSessionRepository,
-      mockCascadeUpsert,
       mockAudit,
       mockVatRegistrationService,
       mockRegConnector,

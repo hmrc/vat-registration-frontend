@@ -23,6 +23,7 @@ import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Format
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,7 +46,8 @@ trait KeystoreMock {
   def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
     when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
 
-  def mockKeystoreClear(): OngoingStubbing[Future[Boolean]] = when(mockKeystoreConnector.remove(any())) thenReturn Future.successful(true)
+  def mockKeystoreClear(): OngoingStubbing[Future[HttpResponse]] =
+    when(mockKeystoreConnector.remove(any())).thenReturn(HttpResponse(200).pure)
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =
     when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any())).thenReturn(Some(regID).pure)

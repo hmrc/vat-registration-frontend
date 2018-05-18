@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.KeystoreConnector
+import connectors.KeystoreConnect
 import features.tradingDetails.{TradingNameView, _}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, MockMessages}
@@ -37,7 +37,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
   class Setup {
     val testController = new TradingDetailsController {
       override val tradingDetailsService: TradingDetailsServiceImpl = mockTradingDetailsService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnect = mockKeystoreConnector
       override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
