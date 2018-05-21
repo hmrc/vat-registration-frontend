@@ -22,18 +22,21 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val bootstrapVersion       = "8.20.0"
-  private val partialsVersion        = "6.1.0"
-  private val cachingClientVersion   = "7.1.0"
-  private val formMappingVersion     = "0.2.0"
-  private val timeVersion            = "3.1.0"
-  private val whitelistFilterVersion = "2.0.0"
-  private val catsVersion            = "1.0.0"
-  private val authClientVersion      = "2.6.0"
+  private val playReactivemongoVersion = "6.0.0"
+  private val bootstrapVersion         = "8.20.0"
+  private val partialsVersion          = "6.1.0"
+  private val cachingClientVersion     = "7.1.0"
+  private val formMappingVersion       = "0.2.0"
+  private val timeVersion              = "3.1.0"
+  private val whitelistFilterVersion   = "2.0.0"
+  private val catsVersion              = "1.0.0"
+  private val authClientVersion        = "2.6.0"
 
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
+    "uk.gov.hmrc" %% "play-reactivemongo"              % playReactivemongoVersion,
+
     "uk.gov.hmrc"   %% "frontend-bootstrap"            % bootstrapVersion,
     "uk.gov.hmrc"   %% "play-partials"                 % partialsVersion,
     "uk.gov.hmrc"   %% "http-caching-client"           % cachingClientVersion,
@@ -81,7 +84,8 @@ private object IntegrationTestDependencies extends TestDependencies {
     "org.scalatestplus.play"  %% "scalatestplus-play"            % scalaTestPlusPlayVersion % scope,
     "com.github.tomakehurst"  %  "wiremock"                      % wireMockVersion          % scope,
     "org.jsoup"               %  "jsoup"                         % jsoupVersion             % scope,
-    "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion         % scope
+    "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion         % scope,
+    "uk.gov.hmrc"             %% "reactivemongo-test"            % "3.1.0"                  % scope
   )
 
   def apply(): Seq[ModuleID] = testDependencies

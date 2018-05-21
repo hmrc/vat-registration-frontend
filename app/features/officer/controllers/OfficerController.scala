@@ -22,7 +22,7 @@ import javax.inject.Inject
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
 import common.exceptions.InternalExceptions.NoOfficerFoundException
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import features.officer.forms._
 import features.officer.models.view.{HomeAddressView, PreviousAddressView}
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class OfficerControllerImpl @Inject()(val messagesApi: MessagesApi,
                                       val authConnector: AuthClientConnector,
-                                      val keystoreConnector: KeystoreConnect,
+                                      val keystoreConnector: KeystoreConnector,
                                       val lodgingOfficerService: LodgingOfficerService,
                                       val prePopService: PrePopService,
                                       val addressLookupService: AddressLookupService) extends OfficerController
