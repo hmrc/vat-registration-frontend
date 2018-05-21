@@ -15,16 +15,40 @@
  */
 package controllers
 
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import features.sicAndCompliance.models.test.SicStub
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.libs.json.{JsObject, JsValue, Json}
+import repositories.ReactiveMongoRepository
 import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
 
+  class Setup {
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
+
   "deleteVatRegistration" should {
-    "return an OK" in {
+    "return an OK" in new Setup {
 
       given()
         .user.isAuthorised
@@ -33,8 +57,10 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
         .audit.writesAuditMerged()
         .vrefe.deleteVREFESession()
         .s4lContainer[SicStub].cleared
-        .keystore.deleteKS()
+        //.keystore.deleteKS()
         .vatScheme.deleted
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildInternalClient("/1/delete")
         .withHeaders("X-Session-ID" -> "session-1112223355556")
@@ -42,6 +68,64 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
 
       whenReady(response) {
         _.status mustBe 200
+      }
+    }
+  }
+
+  "deleteIfRejected" should {
+    "return an OK" when {
+      "the incorp update is accepted" in {
+        val txId: String = "000-431-TEST"
+
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val json = Json.parse(
+          s"""{
+            "SCRSIncorpStatus" : {
+              "IncorpSubscriptionKey" : {
+                "transactionId":"$txId"
+              },
+              "IncorpStatusEvent" : {
+                "status":"acccepted"
+              }
+            }
+          }""".stripMargin).as[JsObject]
+
+        val response = buildInternalClient("/incorp-update").post(json)
+
+        whenReady(response) {
+          _.status mustBe 200
+        }
+      }
+
+      "the incorp update is not accepted" in {
+        val txId: String = "000-431-TEST"
+
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .currentProfile.withProfile()
+          .vatRegistration.clearsUserData()
+
+        val json = Json.parse(
+          s"""{
+            "SCRSIncorpStatus" : {
+              "IncorpSubscriptionKey" : {
+                "transactionId":"$txId"
+              },
+              "IncorpStatusEvent" : {
+                "status":"rejected"
+              }
+            }
+          }""".stripMargin).as[JsObject]
+
+        val response = buildInternalClient("/incorp-update").post(json)
+
+        whenReady(response) {
+          _.status mustBe 200
+        }
       }
     }
   }

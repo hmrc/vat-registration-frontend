@@ -21,7 +21,7 @@ import java.util.MissingResourceException
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.{ConfigConnector, KeystoreConnect}
+import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.services.SicAndComplianceService
@@ -41,7 +41,7 @@ class FlatRateControllerImpl @Inject()(val messagesApi: MessagesApi,
                                        val flatRateService: FlatRateService,
                                        val turnoverEstimatesService: TurnoverEstimatesService,
                                        val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnect,
+                                       val keystoreConnector: KeystoreConnector,
                                        val configConnector: ConfigConnector,
                                        val timeService: TimeService,
                                        val sicAndComplianceService: SicAndComplianceService) extends FlatRateController

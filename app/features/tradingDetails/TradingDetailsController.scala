@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import features.tradingDetails.TradingDetailsService
 import features.tradingDetails.views.html.{eori_apply => ApplyEoriPage, eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 import forms.{ApplyEoriForm, EuGoodsForm, TradingNameForm}
@@ -29,7 +29,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
-class TradingDetailsControllerImpl @Inject()(val keystoreConnector: KeystoreConnect,
+class TradingDetailsControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
                                              val authConnector: AuthClientConnector,
                                              val tradingDetailsService: TradingDetailsService,
                                              val messagesApi: MessagesApi,
@@ -39,7 +39,7 @@ trait TradingDetailsController extends BaseController with SessionProfile {
 
   val tradingDetailsService: TradingDetailsService
   val authConnector: AuthConnector
-  val keystoreConnector: KeystoreConnect
+  val keystoreConnector: KeystoreConnector
   val incorpInfoService: IncorporationInformationService
 
   val tradingNamePage = isAuthenticatedWithProfile {

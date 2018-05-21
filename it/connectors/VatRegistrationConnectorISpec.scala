@@ -32,7 +32,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
   def vatregConnector: RegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
   val nonWhitelistedRegId   = "normalUser"
-  val transactionID         = "000-434-1"
+  val transactionID         = "000-431-TEST"
 
   val currentProfileWhitelisted = models.CurrentProfile(
     "fooBar","99","dummy",VatRegStatus.draft,None,None
@@ -62,7 +62,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
       |    "callbackUrl": "#",
       |    "regime": "vat",
       |    "subscriber": "scrs",
-      |    "transactionId": "000-434-1"
+      |    "transactionId": "000-431-TEST"
       |  }
       |}
     """.stripMargin

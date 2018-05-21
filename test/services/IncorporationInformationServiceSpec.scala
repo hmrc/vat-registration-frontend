@@ -16,13 +16,15 @@
 
 package services
 
-import cats.data.OptionT
+import java.time.LocalDate
+
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api.ScrsAddress
-import models.external.{CoHoCompanyProfile, CoHoRegisteredOfficeAddress, Name, Officer, OfficerList}
+import models.external._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
@@ -85,11 +87,15 @@ class IncorporationInformationServiceSpec extends VatRegSpec with Inspectors wit
     }
   }
 
-  "getIncorporationInfo" must {
-    "return an incorporation info object" in new Setup {
-      when(mockRegConnector.getIncorporationInfo(currentProfile().registrationId, currentProfile().transactionId))
-        .thenReturn(Future.successful(Some(testIncorporationInfo)))
-      service.getIncorporationInfo(currentProfile().registrationId, currentProfile().transactionId) returnsSome testIncorporationInfo
+  "getIncorpDate" must {
+    "return an incorp date" in new Setup {
+      when(mockIIConnector.getIncorpUpdate(currentProfile().registrationId, currentProfile().transactionId))
+        .thenReturn(Future.successful(Some(
+          Json.obj("incorporationDate" -> testIncorporationInfo.statusEvent.incorporationDate.get)))
+        )
+
+      service.getIncorpDate(currentProfile().registrationId, currentProfile().transactionId) returns
+        testIncorporationInfo.statusEvent.incorporationDate
     }
   }
 }
