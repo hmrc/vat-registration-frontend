@@ -19,7 +19,7 @@ package features.sicAndCompliance.controllers
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class SicAndComplianceControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                val authConnector: AuthClientConnector,
-                                               val keystoreConnector: KeystoreConnect,
+                                               val keystoreConnector: KeystoreConnector,
                                                val sicAndCompService: SicAndComplianceService,
                                                val frsService: FlatRateService) extends SicAndComplianceController {
 

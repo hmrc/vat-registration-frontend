@@ -20,7 +20,7 @@ import java.io.File
 import javax.inject.Inject
 
 import config.AuthClientConnector
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class SignInOutControllerImpl @Inject()(config: ServicesConfig,
                                         val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnect,
+                                        val keystoreConnector: KeystoreConnector,
                                         val messagesApi: MessagesApi) extends SignInOutController {
 
   lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url",

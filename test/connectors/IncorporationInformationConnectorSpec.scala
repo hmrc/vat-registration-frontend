@@ -20,6 +20,10 @@ import config.WSHttp
 import helpers.VatRegSpec
 import models.external.{CoHoRegisteredOfficeAddress, Name, Officer, OfficerList}
 import org.joda.time.DateTime
+import play.api.libs.json.{JsObject, JsValue, Json}
+import uk.gov.hmrc.http.{HttpResponse, Upstream4xxResponse, Upstream5xxResponse}
+
+import scala.concurrent.Future
 
 class IncorporationInformationConnectorSpec extends VatRegSpec {
 
@@ -27,6 +31,7 @@ class IncorporationInformationConnectorSpec extends VatRegSpec {
     val connector = new IncorporationInformationConnector {
       override val incorpInfoUrl: String = "tst-url"
       override val incorpInfoUri: String = "tst-url"
+      override val vatRegFEUrl: String = "tst-url"
       override val http: WSHttp = mockWSHttp
     }
 
@@ -78,6 +83,70 @@ class IncorporationInformationConnectorSpec extends VatRegSpec {
     "fail with exception when an Internal Server Error occurs calling remote service" in new Setup {
       mockHttpFailedGET[OfficerList]("test-url", internalServiceException)
       connector.getOfficerList("id") failedWith internalServiceException
+    }
+  }
+
+  "registerInterest" should {
+    "succeed" when {
+      "creating a vat frontend subscription in II" in new Setup {
+        mockHttpPOST[JsObject, HttpResponse]("tst-url", HttpResponse(202), mockWSHttp)
+
+        val response: Either[String, HttpResponse] = await(connector.registerInterest("regId", "transID"))
+
+        response.right.get.status mustBe 202
+      }
+      "a vat frontend subscription already exists in II" in new Setup {
+        mockHttpPOST[JsObject, HttpResponse]("tst-url", HttpResponse(200, Some(Json.obj("transaction_status" ->"accepted"))))
+
+        val response: Either[String, HttpResponse] = await(connector.registerInterest("regId", "transID"))
+
+        response.right.get.status mustBe 200
+      }
+    }
+    "fail" when {
+      "creating a vat frontend subscription in II" in new Setup {
+        mockHttpFailedPOST[JsObject, HttpResponse]("tst-url", Upstream5xxResponse("503", 503, 503), mockWSHttp)
+
+        intercept[Upstream5xxResponse](await(connector.registerInterest("regId", "transID")))
+      }
+    }
+  }
+
+  "getIncorpUpdate" should {
+    "succeed" when {
+      "when fetching an incorp update" in new Setup {
+        mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(Json.obj("x" -> "y"))))
+
+        val response: Option[JsValue] = await(connector.getIncorpUpdate("99", "transID"))
+        (response.get \ "x").as[String] mustBe "y"
+      }
+
+      "when fetching an incorp update that does not exist" in new Setup {
+        mockHttpGET[HttpResponse]("tst-url", HttpResponse(204))
+
+        val response: Option[JsValue] = await(connector.getIncorpUpdate("99", "transID"))
+        response.isDefined mustBe false
+      }
+    }
+  }
+
+  "cancelSubscription" should {
+    "succeed" when {
+      "cancelling an existing VRFE subscription" in new Setup {
+        mockHttpDELETE[HttpResponse]("tst-url", HttpResponse(200), mockWSHttp)
+
+        val response: HttpResponse = await(connector.cancelSubscription("transID"))
+
+        response.status mustBe 200
+      }
+    }
+
+    "fail" when {
+      "cancelling an non-existant VRFE subscription" in new Setup {
+        mockHttpFailedDELETE[HttpResponse]("tst-url", Upstream4xxResponse("404", 404, 404), mockWSHttp)
+
+        intercept[Upstream4xxResponse](await(connector.cancelSubscription("transID")))
+      }
     }
   }
 

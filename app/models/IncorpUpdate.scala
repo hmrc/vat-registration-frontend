@@ -16,15 +16,15 @@
 
 package models
 
-trait ModelKeys {
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.__
 
-}
-object ModelKeys {
+case class IncorpUpdate(transactionId: String, status: String)
 
-  implicit val OFFICER_LIST_KEY = "OfficerList"
-  implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
-  implicit val SIC_CODES_KEY = "SicCodes"
-  implicit val FORMER_NAME = "FormerName"
-  implicit val REGISTRATION_ID = "RegistrationId"
-
+object IncorpUpdate {
+  implicit val reads = (
+    ( __ \ "SCRSIncorpStatus" \ "IncorpSubscriptionKey" \ "transactionId").read[String] and
+      ( __ \ "SCRSIncorpStatus" \ "IncorpStatusEvent" \ "status").read[String]
+    )(IncorpUpdate.apply _)
 }
