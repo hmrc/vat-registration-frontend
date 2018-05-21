@@ -20,7 +20,7 @@ import java.net.URLEncoder
 import javax.inject.Inject
 
 import config.{AuthClientConnector, FrontendAppConfig}
-import connectors.KeystoreConnect
+import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -29,7 +29,7 @@ import services.SessionProfile
 import scala.concurrent.Future
 
 class FeedbackControllerImpl @Inject()(val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnect,
+                                       val keystoreConnector: KeystoreConnector,
                                        val messagesApi: MessagesApi) extends FeedbackController {
   override lazy val contactFrontendPartialBaseUrl = FrontendAppConfig.contactFrontendPartialBaseUrl
   override lazy val contactFormServiceIdentifier  = FrontendAppConfig.contactFormServiceIdentifier

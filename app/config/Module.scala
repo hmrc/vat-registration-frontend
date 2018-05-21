@@ -44,6 +44,7 @@ import features.sicAndCompliance.controllers.test.{SicStubController, SicStubCon
 import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
+import repositories.SessionRepository
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
@@ -119,7 +120,7 @@ class Module extends AbstractModule {
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
     bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
     bind(classOf[IVService]).to(classOf[IVServiceImpl]).asEagerSingleton()
-    bind(classOf[CurrentProfileSrv]).to(classOf[CurrentProfileService]).asEagerSingleton()
+    bind(classOf[CurrentProfileService]).to(classOf[CurrentProfileServiceImpl]).asEagerSingleton()
     bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationService]).to(classOf[BankAccountReputationServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
@@ -142,8 +143,8 @@ class Module extends AbstractModule {
     bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegistrationConnect]).to(classOf[BusinessRegistrationConnector]).asEagerSingleton()
     bind(classOf[CompanyRegistrationConnector]).to(classOf[CompanyRegistrationConnectorImpl]).asEagerSingleton()
-    bind(classOf[S4LConnect]).to(classOf[S4LConnector]).asEagerSingleton()
-    bind(classOf[KeystoreConnect]).to(classOf[KeystoreConnector]).asEagerSingleton()
+    bind(classOf[S4LConnector]).to(classOf[S4LConnectorImpl]).asEagerSingleton()
+    bind(classOf[KeystoreConnector]).to(classOf[KeystoreConnectorImpl]).asEagerSingleton()
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
     bind(classOf[IncorporationInformationConnector]).to(classOf[IncorporationInformationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
