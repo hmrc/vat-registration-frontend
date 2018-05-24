@@ -22,8 +22,8 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val playReactivemongoVersion = "6.0.0"
-  private val bootstrapVersion         = "8.20.0"
+  private val playReactivemongoVersion = "6.2.0"
+  private val bootstrapVersion         = "8.22.0"
   private val partialsVersion          = "6.1.0"
   private val cachingClientVersion     = "7.1.0"
   private val formMappingVersion       = "0.2.0"
