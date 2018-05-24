@@ -1,7 +1,15 @@
 @import forms.EuGoodsForm
-@(euGoodsForm: Form[Boolean])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
+@import views.html.helpers.templates.{errorSummary, verticalInputRadioGroup}
+
+@(euGoodsForm: Form[Boolean])(implicit request: Request[_], messages: Messages)
+
+@hiddenYesContent = {
+    <div class="panel panel-border-narrow">
+        <p>@messages("pages.euGoods.yes.p1")</p>
+        <p>@messages("pages.euGoods.yes.p2")</p>
+    </div>
+}
 
 @main_template(title = messages("pages.euGoods.title")) {
 
@@ -12,17 +20,17 @@
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.euGoods.heading")</h1>
 
-    <p>@messages("pages.euGoods.p1")</p>
-
     @govHelpers.form(action = controllers.routes.TradingDetailsController.submitEuGoods()) {
         <div class="form-group">
-            @vatInputRadioGroup(
+            @verticalInputRadioGroup(
                 field = euGoodsForm("euGoodsRadio"),
                 Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
+                    "true" -> messages("app.common.yes"),
+                    "false" -> messages("app.common.no")
                 ),
-                '_groupClass -> "inline",
+                Map(
+                    "true" -> hiddenYesContent
+                ),
                 '_labelAfter -> true,
                 '_labelClass -> "block-label",
                 '_legend -> messages("pages.euGoods.heading"),
