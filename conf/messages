@@ -688,19 +688,21 @@ pages.frs.costsLimited.heading1                         = Will the company spend
 validation.frs.costsLimited.missing                     = Tell us if the company will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 
 ## When do you want to join the Flat Rate Scheme?
-pages.frs.startDate.title                                 = When do you want to join the Flat Rate Scheme?
-pages.frs.startDate.heading                               = When do you want to join the Flat Rate Scheme?
-pages.frs.startDate.radio1                                = The same date I''m registered for VAT
+pages.frs.startDate.title                                 = When does the business want to join the Flat Rate Scheme?
+pages.frs.startDate.heading                               = When does the business want to join the Flat Rate Scheme?
+pages.frs.startDate.radio1                                = The same date that it''s registered for VAT
 pages.frs.startDate.radio2                                = On a different date
-pages.frs.startDate.para1                                 = This must be more than 2 working days in the future.
+pages.frs.startDate.noVatStartDateText                    = This must be at least 3 working days in the future.
+pages.frs.startDate.hasVatStartDateText                   = This date must be on or after the date the business is registered for VAT.
 pages.frs.startDate.hint1                                 = For example, {0}
 pages.frs.startDate.day                                   = Day
 pages.frs.startDate.month                                 = Month
 pages.frs.startDate.year                                  = Year
 validation.frs.startDate.invalid                          = Enter a valid date
-validation.frs.startDate.choice.missing                   = Tell us when you want to join the Flat Rate Scheme
+validation.frs.startDate.choice.missing                   = Tell us when you want the business to join the Flat Rate Scheme
 validation.frs.startDate.missing                          = Enter a date
-validation.frs.startDate.range.below                      = Enter a date that is more than 2 working days in the future
+validation.frs.startDate.range.below                      = Enter a date that is at least 3 working days in the future
+validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the company''s registered for VAT
 
 ## FRS SUMMARY SECTION
 pages.summary.frs.sectionHeading                        = Flat Rate Scheme

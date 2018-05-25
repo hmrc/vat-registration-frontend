@@ -2,7 +2,7 @@
 @import java.time.LocalDate
 @import frs.FRSDateChoice
 
-@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String)(implicit request: Request[_], messages: Messages)
+@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String, vatStartDate: Option[LocalDate])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
@@ -36,7 +36,9 @@
                 }
 
                 <div class="panel panel-border-narrow hidden" id="different_date_panel">
-                    <p>@messages("pages.frs.startDate.para1")</p>
+                    @{ vatStartDate.fold{ <p>{messages("pages.frs.startDate.noVatStartDateText")}</p>
+                        }{ _ => <p>{messages("pages.frs.startDate.hasVatStartDateText")}</p> }
+                    }
 
                     <span class="form-hint">@messages("pages.frs.startDate.hint1", dateExample)</span>
 

@@ -33,8 +33,6 @@ class SummaryLabourComplianceSectionBuilderSpec extends VatRegSpec with VatRegis
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
   )
 
-//  val testVatSicAndCompliance = Some(VatSicAndCompliance(businessDescription = "TEST", mainBusinessActivity = sicCode))
-
   "The section builder composing a labour details section" should {
 
     "providingWorkersRow render" should {

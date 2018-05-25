@@ -28,8 +28,5 @@ import scala.concurrent.{Await, Future}
 
 trait MongoHelper extends MongoSpecSupport {
   me : GuiceOneServerPerSuite =>
-
-  import scala.concurrent.duration._
-
-//  lazy val mongo: ReactiveMongoRepository = new SessionRepository(app.configuration).apply()
+  
 }

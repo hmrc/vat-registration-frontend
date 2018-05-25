@@ -86,7 +86,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(emptyS4LData)
         .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
         .company.hasOfficerList(Seq(officer, officer2))
@@ -148,7 +147,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lDataPreIV)
         .company.hasOfficerList(Seq(officer, officer2))
         .vatScheme.patched(keyBlock, validJson)
@@ -213,7 +211,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
@@ -280,7 +277,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None))))
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
@@ -310,7 +306,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None)), formerNameDate = None))
         .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
@@ -387,7 +382,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     "patch Lodging Officer in backend" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData)
         .company.hasROAddress(roAddress)
         .vatScheme.patched(keyBlock, validJson)
@@ -455,7 +449,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData)
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .vatScheme.patched(keyBlock, validJson)
@@ -526,7 +519,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     "patch Lodging Officer in backend" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
@@ -611,7 +603,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[LodgingOfficer].contains(s4lData)
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .vatScheme.patched(keyBlock, validJson)

@@ -18,8 +18,8 @@ package features.frs.controllers
 
 import java.text.DecimalFormat
 import java.util.MissingResourceException
-import javax.inject.Inject
 
+import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
@@ -33,6 +33,8 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, TimeService}
+import uk.gov.hmrc.time.workingdays.BankHolidaySet
+import utils.SystemDate
 
 import scala.collection.immutable.ListMap
 import scala.concurrent.Future
@@ -58,7 +60,6 @@ trait FlatRateController extends BaseController with SessionProfile {
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
   val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
   val overBusinessGoodsForm = OverBusinessGoodsForm.form
-  val startDateForm = FRSStartDateForm.form
   def overBusinessGoodsPercentForm(formPct : Long = 0) = new OverBusinessGoodsPercentForm {
     override val pct: Long = formPct
   }.form
@@ -188,11 +189,14 @@ trait FlatRateController extends BaseController with SessionProfile {
   def frsStartDatePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        flatRateService.getPrepopulatedStartDate map { prepop =>
-          val (choOpt, date) = prepop
+        for {
+          vatStartDate <- flatRateService.fetchVatStartDate
+          (choOpt, date) <- flatRateService.getPrepopulatedStartDate(vatStartDate)
+        } yield {
+          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
           val dynamicDate = timeService.dynamicFutureDateExample()
-          val viewForm = choOpt.fold(startDateForm)(choice => startDateForm.fill((choice, date)))
-          Ok(features.frs.views.html.frs_start_date(viewForm, dynamicDate))
+          val viewForm = choOpt.fold(FRSStartDateForm.form(timeService.futureWorkingDate(3)))(choice => FRSStartDateForm.form(timeService.futureWorkingDate(3)).fill((choice, date)))
+          Ok(features.frs.views.html.frs_start_date(viewForm, dynamicDate, vatStartDate))
         }
       }
   }
@@ -200,18 +204,21 @@ trait FlatRateController extends BaseController with SessionProfile {
   def submitFrsStartDate: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        startDateForm.bindFromRequest().fold(
-          badForm => {
-            val dynamicDate = timeService.dynamicFutureDateExample()
-            Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm, dynamicDate)))
-          },
-          view => {
-            val (choice, date) = view
-            flatRateService.saveStartDate(choice, date) map { _ =>
-              Redirect(controllers.routes.SummaryController.show())
+        flatRateService.fetchVatStartDate flatMap { vatStartDate =>
+          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+          FRSStartDateForm.form(timeService.futureWorkingDate(3), vatStartDate).bindFromRequest().fold(
+            badForm => {
+              val dynamicDate = timeService.dynamicFutureDateExample()
+              Future.successful(BadRequest(features.frs.views.html.frs_start_date(badForm, dynamicDate, vatStartDate)))
+            },
+            view => {
+              val (choice, date) = view
+              flatRateService.saveStartDate(choice, date) map { _ =>
+                Redirect(controllers.routes.SummaryController.show())
+              }
             }
-          }
-        )
+          )
+        }
       }
   }
 

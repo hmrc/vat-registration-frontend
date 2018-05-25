@@ -28,16 +28,41 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import repositories.ReactiveMongoRepository
 import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.mongo.MongoSpecSupport
 import uk.gov.hmrc.play.it.Port
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.{Await, Future}
+
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration with MongoSpecSupport {
   me: Suite with TestSuite =>
+
+  trait StandardTestHelpers {
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      res
+    }
+  }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val portNum: Int = port
@@ -59,7 +84,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
   def buildClient(path: String)(implicit headers:(String,String) =  HeaderNames.COOKIE -> getSessionCookie()) = {
-    ws.url(s"http://localhost:$port/register-for-vat$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+    val removeRegisterWithPath = path.replace("""/register-for-vat""","")
+    ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
   }
 
   def buildInternalClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
