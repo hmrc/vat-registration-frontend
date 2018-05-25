@@ -55,7 +55,6 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
     "return 200" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .company.nameIs(companyName)
         .audit.writesAudit()

@@ -16,6 +16,7 @@
 
 package features.frs.controllers
 
+import java.time.LocalDate
 import java.util.MissingResourceException
 
 import connectors.{ConfigConnector, KeystoreConnector}
@@ -272,9 +273,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${routes.FlatRateController.frsStartDatePage()}" should {
 
     "return HTML when there's a frs start date in S4L" in new Setup {
-
-      when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
+      when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
         .thenReturn(Future.successful( (Some(FRSDateChoice.VATDate), None) ))
+
+      when(mockFlatRateService.fetchVatStartDate(any(),any()))
+          .thenReturn(Future.successful(None))
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
@@ -283,9 +286,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
-
-      when(mockFlatRateService.getPrepopulatedStartDate(any(), any()))
+      when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
         .thenReturn(Future.successful( (None, None) ))
+
+      when(mockFlatRateService.fetchVatStartDate(any(),any()))
+        .thenReturn(Future.successful(None))
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
@@ -300,6 +305,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitFrsStartDate())
 
     "return 400 when no data posted" in new Setup {
+      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -312,6 +318,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 400 when partial data is posted" in new Setup {
+      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(Some(LocalDate.of(2017, 3, 1))))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -328,7 +335,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
 
-    "return 400 with Different Date selected and date that is less than 2 working days in the future" in new Setup {
+    "return 400 with Different Date selected and date that is less than 3 working days in the future" in new Setup {
+      System.setProperty("feature.system-date", "2017-03-18T01:43:23")
+      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -346,6 +355,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with VAT Registration Date selected" in new Setup {
+      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
 
       when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))

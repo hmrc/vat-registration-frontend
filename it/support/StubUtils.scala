@@ -548,13 +548,7 @@ trait StubUtils {
       builder
     }
 
-    def putProfile(currentState : Option[String] = None, nextState : Option[String] = None) = {
-      builder
-    }
 
-    def withProfileAndIncorpDate(currentState: Option[String] = None, nextState: Option[String] = None, ivPassed:Boolean = true) = {
-      builder
-    }
     def withProfile(currentState: Option[String] = None, nextState: Option[String] = None, ivPassed:Boolean = true) = {
       builder
     }

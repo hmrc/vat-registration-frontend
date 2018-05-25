@@ -25,7 +25,8 @@ import features.sicAndCompliance.services.SicAndComplianceService
 import features.turnoverEstimates.TurnoverEstimatesService
 import frs.{FRSDateChoice, FlatRateScheme}
 import models._
-import models.api.SicCode
+import models.api.{SicCode, VatStartDate}
+import play.api.Logger
 import services.{Complete, Completion, Incomplete, S4LService}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -172,21 +173,22 @@ trait FlatRateService  {
       updateFlatRate(_.copy(frsStart = Some(Start(date))))
     }
 
-  def getPrepopulatedStartDate(implicit hc : HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
-    fetchVatStartDate flatMap { vatStartDate =>
+  def getPrepopulatedStartDate(vatStartDate: Option[LocalDate])(implicit hc : HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
       getFlatRate map {
         case FlatRateScheme(_, _, _, _, _, Some(Start(frd)), _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
         case FlatRateScheme(_, _, _, _, _, Some(Start(None)), _, _)                       => (Some(FRSDateChoice.VATDate), None)
         case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _)                  => (Some(FRSDateChoice.DifferentDate), Some(frd))
         case _                                                                            => (None, None)
-      }
+
     }
 
-  private def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile) : Future[Option[LocalDate]] = {
+   def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile) : Future[Option[LocalDate]] = {
     vatRegConnector.getReturns(currentProfile.registrationId) map {returns =>
       returns.start.flatMap(_.date)
     } recover {
-      case _ => None
+      case e =>
+        Logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the Returns block with exception: ${e.getMessage}")
+        throw e
     }
   }
 

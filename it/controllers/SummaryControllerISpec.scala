@@ -97,7 +97,6 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         given()
           .user.isAuthorised
-          .currentProfile.withProfile()
           .vatScheme.contains(vatReg)
           .vatScheme.has("officer", officerJson)
           .s4lContainer[SicAndCompliance].isEmpty
@@ -135,7 +134,6 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       "the company is incorporated" in new Setup {
         given()
           .user.isAuthorised
-          .currentProfile.withProfileAndIncorpDate()
           .vatScheme.contains(vatRegIncorporated.copy(flatRateScheme = None))
           .s4lContainer[SicAndCompliance].isEmpty
           .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
@@ -174,13 +172,11 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       "the user is in draft with a vat ready submission" in new Setup {
         given()
           .user.isAuthorised
-          .currentProfile.withProfileAndIncorpDate()
           .vatScheme.contains(vatReg)
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .incorpInformation.cancelsSubscription()
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
-          .currentProfile.putProfile(nextState = Some("Updated current profile"))
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package features.frs
+package features.frs.models
 
 import java.time.LocalDate
 

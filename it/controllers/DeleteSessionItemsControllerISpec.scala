@@ -52,7 +52,6 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vrefe.deleteVREFESession()
@@ -106,7 +105,6 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
         given()
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .currentProfile.withProfile()
           .vatRegistration.clearsUserData()
 
         val json = Json.parse(
