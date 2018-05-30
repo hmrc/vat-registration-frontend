@@ -14,37 +14,28 @@
  * limitations under the License.
  */
 
-package services
+package features.frs.services
 
 import java.time.LocalDate
+
 import connectors.{ConfigConnector, VatRegistrationConnector}
-import features.frs.services.FlatRateService
 import features.returns.models.Start
 import features.sicAndCompliance.models.{MainBusinessActivityView, SicAndCompliance}
 import features.sicAndCompliance.services.SicAndComplianceService
-import features.turnoverEstimates.{TurnoverEstimates, TurnoverEstimatesService}
+import features.turnoverEstimates.TurnoverEstimates
 import frs.{FRSDateChoice, FlatRateScheme}
 import helpers.VatSpec
-import models._
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import services.{Complete, Incomplete, S4LService}
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
 class FlatRateServiceSpec extends VatSpec {
 
   class Setup {
-    val service = new FlatRateService {
-      override val s4LService: S4LService = mockS4LService
-      override val vatRegConnector: VatRegistrationConnector = mockRegConnector
-      override val configConnector: ConfigConnector = mockConfigConnector
-      override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
-    }
-  }
-
-  class SetupWithFRSThreshold(threshold: Long) {
     val service = new FlatRateService {
       override val s4LService: S4LService = mockS4LService
       override val vatRegConnector: VatRegistrationConnector = mockRegConnector
@@ -361,36 +352,33 @@ class FlatRateServiceSpec extends VatSpec {
 
   "getPrepopulatedStartDate" should {
     "should get an empty model if there is nothing in S4L" in new Setup() {
+      val vatStartDate = validVatScheme.returns.get.start.get.date
       when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4l)))
-      when(mockRegConnector.getReturns(any())(any(), any()))
-        .thenReturn(Future.successful(validVatScheme.returns.get))
 
-      await(service.getPrepopulatedStartDate) mustBe (None, None)
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe (None, None)
     }
 
     "should get as different date if it does not match the vat start date" in new Setup() {
       val diffdate = LocalDate.of(2017, 11, 11)
+      val vatStartDate = validVatScheme.returns.get.start.get.date
 
       when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(
           Some(incompleteS4l.copy(frsStart = Some(Start(Some(diffdate)))))
         ))
-      when(mockRegConnector.getReturns(any())(any(), any()))
-        .thenReturn(Future.successful(validVatScheme.returns.get))
 
-      await(service.getPrepopulatedStartDate) mustBe (Some(FRSDateChoice.DifferentDate), Some(diffdate))
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe (Some(FRSDateChoice.DifferentDate), Some(diffdate))
     }
 
     "should get vat date if it matches the vat start date" in new Setup() {
+      val vatStartDate = validVatScheme.returns.get.start.get.date
       when(mockS4LService.fetchAndGetNoAux[FlatRateScheme](any())(any(), any(), any()))
         .thenReturn(Future.successful(
           Some(incompleteS4l.copy(frsStart = Some(Start(None))))
         ))
-      when(mockRegConnector.getReturns(any())(any(), any()))
-        .thenReturn(Future.successful(validVatScheme.returns.get))
 
-      await(service.getPrepopulatedStartDate) mustBe (Some(FRSDateChoice.VATDate), None)
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe (Some(FRSDateChoice.VATDate), None)
     }
   }
 
@@ -445,6 +433,29 @@ class FlatRateServiceSpec extends VatSpec {
 
       await(service.saveStartDate(FRSDateChoice.DifferentDate, Some(frsStart))) mustBe
         incompleteS4l.copy(frsStart = frsDate)
+    }
+  }
+
+  "fetchVatStartDate" should {
+    "return vat start date when it exists" in new Setup() {
+      val returns = validVatScheme.returns.get
+      when(mockRegConnector.getReturns(any())(any(), any()))
+        .thenReturn(Future.successful(returns))
+
+      await(service.fetchVatStartDate) mustBe returns.start.get.date
+    }
+    "return None when date does not exist" in new Setup() {
+      val returns = validVatScheme.returns.get.copy(start = Some(Start(None)))
+      when(mockRegConnector.getReturns(any())(any(), any()))
+        .thenReturn(Future.successful(returns))
+
+      await(service.fetchVatStartDate) mustBe None
+    }
+    "return an exception when getReturns returns an exception" in new Setup() {
+      when(mockRegConnector.getReturns(any())(any(), any()))
+        .thenReturn(Future.failed(new Exception("")))
+
+      intercept[Exception](await(service.fetchVatStartDate))
     }
   }
 

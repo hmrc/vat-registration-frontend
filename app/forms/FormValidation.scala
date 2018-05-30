@@ -237,11 +237,13 @@ object FormValidation {
       case _ => Invalid(s"validation.invalid.$formName")
     }
   }
-
+private def tupleToDate(dateTuple: (String,String,String)) = {
+   LocalDate.parse(s"${dateTuple._1}-${dateTuple._2}-${dateTuple._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+}
   def validDate(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = Try {
-        LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+        tupleToDate(input)
       }.toOption
       date match {
         case Some(valid) => Valid
@@ -251,7 +253,7 @@ object FormValidation {
 
   def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String, args: List[String]): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
-      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      val date = tupleToDate(input)
       if(date.isEqual(minDate) || date.isAfter(minDate))
         if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, args:_*))
       else Invalid(ValidationError(beforeMinErr, args:_*))
@@ -259,14 +261,18 @@ object FormValidation {
 
   def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
-      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+      val date = tupleToDate(input)
       if(date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
 
-  def dateAfterDate(minDay : LocalDate, errKey: String): Constraint[(String, String, String)] = Constraint {
+  def dateAtLeastMinDateOrVatStartDate(minDay : LocalDate, vatStartDate:Option[LocalDate], errKeyNoVatStart: String, errKeyVatStart: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
-      val date = LocalDate.parse(s"${input._1}-${input._2}-${input._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
-      if(date.isAfter(minDay)) Valid else Invalid(errKey)
+      val date = tupleToDate(input)
+      vatStartDate.fold {
+        if (date.isEqual(minDay) || date.isAfter(minDay)) Valid else Invalid(errKeyNoVatStart)
+      } { startDate =>
+        if (date.isEqual(startDate) || date.isAfter(startDate)) Valid else Invalid(errKeyVatStart)
+      }
   }
 
   object Dates {

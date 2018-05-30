@@ -108,7 +108,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "MainBusinessActivity on show returns 200" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -132,7 +131,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     )
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
       .s4lContainer.cleared
@@ -158,7 +156,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -196,7 +193,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(incompleteModel)
       .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
       .audit.writesAudit()
@@ -216,7 +212,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "SkilledWorkers should return 200 on show and users answer is prepopped on page" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -236,7 +231,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .user.isAuthorised
       .audit.writesAudit()
       .audit.writesAuditMerged()
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
       .s4lContainer[SicAndCompliance].cleared
@@ -267,7 +261,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       .user.isAuthorised
       .audit.writesAudit()
       .audit.writesAuditMerged()
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isNotUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
 
@@ -283,7 +276,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "TemporaryContracts should return 200 on show and users answer is prepopped on page" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -301,7 +293,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "TemporaryContracts should return 303 on submit" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))))
       .s4lContainer[SicAndCompliance].cleared
@@ -321,7 +312,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "Workers should return 200 on show and users answer is prepopped on page" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -339,7 +329,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "Workers should return 303 on submit" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(200))))
       .s4lContainer[SicAndCompliance].cleared
@@ -359,7 +348,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "BusinessActivityDescription should return 200 on show and users answer is prepopped on page" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -376,7 +364,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "BusinessActivityDescription should return 303 on submit" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(description = Some(BusinessActivityDescription("foo"))))
       .s4lContainer[SicAndCompliance].cleared
@@ -396,7 +383,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "ComplianceIntroduction should return 200 on show" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
@@ -411,7 +397,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
       .audit.writesAudit()
       .audit.writesAuditMerged()

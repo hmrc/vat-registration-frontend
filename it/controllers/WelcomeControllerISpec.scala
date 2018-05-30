@@ -107,5 +107,4 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       }
     }
   }
-
 }

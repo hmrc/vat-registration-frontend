@@ -164,6 +164,7 @@ trait TestSetupController extends BaseController with SessionProfile {
               lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
               _ <- s4LService.save(lodgingOfficer)
 
+              _ <- data.returnsBlock.fold(empty)(x => s4LService.save(x))
               _ <- data.flatRateSchemeBlock.fold(empty)(x => s4LService.save(x))
               _ <- data.bankAccountBlock.fold(empty)(x => s4LService.save(x))
               _ <- data.turnoverEstimatesBlock.fold(empty)(t => turnoverService.saveTurnoverEstimates(t).flatMap(_ => empty))
