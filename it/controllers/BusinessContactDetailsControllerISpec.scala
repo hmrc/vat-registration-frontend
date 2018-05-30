@@ -59,7 +59,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 200 when S4l returns view model" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.contains(vatReg)
         .company.hasROAddress(coHoRegisteredOfficeAddress)
@@ -81,7 +80,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 200 when s4l returns None and II returns a company that has an address not in the UK" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")
@@ -120,7 +118,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 303 to Address Lookup frontend" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .company.hasROAddress(coHoRegisteredOfficeAddress)
@@ -137,7 +134,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 303 to company contact details page (full model)" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
@@ -161,7 +157,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 500 when model is complete and vat reg returns 500 (s4l is not cleared)" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.contains(vatReg)
@@ -181,7 +176,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 303 save to vat as model is complete" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
@@ -204,7 +198,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "returnFromTxm should return 303 save to s4l as model is incomplete" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
@@ -226,7 +219,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 200" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
@@ -244,7 +236,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 303 and submit to s4l because the model is incomplete" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].isEmpty
@@ -263,7 +254,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 303 and submit to vat reg because the model is complete" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(companyContactDetails = None))
@@ -281,7 +271,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 404 when vat returns a 404" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].isEmpty
@@ -297,7 +286,6 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
     "return 500 when update to vat reg returns an error (s4l is not cleared)" in new Setup {
       given()
         .user.isAuthorised
-        .currentProfile.withProfile()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)

@@ -25,6 +25,7 @@ import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+import utils.SystemDate
 
 object OverBusinessGoodsForm extends RequiredBooleanForm {
   val RADIO_INCLUSIVE: String = "annualCostsInclusiveRadio"
@@ -53,7 +54,8 @@ object FRSStartDateForm {
   val frsDateSelectionEmpty = "validation.frs.startDate.choice.missing"
   val dateEmptyKey = "validation.frs.startDate.missing"
   val dateInvalidKey = "validation.frs.startDate.invalid"
-  val dateAfter = "validation.frs.startDate.range.below"
+  val dateBeforeMin = "validation.frs.startDate.range.below"
+  val dateBeforeVatStartDate = "validation.frs.startDate.range.below.vatStartDate"
 
   val frsStartDateRadio: String = "frsStartDateRadio"
   val frsStartDateInput: String = "frsStartDate"
@@ -74,7 +76,7 @@ object FRSStartDateForm {
     def unbind(key: String, value: FRSDateChoice.Value) = Map(key -> value.toString)
   }
 
-  val form = Form(
+  def form(minDate: LocalDate, vatStartDate: Option[LocalDate] = None) = Form(
     tuple(
       frsStartDateRadio -> Forms.of[FRSDateChoice.Value],
       frsStartDateInput -> mandatoryIf(
@@ -82,7 +84,7 @@ object FRSStartDateForm {
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          dateAfterDate(LocalDate.now().plusDays(2), dateAfter)
+          dateAtLeastMinDateOrVatStartDate(minDate, vatStartDate, dateBeforeMin, dateBeforeVatStartDate)
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
           date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)

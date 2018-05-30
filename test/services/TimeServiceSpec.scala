@@ -16,19 +16,27 @@
 
 package services
 
-import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
 import java.time.{LocalDate => JavaLocalDate}
 
+import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.Environment
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-import scala.concurrent.Future
+class TimeServiceSpec extends UnitSpec with BeforeAndAfterEach with WithFakeApplication with MockitoSugar {
 
-class TimeServiceSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    System.clearProperty("feature.system-date")
+  }
+
+  override protected def afterEach(): Unit = {
+    super.afterEach()
+    System.clearProperty("feature.system-date")
+  }
 
   def timeServiceMock(dateTime: JodaLocalDateTime, dayEnd: Int, bankHolidayDates : List[BankHoliday]) = new TimeService {
     override val dayEndHour: Int = dayEnd
@@ -37,82 +45,81 @@ class TimeServiceSpec extends UnitSpec with WithFakeApplication with MockitoSuga
     implicit val bankHolidaySet: BankHolidaySet = BankHolidaySet("england-and-wales", bankHolidayDates)
   }
 
-  "TimeService" should {
+  val bhDud = new BankHoliday(title = "testBH", date = new JodaLocalDate(2000, 10, 10))
+  val bh3rd = new BankHoliday(title = "testBH", date = new JodaLocalDate(2017, 1, 3))
+  val bh6th = new BankHoliday(title = "testBH", date = new JodaLocalDate(2017, 1, 6))
+  val bh9th = new BankHoliday(title = "testBH", date = new JodaLocalDate(2017, 1, 9))
 
-    val bhDud = new BankHoliday(title="testBH", date=new JodaLocalDate(2000, 10, 10))
-    val bh3rd = new BankHoliday(title="testBH", date=new JodaLocalDate(2017, 1, 3))
-    val bh6th = new BankHoliday(title="testBH", date=new JodaLocalDate(2017, 1, 6))
-    val bh9th = new BankHoliday(title="testBH", date=new JodaLocalDate(2017, 1, 9))
-
+  "isDateSomeWorkingDaysInFuture" should {
     // Before 2pm, no bank holiday
-    "return true when a date 3 days away is supplied before 2pm and does not conflict with any bank holidays"in {
+    "return true when a date 3 days away is supplied before 2pm and does not conflict with any bank holidays" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 12, 0), 14, List(bhDud))
       ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 5))(ts.bankHolidaySet) shouldBe true
     }
 
-    "return false when a date is 2 days away is supplied before 2pm and does not conflict with any bank holidays"in {
+    "return false when a date is 2 days away is supplied before 2pm and does not conflict with any bank holidays" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 12, 0), 14, List(bhDud))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 3))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 3))(ts.bankHolidaySet) shouldBe false
     }
 
 
     // After 2pm, no bank holiday
-    "return true when a date 4 days away is supplied after 2pm and does not conflict with any bank holidays"in {
+    "return true when a date 4 days away is supplied after 2pm and does not conflict with any bank holidays" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 15, 0), 14, List(bhDud))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 6))(ts.bankHolidaySet) shouldBe true
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 6))(ts.bankHolidaySet) shouldBe true
     }
 
-    "return false when a date 3 days away is supplied after 2pm and does not conflict with any bank holidays"in {
+    "return false when a date 3 days away is supplied after 2pm and does not conflict with any bank holidays" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 15, 0), 14, List(bhDud))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 5))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 5))(ts.bankHolidaySet) shouldBe false
     }
 
 
     // Before 2pm, bank holiday
     "return true when a date 3 days away is supplied before 2pm and conflicts with one bank holiday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 12, 0), 14, List(bh9th))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 5))(ts.bankHolidaySet) shouldBe true
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 5))(ts.bankHolidaySet) shouldBe true
     }
 
     "return false when a date 2 days away is supplied before 2pm and conflicts with one bank holiday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 2, 12, 0), 14, List(bh3rd))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 4))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 4))(ts.bankHolidaySet) shouldBe false
     }
 
 
     // Weekend, no bank holiday
     "return true when a date is a saturday and the date entered is a wednesday and no bank holiday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 12, 0), 14, List(bhDud))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 12))(ts.bankHolidaySet) shouldBe true
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 12))(ts.bankHolidaySet) shouldBe true
     }
 
     "return false when a date is a saturday and the date entered is a tuesday and no bank holiday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 12, 0), 14, List(bhDud))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 10))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 10))(ts.bankHolidaySet) shouldBe false
     }
 
 
     // Weekend, bank holiday monday
     "return true when a date is a saturday and the date entered is a thursday with a bank holiday monday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 12, 0), 14, List(bh9th))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 13))(ts.bankHolidaySet) shouldBe true
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 13))(ts.bankHolidaySet) shouldBe true
     }
 
     "return false when a date is a saturday and the date entered is a wednesday with a bank holiday monday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 12, 0), 14, List(bh9th))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 11))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 11))(ts.bankHolidaySet) shouldBe false
     }
 
 
     // Weekend, bank holiday monday, after 2pm
     "return true when a date is a saturday and it is submitted after 2pm and the date entered is a thursday with a bank holiday monday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 15, 0), 14, List(bh9th))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 13))(ts.bankHolidaySet) shouldBe true
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 13))(ts.bankHolidaySet) shouldBe true
     }
 
     "return false when a date is a saturday and it is submitted after 2pm and the date entered is a wednesday with a bank holiday monday" in {
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 7, 15, 0), 14, List(bh9th))
-        ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 11))(ts.bankHolidaySet) shouldBe false
+      ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 11))(ts.bankHolidaySet) shouldBe false
     }
 
 
@@ -126,20 +133,23 @@ class TimeServiceSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 5, 15, 0), 14, List(bh6th, bh9th))
       ts.isDateSomeWorkingDaysInFuture(JavaLocalDate.of(2017, 1, 11))(ts.bankHolidaySet) shouldBe false
     }
+  }
 
-
-    //Test the future dates
-    val ts = timeServiceMock(new JodaLocalDateTime(2017, 1, 5, 15, 0), 14, List(bh3rd, bh6th, bh9th))
-    implicit val bHSTest: BankHolidaySet = ts.bankHolidaySet
+  "futureWorkingDate" should {
+    val bankHolidayDates = List(bh3rd, bh6th, bh9th)
+    implicit val bHSTest: BankHolidaySet = BankHolidaySet("england-and-wales", bankHolidayDates)
 
     "return a future date " in {
-      ts.futureWorkingDate(JodaLocalDate.parse("2016-12-13"), 60)(bHSTest) shouldBe "10 03 2017"
+      val ts = timeServiceMock(new JodaLocalDateTime(2016, 12, 13, 15, 0), 14, bankHolidayDates)
+      ts.futureWorkingDate(60)(bHSTest) shouldBe JavaLocalDate.of(2017, 3, 10)
     }
     "return a future date ignoring bank holidays" in {
-      ts.futureWorkingDate(JodaLocalDate.parse("2017-04-13"), 1)(bHSTest) shouldBe "14 04 2017"
+      val ts = timeServiceMock(new JodaLocalDateTime(2017, 4, 13, 15, 0), 14, bankHolidayDates)
+      ts.futureWorkingDate(1)(bHSTest) shouldBe JavaLocalDate.of(2017, 4, 14)
     }
     "return a future date ignoring bank holidays 2 working days in the future" in {
-      ts.futureWorkingDate(JodaLocalDate.parse("2017-04-13"), 2)(bHSTest) shouldBe "17 04 2017"
+      val ts = timeServiceMock(new JodaLocalDateTime(2017, 4, 13, 15, 0), 14, bankHolidayDates)
+      ts.futureWorkingDate(2)(bHSTest) shouldBe JavaLocalDate.of(2017, 4, 17)
     }
   }
 

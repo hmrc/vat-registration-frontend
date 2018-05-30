@@ -81,14 +81,11 @@ trait TimeService {
     }
   }
 
-  def futureWorkingDate(date: JodaLocalDate, days: Int)(implicit bHS: BankHolidaySet) : String = {
-    val futureDate = date plusWorkingDays days
-    DateTimeFormat.forPattern("dd MM yyyy").print(futureDate)
-  }
+  def futureWorkingDate(days: Int)(implicit bHS: BankHolidaySet): JavaLocalDate = currentLocalDate plusWorkingDays days
 
   def addMonths(months: Int): JavaLocalDate = currentLocalDate.plusMonths(months)
 
-  def dynamicFutureDateExample(anchor: JavaLocalDate = JavaLocalDate.now, displacement: Long = 10): String = {
+  def dynamicFutureDateExample(anchor: JavaLocalDate = SystemDate.getSystemDate.toLocalDate, displacement: Long = 10): String = {
     anchor plusDays displacement format DateTimeFormatter.ofPattern("d M yyyy")
   }
 }
