@@ -1,6 +1,7 @@
 $(document).ready($(function () {
     noSectorForSICCodeToGA();
     showDeskproForm();
+    initRadioOptions();
 }));
 
 
@@ -174,5 +175,26 @@ var showDeskproForm =  function () {
     $("#submissionFailedReportAProblem").each(function(){
         $(".report-error__toggle").click();
         $(".report-error__toggle").hide();
+    });
+}
+
+var initRadioOptions = function () {
+    var radioOptions = $('input[type="radio"]');
+
+    radioOptions.each(function () {
+        var o = $(this).parent().next('.additional-option-block');
+        if ($(this).prop('checked')) {
+            o.show();
+        } else {
+            o.hide();
+        }
+    });
+
+    radioOptions.on('click', function (e) {
+        $('.additional-option-block').hide();
+        var o = $(this).parent().next('.additional-option-block');
+        if (o.index() != -1) {
+            o.show();
+        }
     });
 }

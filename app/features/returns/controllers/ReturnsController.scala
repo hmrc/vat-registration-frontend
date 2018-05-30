@@ -17,12 +17,11 @@
 package features.returns.controllers
 
 import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
 import features.returns.forms._
-import features.returns.models.{DateSelection, Frequency}
+import features.returns.models.{DateSelection, Frequency, Returns}
 import features.returns.services.ReturnsService
 import features.returns.views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
 import features.returns.views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDateIncorpPage, start_date_view => VoluntaryStartDatePage}
@@ -68,12 +67,8 @@ trait ReturnsController extends BaseController with SessionProfile {
         ChargeExpectancyForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(ChargeExpectancyPage(errors))),
           success => {
-            returnsService.saveReclaimVATOnMostReturns(success) map { _ =>
-              if (success) {
-                Redirect(routes.ReturnsController.returnsFrequencyPage())
-              } else {
-                Redirect(routes.ReturnsController.accountPeriodsPage())
-              }
+            returnsService.saveReclaimVATOnMostReturns(success) flatMap { _ =>
+              correctVatStartDatePage()
             }
           }
         )
@@ -102,7 +97,9 @@ trait ReturnsController extends BaseController with SessionProfile {
       ivPassedCheck {
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(AccountingPeriodPage(errors))),
-          success => returnsService.saveStaggerStart(success) flatMap {_ => correctVatStartDatePage()}
+          success => returnsService.saveStaggerStart(success) map { _ =>
+            Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+          }
         )
       }
   }
@@ -124,11 +121,11 @@ trait ReturnsController extends BaseController with SessionProfile {
       ivPassedCheck {
         ReturnFrequencyForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(ReturnFrequencyPage(errors))),
-          success => returnsService.saveFrequency(success) flatMap { _ =>
+          success => returnsService.saveFrequency(success) map { _ =>
             if (success == Frequency.monthly) {
-              correctVatStartDatePage()
+              Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
             } else {
-              Future.successful(Redirect(routes.ReturnsController.accountPeriodsPage()))
+              Redirect(routes.ReturnsController.accountPeriodsPage())
             }
           }
         )
@@ -185,9 +182,7 @@ trait ReturnsController extends BaseController with SessionProfile {
                 case None => VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)
               }))
             },
-            success => returnsService.saveVoluntaryStartDate(success._1, success._2, profile.incorporationDate, ctActiveDate) map { _ =>
-              Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-            }
+            success => returnsService.saveVoluntaryStartDate(success._1, success._2, profile.incorporationDate, ctActiveDate) map redirectBasedOnReclaim
           )
         }
       }
@@ -226,15 +221,19 @@ trait ReturnsController extends BaseController with SessionProfile {
                     val dynamicDate = timeService.dynamicFutureDateExample()
                     Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
                   },
-                  success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map {
-                    _ => Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-                  }
+                  success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map redirectBasedOnReclaim
                 )
             }
-          case None => returnsService.saveVatStartDate(None) map {
-            _ => Redirect(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-          }
+          case None => returnsService.saveVatStartDate(None) map redirectBasedOnReclaim
         }
       }
+  }
+
+  private def redirectBasedOnReclaim(returns: Returns): Result = {
+    if (returns.reclaimVatOnMostReturns.contains(true)) {
+      Redirect(routes.ReturnsController.returnsFrequencyPage())
+    } else {
+      Redirect(routes.ReturnsController.accountPeriodsPage())
+    }
   }
 }

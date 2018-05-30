@@ -258,30 +258,26 @@ validation.estimate.vat.turnover.missing                    = Enter what the com
 validation.estimate.vat.turnover.invalid                    = Enter a valid number
 
 ## Vat Charge Expectancy Page
-pages.vat.charge.expectancy.title                           = VAT charge expectancy
-pages.vat.charge.expectancy.heading                         = Do you expect to reclaim more VAT than you charge?
-pages.vat.charge.expectancy.para1                           = If the VAT you pay for your day to day business-related purchases is more than the VAT you charge your customers, you can claim back the difference.
-pages.vat.charge.expectancy.para2                           = If the VAT you charge is more than the VAT you pay, you''ll have to pay the difference.
-pages.vat.charge.expectancy.radio.yes                       = Yes - I expect to claim back more VAT
-pages.vat.charge.expectancy.radio.no                        = No - I expect to charge more VAT
-validation.vat.charge.expectancy.missing                    = Tell us if you expect the company to claim VAT refunds from HMRC
+pages.vat.charge.expectancy.title                           = Do you expect the business to regularly claim VAT refunds from HMRC?
+pages.vat.charge.expectancy.heading                         = Do you expect the business to regularly claim VAT refunds from HMRC?
+pages.vat.charge.expectancy.para1                           = Most businesses cannot claim VAT refunds. It''s only possible when the VAT a business pays on business-related purchases is more than the VAT it charges customers.
+validation.vat.charge.expectancy.missing                    = Tell us if you expect the business to regularly claim VAT refunds from HMRC
 
 ## Vat Return Frequency
-pages.vat.return.frequency.title                           = Vat Return Frequency
-pages.vat.return.frequency.heading                         = How often do you want to submit VAT Returns?
-pages.vat.return.frequency.radio.monthly                   = Once a month
-pages.vat.return.frequency.radio.quarterly                 = Every 3 months
-validation.vat.return.frequency.missing                    = Tell us when you want to submit VAT Returns
+pages.vat.return.frequency.title                           = How often do you want the business to do VAT Returns?
+pages.vat.return.frequency.heading                         = How often do you want the business to do VAT Returns?
+pages.vat.return.frequency.radio.monthly                   = Monthly
+pages.vat.return.frequency.radio.quarterly                 = Quarterly
+validation.vat.return.frequency.missing                    = Tell us how often you want the business to do VAT Returns
 
 ## Accounting Period Page
-pages.accounting.period.title                               = When do you want to submit VAT Returns?
-pages.accounting.period.heading                             = When do you want to submit VAT Returns?
-pages.accounting.period.para1                               = VAT Returns are usually submitted quarterly. The quarters you choose are known as the VAT ''stagger''.
-pages.accounting.period.para2                               = You can choose any stagger, but you won''t be able to change it later.
+pages.accounting.period.title                               = When do you want the business to do its VAT Returns?
+pages.accounting.period.heading                             = When do you want the business to do its VAT Returns?
+pages.accounting.period.para1                               = VAT Returns are usually done quarterly. The quarters you choose are known as the VAT ''stagger''.
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-validation.accounting.period.missing                        = Tell us when you want your VAT Return periods to end
+validation.accounting.period.missing                        = Tell us how often you want the business to do VAT Returns
 
 ## Summary Page
 pages.summary.title                                         = Summary
@@ -481,10 +477,11 @@ pages.applyEori.number.no                      = No - I''ll get one later
 validation.applyEori.missing                   = Tell us if you want to apply for an EORI number
 
 ## EU Goods
-pages.euGoods.title                         = Will the company trade VAT taxable goods or services with countries outside the EU?
-pages.euGoods.heading                       = Will the company trade VAT taxable goods or services with countries outside the EU?
-pages.euGoods.p1                            = This includes imports from and exports to non-EU countries.
-validation.euGoods.missing                  = Tell us if the company will trade VAT taxable goods or services with countries outside the EU
+pages.euGoods.title                         = Will the company trade VAT-taxable goods with countries outside the EU?
+pages.euGoods.heading                       = Will the company trade VAT-taxable goods with countries outside the EU?
+pages.euGoods.yes.p1                        = You''ll need an Economic Operator Registration and Identification (EORI) number. This is used by customs in EU countries to identify the business''s imports and exports.
+pages.euGoods.yes.p2                        = We''ll send you an EORI number by email within 3 working days.
+validation.euGoods.missing                  = Tell us if the business will trade VAT-taxable goods with countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Company contact details
