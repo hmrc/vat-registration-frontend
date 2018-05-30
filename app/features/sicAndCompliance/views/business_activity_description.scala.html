@@ -2,6 +2,7 @@
 @(businessActivityDescriptionForm:  Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatTextArea}
+@import features.sicAndCompliance.forms.BusinessActivityDescriptionForm._
 
 @main_template(title = messages("pages.business.activity.description.title")) {
 
@@ -25,7 +26,7 @@
                 '_labelClass -> "form-label",
                 '_inputClass -> "form-control fill-width",
                 '_rows -> "4",
-                '_maxlength -> "250",
+                '_maxlength -> DESC_MAX_LENGTH,
                 '_dataCharField -> "data_char_field",
                 '_label -> messages("pages.business.activity.description.label")
               )

@@ -179,10 +179,13 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     val fakeRequest = FakeRequest(routes.OfficerController.showSecurityQuestions())
 
     "return 400 with Empty data" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(validPartialLodgingOfficer))
+
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
     "return 303 with valid data no former name" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(validPartialLodgingOfficer))
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody(
@@ -193,6 +196,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 303 with valid data with former name" in new Setup {
+      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(validPartialLodgingOfficer))
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerName(), fakeRequest.withFormUrlEncodedBody(

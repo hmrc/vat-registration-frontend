@@ -19,6 +19,7 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings._
 
 object ApplyEoriForm extends RequiredBooleanForm {
@@ -45,14 +46,17 @@ object TradingNameForm extends RequiredBooleanForm {
 
   implicit val errorCode: ErrorCode = INPUT_TRADING_NAME
   val RADIO_YES_NO: String = "tradingNameRadio"
-  val TRADING_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$""".r
+  val TRADING_NAME_REGEX = """^[A-Za-z0-9 .,\-()/!"%&*;'<>]+$""".r
 
   val form = Form(
     tuple(
       RADIO_YES_NO -> requiredBoolean,
       INPUT_TRADING_NAME -> mandatoryIf(
         isEqual(RADIO_YES_NO, "true"),
-        text.verifying(nonEmptyValidText(TRADING_NAME_REGEX))
+        text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+          nonEmptyValidText(TRADING_NAME_REGEX),
+          maxLenText(35)
+        ))
       )
     )
   )

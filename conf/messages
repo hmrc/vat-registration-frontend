@@ -209,7 +209,7 @@ validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
 
 ## Trading Name Page
-pages.tradingName.title                             = Trading Name
+pages.tradingName.title                             = Does or will the company trade using a different name?
 pages.tradingName.heading                           = Does or will the company trade using a different name?
 pages.tradingName.lede                              = Tell us if the company will use a trading name that''s different from {0}.
 pages.tradingName.tradingNameLabel                  = Enter the trading name
@@ -219,6 +219,7 @@ pages.tradingName.panel.para3                       = Some companies choose a di
 pages.tradingdetails.input.hint-text                = You can''t include ''limited'', ''Ltd'', ''limited liability partnership'', ''LLP'', ''public limited company'' or ''plc''
 
 validation.tradingName.invalid                      = Enter a valid trading name
+validation.tradingName.maxlen                       = Enter a trading name using 35 characters or less
 validation.tradingName.missing                      = Enter a trading name
 validation.tradingNameRadio.missing                 = Tell us if the company will trade under another name
 
@@ -335,11 +336,12 @@ pages.summary.directorDetails.daytimePhone             = Daytime phone number
 pages.summary.directorDetails.mobile                   = Mobile number
 
 ##Business Activity Description
-pages.business.activity.description.title                     = What does the company do?
-pages.business.activity.description.heading                   = What does the company do?
-pages.business.activity.description.label                     = Enter a description of the type of goods or services the company sells.
-validation.BusinessActivity.description.missing               = Tell us what the company does
-validation.BusinessActivity.description.invalid               = Enter a business description using only letters, numbers and - , / & ''
+pages.business.activity.description.title                     = What does the business do?
+pages.business.activity.description.heading                   = What does the business do?
+pages.business.activity.description.label                     = Enter a description of the type of goods or services the business sells.
+validation.businessActivity.description.missing               = Tell us what the business does
+validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and - , / & ''
+validation.businessActivity.description.maxlen                = Tell us what the business does using 250 characters or less
 
 ## Summary Page Company details
 pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
@@ -504,9 +506,10 @@ pages.businessContactDetails.emailAddress.label              = Email address
 pages.businessContactDetails.daytimePhone.label              = Phone number
 pages.businessContactDetails.mobile.label                    = Mobile number
 pages.businessContactDetails.website.label                   = Website address (optional)
+validation.businessContactDetails.missing                    = Tell us how can we get in touch with the company
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address
-validation.businessContactDetails.email.maxlen               = Email address must not exceed 70 characters
+validation.businessContactDetails.email.maxlen               = Enter an email address using 70 characters or less
 validation.businessContactDetails.atLeastOneNumber.missing   = Enter at least one contact number
 validation.invalid.businessContactDetails                    = Enter a valid contact number
 validation.invalid.businessContactDetails.tooLong            = Enter a contact number using 20 digits or less
@@ -573,9 +576,11 @@ pages.formerName.title                                   = Have you ever changed
 pages.formerName.heading                                 = Have you ever changed your name?
 pages.formerName.fullName.label                          = Enter your former name
 pages.formerName.fullName.hint                           = First name and surname
-validation.formerName.missing                            = Tell us if you have ever changed your name
-validation.formerName.selected.missing                   = Enter your former name
-validation.formerName.selected.invalid                   = Enter a valid name
+validation.formerName.choice.missing                     = Tell us if you have ever changed your name
+validation.formerName.missing                            = Tell us your former name
+validation.formerName.invalid                            = Enter a valid former name
+validation.formerName.maxlen                             = Enter a former name that has 70 characters or less
+validation.formerName.match.cc                           = Enter a former name that''s different from your current name
 
 ## Former Name Date
 pages.formerNameDate.title                               = When did you change it last?
