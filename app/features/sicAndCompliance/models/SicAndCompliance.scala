@@ -20,12 +20,15 @@ import models.api.SicCode
 import TemporaryContracts.{TEMP_CONTRACTS_NO, TEMP_CONTRACTS_YES}
 import SkilledWorkers.{SKILLED_WORKERS_NO, SKILLED_WORKERS_YES}
 import CompanyProvideWorkers.{PROVIDE_WORKERS_NO, PROVIDE_WORKERS_YES}
+import features.tradingDetails.{TradingDetails, TradingNameView}
 import models.S4LKey
-import play.api.libs.json.{JsObject, JsValue, Json, OFormat, Writes}
+import play.api.libs.json
+import play.api.libs.json._
 
 case class SicAndCompliance(description: Option[BusinessActivityDescription] = None,
                             mainBusinessActivity: Option[MainBusinessActivityView] = None,
-                            //Labour Compliance
+                            otherBusinessActivities: Option[OtherBusinessActivities] = None,
+                            //Labour Compliancez
                             companyProvideWorkers: Option[CompanyProvideWorkers] = None,
                             workers: Option[Workers] = None,
                             temporaryContracts: Option[TemporaryContracts] = None,
@@ -33,13 +36,13 @@ case class SicAndCompliance(description: Option[BusinessActivityDescription] = N
 
 object SicAndCompliance {
   val NUMBER_OF_WORKERS_THRESHOLD: Int = 8
-
   implicit val format: OFormat[SicAndCompliance] = Json.format[SicAndCompliance]
   implicit val sicAndCompliance: S4LKey[SicAndCompliance] = S4LKey("SicAndCompliance")
 
   def fromApi(json: JsValue): SicAndCompliance = {
 
     val sicCode = (json \ "mainBusinessActivity").as[SicCode]
+    val otherBusinessActivities = (json \ "otherBusinessActivities").as[List[SicCode]]
     val labourComp = (json \ "labourCompliance").validateOpt[JsObject].get
     val numOfWorkers = labourComp.map(a => (a \ "numberOfWorkers").as[Int])
     val workers = numOfWorkers.flatMap(num => if (num == 0) None else Some(Workers(num)))
@@ -56,7 +59,8 @@ object SicAndCompliance {
 
     SicAndCompliance(
       description = Some(BusinessActivityDescription((json \ "businessDescription").as[String])),
-      mainBusinessActivity = Some(MainBusinessActivityView(id = sicCode.id, mainBusinessActivity = Some(sicCode))),
+      mainBusinessActivity = Some(MainBusinessActivityView(id = sicCode.code, mainBusinessActivity = Some(sicCode))),
+      otherBusinessActivities = Some(OtherBusinessActivities(otherBusinessActivities)),
       companyProvideWorkers = numOfWorkers.map(n => CompanyProvideWorkers(if (n == 0) PROVIDE_WORKERS_NO else PROVIDE_WORKERS_YES)),
       workers = workers,
       temporaryContracts = temporaryContracts,
@@ -64,12 +68,19 @@ object SicAndCompliance {
     )
   }
 
+  val reads: Reads[SicAndCompliance] = new Reads[SicAndCompliance] {
+    override def reads(json: JsValue): JsResult[SicAndCompliance] = {
+      JsSuccess(fromApi(json))
+    }
+  }
+
   val toApiWrites = new Writes[SicAndCompliance] {
     override def writes(sac: SicAndCompliance): JsValue = {
       val busDesc = Json.obj("businessDescription" ->
         sac.description.map(_.description).getOrElse(throw new IllegalStateException("Missing business description to convert to API model"))
       )
-
+      val otherBusinessActivities = Json.obj("otherBusinessActivities" ->
+        sac.otherBusinessActivities.map(_.sicCodes).getOrElse(throw new IllegalStateException("Missing other business activities to convert to API model")))
       val provideWorkers = sac.companyProvideWorkers.map(_.yesNo).map(_ == PROVIDE_WORKERS_YES)
       val numWorkers: Int = if (provideWorkers.contains(true)) {
         sac.workers.map(_.numberOfWorkers).getOrElse(throw new IllegalStateException("Missing number of workers to convert to API model"))
@@ -92,7 +103,9 @@ object SicAndCompliance {
           .getOrElse(throw new IllegalStateException("Missing SIC Code to convert to API model"))
       )
 
-      Seq(Some(busDesc), labour, Some(mainBus)).flatten.reduceLeft(_ ++ _)
+      Seq(Some(busDesc),Some(otherBusinessActivities), labour, Some(mainBus)).flatten.reduceLeft(_ ++ _)
     }
   }
+
+  val apiFormat = Format[SicAndCompliance](reads, toApiWrites)
 }

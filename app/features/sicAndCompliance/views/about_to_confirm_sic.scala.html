@@ -1,0 +1,28 @@
+@()(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@main_template(title = messages("pages.confirmsic.title")) {
+
+
+        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.confirmsic.heading")</h1>
+
+    <p>@messages("pages.confirmsic.p1")</p>
+    <p>@messages("pages.confirmsic.p2")</p>
+    <p>@messages("pages.confirmsic.p3")</p>
+
+    <div class="form-group">
+        <ul class="list list-bullet">
+            <li>@messages("pages.confirmsic.bullet1")</li>
+            <li>@messages("pages.confirmsic.bullet2")</li>
+        </ul>
+    </div>
+    <p>@messages("pages.confirmsic.p4")</p>
+
+    @govHelpers.form(action = features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitSicHalt()) {
+    <div class="form-group">
+        <button class="btn button" type="submit" id="continue">@messages("app.common.continue")</button>
+    </div>
+    }
+}

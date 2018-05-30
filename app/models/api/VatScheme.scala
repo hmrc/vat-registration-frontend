@@ -48,7 +48,8 @@ object VatScheme {
       (__ \ "registrationId").format[String] and
       (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
-      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance].inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
+      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance](SicAndCompliance.apiFormat)
+        .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
       (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
       (__ \ "threshold").formatNullable[Threshold] and
       (__ \ "returns").formatNullable[Returns] and

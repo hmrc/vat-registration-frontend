@@ -210,16 +210,19 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
   "submitSicCodes" should {
     "return a view model with Labour Compliance removed when none SIC Code Labour is provided" in new Setup {
-      val sicCodeList = List(SicCode("66666666", "test1", "desc1"), SicCode("88888888", "test2", "desc2"))
+      val code = SicCode("88888", "description", "displayDetails")
+      val sicCodeList = List(SicCode("66666", "test1", "desc1"), code)
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(code))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
-      val expected = completeViewModel.copy(companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None)
+      val expected = completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)),
+        companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None
+      )
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
@@ -230,16 +233,19 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     }
 
     "return a view model with Main Business Activity updated when only one Labour SIC Code is provided" in new Setup {
-      val newSicCode = SicCode("01610123", "test1", "desc1")
+      val newSicCode = SicCode("01610", "test1", "desc1")
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
-      val expected = completeViewModel.copy(mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)))
+      val expected = completeViewModel.copy(
+         mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
+         otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode)))
+      )
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
@@ -250,16 +256,17 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     }
 
     "return a view model with Main Business Activity updated & Labour Compliance removed when only one none Labour SIC Code is provided" in new Setup {
-      val newSicCode = SicCode("66666666", "test1", "desc1")
+      val newSicCode = SicCode("666666", "test1", "desc1")
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
       val expected = completeViewModel.copy(
+        otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode))),
         mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
         companyProvideWorkers = None,
         workers = None,
@@ -275,7 +282,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     }
 
     "return a view model without Labour Compliance being removed when SIC Code Labour is provided" in new Setup {
-      val sicCodeList = List(SicCode("01610123", "test1", "desc1"), SicCode("81223123", "test2", "desc2"))
+      val sicCodeList = List(SicCode("01610", "test1", "desc1"), SicCode("81223", "test2", "desc2"))
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
         mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
@@ -290,7 +297,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(sicCodeList)) shouldBe completeViewModel
+      await(service.submitSicCodes(sicCodeList)) shouldBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))
     }
   }
 }

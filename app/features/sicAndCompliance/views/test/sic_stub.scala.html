@@ -5,7 +5,7 @@
 @main_template(title = "SIC codes") {
 
     <header class="page-header">
-        <h1 class="form-title heading-large" id="pageHeading">Enter 1-4, 8 digit SIC codes:</h1>
+        <h1 class="form-title heading-large" id="pageHeading">Enter 1-4, 5 digit SIC codes:</h1>
     </header>
 
     <p><button class="btn button" type="button" onclick="fillLabourCodes()">Labour compliance</button></p>
@@ -16,12 +16,12 @@
     @form(action = features.sicAndCompliance.controllers.test.routes.SicStubController.submit()) {
         <div class="form-group">
             <fieldset>
-                <legend class="visually-hidden">Enter 1-4, 8 digit SIC codes:</legend>
+                <legend class="visually-hidden">Enter 1-4, 5 digit SIC codes:</legend>
 
-                <p><input type="text" name="sicCode1" maxlength="8" title="sic1" value=""/></p>
-                <p><input type="text" name="sicCode2" maxlength="8" title="sic2" value=""/></p>
-                <p><input type="text" name="sicCode3" maxlength="8" title="sic4" value=""/></p>
-                <p><input type="text" name="sicCode4" maxlength="8" title="sic4" value=""/></p>
+                <p><input type="text" name="sicCode1" maxlength="5" title="sic1" value=""/></p>
+                <p><input type="text" name="sicCode2" maxlength="5" title="sic2" value=""/></p>
+                <p><input type="text" name="sicCode3" maxlength="5" title="sic4" value=""/></p>
+                <p><input type="text" name="sicCode4" maxlength="5" title="sic4" value=""/></p>
 
             </fieldset>
 
@@ -37,9 +37,9 @@
 <script type="application/javascript">
 
         var blanks = ["", "", "", ""];
-        var single = ["36000008", "", "", ""];
-        var multiple = ["01110004", "81300003", "82190004", ""];
-        var labourSicCodes = ["81221001", "81222002", "81223003", ""];
+        var single = ["36000", "", "", ""];
+        var multiple = ["01110", "81300", "82190", ""];
+        var labourSicCodes = ["81221", "81222", "81223", ""];
 
         function fillInputs(arr) {
             $('input[type=text]').each(function (index) {

@@ -351,7 +351,8 @@ pages.summary.companyContactDetails.website                     = Business websi
 pages.summary.companyContactDetails.ppob                        = Main place of business
 
 ## Summary Page Business Activities
-pages.summary.businessActivities.sectionHeading                = Business activities
+pages.summary.businessActivities.otherBusinessActivities       = Confirm the business''s Standard Industry Classification (SIC) codes for VAT
+pages.summary.businessActivities.sectionHeading                = Business details
 pages.summary.businessActivities.businessDescription           = Business description
 pages.summary.businessActivities.mainBusinessActivity          = Main business activity
 
@@ -433,6 +434,16 @@ validation.companyBankAccount.invalidCombination = Enter a valid bank account nu
 pages.mainBusinessActivity.heading                        = Which activity is the company''s main source of income?
 pages.mainBusinessActivity.title                          = Which activity is the company''s main source of income?
 validation.mainBusinessActivity.missing                   = Tell us which activity is the company''s main source of income
+
+## Confirm SIC
+pages.confirmsic.title                                    = You''re about to confirm the company''s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.heading                                  = You''re about to confirm the company''s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.p1                                       = A SIC code describes a business activity.
+pages.confirmsic.p2                                       = Every company has one or more SIC codes from when it registered with Companies House.
+pages.confirmsic.p3                                       = You must:
+pages.confirmsic.bullet1                                  = check the SIC codes for this company are still correct.
+pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the company''s business.
+pages.confirmsic.p4                                       = We''ll guide you through this process.
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions

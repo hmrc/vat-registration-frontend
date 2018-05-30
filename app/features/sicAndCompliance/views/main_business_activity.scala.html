@@ -20,7 +20,7 @@
 
             @vatInputRadioGroup(
                 field = mainBusinessActivityForm("mainBusinessActivityRadio"),
-                sicCodeList.map(sicCode => (sicCode.id, sicCode.description)),
+                sicCodeList.map(sicCode => (sicCode.code, sicCode.description)),
                 '_labelAfter -> true,
                 '_legend -> messages("pages.mainBusinessActivity.heading"),
                 '_legendClass -> "visually-hidden",
