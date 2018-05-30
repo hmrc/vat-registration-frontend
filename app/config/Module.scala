@@ -41,7 +41,7 @@ import features.returns.controllers.{ReturnsController, ReturnsControllerImpl}
 import features.returns.services.{ReturnsService, ReturnsServiceImpl}
 import features.sicAndCompliance.controllers._
 import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
-import features.sicAndCompliance.services.{SicAndComplianceService, SicAndComplianceServiceImpl}
+import features.sicAndCompliance.services.{ICLService, ICLServiceImpl, SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import features.turnoverEstimates._
 import repositories.SessionRepository
@@ -131,6 +131,7 @@ class Module extends AbstractModule {
     bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
     bind(classOf[BusinessContactService]).to(classOf[BusinessContactServiceImpl]).asEagerSingleton()
     bind(classOf[TimeService]).to(classOf[TimeServiceImpl]).asEagerSingleton()
+    bind(classOf[ICLService]).to(classOf[ICLServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {
@@ -149,6 +150,7 @@ class Module extends AbstractModule {
     bind(classOf[IncorporationInformationConnector]).to(classOf[IncorporationInformationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
     bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
+    bind(classOf[ICLConnector]).to(classOf[ICLConnectorImpl]).asEagerSingleton()
   }
 
   private def featureSwitches(): Unit = {

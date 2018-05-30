@@ -117,7 +117,9 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       "business-registration-dynamic-stub",
       "bank-account-reputation",
       "identity-verification-proxy",
-      "identity-verification-frontend"
+      "identity-verification-frontend",
+      "industry-classification-lookup-frontend",
+      "industry-classification-lookup-frontend-internal"
     )) ++ additionalConfig)
     .build()
 

@@ -159,7 +159,7 @@ trait FlatRateService  {
   def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
     for {
       mainSic          <- sicAndComplianceService.getSicAndCompliance.map(_.mainBusinessActivity)
-      selectionChanged =  mainSic.exists(_.id != sicCode.id)
+      selectionChanged =  mainSic.exists(_.id != sicCode.code)
       _                <- if(selectionChanged) clearFrs else Future.successful(true)
     } yield sicCode
   }

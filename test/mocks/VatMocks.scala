@@ -24,6 +24,7 @@ import features.businessContact.BusinessContactService
 import features.frs.services.FlatRateService
 import features.officer.services.{IVServiceImpl, LodgingOfficerService}
 import features.returns.services.ReturnsService
+import features.sicAndCompliance.services.ICLService
 import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
@@ -64,6 +65,7 @@ trait VatMocks
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnectorImpl]
   implicit lazy val mockPPConnector = mock[PPConnector]
   implicit lazy val mockBrConnector = mock[BusinessRegistrationConnector]
+  implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
   implicit lazy val mockCurrentProfile = mock[CurrentProfileServiceImpl]
   implicit lazy val mockCancellationService = mock[CancellationService]
@@ -82,6 +84,7 @@ trait VatMocks
   implicit lazy val mockPrePopService: PrePopService = mock[PrePopService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
   val mockTimeService = mock[TimeService]
+  lazy val mockICLService = mock[ICLService]
 
   def resetMocks() {
     reset(

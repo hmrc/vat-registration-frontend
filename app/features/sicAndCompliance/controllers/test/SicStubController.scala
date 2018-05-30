@@ -17,7 +17,6 @@
 package features.sicAndCompliance.controllers.test
 
 import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
@@ -65,11 +64,12 @@ trait SicStubController extends BaseController with SessionProfile {
         badForm => Future.successful(BadRequest(sic_stub(badForm))),
         data    => for {
           _ <- s4LService.save[SicStub](data)
-          sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails)
+          sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails).map ( s => s.copy(code = s.code.substring(0, 5)))
+
           _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
           _ <- sicAndCompService.submitSicCodes(sicCodesList)
         } yield {
-          if (data.sicCodes.lengthCompare(1) == 0) {
+          if (sicCodesList.size == 1) {
             if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
               Redirect(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro())
             } else {

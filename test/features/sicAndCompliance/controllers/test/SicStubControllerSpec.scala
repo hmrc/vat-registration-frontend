@@ -63,14 +63,14 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
   s"POST test-only${routes.SicStubController.submit()} with Empty data" should {
     val fakeRequest = FakeRequest(routes.SicStubController.show())
     val dummyCacheMap = CacheMap("", Map.empty)
-    val dummySicCode = SicCode("test", "test", "test")
+    val dummySicCode = SicCode("tests", "tests", "tests")
 
     "return 303 and correct redirection with many sic code selected" in new Setup {
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666666", "sicCode2" -> "88888888")) {
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
         _ redirectsTo features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity().url
       }
     }
@@ -82,7 +82,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666666")) {
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
         _ redirectsTo controllers.routes.TradingDetailsController.tradingNamePage().url
       }
     }
@@ -94,7 +94,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610555")) {
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
         _ redirectsTo features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro().url
       }
     }

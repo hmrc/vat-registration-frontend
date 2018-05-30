@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.{IVResult, VatRegStatus}
 import models.S4LKey
-import models.api.VatScheme
+import models.api.{SicCode, VatScheme}
 import models.external.{CoHoRegisteredOfficeAddress, Officer}
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -64,6 +64,7 @@ trait StubUtils {
     def vatRegistration = VatRegistrationStub()
 
     def currentProfile = CurrentProfile()
+    def icl = ICL()
 
     def company = IncorporationStub()
 
@@ -509,6 +510,39 @@ trait StubUtils {
         get(urlEqualTo(s"/incorporation-information/000-431-TEST/incorporation-update"))
           .willReturn(aResponse().withStatus(204))
       )
+      builder
+    }
+  }
+
+  case class ICL()(implicit builder: PreconditionBuilder, requestHolder: RequestHolder) {
+    def setup(): PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo("/internal/initialise-journey"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "fetchResultsUri" : "fetch",
+               |  "journeyStartUri" : "journeyStart"
+               |}
+             """.stripMargin
+          )))
+
+      builder
+    }
+
+    def fetchResults(sicCodeList : List[SicCode]): PreconditionBuilder = {
+      val sicJsArray = Json.toJson(sicCodeList).as[JsArray]
+
+      stubFor(
+        get(urlPathMatching("/fetch-results"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "sicCodes": $sicJsArray
+               |}
+             """.stripMargin
+          )))
+
       builder
     }
   }

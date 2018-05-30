@@ -46,19 +46,19 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   val jsonListSicCode = s"""
                            |  [
                            |    {
-                           |      "id": "01110004",
-                           |      "description": "gdfgdg d",
-                           |      "displayDetails": "dfg dfg g fd"
+                           |      "code": "01110004",
+                           |      "desc": "gdfgdg d",
+                           |      "indexes": "dfg dfg g fd"
                            |    },
                            |    {
-                           |      "id": "$sicCodeId",
-                           |      "description": "$sicCodeDesc",
-                           |      "displayDetails": "$sicCodeDisplay"
+                           |      "code": "$sicCodeId",
+                           |      "desc": "$sicCodeDesc",
+                           |      "indexes": "$sicCodeDisplay"
                            |    },
                            |    {
-                           |      "id": "82190004",
-                           |      "description": "ry rty try rty ",
-                           |      "displayDetails": " rtyrtyrty rt"
+                           |      "code": "82190004",
+                           |      "desc": "ry rty try rty ",
+                           |      "indexes": " rtyrtyrty rt"
                            |    }
                            |  ]
         """.stripMargin
@@ -71,8 +71,15 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
     workers =  Some(Workers(200)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
+    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
   )
+
+  val modelWithoutCompliance = SicAndCompliance(
+    description = Some(BusinessActivityDescription(businessActivityDescription)),
+    mainBusinessActivity = Some(mainBusinessActivityView)
+  )
+
 
   class Setup {
     import scala.concurrent.duration._
@@ -102,8 +109,117 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
       res
     }
+
+    def insertCurrentProfileFetchUri(sessionId : String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val sicCodeMapping: Map[String, JsValue] = Map(
+        "CurrentProfile"        -> Json.toJson(currentProfile),
+        "ICLFetchResultsUri"    -> JsString("/fetch-results")
+      )
+      val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
   }
 
+
+  "SicHalt on show returns 200" in new Setup {
+    given()
+      .user.isAuthorised
+      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+
+    insertCurrentProfileSicCodeIntoDb(sessionId)
+
+    val response = buildClient("/confirm-standard-industry-classification-codes-vat").get()
+    whenReady(response) { res =>
+      res.status mustBe 200
+    }
+  }
+
+  "User submitting SIC codes on ICL should redirect to MainBusinessActivity" in new Setup {
+
+      given()
+        .user.isAuthorised
+        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+        .s4lContainer[SicAndCompliance].contains(fullModel)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .icl.setup()
+
+      insertCurrentProfileSicCodeIntoDb(sessionId)
+
+      val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
+
+      whenReady(mockedPostToICL) { res =>
+        res.status mustBe 303
+      }
+    }
+
+  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+    val sicCode = SicCode("23456", "This is a fake description", "")
+
+    given()
+      .user.isAuthorised
+      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode)))))
+      .s4lContainer.cleared
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .icl.fetchResults(List(sicCode))
+
+    insertCurrentProfileFetchUri(sessionId)
+
+    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    whenReady(fetchResultsResponse) { res =>
+      res.status mustBe 303
+    }
+  }
+
+  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+    val sicCode1 = SicCode("23456", "This is a fake description", "")
+    val sicCode2 = SicCode("12345", "This is another code", "")
+
+    given()
+      .user.isAuthorised
+      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1, sicCode2)))))
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .icl.fetchResults(List(sicCode1, sicCode2))
+
+    insertCurrentProfileFetchUri(sessionId)
+
+    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    whenReady(fetchResultsResponse) { res =>
+      res.status mustBe 303
+    }
+  }
+
+  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+    val sicCode1 = SicCode("01610", "This is a compliance activity", "")
+
+    given()
+      .user.isAuthorised
+      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
+      .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
+      .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .icl.fetchResults(List(sicCode1))
+
+    insertCurrentProfileFetchUri(sessionId)
+
+    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    whenReady(fetchResultsResponse) { res =>
+      res.status mustBe 303
+      res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro().url)
+    }
+  }
 
   "MainBusinessActivity on show returns 200" in new Setup {
     given()
@@ -146,9 +262,9 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
              val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
               (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
-              (json \ "mainBusinessActivity" \ "id").as[JsString].value mustBe sicCodeId
-              (json \ "mainBusinessActivity" \ "description").as[JsString].value mustBe sicCodeDesc
-              (json \ "mainBusinessActivity" \ "displayDetails").as[JsString].value mustBe sicCodeDisplay
+              (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
+              (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
+              (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
     }
   }
 
@@ -375,7 +491,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     val response = buildClient("/describe-what-company-does").post(Map("description" -> Seq("foo")))
     whenReady(response) { res =>
       res.status mustBe 303
-      res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.test.routes.SicStubController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitSicHalt().url)
 
     }
   }
