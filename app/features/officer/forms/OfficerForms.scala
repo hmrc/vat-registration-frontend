@@ -23,6 +23,7 @@ import forms.FormValidation
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
 import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping, _}
 import models.DateModel
+import models.external.Officer
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -68,19 +69,30 @@ object SecurityQuestionsForm {
 }
 
 object FormerNameForm {
+  val FORMER_NAME_MAX_LENGTH = 70
   val RADIO_YES_NO: String = "formerNameRadio"
   val INPUT_FORMER_NAME: String = "formerName"
 
-  val FORMER_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]{0,55}$""".r
+  val FORMER_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]*$""".r
 
   implicit val errorCode: ErrorCode = INPUT_FORMER_NAME
 
-  val form = Form(
+  def isNotMatchingCompletionCapacityId(matcher: String, errorMsg: String): Constraint[String] = Constraint[String] {
+    input: String =>
+      if (matcher != input.replaceAll(" ", "")) Valid else Invalid(errorMsg)
+  }
+
+  def form(completionCapacityId: String) = Form(
     mapping(
-      RADIO_YES_NO -> missingBooleanFieldMapping()("formerName"),
+      RADIO_YES_NO -> missingBooleanFieldMapping()("formerName.choice"),
       INPUT_FORMER_NAME -> mandatoryIf(
         isEqual(RADIO_YES_NO, "true"),
-        text.verifying(nonEmptyValidText(FORMER_NAME_REGEX)("formerName.selected")))
+        text.verifying(StopOnFirstFail(
+          nonEmptyValidText(FORMER_NAME_REGEX),
+          maxLenText(FORMER_NAME_MAX_LENGTH),
+          isNotMatchingCompletionCapacityId(completionCapacityId, "validation.formerName.match.cc")
+        ))
+      )
     )(FormerNameView.apply)(FormerNameView.unapply)
   )
 }
@@ -123,7 +135,7 @@ object ContactDetailsForm {
     mapping(
       EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
       DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
-      MOBILE        ->optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
+      MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
     )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
   )
 

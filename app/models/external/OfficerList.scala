@@ -34,10 +34,10 @@ case class Name(forename: Option[String],
   import cats.syntax.applicative._
   import models.external.Name.inlineShow.inline
 
-  val id: String = List(forename,
-    surname.pure,
+  val id: String = List(title,
+    forename,
     otherForenames,
-    title
+    surname.pure
   ).flatten.mkString.replaceAll(" ", "")
 
   val asLabel: String = inline show this
@@ -114,10 +114,6 @@ object Officer {
       (__ \ "resigned_on").writeNullable[DateTime] and
       (__ \ "appointment_link").writeNullable[String]
     ) (unlift(Officer.unapply))
-
-  private val emptyName = Name(None, None, "", None)
-  val empty = Officer(emptyName, "", None, None)
-
 }
 
 case class OfficerList(items: Seq[Officer])
