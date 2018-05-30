@@ -83,9 +83,12 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitChargeExpectancy" should {
     val fakeRequest = FakeRequest(features.returns.controllers.routes.ReturnsController.submitChargeExpectancy())
 
-    "return SEE_OTHER when they expect to reclaim more vat than they charge" in new Setup {
+    "return SEE_OTHER when they expect to reclaim more vat than they charge and redirect to VAT Start Page - mandatory flow" in new Setup {
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
+
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
+        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "chargeExpectancyRadio" -> "true"
@@ -93,13 +96,16 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitChargeExpectancy, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/how-often-do-you-want-to-submit-vat-returns")
+        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
       }
     }
 
-    "return SEE_OTHER when they don't expect to reclaim more vat than they charge" in new Setup {
+    "return SEE_OTHER when they don't expect to reclaim more vat than they charge and redirect to VAT Start Page - voluntarily flow" in new Setup {
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(false))))
+
+      when(mockReturnsService.getThreshold()(any(), any(), any()))
+        .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "chargeExpectancyRadio" -> "false"
@@ -107,7 +113,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitChargeExpectancy, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/submit-vat-returns")
+        redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
       }
     }
 
@@ -155,12 +161,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitAccountsPeriod" should {
     val fakeRequest = FakeRequest(features.returns.controllers.routes.ReturnsController.submitAccountPeriods())
 
-    "redirect to the mandatory date page when they select the jan apr jul oct option when on a mandatory flow" in new Setup {
+    "redirect to the bank account date page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> Stagger.jan
@@ -168,16 +171,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
+        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
       }
     }
 
-    "redirect to the voluntary date page when they select the jan apr jul oct option when on a voluntary flow" in new Setup {
+    "redirect to the bank account page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.jan))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> Stagger.jan
@@ -185,16 +185,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
+        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
       }
     }
 
-    "return SEE_OTHER when they select the feb may aug nov option" in new Setup {
+    "redirect to the bank account page when they select the feb may aug nov option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.feb))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> Stagger.feb
@@ -202,16 +199,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
+        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
       }
     }
 
-    "return SEE_OTHER when they select the mar may sep dec option" in new Setup {
+    "redirect to the bank account page when they select the mar may sep dec option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(Stagger.mar))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "accountingPeriodRadio" -> Stagger.mar
@@ -219,7 +213,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
+        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
       }
     }
 
@@ -267,12 +261,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitReturnsFrequency" should {
     val fakeRequest = FakeRequest(features.returns.controllers.routes.ReturnsController.submitReturnsFrequency())
 
-    "redirect to the mandatory date page when they select the monthly option on the mandatory flow" in new Setup {
+    "redirect to the bank account page when they select the monthly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "returnFrequencyRadio" -> Frequency.monthly
@@ -280,33 +271,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
-      }
-    }
-
-    "redirect to the voluntary date page when they select the monthly option on the voluntary flow" in new Setup {
-      when(mockReturnsService.saveFrequency(any())(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.monthly))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(voluntary))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "returnFrequencyRadio" -> Frequency.monthly
-      )
-
-      submitAuthorised(testController.submitReturnsFrequency, request) { result =>
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
+        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
       }
     }
 
     "redirect to the account periods page when they select the quarterly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(frequency = Some(Frequency.quarterly))))
-
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
-        .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "returnFrequencyRadio" -> Frequency.quarterly
@@ -417,7 +388,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitMandatoryStart" should {
     val fakeRequest = FakeRequest(features.returns.controllers.routes.ReturnsController.submitMandatoryStart())
 
-    "redirect to the company bank account page if confirmed without an incorp date" in new Setup(Some(notIncorpProfile)) {
+    "redirect to the accounts period page if confirmed without an incorp date" in new Setup(Some(notIncorpProfile)) {
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
@@ -425,11 +396,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.accountPeriodsPage().url)
       }
     }
 
-    "redirect to the company bank account page, if they are incorped and select the calculated date" in new Setup {
+    "redirect to the accounts period page, if they are incorped and select the calculated date" in new Setup {
       when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.successful(LocalDate.now()))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -441,11 +412,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.accountPeriodsPage().url)
       }
     }
 
-    "redirect to the company bank account page, if they are incorped and select a custom date" in new Setup {
+    "redirect to the account periods page, if they are incorped and select a custom date" in new Setup {
       when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.successful(LocalDate.now()))
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -461,7 +432,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.accountPeriodsPage().url)
       }
     }
 
@@ -595,7 +566,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val fakeRequest = FakeRequest(features.returns.controllers.routes.ReturnsController.submitVoluntaryStart())
     val incorpDatePlusTwo: LocalDate = currentProfile.incorporationDate.get.plusDays(2)
 
-    "redirect to the company bank account page if they select the date of incorp whilst in pre incorp state" in new Setup(Some(notIncorpProfile)) {
+    "redirect to the returns frequency page if they select the date of incorp whilst in pre incorp state" in new Setup(Some(notIncorpProfile)) {
       when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
@@ -611,11 +582,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitVoluntaryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
       }
     }
 
-    "redirect to the company bank account page (whilst in pre incorp state)" when {
+    "redirect to the returns frequency page (whilst in pre incorp state)" when {
       "user submit a valid start date if the submission occurred before 2pm" in new Setup(Some(notIncorpProfile), currDate = dateBefore2pm) {
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
           .thenReturn(Future.successful(emptyReturns))
@@ -637,7 +608,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+          redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
         }
       }
 
@@ -661,7 +632,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+          redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
 
         }
       }
@@ -768,7 +739,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         }
       }
 
-      "redirect to the company bank account page, if they are incorped and select the incorp date" in new Setup {
+      "redirect to the returns frequency page, if they are incorped and select the incorp date" in new Setup {
         when(mockPrePopService.getCTActiveDate(any(), any()))
           .thenReturn(Future.successful(currentProfile.incorporationDate))
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -785,11 +756,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+          redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
         }
       }
 
-      "redirect to the company bank account page, if they are incorped and select the start of business date" in new Setup {
+      "redirect to the returns frequency page, if they are incorped and select the start of business date" in new Setup {
         when(mockPrePopService.getCTActiveDate(any(), any()))
           .thenReturn(Future.successful(currentProfile.incorporationDate))
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -805,11 +776,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+          redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
         }
       }
 
-      "redirect to the company bank account page, if they are incorped and select a custom date" in new Setup {
+      "redirect to the returns frequency page, if they are incorped and select a custom date" in new Setup {
         when(mockPrePopService.getCTActiveDate(any(), any()))
           .thenReturn(Future.successful(currentProfile.incorporationDate))
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -828,7 +799,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+          redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.returnsFrequencyPage().url)
         }
       }
 
