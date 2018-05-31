@@ -48,7 +48,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       override val vatRegFeatureSwitch: VATRegFeatureSwitches = mockFeatureSwitches
       override val useICLStub                                 = iclStubbed
       override val iclService: ICLService                     = mockICLService
-      override val iclFEurl: String = "dummy-url"
+      override val iclFEurlwww: String                        = "www-url"
     }
 
     mockAllMessages
@@ -80,7 +80,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       callAuthorised(controller.submitSicHalt) {
         res =>
           status(res) mustBe 303
-          res redirectsTo "dummy-url/url"
+          res redirectsTo "www-url/url"
       }
     }
     "return exception" in new Setup (true) {
@@ -296,7 +296,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
         callAuthorised(controller.returnToICL) {
           res =>
             status(res) mustBe 303
-            res redirectsTo "dummy-url/url"
+            res redirectsTo "www-url/url"
         }
       }
     }
