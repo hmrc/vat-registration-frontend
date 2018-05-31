@@ -70,7 +70,7 @@ object LodgingOfficer {
       val homeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
       val digitalContact = ContactDetailsView(
-        email = Some((details \ "contact" \ "email").as[String]),
+        email = (details \ "contact" \ "email").validateOpt[String].get,
         daytimePhone = (details \ "contact" \ "tel").validateOpt[String].get,
         mobile = (details \ "contact" \ "mobile").validateOpt[String].get
       )
