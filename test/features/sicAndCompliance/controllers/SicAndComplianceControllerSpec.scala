@@ -19,30 +19,36 @@ package features.sicAndCompliance.controllers
 import connectors.KeystoreConnector
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.models.SicAndCompliance
-import features.sicAndCompliance.services.SicAndComplianceService
+import features.sicAndCompliance.services.{ICLService, SicAndComplianceService}
 import fixtures.VatRegistrationFixture
-import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import mocks.SicAndComplianceServiceMock
+import helpers._
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.cache.client.CacheMap
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-                                     with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
 
-  trait Setup {
+class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+
+  class Setup (iclStubbed:Boolean = false){
     val controller: SicAndComplianceController = new SicAndComplianceController {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val keystoreConnector: KeystoreConnector       = mockKeystoreConnector
       override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
-      override val frsService: FlatRateService = mockFlatRateService
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val authConnector: AuthConnector = mockAuthClientConnector
+      override val frsService: FlatRateService                = mockFlatRateService
+      val messagesApi: MessagesApi                            = mockMessagesAPI
+      val authConnector: AuthConnector                        = mockAuthClientConnector
+      override val vatRegFeatureSwitch: VATRegFeatureSwitches = mockFeatureSwitches
+      override val useICLStub                                 = iclStubbed
+      override val iclService: ICLService                     = mockICLService
+      override val iclFEurl: String = "dummy-url"
     }
 
     mockAllMessages
@@ -50,9 +56,94 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-
   val validLabourSicCode = SicCode("81221001", "BarFoo", "BarFoo")
   val validNoCompliance = SicCode("12345678", "fooBar", "FooBar")
+
+  "showHaltPage should return a 200" in new Setup {
+    callAuthorised(controller.showSicHalt) {
+      status(_) mustBe 200
+    }
+  }
+
+  "submitHaltPage" should {
+    "redirect to SIC stub if feature switch is true" in new Setup (true) {
+      callAuthorised(controller.submitSicHalt) {
+        res =>
+          status(res) mustBe 303
+          res redirectsTo test.routes.SicStubController.show().url
+      }
+    }
+    "redirect to ICL if feature switch is false" in new Setup {
+      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+        .thenReturn(Future.successful("/url"))
+
+      callAuthorised(controller.submitSicHalt) {
+        res =>
+          status(res) mustBe 303
+          res redirectsTo "dummy-url/url"
+      }
+    }
+    "return exception" in new Setup (true) {
+      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+        .thenReturn(Future.failed(new Exception))
+      intercept[Exception](callAuthorised(controller.submitSicHalt)(_ =>1 mustBe 2))
+    }
+  }
+
+  "saveIclSicCodes" should {
+    "redirect and save" when {
+      "returning from ICL with multiple codes" in new Setup {
+        val codes = List(sicCode, sicCode)
+
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any()))
+          .thenReturn(Future.successful(codes))
+        when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
+          .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CacheMap("test", Map())))
+
+        callAuthorised(controller.saveIclCodes) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity().url
+        }
+      }
+      "returning from ICL with one code" in new Setup {
+        val codes = List(sicCode)
+
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any()))
+          .thenReturn(Future.successful(codes))
+        when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
+          .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CacheMap("test", Map())))
+
+        callAuthorised(controller.saveIclCodes) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo controllers.routes.TradingDetailsController.tradingNamePage().url
+        }
+      }
+      "returning from ICL with compliance question SIC codes" in new Setup {
+        val codes = List(sicCode, sicCode.copy(code = "81222"))
+
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any()))
+          .thenReturn(Future.successful(codes))
+        when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
+          .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+        when(mockSicAndComplianceService.needComplianceQuestions(any()))
+          .thenReturn(true)
+        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CacheMap("test", Map())))
+
+        callAuthorised(controller.saveIclCodes) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo features.sicAndCompliance.controllers.routes.SicAndComplianceController.showComplianceIntro().url
+        }
+      }
+    }
+  }
 
   s"GET ${routes.SicAndComplianceController.showBusinessActivityDescription()}" should {
     "return HTML Business Activity Description page with no data in the form" in new Setup {
@@ -85,7 +176,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
       submitAuthorised(controller.submitBusinessActivityDescription(), fakeRequest.withFormUrlEncodedBody("description" -> "Testing")) {
-        _ redirectsTo "/sic-stub"
+        _ redirectsTo s"$contextRoot/confirm-standard-industry-classification-codes-vat"
       }
     }
   }
@@ -143,7 +234,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
 
       submitAuthorised(controller.submitMainBusinessActivity(),
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.id)
+        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.code)
       )(_ isA 400)
 
     }
@@ -162,7 +253,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
         .thenReturn(true)
 
       submitAuthorised(controller.submitMainBusinessActivity(),
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.id)
+        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.code)
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
 
     }
@@ -182,8 +273,38 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
       submitAuthorised(controller.submitMainBusinessActivity(),
 
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validNoCompliance.id)
+        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validNoCompliance.code)
       )(_ redirectsTo s"$contextRoot/trading-name")
     }
   }
+
+  "returnToICL" should {
+    "take the user to ICL stub" when {
+      "hitting change (for SIC codes) on the summary" in new Setup(iclStubbed = true) {
+        callAuthorised(controller.returnToICL) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo test.routes.SicStubController.show().url
+        }
+      }
+    }
+    "take the user to ICL" when {
+      "hitting change (for SIC codes) on the summary" in new Setup {
+        when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+          .thenReturn(Future.successful("/url"))
+
+        callAuthorised(controller.returnToICL) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo "dummy-url/url"
+        }
+      }
+    }
+    "return exception" in new Setup (true) {
+      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+        .thenReturn(Future.failed(new Exception))
+      intercept[Exception](callAuthorised(controller.returnToICL)(_ =>1 mustBe 2))
+    }
+  }
+
 }

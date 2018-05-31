@@ -23,7 +23,7 @@ import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
 import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.fixtures.LodgingOfficerFixture
 import features.returns.models.{Frequency, Returns, Stagger}
-import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
+import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, OtherBusinessActivities, SicAndCompliance}
 import features.tradingDetails.{TradingDetails, TradingNameView}
 import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
@@ -42,7 +42,10 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
 
   val sicAndCompliance = SicAndCompliance(
     description = Some(BusinessActivityDescription("test company desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(SicCode("AB123", "super business", "super business by super people")))
+    mainBusinessActivity = Some(MainBusinessActivityView(SicCode("AB123", "super business", "super business by super people"))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(
+      SicCode("AB123", "super business", "super business by super people")))
+    )
   )
 
 

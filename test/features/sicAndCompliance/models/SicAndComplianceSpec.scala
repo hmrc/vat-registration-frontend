@@ -20,38 +20,53 @@ import features.sicAndCompliance.models.CompanyProvideWorkers._
 import features.sicAndCompliance.models.SkilledWorkers._
 import features.sicAndCompliance.models.TemporaryContracts._
 import models.api.SicCode
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.play.test.UnitSpec
 
 class SicAndComplianceSpec extends UnitSpec {
-  val sicCodeNoneLabour = SicCode(id = "123", description = "none labour", displayDetails = "none labour")
-  val sicCodeLabour = SicCode(id = "123", description = "labour", displayDetails = "labour")
+  val sicCodeNoneLabour = SicCode(code = "123", description = "none labour", displayDetails = "none labour")
+  val sicCodeLabour = SicCode(code = "123", description = "labour", displayDetails = "labour")
 
   val jsonNoneLabour = Json.parse(
     s"""
        |{
-       |  "businessDescription": "Test Desc",
-       |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "none labour",
-       |    "displayDetails": "none labour"
-       |  }
+       |"businessDescription": "Test Desc",
+       |"mainBusinessActivity": {
+       |   "code": "123",
+       |   "desc": "none labour",
+       |   "indexes": "none labour"
+       |},
+       |"otherBusinessActivities": [
+       |{
+       |   "code": "99889",
+       |   "desc": "otherBusiness",
+       |   "indexes": ""
        |}
-         """.stripMargin)
+       |]
+       |}
+    """.stripMargin).as[JsObject]
   val noneLabour = SicAndCompliance(
-    description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeNoneLabour.id, mainBusinessActivity = Some(sicCodeNoneLabour)))
-  )
+      description = Some(BusinessActivityDescription("Test Desc")),
+      mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeNoneLabour.code, mainBusinessActivity = Some(sicCodeNoneLabour))),
+      otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = ""))))
+    )
 
   val jsonLabourWithoutWorkers = Json.parse(
     s"""
        |{
        |  "businessDescription": "Test Desc",
        |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "labour",
-       |    "displayDetails": "labour"
+       |    "code": "123",
+       |    "desc": "labour",
+       |    "indexes": "labour"
        |  },
+       |  "otherBusinessActivities": [
+       |  {
+       |     "code": "99889",
+       |     "desc": "otherBusiness",
+       |     "indexes": "otherBusiness1"
+       |  }
+       |  ],
        |  "labourCompliance": {
        |    "numberOfWorkers": 0
        |  }
@@ -59,7 +74,8 @@ class SicAndComplianceSpec extends UnitSpec {
          """.stripMargin)
   val labourWithoutWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.id, mainBusinessActivity = Some(sicCodeLabour))),
+    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),
     workers = None,
     temporaryContracts = None,
@@ -71,10 +87,17 @@ class SicAndComplianceSpec extends UnitSpec {
        |{
        |  "businessDescription": "Test Desc",
        |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "labour",
-       |    "displayDetails": "labour"
+       |    "code": "123",
+       |    "desc": "labour",
+       |    "indexes": "labour"
        |  },
+       |  "otherBusinessActivities": [
+       |    {
+       |       "code": "99889",
+       |       "desc": "otherBusiness",
+       |       "indexes": "otherBusiness1"
+       |    }
+       |  ],
        |  "labourCompliance": {
        |    "numberOfWorkers": 7
        |  }
@@ -82,7 +105,8 @@ class SicAndComplianceSpec extends UnitSpec {
          """.stripMargin)
   val labourWith7Workers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.id, mainBusinessActivity = Some(sicCodeLabour))),
+    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(7)),
     temporaryContracts = None,
@@ -94,10 +118,17 @@ class SicAndComplianceSpec extends UnitSpec {
        |{
        |  "businessDescription": "Test Desc",
        |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "labour",
-       |    "displayDetails": "labour"
+       |    "code": "123",
+       |    "desc": "labour",
+       |    "indexes": "labour"
        |  },
+       |  "otherBusinessActivities": [
+       |  {
+       |     "code": "99889",
+       |     "desc": "otherBusiness",
+       |     "indexes": "otherBusiness1"
+       |  }
+       |  ],
        |  "labourCompliance": {
        |    "numberOfWorkers": 8,
        |    "temporaryContracts": true,
@@ -107,7 +138,8 @@ class SicAndComplianceSpec extends UnitSpec {
          """.stripMargin)
   val labourWith8PlusWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.id, mainBusinessActivity = Some(sicCodeLabour))),
+    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),
@@ -119,10 +151,17 @@ class SicAndComplianceSpec extends UnitSpec {
        |{
        |  "businessDescription": "Test Desc",
        |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "labour",
-       |    "displayDetails": "labour"
+       |    "code": "123",
+       |    "desc": "labour",
+       |    "indexes": "labour"
        |  },
+       |  "otherBusinessActivities": [
+       |  {
+       |     "code": "99889",
+       |     "desc": "otherBusiness",
+       |     "indexes": "otherBusiness1"
+       |  }
+       |  ],
        |  "labourCompliance": {
        |    "numberOfWorkers": 8,
        |    "temporaryContracts": false
@@ -131,7 +170,8 @@ class SicAndComplianceSpec extends UnitSpec {
          """.stripMargin)
   val labourWithoutTemporaryContracts = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.id, mainBusinessActivity = Some(sicCodeLabour))),
+    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
@@ -143,10 +183,17 @@ class SicAndComplianceSpec extends UnitSpec {
        |{
        |  "businessDescription": "Test Desc",
        |  "mainBusinessActivity": {
-       |    "id": "123",
-       |    "description": "labour",
-       |    "displayDetails": "labour"
+       |    "code": "123",
+       |    "desc": "labour",
+       |    "indexes": "labour"
        |  },
+       |  "otherBusinessActivities": [
+       |  {
+       |     "code": "99889",
+       |     "desc": "otherBusiness",
+       |     "indexes": "otherBusiness1"
+       |  }
+       |  ],
        |  "labourCompliance": {
        |    "numberOfWorkers": 8,
        |    "temporaryContracts": true,
@@ -156,7 +203,8 @@ class SicAndComplianceSpec extends UnitSpec {
          """.stripMargin)
   val labourWithoutSkilledWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.id, mainBusinessActivity = Some(sicCodeLabour))),
+    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
+    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),
@@ -220,7 +268,7 @@ class SicAndComplianceSpec extends UnitSpec {
       }
 
       "the view model is missing the SIC Code" in {
-        val data = MainBusinessActivityView(id = sicCodeNoneLabour.id, mainBusinessActivity = None)
+        val data = MainBusinessActivityView(id = sicCodeNoneLabour.code, mainBusinessActivity = None)
         an[IllegalStateException] shouldBe thrownBy(Json.toJson(noneLabour.copy(mainBusinessActivity = Some(data)))(SicAndCompliance.toApiWrites))
       }
     }

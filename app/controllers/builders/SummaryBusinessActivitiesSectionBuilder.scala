@@ -36,16 +36,25 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S
     s"$sectionId.mainBusinessActivity",
       sicAndComp.mainBusinessActivity.fold("app.common.no")(main =>
         main.mainBusinessActivity collect {
-          case sicCode if sicCode.description.nonEmpty => sicCode.description
+          case sicCode if sicCode.description.nonEmpty => sicCode.code + " - " + sicCode.description
         } getOrElse "app.common.no"
       ),
     Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+  )
+
+  val confirmIndustryClassificationCodesRow: SummaryRow = SummaryRow(
+    s"$sectionId.otherBusinessActivities",
+    sicAndComp.otherBusinessActivities.fold(Seq("app.common.no"))(codes => codes.sicCodes.map(
+      sicCode => sicCode.code + " - " + sicCode.description
+    )),
+    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
   )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
       (companyBusinessDescriptionRow, true),
+      (confirmIndustryClassificationCodesRow, true),
       (companyMainBusinessActivityRow, true)
     )
   )

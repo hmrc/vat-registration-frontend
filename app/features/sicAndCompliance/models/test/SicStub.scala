@@ -25,11 +25,11 @@ case class SicStub(sicCode1: Option[String],
                    sicCode4: Option[String]) {
 
   def sicCodes: List[String] = this.productIterator.toList.collect {
-    case Some(s: String) if s.length == 8 => s.substring(0, 5)
+    case Some(s: String) if s.length == 5 => s
   }
 
   def fullSicCodes: List[String] = this.productIterator.toList.collect {
-    case Some(s: String) if s.length == 8 => s
+    case Some(s: String) if s.length == 5 => s
   }
 }
 

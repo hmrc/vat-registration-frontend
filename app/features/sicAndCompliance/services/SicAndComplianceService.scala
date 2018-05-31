@@ -17,14 +17,13 @@
 package features.sicAndCompliance.services
 
 import javax.inject.Inject
-
 import connectors.RegistrationConnector
 import features.sicAndCompliance.models.CompanyProvideWorkers.PROVIDE_WORKERS_NO
 import features.sicAndCompliance.models.TemporaryContracts.TEMP_CONTRACTS_NO
 import features.sicAndCompliance.models._
 import models.CurrentProfile
 import models.api.SicCode
-import services.{S4LService, VatRegistrationService, Completion, Complete, Incomplete}
+import services.{Complete, Completion, Incomplete, S4LService, VatRegistrationService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -55,13 +54,24 @@ trait SicAndComplianceService {
 
   def submitSicCodes(sicCodes: List[SicCode])(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
     getSicAndCompliance flatMap { sac =>
-      val newSac = if (sicCodes.lengthCompare(1) == 0) sac.copy(mainBusinessActivity = Some(MainBusinessActivityView(sicCodes.head))) else sac
+
+      val sacWithCodes = sac.copy(otherBusinessActivities = Some(OtherBusinessActivities(sicCodes)))
+
+      val newSac = if (sicCodes.size == 1) {
+        sacWithCodes.copy(
+          mainBusinessActivity = Some(MainBusinessActivityView(sicCodes.head))
+        )
+      } else {
+        sacWithCodes.copy(
+          mainBusinessActivity = None
+        )
+      }
+
       val newView = if (!needComplianceQuestions(sicCodes)) {
         newSac.copy(companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None)
       } else {
         newSac
       }
-
       updateSicAndCompliance(newView)
     }
   }
@@ -87,23 +97,25 @@ trait SicAndComplianceService {
     }
   }
 
+  // list of sics nil, 1 or many
   private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = {
     view match {
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(_), Some(_), Some(_), Some(_)) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(_), Some(_), Some(_)) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), None, None, None, None) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(sicCodes)), None, None, None, None) if(!needComplianceQuestions(sicCodes)) =>
         Complete(view)
       case _ => Incomplete(view)
     }
   }
 
   private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {
+
     for {
       _ <- registrationConnector.updateSicAndCompliance(completeModel)
       _ <- s4lService.clear
@@ -115,7 +127,7 @@ trait SicAndComplianceService {
       "01610", "41201", "42110", "42910", "42990",
       "43120", "43999", "78200", "80100", "81210",
       "81221", "81222", "81223", "81291", "81299")
-    lazy val isAllComplianceQuestions = sicCodes.map(_.id).forall(s => s.length == 8 && complianceSicCodes.contains(s.substring(0, 5)))
+    lazy val isAllComplianceQuestions = sicCodes.map(_.code).forall(s => complianceSicCodes.contains(s))
 
     sicCodes.nonEmpty && isAllComplianceQuestions
   }

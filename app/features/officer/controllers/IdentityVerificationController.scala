@@ -36,6 +36,7 @@ class IdentityVerificationControllerImpl @Inject()(val ivService: IVService,
                                                    val keystoreConnector: KeystoreConnector) extends IdentityVerificationController
 
 trait IdentityVerificationController extends BaseController with SessionProfile {
+
   val ivService: IVService
 
   def redirectToIV: Action[AnyContent] = isAuthenticatedWithProfile {

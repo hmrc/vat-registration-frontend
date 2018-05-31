@@ -70,21 +70,26 @@ class VATRegFeatureSwitch @Inject()(injManager: FeatureSwitchManager) extends VA
   override val manager: FeatureManager = injManager
   override val crStubbed: String       = "crStubbed"
   override val setSystemDate           = "system-date"
+  override val iclStubbed: String      = "iclStubbed"
+
 }
 
 trait VATRegFeatureSwitches {
   val ivStubbed: String
   val crStubbed: String
+  val iclStubbed: String
   val setSystemDate: String
   val manager: FeatureManager
 
   def useIvStub: FeatureSwitch    = manager.getProperty(ivStubbed)
   def useCrStubbed: FeatureSwitch = manager.getProperty(crStubbed)
   def systemDate: FeatureSwitch   = manager.getProperty(setSystemDate)
+  def useIclStub: FeatureSwitch   = manager.getProperty(iclStubbed)
 
   def apply(name: String): Option[FeatureSwitch] = name match {
     case `ivStubbed`     => Some(useIvStub)
     case `crStubbed`     => Some(useCrStubbed)
+    case `iclStubbed`    => Some(useIclStub)
     case `setSystemDate` => Some(systemDate)
     case _               => None
   }

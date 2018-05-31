@@ -51,7 +51,7 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
           """.stripMargin).as[JsObject]
       )
     }
-    val sicCode = SicCode(id = "01490025", description = "Silk worm raising", displayDetails = "Raising of other animals")
+    val sicCode = SicCode(code = "01490001", description = "Silk worm raising", displayDetails = "Raising of other animals")
   }
 
   "Calling getSicCodeDetails" must {
@@ -59,7 +59,7 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
       when(mockConfig.getString(ArgumentMatchers.any()))
         .thenReturn("Silk worm raising", "Raising of other animals")
 
-      connector.getSicCodeDetails("01490025") mustBe sicCode
+      connector.getSicCodeDetails("01490") mustBe sicCode
     }
   }
 
@@ -68,7 +68,7 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
       when(mockConfig.getString(ArgumentMatchers.any()))
           .thenReturn("055")
 
-      connector.getSicCodeFRSCategory("01490025") mustBe "055"
+      connector.getSicCodeFRSCategory("01490") mustBe "055"
     }
   }
 

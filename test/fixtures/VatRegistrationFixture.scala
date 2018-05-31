@@ -74,7 +74,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
-  val sicCode = SicCode("88888888", "description", "displayDetails")
+  val sicCode = SicCode("88888", "description", "displayDetails")
 
   val currentThreshold = "50000"
   val taxableThreshold = TaxableThreshold(currentThreshold, "2018-1-1")
@@ -129,7 +129,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
     companyProvideWorkers = None,
     workers = None,
     temporaryContracts = None,
@@ -137,7 +137,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val s4lVatSicAndComplianceWithLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.id, Some(sicCode))),
+    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
     workers = Some(Workers(20)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -239,4 +239,51 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     threshold = threshold,
     status = VatRegStatus.draft
   )
+
+  // ICL
+  val iclMultipleResults = Json.parse(
+    """
+      | {
+      |   "sicCodes": [
+      |     {
+      |       "code" : "12345",
+      |       "desc" : "Whale farming",
+      |       "indexes" : [
+      |         {
+      |         "desc" : "Fish farming",
+      |         "desc" : "Fish-related activities"
+      |         } ]
+      |        },
+      |     {
+      |       "code" : "23456",
+      |       "desc" : "Dog walking",
+      |       "indexes" : [
+      |         {
+      |         "desc" : "Animal services"
+      |         } ]
+      |        }
+      |   ]
+      | }
+    """.stripMargin).as[JsObject]
+
+  val iclMultipleResultsSicCode1 = SicCode("12345","Whale farming", "")
+  val iclMultipleResultsSicCode2 = SicCode("23456", "Dog walking", "")
+
+  val iclSingleResult = Json.parse(
+    """
+      | {
+      |   "sicCodes": [
+      |     {
+      |       "code" : "12345",
+      |       "desc" : "Whale farming",
+      |       "indexes" : [
+      |         {
+      |         "desc" : "Fish farming",
+      |         "desc" : "Fish-related activities"
+      |         } ]
+      |        }
+      |       ]
+      |     }
+    """.stripMargin).as[JsObject]
+
 }
