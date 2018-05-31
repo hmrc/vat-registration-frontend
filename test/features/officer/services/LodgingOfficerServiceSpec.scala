@@ -115,7 +115,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
          |}
        """.stripMargin)
 
-    val jsonFullLodgingOfficer = Json.parse(
+    val jsonFullLodgingOfficerWithEmail = Json.parse(
       s"""
          |{
          |  "name": {
@@ -134,6 +134,30 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
          |    },
          |    "contact": {
          |      "email": "test@t.test"
+         |    }
+         |  }
+         |}
+       """.stripMargin)
+
+    val jsonFullLodgingOfficerNoEmail = Json.parse(
+      s"""
+         |{
+         |  "name": {
+         |    "first": "First",
+         |    "middle": "Middle",
+         |    "last": "Last"
+         |  },
+         |  "role": "Director",
+         |  "dob": "1998-07-12",
+         |  "nino": "SR123456Z",
+         |  "details": {
+         |    "currentAddress": {
+         |      "line1": "TestLine1",
+         |      "line2": "TestLine2",
+         |      "postcode": "TE 1ST"
+         |    },
+         |    "contact": {
+         |      "mobile": "1234567890"
          |    }
          |  }
          |}
@@ -160,13 +184,27 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       service.getLodgingOfficer returns expected
     }
 
-    "return a full LodgingOfficer view model from backend" in new Setup(None, Some(jsonFullLodgingOfficer)) {
+    "return a full LodgingOfficer view model from backend with an email" in new Setup(None, Some(jsonFullLodgingOfficerWithEmail)) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: LodgingOfficer = LodgingOfficer(
         completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), None, None)),
+        formerName = Some(FormerNameView(false, None)),
+        formerNameDate = None,
+        previousAddress = Some(PreviousAddressView(true, None))
+      )
+      service.getLodgingOfficer returns expected
+    }
+
+    "return a full LodgingOfficer view model from backend without an email" in new Setup(None, Some(jsonFullLodgingOfficerNoEmail)) {
+      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val expected: LodgingOfficer = LodgingOfficer(
+        completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
+        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        contactDetails = Some(ContactDetailsView(None, None, Some("1234567890"))),
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
