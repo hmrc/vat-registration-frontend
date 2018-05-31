@@ -45,14 +45,8 @@ class SicAndComplianceControllerImpl @Inject()(val messagesApi: MessagesApi,
                                                val config: ServicesConfig,
                                                val iclService: ICLService) extends SicAndComplianceController {
 
-
-  val baseUri = config.getConfString("industry-classification-lookup-frontend.uri",
-    throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.uri'"))
-  val iclFEurl: String = config.baseUrl("industry-classification-lookup-frontend")
-  val IClFEinternal: String = config.baseUrl("industry-classification-lookup-frontend-internal") + baseUri
-  val initialiseJourney = config.getConfString("industry-classification-lookup-frontend.initialise-journey", throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.initialise-journey'"))
-
-  val IClInitialiseUrl = iclFEurl + initialiseJourney
+  val iclFEurlwww: String = config.getConfString("industry-classification-lookup-frontend.www.url",
+    throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
 }
 
 trait SicAndComplianceController extends BaseController with SessionProfile {
@@ -61,7 +55,7 @@ trait SicAndComplianceController extends BaseController with SessionProfile {
   val frsService: FlatRateService
   val vatRegFeatureSwitch: VATRegFeatureSwitches
   val iclService: ICLService
-  val iclFEurl: String
+  val iclFEurlwww: String
   def useICLStub: Boolean = vatRegFeatureSwitch.useIclStub.enabled
 
   private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
@@ -148,9 +142,9 @@ trait SicAndComplianceController extends BaseController with SessionProfile {
     if (useICLStub) {
       Future.successful(Redirect(test.routes.SicStubController.show()))
     } else {
-      iclService.journeySetup map(redirectUrl => Redirect(iclFEurl + redirectUrl, 303))
-      }
+      iclService.journeySetup map(redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
     }
+  }
 
   def submitSicHalt: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
