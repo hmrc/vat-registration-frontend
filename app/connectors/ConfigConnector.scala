@@ -46,13 +46,17 @@ trait ConfigConnector {
     (json \ "businessTypes").as[Seq[JsObject]]
   }
 
-  def getSicCodeDetails(sicCode: String): SicCode = SicCode(
-    id             = sicCode,
-    description    = config.getString(s"$sicCodePrefix.$sicCode.description"),
-    displayDetails = config.getString(s"$sicCodePrefix.$sicCode.displayDetails")
-  )
+  def getSicCodeDetails(sicCode: String): SicCode = {
+    val amendedCode = sicCode + "001"
 
-  def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.$sicCode.frsCategory")
+    SicCode(
+      code           = amendedCode,
+      description    = config.getString(s"$sicCodePrefix.$amendedCode.description"),
+      displayDetails = config.getString(s"$sicCodePrefix.$amendedCode.displayDetails")
+    )
+  }
+
+  def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.${sicCode}001.frsCategory")
 
   def getBusinessTypeDetails(frsId: String): (String, BigDecimal) = {
     val businessType = businessTypes.flatMap { jsObj =>

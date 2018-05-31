@@ -26,7 +26,20 @@ object BusinessActivityDescription {
 
 case class MainBusinessActivityView(id: String, mainBusinessActivity: Option[SicCode] = None)
 object MainBusinessActivityView {
-  def apply(cc: SicCode): MainBusinessActivityView = new MainBusinessActivityView(cc.id, Some(cc))
+  def apply(cc: SicCode): MainBusinessActivityView = new MainBusinessActivityView(cc.code, Some(cc))
 
   implicit val format = Json.format[MainBusinessActivityView]
+}
+
+case class OtherBusinessActivities(sicCodes: List[SicCode])
+
+object isOtherBusinessActivitiesPopulated {
+  def unapply(arg: Option[OtherBusinessActivities]): Option[Boolean] = {
+    arg.fold[Option[Boolean]](None)(a => Some(a.sicCodes.isEmpty))
+  }
+
+}
+
+object OtherBusinessActivities {
+  implicit val format = Json.format[OtherBusinessActivities]
 }

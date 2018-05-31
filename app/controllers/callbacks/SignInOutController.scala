@@ -17,14 +17,15 @@
 package controllers.callbacks
 
 import java.io.File
-import javax.inject.Inject
 
+import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import views.html.pages.error.TimeoutView
 
@@ -46,7 +47,6 @@ class SignInOutControllerImpl @Inject()(config: ServicesConfig,
 
   lazy val compRegFEPostSignIn = config.getConfString("company-registration-frontend.www.post-sign-in",
     throw new Exception("Config: company-registration-frontend.www.post-sign-in not found"))
-
 
 }
 

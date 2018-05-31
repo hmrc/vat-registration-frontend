@@ -83,9 +83,19 @@ POST        /describe-what-company-does                                         
 GET         /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.showMainBusinessActivity
 POST        /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.submitMainBusinessActivity
 
+## CONFIRM SIC CODES
+GET         /confirm-standard-industry-classification-codes-vat                                features.sicAndCompliance.controllers.SicAndComplianceController.showSicHalt
+POST        /confirm-standard-industry-classification-codes-vat                                features.sicAndCompliance.controllers.SicAndComplianceController.submitSicHalt
+
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    features.sicAndCompliance.controllers.SicAndComplianceController.showComplianceIntro
 POST        /tell-us-more-about-the-company                                                    features.sicAndCompliance.controllers.SicAndComplianceController.submitComplianceIntro
+
+## SAVE ICL CODES
+GET         /save-sic-codes                                                                    features.sicAndCompliance.controllers.SicAndComplianceController.saveIclCodes
+
+## SHOW ICL CONFIRM
+GET         /show-icl-confirmation                                                             features.sicAndCompliance.controllers.SicAndComplianceController.returnToICL
 
 
 ## LABOUR COMPLIANCE QUESTIONS

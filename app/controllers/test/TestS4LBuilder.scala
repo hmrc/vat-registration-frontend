@@ -51,7 +51,7 @@ object TestS4LBuilder {
       description = base.businessActivityDescription.map(BusinessActivityDescription(_)),
       mainBusinessActivity = base.mainBusinessActivityId map { id =>
         MainBusinessActivityView(SicCode(
-          id = id,
+          code = id,
           description = base.mainBusinessActivityDescription.getOrElse(""),
           displayDetails = base.mainBusinessActivityDisplayDetails.getOrElse("")
         ))

@@ -16,6 +16,7 @@
 
 package controllers.builders
 
+import features.sicAndCompliance.models.OtherBusinessActivities
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import models.api._
@@ -54,8 +55,35 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
         builder.companyMainBusinessActivityRow mustBe
           SummaryRow(
             "businessActivities.mainBusinessActivity",
-            sicCode.description,
+            sicCode.code + " - " + sicCode.description,
             Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+          )
+      }
+
+      "sic codes entered in sic and compliance should be shown when they are entered by the user" in {
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance =
+          Some(s4lVatSicAndComplianceWithLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode))))
+        ))
+        builder.confirmIndustryClassificationCodesRow mustBe
+          SummaryRow(
+            "businessActivities.otherBusinessActivities",
+            List(sicCode.code + " - " + sicCode.description),
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
+          )
+      }
+
+      "multiple sic codes entered in sic and compliance should be shown when they are entered by the user" in {
+        val sicOne = sicCode.copy(description = "test")
+        val sicTwo = sicCode.copy(description = "test2")
+
+        val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance =
+          Some(s4lVatSicAndComplianceWithLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicOne, sicTwo))))
+        ))
+        builder.confirmIndustryClassificationCodesRow mustBe
+          SummaryRow(
+            "businessActivities.otherBusinessActivities",
+            List(sicOne.code + " - " + sicOne.description, sicTwo.code + " - " + sicTwo.description),
+            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
           )
       }
     }
@@ -65,7 +93,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
       "a valid summary section" in {
         val builder = SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance = Some(s4lVatSicAndComplianceWithLabour))
         builder.section.id mustBe "businessActivities"
-        builder.section.rows.length mustEqual 2
+        builder.section.rows.length mustEqual 3
       }
     }
   }

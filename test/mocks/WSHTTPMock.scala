@@ -47,7 +47,7 @@ trait WSHTTPMock {
   }
 
   def mockHttpPOST[I, O](url: String, thenReturn: O, mockWSHttp: WSHttp = mockWSHttp): OngoingStubbing[Future[O]] = {
-    when(mockWSHttp.POST[I, O](Matchers.anyString(), Matchers.any[I](), Matchers.any())(Matchers.any[Writes[I]](),
+    when(mockWSHttp.POST[I, O](Matchers.any(), Matchers.any[I](), Matchers.any())(Matchers.any[Writes[I]](),
       Matchers.any[HttpReads[O]](), Matchers.any[HeaderCarrier](), Matchers.any()))
       .thenReturn(Future.successful(thenReturn))
   }
