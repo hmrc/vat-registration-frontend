@@ -35,16 +35,24 @@ object CompanyContactDetailsForm {
 
   private def validationError(field: String) = ValidationError(s"validation.businessContactDetails.$field.missing", field)
 
+  implicit val errorCode: ErrorCode = s"$FORM_NAME.$EMAIL"
 
-  implicit val errorCode: ErrorCode = "officerContactDetails.email"
   val form = Form(
     mapping(
-      EMAIL         -> textMapping()(s"$FORM_NAME.$EMAIL").verifying(StopOnFirstFail(mandatoryText()(s"$FORM_NAME.$EMAIL"),FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH))),
+      EMAIL         -> textMapping().verifying(StopOnFirstFail(mandatoryText(),FormValidation.IsEmail,maxLenText(EMAIL_MAX_LENGTH))),
       DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
       MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
       WEBSITE       -> optional(text)
     )(CompanyContactDetails.apply)(CompanyContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
+
+  def transformErrors(form: Form[CompanyContactDetails]): Form[CompanyContactDetails] = {
+    if (form.hasErrors && form.data.filterKeys(_ != "csrfToken").forall(_._2 == "")) {
+      form.discardingErrors.withGlobalError("validation.businessContactDetails.missing", "businessContactDetails")
+    } else {
+      form
+    }
+  }
 
   private def atLeastOnePhoneNumber: Constraint[CompanyContactDetails] = Constraint {
     case CompanyContactDetails(_, None, None, _) => Invalid(validationError("atLeastOneNumber"))

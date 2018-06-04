@@ -30,7 +30,7 @@ class FormerNamePageSpec extends UnitSpec with WithFakeApplication with I18nSupp
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
 
-  lazy val form = FormerNameForm.form
+  lazy val form = FormerNameForm.form("TestCurrentName")
 
   "Former Name Page" should {
     "display the page without pre populated data" in {

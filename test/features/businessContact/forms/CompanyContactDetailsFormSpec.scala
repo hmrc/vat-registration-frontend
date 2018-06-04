@@ -19,6 +19,7 @@ package features.businessContact.forms
 import features.businessContact.models.CompanyContactDetails
 import uk.gov.hmrc.play.test.UnitSpec
 import helpers.FormInspectors._
+import play.api.data.FormError
 
 class CompanyContactDetailsFormSpec extends UnitSpec {
 
@@ -141,6 +142,24 @@ class CompanyContactDetailsFormSpec extends UnitSpec {
         val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("email" -> "validation.businessContactDetails.email.invalid")
       }
+    }
+  }
+
+  "Calling transformErrors" must {
+    "return a form with only one global error when the form has errors and data is empty" in {
+      val data = Map("email" -> Seq(""), "mobile" -> Seq(""), "csrfToken" -> Seq(""))
+      val formError = testForm.bindFromRequest(data)
+
+      CompanyContactDetailsForm.transformErrors(formError).hasErrors shouldBe true
+      CompanyContactDetailsForm.transformErrors(formError).hasGlobalErrors shouldBe true
+      CompanyContactDetailsForm.transformErrors(formError).globalError shouldBe Some(FormError("", "validation.businessContactDetails.missing", Seq("businessContactDetails")))
+    }
+
+    "do nothing if form has errors and data is not empty" in {
+      val data = Map("email" -> Seq("t@@"), "mobile" -> Seq(""), "csrfToken" -> Seq(""))
+      val formError = testForm.bindFromRequest(data)
+
+      CompanyContactDetailsForm.transformErrors(formError) shouldBe formError
     }
   }
 }
