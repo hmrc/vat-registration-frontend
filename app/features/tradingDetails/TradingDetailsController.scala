@@ -16,13 +16,12 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import features.tradingDetails.TradingDetailsService
-import features.tradingDetails.views.html.{eori_apply => ApplyEoriPage, eu_goods => EuGoodsPage, trading_name => TradingNamePage}
-import forms.{ApplyEoriForm, EuGoodsForm, TradingNameForm}
+import features.tradingDetails.views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
+import forms.{EuGoodsForm, TradingNameForm}
+import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import services.{IncorporationInformationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -90,35 +89,7 @@ trait TradingDetailsController extends BaseController with SessionProfile {
         EuGoodsForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(EuGoodsPage(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-            if (success) {
-              Redirect(controllers.routes.TradingDetailsController.applyEoriPage())
-            } else {
-              Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
-            }
-          }
-        )
-      }
-  }
-
-  val applyEoriPage = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-          _.applyEori match {
-            case Some(eori) => Ok(ApplyEoriPage(ApplyEoriForm.form.fill(eori)))
-            case None => Ok(ApplyEoriPage(ApplyEoriForm.form))
-          }
-        }
-      }
-  }
-
-  val submitApplyEori = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        ApplyEoriForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(ApplyEoriPage(errors))),
-          success => tradingDetailsService.saveEori(profile.registrationId, success) map {
-            _ => Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
+            Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
           }
         )
       }

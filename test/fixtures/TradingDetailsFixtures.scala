@@ -32,15 +32,13 @@ trait TradingDetailsFixtures extends BaseFixture {
   def generateTradingDetails(
                       tradingNameSelection: Boolean = true,
                       tradingName: Option[String] = Some("ACME Ltd."),
-                      euGoodsSelection: Boolean = true,
-                      eoriApplication: Option[Boolean] = Some(true)
+                      euGoodsSelection: Boolean = true
                     ): TradingDetails =
     TradingDetails(
       tradingNameView = Some(TradingNameView(
         yesNo = tradingNameSelection,
         tradingName = tradingName
       )),
-      euGoods = Some(euGoodsSelection),
-      applyEori = eoriApplication
+      euGoods = Some(euGoodsSelection)
     )
 }

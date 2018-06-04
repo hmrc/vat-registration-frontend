@@ -52,8 +52,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
   val fullS4L = TradingDetails(
     Some(tradingNameViewNo),
-    Some(true),
-    Some(false)
+    Some(true)
   )
 
   "tradingNamePage" should {
@@ -200,7 +199,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/apply-economic-operator-registration-identification-number")
+        redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
       }
     }
 
@@ -225,75 +224,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-  }
-
-  "applyEoriPage" should {
-    "return an Ok when there is a trading details present" in new Setup {
-      when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-        .thenReturn(Future.successful(TradingDetails(applyEori = Some(true))))
-
-      callAuthorised(testController.applyEoriPage) {
-        result => {
-          status(result) mustBe OK
-        }
-      }
-    }
-
-    "return an Ok when there is no trading details present" in new Setup {
-      when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-        .thenReturn(Future.successful(TradingDetails()))
-
-      callAuthorised(testController.applyEoriPage) {
-        result => {
-          status(result) mustBe OK
-        }
-      }
-    }
-  }
-
-  "submitApplyEori" should {
-
-    val fakeRequest = FakeRequest(controllers.routes.TradingDetailsController.submitApplyEori())
-
-    "return 303 when they want to apply for eori number" in new Setup {
-      when(mockTradingDetailsService.saveEori(any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "applyEoriRadio" -> "true"
-      )
-
-      submitAuthorised(testController.submitApplyEori, request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
-      }
-    }
-
-    "return 303 when they don't want to apply for an eori number" in new Setup {
-      when(mockTradingDetailsService.saveEori(any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "applyEoriRadio" -> "false"
-      )
-
-      submitAuthorised(testController.submitApplyEori, request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
-      }
-    }
-
-    "return 400 when no option is selected" in new Setup {
-      when(mockTradingDetailsService.saveEori(any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      submitAuthorised(testController.submitApplyEori, request) { result =>
         status(result) mustBe 400
       }
     }

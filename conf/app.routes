@@ -45,10 +45,6 @@ POST        /trading-name                                                       
 GET         /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.euGoodsPage
 POST        /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.submitEuGoods
 
-## EU GOODS APPLY EORI
-GET         /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.applyEoriPage
-POST        /apply-economic-operator-registration-identification-number                        controllers.TradingDetailsController.submitApplyEori
-
 ## ESTIMATE VAT TAXABLE TURNOVER PAGE
 GET         /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.showEstimateVatTurnover
 POST        /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.submitEstimateVatTurnover

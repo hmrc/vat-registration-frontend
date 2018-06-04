@@ -29,17 +29,10 @@ case class SummaryDoingBusinessAbroadSectionBuilder(tradingDetails: Option[Tradi
     Some(controllers.routes.TradingDetailsController.euGoodsPage())
   )
 
-  val applyEoriRow: SummaryRow = SummaryRow(
-    s"$sectionId.eori",
-    tradingDetails.flatMap(_.applyEori).foldLeft("app.common.no")((default, eori) => if (eori) "app.common.yes" else default),
-    Some(controllers.routes.TradingDetailsController.applyEoriPage())
-  )
-
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (euGoodsRow, true),
-      (applyEoriRow, tradingDetails.flatMap(_.euGoods).getOrElse(false))
+      (euGoodsRow, true)
     )
   )
 }
