@@ -217,6 +217,16 @@ class OfficerFormsSpec extends UnitSpec {
       boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.match.cc")
     }
 
+    "have the correct error if true is selected and the name provided is same as the completion capacity (case insensitive)" in {
+      val data = Map(
+        "formerNameRadio" -> "true",
+        "formerName" -> "test current name"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.match.cc")
+    }
+
     "Unbind successfully with true and valid name" in {
       val data = Map(
         "formerNameRadio" -> "true",
