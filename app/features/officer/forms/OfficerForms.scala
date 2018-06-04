@@ -79,7 +79,7 @@ object FormerNameForm {
 
   def isNotMatchingCompletionCapacityId(matcher: String, errorMsg: String): Constraint[String] = Constraint[String] {
     input: String =>
-      if (matcher != input.replaceAll(" ", "")) Valid else Invalid(errorMsg)
+      if (matcher.toLowerCase != input.replaceAll(" ", "").toLowerCase) Valid else Invalid(errorMsg)
   }
 
   def form(completionCapacityId: String) = Form(
