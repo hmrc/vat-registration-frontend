@@ -48,8 +48,7 @@ trait TradingDetailsService {
     }
 
   def getS4LCompletion(data : TradingDetails) : Completion[TradingDetails] = data match {
-    case TradingDetails(Some(tn), Some(eu), Some(ae)) if eu => Complete(data)
-    case TradingDetails(Some(tn), Some(eu), _)        if !eu => Complete(data)
+    case TradingDetails(Some(_), Some(_)) => Complete(data)
     case _ => Incomplete(data)
   }
 
@@ -81,10 +80,5 @@ trait TradingDetailsService {
   def saveEuGoods(regId : String, euGoods: Boolean)
                  (implicit hc : HeaderCarrier, currentProfile: CurrentProfile) : Future[TradingDetails] = {
     updateTradingDetails(regId) { storedData => storedData.copy(euGoods = Some(euGoods))}
-  }
-
-  def saveEori(regId : String, applyEori: Boolean)
-              (implicit hc : HeaderCarrier, currentProfile: CurrentProfile) : Future[TradingDetails] = {
-    updateTradingDetails(regId) { storedData => storedData.copy(applyEori = Some(applyEori))}
   }
 }

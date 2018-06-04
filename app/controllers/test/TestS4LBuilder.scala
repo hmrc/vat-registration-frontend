@@ -22,7 +22,6 @@ import features.businessContact.models.{BusinessContact, CompanyContactDetails}
 import features.officer.models.view._
 import features.sicAndCompliance.models._
 import features.tradingDetails.TradingDetails
-import models._
 import models.api._
 import models.external.{Name, Officer}
 import models.view.test.TestSetup
@@ -31,7 +30,7 @@ object TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): TradingDetails = {
     data.tradingDetailsBlock match {
-      case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods, tdb.applyEori)
+      case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods)
       case None      => TradingDetails()
     }
   }
