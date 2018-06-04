@@ -16,18 +16,23 @@
 
 package features.sicAndCompliance.forms
 
-import forms.FormValidation.{regexPattern, removeNewlineAndTrim, textMapping}
+import forms.FormValidation.{regexPattern, removeNewlineAndTrim, textMapping, maxLenText}
 import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView}
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object BusinessActivityDescriptionForm {
+  val DESC_MAX_LENGTH = 250
   val INPUT_DESCRIPTION: String = "description"
-  val PartPattern = """^[A-Za-z0-9\-',/& ]{1,250}$""".r
+  val PartPattern = """^[A-Za-z0-9\-',/& ]+$""".r
 
   val form = Form(
     mapping(
-      INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(regexPattern(PartPattern)("BusinessActivity.description"))
+      INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+        regexPattern(PartPattern)("businessActivity.description"),
+        maxLenText(DESC_MAX_LENGTH)("businessActivity.description")
+      ))
     )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
   )
 }

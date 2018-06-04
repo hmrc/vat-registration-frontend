@@ -17,16 +17,13 @@
   <p>@Html(messages("pages.businessContactDetails.para1"))</p>
 
   @govHelpers.form(action = features.businessContact.controllers.routes.BusinessContactDetailsController.submitCompanyContactDetails()) {
-      <div class="form-group">
-          <div>
+      <div class="form-group @if(doesFormHaveErrors(companyContactDetailsForm, "businessContactDetails")){form-group-error}">
+          @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
+            @govHelpers.errorInline("businessContactDetails", messages(error.message))
+          }
+          <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
 
-
-              <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
-
-              @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
-                  @govHelpers.errorInline("businessContactDetails", messages(error.message))
-              }
-
+          <div id="businessContactDetails">
               @vatInput(
                   companyContactDetailsForm("email"),
                   '_divClass    -> "form-group",
@@ -35,47 +32,47 @@
                   '_maxlength   -> 70,
                   '_label       -> messages("pages.businessContactDetails.emailAddress.label")
               )
+          </div>
 
-              <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
-                  <p>@Html(messages("pages.businessContactDetails.para3"))</p>
-              </div>
-              <br />
-              <div id="atLeastOneNumber" class="@if(doesFormHaveErrors(companyContactDetailsForm, "atLeastOneNumber")){ form-group-error}">
+          <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
+              <p>@Html(messages("pages.businessContactDetails.para3"))</p>
+          </div>
 
-                @getErrorsForArgument(companyContactDetailsForm, "atLeastOneNumber").map { error =>
-                    @govHelpers.errorInline("businessContactDetails", messages(error.message))
-                }
+          <div id="atLeastOneNumber" class="@if(doesFormHaveErrors(companyContactDetailsForm, "atLeastOneNumber")){ form-group-error}">
 
-                  @vatInput(
-                      companyContactDetailsForm("daytimePhone"),
-                      '_type        -> "text",
-                      '_divClass    -> "form-group",
-                      '_inputClass  -> "form-control",
-                      '_labelClass  -> "cascading",
-                      '_maxlength   -> 20,
-                      '_label       -> messages("pages.businessContactDetails.daytimePhone.label")
-                  )
-
-                  @vatInput(
-                      companyContactDetailsForm("mobile"),
-                      '_type        -> "text",
-                      '_divClass    -> "form-group",
-                      '_inputClass  -> "form-control",
-                      '_labelClass  -> "cascading",
-                      '_maxlength   -> 20,
-                      '_label       -> messages("pages.businessContactDetails.mobile.label")
-                  )
-              </div>
+            @getErrorsForArgument(companyContactDetailsForm, "atLeastOneNumber").map { error =>
+                @govHelpers.errorInline("businessContactDetails", messages(error.message))
+            }
 
               @vatInput(
-                  companyContactDetailsForm("website"),
+                  companyContactDetailsForm("daytimePhone"),
                   '_type        -> "text",
+                  '_divClass    -> "form-group",
                   '_inputClass  -> "form-control",
                   '_labelClass  -> "cascading",
-                  '_maxlength   -> 255,
-                  '_label       -> messages("pages.businessContactDetails.website.label")
+                  '_maxlength   -> 20,
+                  '_label       -> messages("pages.businessContactDetails.daytimePhone.label")
               )
-      </div>
+
+              @vatInput(
+                  companyContactDetailsForm("mobile"),
+                  '_type        -> "text",
+                  '_divClass    -> "form-group",
+                  '_inputClass  -> "form-control",
+                  '_labelClass  -> "cascading",
+                  '_maxlength   -> 20,
+                  '_label       -> messages("pages.businessContactDetails.mobile.label")
+              )
+          </div>
+
+          @vatInput(
+              companyContactDetailsForm("website"),
+              '_type        -> "text",
+              '_inputClass  -> "form-control",
+              '_labelClass  -> "cascading",
+              '_maxlength   -> 255,
+              '_label       -> messages("pages.businessContactDetails.website.label")
+          )
       </div>
 
       <div class="form-group">

@@ -17,10 +17,10 @@
 package features.officer.controllers
 
 import java.time.LocalDate
-import javax.inject.Inject
 
+import javax.inject.Inject
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
-import common.exceptions.InternalExceptions.NoOfficerFoundException
+import common.exceptions.InternalExceptions.{ElementNotFoundException, NoOfficerFoundException}
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
@@ -93,7 +93,8 @@ trait OfficerController extends BaseController with SessionProfile {
       ivPassedCheck {
         for {
           officer    <- lodgingOfficerService.getLodgingOfficer
-          filledForm = officer.formerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
+          ccId       = officer.completionCapacity.map(cc => cc.id).getOrElse(throw new ElementNotFoundException(s"No Completion Capacity View found for regId: ${profile.registrationId}"))
+          filledForm = officer.formerName.fold(FormerNameForm.form(ccId))(FormerNameForm.form(ccId).fill)
         } yield Ok(features.officer.views.html.former_name(filledForm))
       }
   }
@@ -101,16 +102,20 @@ trait OfficerController extends BaseController with SessionProfile {
   def submitFormerName: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        FormerNameForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(features.officer.views.html.former_name(badForm))),
-          data => lodgingOfficerService.saveLodgingOfficer(data) map {
-            _ => if (data.yesNo) {
-              Redirect(routes.OfficerController.showFormerNameDate())
-            } else {
-              Redirect(routes.OfficerController.showContactDetails())
+        lodgingOfficerService.getLodgingOfficer flatMap { officer =>
+          val ccId = officer.completionCapacity.map(cc => cc.id).getOrElse(throw new ElementNotFoundException(s"No Completion Capacity View found for regId: ${profile.registrationId}"))
+          FormerNameForm.form(ccId).bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(features.officer.views.html.former_name(badForm))),
+            data => lodgingOfficerService.saveLodgingOfficer(data) map {
+              _ =>
+                if (data.yesNo) {
+                  Redirect(routes.OfficerController.showFormerNameDate())
+                } else {
+                  Redirect(routes.OfficerController.showContactDetails())
+                }
             }
-          }
-        )
+          )
+        }
       }
   }
 

@@ -124,7 +124,9 @@ trait BusinessContactDetailsController extends BaseController with SessionProfil
     implicit request => implicit profile =>
       ivPassedCheck {
         companyContactForm.bindFromRequest.fold(
-          hasErrors => Future.successful(BadRequest(business_contact_details(hasErrors))),
+          formError => {
+            Future.successful(BadRequest(business_contact_details(CompanyContactDetailsForm.transformErrors(formError))))
+          },
           contact   => businessContactService.updateBusinessContact[CompanyContactDetails](contact) map {
             _ => Redirect(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           }

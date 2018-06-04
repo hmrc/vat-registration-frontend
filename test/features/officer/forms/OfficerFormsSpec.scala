@@ -135,7 +135,7 @@ class OfficerFormsSpec extends UnitSpec {
   }
 
   "FormerNameForm" should {
-    val testForm = FormerNameForm.form
+    val testForm = FormerNameForm.form("TestCurrentName")
     val testDataWithName = FormerNameView(true, Some("Test Old Name"))
     val testDataNoName = FormerNameView(false, None)
 
@@ -174,7 +174,7 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerNameRadio" -> "validation.formerName.missing")
+      boundForm shouldHaveErrors Seq("formerNameRadio" -> "validation.formerName.choice.missing")
     }
 
     "have the correct error if true is selected and no name is provided" in {
@@ -184,7 +184,7 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.selected.missing")
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.missing")
     }
 
     "have the correct error if true is selected and invalid name is provided" in {
@@ -194,7 +194,27 @@ class OfficerFormsSpec extends UnitSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.selected.invalid")
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.invalid")
+    }
+
+    "have the correct error if true is selected and a too long name is provided" in {
+      val data = Map(
+        "formerNameRadio" -> "true",
+        "formerName" -> "tooooooooooooooooooo looooooooooonnnnnnng nnnnaaaaaaaaaaammeeeeeeeeeeee"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.maxlen")
+    }
+
+    "have the correct error if true is selected and the name provided is exact same as the completion capacity" in {
+      val data = Map(
+        "formerNameRadio" -> "true",
+        "formerName" -> "Test Current Name"
+      )
+      val boundForm = testForm.bind(data)
+
+      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.match.cc")
     }
 
     "Unbind successfully with true and valid name" in {

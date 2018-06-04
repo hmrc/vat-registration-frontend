@@ -96,7 +96,6 @@ object FormValidation {
 
   def inRangeWithArgs[T](minValue: T, maxValue: T)(args: Seq[Any] = Seq())(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
-      Logger.info(s"Checking constraint for value $t in the range of [$minValue, $maxValue]")
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
         case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
@@ -107,7 +106,6 @@ object FormValidation {
 
   def onOrAfter[T](minValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
-      Logger.info(s"Checking constraint for value $t on or after [$minValue]")
       (ordering.compare(t, minValue).signum) match {
         case (1) | (0) => Valid
         case (-1) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
@@ -117,7 +115,7 @@ object FormValidation {
   val taxEstimateTextToLong = textToLong(0, 1000000000000000L) _
   val numberOfWorkersToInt = textToInt(1, 99999) _
 
-  def removeSpaces(text: String) = StringUtils.remove(text, ' ')
+  def removeSpaces(text: String): String = text.replaceAll(" ", "")
   def removeNewlineAndTrim(s: String): String = s.replaceAll("\r\n|\r|\n|\t", " ").trim
 
   private def textToInt(min: Int, max: Int)(s: String): Int = {
