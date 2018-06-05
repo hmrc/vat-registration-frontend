@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
-                                       val brConnector : BusinessRegistrationConnect,
+                                       val brConnector : BusinessRegistrationConnector,
                                        val compRegConnector: CompanyRegistrationConnector,
                                        val incorporationService: IncorporationInformationService,
                                        val keystoreConnector: KeystoreConnector,
@@ -44,7 +44,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
-  val brConnector: BusinessRegistrationConnect
+  val brConnector: BusinessRegistrationConnector
   val compRegConnector: CompanyRegistrationConnector
   val incorporationService: IncorporationInformationService
   val iiConnector: IncorporationInformationConnector

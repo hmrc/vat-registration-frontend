@@ -20,18 +20,17 @@ import config.WSHttp
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
 import play.api.http.Status._
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.HttpResponse
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundException}
 
 class BusinessRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
   class Setup() {
-    val connector = new BusinessRegistrationConnect {
+    val connector = new BusinessRegistrationConnector {
       override val businessRegistrationUrl: String = "tst-url"
       override val businessRegistrationUri: String = "tst-url"
       override val http: WSHttp = mockWSHttp
     }
   }
-
 
   val regId = "testRegId"
   val brResponseJson =
@@ -61,6 +60,55 @@ class BusinessRegistrationConnectorSpec extends VatRegSpec with VatRegistrationF
         mockHttpGET[HttpResponse]("tst-urltst-url", HttpResponse(OK, Some(Json.parse("{}"))))
 
         await(connector.getBusinessRegistrationID) mustBe None
+      }
+    }
+  }
+
+  "getTradingName" should {
+    "return a trading name" when {
+      "there is one in business registration" in new Setup {
+        mockHttpGET[JsValue]("tst-urltst-url", Json.parse("""{"tradingName": "Foo Bar"}"""))
+
+        await(connector.retrieveTradingName("someRegId")) mustBe Some("Foo Bar")
+      }
+    }
+    "return no trading name" when {
+      "there is none in business registration" in new Setup {
+        mockHttpGET[JsValue]("tst-urltst-url", Json.obj())
+
+        await(connector.retrieveTradingName("someRegId")) mustBe None
+      }
+
+      "there an invalid trading name" in new Setup {
+        mockHttpGET[JsValue]("tst-urltst-url", Json.parse("""{"tradingNameTroup": "Foo Bar"}"""))
+
+        await(connector.retrieveTradingName("someRegId")) mustBe None
+      }
+      "a not found exception is experienced" in new Setup {
+        mockHttpFailedGET("tst-urltst-url", new NotFoundException(""))
+
+        await(connector.retrieveTradingName("someRegId")) mustBe None
+      }
+      "there is an error in business registration" in new Setup {
+        mockHttpFailedGET("tst-urltst-url", new InternalServerException(""))
+
+        await(connector.retrieveTradingName("someRegId")) mustBe None
+      }
+    }
+  }
+
+  "upsertTradingName" should {
+    "return the passed in trading name" when {
+      "the upsert has been successful" in new Setup {
+        mockHttpPOST[JsValue, HttpResponse]("tst-urltst-url",HttpResponse(200))
+
+        await(connector.upsertTradingName("someRegId", "New Foo Bar")) mustBe "New Foo Bar"
+      }
+
+      "an error occured in br" in new Setup {
+        mockHttpFailedPOST[JsValue, HttpResponse]("tst-urltst-url", new InternalServerException(""))
+
+        await(connector.upsertTradingName("someRegId", "New Foo Bar")) mustBe "New Foo Bar"
       }
     }
   }
