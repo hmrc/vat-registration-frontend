@@ -32,6 +32,7 @@ import models.view.vatContact.ppob.PpobView
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
+import utils.SystemDate
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -43,7 +44,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some(d.format(ofPattern("yyyy-MM-dd")))))))
 
     val service = new PrePopService {
-      override val ppConnector = mockPPConnector
+      override val businessRegistrationConnector = mockBrConnector
       override val incorpInfoService = mockIIService
       override val vatRegService = mockVatRegistrationService
       override val save4later = mockS4LService
@@ -53,21 +54,22 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
   val expectedFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  val optCtr = CorporationTaxRegistration(
-    Some(AccountingDetails("", Some(LocalDate.of(2017, 4, 24) format expectedFormat))))
+  def optCtr = CorporationTaxRegistration(
+    Some(AccountingDetails("", Some(SystemDate.getSystemDate.toLocalDate.plusDays(7) format expectedFormat))))
 
   "CT Active Date" must {
 
     "be a LocalDate" in new Setup {
-      val expectedDate = Some(LocalDate.of(2017, 4, 24))
-      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
-        .thenReturn(Future.successful(Some(optCtr)))
+      val expectedDate = Some(SystemDate.getSystemDate.toLocalDate.plusDays(7))
+      when(mockVatRegistrationService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(Threshold(false, Some(Threshold.INTENDS_TO_SELL))))
+
       service.getCTActiveDate returns expectedDate
     }
 
     "be None" in new Setup {
-      when(mockPPConnector.getCompanyRegistrationDetails(any(), any(), any()))
-        .thenReturn(Future.successful(None))
+      when(mockVatRegistrationService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(Threshold(false, Some(Threshold.SELLS))))
       service.getCTActiveDate returns None
     }
 
@@ -217,4 +219,62 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       service.getOfficerList returns Seq()
     }
  }
+
+  "getCompanyRegistration" should {
+    "return a valid company registration" when {
+      "company intends to sell" in new Setup {
+        when(mockVatRegistrationService.getThreshold(any())(any()))
+          .thenReturn(Future.successful(generateThreshold(reason = Some(Threshold.INTENDS_TO_SELL))))
+
+        service.getCompanyRegistrationDetails returnsSome optCtr
+      }
+    }
+    "return None" when {
+      "there is no threshold reason" in new Setup {
+        when(mockVatRegistrationService.getThreshold(any())(any()))
+          .thenReturn(Future.successful(validVoluntaryRegistration))
+
+        service.getCompanyRegistrationDetails returnsNone
+      }
+      "company already sells" in new Setup {
+        when(mockVatRegistrationService.getThreshold(any())(any()))
+          .thenReturn(Future.successful(generateThreshold(reason = Some(Threshold.SELLS))))
+
+        service.getCompanyRegistrationDetails returnsNone
+      }
+    }
+    "return an Error" when {
+      val failure  = new IllegalArgumentException("Threshold Fails")
+      "an error happens getting the threshold" in new Setup{
+        when(mockVatRegistrationService.getThreshold(any())(any()))
+          .thenReturn(Future.failed(failure))
+
+        service.getCompanyRegistrationDetails failedWith failure
+      }
+    }
+  }
+
+  "getTradingName" should {
+    "return a trading name if found" in new Setup {
+      when(mockBrConnector.retrieveTradingName(any())(any()))
+        .thenReturn(Future.successful(Some("Foo Bar")))
+
+      service.getTradingName("someRegId") returnsSome "Foo Bar"
+    }
+    "return None if not found" in new Setup {
+      when(mockBrConnector.retrieveTradingName(any())(any()))
+        .thenReturn(Future.successful(None))
+
+      service.getTradingName("someRegId") returnsNone
+    }
+  }
+
+  "saveTradingName" should {
+    "return the trading name that was passed in" in new Setup {
+      when(mockBrConnector.upsertTradingName(any(), any())(any()))
+        .thenReturn(Future.successful("Foo Bar Wizz"))
+
+      service.saveTradingName("someRegId", "Foo Bar Wizz") returns "Foo Bar Wizz"
+    }
+  }
 }

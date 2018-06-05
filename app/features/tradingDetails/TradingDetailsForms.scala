@@ -16,6 +16,7 @@
 
 package forms
 
+import features.tradingDetails.TradingNameView
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -51,4 +52,14 @@ object TradingNameForm extends RequiredBooleanForm {
       )
     )
   )
+
+  def fillWithPrePop(prePopTradingName:Option[String], tradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
+    if (tradingNameFormData.exists(_.yesNo)) {
+      form.fill(tradingNameFormData.get.yesNo, tradingNameFormData.get.tradingName)
+    } else {
+      val hasTradingName = tradingNameFormData.map(_.yesNo.toString).getOrElse("")
+      val tradeName = prePopTradingName.getOrElse("")
+      form.bind(Map(RADIO_YES_NO -> hasTradingName, INPUT_TRADING_NAME -> tradeName)).discardingErrors
+    }
+  }
 }
