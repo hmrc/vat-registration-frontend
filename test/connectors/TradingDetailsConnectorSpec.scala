@@ -38,7 +38,6 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
   val fullS4L = TradingDetails(
     Some(tradingNameViewNo),
-    Some(true),
     Some(false)
   )
 

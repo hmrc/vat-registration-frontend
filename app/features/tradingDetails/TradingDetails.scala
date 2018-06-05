@@ -27,8 +27,7 @@ object TradingNameView {
 }
 
 case class TradingDetails(tradingNameView: Option[TradingNameView] = None,
-                          euGoods: Option[Boolean] = None,
-                          applyEori: Option[Boolean] = None)
+                          euGoods: Option[Boolean] = None)
 
 object TradingDetails {
   implicit val s4lkey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
@@ -36,12 +35,11 @@ object TradingDetails {
   val reads: Reads[TradingDetails] = new Reads[TradingDetails] {
     override def reads(json: JsValue): JsResult[TradingDetails] = {
       val tradingName = (json \ "tradingName").asOpt[String]
-      val eoriRequested = (json \ "eoriRequested").asOpt[Boolean]
+      val eoriRequested = (json \ "eoriRequested").as[Boolean]
 
       JsSuccess(TradingDetails(
         Some(TradingNameView(tradingName.isDefined, tradingName)),
-        Some(eoriRequested.isDefined),
-        eoriRequested
+        Some(eoriRequested)
       ))
     }
   }
@@ -49,7 +47,7 @@ object TradingDetails {
   val writes: Writes[TradingDetails] = new Writes[TradingDetails] {
     override def writes(s4l: TradingDetails): JsValue = {
       val tradingName = s4l.tradingNameView.get.tradingName.fold(Json.obj()) {tradingName => Json.obj("tradingName" -> tradingName)}
-      val eoriReqObj = s4l.applyEori.fold(Json.obj()) {eori => Json.obj("eoriRequested" -> eori)}
+      val eoriReqObj = Json.obj("eoriRequested" -> s4l.euGoods.get)
 
       tradingName ++ eoriReqObj
     }

@@ -29,22 +29,11 @@ class TradingDetailsModelSpec extends UnitSpec with Inspectors with VatRegistrat
     "construct valid json" in {
       Json.toJson(TradingDetails(
         Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(true),
         Some(true)
       )) shouldBe Json.parse(
         """{
           |"tradingName":"test",
           |"eoriRequested":true
-          |}""".stripMargin)
-    }
-
-    "construct valid json without applyEori" in {
-      Json.toJson(TradingDetails(
-        Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(false)
-      )) shouldBe Json.parse(
-        """{
-          |"tradingName":"test"
           |}""".stripMargin)
     }
 
@@ -56,20 +45,7 @@ class TradingDetailsModelSpec extends UnitSpec with Inspectors with VatRegistrat
           |}"""
           .stripMargin).as[TradingDetails] shouldBe TradingDetails(
         Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(true),
         Some(true)
-      )
-    }
-
-    "construct valid model without applyEori" in {
-      Json.parse(
-        """{
-          |"tradingName":"test"
-          |}"""
-          .stripMargin).as[TradingDetails] shouldBe TradingDetails(
-        Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(false),
-        None
       )
     }
   }

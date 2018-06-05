@@ -378,7 +378,6 @@ pages.summary.directorAddresses.previousAddress               = Previous address
 ## Summary Page Doing Business Abroad
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
 pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
-pages.summary.doingBusinessAbroad.eori                        = Applied for EORI number
 
 ## Summary Page Annual Accounting Scheme
 pages.summary.annualAccountingScheme.sectionHeading                     = Annual Accounting Scheme
@@ -477,17 +476,6 @@ pages.labourCompliance.skilledWorkers.title         = Does the company provide s
 pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
 pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
 validation.skilledWorkers.missing                   = Tell us if your company provides skilled workers
-
-
-## EORI Apply
-pages.applyEori.title                          = You need an Economic Operator Registration and Identification (EORI) number
-pages.applyEori.heading                        = You need an Economic Operator Registration and Identification (EORI) number
-pages.applyEori.para1                          = You''ll need this to trade VAT taxable goods with countries outside the EU.
-pages.applyEori.para2                          = We can send you an EORI number by email, usually within 3 working days.
-pages.applyEori.h3                             = Do you want to apply for one now?
-pages.applyEori.number.yes                     = Yes - send me one now
-pages.applyEori.number.no                      = No - I''ll get one later
-validation.applyEori.missing                   = Tell us if you want to apply for an EORI number
 
 ## EU Goods
 pages.euGoods.title                         = Will the company trade VAT-taxable goods with countries outside the EU?
