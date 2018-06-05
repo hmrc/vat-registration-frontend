@@ -17,23 +17,25 @@
 package connectors
 
 import javax.inject.Inject
-
 import config.WSHttp
+import features.tradingDetails.TradingDetails
+import play.api.Logger
 import play.api.http.Status._
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class BusinessRegistrationConnector @Inject()(val http: WSHttp,
-                                              config: ServicesConfig) extends BusinessRegistrationConnect {
+class BusinessRegistrationConnectorImpl @Inject()(val http: WSHttp,
+                                                  config: ServicesConfig) extends BusinessRegistrationConnector {
   val businessRegistrationUrl: String = config.baseUrl("business-registration")
   val businessRegistrationUri: String = config.getConfString("business-registration.uri",
     throw new RuntimeException("[BusinessRegistrationConnector] Could not retrieve config for 'business-registration.uri'"))
 }
 
-trait BusinessRegistrationConnect {
+trait BusinessRegistrationConnector {
 
   val businessRegistrationUrl: String
   val businessRegistrationUri: String
@@ -41,13 +43,31 @@ trait BusinessRegistrationConnect {
 
   def getBusinessRegistrationID(implicit hc: HeaderCarrier): Future[Option[String]] = {
     http.GET[HttpResponse](s"$businessRegistrationUrl$businessRegistrationUri/business-tax-registration") map { response =>
-      if (response.status == NOT_FOUND) {
-        None
-      } else {
         Some((response.json \ "registrationID").as[String])
-      }
     } recover {
-      case e => None
+      case e =>
+        Logger.warn(s"[BusinessRegistration][getBusinessRegistrationID] and error has occurred with message ${e.getMessage}")
+        None
+    }
+  }
+
+  def retrieveTradingName(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    http.GET[JsValue](s"$businessRegistrationUrl$businessRegistrationUri/$regId/trading-name") map {
+      _.as[Option[String]](TradingDetails.tradingNameApiPrePopReads)
+    } recover {
+      case e =>
+        Logger.warn(s"[BusinessRegistration][retrieveTradingName] an error occurred when retrieving trading name from business registration with message ${e.getMessage} for regID: $regId")
+        None
+    }
+
+  def upsertTradingName(regId: String, tradingName: String)(implicit hc: HeaderCarrier): Future[String] = {
+    implicit val prePopWrites = TradingDetails.tradingNameApiPrePopWrites
+    http.POST[String,HttpResponse](s"$businessRegistrationUrl$businessRegistrationUri/$regId/trading-name", tradingName) map {
+      _ => tradingName
+    } recover {
+      case e =>
+        Logger.warn(s"[BusinessRegistration][upsertTradingName] an error occurred when upserting trading name from business registration with message ${e.getMessage} for regID: $regId")
+        tradingName
     }
   }
 }

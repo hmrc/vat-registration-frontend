@@ -57,34 +57,65 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
   "tradingNamePage" should {
 
-    "return an Ok when there is a trading details present" in new Setup {
+    "return an Ok when there is a trading details present and pre pop is present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
 
       when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
           .thenReturn(Future.successful(companyName))
 
+      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
+          .thenReturn(Future.successful(Some("this will not appear in the html")))
+
       callAuthorised(testController.tradingNamePage) {
         result => {
           status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
+          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe "checked"
+          doc.getElementById("tradingName").`val` mustBe "tradingName"
         }
       }
     }
 
-    "return an Ok when there is no trading details present" in new Setup {
+    "return an Ok when there is no trading details present but pre pop returns something" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
 
       when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
         .thenReturn(Future.successful(companyName))
+      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
+        .thenReturn(Future.successful(Some("returned from pre pop")))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
           status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
+          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
+          doc.getElementById("tradingName").`val` mustBe "returned from pre pop"
         }
       }
     }
+    "return an Ok when there is no trading details present and pre pop returns nothing" in new Setup {
+      when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
+        .thenReturn(Future.successful(TradingDetails()))
 
+      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
+        .thenReturn(Future.successful(companyName))
+      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
+        .thenReturn(Future.successful(None))
+
+      callAuthorised(testController.tradingNamePage) {
+        result => {
+          status(result) mustBe OK
+          val doc = Jsoup.parse(contentAsString(result))
+          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
+          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
+          doc.getElementById("tradingName").`val` mustBe ""
+        }
+      }
+    }
   }
 
   "submitTradingName" should {

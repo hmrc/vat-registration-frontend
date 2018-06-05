@@ -136,13 +136,12 @@ class Module extends AbstractModule {
 
   private def bindConnectors(): Unit = {
     bind(classOf[AddressLookupConnector]).to(classOf[AddressLookupConnectorImpl]).asEagerSingleton()
-    bind(classOf[PPConnector]).to(classOf[PrePopConnector]).asEagerSingleton()
     bind(classOf[TestRegistrationConnector]).to(classOf[TestVatRegistrationConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
-    bind(classOf[BusinessRegistrationConnect]).to(classOf[BusinessRegistrationConnector]).asEagerSingleton()
+    bind(classOf[BusinessRegistrationConnector]).to(classOf[BusinessRegistrationConnectorImpl]).asEagerSingleton()
     bind(classOf[CompanyRegistrationConnector]).to(classOf[CompanyRegistrationConnectorImpl]).asEagerSingleton()
     bind(classOf[S4LConnector]).to(classOf[S4LConnectorImpl]).asEagerSingleton()
     bind(classOf[KeystoreConnector]).to(classOf[KeystoreConnectorImpl]).asEagerSingleton()
