@@ -135,8 +135,7 @@ object TestSetupForm {
       "yesNo" -> boolean,
       "tradingName" -> optional(text)
     )(TradingNameView.apply)(TradingNameView.unapply)),
-    "euGoods" -> optional(boolean),
-    "applyEori" -> optional(boolean)
+    "euGoods" -> optional(boolean)
   )(TradingDetails.apply)(TradingDetails.unapply)
 
   val form = Form(mapping(

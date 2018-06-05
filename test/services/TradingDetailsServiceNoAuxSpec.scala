@@ -45,21 +45,15 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
   val incompleteS4L = TradingDetails(
     Some(tradingNameViewYes)
   )
-  val twoPageS4L = TradingDetails(
-    Some(tradingNameViewNo),
-    Some(true),
-    None
-  )
+
   val fullS4L = TradingDetails(
     Some(tradingNameViewNo),
-    Some(true),
-    Some(false)
+    Some(true)
   )
 
   val twoPageS4LNo = TradingDetails(
     Some(tradingNameViewNo),
-    Some(false),
-    None
+    Some(false)
   )
 
   "getTradingDetailsViewModel" should {
@@ -73,8 +67,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
     "return the converted backend model if the S4L is not there" in new Setup() {
       val tradingNameNoEu = TradingDetails(
         Some(TradingNameView(yesNo = true, tradingName)),
-        Some(false),
-        None
+        Some(false)
       )
 
       when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
@@ -139,26 +132,15 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
   }
 
   "saveEuGoods" should {
-    "amend the eu goods on a S4L model" in new Setup() {
+    "save a complete model to the backend and clear S4L" in new Setup() {
       when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      await(service.saveEuGoods(regId, euGoods = true)) mustBe incompleteS4L.copy(euGoods = Some(true))
-    }
-  }
-
-  "saveEori" should {
-    "amend the trading name on a S4L model" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(twoPageS4L)))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
       when(mockRegConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
-      when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(202)))
 
-      await(service.saveEori(regId, applyEori = false)) mustBe fullS4L
+      await(service.saveEuGoods(regId, euGoods = true)) mustBe incompleteS4L.copy(euGoods = Some(true))
     }
   }
 }
