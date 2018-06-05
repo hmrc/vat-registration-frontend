@@ -18,27 +18,28 @@ package services
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
-import connectors.PPConnector
+import javax.inject.Inject
+import connectors.{BusinessRegistrationConnector, logResponse}
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import models._
 import models.api._
-import models.external.Officer
-import uk.gov.hmrc.http.HeaderCarrier
+import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import utils.SystemDate
 
 import scala.concurrent.Future
 
-class PrePopulationService @Inject()(val ppConnector: PPConnector,
+class PrePopulationService @Inject()(val businessRegistrationConnector: BusinessRegistrationConnector,
                                      val incorpInfoService: IncorporationInformationService,
                                      val save4later: S4LService,
                                      implicit val vatRegService: RegistrationService) extends PrePopService
 
 trait PrePopService {
 
-  val ppConnector: PPConnector
+  val businessRegistrationConnector: BusinessRegistrationConnector
   val incorpInfoService: IncorporationInformationService
   val vatRegService: RegistrationService
   val save4later: S4LService
@@ -48,7 +49,7 @@ trait PrePopService {
 
   def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[LocalDate]] =
     for {
-      ctReg       <- ppConnector.getCompanyRegistrationDetails
+      ctReg       <- getCompanyRegistrationDetails
       optDate     = ctReg.flatMap(_.accountingDetails).flatMap(_.activeDate)
     } yield optDate.map(dateString => LocalDate.parse(dateString, formatter))
 
@@ -59,6 +60,18 @@ trait PrePopService {
       businessContact <- save4later.fetchAndGet[BusinessContact]
       s4lAddress      =  businessContact.flatMap(_.ppobAddress)
     } yield filterAddressListByCountry(List(roAddress, ppobAddress, s4lAddress).flatten.distinct)
+  }
+
+  private[services] def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
+                                            profile: CurrentProfile,
+                                            rds: HttpReads[CorporationTaxRegistration]): Future[Option[CorporationTaxRegistration]] = {
+
+    vatRegService.getThreshold(profile.registrationId).map(_.voluntaryReason collect  {
+      case Threshold.INTENDS_TO_SELL => CorporationTaxRegistration(
+        Some(AccountingDetails("", Some(SystemDate.getSystemDate.toLocalDate.plusDays(7) format formatter))))
+    }) recover {
+      case e => throw logResponse(e, "getCompanyRegistrationDetails")
+    }
   }
 
   private[services] def filterAddressListByCountry(seqAddress:Seq[ScrsAddress]): Seq[ScrsAddress] = seqAddress.filter(addr =>
@@ -77,4 +90,10 @@ trait PrePopService {
   def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
     incorpInfoService.getOfficerList map (_.distinct)
   }
+
+  def getTradingName(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    businessRegistrationConnector.retrieveTradingName(regId)
+
+  def saveTradingName(regId: String, tradingName: String)(implicit hc: HeaderCarrier): Future[String] =
+    businessRegistrationConnector.upsertTradingName(regId, tradingName)
 }

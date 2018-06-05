@@ -63,8 +63,7 @@ trait VatMocks
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
   implicit lazy val mockIdentityVerificationConnector = mock[IVConnectorImpl]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnectorImpl]
-  implicit lazy val mockPPConnector = mock[PPConnector]
-  implicit lazy val mockBrConnector = mock[BusinessRegistrationConnector]
+  implicit lazy val mockBrConnector = mock[BusinessRegistrationConnectorImpl]
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
   implicit lazy val mockCurrentProfile = mock[CurrentProfileServiceImpl]
@@ -100,7 +99,6 @@ trait VatMocks
       mockVatRegistrationService,
       mockRegConnector,
       mockCompanyRegConnector,
-      mockPPConnector,
       mockPPService,
       mockDateService,
       mockIIConnector,
@@ -120,7 +118,8 @@ trait VatMocks
       mockPrePopService,
       mockBusinessContactService,
       mockAuthClientConnector,
-      mockTimeService
+      mockTimeService,
+      mockBrConnector
     )
   }
 }

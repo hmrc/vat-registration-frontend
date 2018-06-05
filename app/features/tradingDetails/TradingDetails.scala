@@ -53,6 +53,11 @@ object TradingDetails {
     }
   }
 
+  val tradingNameApiPrePopReads: Reads[Option[String]] = (__ \ "tradingName").readNullable[String]
+  val tradingNameApiPrePopWrites: Writes[String] = new Writes[String] {
+    override def writes(tradingName: String): JsValue = Json.obj("tradingName" -> tradingName)
+    }
+
   val apiFormat = Format[TradingDetails](reads, writes)
   implicit val format = Json.format[TradingDetails]
 }

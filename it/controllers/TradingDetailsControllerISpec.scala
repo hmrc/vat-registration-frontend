@@ -16,11 +16,14 @@
 
 package controllers
 
-import features.tradingDetails.TradingDetails
+import com.github.tomakehurst.wiremock.client.WireMock.{findAll, postRequestedFor, urlMatching}
+import features.tradingDetails.{TradingDetails, TradingNameView}
+import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
+import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import repositories.ReactiveMongoRepository
 import support.AppAndStubs
@@ -29,7 +32,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
+class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val companyName = "Test Company Ltd"
 
   class Setup {
@@ -52,13 +55,14 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
   }
 
   "show Trading Name page" should {
-    "return 200" in new Setup {
+    "return 200 and populated trading name field from pre pop" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .company.nameIs(companyName)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .businessRegistration.returnsGETTradingNamePrePopResponse("1", Some("foo bar from pre pop"), 200)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -69,6 +73,57 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
         val document = Jsoup.parse(res.body)
         val elems = document.getElementById("lead-paragraph")
         elems.text must include(companyName)
+        document.getElementById("tradingName").`val` mustBe "foo bar from pre pop"
+        document.getElementById("tradingNameRadio-false").attr("checked") mustBe "checked"
+      }
+    }
+    "return 200 and no pre pop populated or answers populated if s4l returns nothing and pre pop returns nothing" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[TradingDetails].isEmpty
+        .vatScheme.doesNotHave("trading-details")
+        .company.nameIs(companyName)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .businessRegistration.returnsGETTradingNamePrePopResponse("1", None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/trading-name").get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+
+        val document = Jsoup.parse(res.body)
+        val elems = document.getElementById("lead-paragraph")
+        elems.text must include(companyName)
+        document.getElementById("tradingName").`val` mustBe ""
+        document.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
+        document.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
+      }
+    }
+  }
+  "submit Trading Name page" should {
+    "return 303 and post to pre pop" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[TradingDetails].contains(tradingDetails)
+        .vatScheme.doesNotHave("trading-details")
+        .company.nameIs(companyName)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true,Some("Test Trading Name")))))
+        .businessRegistration.postsTradingNameToPrepop("1", Some("Test Trading Name"))
+        .s4lContainer[TradingDetails].cleared
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/trading-name").post(Map("tradingNameRadio" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.euGoodsPage().url)
+        val prePopPost = findAll(postRequestedFor(urlMatching(s"/business-registration/1/trading-name")))
+        val jsonOfPrePopPost =  Json.parse(prePopPost.get(0).getBodyAsString)
+        (jsonOfPrePopPost \ "tradingName").as[String] mustBe "Test Trading Name"
       }
     }
   }

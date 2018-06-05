@@ -17,17 +17,17 @@
 package features.tradingDetails
 
 import javax.inject.Inject
-
 import connectors.RegistrationConnector
 import models.{CurrentProfile, S4LKey}
-import services.{Complete, Completion, Incomplete, S4LService}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TradingDetailsServiceImpl @Inject()(val s4lservice : S4LService,
-                                          val regConnector : RegistrationConnector) extends TradingDetailsService {
+                                          val regConnector : RegistrationConnector,
+                                          val prePopService: PrePopService) extends TradingDetailsService {
   val s4lService: S4LService = s4lservice
   val registrationConnector : RegistrationConnector = regConnector
 }
@@ -35,6 +35,7 @@ class TradingDetailsServiceImpl @Inject()(val s4lservice : S4LService,
 trait TradingDetailsService {
   val s4lService : S4LService
   val registrationConnector : RegistrationConnector
+  val prePopService: PrePopService
 
   private val tradingDetailsS4LKey: S4LKey[TradingDetails] = S4LKey[TradingDetails]("tradingDetails")
 
@@ -47,6 +48,10 @@ trait TradingDetailsService {
       }
     }
 
+  def getTradingNamePrepop(regId: String, tradingName: Option[TradingNameView])(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    if(tradingName.exists(_.yesNo)) Future.successful(None) else prePopService.getTradingName(regId)
+  }
+
   def getS4LCompletion(data : TradingDetails) : Completion[TradingDetails] = data match {
     case TradingDetails(Some(_), Some(_)) => Complete(data)
     case _ => Incomplete(data)
@@ -57,13 +62,12 @@ trait TradingDetailsService {
       incomplete  => s4lService.saveNoAux(incomplete, tradingDetailsS4LKey) map {
         _ => incomplete
       },
-      complete    =>
+      { complete =>
         for {
           _ <- registrationConnector.upsertTradingDetails(regId, complete)
           _ <- s4lService.clear
-        } yield {
-          complete
-        }
+        } yield complete
+      }
     )
   }
 
@@ -74,7 +78,13 @@ trait TradingDetailsService {
 
   def saveTradingName(regId : String, hasName: Boolean, name : Option[String])
                      (implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
-    updateTradingDetails(regId) { storedData => storedData.copy(tradingNameView = Some(TradingNameView(hasName, name)))}
+      updateTradingDetails(regId) {storedData => storedData.copy(tradingNameView = Some(TradingNameView(hasName, name)))}
+        .flatMap{ tradingDetails =>  if(hasName && name.isDefined) {
+          prePopService.saveTradingName(regId, name.get).map(_ => tradingDetails)
+        } else {
+          Future.successful(tradingDetails)
+      }
+     }
   }
 
   def saveEuGoods(regId : String, euGoods: Boolean)

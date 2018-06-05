@@ -45,9 +45,10 @@ trait TradingDetailsController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         for {
-          companyName <- incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId)
-          tradingName <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
-          form        =  tradingName.tradingNameView.fold(TradingNameForm.form)(name => TradingNameForm.form.fill(name.yesNo, name.tradingName))
+          companyName         <- incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId)
+          tradingDetailsView  <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
+          prepopTradingName   <- tradingDetailsService.getTradingNamePrepop(profile.registrationId, tradingDetailsView.tradingNameView)
+          form                =  TradingNameForm.fillWithPrePop(prepopTradingName, tradingDetailsView.tradingNameView)
         } yield Ok(TradingNamePage(form, companyName))
       }
   }

@@ -687,6 +687,25 @@ trait StubUtils {
 
       builder
     }
+    def returnsGETTradingNamePrePopResponse(regId:String, tradingName: Option[String] = None, status: Int = 204) = {
+      val json = tradingName.map(t => s"""{"tradingName" : "$t"}""")
+      stubFor(
+        get(urlPathEqualTo(s"/business-registration/$regId/trading-name"))
+          .willReturn(ok(
+           json.getOrElse("")
+          )))
+
+      builder
+    }
+
+    def postsTradingNameToPrepop(regId: String, tradingName: Option[String] = None, stat: Int = 200) = {
+      val json = tradingName.map(t => s"""{"tradingName" : "$t"}""")
+      stubFor(
+        post(urlPathEqualTo(s"/business-registration/$regId/trading-name"))
+          .willReturn(status(stat).withBody(json.getOrElse(""))))
+
+      builder
+    }
 
     def fails: PreconditionBuilder = {
       stubFor(
