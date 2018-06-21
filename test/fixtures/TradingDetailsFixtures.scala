@@ -27,7 +27,7 @@ trait TradingDetailsFixtures extends BaseFixture {
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
 
-  val validThresholdWithExpectedThreshold = generateOptionalThreshold(expectedOverThreshold = Some(testDate))
+  val validThresholdWithExpectedThreshold = generateOptionalThreshold(thresholdPreviousThirtyDays = Some(testDate))
 
   def generateTradingDetails(
                       tradingNameSelection: Boolean = true,

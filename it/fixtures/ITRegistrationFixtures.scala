@@ -25,8 +25,8 @@ import features.officer.fixtures.LodgingOfficerFixture
 import features.returns.models.{Frequency, Returns, Stagger}
 import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, OtherBusinessActivities, SicAndCompliance}
 import features.tradingDetails.{TradingDetails, TradingNameView}
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
+import models.TurnoverEstimates
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
 import play.api.libs.json.Json
@@ -51,21 +51,18 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
 
 
   val voluntaryThreshold = Threshold(
-    mandatoryRegistration = false,
-    voluntaryReason       = Some(Threshold.SELLS)
+    mandatoryRegistration = false
   )
 
   val threshold = Threshold(
     mandatoryRegistration     = true,
-    voluntaryReason           = None,
-    overThresholdDateThirtyDays         = Some(LocalDate.of(2016, 9, 30)),
-    pastOverThresholdDateThirtyDays = Some(LocalDate.of(2016, 9, 30)),
-    overThresholdOccuredTwelveMonth = Some(LocalDate.of(2017, 1, 1))
+    thresholdPreviousThirtyDays = Some(LocalDate.of(2016, 9, 30)),
+    thresholdInTwelveMonths = Some(LocalDate.of(2017, 1, 1))
   )
 
   val flatRateScheme     = FlatRateScheme(joinFrs = Some(false))
 
-  val turnOverEstimates = TurnoverEstimates(vatTaxable = 30000)
+  val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
   val bankAccount     = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
 
@@ -139,5 +136,36 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     flatRateScheme      = Some(flatRateScheme),
     bankAccount         = Some(bankAccount)
   )
+  val fullEligibilityDataJson = Json.parse("""
+                                             |{ "sections": [
+                                             |            {
+                                             |              "title": "section A",
+                                             |              "data": [
+                                             |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
+                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+                                             |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+                                             |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+                                             |              ]
+                                             |            },
+                                             |            {
+                                             |              "title": "section B",
+                                             |              "data": [
+                                             |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
+                                             |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
+                                             |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
+                                             |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
+                                             |                "name": {
+                                             |                    "forename": "This is my forename",
+                                             |                    "other_forenames": "This is my middle name",
+                                             |                    "surname": "This is my surname"
+                                             |                    },
+                                             |                "role": "director"
+                                             |                 }
+                                             |                }
+                                             |              ]
+                                             |            }
+                                             |          ]
+                                             |         }
+                                           """.stripMargin)
 
 }

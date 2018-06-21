@@ -22,9 +22,9 @@ import connectors.{ConfigConnector, VatRegistrationConnector}
 import features.returns.models.Start
 import features.sicAndCompliance.models.{MainBusinessActivityView, SicAndCompliance}
 import features.sicAndCompliance.services.SicAndComplianceService
-import features.turnoverEstimates.TurnoverEstimates
 import frs.{FRSDateChoice, FlatRateScheme}
 import helpers.VatSpec
+import models.TurnoverEstimates
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -44,7 +44,7 @@ class FlatRateServiceSpec extends VatSpec {
     }
   }
 
-  val financialsWithEstimateVatTurnoverIs100000: TurnoverEstimates = TurnoverEstimates(vatTaxable = 100000L)
+  val financialsWithEstimateVatTurnoverIs100000: TurnoverEstimates = TurnoverEstimates(turnoverEstimate = 100000L)
 
   "getFlatRate" should {
     val frSch = FlatRateScheme(
@@ -181,8 +181,6 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(incompleteS4l)))
       when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
-        .thenReturn(Future.successful(Some(financialsWithEstimateVatTurnoverIs100000)))
 
       await(service.saveOverBusinessGoods(true)) mustBe
         incompleteS4l.copy(overBusinessGoods = Some(true))
@@ -193,8 +191,6 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(incompleteS4l)))
       when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
-        .thenReturn(Future.successful(Some(financialsWithEstimateVatTurnoverIs100000)))
 
       await(service.saveOverBusinessGoods(false)) mustBe
         incompleteS4l.copy(overBusinessGoods = Some(false))

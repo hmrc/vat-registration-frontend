@@ -23,13 +23,6 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
 
   override val sectionId: String = "directorDetails"
 
-  val completionCapacity: SummaryRow = SummaryRow(
-    s"$sectionId.completionCapacity",
-    vatLodgingOfficer.completionCapacity.flatMap(_.officer).map(_.name.asLabel).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showCompletionCapacity())
-  )
-
-
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
     vatLodgingOfficer.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
@@ -44,12 +37,6 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
     vatLodgingOfficer.securityQuestions.map(_.dob.format(presentationFormatter)).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
-  )
-
-  val nino: SummaryRow = SummaryRow(
-    s"$sectionId.nino",
-    vatLodgingOfficer.securityQuestions.map(_.nino).getOrElse(""),
     Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
   )
 
@@ -74,11 +61,9 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (completionCapacity, true),
       (formerName, true),
       (formerNameDate, vatLodgingOfficer.formerName.exists(_.yesNo)),
       (dob, true),
-      (nino, true),
       (email, vatLodgingOfficer.contactDetails.flatMap(_.email).isDefined),
       (daytimePhone, vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).isDefined),
       (mobile, vatLodgingOfficer.contactDetails.flatMap(_.mobile).isDefined)

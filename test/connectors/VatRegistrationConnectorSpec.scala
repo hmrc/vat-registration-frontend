@@ -24,10 +24,9 @@ import features.businessContact.models.BusinessContact
 import features.officer.models.view.{LodgingOfficer, _}
 import features.returns.models.Returns
 import features.sicAndCompliance.models._
-import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import helpers.VatRegSpec
-import models.TaxableThreshold
+import models.{TaxableThreshold, TurnoverEstimates}
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
 import org.mockito.ArgumentMatchers.{any, anyString}
@@ -152,7 +151,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
 
   "Calling updateBusinessContact" should {
-
 
     "return the correct VatResponse when the microservice completes and returns a BusinessContact model" in new Setup {
       mockHttpPATCH[BusinessContact, BusinessContact]("tst-url", validBusinessContactDetails)
@@ -293,7 +291,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "getTurnoverEstimates" should {
 
-    val jsonBody = Json.obj("vatTaxable" -> 1000)
+    val jsonBody = Json.obj("turnoverEstimate" -> 1000)
     val turnoverEstimates = TurnoverEstimates(1000L)
 
     "return turnover estimates if they are returned from the backend" in new Setup {
@@ -308,19 +306,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
       val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
       result mustBe None
-    }
-  }
-
-  "patchTurnoverEstimates" should {
-
-    val turnoverEstimates = TurnoverEstimates(1000L)
-    val httpResponse = HttpResponse(200)
-
-    "return a 200 HttpResponse" in new Setup {
-      mockHttpPATCH(testUrl, HttpResponse(200))
-
-      val result: HttpResponse = await(connector.patchTurnoverEstimates(turnoverEstimates))
-      result.status mustBe httpResponse.status
     }
   }
 
@@ -371,14 +356,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling patchLodgingOfficer" should {
-    val officer = Officer(
-      name = Name(forename = Some("First"), otherForenames = None, surname = "Last"),
-      role = "Director"
-    )
-
     val partialLodgingOfficer = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
+      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
       homeAddress = None,
       contactDetails = None,
       formerName = None,
@@ -389,13 +368,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val partialJson = Json.parse(
       s"""
          |{
-         |  "name": {
-         |    "first": "First",
-         |    "last": "Last"
-         |  },
-         |  "role": "Director",
-         |  "dob": "1998-07-12",
-         |  "nino": "AA112233Z"
+         |  "dob": "1998-07-12"
          |}""".stripMargin)
 
     "return a JsValue with a partial Lodging Officer view model" in new Setup {
@@ -415,13 +388,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       val fullJson = Json.parse(
         s"""
            |{
-           |  "name": {
-           |    "first": "First",
-           |    "last": "Last"
-           |  },
-           |  "role": "Director",
            |  "dob": "1998-07-12",
-           |  "nino": "AA112233Z",
            |  "details": {
            |    "currentAddress": {
            |      "line1": "TestLine1",
@@ -659,6 +626,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         mockHttpFailedPATCH[String, HttpResponse]("tst-url", new Upstream4xxResponse("400", 400, 400))
         intercept[Upstream4xxResponse](await(connector.saveTransactionId("tstID", "transID")))
       }
+    }
+  }
+
+  "getEligibilityData" should {
+    "return 200 and a JsObject" in new Setup {
+      val json = Json.obj("foo" -> "bar")
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(json)))
+      connector.getEligibilityData returns json
+    }
+
+    "return 404 (no 2xx code) and an execption should be thrown" in new Setup {
+      mockHttpFailedGET[HttpResponse]("tst-url", notFound)
+      connector.getEligibilityData failedWith notFound
     }
   }
 }

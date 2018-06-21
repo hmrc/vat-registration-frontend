@@ -126,7 +126,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   "SicHalt on show returns 200" in new Setup {
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -143,7 +142,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
       given()
         .user.isAuthorised
-        .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -163,7 +161,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode)))))
       .s4lContainer.cleared
@@ -185,7 +182,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1, sicCode2)))))
       .audit.writesAudit()
@@ -205,7 +201,6 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     given()
       .user.isAuthorised
-      .currentProfile.withProfile(Some(STARTED), Some("Current Profile"))
       .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
       .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
       .audit.writesAudit()

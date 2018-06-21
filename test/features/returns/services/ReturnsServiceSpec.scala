@@ -225,14 +225,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
     val overTwelveMonthDate = LocalDate.of(2017, 6, 6)
     val pastThirtyDayDate = LocalDate.of(2017, 12, 12)
-    val overThirtyDayDate = LocalDate.of(2017, 10, 10)
 
     "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
 
       val thresholdDates = Threshold(
         true,
-        None,
-        None,
         Some(pastThirtyDayDate),
         Some(overTwelveMonthDate)
       )
@@ -246,7 +243,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
     "return a date when just the overTwelveMonthDate is present" in new Setup {
 
-      val thresholdFirstDateOnly = Threshold(true, None, None, None, Some(overTwelveMonthDate))
+      val thresholdFirstDateOnly = Threshold(true, None, Some(overTwelveMonthDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdFirstDateOnly))
@@ -256,21 +253,12 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
     "return a date when just the pastThirtyDayDate is present" in new Setup {
 
-      val thresholdSecondDateOnly = generateThreshold(expectedOverThreshold = Some(pastThirtyDayDate))
+      val thresholdSecondDateOnly = generateThreshold(thresholdPreviousThirtyDays = Some(pastThirtyDayDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdSecondDateOnly))
 
       await(service.retrieveCalculatedStartDate) mustBe pastThirtyDayDate
-    }
-
-    "return a date when just the overThirtyDayDate is present" in new Setup {
-
-      val thresholdThirdDateOnly = generateThreshold(overThreshold = Some(overThirtyDayDate))
-
-      when(service.vatService.getThreshold(any())(any())) thenReturn Future.successful(thresholdThirdDateOnly)
-
-      await(service.retrieveCalculatedStartDate) mustBe overThirtyDayDate
     }
 
     "throw a RuntimeException when no dates are present" in new Setup {
@@ -304,7 +292,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     }
 
     "return false when in a mandatory flow" in new Setup {
-      val mandatory = generateThreshold(overThreshold = Some(testDate))
+      val mandatory = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(mandatory))
@@ -316,7 +304,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
   "retrieveMandatoryDates" should {
     val calculatedDate: LocalDate = LocalDate.of(2017, 12, 25)
 
-    val threshold = generateThreshold(expectedOverThreshold = Some(calculatedDate))
+    val threshold = generateThreshold(thresholdPreviousThirtyDays = Some(calculatedDate))
 
     "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
@@ -517,20 +505,4 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       )) mustBe expected
     }
   }
-
-  /*
-  def saveVoluntaryStartDate
-  (dateChoice : DateSelection.Value, startDate : Option[LocalDate], incorpDate : Option[LocalDate], ctActive : Option[LocalDate])
-  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
-    saveVatStartDate((dateChoice, startDate, incorpDate, ctActive) match {
-      case (DateSelection.company_registration_date, _, Some(icd), _)   => Some(icd)
-      case (DateSelection.company_registration_date, _, _, _)           => None
-      case (DateSelection.business_start_date,       _, _, Some(cta))   => Some(cta)
-      case (DateSelection.specific_date,             Some(vsd), _, _)   => Some(vsd)
-      case _                                                            => None
-    })
-  }
-   */
-
-
 }

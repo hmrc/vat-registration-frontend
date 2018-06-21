@@ -29,74 +29,15 @@ import uk.gov.hmrc.play.config.ServicesConfig
 
 
 
-case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetails] = None,
+case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails] = None,
                                             threshold: Option[Threshold],
                                             returnsBlock : Option[Returns],
-                                            incorpDate: Option[LocalDate] = None,
-                                            taxableThreshold: String
+                                            incorpDate: Option[LocalDate] = None
                                            ) extends SummarySectionBuilder with ServicesConfig {
-  override val sectionId: String      = "vatDetails"
-  val monthYearPresentationFormatter  = DateTimeFormatter.ofPattern("MMMM y")
-  val serviceName                     = "vat-registration-eligibility-frontend"
 
+  override val sectionId: String      = "vatDetails"
   private val thresholdBlock        = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
-
-  val overThresholdSelectionRow: SummaryRow = SummaryRow(
-    s"$sectionId.overThresholdSelection",
-    thresholdBlock.overThresholdOccuredTwelveMonth.fold("app.common.no")(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"gone-over-threshold")),
-    Seq(incorpDate.fold("")(_.format(MonthYearModel.FORMAT_DD_MMMM_Y)), taxableThreshold)
-  )
-
-  val overThresholdDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.overThresholdDate",
-    thresholdBlock.overThresholdOccuredTwelveMonth.map(_.format(monthYearPresentationFormatter)).getOrElse(""),
-    Some(getUrl(serviceName,"gone-over-threshold")),
-    Seq(taxableThreshold)
-  )
-
-  val dayMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("dd MMMM y")
-
-  val pastOverThresholdSelectionRow: SummaryRow = SummaryRow(
-    s"$sectionId.expectationOverThresholdSelection",
-    thresholdBlock.pastOverThresholdDateThirtyDays.fold("app.common.no")(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"gone-over-threshold-period"))
-  )
-
-  val pastOverThresholdDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.expectationOverThresholdDate",
-    thresholdBlock.pastOverThresholdDateThirtyDays.map(_.format(dayMonthYearPresentationFormatter)).getOrElse(""),
-    Some(getUrl(serviceName,"gone-over-threshold-period"))
-  )
-
-  val overThresholdThirtySelectionRow: SummaryRow = SummaryRow(
-    s"$sectionId.overThresholdThirtySelection",
-    thresholdBlock.overThresholdDateThirtyDays.fold(
-      if(thresholdBlock.mandatoryRegistration && incorpDate.isEmpty) "app.common.yes" else "app.common.no"
-    )(_ => "app.common.yes"),
-    Some(getUrl(serviceName,"make-more-taxable-sales")),
-    Seq(taxableThreshold)
-  )
-
-  val necessityRow: SummaryRow = SummaryRow(
-    s"$sectionId.necessity",
-    s"app.common.${if (voluntaryRegistration) "yes" else "no"}",
-    if (voluntaryRegistration) {
-      Some(getUrl(serviceName, "register-voluntary"))
-    } else {
-      None
-    }
-  )
-
-  val voluntaryReasonRow: SummaryRow = SummaryRow(
-    s"$sectionId.voluntaryRegistrationReason",
-    thresholdBlock.voluntaryReason.fold("app.common.no"){
-      case Threshold.SELLS => "pages.summary.voluntaryReason.sells"
-      case Threshold.INTENDS_TO_SELL => "pages.summary.voluntaryReason.intendsToSell"
-    },
-    Some(getUrl(serviceName,"registration-reason"))
-  )
 
   def startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
@@ -119,23 +60,6 @@ case class SummaryVatDetailsSectionBuilder (tradingDetails: Option[TradingDetail
   val section: SummarySection =
     SummarySection(
       sectionId,
-      rows = Seq(
-        (overThresholdThirtySelectionRow, true),
-        (pastOverThresholdSelectionRow, incorpDate.isDefined ),
-        (pastOverThresholdDateRow, incorpDate.isDefined && thresholdBlock.pastOverThresholdDateThirtyDays.isDefined),
-        (overThresholdSelectionRow, incorpDate.isDefined),
-        (overThresholdDateRow, incorpDate.isDefined && thresholdBlock.overThresholdOccuredTwelveMonth.isDefined),
-        (necessityRow, voluntaryRegistration),
-        (voluntaryReasonRow, voluntaryRegistration),
-        (startDateRow, true),
-        (tradingNameRow, true)
-      )
+      rows = Seq((startDateRow, true), (tradingNameRow, true))
     )
-
-  def getUrl(serviceName: String, uri: String): Call = {
-    val basePath = getConfString(s"$serviceName.www.host", "")
-    val mainUri = getConfString(s"$serviceName.uri","/register-for-vat/")
-    val serviceUri = getConfString(s"$serviceName.uris.$uri",uri)
-    Call("Get", s"$basePath$mainUri$serviceUri")
-  }
 }

@@ -92,13 +92,11 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
   }
 
   "GET Summary page" should {
-    "display the summary page correctly" when {
-      "the company is NOT incorporated" in new Setup {
-
+    "display the summary page correctly"  in new Setup {
         given()
           .user.isAuthorised
           .vatScheme.contains(vatReg)
-          .vatScheme.has("officer", officerJson)
+          .vatScheme.has("officer-data", officerJson)
           .s4lContainer[SicAndCompliance].isEmpty
           .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
           .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
@@ -107,7 +105,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatRegistration.threshold(thresholdUrl, currentThreshold)
+          .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -116,55 +114,30 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           res.status mustBe 200
           val document = Jsoup.parse(res.body)
           document.title() mustBe "Summary"
+          document.getElementById("pageHeading").text mustBe "Check and confirm your answers"
+
+          document.getElementById("sectionA").text mustBe "section A"
+          document.getElementById("sectionA.0Question").text mustBe "Question 1"
+          document.getElementById("sectionA.0Answer").text mustBe "FOO"
+          document.getElementById("sectionA.0ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionA.1Question").text mustBe "Question 2"
+          document.getElementById("sectionA.1Answer").text mustBe "BAR"
+          document.getElementById("sectionA.1ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+
+          document.getElementById("sectionB").text mustBe "section B"
+          document.getElementById("sectionB.0Question").text mustBe "Question 5"
+          document.getElementById("sectionB.0Answer").text mustBe "bang"
+          document.getElementById("sectionB.0ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionB.1Question").text mustBe "Question 6"
+          document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
+          document.getElementById("sectionB.1ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
 
           document.getElementById("frs.joinFrsAnswer").text mustBe "No"
-          document.getElementById("vatDetails.overThresholdThirtySelectionAnswer").text mustBe "No"
-          document.getElementById("vatDetails.overThresholdThirtySelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/make-more-taxable-sales"
-          document.getElementById("vatDetails.necessityAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.necessityChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/register-voluntarily"
-          document.getElementById("vatDetails.voluntaryRegistrationReasonAnswer").text mustBe "The company is already selling goods or services"
-          document.getElementById("vatDetails.voluntaryRegistrationReasonChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/applies-company"
-
           document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
-          document.getElementById("taxableSales.estimatedSalesValueAnswer").text mustBe "£30000"
           document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
         }
       }
 
-      "the company is incorporated" in new Setup {
-        given()
-          .user.isAuthorised
-          .vatScheme.contains(vatRegIncorporated.copy(flatRateScheme = None))
-          .s4lContainer[SicAndCompliance].isEmpty
-          .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
-          .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
-          .vatScheme.has("officer", officerJson)
-          .s4lContainer[LodgingOfficer].contains(validFullLodgingOfficer)
-          .s4lContainer[SicAndCompliance].cleared
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .vatRegistration.threshold(thresholdUrl, currentThreshold)
-
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
-
-        val response = buildClient("/check-your-answers").get()
-        whenReady(response) { res =>
-          res.status mustBe 200
-          val document = Jsoup.parse(res.body)
-
-          a[NullPointerException] mustBe thrownBy(document.getElementById("vatDetails.taxableTurnoverQuestion").text)
-          document.getElementById("vatDetails.overThresholdSelectionQuestion").text must include("05 August 2016")
-          document.getElementById("vatDetails.overThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.overThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold"
-          document.getElementById("vatDetails.overThresholdDateAnswer").text mustBe "January 2017"
-          document.getElementById("vatDetails.overThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold"
-          document.getElementById("vatDetails.expectationOverThresholdSelectionAnswer").text mustBe "Yes"
-          document.getElementById("vatDetails.expectationOverThresholdSelectionChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
-          document.getElementById("vatDetails.expectationOverThresholdDateAnswer").text mustBe "30 September 2016"
-          document.getElementById("vatDetails.expectationOverThresholdDateChangeLink").attr("href") mustBe s"http://localhost:$wiremockPort/vat-eligibility-uri/gone-over-threshold-period"
-        }
-      }
-    }
   }
 
   "POST Summary Page" should {

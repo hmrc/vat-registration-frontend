@@ -23,7 +23,6 @@ import features.officer.models.view._
 import features.sicAndCompliance.models._
 import features.tradingDetails.TradingDetails
 import models.api._
-import models.external.{Name, Officer}
 import models.view.test.TestSetup
 
 object TestS4LBuilder {
@@ -108,17 +107,6 @@ object TestS4LBuilder {
         data.lodgingOfficer.dobMonth.getOrElse("1").toInt,
         data.lodgingOfficer.dobDay.getOrElse("1").toInt))
 
-    val nino = data.lodgingOfficer.nino
-
-    val completionCapacity = data.lodgingOfficer.role.map(_ => {
-      val officer = Officer(
-        name = Name(data.lodgingOfficer.firstname,
-          data.lodgingOfficer.othernames,
-          data.lodgingOfficer.surname.getOrElse("")),
-        role = data.lodgingOfficer.role.getOrElse(""))
-      CompletionCapacityView(officer)
-    })
-
     val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ => ContactDetailsView(
       email         = data.lodgingOfficer.email,
       mobile        = data.lodgingOfficer.mobile,
@@ -140,8 +128,7 @@ object TestS4LBuilder {
     LodgingOfficer(
       previousAddress     = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       homeAddress         = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
-      securityQuestions   = dob.map(SecurityQuestionsView(_, nino.getOrElse(""))),
-      completionCapacity  = completionCapacity,
+      securityQuestions   = dob.map(SecurityQuestionsView(_)),
       contactDetails      = contactDetails,
       formerName          = formerName,
       formerNameDate      = formerNameDate

@@ -21,12 +21,11 @@ import com.google.inject.name.Names
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
 import connectors.test.{BusinessRegDynamicStubConnector, BusinessRegDynamicStubConnectorImpl, TestRegistrationConnector, TestVatRegistrationConnector}
-import controllers._
 import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
 import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
 import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
 import controllers.test._
-import controllers.{ErrorController, ErrorControllerImpl}
+import controllers.{ErrorController, ErrorControllerImpl, _}
 import features.bankAccountDetails.connectors.{BankAccountReputationConnector, BankAccountReputationConnectorImpl}
 import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
 import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
@@ -43,8 +42,6 @@ import features.sicAndCompliance.controllers._
 import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
 import features.sicAndCompliance.services.{ICLService, ICLServiceImpl, SicAndComplianceService, SicAndComplianceServiceImpl}
 import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
-import features.turnoverEstimates._
-import repositories.SessionRepository
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
@@ -84,7 +81,6 @@ class Module extends AbstractModule {
   private def bindControllers(): Unit = {
     bind(classOf[FlatRateController]).to(classOf[FlatRateControllerImpl]).asEagerSingleton()
     bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
-    bind(classOf[TurnoverEstimatesController]).to(classOf[TurnoverEstimatesControllerImpl]).asEagerSingleton()
     bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
     bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
@@ -124,7 +120,6 @@ class Module extends AbstractModule {
     bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationService]).to(classOf[BankAccountReputationServiceImpl]).asEagerSingleton()
     bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
-    bind(classOf[TurnoverEstimatesService]).to(classOf[TurnoverEstimatesServiceImpl]).asEagerSingleton()
     bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
     bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
     bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
@@ -132,6 +127,7 @@ class Module extends AbstractModule {
     bind(classOf[BusinessContactService]).to(classOf[BusinessContactServiceImpl]).asEagerSingleton()
     bind(classOf[TimeService]).to(classOf[TimeServiceImpl]).asEagerSingleton()
     bind(classOf[ICLService]).to(classOf[ICLServiceImpl]).asEagerSingleton()
+    bind(classOf[SummaryService]).to(classOf[SummaryServiceImpl]).asEagerSingleton()
   }
 
   private def bindConnectors(): Unit = {

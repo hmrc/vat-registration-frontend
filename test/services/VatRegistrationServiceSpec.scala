@@ -196,4 +196,18 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
       await(service.getTaxableThreshold(date)) mustBe formattedThreshold
     }
   }
+  "getEligibilityData" should {
+    "return a JsObject" in new Setup {
+      val json = Json.obj("foo" -> "bar")
+      when(mockRegConnector.getEligibilityData) thenReturn Future.successful(json)
+
+      await(service.getEligibilityData) mustBe json
+
+    }
+    "return an exception if the vat reg connector returns an exception" in new Setup {
+      when(mockRegConnector.getEligibilityData) thenReturn Future.failed(new Exception(""))
+
+      intercept[Exception](await(service.getEligibilityData))
+    }
+  }
 }

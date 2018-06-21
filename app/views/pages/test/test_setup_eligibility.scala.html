@@ -1,0 +1,29 @@
+@(testSetupForm: Form[String])(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.vatTextArea
+
+<h1 class="form-title heading-large" id="pageHeading">Test Setup Eligibility</h1>
+
+@govHelpers.form(action = controllers.test.routes.TestSetupController.submitEligibility()) {
+    <div class="form-group" id="vrfe-test-setup-eligibility-form">
+        <fieldset>
+
+            <h2>ELIGIBILITY JSON</h2>
+            <p>
+                @vatTextArea(
+                    testSetupForm("eligibilityJson"),
+                    '_divClass -> "form-group",
+                    '_labelClass -> "form-label",
+                    '_inputClass -> "form-control fill-width",
+                    '_rows -> "50",
+                    '_cols -> "150"
+                )
+            </p>
+        </fieldset>
+
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="submit">Submit</button>
+    </div>
+}

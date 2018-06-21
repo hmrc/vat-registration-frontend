@@ -17,8 +17,8 @@
 package controllers.test
 
 import javax.inject.Inject
-
 import config.AuthClientConnector
+import connectors.test.TestVatRegistrationConnector
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
 import features.businessContact.models.BusinessContact
@@ -26,14 +26,16 @@ import features.officer.models.view.LodgingOfficer
 import features.sicAndCompliance.models.SicAndCompliance
 import features.sicAndCompliance.models.test.SicStub
 import features.tradingDetails.TradingDetails
-import features.turnoverEstimates.TurnoverEstimatesService
-import forms.test.TestSetupForm
+import forms.test.{TestSetupEligibilityForm, TestSetupForm}
 import models.view.test._
 import models.S4LKey
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
+import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.{AuthProviders, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
@@ -42,15 +44,15 @@ class TestSetupControllerImpl @Inject()(implicit val s4LService: S4LService,
                                         val s4lConnector: S4LConnector,
                                         val authConnector: AuthClientConnector,
                                         val keystoreConnector: KeystoreConnector,
-                                        val turnoverService: TurnoverEstimatesService,
-                                        val messagesApi: MessagesApi) extends TestSetupController
+                                        val messagesApi: MessagesApi,
+                                        val testVatRegConnector: TestVatRegistrationConnector) extends TestSetupController
 
 trait TestSetupController extends BaseController with SessionProfile {
   val s4LBuilder = TestS4LBuilder
 
   val s4LService: S4LService
   val s4lConnector: S4LConnector
-  val turnoverService: TurnoverEstimatesService
+  val testVatRegConnector: TestVatRegistrationConnector
 
   private val empty = Future.successful(CacheMap("", Map.empty))
 
@@ -64,7 +66,6 @@ trait TestSetupController extends BaseController with SessionProfile {
         bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
         flatRateScheme    <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
         returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
-        turnoverEstimates <- turnoverService.fetchTurnoverEstimates
         tradingDetails    <- s4LService.fetchAndGet[TradingDetails]
 
         testSetup = TestSetup(
@@ -113,11 +114,6 @@ trait TestSetupController extends BaseController with SessionProfile {
             dobDay = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getDayOfMonth.toString),
             dobMonth = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getMonthValue.toString),
             dobYear = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getYear.toString),
-            nino = lodgingOfficer.flatMap(_.securityQuestions).map(_.nino),
-            role = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.role),
-            firstname = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.forename),
-            othernames = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).flatMap(_.name.otherForenames),
-            surname = lodgingOfficer.flatMap(_.completionCapacity).flatMap(_.officer).map(_.name.surname),
             email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
             mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
             phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),
@@ -128,7 +124,6 @@ trait TestSetupController extends BaseController with SessionProfile {
             formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
           ),
           flatRateSchemeBlock = flatRateScheme,
-          turnoverEstimatesBlock = turnoverEstimates,
           bankAccountBlock = bankAccount,
           returnsBlock = returns,
           tradingDetailsBlock = tradingDetails
@@ -167,11 +162,26 @@ trait TestSetupController extends BaseController with SessionProfile {
               _ <- data.returnsBlock.fold(empty)(x => s4LService.save(x))
               _ <- data.flatRateSchemeBlock.fold(empty)(x => s4LService.save(x))
               _ <- data.bankAccountBlock.fold(empty)(x => s4LService.save(x))
-              _ <- data.turnoverEstimatesBlock.fold(empty)(t => turnoverService.saveTurnoverEstimates(t).flatMap(_ => empty))
             } yield Ok("Test setup complete")
           }
         }
       )
     }
+  }
+
+  def showEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      Future.successful(Ok(views.html.pages.test.test_setup_eligibility(TestSetupEligibilityForm.form)))
+  }
+
+  def submitEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      TestSetupEligibilityForm.form.bindFromRequest().fold(
+        badForm => {
+          Future.successful(BadRequest(views.html.pages.test.test_setup_eligibility(badForm)))
+        }, { data: String =>
+          testVatRegConnector.updateEligibilityData(Json.parse(data)) map (_ => Ok("Eligibility updated"))
+        }
+      )
   }
 }

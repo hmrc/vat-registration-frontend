@@ -45,10 +45,6 @@ POST        /trading-name                                                       
 GET         /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.euGoodsPage
 POST        /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.submitEuGoods
 
-## ESTIMATE VAT TAXABLE TURNOVER PAGE
-GET         /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.showEstimateVatTurnover
-POST        /estimate-vat-taxable-turnover-next-12-months                                      features.turnoverEstimates.TurnoverEstimatesController.submitEstimateVatTurnover
-
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.chargeExpectancyPage
 POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.submitChargeExpectancy
@@ -128,10 +124,6 @@ GET         /your-home-address/acceptFromTxm                                    
 ## OFFICER DOB PAGE
 GET         /pass-security                                                                     features.officer.controllers.OfficerController.showSecurityQuestions
 POST        /pass-security                                                                     features.officer.controllers.OfficerController.submitSecurityQuestions
-
-## COMPLETION CAPACITY PAGE
-GET         /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.showCompletionCapacity
-POST        /who-is-registering-the-company-for-vat                                            features.officer.controllers.OfficerController.submitCompletionCapacity
 
 ## OFFICER CONTACT DETAILS PAGE
 GET         /your-contact-details                                                              features.officer.controllers.OfficerController.showContactDetails
