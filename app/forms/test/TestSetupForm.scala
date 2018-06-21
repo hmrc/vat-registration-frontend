@@ -21,11 +21,17 @@ import features.returns.models.Frequency.Frequency
 import features.returns.models.Stagger.Stagger
 import features.returns.models.{Returns, Start}
 import features.tradingDetails.{TradingDetails, TradingNameView}
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
+import models.TurnoverEstimates
 import models.view.test._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
+
+object TestSetupEligibilityForm {
+  val form = Form(single(
+    "eligibilityJson" -> text
+  ))
+}
 
 object TestSetupForm {
 
@@ -61,11 +67,6 @@ object TestSetupForm {
     "dobDay" -> optional(text),
     "dobMonth" -> optional(text),
     "dobYear" -> optional(text),
-    "nino" -> optional(text),
-    "role" -> optional(text),
-    "firstname" -> optional(text),
-    "othernames" -> optional(text),
-    "surname" -> optional(text),
     "email" -> optional(text),
     "mobile" -> optional(text),
     "phone" -> optional(text),
@@ -126,10 +127,6 @@ object TestSetupForm {
     )(Start.apply)(Start.unapply))
   )(Returns.apply)(Returns.unapply)
 
-  val turnoverEstimatesMapping: Mapping[TurnoverEstimates] = mapping(
-    "vatTaxable" -> longNumber
-  )(TurnoverEstimates.apply)(TurnoverEstimates.unapply)
-
   val tradingDetailsMapping = mapping(
     "tradingName" -> optional(mapping(
       "yesNo" -> boolean,
@@ -145,7 +142,6 @@ object TestSetupForm {
     "officerPreviousAddress" -> officePreviousAddressMapping,
     "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
     "flatRateScheme" -> optional(flatRateSchemeMapping),
-    "turnoverEstimates" -> optional(turnoverEstimatesMapping),
     "bankAccount" -> optional(bankAccountMapping),
     "returns" -> optional(returnsMapping),
     "tradingDetails" -> optional(tradingDetailsMapping)

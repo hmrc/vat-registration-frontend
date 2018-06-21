@@ -17,20 +17,19 @@
 package services
 
 import java.time.LocalDate
-import javax.inject.Inject
 
 import common.enums.VatRegStatus
 import connectors._
-import models.ModelKeys._
-import models._
+import javax.inject.Inject
+import models.{TurnoverEstimates, _}
 import models.api._
-import models.external.{CompanyRegistrationProfile, IncorporationInfo}
+import models.external.CompanyRegistrationProfile
 import play.api.Logger
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, JsObject}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
@@ -99,6 +98,8 @@ trait LegacyServiceToBeRefactored {
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
+  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[JsObject] = vatRegConnector.getEligibilityData
+
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
     iiConnector.cancelSubscription(profile.transactionId) flatMap { _ =>
       vatRegConnector.submitRegistration(profile.registrationId)
@@ -110,4 +111,7 @@ trait LegacyServiceToBeRefactored {
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
     vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))
 
+  def fetchTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
+    vatRegConnector.getTurnoverEstimates
+  }
 }

@@ -28,13 +28,14 @@ import features.returns.ReturnsFixture
 import features.returns.models.{Frequency, Returns, Start}
 import features.sicAndCompliance.models.{SicAndCompliance, _}
 import features.tradingDetails.TradingDetails
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
-import models.TaxableThreshold
+import models.{TaxableThreshold, TurnoverEstimates}
 import models.api._
 import models.external.{IncorporationInfo, _}
+import models.view.{Summary, SummaryRow, SummarySection}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.Call
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -45,26 +46,23 @@ trait BaseFixture {
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validExpectedOverTrue = Some(testDate)
-  def generateThreshold(reason: Option[String] = None,
-                        overThreshold: Option[LocalDate] = None,
-                        expectedOverThreshold: Option[LocalDate] = None,
-                        overThresholdTwelve: Option[LocalDate] = None) =
-    (reason, overThreshold, expectedOverThreshold, overThresholdTwelve) match {
-      case (r@Some(_), _, _, _)                                    => Threshold(false,r)
-      case (None, o, eo, ott) if List(o, eo, ott).flatten.nonEmpty => Threshold(true, None, o, eo, ott)
-      case _                                                       => Threshold(false)
+  def generateThreshold(mandatory: Boolean = false,
+                        thresholdPreviousThirtyDays: Option[LocalDate] = None,
+                        thresholdInTwelveMonths: Option[LocalDate] = None) =
+    (mandatory, thresholdPreviousThirtyDays, thresholdInTwelveMonths) match {
+      case (false, None, None)                              => Threshold(false)
+      case (_, ptd, itm) if List(ptd, itm).flatten.nonEmpty => Threshold(true, ptd, itm)
+      case _                                                => Threshold(false)
     }
-  def generateOptionalThreshold(reason: Option[String] = None, overThreshold: Option[LocalDate] = None, expectedOverThreshold: Option[LocalDate] = None) = {
-    Some(generateThreshold(reason, overThreshold, expectedOverThreshold))
+  def generateOptionalThreshold(mandatory: Boolean = false, thresholdPreviousThirtyDays: Option[LocalDate] = None) = {
+    Some(generateThreshold(mandatory, thresholdPreviousThirtyDays))
   }
   val validVoluntaryRegistration            = generateThreshold()
-  val validVoluntaryRegistrationWithReason  = generateThreshold(reason = Some(Threshold.INTENDS_TO_SELL))
-  val validMandatoryRegistration            = generateThreshold(overThreshold = Some(testDate))
-  val validMandatoryRegistrationBothDates   = generateThreshold(overThreshold = Some(testDate), expectedOverThreshold = Some(testDate))
-  val validMandatoryRegistrationTwelve      = generateThreshold(overThresholdTwelve = Some(testDate))
+  val validMandatoryRegistrationThirtyDays  = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
+  val validMandatoryRegistrationBothDates   = generateThreshold(thresholdPreviousThirtyDays = Some(testDate), thresholdInTwelveMonths = Some(testDate))
+  val validMandatoryRegistrationTwelve      = generateThreshold(thresholdInTwelveMonths = Some(testDate))
   val optVoluntaryRegistration              = Some(validVoluntaryRegistration)
-  val optVoluntaryRegistrationWithReason    = Some(validVoluntaryRegistrationWithReason)
-  val optMandatoryRegistration              = Some(validMandatoryRegistration)
+  val optMandatoryRegistrationThirtyDays    = Some(validMandatoryRegistrationThirtyDays)
   val optMandatoryRegistrationBothDates     = Some(validMandatoryRegistrationBothDates)
   val optMandatoryRegistrationTwelve        = Some(validMandatoryRegistrationTwelve)
 }
@@ -285,5 +283,54 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       |       ]
       |     }
     """.stripMargin).as[JsObject]
+    val redirectCall: Call = Call("GET","http://vatRegEFEUrl")
+    val fullEligibilityDataJson = Json.parse("""
+                                             |{ "sections": [
+                                             |            {
+                                             |              "title": "section_1",
+                                             |              "data": [
+                                             |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
+                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+                                             |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+                                             |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+                                             |              ]
+                                             |            },
+                                             |            {
+                                             |              "title": "section_2",
+                                             |              "data": [
+                                             |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
+                                             |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
+                                             |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
+                                             |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
+                                             |                "name": {
+                                             |                    "forename": "This is my forename",
+                                             |                    "other_forenames": "This is my middle name",
+                                             |                    "surname": "This is my surname"
+                                             |                    },
+                                             |                "role": "director"
+                                             |                 }
+                                             |                }
+                                             |              ]
+                                             |            }
+                                             |          ]
+                                             |         }
+                                           """.stripMargin)
+
+  val section1 = SummarySection("section_1",
+    Seq(
+      (SummaryRow("Question 1",Seq("FOO"),Some(redirectCall)), true),
+      (SummaryRow("Question 2",Seq("BAR"),Some(redirectCall)), true),
+      (SummaryRow("Question 3",Seq("wizz"),Some(redirectCall)), true),
+      (SummaryRow("Question 4",Seq("woosh"),Some(redirectCall)), true)
+    ),true)
+
+  val section2 = SummarySection("section_2",
+    Seq(
+      (SummaryRow("Question 5",Seq("bang"),Some(redirectCall)), true),
+      (SummaryRow("Question 6",Seq("BUZZ"),Some(redirectCall)), true),
+      (SummaryRow("Question 7",Seq("cablam"),Some(redirectCall)), true),
+      (SummaryRow("Question 8",Seq("weez"),Some(redirectCall)), true)
+    ),true)
+  val fullSummaryModelFromFullEligiblityJson = Summary(section1 :: section2 :: Nil)
 
 }

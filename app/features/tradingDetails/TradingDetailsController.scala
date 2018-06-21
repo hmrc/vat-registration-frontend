@@ -90,7 +90,7 @@ trait TradingDetailsController extends BaseController with SessionProfile {
         EuGoodsForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(EuGoodsPage(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-            Redirect(features.turnoverEstimates.routes.TurnoverEstimatesController.showEstimateVatTurnover())
+            Redirect(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage())
           }
         )
       }

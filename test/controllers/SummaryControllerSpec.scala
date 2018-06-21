@@ -20,16 +20,14 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import connectors._
-import features.frs.services.FlatRateService
 import features.returns.models.{Frequency, Returns, Start}
 import fixtures.VatRegistrationFixture
 import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import models.CurrentProfile
-import models.external.IncorporationInfo
+import models.view.Summary
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
-import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -40,15 +38,12 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
 
   trait Setup {
     val testSummaryController = new SummaryController {
-      override val vrs = mockVatRegistrationService
-      override val lodgingOfficerService = mockLodgingOfficerService
-      override val sicSrv = mockSicAndComplianceService
-      override val s4LService = mockS4LService
-      override val keystoreConnector = mockKeystoreConnector
-      val authConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      override val flatRateService: FlatRateService = mockFlatRateService
-      override val configConnector: ConfigConnector = mockConfigConnector
+      override val vrs                = mockVatRegistrationService
+      override val s4LService         = mockS4LService
+      override val keystoreConnector  = mockKeystoreConnector
+      override val authConnector      = mockAuthClientConnector
+      override val messagesApi        = mockMessagesAPI
+      override val summaryService     = mockSummaryService
     }
 
     mockAllMessages
@@ -63,63 +58,20 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
   val emptyReturns = Returns(None, None, None, None)
 
   "Calling summary to show the summary page" should {
-
     "return HTML with a valid summary view pre-incorp" in new Setup {
-      when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(validHttpResponse))
-
-      when(mockVatRegistrationService.getVatScheme(any(),any()))
-        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
-
-      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
-
-      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
-        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("test business type", BigDecimal(6.5)))
-
-      when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+      when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
+      when(mockSummaryService.getRegistrationSummary(any(),any())) thenReturn Future.successful(Summary(Seq.empty))
+      when(mockSummaryService.getEligibilityDataSummary(any(),any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
     "return HTML with a valid summary view post-incorp" in new Setup {
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
-      when(mockVatRegistrationService.getVatScheme(any(),any()))
-        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
-      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
-      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
-        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("test business type", BigDecimal(6.5)))
-
-      when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+      when(mockS4LService.clear(any(),any())) thenReturn Future.successful(validHttpResponse)
+      when(mockSummaryService.getRegistrationSummary(any(),any())) thenReturn Future.successful(Summary(Seq.empty))
+      when(mockSummaryService.getEligibilityDataSummary(any(),any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
-    }
-
-    "getRegistrationSummary maps a valid VatScheme object to a Summary object" in new Setup {
-      when(mockVatRegistrationService.getVatScheme(any(),any()))
-        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistration)))
-      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
-      testSummaryController.getRegistrationSummary().map(summary => summary.sections.length mustEqual 2)
-    }
-
-    "registrationToSummary maps a valid VatScheme object to a Summary object" in new Setup {
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("test business type", BigDecimal(6.32)))
-
-      testSummaryController.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistration), formattedThreshold).sections.length mustEqual 11
-    }
-
-    "registrationToSummary maps a valid empty VatScheme object to a Summary object" in new Setup {
-      when(mockLodgingOfficerService.getLodgingOfficer(any(),any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
-      testSummaryController.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistration), formattedThreshold).sections.length mustEqual 11
     }
   }
 
@@ -145,7 +97,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+      when(mockVatRegistrationService.submitRegistration()(any(), any ()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
 
       when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))

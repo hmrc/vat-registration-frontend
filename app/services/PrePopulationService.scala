@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter
 
 import javax.inject.Inject
 import connectors.{BusinessRegistrationConnector, logResponse}
+import features.businessContact.BusinessContactService
 import features.businessContact.models.BusinessContact
 import features.officer.models.view.LodgingOfficer
 import models._
@@ -35,7 +36,8 @@ import scala.concurrent.Future
 class PrePopulationService @Inject()(val businessRegistrationConnector: BusinessRegistrationConnector,
                                      val incorpInfoService: IncorporationInformationService,
                                      val save4later: S4LService,
-                                     implicit val vatRegService: RegistrationService) extends PrePopService
+                                     val businessContactService: BusinessContactService,
+                                     val vatRegService: RegistrationService) extends PrePopService
 
 trait PrePopService {
 
@@ -43,6 +45,7 @@ trait PrePopService {
   val incorpInfoService: IncorporationInformationService
   val vatRegService: RegistrationService
   val save4later: S4LService
+  val businessContactService: BusinessContactService
 
   private val formatter             = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   private val seqAllowedCountries   = Seq("United Kingdom","UK").map(a => a.toLowerCase.replace(" ", ""))
@@ -56,7 +59,7 @@ trait PrePopService {
   def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     for {
       roAddress       <- incorpInfoService.getRegisteredOfficeAddress
-      ppobAddress     <- vatRegService.getVatScheme map(_.businessContact flatMap(_.ppobAddress))
+      ppobAddress     <- businessContactService.getBusinessContact map(_.ppobAddress)
       businessContact <- save4later.fetchAndGet[BusinessContact]
       s4lAddress      =  businessContact.flatMap(_.ppobAddress)
     } yield filterAddressListByCountry(List(roAddress, ppobAddress, s4lAddress).flatten.distinct)
@@ -66,10 +69,13 @@ trait PrePopService {
                                             profile: CurrentProfile,
                                             rds: HttpReads[CorporationTaxRegistration]): Future[Option[CorporationTaxRegistration]] = {
 
-    vatRegService.getThreshold(profile.registrationId).map(_.voluntaryReason collect  {
-      case Threshold.INTENDS_TO_SELL => CorporationTaxRegistration(
-        Some(AccountingDetails("", Some(SystemDate.getSystemDate.toLocalDate.plusDays(7) format formatter))))
-    }) recover {
+    vatRegService.getThreshold(profile.registrationId) map { threshold =>
+      if (!threshold.mandatoryRegistration) {
+        Some(CorporationTaxRegistration(Some(AccountingDetails("", Some(SystemDate.getSystemDate.toLocalDate.plusDays(7) format formatter)))))
+      } else {
+        None
+      }
+    } recover {
       case e => throw logResponse(e, "getCompanyRegistrationDetails")
     }
   }

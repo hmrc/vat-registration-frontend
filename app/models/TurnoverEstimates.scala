@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package features.turnoverEstimates
+package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class TurnoverEstimates(vatTaxable: Long)
+case class TurnoverEstimates(turnoverEstimate: Long)
 
 object TurnoverEstimates {
   implicit val format: OFormat[TurnoverEstimates] = Json.format[TurnoverEstimates]

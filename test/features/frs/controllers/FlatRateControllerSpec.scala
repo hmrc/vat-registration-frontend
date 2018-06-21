@@ -23,11 +23,10 @@ import connectors.{ConfigConnector, KeystoreConnector}
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.models.{MainBusinessActivityView, SicAndCompliance}
 import features.sicAndCompliance.services.SicAndComplianceService
-import features.turnoverEstimates.{TurnoverEstimates, TurnoverEstimatesService}
 import fixtures.VatRegistrationFixture
 import frs.{FRSDateChoice, FlatRateScheme}
 import helpers.{ControllerSpec, MockMessages}
-import models._
+import models.{TurnoverEstimates, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -36,7 +35,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.TimeService
+import services.{TimeService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
@@ -66,7 +65,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val controller: FlatRateController = new FlatRateController {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
       override val flatRateService: FlatRateService = mockFlatRateService
-      override val turnoverEstimatesService: TurnoverEstimatesService = mockTurnoverEstimatesService
+      override val vatRegistrationService: VatRegistrationService = mockVatRegistrationService
       override val configConnector: ConfigConnector = mockConfigConnector
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
       val authConnector: AuthConnector = mockAuthClientConnector
@@ -376,7 +375,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "render the page" when {
 
       "visited for the first time" in new Setup {
-        when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
+        when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
         when(mockFlatRateService.getFlatRate(any(), any(), any()))
@@ -401,7 +400,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
-        when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
+        when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
         when(mockFlatRateService.getFlatRate(any(), any(), any()))
@@ -420,7 +419,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
         .thenReturn(Future.successful(Some(TurnoverEstimates(150001L))))
 
       callAuthorised(controller.joinFrsPage) { result =>
@@ -433,7 +432,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      when(mockTurnoverEstimatesService.fetchTurnoverEstimates(any(), any(), any()))
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
         .thenReturn(Future.successful(None))
 
       callAuthorised(controller.joinFrsPage) { result =>

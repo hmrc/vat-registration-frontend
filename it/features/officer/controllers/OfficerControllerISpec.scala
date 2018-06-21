@@ -35,7 +35,7 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
-  val keyBlock = "officer"
+  val keyBlock = "officer-data"
 
   val email = "test@test.com"
   val nino = "SR123456C"
@@ -79,103 +79,10 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     }
   }
 
-  "POST Completion Capacity page" should {
-    "save Lodging Officer in S4L" in new Setup {
-      val emptyS4LData = LodgingOfficer(None, None, None, None, None, None, None)
-      val updatedS4LData = LodgingOfficer(Some(CompletionCapacityView(officer.name.id, Some(officer))), None, None, None, None, None, None)
-
-      given()
-        .user.isAuthorised
-        .s4lContainer[LodgingOfficer].contains(emptyS4LData)
-        .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
-        .company.hasOfficerList(Seq(officer, officer2))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/who-is-registering-the-company-for-vat").post(Map("completionCapacityRadio" -> Seq(officer.name.id)))
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions().url)
-      }
-    }
-
-    "patch Lodging Officer in backend" in new Setup {
-      val s4lDataPreIV = LodgingOfficer(
-        completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-        securityQuestions = Some(SecurityQuestionsView(dob, nino)),
-        homeAddress = None,
-        contactDetails = None,
-        formerName = None,
-        formerNameDate = None,
-        previousAddress = None
-      )
-
-      val validJson = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "${officer2.name.forename}",
-           |    "middle": "${officer2.name.otherForenames}",
-           |    "last": "${officer2.name.surname}"
-           |  },
-           |  "role": "${officer2.role}",
-           |  "dob": "$dob",
-           |  "nino": "$nino",
-           |  "details": {
-           |    "currentAddress": {
-           |      "line1": "$addrLine1",
-           |      "line2": "$addrLine2",
-           |      "postcode": "$postcode"
-           |    },
-           |    "contact": {
-           |      "email": "$email",
-           |      "tel": "1234",
-           |      "mobile": "5678"
-           |    },
-           |    "changeOfName": {
-           |      "name": {
-           |        "first": "New",
-           |        "middle": "Name",
-           |        "last": "Cosmo"
-           |      },
-           |      "change": "2000-07-12"
-           |    }
-           |  }
-           |}""".stripMargin)
-
-      given()
-        .user.isAuthorised
-        .s4lContainer[LodgingOfficer].contains(s4lDataPreIV)
-        .company.hasOfficerList(Seq(officer, officer2))
-        .vatScheme.patched(keyBlock, validJson)
-        .s4lContainer[LodgingOfficer].cleared
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/who-is-registering-the-company-for-vat").post(Map("completionCapacityRadio" -> Seq(officer2.name.id)))
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions().url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "dob").as[LocalDate] mustBe dob
-        (json \ "nino").as[JsString].value mustBe nino
-        (json \ "role").as[JsString].value mustBe officer2.role
-        (json \ "name" \ "last").as[JsString].value mustBe officer2.name.surname
-        (json \ "name" \ "middle").validateOpt[String].get mustBe officer2.name.otherForenames
-        (json \ "name" \ "first").validateOpt[String].get mustBe officer2.name.forename
-      }
-    }
-  }
-
   "POST Former Name page" should {
+    val jsonApplicantName = Json.obj("name" -> Json.obj("first" -> officer.name.forename, "middle" -> officer.name.otherForenames, "last" -> officer.name.surname))
     val s4lData = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -212,6 +119,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       given()
         .user.isAuthorised
         .s4lContainer[LodgingOfficer].contains(s4lData)
+        .vatScheme.has(keyBlock, jsonApplicantName)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
@@ -226,11 +134,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "dob").as[LocalDate] mustBe dob
-        (json \ "nino").as[JsString].value mustBe nino
-        (json \ "role").as[JsString].value mustBe officer.role
-        (json \ "name" \ "last").as[JsString].value mustBe officer.name.surname
-        (json \ "name" \ "middle").validateOpt[String].get mustBe officer.name.otherForenames
-        (json \ "name" \ "first").validateOpt[String].get mustBe officer.name.forename
         (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
         (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
         (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
@@ -278,6 +181,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
       given()
         .user.isAuthorised
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None))))
+        .vatScheme.has(keyBlock, jsonApplicantName)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
@@ -306,6 +210,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       given()
         .user.isAuthorised
+        .vatScheme.has(keyBlock, jsonApplicantName)
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None)), formerNameDate = None))
         .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
@@ -326,8 +231,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   "POST Home Address page" should {
     val s4lData = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -406,8 +310,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   "GET Txm ALF callback for Home Address" should {
     val s4lData = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
@@ -474,8 +377,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   "POST Previous Address page" should {
     val s4lData = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -537,11 +439,6 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
         (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
         (json \ "dob").as[LocalDate] mustBe dob
-        (json \ "nino").as[JsString].value mustBe nino
-        (json \ "role").as[JsString].value mustBe role
-        (json \ "name" \ "last").as[JsString].value mustBe "Last"
-        (json \ "name" \ "middle").as[JsString].value mustBe "Middle"
-        (json \ "name" \ "first").as[JsString].value mustBe "First"
         (json \ "details" \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
         (json \ "details" \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
         (json \ "details" \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
@@ -554,8 +451,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   "GET Txm ALF callback for Previous Address" should {
     val s4lData = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(dob, nino)),
+      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),

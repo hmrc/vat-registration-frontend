@@ -62,4 +62,10 @@ trait TestRegistrationConnector {
       case e: Exception => throw logResponse(e, "wipeTestData")
     }
   }
+
+  def updateEligibilityData(jsonData: JsValue)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {
+    http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/${currentProfile.registrationId}/eligibility-data", jsonData) recover {
+      case e: Exception => throw logResponse(e, "updateEligibilityData")
+    }
+  }
 }

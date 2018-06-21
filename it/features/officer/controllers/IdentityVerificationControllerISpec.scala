@@ -16,29 +16,26 @@
 
 package features.officer.controllers
 
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
-import common.enums.{IVResult, VatRegStatus}
+import common.enums.IVResult
 import features.officer.fixtures.LodgingOfficerFixture
-import features.officer.models.view.LodgingOfficer
 import helpers.RequestsFinder
-import models.{CurrentProfile => cp}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsString, JsValue, Json}
 import repositories.ReactiveMongoRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.VATRegFeatureSwitch
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with LodgingOfficerFixture {
 
   val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
 
-  val blockKey = "officer"
+  val blockKey = "officer-data"
 
   val officerJson = Json.parse(
     s"""
@@ -80,9 +77,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.Success)
         .setIvStatus.setStatus()
 
@@ -95,14 +90,14 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       }
     }
 
-    "return 500 if VAT Backend does not return a 200 status when saving ivPassed" in new Setup() {
+    "return 303 if VAT Backend does not return a 200 status when saving ivPassed" in new Setup() {
       featureSwitch.manager.enable(featureSwitch.useIvStub)
       val journeyId = "12345"
       given()
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.Success)
         .setIvStatus.setStatus(status = 404)
 
@@ -120,10 +115,8 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       featureSwitch.manager.disable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
-        .s4lContainerInScenario[LodgingOfficer].contains(lodgingOfficerPreIv, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
-        .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
+        .s4l.isUpdatedWith("IVJourneyID", JsString("12345").toString)
+        .vatScheme.has(blockKey, officerJson)
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .iv.startJourney(200)
@@ -140,10 +133,8 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
       featureSwitch.manager.enable(featureSwitch.useIvStub)
       given()
         .user.isAuthorised
-        .s4lContainerInScenario[LodgingOfficer].contains(lodgingOfficerPreIv, Some(STARTED), Some("Lodging Officer retrieved from S4L"))
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LPutIV(currentState = Some("Lodging Officer retrieved from S4L"), nextState = Some("IV updated in S4L"))
-        .getS4LJourneyID.stubS4LGetIV(currentState = Some("IV updated in S4L"), nextState = Some("IV retrieved from S4L"))
+        .vatScheme.has(blockKey, officerJson)
+        .s4l.isUpdatedWith("IVJourneyID", JsString("12345").toString)
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -165,9 +156,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.Timeout)
         .setIvStatus.setStatus(ivPassed = false)
 
@@ -187,10 +176,8 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
         .iv.outcome(journeyId, IVResult.InsufficientEvidence)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .setIvStatus.setStatus(ivPassed = false)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -209,9 +196,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.FailedIV)
         .setIvStatus.setStatus(ivPassed = false)
 
@@ -231,9 +216,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.LockedOut)
         .setIvStatus.setStatus(ivPassed = false)
 
@@ -253,9 +236,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[LodgingOfficer].contains(lodgingOfficerPreIv)
-        .vatScheme.patched(blockKey, officerJson)
-        .getS4LJourneyID.stubS4LGetIV()
+        .s4l.contains("IVJourneyID", JsString(journeyId).toString)
         .iv.outcome(journeyId, IVResult.UserAborted)
         .setIvStatus.setStatus(ivPassed = false)
 

@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import common.enums.VatRegStatus
+import features.businessContact.BusinessContactService
 import features.businessContact.models.BusinessContact
 import features.officer.models.view._
 import fixtures.VatRegistrationFixture
@@ -48,6 +49,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       override val incorpInfoService = mockIIService
       override val vatRegService = mockVatRegistrationService
       override val save4later = mockS4LService
+      override val businessContactService: BusinessContactService = mockBusinessContactService
       mockFetchRegId()
     }
   }
@@ -62,14 +64,14 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     "be a LocalDate" in new Setup {
       val expectedDate = Some(SystemDate.getSystemDate.toLocalDate.plusDays(7))
       when(mockVatRegistrationService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(Threshold(false, Some(Threshold.INTENDS_TO_SELL))))
+        .thenReturn(Future.successful(Threshold(false)))
 
       service.getCTActiveDate returns expectedDate
     }
 
     "be None" in new Setup {
       when(mockVatRegistrationService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(Threshold(false, Some(Threshold.SELLS))))
+        .thenReturn(Future.successful(Threshold(true, Some(SystemDate.getSystemDate.toLocalDate.minusDays(20)))))
       service.getCTActiveDate returns None
     }
 
@@ -78,8 +80,7 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
   "getOfficerAddressList" must {
     val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val lodgingOfficer = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer.name.id, Some(officer))),
-      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA112233Z")),
+      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
@@ -108,22 +109,20 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       when(mockIIService.getRegisteredOfficeAddress)
         .thenReturn(Future.successful(None))
 
-      val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
+      val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None)
 
       service.getOfficerAddressList(emptyLodgingOfficer) returns Seq()
     }
   }
 
   "getPpobAddressList" must {
-    val emptyVatScheme = VatScheme("123", status = VatRegStatus.draft)
-
     "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
       val ppobView = PpobView(scrsAddress.id, Some(scrsAddress))
 
       when(mockIIService.getRegisteredOfficeAddress)
         .thenReturn(Future.successful(Some(scrsAddress)))
-      when(mockVatRegistrationService.getVatScheme)
-        .thenReturn(emptyVatScheme.pure)
+      when(mockBusinessContactService.getBusinessContact(any(),any(),any()))
+        .thenReturn(BusinessContact().pure)
 
       save4laterReturns(BusinessContact(ppobAddress = Some(scrsAddress)))
 
@@ -133,8 +132,8 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
       val validAddrWithUKCountry = ScrsAddress("myLine1","myLine2", None,Some("myLine4"),Some("XX XY"),Some("UK"))
       when(mockIIService.getRegisteredOfficeAddress)
         .thenReturn(Future.successful(Some(scrsAddress.copy(country = Some("foo BAR")))))
-      when(mockVatRegistrationService.getVatScheme)
-        .thenReturn(emptyVatScheme.pure)
+      when(mockBusinessContactService.getBusinessContact(any(),any(),any()))
+        .thenReturn(BusinessContact().pure)
 
       save4laterReturns(BusinessContact(ppobAddress = Some(validAddrWithUKCountry)))
 
@@ -143,15 +142,9 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
       val address = ScrsAddress(line1 = "street", line2 = "area", postcode = Some("xyz"))
-      val vatSchemeWithAddress = VatScheme(
-        "123",
-        status = VatRegStatus.draft
-      ).copy(
-        businessContact = Some(BusinessContact(ppobAddress = Some(scrsAddress)))
-      )
 
-      when(mockVatRegistrationService.getVatScheme)
-        .thenReturn(vatSchemeWithAddress.pure)
+      when(mockBusinessContactService.getBusinessContact(any(),any(),any()))
+        .thenReturn(BusinessContact(ppobAddress = Some(scrsAddress)).pure)
 
       when(mockIIService.getRegisteredOfficeAddress)
         .thenReturn(Future.successful(Some(scrsAddress)))
@@ -163,8 +156,8 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
     "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
 
-      when(mockVatRegistrationService.getVatScheme)
-        .thenReturn(emptyVatScheme.pure)
+      when(mockBusinessContactService.getBusinessContact(any(),any(),any()))
+        .thenReturn(BusinessContact().pure)
 
       when(mockIIService.getRegisteredOfficeAddress)
         .thenReturn(Future.successful(None))
@@ -222,25 +215,11 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
 
   "getCompanyRegistration" should {
     "return a valid company registration" when {
-      "company intends to sell" in new Setup {
+      "it is a voluntary registration" in new Setup {
         when(mockVatRegistrationService.getThreshold(any())(any()))
-          .thenReturn(Future.successful(generateThreshold(reason = Some(Threshold.INTENDS_TO_SELL))))
+          .thenReturn(Future.successful(generateThreshold(false)))
 
         service.getCompanyRegistrationDetails returnsSome optCtr
-      }
-    }
-    "return None" when {
-      "there is no threshold reason" in new Setup {
-        when(mockVatRegistrationService.getThreshold(any())(any()))
-          .thenReturn(Future.successful(validVoluntaryRegistration))
-
-        service.getCompanyRegistrationDetails returnsNone
-      }
-      "company already sells" in new Setup {
-        when(mockVatRegistrationService.getThreshold(any())(any()))
-          .thenReturn(Future.successful(generateThreshold(reason = Some(Threshold.SELLS))))
-
-        service.getCompanyRegistrationDetails returnsNone
       }
     }
     "return an Error" when {

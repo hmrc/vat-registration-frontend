@@ -22,11 +22,6 @@ case class LodgingOfficerTestSetup(
                                   dobDay: Option[String] = None,
                                   dobMonth: Option[String] = None,
                                   dobYear: Option[String] = None,
-                                  nino: Option[String] = None,
-                                  role: Option[String] = None,
-                                  firstname: Option[String] = None,
-                                  othernames: Option[String] = None,
-                                  surname: Option[String] = None,
                                   email: Option[String] = None,
                                   mobile: Option[String] = None,
                                   phone: Option[String] = None,
@@ -34,8 +29,7 @@ case class LodgingOfficerTestSetup(
                                   formername: Option[String] = None,
                                   formernameChangeDay: Option[String] = None,
                                   formernameChangeMonth: Option[String] = None,
-                                  formernameChangeYear: Option[String] = None
-                                     )
+                                  formernameChangeYear: Option[String] = None)
 
 object LodgingOfficerTestSetup {
   implicit val format = Json.format[LodgingOfficerTestSetup]

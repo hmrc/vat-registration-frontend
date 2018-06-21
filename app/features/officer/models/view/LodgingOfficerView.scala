@@ -23,23 +23,21 @@ import models.api.ScrsAddress
 import models.external.Officer
 import play.api.libs.json.{Json, OFormat}
 
-sealed trait LodgingOfficerView
-
-case class CompletionCapacityView(id: String, officer: Option[Officer] = None)
-object CompletionCapacityView {
-  def apply(officer: Officer): CompletionCapacityView = CompletionCapacityView(officer.name.id, Some(officer))
-
-  implicit val format = Json.format[CompletionCapacityView]
-}
-
-case class SecurityQuestionsView(dob: LocalDate, nino: String) extends LodgingOfficerView
+//case class SecurityQuestionsView(dob: LocalDate, nino: String) extends LodgingOfficerView
+case class SecurityQuestionsView(dob: LocalDate)
 object SecurityQuestionsView {
 
-  def bind(dateModel: DateModel, nino: String): SecurityQuestionsView =
-    SecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
+//  def bind(dateModel: DateModel, nino: String): SecurityQuestionsView =
+//    SecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
+//
+//  def unbind(dobView: SecurityQuestionsView): Option[(DateModel, String)] =
+//    Some(DateModel.fromLocalDate(dobView.dob) -> dobView.nino) // form ensures valid date
 
-  def unbind(dobView: SecurityQuestionsView): Option[(DateModel, String)] =
-    Some(DateModel.fromLocalDate(dobView.dob) -> dobView.nino) // form ensures valid date
+  def bind(dateModel: DateModel): SecurityQuestionsView =
+    SecurityQuestionsView(dateModel.toLocalDate.get) // form ensures valid date
+
+  def unbind(dobView: SecurityQuestionsView): Option[DateModel] =
+    Some(DateModel.fromLocalDate(dobView.dob)) // form ensures valid date
 
   implicit val format = Json.format[SecurityQuestionsView]
 }

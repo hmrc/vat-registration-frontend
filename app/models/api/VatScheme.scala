@@ -23,8 +23,8 @@ import features.officer.models.view.LodgingOfficer
 import features.returns.models.Returns
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
+import models.TurnoverEstimates
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

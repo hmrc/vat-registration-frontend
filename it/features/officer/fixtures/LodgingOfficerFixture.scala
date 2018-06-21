@@ -22,8 +22,7 @@ trait LodgingOfficerFixture {
   val validOfficer: Officer = generateOfficer("First", Some("Middle"), "Last", "Director")
 
   val lodgingOfficerPreIv = LodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(id = validOfficer.name.id, officer = Some(validOfficer))),
-    securityQuestions = Some(SecurityQuestionsView(officerDob,officerNino)),
+    securityQuestions = Some(SecurityQuestionsView(officerDob)),
     None,None,None,None,None
   )
 
@@ -34,8 +33,7 @@ trait LodgingOfficerFixture {
   val officerEmail = "test@test"
 
   val validFullLodgingOfficer = LodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), officerNino)),
+    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     contactDetails = Some(ContactDetailsView(Some(officerEmail), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
