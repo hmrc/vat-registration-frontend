@@ -1,16 +1,32 @@
 @import helpers.templates.summaryRow
+@import helpers.templates.genericSummaryRow
 @import models.view.Summary
 @import uk.gov.hmrc.play.views.html.helpers.form
-@(summaryModel: Summary)(implicit request: Request[_], messages: Messages)
+@(eligibilityDataSummary: Summary, summaryModel: Summary)(implicit request: Request[_], messages: Messages)
 
 @main_template(title = messages("pages.summary.title")) {
 
   <h1 class="form-title heading-large" id="pageHeading">@messages("pages.summary.heading")</h1>
 
+  @for(section <- eligibilityDataSummary.sections) {
+    @if(section.display) {
+      <section>
+        <h2 class="heading-medium" id='@{section.id.replace(" ","")}'>@{section.id}</h2>
+        <dl class="govuk-check-your-answers cya-questions-long">
+          @for((tuple, index) <- section.rows.zipWithIndex) {
+            @if(tuple._2) {
+              @genericSummaryRow(tuple._1,s"${section.id.replace(" ","")}.${index}")
+            }
+          }
+        </dl>
+      </section>
+    }
+}
+
   @for(section <- summaryModel.sections) {
     @if(section.display) {
       <section>
-        <h2 class="heading-medium">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
+        <h2 class="heading-medium" id="@{section.id}">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
         <dl class="govuk-check-your-answers cya-questions-long">
           @for((row, doDisplayRow) <- section.rows) {
             @if(doDisplayRow) {
@@ -21,6 +37,7 @@
       </section>
     }
   }
+
   <div class="form-group">
     <h2 class="heading-medium">@messages("pages.summary.subheading")</h2>
     <p>@messages("pages.summary.para1")</p>

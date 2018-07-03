@@ -17,8 +17,8 @@
 package connectors
 
 import java.time.LocalDate
-import javax.inject.Inject
 
+import javax.inject.Inject
 import common.enums.VatRegStatus
 import config.WSHttp
 import features.bankAccountDetails.models.BankAccount
@@ -26,11 +26,10 @@ import features.officer.models.view.LodgingOfficer
 import features.returns.models.Returns
 import features.sicAndCompliance.models.SicAndCompliance
 import features.tradingDetails.TradingDetails
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
 import models.api._
 import models.external.IncorporationInfo
-import models.{CurrentProfile, TaxableThreshold}
+import models.{CurrentProfile, TaxableThreshold, TurnoverEstimates}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
@@ -82,8 +81,16 @@ trait RegistrationConnector extends RegistrationWhitelist {
     }
   }
 
+  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[JsObject] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/eligibility-data") map {
+      _.json.as[JsObject]
+    } recover {
+      case e => throw logResponse(e, "getEligibilityData")
+    }
+  }
+
   def getLodgingOfficer(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/officer") map { response =>
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/officer-data") map { response =>
       if(response.status == NO_CONTENT) None else Some(response.json)
     } recover {
       case e => throw logResponse(e, "getLodgingOfficer")
@@ -91,7 +98,7 @@ trait RegistrationConnector extends RegistrationWhitelist {
   }
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold").map {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold-data").map {
       result => if(result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get
     }.recover {
       case e => throw logResponse(e, "getThreshold")
@@ -100,7 +107,7 @@ trait RegistrationConnector extends RegistrationWhitelist {
 
   def patchLodgingOfficer(data: LodgingOfficer)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
     val json = Json.toJson(data)(LodgingOfficer.apiWrites)
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer", json) map {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer-data", json) map {
       _ => json
     } recover {
       case e: Exception => throw logResponse(e, "patchLodgingOfficer")
@@ -148,16 +155,10 @@ trait RegistrationConnector extends RegistrationWhitelist {
   }
 
   def getTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates") map { res =>
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates-data") map { res =>
       if(res.status.equals(OK)) Some(res.json.as[TurnoverEstimates]) else None
     } recover {
       case e: Exception => throw logResponse(e, "getTurnoverEstimates")
-    }
-  }
-
-  def patchTurnoverEstimates(turnoverEstimates: TurnoverEstimates)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] = {
-    http.PATCH[TurnoverEstimates, HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates", turnoverEstimates) recover {
-      case e: Exception => throw logResponse(e, "patchTurnoverEstimates")
     }
   }
 

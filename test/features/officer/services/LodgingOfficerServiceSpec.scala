@@ -30,27 +30,40 @@ import models.external.{Name, Officer}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsResultException, JsValue, Json}
 import services.{IncorporationInformationService, S4LService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks with FutureAssertions with LodgingOfficerFixtures {
+class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks with FutureAssertions with LodgingOfficerFixtures with BeforeAndAfterEach {
   val testRegId = "testRegId"
 
   implicit val hc = HeaderCarrier()
   implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1", VatRegStatus.draft, None)
 
-  val incompleteLodgingOfficer = LodgingOfficer(Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))), None, None, None, None, None, None)
-
   val validFullLodgingOfficerNoFormerName = validFullLodgingOfficer.copy(
     formerName = Some(FormerNameView(false, None)),
     formerNameDate = None
   )
+
+  val jsonPartialLodgingOfficer = Json.parse(
+    s"""
+       |{
+       |  "name": {
+       |    "first": "First",
+       |    "middle": "Middle",
+       |    "last": "Last"
+       |  },
+       |  "role": "Director",
+       |  "dob": "1998-07-12",
+       |  "nino": "SR123456Z"
+       |}
+       """.stripMargin)
 
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
     val service = new LodgingOfficerService {
@@ -101,20 +114,6 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   }
 
   "Calling getLodgingOfficer" should {
-    val jsonPartialLodgingOfficer = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "First",
-         |    "middle": "Middle",
-         |    "last": "Last"
-         |  },
-         |  "role": "Director",
-         |  "dob": "1998-07-12",
-         |  "nino": "SR123456Z"
-         |}
-       """.stripMargin)
-
     val jsonFullLodgingOfficerWithEmail = Json.parse(
       s"""
          |{
@@ -167,14 +166,9 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       service.getLodgingOfficer returns emptyLodgingOfficer
     }
 
-    "return an incomplete LodgingOfficer view model from S4L" in new Setup(Some(incompleteLodgingOfficer)) {
-      service.getLodgingOfficer returns incompleteLodgingOfficer
-    }
-
     "return a partial LodgingOfficer view model from backend" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
       val expected = LodgingOfficer(
-        completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress     = None,
         contactDetails  = None,
         formerName      = None,
@@ -187,8 +181,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
     "return a full LodgingOfficer view model from backend with an email" in new Setup(None, Some(jsonFullLodgingOfficerWithEmail)) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: LodgingOfficer = LodgingOfficer(
-        completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("test@t.test"), None, None)),
         formerName = Some(FormerNameView(false, None)),
@@ -201,8 +194,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
     "return a full LodgingOfficer view model from backend without an email" in new Setup(None, Some(jsonFullLodgingOfficerNoEmail)) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: LodgingOfficer = LodgingOfficer(
-        completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12), nino = "SR123456Z")),
+        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(None, None, Some("1234567890"))),
         formerName = Some(FormerNameView(false, None)),
@@ -215,33 +207,9 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
 
   "Calling updateLodgingOfficer" should {
     "return a LodgingOfficer" when {
-      "updating completion capacity" that {
-        val cc = CompletionCapacityView("TestName", Some(Officer(name = Name(Some("Test"), None, "Name"), "Director")))
-        val preUpdateLodgingOfficer = validPartialLodgingOfficer.copy(completionCapacity = Some(cc))
-
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave {
-          val expected = emptyLodgingOfficer.copy(completionCapacity = Some(cc))
-
-          service.saveLodgingOfficer(cc) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(preUpdateLodgingOfficer) {
-          val newCC = CompletionCapacityView(validOfficer.name.id, Some(validOfficer))
-
-          service.saveLodgingOfficer(newCC) returns validPartialLodgingOfficer
-        }
-      }
-
       "updating security questions" that {
-        val officerSecurityQuestions = SecurityQuestionsView(LocalDate.of(2000, 7, 23), "AA123456Z")
-
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave {
-          val expected = emptyLodgingOfficer.copy(securityQuestions = Some(officerSecurityQuestions))
-
-          service.saveLodgingOfficer(officerSecurityQuestions) returns expected
-        }
-
         "makes the block complete and save to backend" in new SetupForBackendSave {
+          val officerSecurityQuestions = SecurityQuestionsView(LocalDate.of(2000, 7, 23))
           val expected = validPartialLodgingOfficer.copy(securityQuestions = Some(officerSecurityQuestions))
 
           service.saveLodgingOfficer(officerSecurityQuestions) returns expected
@@ -343,6 +311,20 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
           service.saveLodgingOfficer(previousAddress) returns expected
         }
       }
+    }
+  }
+
+  "Calling getApplicantName" should {
+    "return an applicant Name" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
+      service.getApplicantName returns Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last")
+    }
+
+    "throw an Exception if nothing is returned from backend" in new Setup(None, None) {
+      service.getApplicantName failedWith classOf[IllegalStateException]
+    }
+
+    "return a NoSuchElementException if data returns is not correct" in new Setup(None, Some(Json.obj("test" -> "val test"))) {
+      service.getApplicantName failedWith classOf[NoSuchElementException]
     }
   }
 }

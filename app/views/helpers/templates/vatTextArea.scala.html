@@ -39,6 +39,7 @@
     @if( elements.args.get('_dataCharField) ){ data-char-field="@elements.args.get('_dataCharField)" }
     @if( elements.args.get('_percentageWidth) ){ style="width:@elements.args.get('_percentageWidth)%" }
     @if( elements.args.get('_rows) ){ rows="@elements.args.get('_rows)" }
+    @if( elements.args.get('_cols) ){ cols="@elements.args.get('_cols)" }
     @if( elements.args.get('_maxlength) ){ maxlength="@elements.args.get('_maxlength)" }>@field.value
 </textarea>
 @if(labelAfter && elements.args.contains('_label)) { @elements.label }

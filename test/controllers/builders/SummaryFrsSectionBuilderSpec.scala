@@ -16,10 +16,10 @@
 
 package controllers.builders
 
-import features.turnoverEstimates.TurnoverEstimates
 import fixtures.VatRegistrationFixture
 import frs.FlatRateScheme
 import helpers.VatRegSpec
+import models.TurnoverEstimates
 
 class SummaryFrsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 

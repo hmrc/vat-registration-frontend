@@ -33,44 +33,33 @@ import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
 
 class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
                                       val authConnector: AuthClientConnector,
                                       val vrs: RegistrationService,
-                                      val lodgingOfficerService: LodgingOfficerService,
-                                      val sicSrv: SicAndComplianceService,
                                       val s4LService: S4LService,
                                       val messagesApi: MessagesApi,
-                                      val flatRateService: FlatRateService,
-                                      val configConnector: ConfigConnector) extends SummaryController
+                                      val summaryService: SummaryService) extends SummaryController {
+}
 
 trait SummaryController extends BaseController with SessionProfile with ApplicativeSyntax {
   val vrs: RegistrationService
-  val lodgingOfficerService: LodgingOfficerService
-  val sicSrv: SicAndComplianceService
   val s4LService: S4LService
-  val flatRateService: FlatRateService
-  val configConnector: ConfigConnector
+  val summaryService: SummaryService
+
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         for {
-          summary <- getRegistrationSummary()
-          _       <- s4LService.clear
-        } yield Ok(views.html.pages.summary(summary))
+          eligibilitySummary  <- summaryService.getEligibilityDataSummary
+          summary             <- summaryService.getRegistrationSummary
+          _                   <- s4LService.clear
+        } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
       }
-  }
-
-  def getRegistrationSummary()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
-    for {
-      officer <- lodgingOfficerService.getLodgingOfficer
-      sac     <- sicSrv.getSicAndCompliance
-      taxableThreshold <- vrs.getTaxableThreshold()
-      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac)), taxableThreshold))
-    } yield summary
   }
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
@@ -96,32 +85,6 @@ trait SummaryController extends BaseController with SessionProfile with Applicat
     }
   }
 
-  def registrationToSummary(vs: VatScheme, taxableThreshold: String)(implicit profile : CurrentProfile): Summary = {
-    Summary(Seq(
-      SummaryVatDetailsSectionBuilder(
-        vs.tradingDetails,
-        vs.threshold,
-        vs.returns,
-        profile.incorporationDate,
-        taxableThreshold
-      ).section,
-      SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
-      SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
-      SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
-      SummaryBusinessActivitiesSectionBuilder(vs.sicAndCompliance).section,
-      SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,
-      SummaryCompanyContactDetailsSectionBuilder(vs.businessContact).section,
-      SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
-      SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
-      SummaryTaxableSalesSectionBuilder(vs.turnOverEstimates).section,
-      SummaryFrsSectionBuilder(
-        vs.flatRateScheme,
-        vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
-        vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-        vs.turnOverEstimates
-      ).section
-    ))
-  }
 
   private[controllers] def invalidSubmissionGuard()(f: => Future[Result])(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
     vrs.getStatus(profile.registrationId) flatMap {

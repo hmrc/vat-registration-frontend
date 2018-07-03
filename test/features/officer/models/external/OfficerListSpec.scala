@@ -92,18 +92,14 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
 
        Officer.wt.writes(officer) shouldBe bobJson
     }
-  }
 
-  "Officer" should {
     "have equality equal" in {
       val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
       val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
 
       (officer1 == officer2) shouldBe true
     }
-  }
 
-  "Officer" should {
     "have equality not-equal" in {
       val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
       val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director")
@@ -111,5 +107,4 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
       (officer1 == officer2) shouldBe false
     }
   }
-
 }

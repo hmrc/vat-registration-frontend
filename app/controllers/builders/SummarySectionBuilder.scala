@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 
+
 trait SummarySectionBuilder {
 
   val sectionId: String

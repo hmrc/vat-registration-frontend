@@ -60,23 +60,6 @@
               <input type="hidden" name="dob" value="" id="dob" class="hidden" />
           </fieldset>
           </div>
-
-          <h2 class="form-title heading-medium">@messages("pages.security.questions.nino.h3")</h2>
-          <p>@messages("pages.security.questions.nino.p1")</p>
-          <fieldset id="ninoField">
-            <legend class="visually-hidden">@messages("pages.security.questions.nino.h3")</legend>
-            <span class="form-hint">@messages("pages.security.questions.nino.hint")</span>
-            @vatInput(
-                securityQuestionsForm("nino"),
-                '_inputClass -> "form-control",
-                '_minlength -> 13,
-                '_maxlength -> 13,
-                '_label -> messages("pages.security.questions.nino.h3"),
-                '_labelTextClass -> "hidden",
-                '_labelClass -> "form-label"
-            )
-          </fieldset>
-              
   }
   </div>
   <div class="form-group">

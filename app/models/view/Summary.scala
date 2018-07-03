@@ -16,6 +16,8 @@
 
 package models.view
 
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsObject, JsResult, JsValue, Reads, _}
 import play.api.mvc.Call
 
 case class Summary(sections: Seq[SummarySection])
@@ -23,6 +25,8 @@ case class Summary(sections: Seq[SummarySection])
 case class SummarySection(id: String,
                           rows: Seq[(SummaryRow, Boolean)],
                           display: Boolean = true)
+
+
 
 object SummaryRow {
   def apply(id: String, answerMessageKey: String, changeLink: Option[Call]): SummaryRow = {
@@ -37,3 +41,32 @@ case class SummaryRow(id: String,
                       answerMessageKeys: Seq[String],
                       changeLink: Option[Call],
                       questionArgs: Seq[String] = Nil)
+
+
+object SummaryFromQuestionAnswerJson {
+ private def summaryRowReads(call: Call): Reads[(SummaryRow, Boolean)] = (
+    (__ \ "question").read[String] and
+    (__ \ "answer").read[String] and
+    Reads.pure(Some(call))
+    )((a,b,c) => (SummaryRow(a,b,c), true))
+
+  private def summarySectionReads(call: Call): Reads[SummarySection] = new Reads[SummarySection] {
+    override def reads(json: JsValue): JsResult[SummarySection] = {
+      val sectionId = (json \ "title").validate[String]
+      val summaryRows = (json \ "data").validate(Reads.seq[(SummaryRow, Boolean)](summaryRowReads(call)))
+
+      val seqErrors = sectionId.fold(identity, _ => Seq.empty) ++ summaryRows.fold(identity, _ => Seq.empty)
+      if (seqErrors.nonEmpty) {
+        JsError(seqErrors)
+      } else {
+        JsSuccess(SummarySection(
+          id = sectionId.get,
+          rows = summaryRows.get,
+          true
+        ))
+      }
+    }
+  }
+
+  def summaryReads(call:Call): Reads[Summary] = (__ \ "sections").read[Seq[SummarySection]](Reads.seq[SummarySection](summarySectionReads(call))) map Summary.apply
+}

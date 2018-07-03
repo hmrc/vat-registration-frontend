@@ -20,11 +20,10 @@ import java.time.LocalDate
 
 import models.S4LKey
 import models.api.ScrsAddress
-import models.external.{Name, Officer}
+import models.external.Name
 import play.api.libs.json._
 
-case class LodgingOfficer(completionCapacity: Option[CompletionCapacityView],
-                          securityQuestions: Option[SecurityQuestionsView],
+case class LodgingOfficer(securityQuestions: Option[SecurityQuestionsView],
                           homeAddress: Option[HomeAddressView],
                           contactDetails: Option[ContactDetailsView],
                           formerName: Option[FormerNameView],
@@ -36,10 +35,12 @@ object LodgingOfficer {
   implicit val s4lKey: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
 
   def ivStatusfromApi(lodgingOfficer: JsValue): Option[Boolean] = {
+
     (lodgingOfficer \ "ivPassed").validateOpt[Boolean].get
+
   }
 
-  private def fromJsonToName(json: JsValue): Name = Name(
+  def fromJsonToName(json: JsValue): Name = Name(
     forename = (json \ "name" \ "first").validateOpt[String].get,
     otherForenames = (json \ "name" \ "middle").validateOpt[String].get,
     surname = (json \ "name" \ "last").validate[String].get,
@@ -47,16 +48,10 @@ object LodgingOfficer {
   )
 
   def fromApi(lodgingOfficer: JsValue): LodgingOfficer = {
-    val officer: Officer = Officer(
-      name = fromJsonToName(lodgingOfficer),
-      role = (lodgingOfficer \ "role").validate[String].get
-    )
-
-    val officerSecurity = SecurityQuestionsView((lodgingOfficer \ "dob").as[LocalDate], (lodgingOfficer \ "nino").as[String])
+    val officerSecurity = (lodgingOfficer \ "dob").validateOpt[LocalDate].get.map(dob => SecurityQuestionsView(dob))
 
     val lodgingOfficerView = LodgingOfficer(
-      completionCapacity = Some(CompletionCapacityView(officer)),
-      securityQuestions = Some(officerSecurity),
+      securityQuestions = officerSecurity,
       homeAddress = None,
       contactDetails = None,
       formerName = None,
@@ -147,34 +142,26 @@ object LodgingOfficer {
 
   def apiWrites: Writes[LodgingOfficer] = new Writes[LodgingOfficer] {
     override def writes(o: LodgingOfficer) = {
-      val officer = o.completionCapacity.flatMap(_.officer).getOrElse(throw new IllegalStateException("Missing officer data to save into backend"))
-      val lastName = Json.obj("last" -> officer.name.surname)
-      val firstName = officer.name.forename.fold(Json.obj())(v => Json.obj("first" -> v))
-      val middleName = officer.name.otherForenames.fold(Json.obj())(v => Json.obj("middle" -> v))
-      val name = Json.obj("name" -> lastName.++(firstName).++(middleName))
-
       val officerSecurityQuestions = o.securityQuestions.getOrElse(throw new IllegalStateException("Missing officer security data to save into backend"))
 
       val otherData = Json.parse(
         s"""
            |{
-           |  "role": "${officer.role}",
-           |  "dob": "${officerSecurityQuestions.dob}",
-           |  "nino": "${officerSecurityQuestions.nino}"
+           |  "dob": "${officerSecurityQuestions.dob}"
            |}
         """.stripMargin
       ).as[JsObject]
 
       val officerDetails = o match {
-        case LodgingOfficer(_, _, None, None, None, None, None) =>
+        case LodgingOfficer(_, None, None, None, None, None) =>
           Json.obj()
-        case LodgingOfficer(_, _, Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
+        case LodgingOfficer(_, Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
           Json.obj("details" -> buildJsonOfficerDetails(currAddr, contact, fName, fNameDate, prevAddr))
         case _ =>
           throw new IllegalStateException("Missing officer details data to save into backend")
       }
 
-      name ++ otherData ++ officerDetails
+      otherData ++ officerDetails
     }
   }
 }
