@@ -42,11 +42,10 @@ class SecurityQuestionsPageSpec extends UnitSpec with WithFakeApplication with I
       document.getElementById("dob.day").attr("value") shouldBe ""
       document.getElementById("dob.month").attr("value") shouldBe ""
       document.getElementById("dob.year").attr("value") shouldBe ""
-      document.getElementById("nino").attr("value") shouldBe ""
     }
 
     "display the page with form pre populated" in {
-      val validOfficerSecurityQuestions = SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456Z")
+      val validOfficerSecurityQuestions = SecurityQuestionsView(LocalDate.of(1998, 7, 12))
 
       lazy val view = SecurityQuestionsPage(form.fill(validOfficerSecurityQuestions))
       lazy val document = Jsoup.parse(view.body)
@@ -54,7 +53,6 @@ class SecurityQuestionsPageSpec extends UnitSpec with WithFakeApplication with I
       document.getElementById("dob.day").attr("value") shouldBe "12"
       document.getElementById("dob.month").attr("value") shouldBe "7"
       document.getElementById("dob.year").attr("value") shouldBe "1998"
-      document.getElementById("nino").attr("value") shouldBe "AA123456Z"
     }
   }
 }

@@ -230,7 +230,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
+        redirectLocation(result) mustBe Some("/register-for-vat/expect-to-reclaim-more-vat-than-you-charge")
       }
     }
 
@@ -244,7 +244,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/estimate-vat-taxable-turnover-next-12-months")
+        redirectLocation(result) mustBe Some("/register-for-vat/expect-to-reclaim-more-vat-than-you-charge")
       }
     }
 

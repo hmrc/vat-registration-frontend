@@ -27,7 +27,6 @@ import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import uk.gov.hmrc.crypto.CompositeSymmetricCrypto.aes
 
 trait StubUtils {
   me: StartAndStopWireMock =>
@@ -77,9 +76,9 @@ trait StubUtils {
 
     def iv = IVStub()
     def setIvStatus = setIVStatusInVat()
-    def getS4LJourneyID = S4LGETIVJourneyID()
 
     def vrefe = VREFE()
+    def s4l = S4L()
   }
 
   def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
@@ -128,58 +127,65 @@ trait StubUtils {
   }
 
   trait S4LStub {
-
     import uk.gov.hmrc.crypto._
+    import uk.gov.hmrc.crypto.json.JsonEncryptor
 
-    //TODO get the json.encryption.key config value from application.conf
-    val crypto: CompositeSymmetricCrypto = aes("fqpLDZ4sumDsekHkeEBlCA==", Seq.empty)
+    implicit lazy val jsonCrypto = ApplicationCrypto.JsonCrypto
+    implicit lazy val encryptionFormat = new JsonEncryptor[JsValue]()
 
-    def decrypt(encData: String): String = crypto.decrypt(Crypted(encData)).value
+    def stubS4LGetNoAux(key: String, data: String): MappingBuilder = {
+      val s4lData = Json.parse(data).as[JsValue]
+      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
 
-    def encrypt(str: String): String = crypto.encrypt(PlainText(str)).value
+      val json = s"""
+                    |{
+                    |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+                    |  "data": {
+                    |    "$key": $encData
+                    |  },
+                    |  "id": "1",
+                    |  "modifiedDetails": {
+                    |    "createdAt": { "$$date": 1502097615710 },
+                    |    "lastUpdated": { "$$date": 1502189409725 }
+                    |  }
+                    |}
+            """.stripMargin
 
-
-    def stubS4LGetNoAux(key:String,data:String) :MappingBuilder =
       get(urlPathMatching("/save4later/vat-registration-frontend/1"))
         .willReturn(ok(
-          s"""
-             |{
-             |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-             |  "data": {
-             |    "${key}": "${encrypt(data)}"
-             |  },
-             |  "id": "1",
-             |  "modifiedDetails": {
-             |    "createdAt": { "$$date": 1502097615710 },
-             |    "lastUpdated": { "$$date": 1502189409725 }
-             |  }
-             |}
-            """.stripMargin
+          json
         ))
+    }
 
+    def stubS4LPut(key: String, data: String): MappingBuilder = {
+      val s4lData = Json.parse(data).as[JsValue]
+      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
 
-    def stubS4LPut(key: String, data: String): MappingBuilder =
       put(urlPathMatching(s"/save4later/vat-registration-frontend/1/data/$key"))
         .willReturn(ok(
           s"""
              |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
-             |    "data": { "$key": "${encrypt(data)}" },
+             |    "data": { "$key": $encData },
              |    "id": "1",
              |    "modifiedDetails": {
              |      "createdAt": { "$$date": 1502265526026 },
              |      "lastUpdated": { "$$date": 1502265526026 }}}
           """.stripMargin
         ))
+    }
 
 
-    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): MappingBuilder =
+    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): MappingBuilder = {
+      val s4lData = Json.toJson(t)
+      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
+
       get(urlPathMatching("/save4later/vat-registration-frontend/1"))
         .willReturn(ok(
           s"""
              |{
              |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
              |  "data": {
-             |    "${key.key}": "${encrypt(fmt.writes(t).toString())}"
+             |    "${key.key}": $encData
              |  },
              |  "id": "1",
              |  "modifiedDetails": {
@@ -189,6 +195,7 @@ trait StubUtils {
              |}
             """.stripMargin
         ))
+    }
 
     def stubS4LGetNothing(): MappingBuilder =
       get(urlPathMatching("/save4later/vat-registration-frontend/1"))
@@ -210,48 +217,42 @@ trait StubUtils {
       delete(urlPathMatching("/save4later/vat-registration-frontend/1")).willReturn(ok(""))
   }
 
-  case class S4LGETIVJourneyID(scenario: String = "S4L Scenario")
-                              (implicit builder: PreconditionBuilder, format:Format[String]) extends S4LStub  {
-    def stubS4LPutIV(journeyId: String = "1234", currentState: Option[String] = None, nextState: Option[String] = None) = {
-      val mappingBuilderScenarioPUT = stubS4LPut("IVJourneyID",encrypt(format.writes(journeyId).toString())).inScenario(scenario)
+  case class S4L(scenario: String = "S4L Scenario")(implicit builder: PreconditionBuilder) extends S4LStub {
+    def contains(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
+      val mappingBuilderScenarioGET = stubS4LGetNoAux(key, data).inScenario(scenario)
+      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
+
+      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
+      builder
+    }
+
+    def isUpdatedWith(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
+      val mappingBuilderScenarioPUT = stubS4LPut(key, data).inScenario(scenario)
       val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
       builder
     }
 
-    def stubS4LGetIV(journeyID: String = "12345", currentState: Option[String] = None, nextState: Option[String] = None)
-                    (implicit format: Format[String]): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = get(urlPathMatching("/save4later/vat-registration-frontend/1"))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-            .withBody(
-              s"""
-                 |{
-                 |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-                 |  "data": {
-                 |    "IVJourneyID":"${encrypt(format.writes(journeyID).toString())}"
-                 |  },
-                 |  "id": "1",
-                 |  "modifiedDetails": {
-                 |    "createdAt": { "$$date": 1502097615710 },
-                 |    "lastUpdated": { "$$date": 1502189409725 }
-                 |  }
-                 |}
-          """.stripMargin
-            )
-        ).inScenario(scenario)
-
+    def isEmpty(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
+      val mappingBuilderScenarioGET = stubS4LGetNothing().inScenario(scenario)
       val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
+      builder
+    }
 
+    def cleared(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
+      val mappingBuilderScenarioDELETE = stubS4LClear().inScenario(scenario)
+      val mappingBuilderDELETE = currentState.fold(mappingBuilderScenarioDELETE)(mappingBuilderScenarioDELETE.whenScenarioStateIs)
+
+      stubFor(nextState.fold(mappingBuilderDELETE)(mappingBuilderDELETE.willSetStateTo))
       builder
     }
   }
+
   @deprecated("please change the types on this once all refactoring has been completed, both should be same type instead of C & T")
-  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub with KeystoreStub {
+  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub {
 
     def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
       stubFor(stubS4LGet[C, T](t))
@@ -313,7 +314,7 @@ trait StubUtils {
     }
   }
 
-  case class IncorporationStub()(implicit builder: PreconditionBuilder) extends KeystoreStub {
+  case class IncorporationStub()(implicit builder: PreconditionBuilder) {
     def isIncorporated: PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo("/vatreg/incorporation-information/000-431-TEST"))
@@ -581,15 +582,10 @@ trait StubUtils {
 
       builder
     }
-
-
-    def withProfile(currentState: Option[String] = None, nextState: Option[String] = None, ivPassed:Boolean = true) = {
-      builder
-    }
   }
 
 
-  case class VatSchemeStub()(implicit builder: PreconditionBuilder) extends KeystoreStub {
+  case class VatSchemeStub()(implicit builder: PreconditionBuilder) {
 
     def isBlank: PreconditionBuilder = {
       stubFor(
@@ -716,9 +712,7 @@ trait StubUtils {
     }
   }
 
-  case class UserStub
-  ()
-  (implicit builder: PreconditionBuilder) extends SessionBuilder {
+  case class UserStub()(implicit builder: PreconditionBuilder) extends SessionBuilder {
 
     def isAuthorised(implicit requestHolder: RequestHolder): PreconditionBuilder = {
       requestHolder.request = requestWithSession(requestHolder.request, "anyUserId")

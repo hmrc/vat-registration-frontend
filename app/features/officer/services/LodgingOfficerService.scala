@@ -16,11 +16,11 @@
 
 package features.officer.services
 
-import javax.inject.Inject
-
 import config.Logging
 import connectors.RegistrationConnector
 import features.officer.models.view.{LodgingOfficer, _}
+import javax.inject.Inject
+import models.external.Name
 import models.{CurrentProfile, S4LKey}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,13 +37,19 @@ trait LodgingOfficerService extends Logging {
   val vatRegistrationConnector: RegistrationConnector
   val s4LService: S4LService
 
-  private val N               = None
+  private val N = None
+
+  def getApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Name] = {
+    vatRegistrationConnector.getLodgingOfficer(cp.registrationId) map { res =>
+      res.fold(throw new IllegalStateException(s"[LodgingOfficerService] [getApplicantName] Can't determine applicant Name for regId: ${cp.registrationId}"))(LodgingOfficer.fromJsonToName)
+    }
+  }
 
   def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
     s4LService.fetchAndGetNoAux[LodgingOfficer](S4LKey[LodgingOfficer]) flatMap {
       case Some(officer) => Future.successful(officer)
       case _ => vatRegistrationConnector.getLodgingOfficer(cp.registrationId) flatMap { json =>
-        val lodgingOfficer = json.fold(LodgingOfficer(N, N, N, N, N, N, N))(LodgingOfficer.fromApi)
+        val lodgingOfficer = json.fold(LodgingOfficer(N, N, N, N, N, N))(LodgingOfficer.fromApi)
         s4LService.saveNoAux[LodgingOfficer](lodgingOfficer, S4LKey[LodgingOfficer]) map (_ => lodgingOfficer)
       }
     }
@@ -58,11 +64,11 @@ trait LodgingOfficerService extends Logging {
   }
 
   private def isModelComplete(lodgingOfficer: LodgingOfficer): Completion[LodgingOfficer] = lodgingOfficer match {
-    case LodgingOfficer(Some(_), Some(_), N, N, N, N, N) =>
+    case LodgingOfficer(Some(_), N, N, N, N, N) =>
       Complete(lodgingOfficer)
-    case LodgingOfficer(Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
+    case LodgingOfficer(Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(lodgingOfficer)
-    case LodgingOfficer(Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
+    case LodgingOfficer(Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
       Complete(lodgingOfficer)
     case _ =>
       Incomplete(lodgingOfficer)
@@ -71,7 +77,6 @@ trait LodgingOfficerService extends Logging {
   def saveLodgingOfficer[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
     def updateModel(data: T, before: LodgingOfficer): LodgingOfficer = {
       data match {
-        case cc: CompletionCapacityView    => before.copy(completionCapacity = Some(cc))
         case secu: SecurityQuestionsView   => before.copy(securityQuestions = Some(secu))
         case currAddr: HomeAddressView     => before.copy(homeAddress = Some(currAddr))
         case contact: ContactDetailsView   => before.copy(contactDetails = Some(contact))

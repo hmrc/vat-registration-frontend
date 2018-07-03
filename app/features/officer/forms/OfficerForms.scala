@@ -23,25 +23,14 @@ import forms.FormValidation
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
 import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping, _}
 import models.DateModel
-import models.external.Officer
 import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, text}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-object CompletionCapacityForm {
-  val NAME_ID: String = "completionCapacityRadio"
-
-  val form = Form(
-    mapping(
-      NAME_ID -> textMapping()("completionCapacity")
-    )(CompletionCapacityView(_))(view => Option(view.id))
-  )
-}
-
 object SecurityQuestionsForm {
-  val NINO_REGEX = """^[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\d{2} ?\d{2} ?\d{2} ?[A-D]{1}$""".r
+  //val NINO_REGEX = """^[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\d{2} ?\d{2} ?\d{2} ?[A-D]{1}$""".r
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
@@ -59,11 +48,12 @@ object SecurityQuestionsForm {
           "month" -> text,
           "year" -> text
         )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
-      },
-      "nino" -> {
-        implicit val errorCodeNino: ErrorCode = "security.questions.nino"
-        text.verifying(nonEmptyValidText(NINO_REGEX))
       }
+//      ,
+//      "nino" -> {
+//        implicit val errorCodeNino: ErrorCode = "security.questions.nino"
+//        text.verifying(nonEmptyValidText(NINO_REGEX))
+//      }
     )(SecurityQuestionsView.bind)(SecurityQuestionsView.unbind)
   )
 }

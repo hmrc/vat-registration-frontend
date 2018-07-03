@@ -46,30 +46,6 @@ trait OfficerController extends BaseController with SessionProfile {
   val addressLookupService: AddressLookupService
   implicit val messagesApi: MessagesApi
 
-  def showCompletionCapacity: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        officerList <- prePopService.getOfficerList
-        officer     <- lodgingOfficerService.getLodgingOfficer
-        filledForm  = officer.completionCapacity.fold(CompletionCapacityForm.form)(CompletionCapacityForm.form.fill)
-      } yield Ok(features.officer.views.html.completion_capacity(filledForm, officerList))
-  }
-
-  def submitCompletionCapacity: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      prePopService.getOfficerList flatMap { officerList =>
-        CompletionCapacityForm.form.bindFromRequest.fold(
-          formErrors => Future.successful(BadRequest(features.officer.views.html.completion_capacity(formErrors, officerList))),
-          cc => {
-            val officer = officerList.find(_.name.id == cc.id).getOrElse(throw new NoOfficerFoundException(profile.registrationId))
-            lodgingOfficerService.saveLodgingOfficer(cc.copy(officer = Some(officer))) map {
-              _ => Redirect(routes.OfficerController.showSecurityQuestions())
-            }
-          }
-        )
-      }
-  }
-
   def showSecurityQuestions: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       for {
@@ -93,7 +69,8 @@ trait OfficerController extends BaseController with SessionProfile {
       ivPassedCheck {
         for {
           officer    <- lodgingOfficerService.getLodgingOfficer
-          ccId       = officer.completionCapacity.map(cc => cc.id).getOrElse(throw new ElementNotFoundException(s"No Completion Capacity View found for regId: ${profile.registrationId}"))
+          applicant  <- lodgingOfficerService.getApplicantName
+          ccId       = applicant.id
           filledForm = officer.formerName.fold(FormerNameForm.form(ccId))(FormerNameForm.form(ccId).fill)
         } yield Ok(features.officer.views.html.former_name(filledForm))
       }
@@ -102,17 +79,11 @@ trait OfficerController extends BaseController with SessionProfile {
   def submitFormerName: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
-        lodgingOfficerService.getLodgingOfficer flatMap { officer =>
-          val ccId = officer.completionCapacity.map(cc => cc.id).getOrElse(throw new ElementNotFoundException(s"No Completion Capacity View found for regId: ${profile.registrationId}"))
-          FormerNameForm.form(ccId).bindFromRequest().fold(
+        lodgingOfficerService.getApplicantName flatMap { applicant =>
+          FormerNameForm.form(applicant.id).bindFromRequest().fold(
             badForm => Future.successful(BadRequest(features.officer.views.html.former_name(badForm))),
-            data => lodgingOfficerService.saveLodgingOfficer(data) map {
-              _ =>
-                if (data.yesNo) {
-                  Redirect(routes.OfficerController.showFormerNameDate())
-                } else {
-                  Redirect(routes.OfficerController.showContactDetails())
-                }
+            data => lodgingOfficerService.saveLodgingOfficer(data) map { _ =>
+              if (data.yesNo) Redirect(routes.OfficerController.showFormerNameDate()) else Redirect(routes.OfficerController.showContactDetails())
             }
           )
         }

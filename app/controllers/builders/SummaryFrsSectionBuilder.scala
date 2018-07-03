@@ -19,8 +19,8 @@ package controllers.builders
 import java.text.DecimalFormat
 
 import features.returns.models.Start
-import features.turnoverEstimates.TurnoverEstimates
 import frs.FlatRateScheme
+import models.TurnoverEstimates
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
@@ -99,7 +99,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
       (flatRatePercentageRow, joinFrsContainsTrue && vatFrs.flatMap(_.useThisRate).isDefined),
       (startDateRow, isflatRatePercentYes && vatFrs.flatMap(_.frsStart).isDefined)
     ),
-      turnoverEstimates.exists(toe => if(toe.vatTaxable > 150000L) false else vatFrs.isDefined)
+      turnoverEstimates.exists(toe => if(toe.turnoverEstimate > 150000L) false else vatFrs.isDefined)
   )}
 
 }

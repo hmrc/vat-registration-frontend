@@ -18,7 +18,6 @@ package features.officer.forms
 
 import java.time.LocalDate
 
-import features.officer.forms.CompletionCapacityForm.NAME_ID
 import features.officer.forms.HomeAddressForm.ADDRESS_ID
 import features.officer.models.view._
 import helpers.FormInspectors._
@@ -26,46 +25,15 @@ import models.api.ScrsAddress
 import uk.gov.hmrc.play.test.UnitSpec
 
 class OfficerFormsSpec extends UnitSpec {
-  "CompletionCapacityForm" should {
-    val testForm = CompletionCapacityForm.form
-    val testName = "TestData"
-    val testData = CompletionCapacityView(testName, None)
-
-    "bind successfully with data" in {
-      val data = Map(NAME_ID -> testName)
-
-      val result = testForm.bind(data).fold(
-        errors => errors,
-        success => success
-      )
-
-      result shouldBe testData
-    }
-
-    "have the correct error if no data is provided" in {
-      val data: Map[String, String] = Map()
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq(NAME_ID -> "validation.completionCapacity.missing")
-    }
-
-    "Unbind successfully with full data" in {
-      val data = Map(NAME_ID -> testName)
-
-      testForm.fill(testData).data shouldBe data
-    }
-  }
-
   "SecurityQuestionsForm" should {
     val testForm = SecurityQuestionsForm.form
-    val testData = SecurityQuestionsView(LocalDate.of(1998, 7, 12), "AA123456C")
+    val testData = SecurityQuestionsView(LocalDate.of(1998, 7, 12))
 
     "bind successfully with data" in {
       val data = Map(
         "dob.day" -> "12",
         "dob.month" -> "7",
-        "dob.year" -> "1998",
-        "nino" -> testData.nino
+        "dob.year" -> "1998"
       )
 
       val result = testForm.bind(data).fold(
@@ -79,8 +47,7 @@ class OfficerFormsSpec extends UnitSpec {
     "have the correct error if no dob month is provided" in {
       val data = Map(
         "dob.day" -> "12",
-        "dob.year" -> "1998",
-        "nino" -> testData.nino
+        "dob.year" -> "1998"
       )
       val boundForm = testForm.bind(data)
 
@@ -91,43 +58,18 @@ class OfficerFormsSpec extends UnitSpec {
       val data = Map(
         "dob.day" -> "12",
         "dob.month" -> "13",
-        "dob.year" -> "1998",
-        "nino" -> testData.nino
+        "dob.year" -> "1998"
       )
       val boundForm = testForm.bind(data)
 
       boundForm shouldHaveErrors Seq("dob" -> "validation.security.questions.dob.invalid")
     }
 
-    "have the correct error if no nino is provided" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.month" -> "7",
-        "dob.year" -> "1998"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("nino" -> "error.required")
-    }
-
-    "have the correct error if no correct nino is provided" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.month" -> "7",
-        "dob.year" -> "1998",
-        "nino" -> "AA123456Z"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("nino" -> "validation.security.questions.nino.invalid")
-    }
-
     "Unbind successfully with full data" in {
       val data = Map(
         "dob.day" -> "12",
         "dob.month" -> "7",
-        "dob.year" -> "1998",
-        "nino" -> testData.nino
+        "dob.year" -> "1998"
       )
 
       testForm.fill(testData).data shouldBe data

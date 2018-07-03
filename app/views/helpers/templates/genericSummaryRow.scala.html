@@ -1,0 +1,16 @@
+@import models.view.SummaryRow
+
+@(row: SummaryRow, rowId: String)(implicit messages: Messages)
+<div id="@rowId">
+  <dt class="cya-question" id="@{rowId}Question">@{row.id}</dt>
+  <dd class="cya-answer" id="@{rowId}Answer">
+    @for(answer <- row.answerMessageKeys) {
+        @{answer}<br>
+    }
+  </dd>
+  <dd class="cya-change">
+    @row.changeLink.map { linkLocation =>
+        <a href="@linkLocation" id="@{rowId}ChangeLink">@messages("app.common.change") <span class="visuallyhidden">&nbsp; @{row.id}</span></a>
+    }
+  </dd>
+</div>

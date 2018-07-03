@@ -22,10 +22,9 @@ import com.google.inject.Inject
 import connectors.{ConfigConnector, RegistrationConnector}
 import features.returns.models.Start
 import features.sicAndCompliance.services.SicAndComplianceService
-import features.turnoverEstimates.TurnoverEstimatesService
 import frs.{FRSDateChoice, FlatRateScheme}
 import models._
-import models.api.{SicCode, VatStartDate}
+import models.api.SicCode
 import play.api.Logger
 import services.{Complete, Completion, Incomplete, S4LService}
 import uk.gov.hmrc.http.HeaderCarrier

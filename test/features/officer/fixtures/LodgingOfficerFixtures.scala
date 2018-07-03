@@ -29,15 +29,14 @@ trait LodgingOfficerFixtures {
     role = "Director"
   )
 
-  val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None, None)
+  val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None)
 
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
   val validPartialLodgingOfficer = LodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
+    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
     homeAddress = None,
     contactDetails = None,
     formerName = None,
@@ -46,8 +45,7 @@ trait LodgingOfficerFixtures {
   )
 
   val validFullLodgingOfficer = LodgingOfficer(
-    completionCapacity = Some(CompletionCapacityView(validOfficer.name.id, Some(validOfficer))),
-    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12), "ZZ987654A")),
+    securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),

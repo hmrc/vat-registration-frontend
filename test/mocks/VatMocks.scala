@@ -16,7 +16,6 @@
 
 package mocks
 
-import config.AppConfig
 import connectors._
 import features.bankAccountDetails.connectors.BankAccountReputationConnectorImpl
 import features.bankAccountDetails.services.BankAccountReputationServiceImpl
@@ -25,7 +24,6 @@ import features.frs.services.FlatRateService
 import features.officer.services.{IVServiceImpl, LodgingOfficerService}
 import features.returns.services.ReturnsService
 import features.sicAndCompliance.services.ICLService
-import features.turnoverEstimates.TurnoverEstimatesService
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
@@ -78,9 +76,9 @@ trait VatMocks
   implicit lazy val mockIVService = mock[IVServiceImpl]
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
-  implicit lazy val mockTurnoverEstimatesService = mock[TurnoverEstimatesService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockPrePopService: PrePopService = mock[PrePopService]
+  lazy val mockSummaryService: SummaryService = mock[SummaryService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
@@ -111,11 +109,11 @@ trait VatMocks
       mockIVService,
       mockReturnsService,
       mockLodgingOfficerService,
-      mockTurnoverEstimatesService,
       mockFlatRateService,
       mockSicAndComplianceService,
       mockMessagesAPI,
       mockPrePopService,
+      mockSummaryService,
       mockBusinessContactService,
       mockAuthClientConnector,
       mockTimeService,
