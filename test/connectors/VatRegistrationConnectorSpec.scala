@@ -380,7 +380,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val fullLodgingOfficer: LodgingOfficer = partialLodgingOfficer.copy(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"))),
+        contactDetails = Some(ContactDetailsView(email = Some("test@t.test"))),
         formerName = Some(FormerNameView(false, None)),
         previousAddress = Some(PreviousAddressView(true, None))
       )

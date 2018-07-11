@@ -43,7 +43,7 @@ class ContactDetailsPageSpec extends UnitSpec with WithFakeApplication with I18n
     }
 
     "display the page with form pre populated" in {
-      val validContactDetails = ContactDetailsView(Some("t@t.tt.co.tt"), Some("1234"), Some("5678"))
+      val validContactDetails = ContactDetailsView(Some("1234"),Some("t@t.tt.co.tt"), Some("5678"))
 
       lazy val view = ContactDetailsPage(form.fill(validContactDetails))
       lazy val document = Jsoup.parse(view.body)

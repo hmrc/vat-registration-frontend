@@ -23,15 +23,9 @@ import models.api.ScrsAddress
 import models.external.Officer
 import play.api.libs.json.{Json, OFormat}
 
-//case class SecurityQuestionsView(dob: LocalDate, nino: String) extends LodgingOfficerView
 case class SecurityQuestionsView(dob: LocalDate)
 object SecurityQuestionsView {
 
-//  def bind(dateModel: DateModel, nino: String): SecurityQuestionsView =
-//    SecurityQuestionsView(dateModel.toLocalDate.get, nino) // form ensures valid date
-//
-//  def unbind(dobView: SecurityQuestionsView): Option[(DateModel, String)] =
-//    Some(DateModel.fromLocalDate(dobView.dob) -> dobView.nino) // form ensures valid date
 
   def bind(dateModel: DateModel): SecurityQuestionsView =
     SecurityQuestionsView(dateModel.toLocalDate.get) // form ensures valid date
@@ -59,7 +53,7 @@ object FormerNameDateView {
   implicit val format = Json.format[FormerNameDateView]
 }
 
-case class ContactDetailsView(email: Option[String] = None, daytimePhone: Option[String] = None, mobile: Option[String] = None)
+case class ContactDetailsView(daytimePhone: Option[String] = None,email: Option[String] = None, mobile: Option[String] = None)
 object ContactDetailsView {
   implicit val format: OFormat[ContactDetailsView] = Json.format[ContactDetailsView]
 }

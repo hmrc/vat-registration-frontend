@@ -84,7 +84,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
@@ -233,7 +233,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"),Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
@@ -295,7 +295,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/your-home-address").post(Map("homeAddressRadio" -> Seq(currentAddress.id)))
+      val response = buildClient(features.officer.controllers.routes.OfficerController.submitHomeAddress().url).post(Map("homeAddressRadio" -> Seq(currentAddress.id)))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.OfficerController.showPreviousAddress().url)
@@ -312,7 +312,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
       previousAddress = Some(PreviousAddressView(true, None))
@@ -361,7 +361,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(s"/your-home-address/acceptFromTxm?id=$addressId").get()
+      val response = buildClient(features.officer.controllers.routes.OfficerController.acceptFromTxmHomeAddress(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.officer.controllers.routes.OfficerController.showPreviousAddress().url)
@@ -379,7 +379,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = None
@@ -429,7 +429,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/current-address-three-years-or-more").post(Map("previousAddressQuestionRadio" -> Seq("true")))
+      val response = buildClient(features.officer.controllers.routes.OfficerController.submitPreviousAddress().url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url)
@@ -453,7 +453,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some(email), Some("1234"), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
       previousAddress = None
@@ -508,7 +508,7 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(s"/current-address-three-years-or-more/acceptFromTxm?id=$addressId").get()
+      val response = buildClient(features.officer.controllers.routes.OfficerController.acceptFromTxmPreviousAddress(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url)

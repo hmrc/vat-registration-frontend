@@ -291,7 +291,7 @@ trait FlatRateController extends BaseController with SessionProfile {
       ivPassedCheck {
         flatRateService.getFlatRate map { flatRateScheme =>
           val form = flatRateScheme.estimateTotalSales.fold(EstimateTotalSalesForm.form)(v => EstimateTotalSalesForm.form.fill(v))
-          Ok(features.frs.views.html.estimateTotalSales(form))
+          Ok(features.frs.views.html.estimate_total_sales(form))
         }
       }
   }
@@ -300,7 +300,7 @@ trait FlatRateController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         EstimateTotalSalesForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(features.frs.views.html.estimateTotalSales(badForm))),
+          badForm => Future.successful(BadRequest(features.frs.views.html.estimate_total_sales(badForm))),
           data => flatRateService.saveEstimateTotalSales(data) map {
             _ => Redirect(features.frs.controllers.routes.FlatRateController.annualCostsLimitedPage())
           }

@@ -30,7 +30,6 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object SecurityQuestionsForm {
-  //val NINO_REGEX = """^[[A-Z]&&[^DFIQUV]][[A-Z]&&[^DFIQUVO]] ?\d{2} ?\d{2} ?\d{2} ?[A-D]{1}$""".r
 
   implicit object LocalDateOrdering extends Ordering[LocalDate] {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
@@ -49,11 +48,6 @@ object SecurityQuestionsForm {
           "year" -> text
         )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
       }
-//      ,
-//      "nino" -> {
-//        implicit val errorCodeNino: ErrorCode = "security.questions.nino"
-//        text.verifying(nonEmptyValidText(NINO_REGEX))
-//      }
     )(SecurityQuestionsView.bind)(SecurityQuestionsView.unbind)
   )
 }
@@ -96,13 +90,13 @@ object FormerNameDateForm {
 
   val maxDate: LocalDate = LocalDate.now()
 
-  def form(minDate: LocalDate) = Form(
+  def form(dateOfBirth: LocalDate) = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,
         "month" -> text,
         "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(dateOfBirth, maxDate))))
     )(FormerNameDateView.bind)(FormerNameDateView.unbind)
   )
 }
@@ -123,8 +117,8 @@ object ContactDetailsForm {
 
   val form = Form(
     mapping(
-      EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
       DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
+      EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
       MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
     )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
   )
