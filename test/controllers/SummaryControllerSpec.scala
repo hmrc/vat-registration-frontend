@@ -89,7 +89,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result.redirectsTo(s"/register-for-vat/submission-confirmation")
+          result.redirectsTo(controllers.routes.ApplicationSubmissionController.show().url)
       }
     }
 

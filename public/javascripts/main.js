@@ -4,7 +4,6 @@ $(document).ready($(function () {
     initRadioOptions();
 }));
 
-
 /*
  example of multiple hide/show areas
  UI.hideShowOnRadioButton("startDate",
@@ -38,28 +37,12 @@ $(document).ready($(function () {
             updateState(buttonToAreaMap);
         }).trigger("change");
     };
-
-    UI.preventNonNumericInput = function(inputs) {
-        //             \t,\n, 0,  1,  2,  3,  3,  5,  6,  7,  8,  9
-        var allowed = [8, 9, 13, 26, 27, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 127, ];
-        $.each(inputs, function(idx, inputName){
-            $('input[name='+inputName+']').keypress (function(evt) {
-                // if current key not found in the array of allowed key codes, ignore keypress
-                if ($.inArray(evt.which, allowed) === -1) {
-                    return evt.preventDefault();
-                }
-            });
-        });
-    };
 }(window.UI = window.UI || {}, jQuery));
-
 // StartDatePage module
 (function (StartDatePage, $, undefined) {
     StartDatePage.init = function() {
         UI.hideShowOnRadioButton("startDateRadio",
             { "#startDateRadio-specific_date": "#specific_date_panel" });
-        var numericInputs = ["startDate\\.day", "startDate\\.month", "startDate\\.year"];
-        UI.preventNonNumericInput(numericInputs);
     }
 }(window.StartDatePage = window.StartDatePage || {}, jQuery));
 
@@ -70,70 +53,6 @@ $(document).ready($(function () {
             { "#tradingNameRadio-true": "#trading_name_panel" });
     }
 }(window.TradingNamePage = window.TradingNamePage || {}, jQuery));
-
-// Company Bank Account Details module
-(function (CompanyBankAccountDetailsPage, $, undefined) {
-    CompanyBankAccountDetailsPage.init = function() {
-        var numericInputs = ["accountNumber",  "sortCode\\.part1", "sortCode\\.part2", "sortCode\\.part3"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.CompanyBankAccountDetailsPage = window.CompanyBankAccountDetailsPage || {}, jQuery));
-
-// Estimate Vat Turnover
-(function (EstimateVatTurnoverPage, $, undefined) {
-    EstimateVatTurnoverPage.init = function() {
-        var numericInputs = ["turnoverEstimate"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.EstimateVatTurnoverPage = window.EstimateVatTurnoverPage || {}, jQuery));
-
-// Estimate Total Sales
-(function (EstimateTotalSalesPage, $, undefined) {
-    EstimateTotalSalesPage.init = function() {
-        var numericInputs = ["totalSalesEstimate"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.EstimateTotalSalesPage = window.EstimateTotalSalesPage || {}, jQuery));
-
-// Labour Compliance - Workers
-(function (WorkersPage, $, undefined) {
-    WorkersPage.init = function() {
-        var numericInputs = ["numberOfWorkers"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.WorkersPage = window.WorkersPage || {}, jQuery));
-
-
-
-// Business Contact Details Page
-(function (BusinessContactDetailsPage, $, undefined) {
-    BusinessContactDetailsPage.init = function() {
-        var phone1error = $('#daytimePhone-error-summary');
-        var phone2error = $('#mobile-error-summary');
-        if (phone1error.text() === phone2error.text()) phone2error.parent('li').hide();
-    }
-}(window.BusinessContactDetailsPage = window.BusinessContactDetailsPage || {}, jQuery));
-
-// Officer Contact Details Page
-(function (OfficerContactDetailsPage, $, undefined) {
-    OfficerContactDetailsPage.init = function() {
-        var daytimePhoneError = $('#daytimePhone-error-summary');
-        var mobileError = $('#mobile-error-summary');
-        var emailError = $('#email-error-summary');
-        if (emailError.text() === mobileError.text())
-            mobileError.parent('li').hide();
-        if (emailError.text() === daytimePhoneError.text())
-            daytimePhoneError.parent('li').hide();
-    }
-}(window.OfficerContactDetailsPage = window.OfficerContactDetailsPage || {}, jQuery));
-
-// Officer DOB page
-(function (OfficerDOBPage, $, undefined) {
-    OfficerDOBPage.init = function() {
-        var numericInputs = ["dob\\.day", "dob\\.month", "dob\\.year"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.OfficerDOBPage = window.OfficerDOBPage || {}, jQuery));
 
 // FormerNamePage module
 (function (FormerNamePage, $, undefined) {
@@ -148,18 +67,8 @@ $(document).ready($(function () {
     FrsStartDatePage.init = function() {
         UI.hideShowOnRadioButton("frsStartDateRadio",
             { "#frsStartDateRadio-differentdate": "#different_date_panel" });
-        var numericInputs = ["frsStartDate\\.day", "frsStartDate\\.month", "frsStartDate\\.year"];
-        UI.preventNonNumericInput(numericInputs);
     }
 }(window.FrsStartDatePage = window.FrsStartDatePage || {}, jQuery));
-
-// FormerNameDate page
-(function (FormerNameDatePage, $, undefined) {
-    FormerNameDatePage.init = function() {
-        var numericInputs = ["formerNameDate\\.day", "formerNameDate\\.month", "formerNameDate\\.year"];
-        UI.preventNonNumericInput(numericInputs);
-    }
-}(window.FormerNameDatePage = window.FormerNameDatePage || {}, jQuery));
 
 var noSectorForSICCodeToGA = function() {
     if($("#noSectorForSICCode").length) {

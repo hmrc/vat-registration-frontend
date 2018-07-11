@@ -252,7 +252,7 @@ class OfficerFormsSpec extends UnitSpec {
 
   "ContactDetailsForm" should {
     val testForm = ContactDetailsForm.form
-    val testData = ContactDetailsView(Some("t@t.tt.co.tt"), Some("12345678901234567890"), Some("5678912345"))
+    val testData = ContactDetailsView(Some("12345678901234567890"), Some("t@t.tt.co.tt"), Some("5678912345"))
 
     "bind successfully with data" in {
       val data = Map(

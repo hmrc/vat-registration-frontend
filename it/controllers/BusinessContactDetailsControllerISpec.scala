@@ -67,7 +67,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile.copy(incorporationDate = None), sessionId)
 
-      val response = buildClient("/carry-out-business-activities").get()
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 200
 
@@ -90,7 +90,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities").get()
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
@@ -107,7 +107,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient("/carry-out-business-activities").get()
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 500
 
@@ -125,7 +125,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("other")))
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("other")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -144,7 +144,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
@@ -165,7 +165,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities").post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 500
       }
@@ -185,7 +185,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
@@ -208,7 +208,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/carry-out-business-activities/acceptFromTxm?id=fudgesicle").get()
+      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)

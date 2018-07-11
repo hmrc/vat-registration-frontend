@@ -1,3 +1,19 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
 @import forms.TradingNameForm
 @(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
@@ -14,9 +30,7 @@
     Seq("tradingName")
     )
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.tradingName.heading")</h1>
-
-    <p id="lead-paragraph">@messages("pages.tradingName.lede", companyName)</p>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.tradingName.heading", companyName)</h1>
 
     <details role="group" class="form-group">
         <summary role="button" aria-controls="details-content-0" aria-expanded="false">
@@ -46,7 +60,7 @@
             <div class="panel panel-border-narrow hidden @fieldSetClasses" id="trading_name_panel">
 
                 @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
-                    @govHelpers.errorInline("tradingName", Messages(error.message))
+                    @govHelpers.errorInline("tradingName", error.message)
                 }
 
                 @vatInput(
