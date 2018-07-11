@@ -160,7 +160,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val lodgingOfficer = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some(formerName.asLabel))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -198,7 +198,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val lodgingOfficer = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
@@ -232,7 +232,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -276,7 +276,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
@@ -307,7 +307,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = None,
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -320,7 +320,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = None,
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -333,7 +333,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, None)),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -359,7 +359,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = None,
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -372,7 +372,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, None)),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -385,7 +385,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
@@ -398,7 +398,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = None
@@ -411,7 +411,7 @@ class LodgingOfficerSpec extends UnitSpec {
       val data = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(false, None))

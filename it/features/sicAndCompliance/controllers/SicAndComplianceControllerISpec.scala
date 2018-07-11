@@ -225,7 +225,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileSicCodeIntoDb(sessionId)
 
-    val response = buildClient("/main-source-of-income").get()
+    val response = buildClient(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity.url).get()
     whenReady(response) { res =>
       res.status mustBe 200
     }
@@ -250,7 +250,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileSicCodeIntoDb(sessionId)
 
-    val response = buildClient("/main-source-of-income").post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
+    val response = buildClient(features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe 303
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
@@ -465,7 +465,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/describe-what-company-does").get()
+    val response = buildClient(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription.url).get()
     whenReady(response) { res =>
       res.status mustBe 200
       val document = Jsoup.parse(res.body)
@@ -483,7 +483,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/describe-what-company-does").post(Map("description" -> Seq("foo")))
+    val response = buildClient(features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitBusinessActivityDescription().url).post(Map("description" -> Seq("foo")))
     whenReady(response) { res =>
       res.status mustBe 303
       res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.submitSicHalt().url)
