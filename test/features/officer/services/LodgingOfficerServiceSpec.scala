@@ -183,7 +183,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       val expected: LodgingOfficer = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("test@t.test"), None, None)),
+        contactDetails = Some(ContactDetailsView(None, Some("test@t.test"), None)),
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))

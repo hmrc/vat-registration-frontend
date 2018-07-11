@@ -46,8 +46,8 @@ GET         /trade-goods-services-with-countries-outside-uk                     
 POST        /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.submitEuGoods
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.chargeExpectancyPage
-POST        /expect-to-reclaim-more-vat-than-you-charge                                        features.returns.controllers.ReturnsController.submitChargeExpectancy
+GET         /claim-vat-refunds                                                                 features.returns.controllers.ReturnsController.chargeExpectancyPage
+POST        /claim-vat-refunds                                                                 features.returns.controllers.ReturnsController.submitChargeExpectancy
 
 ## ACCOUNTING PERIOD PAGE
 GET         /submit-vat-returns                                                                features.returns.controllers.ReturnsController.accountPeriodsPage
@@ -64,16 +64,16 @@ GET         /companys-bank-account                                              
 POST        /companys-bank-account                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitHasCompanyBankAccount
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /bank-account-details                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
-POST        /bank-account-details                                                             features.bankAccountDetails.controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
+GET         /account-details                                                                   features.bankAccountDetails.controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
+POST        /account-details                                                                   features.bankAccountDetails.controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.showBusinessActivityDescription
-POST        /describe-what-company-does                                                        features.sicAndCompliance.controllers.SicAndComplianceController.submitBusinessActivityDescription
+GET         /what-company-does                                                                 features.sicAndCompliance.controllers.SicAndComplianceController.showBusinessActivityDescription
+POST        /what-company-does                                                                 features.sicAndCompliance.controllers.SicAndComplianceController.submitBusinessActivityDescription
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.showMainBusinessActivity
-POST        /main-source-of-income                                                             features.sicAndCompliance.controllers.SicAndComplianceController.submitMainBusinessActivity
+GET         /main-source-business-income                                                       features.sicAndCompliance.controllers.SicAndComplianceController.showMainBusinessActivity
+POST        /main-source-business-income                                                       features.sicAndCompliance.controllers.SicAndComplianceController.submitMainBusinessActivity
 
 ## CONFIRM SIC CODES
 GET         /confirm-standard-industry-classification-codes-vat                                features.sicAndCompliance.controllers.SicAndComplianceController.showSicHalt
@@ -104,9 +104,9 @@ GET         /provides-skilled-workers                                           
 POST        /provides-skilled-workers                                                          features.sicAndCompliance.controllers.LabourComplianceController.submitSkilledWorkers
 
 ## PPOB ADDRESS
-GET         /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.showPPOB
-POST        /carry-out-business-activities                                                     features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
-GET         /carry-out-business-activities/acceptFromTxm                                       features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+GET         /principal-place-business                                                          features.businessContact.controllers.BusinessContactDetailsController.showPPOB
+POST        /principal-place-business                                                          features.businessContact.controllers.BusinessContactDetailsController.submitPPOB
+GET         /principal-place-business/acceptFromTxm                                            features.businessContact.controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
 
 ## PPOB ADDRESS Drop out page
 GET         /cant-register-vat                                                                 features.businessContact.controllers.BusinessContactDetailsController.showPPOBDropOut
@@ -117,17 +117,17 @@ POST        /company-contact-details                                            
 
 
 ## OFFICER ADDRESS PAGE
-GET         /your-home-address                                                                 features.officer.controllers.OfficerController.showHomeAddress
-POST        /your-home-address                                                                 features.officer.controllers.OfficerController.submitHomeAddress
-GET         /your-home-address/acceptFromTxm                                                   features.officer.controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
+GET         /home-address                                                                       features.officer.controllers.OfficerController.showHomeAddress
+POST        /home-address                                                                       features.officer.controllers.OfficerController.submitHomeAddress
+GET         /home-address/acceptFromTxm                                                         features.officer.controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
 
 ## OFFICER DOB PAGE
 GET         /pass-security                                                                     features.officer.controllers.OfficerController.showSecurityQuestions
 POST        /pass-security                                                                     features.officer.controllers.OfficerController.submitSecurityQuestions
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /your-contact-details                                                              features.officer.controllers.OfficerController.showContactDetails
-POST        /your-contact-details                                                              features.officer.controllers.OfficerController.submitContactDetails
+GET         /vat-contact                                                                       features.officer.controllers.OfficerController.showContactDetails
+POST        /vat-contact                                                                       features.officer.controllers.OfficerController.submitContactDetails
 
 ## FORMER NAME PAGE
 GET         /changed-name                                                                      features.officer.controllers.OfficerController.showFormerName
@@ -139,10 +139,10 @@ POST        /when-change                                                        
 
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.showPreviousAddress
-POST        /current-address-three-years-or-more                                               features.officer.controllers.OfficerController.submitPreviousAddress
-GET         /current-address-three-years-or-more/changePreviousAddress                         features.officer.controllers.OfficerController.changePreviousAddress
-GET         /current-address-three-years-or-more/acceptFromTxm                                 features.officer.controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
+GET         /current-address                                                                   features.officer.controllers.OfficerController.showPreviousAddress
+POST        /current-address                                                                   features.officer.controllers.OfficerController.submitPreviousAddress
+GET         /current-address/changePreviousAddress                                             features.officer.controllers.OfficerController.changePreviousAddress
+GET         /current-address/acceptFromTxm                                                     features.officer.controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
 
 ## SUMMARY
 GET         /check-your-answers                                                                controllers.SummaryController.show
@@ -156,7 +156,7 @@ GET         /sign-out                                                           
 GET         /post-sign-in                                                                      controllers.callbacks.SignInOutController.postSignIn
 
 ## APPLICATION SUBMISSION CONFIRMATION
-GET         /submission-confirmation                                                           controllers.ApplicationSubmissionController.show
+GET         /application-submitted                                                             controllers.ApplicationSubmissionController.show
 
 ## FRS FLOW
 ##
@@ -164,17 +164,17 @@ GET         /submission-confirmation                                            
 GET         /join-flat-rate                                                                    features.frs.controllers.FlatRateController.joinFrsPage
 POST        /join-flat-rate                                                                    features.frs.controllers.FlatRateController.submitJoinFRS
 
-##Do you spend less than £1000 a year Page
-GET         /company-spend-less-business-goods                                                 features.frs.controllers.FlatRateController.annualCostsInclusivePage
-POST        /company-spend-less-business-goods                                                 features.frs.controllers.FlatRateController.submitAnnualInclusiveCosts
+##Do you spend less than 250 a year Page
+GET         /business-spend-relevant-goods                                                     features.frs.controllers.FlatRateController.annualCostsInclusivePage
+POST        /business-spend-relevant-goods                                                     features.frs.controllers.FlatRateController.submitAnnualInclusiveCosts
 
 ## Estimate Total Sales
 GET         /estimate-total-sales                                                              features.frs.controllers.FlatRateController.estimateTotalSales
 POST        /estimate-total-sales                                                              features.frs.controllers.FlatRateController.submitEstimateTotalSales
 
 ## Do you want to register for FRS page
-GET         /use-flat-rate                                                                     features.frs.controllers.FlatRateController.registerForFrsPage
-POST        /use-flat-rate                                                                     features.frs.controllers.FlatRateController.submitRegisterForFrs
+GET         /business-flat-rate                                                                features.frs.controllers.FlatRateController.registerForFrsPage
+POST        /business-flat-rate                                                                features.frs.controllers.FlatRateController.submitRegisterForFrs
 
 ## Do you want to register for FRS page - Business Sector selected
 GET         /confirm-flat-rate                                                                 features.frs.controllers.FlatRateController.yourFlatRatePage
@@ -193,8 +193,8 @@ GET         /confirm-business-type                                              
 POST        /confirm-business-type                                                             features.frs.controllers.FlatRateController.submitConfirmSectorFrs
 
 ## When do you want to join the Flat Rate Scheme?
-GET         /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.frsStartDatePage
-POST        /when-join-flat-rate                                                               features.frs.controllers.FlatRateController.submitFrsStartDate
+GET         /flat-rate-date                                                                    features.frs.controllers.FlatRateController.frsStartDatePage
+POST        /flat-rate-date                                                                    features.frs.controllers.FlatRateController.submitFrsStartDate
 
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable

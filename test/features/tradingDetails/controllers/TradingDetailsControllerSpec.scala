@@ -71,6 +71,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
         result => {
           status(result) mustBe OK
           val doc = Jsoup.parse(contentAsString(result))
+
           doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
           doc.getElementById("tradingNameRadio-true").attr("checked") mustBe "checked"
           doc.getElementById("tradingName").`val` mustBe "tradingName"
@@ -230,7 +231,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/expect-to-reclaim-more-vat-than-you-charge")
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage.url)
       }
     }
 
@@ -244,7 +245,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitEuGoods, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/expect-to-reclaim-more-vat-than-you-charge")
+        redirectLocation(result) mustBe Some(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage.url)
       }
     }
 

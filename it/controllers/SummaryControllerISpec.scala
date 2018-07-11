@@ -157,7 +157,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
         val response = buildClient("/check-your-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/submission-confirmation")
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show().url)
         }
       }
     }

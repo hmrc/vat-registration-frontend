@@ -1,3 +1,19 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import features.returns.models.Stagger
 
@@ -11,35 +27,22 @@
 
     <div class="govuk-box-highlight">
         <h1 id="heading-application-submitted" class="heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
-        <p class="font-small">
-            @messages("pages.application.submission.confirmation.reference.number")
-            <br>
-            <strong class="heading-medium">@refNo</strong>
-        </p>
     </div>
+    <p>@messages("pages.application.submission.confirmation.reference.number") <strong class="bold">@refNo.</strong></p>
+    <p>@messages("pages.application.submission.confirmation.email")</p>
 
     <div class="form-group">
         <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whatNext.sub.heading")</h2>
         <p>@messages("pages.application.submission.confirmation.whatNext.para1")</p>
-        <ul class="list list-bullet">
-            <li>@messages("pages.application.submission.confirmation.whatNext.para2")</li>
-            <li>@messages("pages.application.submission.confirmation.whatNext.para3")</li>
-        </ul>
-        <p>@messages("pages.application.submission.confirmation.whatNext.para5")</p>
 
-        <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
+        <div class="panel panel-border-wide">
             <p>@messages("pages.application.submission.confirmation.panel.para")</p>
         </div>
-        </details>
 
         <a class="btn button" href="@dashBoardUrl" id="save-and-continue">@messages("pages.application.submission.confirmation.button")</a>
-
-    @***
-    * "vatAccountPeriod" ID must not change as there's GA scripts looking for this hidden element
-    ***@
-    @for(startPeriod <- staggerStart) {
-        <div class="hidden"><span id="vatAccountPeriod">@startPeriod</span></div>
+    </div>
+        @staggerStart.map{ startPeriod =>
+        <div class="hidden"><span id="vatAccountPeriodGAEventDoNotRemove">@startPeriod</span></div>
     }
 
 }
-

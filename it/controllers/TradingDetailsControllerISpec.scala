@@ -71,7 +71,7 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
         res.status mustBe 200
 
         val document = Jsoup.parse(res.body)
-        val elems = document.getElementById("lead-paragraph")
+        val elems = document.getElementById("pageHeading")
         elems.text must include(companyName)
         document.getElementById("tradingName").`val` mustBe "foo bar from pre pop"
         document.getElementById("tradingNameRadio-false").attr("checked") mustBe "checked"
@@ -94,7 +94,7 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
         res.status mustBe 200
 
         val document = Jsoup.parse(res.body)
-        val elems = document.getElementById("lead-paragraph")
+        val elems = document.getElementById("pageHeading")
         elems.text must include(companyName)
         document.getElementById("tradingName").`val` mustBe ""
         document.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
@@ -111,7 +111,7 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
         .company.nameIs(companyName)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true,Some("Test Trading Name")))))
+        .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .businessRegistration.postsTradingNameToPrepop("1", Some("Test Trading Name"))
         .s4lContainer[TradingDetails].cleared
 

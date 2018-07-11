@@ -47,9 +47,9 @@ class ApplicationSubmissionControllerImpl @Inject()(val vatRegService: Registrat
 }
 
 trait ApplicationSubmissionController extends BaseController with SessionProfile {
-  val vatRegService       : RegistrationService
-  val returnsService      : ReturnsService
-  val dashboardUrl        : String
+  val vatRegService       :RegistrationService
+  val returnsService      :ReturnsService
+  val dashboardUrl        :String
 
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>

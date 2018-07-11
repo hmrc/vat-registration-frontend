@@ -421,5 +421,4 @@ class FormValidationSpec extends UnitSpec with Inside with Inspectors {
       constraint(s"${moreThan4.getDayOfMonth}", s"${moreThan4.getMonthValue}", s"${moreThan4.getYear}") shouldBe Invalid(ValidationError("testErrMsg"))
     }
   }
-
 }
