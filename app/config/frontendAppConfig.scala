@@ -85,4 +85,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   lazy val whitelistedPreIncorpRegIds:Seq[String]  = whitelistConfig("regIdPreIncorpWhitelist")
   lazy val whitelistedPostIncorpRegIds:Seq[String] = whitelistConfig("regIdPostIncorpWhitelist")
 
+  lazy val noneOnsSicCodes = new String(
+      Base64.getDecoder.decode(configuration.getString("noneOnsSicCodes").getOrElse("")), Charset.forName("UTF-8")
+    ).split(",").toSet
+
 }

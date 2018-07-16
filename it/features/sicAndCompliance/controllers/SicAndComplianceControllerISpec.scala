@@ -138,23 +138,51 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "User submitting SIC codes on ICL should redirect to MainBusinessActivity" in new Setup {
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
+    val simplifiedSicJson = """|{"otherBusinessActivities" : [
+                               |           {
+                               |               "code" : "43220",
+                               |               "desc" : "Plumbing, heat and air-conditioning installation",
+                               |               "indexes" : ""
+                               |           }
+                               |       ]
+                               |}""".stripMargin
 
-      given()
-        .user.isAuthorised
-        .s4lContainer[SicAndCompliance].contains(fullModel)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .icl.setup()
+    given()
+      .user.isAuthorised
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .vatScheme.has("sicAndComp", Json.parse(simplifiedSicJson))
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .icl.setup()
 
-      insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertCurrentProfileSicCodeIntoDb(sessionId)
 
-      val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
+    val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
 
-      whenReady(mockedPostToICL) { res =>
-        res.status mustBe 303
-      }
+    whenReady(mockedPostToICL) { res =>
+      res.status mustBe 303
     }
+  }
+
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
+    given()
+      .user.isAuthorised
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .vatScheme.doesNotHave("sicAndComp")
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .incorpInformation.hasSicCodes
+      .icl.setup()
+
+    insertCurrentProfileSicCodeIntoDb(sessionId)
+
+    val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
+
+    whenReady(mockedPostToICL) { res =>
+      res.status mustBe 303
+    }
+  }
 
   "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
     val sicCode = SicCode("23456", "This is a fake description", "")

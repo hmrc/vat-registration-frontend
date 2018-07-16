@@ -150,4 +150,15 @@ class IncorporationInformationConnectorSpec extends VatRegSpec {
     }
   }
 
+  "getSicCodes" should {
+    "retrieve sic codes" when {
+      "they are available in II" in new Setup {
+        mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(Json.obj("x" -> "y"))))
+
+        val response: HttpResponse = await(connector.retrieveSicCodes("transID"))
+        response.status mustBe 200
+      }
+    }
+  }
+
 }
