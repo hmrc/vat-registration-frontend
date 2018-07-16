@@ -111,4 +111,8 @@ trait IncorporationInformationConnector extends RegistrationWhitelist {
   def cancelSubscription(txId : String)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
     http.DELETE[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/subscribe/$txId/regime/vatfe/subscriber/scrs")
   }
+
+  def retrieveSicCodes(transID : String)(implicit hc : HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/sic-codes/transaction/$transID")
+  }
 }

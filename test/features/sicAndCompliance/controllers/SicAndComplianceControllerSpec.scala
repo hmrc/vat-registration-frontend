@@ -19,7 +19,7 @@ package features.sicAndCompliance.controllers
 import connectors.KeystoreConnector
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.models.SicAndCompliance
-import features.sicAndCompliance.services.{ICLService, SicAndComplianceService}
+import features.sicAndCompliance.services.{CustomICLMessages, ICLService, SicAndComplianceService}
 import fixtures.VatRegistrationFixture
 import helpers._
 import models.ModelKeys.SIC_CODES_KEY
@@ -74,7 +74,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       }
     }
     "redirect to ICL if feature switch is false" in new Setup {
-      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful("/url"))
 
       callAuthorised(controller.submitSicHalt) {
@@ -84,7 +84,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       }
     }
     "return exception" in new Setup (true) {
-      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.submitSicHalt)(_ =>1 mustBe 2))
     }
@@ -290,7 +290,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
     }
     "take the user to ICL" when {
       "hitting change (for SIC codes) on the summary" in new Setup {
-        when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+        when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful("/url"))
 
         callAuthorised(controller.returnToICL) {
@@ -301,7 +301,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       }
     }
     "return exception" in new Setup (true) {
-      when(mockICLService.journeySetup()(any[HeaderCarrier]()))
+      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.returnToICL)(_ =>1 mustBe 2))
     }

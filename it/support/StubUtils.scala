@@ -513,6 +513,22 @@ trait StubUtils {
       )
       builder
     }
+
+    def hasSicCodes: PreconditionBuilder = {
+      stubFor(
+        get(urlEqualTo(s"/incorporation-information/sic-codes/transaction/000-431-TEST"))
+          .willReturn(ok(
+            s"""
+               |{
+               |  "sic_codes" : [
+               |    "13121", "14141", "16523"
+               |  ]
+               |}
+            """.stripMargin
+          ))
+      )
+      builder
+    }
   }
 
   case class ICL()(implicit builder: PreconditionBuilder, requestHolder: RequestHolder) {

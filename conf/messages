@@ -279,7 +279,7 @@ pages.accounting.period.para1                               = VAT Returns are us
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-validation.accounting.period.missing                        = Tell us when you want the business to do its VAT Returns?
+validation.accounting.period.missing                        = Tell us when you want the business to do its VAT Returns
 
 ## Summary Page
 pages.summary.title                                         = Summary
@@ -717,3 +717,8 @@ pages.summary.frs.businessSector                        = Business type for the 
 pages.summary.frs.flatRate                              = Do you want to use the {0}% flat rate?
 pages.summary.frs.startDate                             = When do you want to join the Flat Rate Scheme?
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration
+
+## ICL CUSTOM MESSAGES
+pages.icl.heading                                       = Check and confirm the company''s Standard Industry Classification (SIC) codes for VAT
+pages.icl.lead                                          = This is the information we have on record. Any changes you make here will not affect what''s on the company''s public record.
+pages.icl.hint                                          = Make sure the company''s SIC codes for VAT reflect all the company''s business activities. It makes it quicker and easier to process VAT Returns.
