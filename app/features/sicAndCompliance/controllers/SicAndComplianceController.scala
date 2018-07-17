@@ -17,14 +17,16 @@
 package features.sicAndCompliance.controllers
 
 import javax.inject.Inject
+
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
 import features.frs.services.FlatRateService
 import features.sicAndCompliance.forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
 import features.sicAndCompliance.models.MainBusinessActivityView
-import features.sicAndCompliance.services.{ICLService, SicAndComplianceService}
+import features.sicAndCompliance.services.{CustomICLMessages, ICLService, SicAndComplianceService}
 import features.sicAndCompliance.views.html._
+import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import play.api.i18n.MessagesApi
@@ -138,11 +140,17 @@ trait SicAndComplianceController extends BaseController with SessionProfile {
       }
   }
 
-  private def startSelectingNewSicCodes(implicit hc : HeaderCarrier) : Future[Result] = {
+  private def startSelectingNewSicCodes(implicit hc : HeaderCarrier, cp : CurrentProfile) : Future[Result] = {
     if (useICLStub) {
       Future.successful(Redirect(test.routes.SicStubController.show()))
     } else {
-      iclService.journeySetup map(redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
+      val customICLMessages: CustomICLMessages = CustomICLMessages(
+        messagesApi("pages.icl.heading"),
+        messagesApi("pages.icl.lead"),
+        messagesApi("pages.icl.hint")
+      )
+
+      iclService.journeySetup(customICLMessages) map(redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
     }
   }
 

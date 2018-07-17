@@ -37,24 +37,24 @@ class ICLConnectorSpec extends VatRegSpec {
   "ICLSetup" should {
     "return a JSObject" in new Setup {
       mockHttpPOST[JsObject, HttpResponse]("", successfulResponse)
-      val res = await(testConnector.ICLSetup(Json.parse("{}").as[JsObject]))
+      val res = await(testConnector.iclSetup(Json.parse("{}").as[JsObject]))
       res mustBe jsResponse
     }
     "return an exception" in new Setup {
       val exception = new Exception
       mockHttpFailedPOST[JsObject, HttpResponse]("", exception)
-      intercept[Exception](await(testConnector.ICLSetup(Json.parse("{}").as[JsObject])))
+      intercept[Exception](await(testConnector.iclSetup(Json.parse("{}").as[JsObject])))
     }
   }
   "ICLGetResult" should {
     "return a JSObject" in new Setup {
       mockHttpGET[HttpResponse]("", Future.successful(HttpResponse(200, Some(iclMultipleResults))))
-      val res = await(testConnector.ICLGetResult(""))
+      val res = await(testConnector.iclGetResult(""))
       res mustBe iclMultipleResults
     }
     "return an Exception" in new Setup {
       mockHttpGET[HttpResponse]("", Future.failed(new Exception))
-      intercept[Exception](await(testConnector.ICLGetResult("")))
+      intercept[Exception](await(testConnector.iclGetResult("")))
     }
   }
 }

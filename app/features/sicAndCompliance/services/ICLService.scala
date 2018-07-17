@@ -18,11 +18,12 @@ package features.sicAndCompliance.services
 
 import javax.inject.Inject
 
-import connectors.{ICLConnector, KeystoreConnector}
+import connectors.{ICLConnector, KeystoreConnector, RegistrationConnector}
 import models.CurrentProfile
 import models.api.SicCode
 import play.api.Logger
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
+import services.IncorporationInformationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -31,7 +32,10 @@ import scala.concurrent.Future
 
 class ICLServiceImpl @Inject()(val iclConnector: ICLConnector,
                                config: ServicesConfig,
-                               val keystore: KeystoreConnector, val sicAndCompliance:SicAndComplianceService) extends ICLService {
+                               val keystore: KeystoreConnector,
+                               val sicAndCompliance : SicAndComplianceService,
+                               val registrationConnector: RegistrationConnector,
+                               val iiService: IncorporationInformationService) extends ICLService {
   lazy val vatFeUrl:String = config.getConfString("vat-registration-frontend.www.url",
     throw new RuntimeException("[ICLService] Could not retrieve config for 'vat-registration-frontend'"))
   lazy val vatFeUri:String = config.getConfString("vat-registration-frontend.www.uri",
@@ -43,13 +47,38 @@ class ICLServiceImpl @Inject()(val iclConnector: ICLConnector,
 
 }
 
+case class CustomICLMessages(
+                              heading : String,
+                              lead: String,
+                              hint: String
+                            )
+
+object CustomICLMessages {
+  implicit val writes = Json.writes[CustomICLMessages]
+}
+
 trait ICLService {
   val iclConnector: ICLConnector
   val vatRedirectUrl: String
   val keystore: KeystoreConnector
   val sicAndCompliance: SicAndComplianceService
+  val iiService: IncorporationInformationService
+  val registrationConnector : RegistrationConnector
 
-  def journeySetup()(implicit hc: HeaderCarrier): Future[String] = {
+  def prepopulateSicCodes(implicit hc : HeaderCarrier, cp : CurrentProfile) : Future[List[String]] = {
+    sicAndCompliance.getSicAndCompliance flatMap {sac =>
+      sac.otherBusinessActivities match {
+        case Some(res) => Future.successful(res.sicCodes map (_.code))
+        case None      => iiService.retrieveSicCodes(cp.transactionId)
+      }
+    } recover {
+      case e =>
+        Logger.warn(s"[ICLServiceImpl] [prepopulateSicCodes] Retrieving S4L/VR sic codes failed: ${e.getMessage}")
+        Nil
+    }
+  }
+
+  def journeySetup(customICLMessages: CustomICLMessages)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
     def extractFromJsonSetup(jsonSetup : JsObject, item : String) = {
       (jsonSetup \ item).validate[String].getOrElse {
         Logger.error(s"[ICLServiceImpl] [journeySetup] $item couldn't be parsed from Json object")
@@ -58,7 +87,8 @@ trait ICLService {
     }
 
     for {
-      jsonSetup       <- iclConnector.ICLSetup(constructJsonForJourneySetup())
+      codes           <- prepopulateSicCodes
+      jsonSetup       <- iclConnector.iclSetup(constructJsonForJourneySetup(codes, customICLMessages))
       fetchResultsUri = extractFromJsonSetup(jsonSetup, "fetchResultsUri")
       storeFetch      <- keystore.cache[String]("ICLFetchResultsUri", fetchResultsUri)
     } yield {
@@ -66,14 +96,22 @@ trait ICLService {
     }
   }
 
-  private def constructJsonForJourneySetup(): JsObject = {
-    Json.obj("redirectUrl" -> vatRedirectUrl)
+  private[services] def constructJsonForJourneySetup(sicCodes: List[String], customICLMessages: CustomICLMessages): JsObject = {
+    Json.obj(
+      "redirectUrl" -> vatRedirectUrl,
+      "journeySetupDetails" -> Json.obj(
+        "customMessages" -> Json.obj(
+          "summary" -> customICLMessages
+        ),
+        "sicCodes" -> sicCodes
+      )
+    )
   }
 
   def getICLSICCodes()(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[List[SicCode]] = {
     for {
       url   <- keystore.fetchAndGet[String]("ICLFetchResultsUri").map(_.getOrElse(throw new Exception(s"[ICLService] [getICLCodes] No URL in keystore for key ICLFetchResultsUri for reg id ${cp.registrationId}")))
-      js    <- iclConnector.ICLGetResult(url)
+      js    <- iclConnector.iclGetResult(url)
       list  = Json.fromJson[List[SicCode]](js)(SicCode.readsList).get
     } yield {
       if (list.isEmpty) {

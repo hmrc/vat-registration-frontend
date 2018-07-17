@@ -17,12 +17,13 @@
 package features.sicAndCompliance.services
 
 import connectors.{ICLConnector, KeystoreConnector}
-import features.sicAndCompliance.models.OtherBusinessActivities
+import features.sicAndCompliance.models.{OtherBusinessActivities, SicAndCompliance}
 import helpers.VatRegSpec
+import models.api.SicCode
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 
@@ -39,37 +40,87 @@ class ICLServiceSpec extends VatRegSpec {
         override val iclConnector: ICLConnector = mockICLConnector
         override val keystore: KeystoreConnector = mockKeystoreConnector
         override val sicAndCompliance = mockSicAndComplianceService
+        override val iiService = mockIIService
+        override val registrationConnector = mockRegConnector
         override val vatRedirectUrl: String = "dummy-url"
       }
     }
 
+    val customICLMessages: CustomICLMessages = CustomICLMessages("heading", "lead", "hint")
+
     "journeySetup" should {
-      "return a Future[String]" in new Setup {
-        when(mockICLConnector.ICLSetup(any[JsObject]())(any[HeaderCarrier]()))
+      "return the ICL start url when neither VR or II are prepopped" in new Setup {
+        when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+          .thenReturn(Future.successful(SicAndCompliance()))
+        when(mockIIService.retrieveSicCodes(any())(any()))
+          .thenReturn(Future.successful(List()))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(jsResponse))
         when(mockKeystoreConnector.cache[String](any(),any())(any(), any()))
           .thenReturn(Future.successful(validCacheMap))
-        val res = await(testService.journeySetup())
+        val res = await(testService.journeySetup(customICLMessages))
         res mustBe "example.url"
       }
-      "return an exception" in new Setup {
-        when(mockICLConnector.ICLSetup(any[JsObject]())(any[HeaderCarrier]()))
-          .thenReturn(Future.failed(new Exception))
-        intercept[Exception](await(testService.journeySetup()))
+      "return the ICL start url when II codes are prepopped" in new Setup {
+        when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+          .thenReturn(Future.successful(SicAndCompliance()))
+        when(mockIIService.retrieveSicCodes(any())(any()))
+          .thenReturn(Future.successful(List("code")))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(jsResponse))
+        when(mockKeystoreConnector.cache[String](any(),any())(any(), any()))
+          .thenReturn(Future.successful(validCacheMap))
+        val res = await(testService.journeySetup(customICLMessages))
+        res mustBe "example.url"
       }
-      "return a exception with invalid json" in new Setup {
-        when(mockICLConnector.ICLSetup(any[JsObject]())(any[HeaderCarrier]()))
-          .thenReturn(Future.successful(jsInvalidResponse))
-        intercept[Exception](await(testService.journeySetup()))
+      "return the ICL start url when VR codes are prepopped" in new Setup {
+        when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+          .thenReturn(Future.successful(
+            SicAndCompliance(otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode("43220", "Plumbing", "")))))
+          ))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(jsResponse))
+        when(mockKeystoreConnector.cache[String](any(),any())(any(), any()))
+          .thenReturn(Future.successful(validCacheMap))
+        val res = await(testService.journeySetup(customICLMessages))
+        res mustBe "example.url"
 
+        verify(mockIIService, times(0)).retrieveSicCodes(any())(any())
+      }
+      "return the ICL start url when VR call fails" in new Setup {
+        when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+          .thenReturn(Future.failed(new InternalServerException("VR call failed")))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(jsResponse))
+        when(mockKeystoreConnector.cache[String](any(),any())(any(), any()))
+          .thenReturn(Future.successful(validCacheMap))
+        val res = await(testService.journeySetup(customICLMessages))
+        res mustBe "example.url"
+
+        verify(mockIIService, times(0)).retrieveSicCodes(any())(any())
+      }
+      "return an exception when setting up ICL failed" in new Setup {
+        when(mockIIService.retrieveSicCodes(any())(any()))
+          .thenReturn(Future.successful(List()))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+          .thenReturn(Future.failed(new Exception))
+        intercept[Exception](await(testService.journeySetup(customICLMessages)))
+      }
+      "return a exception when json was invalid" in new Setup {
+        when(mockIIService.retrieveSicCodes(any())(any()))
+          .thenReturn(Future.successful(List()))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+          .thenReturn(Future.successful(jsInvalidResponse))
+        intercept[Exception](await(testService.journeySetup(customICLMessages)))
       }
       "return an exception when keystore cache is not successful" in new Setup {
+        when(mockIIService.retrieveSicCodes(any())(any()))
+          .thenReturn(Future.successful(List()))
         when(mockKeystoreConnector.cache[String](any(),any())(any(), any()))
           .thenReturn(Future.failed(new Exception))
-        when(mockICLConnector.ICLSetup(any[JsObject]())(any[HeaderCarrier]()))
+        when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(jsResponse))
-        intercept[Exception](await(testService.journeySetup()))
-
+        intercept[Exception](await(testService.journeySetup(customICLMessages)))
       }
     }
 
@@ -78,7 +129,7 @@ class ICLServiceSpec extends VatRegSpec {
       val listOfSicCodes = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
       val sicAndCompUpdated = s4lVatSicAndComplianceWithoutLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(listOfSicCodes)))
 
-      when(mockICLConnector.ICLGetResult(any[String]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclMultipleResults))
       when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
@@ -92,7 +143,7 @@ class ICLServiceSpec extends VatRegSpec {
     "return list of sic code containing 1 sic code when a successful response is returned from the connector with only 1 SIC code and keystore returns a String" in new Setup {
       val listOf1SicCode = iclMultipleResultsSicCode1 :: Nil
       val sicAndComplianceUpdated = s4lVatSicAndComplianceWithoutLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(listOf1SicCode)))
-      when(mockICLConnector.ICLGetResult(any[String]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclSingleResult))
       when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
@@ -109,4 +160,40 @@ class ICLServiceSpec extends VatRegSpec {
       intercept[Exception](await(testService.getICLSICCodes()))
     }
   }
+
+  "constructJsonForJourneySetup" should {
+    "construct a json body for starting an ICL journey" when {
+      "given custom messages and sic codes" in new Setup {
+        testService.constructJsonForJourneySetup(List("12345"), CustomICLMessages("heading", "lead", "hint")) mustBe
+          Json.parse("""{
+                       |  "redirectUrl":"dummy-url",
+                       |  "journeySetupDetails":{
+                       |    "customMessages":{ "summary" : {
+                       |      "heading":"heading",
+                       |      "lead":"lead",
+                       |      "hint":"hint"
+                       |    }},
+                       |    "sicCodes":["12345"]
+                       |  }
+                       |}""".stripMargin)
+        }
+
+      "given custom messages and no sic codes" in new Setup {
+        testService.constructJsonForJourneySetup(Nil, CustomICLMessages("heading", "lead", "hint")) mustBe
+          Json.parse("""{
+                       |  "redirectUrl":"dummy-url",
+                       |  "journeySetupDetails":{
+                       |    "customMessages":{ "summary" : {
+                       |      "heading":"heading",
+                       |      "lead":"lead",
+                       |      "hint":"hint"
+                       |    }}
+                       |    ,
+                       |    "sicCodes":[]
+                       |  }
+                       |}""".stripMargin)
+      }
+    }
+  }
 }
+

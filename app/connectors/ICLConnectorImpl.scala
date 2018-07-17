@@ -38,11 +38,11 @@ class ICLConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) exten
 }
 
 trait ICLConnector {
-  val http:   WSHttp
+  val http: WSHttp
   val IClInitialiseUrl: String
   val IClFEinternal: String
 
-  def ICLSetup(js:JsObject)(implicit hc : HeaderCarrier) : Future[JsObject] = {
+  def iclSetup(js:JsObject)(implicit hc : HeaderCarrier): Future[JsObject] = {
     http.POST[JsObject, HttpResponse](IClInitialiseUrl, js)
       .map(_.json.as[JsObject])
       .recover{
@@ -52,7 +52,7 @@ trait ICLConnector {
       }
   }
 
-  def ICLGetResult(fetchResultsUrl:String)(implicit hc:HeaderCarrier):Future[JsObject] = {
+  def iclGetResult(fetchResultsUrl:String)(implicit hc:HeaderCarrier): Future[JsObject] = {
     http.GET[HttpResponse](IClFEinternal + fetchResultsUrl)
       .map (_.json.as[JsObject])
       .recover {
