@@ -1,5 +1,15 @@
 @import 'form-validation.css';
 @import 'taas.css';
+
+/* Custom box shaded for confirmation page */
+.box--shaded {
+    margin: 1em 0;
+    padding: 2em 1em;
+    color: white;
+    background: #6f777b;
+    text-align: center;
+}
+
 /* position labels above input fields in cascading forms */
 label.cascading span {
 	display: block;
