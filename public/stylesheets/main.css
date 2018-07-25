@@ -2,7 +2,7 @@
 @import 'taas.css';
 
 /* Custom box shaded for confirmation page */
-.box--shaded {
+.box-shaded-grey {
     margin: 1em 0;
     padding: 2em 1em;
     color: white;
