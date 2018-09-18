@@ -23,20 +23,19 @@ object AppDependencies {
 
 private object CompileDependencies {
   private val playReactivemongoVersion = "6.2.0"
-  private val bootstrapVersion         = "8.24.0"
+  private val bootstrapVersion         = "10.3.0"
   private val partialsVersion          = "6.1.0"
   private val cachingClientVersion     = "7.1.0"
   private val formMappingVersion       = "0.2.0"
   private val timeVersion              = "3.1.0"
   private val whitelistFilterVersion   = "2.0.0"
   private val catsVersion              = "1.0.0"
-  private val authClientVersion        = "2.6.0"
+  private val authClientVersion        = "2.9.0-play-25"
 
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
-    "uk.gov.hmrc" %% "play-reactivemongo"              % playReactivemongoVersion,
-
+    "uk.gov.hmrc"   %% "play-reactivemongo"            % playReactivemongoVersion,
     "uk.gov.hmrc"   %% "frontend-bootstrap"            % bootstrapVersion,
     "uk.gov.hmrc"   %% "play-partials"                 % partialsVersion,
     "uk.gov.hmrc"   %% "http-caching-client"           % cachingClientVersion,
@@ -57,7 +56,7 @@ private trait TestDependencies {
   val mockitoVersion           = "2.13.0"
   val scalaMockVersion         = "3.6.0"
   val wireMockVersion          = "2.6.0"
-  val hmrcTestVersion          = "3.0.0"
+  val hmrcTestVersion          = "3.1.0"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]

@@ -25,6 +25,7 @@ import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.Call
 
 import scala.concurrent.Future
 
@@ -37,7 +38,16 @@ class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture  {
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
       override val flatRateService: FlatRateService                 = mockFlatRateService
       override val configConnector: ConfigConnector                 = mockConfigConnector
-      override val vatRegEFEUrl: String = "http://vatRegEFEUrl"
+      override val vatRegEFEUrlUri: String                          = "http://vatRegEFEUrl"
+      override val vatRegEFEQuestionUri                             = "/question"
+    }
+  }
+
+  "eligibilityCall" should {
+    "return a full url" in new Setup {
+     val res = testService.eligibilityCall("page1OfEligibility")
+      res.url mustBe "http://vatRegEFEUrl/question?pageId=page1OfEligibility"
+      res mustBe Call("GET", "http://vatRegEFEUrl/question?pageId=page1OfEligibility")
     }
   }
 

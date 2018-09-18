@@ -38,7 +38,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
-
+  val eligibilitySummaryUrl = (s:String) => s"http://$wiremockHost:$wiremockPort/uriELFE/foo?pageId=$s"
   val officerJson = Json.parse(
     s"""
        |{
@@ -119,18 +119,18 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           document.getElementById("sectionA").text mustBe "section A"
           document.getElementById("sectionA.0Question").text mustBe "Question 1"
           document.getElementById("sectionA.0Answer").text mustBe "FOO"
-          document.getElementById("sectionA.0ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionA.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("mandatoryRegistration")
           document.getElementById("sectionA.1Question").text mustBe "Question 2"
           document.getElementById("sectionA.1Answer").text mustBe "BAR"
-          document.getElementById("sectionA.1ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionA.1ChangeLink").attr("href").contains(eligibilitySummaryUrl("voluntaryRegistration")) mustBe true
 
           document.getElementById("sectionB").text mustBe "section B"
           document.getElementById("sectionB.0Question").text mustBe "Question 5"
           document.getElementById("sectionB.0Answer").text mustBe "bang"
-          document.getElementById("sectionB.0ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionB.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("applicantUKNino")
           document.getElementById("sectionB.1Question").text mustBe "Question 6"
           document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
-          document.getElementById("sectionB.1ChangeLink").attr("href").contains("vat-eligibility-uri") mustBe true
+          document.getElementById("sectionB.1ChangeLink").attr("href") mustBe eligibilitySummaryUrl("turnoverEstimate")
 
           document.getElementById("frs.joinFrsAnswer").text mustBe "No"
           document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"

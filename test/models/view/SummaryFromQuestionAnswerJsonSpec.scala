@@ -24,11 +24,26 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFixture {
 
-
   "summaryReads" should {
     "return a summary with 2 sections from Full Json" in {
-      val res = Json.fromJson[Summary](fullEligibilityDataJson)(SummaryFromQuestionAnswerJson.summaryReads(redirectCall)).get
+      val res = Json.fromJson[Summary](fullEligibilityDataJson)(SummaryFromQuestionAnswerJson.summaryReads).get
       res shouldBe fullSummaryModelFromFullEligiblityJson
+    }
+
+    "one section exists with questionId's with dashes in. all dashes and characters after the dash are removed for change links" in {
+      val eligibilityJsonWithQuestionIdDashes = Json.parse("""
+                                             |{ "sections": [
+                                             |            {
+                                             |              "title": "section_1",
+                                             |              "data": [
+                                             |                {"questionId": "mandatoryRegistration-foo", "question": "Question 1", "answer": "FOO", "answerValue": true},
+                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+                                             |                {"questionId": "thresholdPreviousThirtyDays-", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+                                             |                {"questionId": "thresholdInTwelveMonths-foo-bar", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+                                             |              ]
+                                             |            }]}""".stripMargin)
+      val res = Json.fromJson[Summary](eligibilityJsonWithQuestionIdDashes)(SummaryFromQuestionAnswerJson.summaryReads).get
+      res shouldBe Summary(section1 :: Nil)
     }
     "return a JsError if section is missing an answer" in {
       val invalidJson = Json.parse("""
@@ -44,10 +59,11 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
           |  }
         """.stripMargin)
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads(redirectCall))
+      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
       res.isError shouldBe true
       res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0][1].answer"
     }
+
     "return a JsError if section is missing a question" in {
       val invalidJson = Json.parse("""
           |{ "sections": [
@@ -62,7 +78,7 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
           |  }
         """.stripMargin)
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads(redirectCall))
+      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
       res.isError shouldBe true
       res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0][0].question"
     }
@@ -78,7 +94,7 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
                                      |  }
                                    """.stripMargin)
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads(redirectCall))
+      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
       res.isError shouldBe true
       res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0]"
     }
@@ -92,7 +108,7 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
                                      |  }
                                    """.stripMargin)
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads(redirectCall))
+      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
       res.isError shouldBe true
       res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0]"
     }
