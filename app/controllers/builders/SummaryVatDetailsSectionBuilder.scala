@@ -36,7 +36,7 @@ case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails
                                            ) extends SummarySectionBuilder with ServicesConfig {
 
   override val sectionId: String      = "vatDetails"
-  private val thresholdBlock        = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
+  private val thresholdBlock          = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
 
   def startDateRow: SummaryRow = SummaryRow(

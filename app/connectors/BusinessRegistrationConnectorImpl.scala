@@ -16,11 +16,10 @@
 
 package connectors
 
-import javax.inject.Inject
 import config.WSHttp
 import features.tradingDetails.TradingDetails
+import javax.inject.Inject
 import play.api.Logger
-import play.api.http.Status._
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
