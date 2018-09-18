@@ -28,7 +28,7 @@ import models.api.VatScheme
 import models.view.{Summary, SummaryFromQuestionAnswerJson}
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
@@ -37,23 +37,30 @@ class SummaryServiceImpl @Inject()(val vrs: RegistrationService,
                                    val lodgingOfficerService: LodgingOfficerService,
                                    val sicAndComplianceService: SicAndComplianceService,
                                    val flatRateService: FlatRateService,
-                                   val configConnector: ConfigConnector
+                                   val configConnector: ConfigConnector,
+                                   config: ServicesConfig
                                   ) extends SummaryService {
-  lazy val vatRegEFEBaseUrl = getConfString("vat-registration-eligibility-frontend.www.host", throw new Exception("[SummaryController][vatRegEFEBaseUrl] cannot find config value"))
-  lazy val vatRegEFEUri     = getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[SummaryController][vatRegEFEUri] cannot find config value"))
-  lazy val vatRegEFEUrl     = vatRegEFEBaseUrl + vatRegEFEUri
+  lazy val vatRegEFEUrl         = config.baseUrl("vat-registration-eligibility-frontend")
+  lazy val vatRegEFEUri         = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
+  lazy val vatRegEFEQuestionUri = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
+  lazy val vatRegEFEUrlUri = vatRegEFEUrl + vatRegEFEUri
+
 }
 
-trait SummaryService extends ServicesConfig {
+trait SummaryService {
   val vrs: RegistrationService
   val lodgingOfficerService: LodgingOfficerService
   val sicAndComplianceService: SicAndComplianceService
   val flatRateService: FlatRateService
   val configConnector: ConfigConnector
-  val vatRegEFEUrl: String
+  val vatRegEFEUrlUri: String
+  val vatRegEFEQuestionUri: String
+
+  private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrlUri + vatRegEFEQuestionUri + s"?pageId=$uri")
 
   def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] ={
-    vrs.getEligibilityData.map{_.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(Call("GET",vatRegEFEUrl))).fold(
+
+    vrs.getEligibilityData.map{_.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(eligibilityCall)).fold(
       errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
       identity
     )}
