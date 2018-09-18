@@ -16,14 +16,13 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import play.api.Configuration
+import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.{CurrentProfileService, RegistrationService, SessionProfile}
+import uk.gov.hmrc.play.config.inject.ServicesConfig
 import views.html.pages.welcome
 
 import scala.concurrent.Future
@@ -32,10 +31,12 @@ class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationSe
                                       val currentProfileService: CurrentProfileService,
                                       val authConnector: AuthClientConnector,
                                       val keystoreConnector: KeystoreConnector,
-                                      val conf: Configuration,
-                                      val messagesApi: MessagesApi) extends WelcomeController {
-  val eligibilityFEUrl = conf.getString("microservice.services.vat-registration-eligibility-frontend.entry-url").getOrElse("")
-  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
+                                      val messagesApi: MessagesApi,
+                                      conf: ServicesConfig) extends WelcomeController {
+  val eligibilityFEUrl = conf.baseUrl("vat-registration-eligibility-frontend")
+  val eligibilityFEUri = conf.getConfString("vat-registration-eligibility-frontend.uri",throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
+
+  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl + eligibilityFEUri)
 }
 
 trait WelcomeController extends BaseController with SessionProfile {

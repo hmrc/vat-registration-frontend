@@ -44,16 +44,16 @@ case class SummaryRow(id: String,
 
 
 object SummaryFromQuestionAnswerJson {
- private def summaryRowReads(call: Call): Reads[(SummaryRow, Boolean)] = (
+ private def summaryRowReads(implicit f: String => Call): Reads[(SummaryRow, Boolean)] = (
     (__ \ "question").read[String] and
     (__ \ "answer").read[String] and
-    Reads.pure(Some(call))
-    )((a,b,c) => (SummaryRow(a,b,c), true))
+    (__ \ "questionId").read[String].map(_.replaceAll("[-](?<=-).*",""))
+    )((ques,ans,id) => (SummaryRow(ques, ans, Some(f(id))), true))
 
-  private def summarySectionReads(call: Call): Reads[SummarySection] = new Reads[SummarySection] {
+  private def summarySectionReads(implicit f: String => Call): Reads[SummarySection] = new Reads[SummarySection] {
     override def reads(json: JsValue): JsResult[SummarySection] = {
       val sectionId = (json \ "title").validate[String]
-      val summaryRows = (json \ "data").validate(Reads.seq[(SummaryRow, Boolean)](summaryRowReads(call)))
+      val summaryRows = (json \ "data").validate(Reads.seq[(SummaryRow, Boolean)](summaryRowReads))
 
       val seqErrors = sectionId.fold(identity, _ => Seq.empty) ++ summaryRows.fold(identity, _ => Seq.empty)
       if (seqErrors.nonEmpty) {
@@ -68,5 +68,5 @@ object SummaryFromQuestionAnswerJson {
     }
   }
 
-  def summaryReads(call:Call): Reads[Summary] = (__ \ "sections").read[Seq[SummarySection]](Reads.seq[SummarySection](summarySectionReads(call))) map Summary.apply
+  def summaryReads(implicit f: String => Call): Reads[Summary] = (__ \ "sections").read[Seq[SummarySection]](Reads.seq[SummarySection](summarySectionReads)) map Summary.apply
 }
