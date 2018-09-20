@@ -33,10 +33,9 @@ class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationSe
                                       val keystoreConnector: KeystoreConnector,
                                       val messagesApi: MessagesApi,
                                       conf: ServicesConfig) extends WelcomeController {
-  val eligibilityFEUrl = conf.baseUrl("vat-registration-eligibility-frontend")
-  val eligibilityFEUri = conf.getConfString("vat-registration-eligibility-frontend.uri",throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
+  val eligibilityFEUrl = conf.getConfString("vat-registration-eligibility-frontend.uri",throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
 
-  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl + eligibilityFEUri)
+  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
 }
 
 trait WelcomeController extends BaseController with SessionProfile {
