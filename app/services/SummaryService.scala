@@ -40,11 +40,9 @@ class SummaryServiceImpl @Inject()(val vrs: RegistrationService,
                                    val configConnector: ConfigConnector,
                                    config: ServicesConfig
                                   ) extends SummaryService {
-  lazy val vatRegEFEUrl         = config.baseUrl("vat-registration-eligibility-frontend")
-  lazy val vatRegEFEUri         = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
-  lazy val vatRegEFEQuestionUri = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
-  lazy val vatRegEFEUrlUri = vatRegEFEUrl + vatRegEFEUri
 
+  lazy val vatRegEFEUrl         = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
+  lazy val vatRegEFEQuestionUri = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
 }
 
 trait SummaryService {
@@ -53,10 +51,10 @@ trait SummaryService {
   val sicAndComplianceService: SicAndComplianceService
   val flatRateService: FlatRateService
   val configConnector: ConfigConnector
-  val vatRegEFEUrlUri: String
+  val vatRegEFEUrl: String
   val vatRegEFEQuestionUri: String
 
-  private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrlUri + vatRegEFEQuestionUri + s"?pageId=$uri")
+  private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrl + vatRegEFEQuestionUri + s"?pageId=$uri")
 
   def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] ={
 

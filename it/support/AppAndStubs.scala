@@ -134,14 +134,14 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
       ("microservice.services.business-registration.uri" -> "/business-registration") +
       ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
-      ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort)+
+      ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort) +
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort) +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
-      ("microservice.services.vat-registration-eligibility-frontend.host" -> s"$wiremockHost") +
-      ("microservice.services.vat-registration-eligibility-frontend.port" -> s"$wiremockPort") +
-      ("microservice.services.vat-registration-eligibility-frontend.uri"  -> s"/uriELFE") +
-      ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo")
+      ("microservice.services.vat-registration-eligibility-frontend.uri"  -> s"http://$wiremockHost:$wiremockPort/uriELFE") +
+      ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo") +
+      ("microservice.services.vat-registration-eligibility-frontend.host"  -> wiremockHost) +
+      ("microservice.services.vat-registration-eligibility-frontend.port" -> wiremockPort)
 }
 
 

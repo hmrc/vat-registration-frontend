@@ -38,7 +38,7 @@ class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture  {
       override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
       override val flatRateService: FlatRateService                 = mockFlatRateService
       override val configConnector: ConfigConnector                 = mockConfigConnector
-      override val vatRegEFEUrlUri: String                          = "http://vatRegEFEUrl"
+      override val vatRegEFEUrl: String                             = "http://vatRegEFEUrl"
       override val vatRegEFEQuestionUri                             = "/question"
     }
   }
