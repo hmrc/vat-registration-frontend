@@ -109,11 +109,11 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/check-your-answers").get()
+        val response = buildClient("/check-confirm-answers").get()
         whenReady(response) { res =>
           res.status mustBe 200
           val document = Jsoup.parse(res.body)
-          document.title() mustBe "Summary"
+          document.title() mustBe "Check and confirm your answers"
           document.getElementById("pageHeading").text mustBe "Check and confirm your answers"
 
           document.getElementById("sectionA").text mustBe "section A"
@@ -154,7 +154,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
-        val response = buildClient("/check-your-answers").post(Map("" -> Seq("")))
+        val response = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show().url)
