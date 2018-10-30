@@ -365,7 +365,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitFrsStartDate(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
       }
     }
   }
@@ -484,7 +484,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       )
 
       submitAuthorised(controller.submitJoinFRS(), request){ result =>
-        redirectLocation(result) mustBe Some(s"$contextRoot/check-your-answers")
+        redirectLocation(result) mustBe Some(s"$contextRoot/check-confirm-answers")
       }
     }
   }
@@ -547,7 +547,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
       }
     }
   }
@@ -614,7 +614,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitYourFlatRate(), request){ result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-your-answers")
+        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
       }
     }
   }
@@ -718,7 +718,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/company-spend-business-goods")
+        redirectLocation(result) mustBe Some("/register-for-vat/company-spend-goods")
       }
     }
   }
