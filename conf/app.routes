@@ -30,8 +30,8 @@ GET         /before-you-register-for-vat                                        
 GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
 ## VOLUNTARY START DATE PAGE
-GET         /what-do-you-want-your-vat-start-date-to-be                                        features.returns.controllers.ReturnsController.voluntaryStartPage
-POST        /what-do-you-want-your-vat-start-date-to-be                                        features.returns.controllers.ReturnsController.submitVoluntaryStart
+GET         /vat-start-date                                                                    features.returns.controllers.ReturnsController.voluntaryStartPage
+POST        /vat-start-date                                                                    features.returns.controllers.ReturnsController.submitVoluntaryStart
 
 ## MANDATORY START DATE PAGE
 GET         /vat-start-date                                                                    features.returns.controllers.ReturnsController.mandatoryStartPage
@@ -42,8 +42,8 @@ GET         /trading-name                                                       
 POST        /trading-name                                                                      controllers.TradingDetailsController.submitTradingName
 
 ## EU GOODS PAGE
-GET         /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.euGoodsPage
-POST        /trade-goods-services-with-countries-outside-uk                                    controllers.TradingDetailsController.submitEuGoods
+GET         /trade-goods-outside-eu                                                            controllers.TradingDetailsController.euGoodsPage
+POST        /trade-goods-outside-eu                                                            controllers.TradingDetailsController.submitEuGoods
 
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                                                 features.returns.controllers.ReturnsController.chargeExpectancyPage
@@ -54,8 +54,8 @@ GET         /submit-vat-returns                                                 
 POST        /submit-vat-returns                                                                features.returns.controllers.ReturnsController.submitAccountPeriods
 
 ## VAT RETURN FREQUENCY - OLD
-GET         /how-often-do-you-want-to-submit-vat-returns                                       features.returns.controllers.ReturnsController.returnsFrequencyPage
-POST        /how-often-do-you-want-to-submit-vat-returns                                       features.returns.controllers.ReturnsController.submitReturnsFrequency
+GET         /how-often-submit-returns                                                          features.returns.controllers.ReturnsController.returnsFrequencyPage
+POST        /how-often-submit-returns                                                          features.returns.controllers.ReturnsController.submitReturnsFrequency
 
 ## VAT RETURN FREQUENCY
 
@@ -76,8 +76,8 @@ GET         /main-source-business-income                                        
 POST        /main-source-business-income                                                       features.sicAndCompliance.controllers.SicAndComplianceController.submitMainBusinessActivity
 
 ## CONFIRM SIC CODES
-GET         /confirm-standard-industry-classification-codes-vat                                features.sicAndCompliance.controllers.SicAndComplianceController.showSicHalt
-POST        /confirm-standard-industry-classification-codes-vat                                features.sicAndCompliance.controllers.SicAndComplianceController.submitSicHalt
+GET         /choose-standard-industry-classification-codes                                     features.sicAndCompliance.controllers.SicAndComplianceController.showSicHalt
+POST        /choose-standard-industry-classification-codes                                     features.sicAndCompliance.controllers.SicAndComplianceController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-company                                                    features.sicAndCompliance.controllers.SicAndComplianceController.showComplianceIntro
@@ -126,8 +126,8 @@ GET         /pass-security                                                      
 POST        /pass-security                                                                     features.officer.controllers.OfficerController.submitSecurityQuestions
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /vat-contact                                                                       features.officer.controllers.OfficerController.showContactDetails
-POST        /vat-contact                                                                       features.officer.controllers.OfficerController.submitContactDetails
+GET         /contact-application                                                               features.officer.controllers.OfficerController.showContactDetails
+POST        /contact-application                                                               features.officer.controllers.OfficerController.submitContactDetails
 
 ## FORMER NAME PAGE
 GET         /changed-name                                                                      features.officer.controllers.OfficerController.showFormerName
@@ -145,8 +145,8 @@ GET         /current-address/changePreviousAddress                              
 GET         /current-address/acceptFromTxm                                                     features.officer.controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
 
 ## SUMMARY
-GET         /check-your-answers                                                                controllers.SummaryController.show
-POST        /check-your-answers                                                                controllers.SummaryController.submitRegistration
+GET         /check-confirm-answers                                                             controllers.SummaryController.show
+POST        /check-confirm-answers                                                             controllers.SummaryController.submitRegistration
 
 ## CALLBACKS FROM OTHER SERVICES
 ## SIGN OUT
@@ -181,8 +181,8 @@ GET         /confirm-flat-rate                                                  
 POST        /confirm-flat-rate                                                                 features.frs.controllers.FlatRateController.submitYourFlatRate
 
 ##Do you spend less than 2% of turnover a year Page
-GET         /company-spend-business-goods                                                      features.frs.controllers.FlatRateController.annualCostsLimitedPage
-POST        /company-spend-business-goods                                                      features.frs.controllers.FlatRateController.submitAnnualCostsLimited
+GET         /company-spend-goods                                                               features.frs.controllers.FlatRateController.annualCostsLimitedPage
+POST        /company-spend-goods                                                               features.frs.controllers.FlatRateController.submitAnnualCostsLimited
 
 ## Choose business type
 GET         /choose-business-type                                                              features.frs.controllers.FlatRateController.businessType(sendGA: Boolean ?= false)

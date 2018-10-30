@@ -113,7 +113,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitChargeExpectancy, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
+        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
       }
     }
 
@@ -379,7 +379,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         callAuthorised(testController.mandatoryStartPage) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/register-for-vat/what-do-you-want-your-vat-start-date-to-be")
+          redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
         }
       }
     }

@@ -133,7 +133,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-services-with-countries-outside-uk")
+        redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
       }
     }
 
@@ -148,7 +148,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
       submitAuthorised(testController.submitTradingName, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-services-with-countries-outside-uk")
+        redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
       }
     }
 

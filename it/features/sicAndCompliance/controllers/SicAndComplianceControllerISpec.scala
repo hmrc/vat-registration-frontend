@@ -132,7 +132,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileSicCodeIntoDb(sessionId)
 
-    val response = buildClient("/confirm-standard-industry-classification-codes-vat").get()
+    val response = buildClient("/choose-standard-industry-classification-codes").get()
     whenReady(response) { res =>
       res.status mustBe 200
     }
@@ -158,7 +158,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileSicCodeIntoDb(sessionId)
 
-    val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
+    val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
       res.status mustBe 303
@@ -177,7 +177,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
     insertCurrentProfileSicCodeIntoDb(sessionId)
 
-    val mockedPostToICL = buildClient("/confirm-standard-industry-classification-codes-vat").post(Map("" -> Seq()))
+    val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
       res.status mustBe 303
