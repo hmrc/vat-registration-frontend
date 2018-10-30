@@ -183,7 +183,7 @@ pages.welcome.bullet7                   = personal information we can use to ide
 pages.welcome.bullet8                   = your UK National Insurance number
 
 ## Start Date Page
-pages.startDate.title                                 = What do you want your VAT start date to be?
+pages.startDate.title                                 = What do you want the business’s VAT registration date to be?
 pages.startDate.heading                               = What do you want the company''s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
 pages.startDate.para1.post                            = You can choose the date the company becomes VAT registered when you register voluntarily.
@@ -282,7 +282,7 @@ pages.accounting.period.radio.march                         = March, June, Septe
 validation.accounting.period.missing                        = Tell us when you want the business to do its VAT Returns
 
 ## Summary Page
-pages.summary.title                                         = Summary
+pages.summary.title                                         = Check and confirm your answers
 pages.summary.heading                                       = Check and confirm your answers
 pages.summary.subheading                                    = Now send your application
 pages.summary.para1                                         = By submitting this application you''re confirming that the details you''re providing are correct and reflect the company''s current position.
@@ -416,7 +416,7 @@ pages.company.bank.account.panel.para           = Tell HMRC if the company gets 
 validation.company.bank.account.missing         = Tell us if the company has a bank account in its own name
 
 ## Bank Details page
-pages.bankDetails.title                             = What are the business''s bank account details?
+pages.bankDetails.title                             = What are the business''s bank or building society account details?
 pages.bankDetails.heading                           = What are the business''s bank account details?
 pages.bankDetails.p1                                = HMRC VAT will only use this account to send VAT repayments. We will not take money from it.
 pages.bankDetails.info                              = If this changes you need to let us know.
@@ -434,11 +434,11 @@ validation.companyBankAccount.invalidCombination    = Enter a valid bank account
 
 ## Main Business Activity
 pages.mainBusinessActivity.heading                        = Which activity is the business''s main source of income?
-pages.mainBusinessActivity.title                          = Which activity is the business''s main source of income
+pages.mainBusinessActivity.title                          = What activity is the business''s main source of income
 validation.mainBusinessActivity.missing                   = Tell us which activity is the business''s main source of income
 
 ## Confirm SIC
-pages.confirmsic.title                                    = You''re about to confirm the company''s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.title                                    = You''re about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.heading                                  = You''re about to confirm the company''s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.p1                                       = A SIC code describes a business activity.
 pages.confirmsic.p2                                       = Every company has one or more SIC codes from when it registered with Companies House.
@@ -479,7 +479,7 @@ pages.labourCompliance.skilledWorkers.para          = For example, workers who h
 validation.skilledWorkers.missing                   = Tell us if your company provides skilled workers
 
 ## EU Goods
-pages.euGoods.title                         = Will the company trade VAT-taxable goods with countries outside the EU?
+pages.euGoods.title                         = Will the business trade VAT-taxable goods with countries outside the EU?
 pages.euGoods.heading                       = Will the company trade VAT-taxable goods with countries outside the EU?
 pages.euGoods.yes.p1                        = You''ll need an Economic Operator Registration and Identification (EORI) number. This is used by customs in EU countries to identify the business''s imports and exports.
 pages.euGoods.yes.p2                        = We''ll send you an EORI number by email within 3 working days.
@@ -541,7 +541,7 @@ pages.completionCapacity.panel.p3.link                   = register for VAT with
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Officer Contact Details
-pages.officerContact.title                               = How can we get in touch with the business after it is registered for VAT?
+pages.officerContact.title                               = How can we contact the applicant?
 pages.officerContact.heading                             = How can we get in touch with the business after it is registered for VAT?
 pages.officerContact.p1                                  = We''ll only do this when we have questions about the business''s VAT.
 pages.officerContact.p2                                  = This cannot be a third-party agent or external accountant.
@@ -686,7 +686,7 @@ pages.frs.registerForWithSector.subheading1               = Do you want the busi
 validation.frs.registerForWithSector.missing              = Tell us if you want the business to join the Flat Rate Scheme
 
 ## Do you spend less than 2% of your turn over Page
-pages.frs.costsLimited.title                            = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.frs.costsLimited.title                            = Will the business spend more than 2% of its turnover on relevant goods over the next 3 months?
 pages.frs.costsLimited.heading1                         = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
 validation.frs.costsLimited.missing                     = Tell us if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 

@@ -176,7 +176,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
       submitAuthorised(controller.submitBusinessActivityDescription(), fakeRequest.withFormUrlEncodedBody("description" -> "Testing")) {
-        _ redirectsTo s"$contextRoot/confirm-standard-industry-classification-codes-vat"
+        _ redirectsTo s"$contextRoot/choose-standard-industry-classification-codes"
       }
     }
   }
