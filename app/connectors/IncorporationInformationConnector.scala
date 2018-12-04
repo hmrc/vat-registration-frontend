@@ -17,12 +17,11 @@
 package connectors
 
 import javax.inject.Inject
-
 import config.WSHttp
 import models.CurrentProfile
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.libs.json.{JsObject, JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, NotFoundException, Upstream4xxResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.RegistrationWhitelist
@@ -110,7 +109,11 @@ trait IncorporationInformationConnector extends RegistrationWhitelist {
 
   def cancelSubscription(txId : String)(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
     http.DELETE[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/subscribe/$txId/regime/vatfe/subscriber/scrs")
+      .recover{
+        case a@Upstream4xxResponse(_,_,_,_) => HttpResponse(200)
+      }
   }
+
 
   def retrieveSicCodes(transID : String)(implicit hc : HeaderCarrier): Future[HttpResponse] = {
     http.GET[HttpResponse](s"$incorpInfoUrl$incorpInfoUri/sic-codes/transaction/$transID")
