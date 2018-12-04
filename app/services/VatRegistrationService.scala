@@ -21,12 +21,13 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import connectors._
 import javax.inject.Inject
+
 import models.{TurnoverEstimates, _}
 import models.api._
 import models.external.CompanyRegistrationProfile
 import play.api.Logger
 import play.api.libs.json.{Format, JsObject}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -101,12 +102,17 @@ trait LegacyServiceToBeRefactored {
   def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[JsObject] = vatRegConnector.getEligibilityData
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
-    iiConnector.cancelSubscription(profile.transactionId) flatMap { _ =>
-      vatRegConnector.submitRegistration(profile.registrationId)
+    for {
+      submit <- vatRegConnector.submitRegistration(profile.registrationId)
+      _      <- if (submit == Success) iiConnector.cancelSubscription(profile.transactionId) else Future.successful(None)
+    } yield submit
+
     } recover {
-      case _ => SubmissionFailedRetryable
+    case e => {
+      SubmissionFailedRetryable
     }
   }
+
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
     vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))
