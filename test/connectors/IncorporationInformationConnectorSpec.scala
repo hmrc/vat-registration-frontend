@@ -139,13 +139,18 @@ class IncorporationInformationConnectorSpec extends VatRegSpec {
 
         response.status mustBe 200
       }
-    }
-
-    "fail" when {
       "cancelling an non-existant VRFE subscription" in new Setup {
         mockHttpFailedDELETE[HttpResponse]("tst-url", Upstream4xxResponse("404", 404, 404), mockWSHttp)
 
-        intercept[Upstream4xxResponse](await(connector.cancelSubscription("transID")))
+       await(connector.cancelSubscription("transID")).status mustBe 200
+      }
+    }
+
+    "fail" when {
+      "5xx returned from ii for VRFE subscription" in new Setup {
+        mockHttpFailedDELETE[HttpResponse]("tst-url", Upstream5xxResponse("503", 503, 503), mockWSHttp)
+
+        intercept[Upstream5xxResponse](await(connector.cancelSubscription("transID")))
       }
     }
   }
