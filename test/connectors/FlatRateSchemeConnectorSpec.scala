@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 package connectors
 
 import java.time.LocalDate
+
 import config.WSHttp
-import features.returns.models.Start
 import fixtures.VatRegistrationFixture
-import frs.FlatRateScheme
-import helpers.VatRegSpec
+import models.{FlatRateScheme, Start}
 import play.api.libs.json.{JsObject, Json}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HttpResponse
+
 import scala.language.postfixOps
 
 class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture {

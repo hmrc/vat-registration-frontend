@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package controllers.feedback
 
-import helpers.{ControllerSpec, FutureAssertions}
 import mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
+import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future

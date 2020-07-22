@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import features.officer.models.view.LodgingOfficer
+import models.view.LodgingOfficer
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
@@ -26,36 +26,36 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
     vatLodgingOfficer.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
-    Some(features.officer.controllers.routes.OfficerController.showFormerName())
+    Some(controllers.routes.OfficerController.showFormerName())
   )
   val formerNameDate: SummaryRow = SummaryRow(
     s"$sectionId.formerNameDate",
     vatLodgingOfficer.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showFormerNameDate())
+    Some(controllers.routes.OfficerController.showFormerNameDate())
   )
 
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
     vatLodgingOfficer.securityQuestions.map(_.dob.format(presentationFormatter)).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showSecurityQuestions())
+    Some(controllers.routes.OfficerController.showSecurityQuestions())
   )
 
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
     vatLodgingOfficer.contactDetails.flatMap(_.email).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
+    Some(controllers.routes.OfficerController.showContactDetails())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
     vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
+    Some(controllers.routes.OfficerController.showContactDetails())
   )
 
   val mobile: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
     vatLodgingOfficer.contactDetails.flatMap(_.mobile).getOrElse(""),
-    Some(features.officer.controllers.routes.OfficerController.showContactDetails())
+    Some(controllers.routes.OfficerController.showContactDetails())
   )
 
   val section: SummarySection = SummarySection(

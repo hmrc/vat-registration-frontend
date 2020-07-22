@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package controllers.test
 
-import helpers.VatRegSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_REQUEST, OK}
+import testHelpers.VatRegSpec
 
 class FeatureSwitchControllerSpec extends VatRegSpec {
 

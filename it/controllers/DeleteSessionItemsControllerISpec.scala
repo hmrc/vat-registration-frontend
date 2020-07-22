@@ -15,7 +15,7 @@
  */
 package controllers
 
-import features.sicAndCompliance.models.test.SicStub
+import models.test.SicStub
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsObject, JsValue, Json}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package services
 
-import features.officer.models.view.LodgingOfficer
+import models.view.LodgingOfficer
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
 import models._
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {

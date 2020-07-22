@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package controllers.builders
 
 import java.time.LocalDate
 
-import features.returns.models.{Returns, Start}
+import models.Start
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import models.{Returns, Start}
 import models.view.SummaryRow
+import testHelpers.VatRegSpec
 
 
 class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
@@ -41,7 +42,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "21 March 2017",
-          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
+          Some(controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -57,7 +58,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "pages.summary.vatDetails.mandatoryStartDate",
-          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
+          Some(controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -82,7 +83,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "21 March 2017",
-          Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage())
+          Some(controllers.routes.ReturnsController.voluntaryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -98,7 +99,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         val expectedRow = SummaryRow(
           "vatDetails.startDate",
           "26 April 2017",
-          Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
+          Some(controllers.routes.ReturnsController.mandatoryStartPage())
         )
 
         builder.startDateRow mustBe expectedRow
@@ -114,7 +115,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         builder.startDateRow mustBe SummaryRow(
           "vatDetails.startDate",
           "pages.summary.vatDetails.mandatoryStartDate",
-          Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
+          Some(controllers.routes.ReturnsController.mandatoryStartPage())
         )
       }
     }

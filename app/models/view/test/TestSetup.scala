@@ -16,11 +16,7 @@
 
 package models.view.test
 
-import features.bankAccountDetails.models.BankAccount
-import features.returns.models.Returns
-import features.tradingDetails.TradingDetails
-import frs.FlatRateScheme
-import models.TurnoverEstimates
+import models.{BankAccount, FlatRateScheme, Returns, TradingDetails, TurnoverEstimates}
 import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(

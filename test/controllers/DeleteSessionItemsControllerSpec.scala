@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package controllers
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.internal.DeleteSessionItemsController
 import fixtures.VatRegistrationFixture
-import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import services.{CurrentProfileService, VatRegistrationService}
+import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future

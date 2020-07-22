@@ -17,9 +17,9 @@
 package client
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.enums.VatRegStatus
-import features.bankAccountDetails.controllers.routes
-import features.bankAccountDetails.forms.EnterBankAccountDetailsForm._
-import features.bankAccountDetails.forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
+import controllers.routes
+import forms.EnterBankAccountDetailsForm._
+import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import helpers.ClientHelper
 import itutil.{IntegrationSpecBase, WiremockHelper}
 import org.jsoup.Jsoup
@@ -180,9 +180,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> false)
       val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
 
-      Then(s"The client is served a 303 and redirected to ${features.frs.controllers.routes.FlatRateController.joinFrsPage()}")
+      Then(s"The client is served a 303 and redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
       response.status shouldBe 303
-      redirectLocation(response) shouldBe Some(features.frs.controllers.routes.FlatRateController.joinFrsPage().url)
+      redirectLocation(response) shouldBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
     }
   }
 
@@ -230,9 +230,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       )
       val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
 
-      Then(s"the client is served a 303 response and is redirected to ${features.frs.controllers.routes.FlatRateController.joinFrsPage()}")
+      Then(s"the client is served a 303 response and is redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
       response.status shouldBe 303
-      redirectLocation(response) shouldBe Some(features.frs.controllers.routes.FlatRateController.joinFrsPage().url)
+      redirectLocation(response) shouldBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
     }
   }
 }

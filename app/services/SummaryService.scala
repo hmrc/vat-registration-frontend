@@ -18,11 +18,7 @@ package services
 
 import connectors.ConfigConnector
 import controllers.builders._
-import features.frs.services.FlatRateService
-import features.officer.services.LodgingOfficerService
-import features.sicAndCompliance.services.SicAndComplianceService
 import javax.inject.Inject
-
 import models.CurrentProfile
 import models.api.VatScheme
 import models.view.{Summary, SummaryFromQuestionAnswerJson}

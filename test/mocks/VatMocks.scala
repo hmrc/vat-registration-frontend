@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,12 @@
 
 package mocks
 
-import connectors._
-import features.bankAccountDetails.connectors.BankAccountReputationConnectorImpl
-import features.bankAccountDetails.services.BankAccountReputationServiceImpl
-import features.businessContact.BusinessContactService
-import features.frs.services.FlatRateService
-import features.officer.services.{IVServiceImpl, LodgingOfficerService}
-import features.returns.services.ReturnsService
-import features.sicAndCompliance.services.ICLService
+import connectors.{BankAccountReputationConnectorImpl, _}
+import services.{BankAccountReputationServiceImpl, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
-import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.inject.ServicesConfig

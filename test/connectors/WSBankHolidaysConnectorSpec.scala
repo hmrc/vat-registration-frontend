@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package connectors
 
-import helpers.VatRegSpec
 import org.joda.time.LocalDate
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import scala.concurrent.Future

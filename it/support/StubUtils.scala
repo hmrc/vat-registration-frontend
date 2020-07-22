@@ -19,8 +19,8 @@ package support
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
-import common.enums.{IVResult, VatRegStatus}
-import models.S4LKey
+import common.enums.VatRegStatus
+import models.{IVResult, S4LKey}
 import models.api.{SicCode, VatScheme}
 import models.external.{CoHoRegisteredOfficeAddress, Officer}
 import play.api.libs.json._

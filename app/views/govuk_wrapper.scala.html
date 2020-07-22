@@ -14,6 +14,13 @@
  * limitations under the License.
  *@
 
+@import controllers.routes
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
+@import views.html.helpers.{mainContentHeader, phaseBanner}
+@import views.html.layouts.govuk_template
+
 @(appConfig: config.AppConfig,
         title: String,
         mainClass: Option[String] = None,
@@ -26,9 +33,6 @@
         pageScripts: Option[Html] = None,
         backEnabled: Boolean)(implicit request: Request[_], messages: Messages)
 
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
-@import views.html.helpers.{mainContentHeader, phaseBanner}
 
 @head = {
 @uiLayouts.head(
@@ -108,4 +112,4 @@
     sidebar = sidebar)
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@govuk_template(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)

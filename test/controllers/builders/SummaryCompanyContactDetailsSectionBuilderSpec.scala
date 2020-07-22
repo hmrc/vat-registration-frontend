@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package controllers.builders
 
-import features.businessContact.models.{BusinessContact, CompanyContactDetails}
+import models.BusinessContact
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import models.{BusinessContact, CompanyContactDetails}
 import models.api.ScrsAddress
 import models.view.SummaryRow
+import testHelpers.VatRegSpec
 
 class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -42,7 +43,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       sectionBuilder.businessEmailRow mustBe SummaryRow(
         id = "companyContactDetails.email",
         answerMessageKey = "some@email.com",
-        changeLink = Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        changeLink = Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
       )
     }
 
@@ -50,7 +51,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       sectionBuilder.businessDaytimePhoneNumberRow mustBe SummaryRow(
         id = "companyContactDetails.daytimePhone",
         answerMessageKey = "0123456789",
-        changeLink = Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        changeLink = Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
       )
     }
 
@@ -58,7 +59,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       sectionBuilder.businessMobilePhoneNumberRow mustBe SummaryRow(
         id = "companyContactDetails.mobile",
         answerMessageKey = "0123456789",
-        changeLink = Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        changeLink = Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
       )
     }
 
@@ -66,7 +67,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       sectionBuilder.businessWebsiteRow mustBe SummaryRow(
         id = "companyContactDetails.website",
         answerMessageKey = "http://website.com",
-        changeLink = Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        changeLink = Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
       )
     }
 
@@ -81,7 +82,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
         SummaryRow(
           "companyContactDetails.ppob",
           scrsAddress,
-          changeLink = Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB())
+          changeLink = Some(controllers.routes.BusinessContactDetailsController.showPPOB())
         )
     }
   }

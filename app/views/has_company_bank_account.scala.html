@@ -1,0 +1,67 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.data.Form
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import views.html.main_template
+
+@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages)
+
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
+
+@main_template(title = messages("pages.company.bank.account.title")) {
+
+    @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        hasBankAccountForm
+    )
+
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>
+    <p>@messages("pages.company.bank.account.para")</p>
+
+
+    <details role="group" class="form-group">
+    <summary role="button" aria-controls="details-content-0" aria-expanded="false">
+        <span class="summary">@messages("pages.company.bank.account.panel.title")</span>
+    </summary>
+    <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
+        <p>@messages("pages.company.bank.account.panel.para")</p>
+    </div>
+    </details>
+
+    @form(action = controllers.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
+        <div class="form-group">
+            @vatInputRadioGroup(
+                field = hasBankAccountForm("companyBankAccountRadio"),
+                Seq(
+                    "true" -> Messages("app.common.yes"),
+                    "false" -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.company.bank.account.heading"),
+                '_legendClass -> "visually-hidden"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+    }
+}
