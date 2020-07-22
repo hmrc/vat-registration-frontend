@@ -17,9 +17,8 @@
 package connectors.test
 
 import javax.inject.Inject
-
-import common.enums.IVResult
 import config.WSHttp
+import models.IVResult
 import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._

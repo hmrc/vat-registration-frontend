@@ -49,5 +49,11 @@ lazy val microservice = Project(appName, file("."))
     PlayKeys.playDefaultPort                      :=  9895,
     retrieveManaged                               :=  true,
     evictionWarningOptions in update              :=  EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    addTestReportOption(IntegrationTest, "int-test-reports")
+    addTestReportOption(IntegrationTest, "int-test-reports"),
+    TwirlKeys.templateImports ++= Seq(
+      "play.twirl.api._",
+      "play.api.i18n._",
+      "play.api.mvc._",
+      "play.api.data._"
+    )
   )

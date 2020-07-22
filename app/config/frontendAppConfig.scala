@@ -19,10 +19,9 @@ package config
 import java.nio.charset.Charset
 import java.util.Base64
 
-import common.enums.VatRegStatus
-import models.external.{CoHoRegisteredOfficeAddress, IncorporationInfo, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Play.{configuration, current}
-import play.api.libs.json.{JsObject, JsValue, Json, Reads}
+import play.api.libs.json.{JsValue, Json, Reads}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {

@@ -17,7 +17,7 @@
 package connectors
 
 import config.WSHttp
-import features.tradingDetails.TradingDetails
+import models.TradingDetails
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsValue

@@ -19,14 +19,10 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
-import features.businessContact.models.{BusinessContact, CompanyContactDetails}
-import features.officer.fixtures.LodgingOfficerFixture
-import features.returns.models.{Frequency, Returns, Stagger}
-import features.sicAndCompliance.models.{BusinessActivityDescription, MainBusinessActivityView, OtherBusinessActivities, SicAndCompliance}
-import features.tradingDetails.{TradingDetails, TradingNameView}
-import frs.FlatRateScheme
-import models.TurnoverEstimates
+import models.{BankAccount, BankAccountDetails, BusinessActivityDescription, BusinessContact, CompanyContactDetails, FlatRateScheme, Frequency, MainBusinessActivityView, OtherBusinessActivities, Returns, SicAndCompliance, Stagger, TurnoverEstimates}
+import fixtures.LodgingOfficerFixture
+import models.BusinessActivityDescription
+import models.{TradingDetails, TradingNameView}
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
 import play.api.libs.json.Json

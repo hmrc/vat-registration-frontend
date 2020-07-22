@@ -17,7 +17,7 @@
 package controllers
 
 import com.github.tomakehurst.wiremock.client.WireMock.{findAll, postRequestedFor, urlMatching}
-import features.tradingDetails.{TradingDetails, TradingNameView}
+import models.{TradingDetails, TradingNameView}
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup

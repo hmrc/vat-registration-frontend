@@ -18,9 +18,8 @@ package controllers
 
 import java.time.LocalDate
 
-import features.officer.models.view.LodgingOfficer
-import features.returns.models.{Frequency, Returns, Stagger}
-import features.sicAndCompliance.models.SicAndCompliance
+import models.view.LodgingOfficer
+import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures

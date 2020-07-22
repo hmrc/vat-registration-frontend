@@ -17,9 +17,7 @@
 package services
 
 import javax.inject.Inject
-
 import connectors.{IncorporationInformationConnector, KeystoreConnector}
-import features.officer.services.IVService
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._

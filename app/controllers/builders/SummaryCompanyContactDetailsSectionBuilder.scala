@@ -16,9 +16,8 @@
 
 package controllers.builders
 
-import features.businessContact.models.BusinessContact
+import models.BusinessContact
 import models.api.ScrsAddress.htmlShow._
-
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
@@ -28,32 +27,32 @@ case class SummaryCompanyContactDetailsSectionBuilder(businessContact: Option[Bu
   val businessEmailRow: SummaryRow = SummaryRow(
     s"$sectionId.email",
     businessContact.fold("")(_.companyContactDetails.get.email),
-    Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
     businessContact.fold("")(_.companyContactDetails.get.phoneNumber.getOrElse("")),
-    Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
     businessContact.fold("")(_.companyContactDetails.get.mobileNumber.getOrElse("")),
-    Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
 
   val businessWebsiteRow: SummaryRow = SummaryRow(
     s"$sectionId.website",
     businessContact.fold("")(_.companyContactDetails.get.websiteAddress.getOrElse("")),
-    Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   )
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
     businessContact.map(bc => ScrsAddress.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
-    Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB())
+    Some(controllers.routes.BusinessContactDetailsController.showPPOB())
   )
 
 

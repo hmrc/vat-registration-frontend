@@ -21,14 +21,12 @@ import config.AuthClientConnector
 import connectors.test.TestVatRegistrationConnector
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
-import features.businessContact.models.BusinessContact
-import features.officer.models.view.LodgingOfficer
-import features.sicAndCompliance.models.SicAndCompliance
-import features.sicAndCompliance.models.test.SicStub
-import features.tradingDetails.TradingDetails
+import models.view.LodgingOfficer
+import models.test.SicStub
+import models.TradingDetails
 import forms.test.{TestSetupEligibilityForm, TestSetupForm}
 import models.view.test._
-import models.S4LKey
+import models.{BusinessContact, S4LKey, SicAndCompliance}
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.{Action, AnyContent}

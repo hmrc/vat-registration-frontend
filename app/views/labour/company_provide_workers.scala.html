@@ -1,0 +1,60 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.data.Form
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.main_template
+@import views.html.helpers.templates._
+@import models.CompanyProvideWorkers
+
+@(companyProvideWorkersForm: Form[CompanyProvideWorkers])(implicit request: Request[_], messages: Messages)
+
+@main_template(title = messages("pages.labourCompliance.companyProvideWorkers.title")) {
+
+    @errorSummary(
+        Messages("app.common.errorSummaryLabel"),
+        companyProvideWorkersForm
+    )
+
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.labourCompliance.companyProvideWorkers.heading")</h1>
+
+    <p>
+    @messages("pages.labourCompliance.companyProvideWorkers.para")
+    </p>
+    @govHelpers.form(action = controllers.routes.LabourComplianceController.submitProvideWorkers()) {
+        <div class="form-group">
+            @vatInputRadioGroup(
+                field = companyProvideWorkersForm("companyProvideWorkersRadio"),
+                Seq(
+                    CompanyProvideWorkers.PROVIDE_WORKERS_YES -> Messages("app.common.yes"),
+                    CompanyProvideWorkers.PROVIDE_WORKERS_NO -> Messages("app.common.no")
+                ),
+                '_groupClass -> "inline",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.labourCompliance.companyProvideWorkers.heading"),
+                '_legendClass -> "visually-hidden"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="button-save-and-continue" role="button" id="save-and-continue">@messages("app.common.saveAndContinue")</button>
+        </div>
+
+    }
+}

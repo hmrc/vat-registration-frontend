@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package services
 
 import connectors.RegistrationConnector
-import features.tradingDetails.{TradingNameView, _}
+import models.{TradingNameView, _}
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
+import testHelpers.VatRegSpec
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import testHelpers.{S4LMockSugar, VatRegSpec}
 import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future

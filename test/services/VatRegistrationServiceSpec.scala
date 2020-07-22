@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ import java.time.LocalDate
 
 import connectors._
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
+import testHelpers.VatRegSpec
 import models.TaxableThreshold
 import models.external.CompanyRegistrationProfile
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
+import testHelpers.{S4LMockSugar, VatRegSpec}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, Upstream4xxResponse}
 

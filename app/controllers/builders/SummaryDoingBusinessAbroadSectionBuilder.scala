@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import features.tradingDetails.TradingDetails
+import models.TradingDetails
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryDoingBusinessAbroadSectionBuilder(tradingDetails: Option[TradingDetails] = None) extends SummarySectionBuilder {

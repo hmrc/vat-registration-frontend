@@ -21,10 +21,8 @@ import java.time.format.DateTimeFormatter
 
 import javax.inject.Inject
 import connectors.{BusinessRegistrationConnector, logResponse}
-import features.businessContact.BusinessContactService
-import features.businessContact.models.BusinessContact
-import features.officer.models.view.LodgingOfficer
-import models._
+import models.view.LodgingOfficer
+import models.{BusinessContact, _}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
