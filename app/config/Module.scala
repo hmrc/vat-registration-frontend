@@ -20,33 +20,17 @@ import com.google.inject.AbstractModule
 import com.google.inject.name.Names
 import config.startup.{VerifyCrypto, VerifyCryptoConfig}
 import connectors._
-import connectors.test.{BusinessRegDynamicStubConnector, BusinessRegDynamicStubConnectorImpl, TestRegistrationConnector, TestVatRegistrationConnector}
-import controllers.callbacks.{SignInOutController, SignInOutControllerImpl}
-import controllers.feedback.{FeedbackController, FeedbackControllerImpl}
-import controllers.internal.{DeleteSessionItemsController, DeleteSessionItemsControllerImpl}
+import connectors.test._
+import controllers._
+import controllers.callbacks._
+import controllers.feedback._
+import controllers.internal._
 import controllers.test._
-import controllers.{ErrorController, ErrorControllerImpl, _}
-import features.bankAccountDetails.connectors.{BankAccountReputationConnector, BankAccountReputationConnectorImpl}
-import features.bankAccountDetails.controllers.{BankAccountDetailsController, BankAccountDetailsControllerImpl}
-import features.bankAccountDetails.services.{BankAccountDetailsService, BankAccountDetailsServiceImpl, BankAccountReputationService, BankAccountReputationServiceImpl}
-import features.businessContact.controllers.{BusinessContactDetailsController, BusinessContactDetailsControllerImpl}
-import features.businessContact.{BusinessContactService, BusinessContactServiceImpl}
-import features.frs.controllers.{FlatRateController, FlatRateControllerImpl}
-import features.frs.services.{FlatRateService, FlatRateServiceImpl}
-import features.officer.controllers._
-import features.officer.controllers.test.{TestIVController, TestIVControllerImpl}
-import features.officer.services.{IVService, IVServiceImpl, LodgingOfficerService, LodgingOfficerServiceImpl}
-import features.returns.controllers.{ReturnsController, ReturnsControllerImpl}
-import features.returns.services.{ReturnsService, ReturnsServiceImpl}
-import features.sicAndCompliance.controllers._
-import features.sicAndCompliance.controllers.test.{SicStubController, SicStubControllerImpl}
-import features.sicAndCompliance.services.{ICLService, ICLServiceImpl, SicAndComplianceService, SicAndComplianceServiceImpl}
-import features.tradingDetails.{TradingDetailsService, TradingDetailsServiceImpl}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
-import utils.{FeatureManager, FeatureSwitchManager, VATRegFeatureSwitch, VATRegFeatureSwitches}
+import utils._
 
 class Module extends AbstractModule {
 

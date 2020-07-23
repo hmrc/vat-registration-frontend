@@ -17,7 +17,7 @@
 package models.api
 
 import cats.Show.show
-import features.officer.models.view.HomeAddressView
+import models.view.HomeAddressView
 import models.api.ScrsAddress.inlineShow.inline
 import models.view.vatContact.ppob.PpobView
 import models.{ApiModelTransformer => MT}

@@ -18,10 +18,9 @@ package controllers.test
 
 import java.time.LocalDate
 
-import features.businessContact.models.{BusinessContact, CompanyContactDetails}
-import features.officer.models.view._
-import features.sicAndCompliance.models._
-import features.tradingDetails.TradingDetails
+import models.{BusinessActivityDescription, BusinessContact, CompanyContactDetails, CompanyProvideWorkers, MainBusinessActivityView, SicAndCompliance, SkilledWorkers, TemporaryContracts, Workers}
+import models.view._
+import models.TradingDetails
 import models.api._
 import models.view.test.TestSetup
 

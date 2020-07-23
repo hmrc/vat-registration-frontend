@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package services
 
 import com.typesafe.config.ConfigFactory
 import common.enums.AddressLookupJourneyIdentifier
-import helpers.VatRegSpec
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.MessagesApi
 import play.api.mvc.Call
+import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 

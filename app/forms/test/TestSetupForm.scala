@@ -16,13 +16,11 @@
 
 package forms.test
 
-import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
-import features.returns.models.Frequency.Frequency
-import features.returns.models.Stagger.Stagger
-import features.returns.models.{Returns, Start}
-import features.tradingDetails.{TradingDetails, TradingNameView}
-import frs.FlatRateScheme
-import models.TurnoverEstimates
+import models.{BankAccount, BankAccountDetails, FlatRateScheme, Returns, Start, TurnoverEstimates}
+import models.Frequency.Frequency
+import models.Stagger.Stagger
+import models.Start
+import models.{TradingDetails, TradingNameView}
 import models.view.test._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}

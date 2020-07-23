@@ -17,14 +17,8 @@
 package models.api
 
 import common.enums.VatRegStatus
-import features.bankAccountDetails.models.BankAccount
-import features.businessContact.models.BusinessContact
-import features.officer.models.view.LodgingOfficer
-import features.returns.models.Returns
-import features.sicAndCompliance.models.SicAndCompliance
-import features.tradingDetails.TradingDetails
-import frs.FlatRateScheme
-import models.TurnoverEstimates
+import models.view.LodgingOfficer
+import models.{BankAccount, BusinessContact, FlatRateScheme, Returns, SicAndCompliance, TradingDetails, TurnoverEstimates}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

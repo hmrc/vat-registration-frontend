@@ -17,9 +17,9 @@
 package controllers
 
 import common.enums.VatRegStatus
-import features.businessContact.models.BusinessContact
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import models.BusinessContact
 import models.api.VatScheme
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
@@ -67,7 +67,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile.copy(incorporationDate = None), sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 200
 
@@ -90,7 +90,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
@@ -107,7 +107,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 500
 
@@ -125,7 +125,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("other")))
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("other")))
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -144,10 +144,10 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
         json mustBe validBusinessContactDetailsJson
@@ -165,7 +165,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
       whenReady(response) { res =>
         res.status mustBe 500
       }
@@ -185,10 +185,10 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
         json mustBe validBusinessContactDetailsJson
@@ -208,10 +208,10 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(features.businessContact.controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.returnFromTxm(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.businessContact.controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
       }
     }
   }
@@ -247,7 +247,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
 
       }
     }
@@ -265,7 +265,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
       }
     }
     "return 404 when vat returns a 404" in new Setup {

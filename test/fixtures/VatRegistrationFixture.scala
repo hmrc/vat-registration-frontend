@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,11 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
-import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
-import features.businessContact.models.{BusinessContact, CompanyContactDetails}
-import features.officer.fixtures.LodgingOfficerFixtures
-import features.officer.models.view._
-import features.returns.ReturnsFixture
-import features.returns.models.{Frequency, Returns, Start}
-import features.sicAndCompliance.models.{SicAndCompliance, _}
-import features.tradingDetails.TradingDetails
-import frs.FlatRateScheme
-import models.{TaxableThreshold, TurnoverEstimates}
+import models.{BankAccount, BankAccountDetails, BusinessActivityDescription, BusinessContact, CompanyContactDetails, CompanyProvideWorkers, FlatRateScheme, Frequency, MainBusinessActivityView, Returns, SicAndCompliance, SkilledWorkers, Start, TaxableThreshold, TemporaryContracts, TurnoverEstimates, Workers}
+import models.view._
+import fixtures.ReturnsFixture
+import models._
+import models.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
 import models.view.{Summary, SummaryRow, SummarySection}

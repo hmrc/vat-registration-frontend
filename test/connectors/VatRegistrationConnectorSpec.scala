@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,17 @@ package connectors
 import java.time.LocalDate
 
 import config.WSHttp
-import features.bankAccountDetails.models.BankAccount
-import features.businessContact.models.BusinessContact
-import features.officer.models.view.{LodgingOfficer, _}
-import features.returns.models.Returns
-import features.sicAndCompliance.models._
+import models.view.{LodgingOfficer, _}
+import models._
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
-import models.{TaxableThreshold, TurnoverEstimates}
+import models.{BankAccount, BusinessActivityDescription, BusinessContact, CompanyProvideWorkers, MainBusinessActivityView, OtherBusinessActivities, Returns, SicAndCompliance, SkilledWorkers, TaxableThreshold, TemporaryContracts, TurnoverEstimates, Workers}
 import models.api._
 import models.external.{IncorporationInfo, Name, Officer}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
 
 import scala.concurrent.Future

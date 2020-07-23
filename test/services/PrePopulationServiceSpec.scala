@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,17 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 import cats.data.OptionT
 import common.enums.VatRegStatus
-import features.businessContact.BusinessContactService
-import features.businessContact.models.BusinessContact
-import features.officer.models.view._
+import models.view._
 import fixtures.VatRegistrationFixture
-import helpers.{S4LMockSugar, VatRegSpec}
+import models.BusinessContact
+import testHelpers.VatRegSpec
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
 import models.view.vatContact.ppob.PpobView
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
+import testHelpers.{S4LMockSugar, VatRegSpec}
 import utils.SystemDate
 
 import scala.concurrent.Future

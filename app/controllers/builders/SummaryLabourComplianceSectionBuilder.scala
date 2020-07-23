@@ -16,7 +16,8 @@
 
 package controllers.builders
 
-import features.sicAndCompliance.models.{CompanyProvideWorkers, SicAndCompliance, SkilledWorkers, TemporaryContracts}
+import models.SicAndCompliance
+import models.{CompanyProvideWorkers, SicAndCompliance, SkilledWorkers, TemporaryContracts}
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
@@ -26,25 +27,25 @@ case class SummaryLabourComplianceSectionBuilder(vatSicAndCompliance: Option[Sic
   val providingWorkersRow: SummaryRow = yesNoRow(
     "providesWorkers",
     vatSicAndCompliance.flatMap(_.companyProvideWorkers).flatMap(v => CompanyProvideWorkers.toBool(v.yesNo)),
-    features.sicAndCompliance.controllers.routes.LabourComplianceController.showProvideWorkers()
+    controllers.routes.LabourComplianceController.showProvideWorkers()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
     vatSicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
-    Some(features.sicAndCompliance.controllers.routes.LabourComplianceController.showWorkers())
+    Some(controllers.routes.LabourComplianceController.showWorkers())
   )
 
   val temporaryContractsRow: SummaryRow = yesNoRow(
     "workersOnTemporaryContracts",
     vatSicAndCompliance.flatMap(_.temporaryContracts).flatMap(v => TemporaryContracts.toBool(v.yesNo)),
-    features.sicAndCompliance.controllers.routes.LabourComplianceController.showTemporaryContracts()
+    controllers.routes.LabourComplianceController.showTemporaryContracts()
   )
 
   val skilledWorkersRow: SummaryRow = yesNoRow(
     "providesSkilledWorkers",
     vatSicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
-    features.sicAndCompliance.controllers.routes.LabourComplianceController.showSkilledWorkers()
+    controllers.routes.LabourComplianceController.showSkilledWorkers()
   )
 
   val section: SummarySection = SummarySection(

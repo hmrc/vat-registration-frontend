@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package controllers.builders
 
-import features.sicAndCompliance.models.OtherBusinessActivities
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import models.OtherBusinessActivities
 import models.api._
 import models.view.SummaryRow
+import testHelpers.VatRegSpec
 
 class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -36,7 +36,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.businessDescription",
             "app.common.no",
-            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+            Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
@@ -46,7 +46,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.businessDescription",
             testBusinessActivityDescription,
-            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+            Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
           )
       }
 
@@ -56,7 +56,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.mainBusinessActivity",
             sicCode.code + " - " + sicCode.description,
-            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+            Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
           )
       }
 
@@ -68,7 +68,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.otherBusinessActivities",
             List(sicCode.code + " - " + sicCode.description),
-            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
+            Some(controllers.routes.SicAndComplianceController.returnToICL())
           )
       }
 
@@ -83,7 +83,7 @@ class SummaryBusinessActivitiesSectionBuilderSpec extends VatRegSpec with VatReg
           SummaryRow(
             "businessActivities.otherBusinessActivities",
             List(sicOne.code + " - " + sicOne.description, sicTwo.code + " - " + sicTwo.description),
-            Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
+            Some(controllers.routes.SicAndComplianceController.returnToICL())
           )
       }
     }

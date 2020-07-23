@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package controllers.builders
 
-import features.bankAccountDetails.models.{BankAccount, BankAccountDetails}
+import models.BankAccount
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
+import models.{BankAccount, BankAccountDetails}
 import models.view.SummaryRow
+import testHelpers.VatRegSpec
 
 class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -36,8 +37,8 @@ class SummaryBusinessBankDetailsSectionBuilderSpec extends VatRegSpec with VatRe
   val bankAccountNotProvidedSection = SummaryBusinessBankDetailsSectionBuilder(Some(bankAccountNotProvided))
   val bankAccountProvidedSection = SummaryBusinessBankDetailsSectionBuilder(Some(bankAccount))
 
-  val hasCompanyBankAccountUrl = features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
-  val enterCompanyBankAccountDetailsUrl = features.bankAccountDetails.controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()
+  val hasCompanyBankAccountUrl = controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
+  val enterCompanyBankAccountDetailsUrl = controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()
 
   "accountIsProvidedRow" should {
 

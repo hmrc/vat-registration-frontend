@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package services
 
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
 import models.api.{ScrsAddress, SicCode}
 import models.external._
 import org.mockito.Mockito._
 import org.scalatest.Inspectors
 import play.api.Logger
 import play.api.libs.json.Json
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.test.LogCapturing
 

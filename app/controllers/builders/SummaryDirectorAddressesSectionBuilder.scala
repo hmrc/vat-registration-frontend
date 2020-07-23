@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import features.officer.models.view.LodgingOfficer
+import models.view.LodgingOfficer
 import models.api.ScrsAddress
 import models.view.{SummaryRow, SummarySection}
 
@@ -27,18 +27,18 @@ case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: LodgingOffi
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
     vatLodgingOfficer.homeAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
-    Some(features.officer.controllers.routes.OfficerController.showHomeAddress())
+    Some(controllers.routes.OfficerController.showHomeAddress())
   )
 
   val currentAddressThreeYears: SummaryRow = yesNoRow(
     "currentAddressThreeYears",
     vatLodgingOfficer.previousAddress.map(_.yesNo),
-    features.officer.controllers.routes.OfficerController.showPreviousAddress()
+    controllers.routes.OfficerController.showPreviousAddress()
   )
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
     vatLodgingOfficer.previousAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
-    Some(features.officer.controllers.routes.OfficerController.changePreviousAddress())
+    Some(controllers.routes.OfficerController.changePreviousAddress())
   )
 
   val section: SummarySection = SummarySection(

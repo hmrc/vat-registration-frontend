@@ -21,15 +21,11 @@ import java.time.LocalDate
 import javax.inject.Inject
 import common.enums.VatRegStatus
 import config.WSHttp
-import features.bankAccountDetails.models.BankAccount
-import features.officer.models.view.LodgingOfficer
-import features.returns.models.Returns
-import features.sicAndCompliance.models.SicAndCompliance
-import features.tradingDetails.TradingDetails
-import frs.FlatRateScheme
+import models.view.LodgingOfficer
+import models.TradingDetails
 import models.api._
 import models.external.IncorporationInfo
-import models.{CurrentProfile, TaxableThreshold, TurnoverEstimates}
+import models.{BankAccount, CurrentProfile, FlatRateScheme, Returns, SicAndCompliance, TaxableThreshold, TurnoverEstimates}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._

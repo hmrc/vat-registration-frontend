@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package utils
 
 import common.enums.VatRegStatus
 import connectors.KeystoreConnector
-import helpers.VatRegSpec
 import models.CurrentProfile
 import play.api.mvc.Result
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionProfile
+import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
