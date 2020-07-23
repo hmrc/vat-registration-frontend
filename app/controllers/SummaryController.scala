@@ -17,21 +17,17 @@
 package controllers
 
 import javax.inject.Inject
-
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import config.AuthClientConnector
 import connectors._
 import controllers.builders._
-import features.frs.services.FlatRateService
-import features.officer.services.LodgingOfficerService
-import features.sicAndCompliance.services.SicAndComplianceService
 import models.CurrentProfile
 import models.api._
 import models.view._
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services._
+import services.{FlatRateService, LodgingOfficerService, SicAndComplianceService, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
 

@@ -16,11 +16,8 @@
 
 package models
 
-import features.bankAccountDetails.models.BankAccount
-import features.returns.models.Returns
-import features.sicAndCompliance.models.test.SicStub
-import features.tradingDetails.TradingDetails
-import frs.FlatRateScheme
+import models.test.SicStub
+import models.TradingDetails
 
 trait S4LKey[T] {
 

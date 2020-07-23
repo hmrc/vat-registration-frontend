@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import features.sicAndCompliance.models.SicAndCompliance
+import models.SicAndCompliance
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
@@ -29,7 +29,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S
     s"$sectionId.businessDescription",
     sicAndComp.description.fold("app.common.no")(desc =>
       if(desc.description.isEmpty) "app.common.no" else desc.description),
-    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+    Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
   )
 
   val companyMainBusinessActivityRow: SummaryRow = SummaryRow(
@@ -39,7 +39,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S
           case sicCode if sicCode.description.nonEmpty => sicCode.code + " - " + sicCode.description
         } getOrElse "app.common.no"
       ),
-    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+    Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
   )
 
   val confirmIndustryClassificationCodesRow: SummaryRow = SummaryRow(
@@ -47,7 +47,7 @@ case class SummaryBusinessActivitiesSectionBuilder(vatSicAndCompliance: Option[S
     sicAndComp.otherBusinessActivities.fold(Seq("app.common.no"))(codes => codes.sicCodes.map(
       sicCode => sicCode.code + " - " + sicCode.description
     )),
-    Some(features.sicAndCompliance.controllers.routes.SicAndComplianceController.returnToICL())
+    Some(controllers.routes.SicAndComplianceController.returnToICL())
   )
 
   val section: SummarySection = SummarySection(

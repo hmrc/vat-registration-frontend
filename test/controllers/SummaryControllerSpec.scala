@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import connectors._
-import features.returns.models.{Frequency, Returns, Start}
+import models.Start
 import fixtures.VatRegistrationFixture
-import helpers.{ControllerSpec, FutureAssertions, MockMessages}
-import models.CurrentProfile
+import models.{CurrentProfile, Frequency, Returns, Start}
 import models.view.Summary
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
+import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future

@@ -18,9 +18,7 @@ package controllers.builders
 
 import java.text.DecimalFormat
 
-import features.returns.models.Start
-import frs.FlatRateScheme
-import models.TurnoverEstimates
+import models.{FlatRateScheme, Start, TurnoverEstimates}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
@@ -35,25 +33,25 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
   val joinFrsRow: SummaryRow = yesNoRow(
     "joinFrs",
     vatFrs.flatMap(_.joinFrs),
-    features.frs.controllers.routes.FlatRateController.joinFrsPage()
+    controllers.routes.FlatRateController.joinFrsPage()
   )
 
   val costsInclusiveRow: SummaryRow = SummaryRow(
     s"$sectionId.costsInclusive",
     if(vatFrs.flatMap(_.overBusinessGoods).contains(true)) "app.common.yes" else "app.common.no",
-    Some(features.frs.controllers.routes.FlatRateController.annualCostsInclusivePage())
+    Some(controllers.routes.FlatRateController.annualCostsInclusivePage())
   )
 
   val estimateTotalSalesRow: SummaryRow = SummaryRow(
     s"$sectionId.estimateTotalSales",
     s"£${vatFrs.flatMap(_.estimateTotalSales.map("%,d".format(_))).getOrElse("0")}",
-    Some(features.frs.controllers.routes.FlatRateController.estimateTotalSales())
+    Some(controllers.routes.FlatRateController.estimateTotalSales())
   )
 
   val costsLimitedRow: SummaryRow = SummaryRow(
     s"$sectionId.costsLimited",
     if(vatFrs.flatMap(_.overBusinessGoodsPercent).contains(true)) "app.common.yes" else "app.common.no",
-    Some(features.frs.controllers.routes.FlatRateController.annualCostsLimitedPage()),
+    Some(controllers.routes.FlatRateController.annualCostsLimitedPage()),
     Seq(calculatedOnEstimatedSales.map("%,d".format(_)).getOrElse("0"))
   )
 
@@ -64,15 +62,15 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
       case Start(frds) => frds.map(d => d.format(presentationFormatter))
       case _ => None
     }.getOrElse(""),
-    Some(features.frs.controllers.routes.FlatRateController.frsStartDatePage())
+    Some(controllers.routes.FlatRateController.frsStartDatePage())
   )
 
   val flatRatePercentageRow: SummaryRow = SummaryRow(
     s"$sectionId.flatRate",
     if(vatFrs.flatMap(_.useThisRate).contains(true)) "app.common.yes" else "app.common.no",
     vatFrs.flatMap(_.categoryOfBusiness).collect {
-      case s if s.nonEmpty => features.frs.controllers.routes.FlatRateController.yourFlatRatePage()
-      case _               => features.frs.controllers.routes.FlatRateController.registerForFrsPage()
+      case s if s.nonEmpty => controllers.routes.FlatRateController.yourFlatRatePage()
+      case _               => controllers.routes.FlatRateController.registerForFrsPage()
     },
     Seq(vatFrs.flatMap(_.percent).getOrElse(0.0).toString)
   )
@@ -80,7 +78,7 @@ case class SummaryFrsSectionBuilder(vatFrs: Option[FlatRateScheme] = None,
   val businessSectorRow: SummaryRow = SummaryRow(
     s"$sectionId.businessSector",
     businessType.getOrElse(""),
-    Some(features.frs.controllers.routes.FlatRateController.businessType())
+    Some(controllers.routes.FlatRateController.businessType())
   )
 
   val joinFrsContainsTrue: Boolean  = vatFrs.flatMap(_.joinFrs).contains(true)

@@ -16,7 +16,8 @@
 
 package controllers.builders
 
-import features.returns.models.{Frequency, Returns}
+import models.Returns
+import models.{Frequency, Returns}
 import models.view.{SummaryRow, SummarySection}
 
 case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns]) extends SummarySectionBuilder {
@@ -27,7 +28,7 @@ case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns])
     returns.flatMap(_.reclaimVatOnMostReturns).fold("") {
       reclaim => s"pages.summary.$sectionId.reclaimMoreVat.${if (reclaim) "yes" else "no"}"
     },
-    Some(features.returns.controllers.routes.ReturnsController.chargeExpectancyPage())
+    Some(controllers.routes.ReturnsController.chargeExpectancyPage())
   )
 
   val accountingPeriodRow: SummaryRow = SummaryRow(
@@ -38,7 +39,7 @@ case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns])
         s"pages.summary.$sectionId.accountingPeriod.${period.substring(0, 3)}"
       case _ => ""
     },
-    Some(features.returns.controllers.routes.ReturnsController.accountPeriodsPage())
+    Some(controllers.routes.ReturnsController.accountPeriodsPage())
   )
 
   val section: SummarySection = SummarySection(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package controllers
 
-import features.returns.models.Returns
 import fixtures.VatRegistrationFixture
-import helpers.{ControllerSpec, FutureAssertions, MockMessages}
 import mocks.AuthMock
+import models.Returns
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
+import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 
 import scala.concurrent.Future
 

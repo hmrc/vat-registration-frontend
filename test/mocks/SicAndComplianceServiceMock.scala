@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package mocks
 
-import features.sicAndCompliance.models.SicAndCompliance
 import org.mockito.{ArgumentMatchers => Matchers}
-import features.sicAndCompliance.services.SicAndComplianceService
-import models.CurrentProfile
+import models.{CurrentProfile, SicAndCompliance}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
+import services.SicAndComplianceService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future

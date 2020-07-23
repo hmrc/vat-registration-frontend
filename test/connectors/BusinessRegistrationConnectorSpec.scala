@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package connectors
 
 import config.WSHttp
 import fixtures.VatRegistrationFixture
-import helpers.VatRegSpec
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundException}
 
 class BusinessRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {

@@ -19,15 +19,11 @@ package controllers.builders
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import features.returns.models.Returns
-import features.tradingDetails.TradingDetails
-import models.MonthYearModel
+import models.{MonthYearModel, Returns, TradingDetails}
 import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.config.ServicesConfig
-
-
 
 case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails] = None,
                                             threshold: Option[Threshold],
@@ -45,8 +41,8 @@ case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails
       case Some(date) => date.format(presentationFormatter)
       case _ => s"pages.summary.$sectionId.mandatoryStartDate"
     },
-    if (voluntaryRegistration) Some(features.returns.controllers.routes.ReturnsController.voluntaryStartPage()) else incorpDate match {
-      case Some(_) => Some(features.returns.controllers.routes.ReturnsController.mandatoryStartPage())
+    if (voluntaryRegistration) Some(controllers.routes.ReturnsController.voluntaryStartPage()) else incorpDate match {
+      case Some(_) => Some(controllers.routes.ReturnsController.mandatoryStartPage())
       case None => None
     }
   )

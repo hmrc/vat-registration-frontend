@@ -16,7 +16,7 @@
 
 package controllers.builders
 
-import features.sicAndCompliance.models.SicAndCompliance
+import models.SicAndCompliance
 import models.view.SummarySection
 
 case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
