@@ -19,6 +19,7 @@ package controllers
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
 import config.AuthClientConnector
 import connectors.KeystoreConnector
+import deprecated.DeprecatedConstants
 import models.view.{HomeAddressView, PreviousAddressView}
 import forms._
 import javax.inject.Inject
@@ -140,9 +141,8 @@ trait OfficerController extends BaseController with SessionProfile {
       ivPassedCheck {
         for {
           officer    <- lodgingOfficerService.getLodgingOfficer
-          addresses  <- prePopService.getOfficerAddressList(officer)
           filledForm = officer.homeAddress.fold(HomeAddressForm.form)(HomeAddressForm.form.fill)
-        } yield Ok(views.html.officer_home_address(filledForm, addresses))
+        } yield Ok(views.html.officer_home_address(filledForm, DeprecatedConstants.emptyAddressList))
       }
   }
 
@@ -151,18 +151,12 @@ trait OfficerController extends BaseController with SessionProfile {
     implicit request => implicit profile =>
       lodgingOfficerService.getLodgingOfficer.flatMap {
         officer => HomeAddressForm.form.bindFromRequest.fold(
-          badForm => prePopService.getOfficerAddressList(officer) map { addresses =>
-            BadRequest(views.html.officer_home_address(badForm, addresses))
-          },
-          data    => if(data.addressId == "other") {
+          badForm =>
+            Future.successful(BadRequest(views.html.officer_home_address(badForm, DeprecatedConstants.emptyAddressList)))
+          ,
+          data    =>
+            //Routes only to capturing "other" address as there will never be a previously captured address
             addressLookupService.getJourneyUrl(homeAddress, controllers.routes.OfficerController.acceptFromTxmHomeAddress()) map Redirect
-          } else {
-            for {
-              addresses <- prePopService.getOfficerAddressList(officer)
-              address   =  addresses.find(_.id == data.addressId)
-              _         <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(data.addressId, address))
-            } yield Redirect(controllers.routes.OfficerController.showPreviousAddress())
-          }
         )
       }
   }

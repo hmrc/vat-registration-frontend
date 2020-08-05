@@ -18,37 +18,34 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
+import deprecated.DeprecatedConstants
 import forms.{EuGoodsForm, TradingNameForm}
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
-import services.{IncorporationInformationService, SessionProfile, TradingDetailsService}
+import services.{SessionProfile, TradingDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 
 import scala.concurrent.Future
 
 class TradingDetailsControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
                                              val authConnector: AuthClientConnector,
                                              val tradingDetailsService: TradingDetailsService,
-                                             val messagesApi: MessagesApi,
-                                             val incorpInfoService: IncorporationInformationService) extends TradingDetailsController
+                                             val messagesApi: MessagesApi) extends TradingDetailsController
 
 trait TradingDetailsController extends BaseController with SessionProfile {
 
   val tradingDetailsService: TradingDetailsService
   val authConnector: AuthConnector
   val keystoreConnector: KeystoreConnector
-  val incorpInfoService: IncorporationInformationService
 
   val tradingNamePage = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       ivPassedCheck {
         for {
-          companyName         <- incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId)
           tradingDetailsView  <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
-          prepopTradingName   <- tradingDetailsService.getTradingNamePrepop(profile.registrationId, tradingDetailsView.tradingNameView)
-          form                =  TradingNameForm.fillWithPrePop(prepopTradingName, tradingDetailsView.tradingNameView)
-        } yield Ok(TradingNamePage(form, companyName))
+          form                =  TradingNameForm.fillWithPrePop(tradingDetailsView.tradingNameView)
+        } yield Ok(TradingNamePage(form, DeprecatedConstants.fakeCompanyName))
       }
   }
 
@@ -57,9 +54,8 @@ trait TradingDetailsController extends BaseController with SessionProfile {
       ivPassedCheck {
         TradingNameForm.form.bindFromRequest.fold(
           errors => {
-            incorpInfoService.getCompanyName(profile.registrationId, profile.transactionId) map { companyName =>
-              BadRequest(TradingNamePage(errors, companyName))
-            }
+              Future.successful(BadRequest(TradingNamePage(errors, DeprecatedConstants.fakeCompanyName)))
+
           },
           success => {
             val (hasName, name) = success

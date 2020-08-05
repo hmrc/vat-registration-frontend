@@ -33,7 +33,7 @@ class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationSe
                                       val keystoreConnector: KeystoreConnector,
                                       val messagesApi: MessagesApi,
                                       conf: ServicesConfig) extends WelcomeController {
-  val eligibilityFEUrl = conf.getConfString("vat-registration-eligibility-frontend.uri",throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
+  val eligibilityFEUrl = conf.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
 
   override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
 }
@@ -48,20 +48,19 @@ trait WelcomeController extends BaseController with SessionProfile {
 
   def start: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      vatRegistrationService.assertFootprintNeeded flatMap {
-        case Some((regId, txID)) =>
-          for{
-            _                <- currentProfileService.buildCurrentProfile(regId, txID)
-            taxableThreshold <- vatRegistrationService.getTaxableThreshold()
-          } yield {
-            Ok(welcome(taxableThreshold))
-          }
-        case None => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+      for {
+        registrationId <- vatRegistrationService.createRegistrationFootprint
+        _ <- currentProfileService.buildCurrentProfile(registrationId)
+        taxableThreshold <- vatRegistrationService.getTaxableThreshold()
+      } yield {
+        Ok(welcome(taxableThreshold))
       }
   }
 
+
   def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => _ =>
-      Future.successful(Redirect(eligibilityFE))
+    implicit request =>
+      _ =>
+        Future.successful(Redirect(eligibilityFE))
   }
 }

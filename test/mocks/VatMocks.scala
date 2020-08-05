@@ -17,11 +17,11 @@
 package mocks
 
 import connectors.{BankAccountReputationConnectorImpl, _}
-import services.{BankAccountReputationServiceImpl, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
 import org.mockito.Mockito.reset
 import org.scalatest.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
+import services.{BankAccountReputationServiceImpl, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.config.inject.ServicesConfig
@@ -37,7 +37,7 @@ trait VatMocks
 
 
   implicit lazy val mockFeatureSwitch = mock[VATRegFeatureSwitch]
-  implicit lazy val mockFeatureSwitches  = mock[VATRegFeatureSwitches]
+  implicit lazy val mockFeatureSwitches = mock[VATRegFeatureSwitches]
   implicit lazy val mockAudit = mock[Audit]
   implicit lazy val mockSessionRepository = mock[SessionRepository]
   implicit lazy val mockCascadeUpsert = mock[CascadeUpsert]
@@ -47,24 +47,19 @@ trait VatMocks
 
   implicit lazy val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   //Connectors
-  implicit lazy val mockCompanyRegConnector = mock[CompanyRegistrationConnectorImpl]
-  implicit lazy val mockIIConnector = mock[IncorporationInformationConnectorImpl]
   implicit lazy val mockRegConnector = mock[VatRegistrationConnector]
   implicit lazy val mockConfigConnector = mock[ConfigConnector]
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
   implicit lazy val mockIdentityVerificationConnector = mock[IVConnectorImpl]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnectorImpl]
-  implicit lazy val mockBrConnector = mock[BusinessRegistrationConnectorImpl]
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
   implicit lazy val mockCurrentProfile = mock[CurrentProfileServiceImpl]
   implicit lazy val mockCancellationService = mock[CancellationService]
   implicit lazy val mockAddressService = mock[AddressLookupService]
   implicit lazy val mockPPService = mock[PrePopulationService]
-  implicit lazy val mockIIService = mock[IncorporationInformationServiceImpl]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
   implicit lazy val mockDateService = mock[DateService]
-  implicit lazy val mockIncorpInfoService = mock[IncorporationInformationService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationServiceImpl]
   implicit lazy val mockIVService = mock[IVServiceImpl]
   implicit lazy val mockReturnsService = mock[ReturnsService]
@@ -89,12 +84,9 @@ trait VatMocks
       mockAudit,
       mockVatRegistrationService,
       mockRegConnector,
-      mockCompanyRegConnector,
       mockPPService,
       mockDateService,
-      mockIIConnector,
       mockConfigConnector,
-      mockIIService,
       mockAddressLookupConnector,
       mockWSHttp,
       mockCurrentProfile,
@@ -109,8 +101,7 @@ trait VatMocks
       mockSummaryService,
       mockBusinessContactService,
       mockAuthClientConnector,
-      mockTimeService,
-      mockBrConnector
+      mockTimeService
     )
   }
 }

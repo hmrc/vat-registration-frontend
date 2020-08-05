@@ -34,25 +34,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: RegistrationConnector,
-                                       val brConnector : BusinessRegistrationConnector,
-                                       val compRegConnector: CompanyRegistrationConnector,
-                                       val incorporationService: IncorporationInformationService,
-                                       val keystoreConnector: KeystoreConnector,
-                                       val iiConnector: IncorporationInformationConnector
+                                       val keystoreConnector: KeystoreConnector
                                       ) extends RegistrationService
 
 trait RegistrationService extends LegacyServiceToBeRefactored {
   val s4LService: S4LService
   val vatRegConnector: RegistrationConnector
-  val brConnector: BusinessRegistrationConnector
-  val compRegConnector: CompanyRegistrationConnector
-  val incorporationService: IncorporationInformationService
-  val iiConnector: IncorporationInformationConnector
 }
 
 // TODO refactor in a similar way to FRS
 trait LegacyServiceToBeRefactored {
-  self : RegistrationService =>
+  self: RegistrationService =>
 
   val keystoreConnector: KeystoreConnector
 
@@ -75,39 +67,25 @@ trait LegacyServiceToBeRefactored {
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
 
-  def assertFootprintNeeded(implicit hc : HeaderCarrier) : Future[Option[RegistrationFootprint]] = {
-    brConnector.getBusinessRegistrationID flatMap {
-      case Some(regId) => compRegConnector.getCompanyProfile(regId) flatMap {
-        case Some(CompanyRegistrationProfile("draft" | "locked" | "rejected", _)) |
-             Some(CompanyRegistrationProfile(_, Some("06" | "07" | "08" | "09" | "10"))) |
-             None => Future.successful(None)
-        case _ => createRegistrationFootprint map Some.apply
-      }
-      case None => Future.successful(None)
-    }
-  }
-
-  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[RegistrationFootprint] = {
+  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[String] = {
     Logger.info("[createRegistrationFootprint] Creating registration footprint")
     for {
       vatScheme <- vatRegConnector.createNewRegistration
-      txId      <- compRegConnector.getTransactionId(vatScheme.id)
     } yield {
-      (vatScheme.id, txId)
+      vatScheme.id
     }
   }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
 
-  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile):Future[JsObject] = vatRegConnector.getEligibilityData
+  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsObject] = vatRegConnector.getEligibilityData
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
     for {
       submit <- vatRegConnector.submitRegistration(profile.registrationId)
-      _      <- if (submit == Success) iiConnector.cancelSubscription(profile.transactionId) else Future.successful(None)
     } yield submit
 
-    } recover {
+  } recover {
     case e => {
       SubmissionFailedRetryable
     }

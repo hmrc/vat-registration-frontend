@@ -17,9 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import mocks.AuthMock
 import models.Returns
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -32,13 +30,12 @@ import scala.concurrent.Future
 class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   val testController = new ApplicationSubmissionController {
-    override val vatRegService     = mockVatRegistrationService
-    override val returnsService    = mockReturnsService
+    override val vatRegService = mockVatRegistrationService
+    override val returnsService = mockReturnsService
     override val keystoreConnector = mockKeystoreConnector
-    override val dashboardUrl      = "/foo"
 
-    val authConnector              = mockAuthClientConnector
-    val messagesApi: MessagesApi   = mockMessagesAPI
+    val authConnector = mockAuthClientConnector
+    val messagesApi: MessagesApi = mockMessagesAPI
   }
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
@@ -50,7 +47,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessag
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.getVatScheme(any(),any()))
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
 
       when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
@@ -59,10 +56,8 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessag
       when(mockReturnsService.getReturns(any(), any(), any()))
         .thenReturn(Future.successful(Returns(None, None, None, None)))
 
-      callAuthorised(testController.show) {res =>
+      callAuthorised(testController.show) { res =>
         res includesText MOCKED_MESSAGE
-        val document = Jsoup.parse(contentAsString(res))
-        document.getElementById("save-and-continue").attr("href") mustBe "/foo"
       }
     }
   }

@@ -40,20 +40,17 @@ class ApplicationSubmissionControllerImpl @Inject()(val vatRegService: Registrat
 
   lazy val compRegFEDashboard = config.getConfString("company-registration-frontend.www.dashboard",
     throw new Exception("Config: company-registration-frontend.www.dashboard not found"))
-
-  lazy val dashboardUrl = s"$compRegFEURL$compRegFEURI$compRegFEDashboard"
 }
 
 trait ApplicationSubmissionController extends BaseController with SessionProfile {
   val vatRegService       :RegistrationService
   val returnsService      :ReturnsService
-  val dashboardUrl        :String
 
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => implicit profile =>
       for {
         ackRef <- vatRegService.getAckRef(profile.registrationId)
         returns <- returnsService.getReturns
-      } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart,dashboardUrl))
+      } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
   }
 }

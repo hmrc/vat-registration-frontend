@@ -40,27 +40,9 @@ trait TestRegistrationConnector {
   val http: WSHttp
 
   val vatRegUrl: String
-  val incorporationFrontendStubsUrl: String
-  val incorporationFrontendStubsUri: String
 
   def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
-  }
-
-  def incorpCompany(incorpDate: String)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/test-only/incorporation-information/incorp-company/${currentProfile.transactionId}/$incorpDate")
-  }
-
-  def postTestData(jsonData: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.POST[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/insert-data", jsonData) recover {
-      case e: Exception => throw logResponse(e, "postTestData")
-    }
-  }
-
-  def wipeTestData(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.PUT[JsValue, HttpResponse](s"$incorporationFrontendStubsUrl$incorporationFrontendStubsUri/wipe-data", Json.parse("{}")) recover {
-      case e: Exception => throw logResponse(e, "wipeTestData")
-    }
   }
 
   def updateEligibilityData(jsonData: JsValue)(implicit currentProfile: CurrentProfile, hc: HeaderCarrier): Future[HttpResponse] = {

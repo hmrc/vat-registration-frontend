@@ -19,28 +19,23 @@ package services
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import connectors.logResponse
 import javax.inject.Inject
-import connectors.{BusinessRegistrationConnector, logResponse}
-import models.view.LodgingOfficer
-import models.{BusinessContact, _}
 import models.api._
-import models.external.{AccountingDetails, CorporationTaxRegistration, Officer}
+import models.external.{AccountingDetails, CorporationTaxRegistration}
+import models.{BusinessContact, _}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.SystemDate
 
 import scala.concurrent.Future
 
-class PrePopulationService @Inject()(val businessRegistrationConnector: BusinessRegistrationConnector,
-                                     val incorpInfoService: IncorporationInformationService,
-                                     val save4later: S4LService,
+class PrePopulationService @Inject()(val save4later: S4LService,
                                      val businessContactService: BusinessContactService,
                                      val vatRegService: RegistrationService) extends PrePopService
 
 trait PrePopService {
 
-  val businessRegistrationConnector: BusinessRegistrationConnector
-  val incorpInfoService: IncorporationInformationService
   val vatRegService: RegistrationService
   val save4later: S4LService
   val businessContactService: BusinessContactService
@@ -56,11 +51,10 @@ trait PrePopService {
 
   def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
     for {
-      roAddress       <- incorpInfoService.getRegisteredOfficeAddress
       ppobAddress     <- businessContactService.getBusinessContact map(_.ppobAddress)
       businessContact <- save4later.fetchAndGet[BusinessContact]
       s4lAddress      =  businessContact.flatMap(_.ppobAddress)
-    } yield filterAddressListByCountry(List(roAddress, ppobAddress, s4lAddress).flatten.distinct)
+    } yield filterAddressListByCountry(List(ppobAddress, s4lAddress).flatten.distinct)
   }
 
   private[services] def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
@@ -84,20 +78,4 @@ trait PrePopService {
       )
     )
   )
-
-  def getOfficerAddressList(officer: LodgingOfficer)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    incorpInfoService.getRegisteredOfficeAddress map {
-      address => Seq(address, officer.homeAddress.fold(Option.empty[ScrsAddress])(_.address)).flatten.distinct
-    }
-  }
-
-  def getOfficerList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[Officer]] = {
-    incorpInfoService.getOfficerList map (_.distinct)
-  }
-
-  def getTradingName(regId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    businessRegistrationConnector.retrieveTradingName(regId)
-
-  def saveTradingName(regId: String, tradingName: String)(implicit hc: HeaderCarrier): Future[String] =
-    businessRegistrationConnector.upsertTradingName(regId, tradingName)
 }

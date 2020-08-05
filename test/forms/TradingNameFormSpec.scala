@@ -24,50 +24,31 @@ class TradingNameFormSpec extends VatRegSpec {
   val testForm = TradingNameForm.form
 
   "fillWithPrePop" should {
-    "return a form with just trading Name populated and differentName set to blank string if TradingName model = None" in {
-      val mappingOfForm = Map(
-        "tradingNameRadio" -> "",
-        "tradingName" -> "foo bar wizz pre pop"
-      )
-      val prePopName = Some("foo bar wizz pre pop")
-      val tradingNameModel = None
-
-      val res = TradingNameForm.fillWithPrePop(prePopName,tradingNameModel)
-      res.errors mustBe Seq.empty
-      res mustBe testForm.bind(mappingOfForm).discardingErrors
-    }
-    "return a form populated with the model not the pre pop trading name as the model = Some and answer is true" in {
+    "return a form populated with the model as the model = Some and answer is true" in {
       val mappingOfForm = Map(
         "tradingNameRadio" -> "true",
-        "tradingName" -> "foo"
+        "tradingName" -> "testName"
       )
-      val prePopName = Some("foo bar wizz pre pop")
-      val tradingNameModel = Some(TradingNameView(true,Some("foo")))
+      val tradingNameModel = Some(TradingNameView(true, Some("testName")))
 
-      val res = TradingNameForm.fillWithPrePop(prePopName,tradingNameModel)
+      val res = TradingNameForm.fillWithPrePop(tradingNameModel)
       res.errors mustBe Seq.empty
       res mustBe testForm.bind(mappingOfForm).discardingErrors
     }
-    "return a form populated with the model and the pre pop trading name as the model = Some and answer is false" in {
+    "return a form populated with the model as the model = Some and answer is false" in {
       val mappingOfForm = Map(
-        "tradingNameRadio" -> "false",
-        "tradingName" -> "foo bar wizz pre pop"
+        "tradingNameRadio" -> "false"
       )
-      val prePopName = Some("foo bar wizz pre pop")
-      val tradingNameModel = Some(TradingNameView(false,None))
+      val tradingNameModel = Some(TradingNameView(false, None))
 
-      val res = TradingNameForm.fillWithPrePop(prePopName,tradingNameModel)
+      val res = TradingNameForm.fillWithPrePop(tradingNameModel)
       res.errors mustBe Seq.empty
       res mustBe testForm.bind(mappingOfForm).discardingErrors
     }
-    "return a form with nothing populated as there is neither pre pop nor is there a model" in {
-      val mappingOfForm = Map(
-        "tradingNameRadio" -> "",
-        "tradingName" -> "")
-
-      val res = TradingNameForm.fillWithPrePop(None,None)
+    "return a form with nothing populated as there is no model" in {
+      val res = TradingNameForm.fillWithPrePop(None)
       res.errors mustBe Seq.empty
-      res mustBe testForm.bind(mappingOfForm).discardingErrors
+      res mustBe testForm
     }
   }
   "Trading Name form" must {
@@ -76,17 +57,17 @@ class TradingNameFormSpec extends VatRegSpec {
     "be valid" when {
       "no is selected" in {
         val data = Map("tradingNameRadio" -> Seq("false"))
-        testForm.bindFromRequest(data) shouldContainValue (false, None)
+        testForm.bindFromRequest(data) shouldContainValue(false, None)
       }
 
       "no is selected and a correct trading name is provided" in {
         val data = Map("tradingNameRadio" -> Seq("false"), "tradingName" -> Seq(tradingName))
-        testForm.bindFromRequest(data) shouldContainValue (false, None)
+        testForm.bindFromRequest(data) shouldContainValue(false, None)
       }
 
       "yes is selected and a correct trading name is provided" in {
         val data = Map("tradingNameRadio" -> Seq("true"), "tradingName" -> Seq(tradingName))
-        testForm.bindFromRequest(data) shouldContainValue (true, Some(tradingName))
+        testForm.bindFromRequest(data) shouldContainValue(true, Some(tradingName))
       }
     }
 

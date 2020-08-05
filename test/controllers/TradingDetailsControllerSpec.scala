@@ -17,15 +17,15 @@
 package controllers
 
 import connectors.KeystoreConnector
-import models.{TradingNameView, _}
 import fixtures.VatRegistrationFixture
+import models.{TradingNameView, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.{IncorporationInformationService, TradingDetailsServiceImpl}
+import services.TradingDetailsServiceImpl
 import testHelpers.{ControllerSpec, MockMessages}
 import uk.gov.hmrc.auth.core.AuthConnector
 
@@ -38,7 +38,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     val testController = new TradingDetailsController {
       override val tradingDetailsService: TradingDetailsServiceImpl = mockTradingDetailsService
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       val authConnector: AuthConnector = mockAuthClientConnector
       val messagesApi: MessagesApi = mockMessagesAPI
     }
@@ -57,15 +56,9 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
   "tradingNamePage" should {
 
-    "return an Ok when there is a trading details present and pre pop is present" in new Setup {
+    "return an Ok when there is a trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
-
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-          .thenReturn(Future.successful(companyName))
-
-      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
-          .thenReturn(Future.successful(Some("this will not appear in the html")))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
@@ -79,33 +72,9 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
       }
     }
 
-    "return an Ok when there is no trading details present but pre pop returns something" in new Setup {
+    "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
-
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-        .thenReturn(Future.successful(companyName))
-      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
-        .thenReturn(Future.successful(Some("returned from pre pop")))
-
-      callAuthorised(testController.tradingNamePage) {
-        result => {
-          status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
-          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
-          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
-          doc.getElementById("tradingName").`val` mustBe "returned from pre pop"
-        }
-      }
-    }
-    "return an Ok when there is no trading details present and pre pop returns nothing" in new Setup {
-      when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-        .thenReturn(Future.successful(TradingDetails()))
-
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-        .thenReturn(Future.successful(companyName))
-      when(mockTradingDetailsService.getTradingNamePrepop(any(),any())(any()))
-        .thenReturn(Future.successful(None))
 
       callAuthorised(testController.tradingNamePage) {
         result => {
@@ -153,9 +122,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 without a provided trading name" in new Setup {
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-        .thenReturn(Future.successful(companyName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> "true",
         "tradingName" -> ""
@@ -167,9 +133,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 when no option is selected" in new Setup {
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-        .thenReturn(Future.successful(companyName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
       submitAuthorised(testController.submitTradingName, request) { result =>
@@ -178,9 +141,6 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 400 when the trading name they have provided is invalid" in new Setup {
-      when(mockIncorpInfoService.getCompanyName(any(), any())(any()))
-        .thenReturn(Future.successful(companyName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "tradingNameRadio" -> "true",
         "tradingName" -> "$0M3 T3$T"

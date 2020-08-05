@@ -37,10 +37,11 @@ class SessionProfileSpec extends VatRegSpec {
     }
   }
 
-  def testFunc : Future[Result] = Future.successful(Ok)
+  def testFunc: Future[Result] = Future.successful(Ok)
+
   implicit val request = FakeRequest()
 
-  val validProfile = CurrentProfile("testName", "testRegId", "testTransId", VatRegStatus.draft, None, Some(true))
+  val validProfile = CurrentProfile("testRegId", VatRegStatus.draft)
 
   "calling withCurrentProfile" should {
     "redirect to the welcome show if the current profile was not fetched from keystore" in new Setup {
@@ -77,12 +78,6 @@ class SessionProfileSpec extends VatRegSpec {
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat/submission-failure")
-    }
-    "redirect to the rejected incorporation page on Company Registration" in new Setup {
-      mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(incorpRejected = Some(true))))
-      val result = sessionProfile.withCurrentProfile() { _ => testFunc }
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some("/register-for-vat/redirect-to-rejection")
     }
   }
 }

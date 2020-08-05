@@ -53,13 +53,12 @@ object TradingNameForm extends RequiredBooleanForm {
     )
   )
 
-  def fillWithPrePop(prePopTradingName:Option[String], tradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
-    if (tradingNameFormData.exists(_.yesNo)) {
-      form.fill(tradingNameFormData.get.yesNo, tradingNameFormData.get.tradingName)
-    } else {
-      val hasTradingName = tradingNameFormData.map(_.yesNo.toString).getOrElse("")
-      val tradeName = prePopTradingName.getOrElse("")
-      form.bind(Map(RADIO_YES_NO -> hasTradingName, INPUT_TRADING_NAME -> tradeName)).discardingErrors
-    }
+  def fillWithPrePop(optTradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
+      optTradingNameFormData match {
+        case Some(tradingNameFormData) =>
+          form.fill(tradingNameFormData.yesNo, tradingNameFormData.tradingName)
+        case None =>
+          form
+      }
   }
 }

@@ -43,7 +43,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   val testRegId = "testRegId"
 
   implicit val hc = HeaderCarrier()
-  implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1", VatRegStatus.draft, None)
+  implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val validFullLodgingOfficerNoFormerName = validFullLodgingOfficer.copy(
     formerName = Some(FormerNameView(false, None)),
@@ -67,7 +67,6 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
     }
 
@@ -83,7 +82,6 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class SetupForS4LSave(t: LodgingOfficer = emptyLodgingOfficer) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
@@ -98,7 +96,6 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   class SetupForBackendSave(t: LodgingOfficer = validPartialLodgingOfficer) {
     val service = new LodgingOfficerService {
       override val s4LService: S4LService = mockS4LService
-      override val incorpInfoService: IncorporationInformationService = mockIncorpInfoService
       override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
 
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
@@ -106,7 +103,7 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
       }
     }
 
-    when(mockRegConnector.patchLodgingOfficer(any())(any(),any())).thenReturn(Future.successful(Json.toJson("""{}""")))
+    when(mockRegConnector.patchLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(Json.toJson("""{}""")))
 
     when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(200)))
@@ -168,10 +165,10 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
     "return a partial LodgingOfficer view model from backend" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
       val expected = LodgingOfficer(
         securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
-        homeAddress     = None,
-        contactDetails  = None,
-        formerName      = None,
-        formerNameDate  = None,
+        homeAddress = None,
+        contactDetails = None,
+        formerName = None,
+        formerNameDate = None,
         previousAddress = None
       )
       service.getLodgingOfficer returns expected

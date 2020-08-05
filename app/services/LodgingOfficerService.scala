@@ -28,11 +28,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 
 class LodgingOfficerServiceImpl @Inject()(val vatRegistrationConnector: RegistrationConnector,
-                                          val incorpInfoService: IncorporationInformationService,
                                           val s4LService: S4LService) extends LodgingOfficerService
 
 trait LodgingOfficerService extends Logging {
-  val incorpInfoService: IncorporationInformationService
   val vatRegistrationConnector: RegistrationConnector
   val s4LService: S4LService
 
@@ -76,10 +74,10 @@ trait LodgingOfficerService extends Logging {
   def saveLodgingOfficer[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
     def updateModel(data: T, before: LodgingOfficer): LodgingOfficer = {
       data match {
-        case secu: SecurityQuestionsView   => before.copy(securityQuestions = Some(secu))
-        case currAddr: HomeAddressView     => before.copy(homeAddress = Some(currAddr))
-        case contact: ContactDetailsView   => before.copy(contactDetails = Some(contact))
-        case fName: FormerNameView         => before.copy(formerName = Some(fName))
+        case secu: SecurityQuestionsView => before.copy(securityQuestions = Some(secu))
+        case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
+        case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
+        case fName: FormerNameView => before.copy(formerName = Some(fName))
         case fNameDate: FormerNameDateView => before.copy(formerNameDate = Some(fNameDate))
         case prevAddr: PreviousAddressView => before.copy(previousAddress = Some(prevAddr))
       }

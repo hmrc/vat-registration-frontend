@@ -38,23 +38,19 @@ trait SessionProfile {
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show()))
       ) {
-        profile => (profile.vatRegistrationStatus, profile.incorpRejected) match {
-          case (VatRegStatus.draft, None)                                        => f(profile)
-          case (VatRegStatus.locked, None) if checkStatus                        => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
-          case ((VatRegStatus.held | VatRegStatus.locked), None) if !checkStatus => f(profile)
-          case (_, Some(_)) => Future.successful(Redirect(controllers.routes.ErrorController.redirectToCR()))
-          case _            => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
-        }
+        profile =>
+          (profile.vatRegistrationStatus) match {
+            case VatRegStatus.draft => f(profile)
+            case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
+            case VatRegStatus.held | VatRegStatus.locked if !checkStatus => f(profile)
+            case _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+          }
       }
     }
   }
 
+  //todo - remove this check - always passes currently
   def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
-    if(!cp.ivPassed.getOrElse(false)) {
-      logger.warn(s"[ivPassedCheck] IV has not been passed so showing error page - regId: ${cp.registrationId}, ivpassed: ${cp.ivPassed}")
-      Future.successful(InternalServerError(views.html.pages.error.restart()))
-    } else {
-      f
-    }
+    f
   }
 }

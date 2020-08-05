@@ -27,25 +27,20 @@ import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
-
 class SessionProfileSpec extends VatRegSpec with VatRegistrationFixture {
-val mockMessages = mock[Messages]
+  val mockMessages = mock[Messages]
+
   class Setup {
     val sp = new SessionProfile {
       override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
+
   "hasIvStatus" should {
-    "return foo when CurrentProfile ivPassed is true" in new Setup {
-      val cp = CurrentProfile("","","",VatRegStatus.draft,None,Some(true))
-      val res = await(sp.ivPassedCheck(Future.successful(Ok))(cp,FakeRequest(),mockMessages))
+    "return 200 when CurrentProfile ivPassed is true" in new Setup {
+      val cp = CurrentProfile("", VatRegStatus.draft)
+      val res = await(sp.ivPassedCheck(Future.successful(Ok))(cp, FakeRequest(), mockMessages))
       res.header.status mustBe 200
     }
-    "return fo when CurrentProfile ivPassed is false" in new Setup {
-      val cp = CurrentProfile("","","",VatRegStatus.draft,None,Some(false))
-      val res = await(sp.ivPassedCheck(Future.successful(Ok))(cp,FakeRequest(),mockMessages))
-      res.header.status mustBe 500
-    }
   }
-
 }

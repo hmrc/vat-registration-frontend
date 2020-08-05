@@ -29,14 +29,12 @@ import scala.concurrent.Future
 
 class CancellationServiceImpl @Inject()(val keystoreConnector: KeystoreConnector,
                                         val currentProfileService: CurrentProfileService,
-                                        val companyRegistrationConnector: CompanyRegistrationConnector,
                                         val save4LaterConnector: S4LConnector,
                                         val vatRegistrationConnector: RegistrationConnector) extends CancellationService
 
 trait CancellationService {
   val keystoreConnector: KeystoreConnector
   val currentProfileService: CurrentProfileService
-  val companyRegistrationConnector: CompanyRegistrationConnector
   val save4LaterConnector: S4LConnector
   val vatRegistrationConnector: RegistrationConnector
 
@@ -69,7 +67,6 @@ trait CancellationService {
   }
 
   private def buildNewProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = for {
-    txId            <- companyRegistrationConnector.getTransactionId(regId)
-    profile         <- currentProfileService.buildCurrentProfile(regId, txId)
+    profile         <- currentProfileService.buildCurrentProfile(regId)
   } yield profile
 }
