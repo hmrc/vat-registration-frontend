@@ -17,7 +17,7 @@
 @import models.Stagger
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@(refNo: String, staggerStart: Option[Stagger.Value], dashBoardUrl:String)(implicit request: Request[_], messages: Messages)
+@(refNo: String, staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages)
 
 @pageScripts = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/VatGAEvent.js")'></script>
@@ -38,8 +38,6 @@
         <div class="panel panel-border-wide">
             <p>@messages("pages.application.submission.confirmation.panel.para")</p>
         </div>
-
-        <a class="btn button" href="@dashBoardUrl" id="save-and-continue">@messages("pages.application.submission.confirmation.button")</a>
     </div>
         @staggerStart.map{ startPeriod =>
         <div class="hidden"><span id="vatAccountPeriodGAEventDoNotRemove">@startPeriod</span></div>

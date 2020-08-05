@@ -29,6 +29,7 @@ import utils.VATRegFeatureSwitch
 class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
+
   val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
@@ -66,7 +67,7 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .incorpInformation.hasIncorpUpdateWithNoDate
           .incorpInformation.returnsRejectedIncorpUpdate()
           .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("held","04")
+          .corporationTaxRegistration.existsWithStatus("held", "04")
           .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
           .vatScheme.contains(vatRegIncorporated)
           .vatScheme.has("officer-data", Json.obj())
@@ -76,34 +77,6 @@ class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
           .vatRegistration.clearsUserData()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
-      }
-    }
-
-    "return a redirect to CR post sign in" when {
-      "the user has no business registration" in {
-        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
-
-        given()
-          .user.isAuthorised
-          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
-          .businessRegistration.fails
-          .corporationTaxRegistration.existsWithStatus("held", "04")
-          .audit.writesAuditMerged()
-
-        whenReady(controller.start(request))(res => res.header.status mustBe 303)
-      }
-
-      "the user has a BR but an unfinished CT registration" in {
-        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
-
-        given()
-          .user.isAuthorised
-          .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("draft", "04")
-          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
-          .audit.writesAuditMerged()
-
-        whenReady(controller.start(request))(res => res.header.status mustBe 303)
       }
     }
   }

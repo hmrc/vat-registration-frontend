@@ -24,21 +24,21 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TradingDetailsServiceImpl @Inject()(val s4lservice : S4LService,
-                                          val regConnector : RegistrationConnector,
+class TradingDetailsServiceImpl @Inject()(val s4lservice: S4LService,
+                                          val regConnector: RegistrationConnector,
                                           val prePopService: PrePopService) extends TradingDetailsService {
   val s4lService: S4LService = s4lservice
-  val registrationConnector : RegistrationConnector = regConnector
+  val registrationConnector: RegistrationConnector = regConnector
 }
 
 trait TradingDetailsService {
-  val s4lService : S4LService
-  val registrationConnector : RegistrationConnector
+  val s4lService: S4LService
+  val registrationConnector: RegistrationConnector
   val prePopService: PrePopService
 
   private val tradingDetailsS4LKey: S4LKey[TradingDetails] = S4LKey[TradingDetails]("tradingDetails")
 
-  def getTradingDetailsViewModel(regId : String)(implicit hc : HeaderCarrier, profile : CurrentProfile): Future[TradingDetails] =
+  def getTradingDetailsViewModel(regId: String)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[TradingDetails] =
     s4lService.fetchAndGetNoAux(tradingDetailsS4LKey) flatMap {
       case Some(s4l) => Future.successful(s4l)
       case None => registrationConnector.getTradingDetails(regId) map {
@@ -47,18 +47,14 @@ trait TradingDetailsService {
       }
     }
 
-  def getTradingNamePrepop(regId: String, tradingName: Option[TradingNameView])(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    if(tradingName.exists(_.yesNo)) Future.successful(None) else prePopService.getTradingName(regId)
-  }
-
-  def getS4LCompletion(data : TradingDetails) : Completion[TradingDetails] = data match {
+  def getS4LCompletion(data: TradingDetails): Completion[TradingDetails] = data match {
     case TradingDetails(Some(_), Some(_)) => Complete(data)
     case _ => Incomplete(data)
   }
 
-  def submitTradingDetails(regId : String, data : TradingDetails)(implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+  def submitTradingDetails(regId: String, data: TradingDetails)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
     getS4LCompletion(data).fold(
-      incomplete  => s4lService.saveNoAux(incomplete, tradingDetailsS4LKey) map {
+      incomplete => s4lService.saveNoAux(incomplete, tradingDetailsS4LKey) map {
         _ => incomplete
       },
       { complete =>
@@ -70,24 +66,20 @@ trait TradingDetailsService {
     )
   }
 
-  def updateTradingDetails(regId : String)(newS4L : (TradingDetails => TradingDetails))
-                          (implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
-    getTradingDetailsViewModel(regId) flatMap { storedData => submitTradingDetails(regId, newS4L(storedData))}
+  def updateTradingDetails(regId: String)(newS4L: (TradingDetails => TradingDetails))
+                          (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    getTradingDetailsViewModel(regId) flatMap { storedData => submitTradingDetails(regId, newS4L(storedData)) }
   }
 
-  def saveTradingName(regId : String, hasName: Boolean, name : Option[String])
-                     (implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
-      updateTradingDetails(regId) {storedData => storedData.copy(tradingNameView = Some(TradingNameView(hasName, name)))}
-        .flatMap{ tradingDetails =>  if(hasName && name.isDefined) {
-          prePopService.saveTradingName(regId, name.get).map(_ => tradingDetails)
-        } else {
-          Future.successful(tradingDetails)
-      }
-     }
+  def saveTradingName(regId: String, hasName: Boolean, name: Option[String])
+                     (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    updateTradingDetails(regId) { storedData => storedData.copy(tradingNameView = Some(TradingNameView(hasName, name))) }
   }
 
-  def saveEuGoods(regId : String, euGoods: Boolean)
-                 (implicit hc : HeaderCarrier, currentProfile: CurrentProfile) : Future[TradingDetails] = {
-    updateTradingDetails(regId) { storedData => storedData.copy(euGoods = Some(euGoods))}
+  def saveEuGoods(regId: String, euGoods: Boolean)
+                 (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    updateTradingDetails(regId) {
+      storedData => storedData.copy(euGoods = Some(euGoods))
+    }
   }
 }

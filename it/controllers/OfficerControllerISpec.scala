@@ -21,7 +21,7 @@ import java.time.LocalDate
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import models.api.ScrsAddress
-import models.external.{CoHoRegisteredOfficeAddress, Name, Officer}
+import models.external.{Name, Officer}
 import models.view._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -61,16 +61,18 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
   val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -233,77 +235,24 @@ class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
     val s4lData = LodgingOfficer(
       securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"),Some(email), Some("5678"))),
+      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
     )
 
-    val roAddress = CoHoRegisteredOfficeAddress(
-      premises = "Pizza",
-      addressLine1 = "Line1",
-      addressLine2 = None,
-      locality = "TechCity",
-      country = Some("Italy"),
-      poBox = None,
-      postalCode = None,
-      region = None
-    )
-
-    val validJson = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "${officer.name.forename}",
-         |    "middle": "${officer.name.otherForenames}",
-         |    "last": "${officer.name.surname}"
-         |  },
-         |  "role": "${officer.role}",
-         |  "dob": "$dob",
-         |  "nino": "$nino",
-         |  "details": {
-         |    "currentAddress": {
-         |      "line1": "$addrLine1",
-         |      "line2": "$addrLine2",
-         |      "postcode": "$postcode"
-         |    },
-         |    "contact": {
-         |      "email": "$email",
-         |      "tel": "1234",
-         |      "mobile": "5678"
-         |    },
-         |    "changeOfName": {
-         |      "name": {
-         |        "first": "New",
-         |        "middle": "Name",
-         |        "last": "Cosmo"
-         |      },
-         |      "change": "2000-07-12"
-         |    }
-         |  }
-         |}""".stripMargin)
-
-    "patch Lodging Officer in backend" in new Setup {
+    "redirect to ALF" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[LodgingOfficer].contains(s4lData)
-        .company.hasROAddress(roAddress)
-        .vatScheme.patched(keyBlock, validJson)
-        .s4lContainer[LodgingOfficer].cleared
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
+        .alfeJourney.initialisedSuccessfully()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(controllers.routes.OfficerController.submitHomeAddress().url).post(Map("homeAddressRadio" -> Seq(currentAddress.id)))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.OfficerController.showPreviousAddress().url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
-        (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
-        (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
+        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
       }
     }
   }

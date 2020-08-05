@@ -35,7 +35,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import scala.concurrent.Future
 
 class OfficerControllerSpec extends ControllerSpec with FutureAwaits with DefaultAwaitTimeout
-                            with VatRegistrationFixture with MockMessages with FutureAssertions {
+  with VatRegistrationFixture with MockMessages with FutureAssertions {
 
   val officerSecu = SecurityQuestionsView(LocalDate.of(1998, 7, 12))
   val partialLodgingOfficer = LodgingOfficer(Some(officerSecu), None, None, None, None, None)
@@ -218,10 +218,10 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
         .thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitFormerNameDate(), fakeRequest.withFormUrlEncodedBody(
-          "formerNameDate.day" -> "1",
-          "formerNameDate.month" -> "1",
-          "formerNameDate.year" -> "2017"
-        )) {
+        "formerNameDate.day" -> "1",
+        "formerNameDate.month" -> "1",
+        "formerNameDate.year" -> "2017"
+      )) {
         _ redirectsTo s"${controllers.routes.OfficerController.showContactDetails().url}"
       }
     }
@@ -284,7 +284,6 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
         None,
         None)
 
-      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
@@ -293,7 +292,6 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "return 200 when there's no data" in new Setup {
-      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
@@ -307,24 +305,11 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
     "return 400 with Empty data" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
-      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
 
       submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody())(result => result isA 400)
     }
 
-    "return 303 with valid Home address entered" in new Setup {
-      when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
-      when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
-      when(mockPPService.getOfficerAddressList(any())(any(), any())).thenReturn(Future.successful(Seq(address)))
-
-      submitAuthorised(controller.submitHomeAddress(), fakeRequest.withFormUrlEncodedBody(
-        "homeAddressRadio" -> address.id
-      )) {
-        _ redirectsTo s"${controllers.routes.OfficerController.showPreviousAddress().url}"
-      }
-    }
-
-    "redirect the user to TxM address capture page with 'other address' selected" in new Setup {
+    "redirect the user to ALF" in new Setup {
       when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 

@@ -17,7 +17,6 @@
 package support
 
 
-import java.time.LocalDate
 import java.util.Base64
 
 import common.enums.VatRegStatus
@@ -40,23 +39,24 @@ import uk.gov.hmrc.mongo.MongoSpecSupport
 import uk.gov.hmrc.play.it.Port
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.concurrent.{Await, Future}
 
 trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration with MongoSpecSupport {
   me: Suite with TestSuite =>
 
   trait StandardTestHelpers {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -69,8 +69,8 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
   implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest().withFormUrlEncodedBody())
 
   val sessionId: String = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
-  val currentProfile = models.CurrentProfile("testingCompanyName", "1", "000-431-TEST", VatRegStatus.draft, None, Some(true))
-  val currentProfileIncorp = models.CurrentProfile("testingCompanyName", "1", "000-431-TEST", VatRegStatus.draft, Some(LocalDate.of(2016, 8, 5)), Some(true))
+  val currentProfile: models.CurrentProfile = models.CurrentProfile("1", VatRegStatus.draft)
+  val currentProfileIncorp: models.CurrentProfile = models.CurrentProfile("1", VatRegStatus.draft)
 
   def request: FakeRequest[AnyContentAsFormUrlEncoded] = requestHolder.request
 
@@ -83,22 +83,21 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
 
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
-  def buildClient(path: String)(implicit headers:(String,String) =  HeaderNames.COOKIE -> getSessionCookie()) = {
-    val removeRegisterWithPath = path.replace("""/register-for-vat""","")
-    ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+  def buildClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> getSessionCookie()) = {
+    val removeRegisterWithPath = path.replace("""/register-for-vat""", "")
+    ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
-  def buildInternalClient(path: String)(implicit headers:(String,String) = HeaderNames.COOKIE -> getSessionCookie()) = {
-    ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHeaders(headers,"Csrf-Token" -> "nocheck")
+  def buildInternalClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> getSessionCookie()) = {
+    ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
-  val encryptedRegIdList1  = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
+  val encryptedRegIdList1 = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
 
-  def additionalConfig: Map[String, String] =     Map(
+  def additionalConfig: Map[String, String] = Map(
     "regIdWhitelist" -> s"OTgsOTk=",
     "mongodb.uri" -> s"$mongoUri"
   )
-
 
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -138,9 +137,9 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
       ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort) +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
-      ("microservice.services.vat-registration-eligibility-frontend.uri"  -> s"http://$wiremockHost:$wiremockPort/uriELFE") +
+      ("microservice.services.vat-registration-eligibility-frontend.uri" -> s"http://$wiremockHost:$wiremockPort/uriELFE") +
       ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo") +
-      ("microservice.services.vat-registration-eligibility-frontend.host"  -> wiremockHost) +
+      ("microservice.services.vat-registration-eligibility-frontend.host" -> wiremockHost) +
       ("microservice.services.vat-registration-eligibility-frontend.port" -> wiremockPort)
 }
 

@@ -16,23 +16,18 @@
 
 package controllers.builders
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-import models.{MonthYearModel, Returns, TradingDetails}
 import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
-import play.api.mvc.Call
+import models.{Returns, TradingDetails}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails] = None,
-                                            threshold: Option[Threshold],
-                                            returnsBlock : Option[Returns],
-                                            incorpDate: Option[LocalDate] = None
-                                           ) extends SummarySectionBuilder with ServicesConfig {
+                                           threshold: Option[Threshold],
+                                           returnsBlock: Option[Returns]
+                                          ) extends SummarySectionBuilder with ServicesConfig {
 
-  override val sectionId: String      = "vatDetails"
-  private val thresholdBlock          = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
+  override val sectionId: String = "vatDetails"
+  private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
 
   def startDateRow: SummaryRow = SummaryRow(
@@ -41,10 +36,7 @@ case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails
       case Some(date) => date.format(presentationFormatter)
       case _ => s"pages.summary.$sectionId.mandatoryStartDate"
     },
-    if (voluntaryRegistration) Some(controllers.routes.ReturnsController.voluntaryStartPage()) else incorpDate match {
-      case Some(_) => Some(controllers.routes.ReturnsController.mandatoryStartPage())
-      case None => None
-    }
+    if (voluntaryRegistration) Some(controllers.routes.ReturnsController.voluntaryStartPage()) else None
   )
 
   val tradingNameRow: SummaryRow = SummaryRow(
