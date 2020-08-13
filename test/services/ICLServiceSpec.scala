@@ -36,12 +36,14 @@ class ICLServiceSpec extends VatRegSpec {
 
     val jsResponse = Json.obj("journeyStartUri" -> "example.url", "fetchResultsUri" -> "exampleresults.url")
     val jsInvalidResponse = Json.obj("journeyStartUrl" -> "example.url")
-    val testService = new ICLService {
-      override val iclConnector: ICLConnector = mockICLConnector
-      override val keystore: KeystoreConnector = mockKeystoreConnector
-      override val sicAndCompliance = mockSicAndComplianceService
-      override val registrationConnector = mockRegConnector
-      override val vatRedirectUrl: String = "dummy-url"
+    val testService: ICLService = new ICLService(
+      mockICLConnector,
+      mockServicesConfig,
+      mockKeystoreConnector,
+      mockSicAndComplianceService,
+      mockVatRegistrationConnector
+    ) {
+      override lazy val vatRedirectUrl: String = "dummy-url"
     }
   }
 

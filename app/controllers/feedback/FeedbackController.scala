@@ -17,27 +17,23 @@
 package controllers.feedback
 
 import java.net.URLEncoder
-import javax.inject.Inject
 
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
 
 import scala.concurrent.Future
 
-class FeedbackControllerImpl @Inject()(val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnector,
-                                       val messagesApi: MessagesApi) extends FeedbackController {
-  override lazy val contactFrontendPartialBaseUrl = FrontendAppConfig.contactFrontendPartialBaseUrl
-  override lazy val contactFormServiceIdentifier  = FrontendAppConfig.contactFormServiceIdentifier
-}
-
-trait FeedbackController extends BaseController with SessionProfile {
-  val contactFrontendPartialBaseUrl: String
-  val contactFormServiceIdentifier: String
+@Singleton
+class FeedbackController @Inject()(val authConnector: AuthClientConnector,
+                                   val keystoreConnector: KeystoreConnector,
+                                   val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+  lazy val contactFrontendPartialBaseUrl: String = FrontendAppConfig.contactFrontendPartialBaseUrl
+  lazy val contactFormServiceIdentifier: String = FrontendAppConfig.contactFormServiceIdentifier
 
   def contactFormReferrer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 

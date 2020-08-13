@@ -19,7 +19,7 @@ package services
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import connectors.RegistrationConnector
+import connectors.VatRegistrationConnector
 import fixtures.LodgingOfficerFixtures
 import mocks.VatMocks
 import models.CurrentProfile
@@ -65,25 +65,25 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
        """.stripMargin)
 
   class Setup(s4lData: Option[LodgingOfficer] = None, backendData: Option[JsValue] = None) {
-    val service = new LodgingOfficerService {
-      override val s4LService: S4LService = mockS4LService
-      override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
-    }
+    val service = new LodgingOfficerService(
+      mockVatRegistrationConnector,
+      mockS4LService
+    )
 
     when(mockS4LService.fetchAndGetNoAux[LodgingOfficer](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(s4lData))
 
-    when(mockRegConnector.getLodgingOfficer(any())(any())).thenReturn(Future.successful(backendData))
+    when(mockVatRegistrationConnector.getLodgingOfficer(any())(any())).thenReturn(Future.successful(backendData))
 
     when(mockS4LService.saveNoAux(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   class SetupForS4LSave(t: LodgingOfficer = emptyLodgingOfficer) {
-    val service = new LodgingOfficerService {
-      override val s4LService: S4LService = mockS4LService
-      override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
-
+    val service: LodgingOfficerService = new LodgingOfficerService(
+      mockVatRegistrationConnector,
+      mockS4LService
+    ) {
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
         Future.successful(t)
       }
@@ -94,16 +94,16 @@ class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks
   }
 
   class SetupForBackendSave(t: LodgingOfficer = validPartialLodgingOfficer) {
-    val service = new LodgingOfficerService {
-      override val s4LService: S4LService = mockS4LService
-      override val vatRegistrationConnector: RegistrationConnector = mockRegConnector
-
+    val service: LodgingOfficerService = new LodgingOfficerService(
+      mockVatRegistrationConnector,
+      mockS4LService
+    ) {
       override def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
         Future.successful(t)
       }
     }
 
-    when(mockRegConnector.patchLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(Json.toJson("""{}""")))
+    when(mockVatRegistrationConnector.patchLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(Json.toJson("""{}""")))
 
     when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(200)))

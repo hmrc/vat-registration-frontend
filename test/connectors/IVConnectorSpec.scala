@@ -16,23 +16,28 @@
 
 package connectors
 
-import config.WSHttp
 import models.{IVResult, IVSetup, UserData}
 import org.mockito.Mockito._
 import play.api.libs.json.{JsObject, JsResultException, JsValue, Json}
 import testHelpers.VatRegSpec
 
 class IVConnectorSpec extends VatRegSpec {
+
   class Setup {
-    val connector = new IVConnector {
+    val connector: IVConnector = new IVConnector(
+      mockVatRegFeatureSwitches,
+      mockServicesConfig,
+      mockWSHttp
+    ) {
       override val ivProxyUrl = "tst-url"
       override val ivProxyUri = "tst-url"
       override val ivBase = "tst-url"
+
       override def useIvStub = true
+
       override val brdsUrl: String = "tst-url"
       override val brdsUri: String = "tst-url"
-      override val ivFeUrl:String = "iv"
-      override val http: WSHttp = mockWSHttp
+      override val ivFeUrl: String = "iv"
     }
   }
 
@@ -83,11 +88,11 @@ class IVConnectorSpec extends VatRegSpec {
       connector.getJourneyOutcome("testJourneyId") failedWith internalServiceException
     }
   }
-  "setupIVJourney" should{
+  "setupIVJourney" should {
     "return link with ivfe base url attached to it" in new Setup {
-      mockHttpPOST[IVSetup,JsValue]("test-url",JsObject(Map("link" -> Json.toJson("/myLink"),"journeyLink" -> Json.toJson("foo"))).as[JsValue])
-      val res =  await(connector.setupIVJourney(IVSetup("origin","completion","fail",1,UserData("foo","bar","fudge","wizz"))))
-      res mustBe JsObject(Map("link" -> Json.toJson("iv/myLink"),"journeyLink" -> Json.toJson("foo"))).as[JsValue]
+      mockHttpPOST[IVSetup, JsValue]("test-url", JsObject(Map("link" -> Json.toJson("/myLink"), "journeyLink" -> Json.toJson("foo"))).as[JsValue])
+      val res = await(connector.setupIVJourney(IVSetup("origin", "completion", "fail", 1, UserData("foo", "bar", "fudge", "wizz"))))
+      res mustBe JsObject(Map("link" -> Json.toJson("iv/myLink"), "journeyLink" -> Json.toJson("foo"))).as[JsValue]
     }
   }
 }

@@ -16,26 +16,23 @@
 
 package controllers.test
 
-import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
 
-class TestCacheControllerImpl @Inject()(val s4LService: S4LService,
-                                        val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnector,
-                                        val messagesApi: MessagesApi) extends TestCacheController
-
-
-trait TestCacheController extends BaseController with SessionProfile {
-  val s4LService: S4LService
+@Singleton
+class TestCacheController @Inject()(val s4LService: S4LService,
+                                    val authConnector: AuthClientConnector,
+                                    val keystoreConnector: KeystoreConnector,
+                                    val messagesApi: MessagesApi) extends BaseController with SessionProfile {
 
   def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      s4LService.clear.map(_ => Ok("Save4Later cleared"))
+    implicit request =>
+      implicit profile =>
+        s4LService.clear.map(_ => Ok("Save4Later cleared"))
   }
 }

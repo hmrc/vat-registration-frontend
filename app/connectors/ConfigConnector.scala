@@ -17,8 +17,8 @@
 package connectors
 
 import java.util.MissingResourceException
-import javax.inject.Inject
 
+import javax.inject.{Inject, Singleton}
 import models.api.SicCode
 import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
@@ -26,12 +26,9 @@ import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.io.Source
 
-class ConfigConnectorImpl @Inject()(val config: ServicesConfig,
-                                    val environment: Environment) extends ConfigConnector
-
-trait ConfigConnector {
-  val config: ServicesConfig
-  val environment: Environment
+@Singleton
+class ConfigConnector @Inject()(val config: ServicesConfig,
+                                val environment: Environment) {
 
   private val sicCodePrefix = "sic.codes"
 
@@ -50,8 +47,8 @@ trait ConfigConnector {
     val amendedCode = sicCode + "001"
 
     SicCode(
-      code           = amendedCode,
-      description    = config.getString(s"$sicCodePrefix.$amendedCode.description"),
+      code = amendedCode,
+      description = config.getString(s"$sicCodePrefix.$amendedCode.description"),
       displayDetails = config.getString(s"$sicCodePrefix.$amendedCode.displayDetails")
     )
   }
@@ -63,7 +60,7 @@ trait ConfigConnector {
       (jsObj \ "categories").as[Seq[JsObject]]
     }.find(jsObj => (jsObj \ "id").as[String] == frsId)
 
-    businessType.fold(throw new MissingResourceException(s"Missing Business Type for id: $frsId", "ConfigConnector", "id")){ jsObj =>
+    businessType.fold(throw new MissingResourceException(s"Missing Business Type for id: $frsId", "ConfigConnector", "id")) { jsObj =>
       ((jsObj \ "businessType").as[String], (jsObj \ "currentFRSPercent").as[BigDecimal])
     }
   }

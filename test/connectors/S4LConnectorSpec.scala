@@ -32,9 +32,9 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
 
   val mockShortLivedCache = mock[ShortLivedCache]
 
-  object S4LConnectorTest extends S4LConnector {
-    override val shortCache = mockShortLivedCache
-  }
+  object S4LConnectorTest extends S4LConnector(
+    mockShortLivedCache
+  )
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

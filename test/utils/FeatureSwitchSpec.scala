@@ -30,7 +30,7 @@ class FeatureSwitchSpec extends PlaySpec with BeforeAndAfterEach {
   }
 
   val featureSwitch         = new FeatureSwitchManager
-  val vatFeatureSwitch      = new VATRegFeatureSwitch(featureSwitch)
+  val vatFeatureSwitch      = new VATRegFeatureSwitches(featureSwitch)
   val booleanFeatureSwitch  = BooleanFeatureSwitch("test", false)
   val datetimeFeatureSwitch = ValueSetFeatureSwitch("testDateTime", "2018-01-13T00:18:58")
 

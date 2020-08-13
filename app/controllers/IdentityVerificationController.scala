@@ -18,7 +18,7 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.IVResult
 import play.api.Logger
 import play.api.i18n.MessagesApi
@@ -27,74 +27,79 @@ import services.{IVService, SessionProfile}
 
 import scala.concurrent.Future
 
-class IdentityVerificationControllerImpl @Inject()(val ivService: IVService,
-                                                   val messagesApi: MessagesApi,
-                                                   val authConnector: AuthClientConnector,
-                                                   val keystoreConnector: KeystoreConnector) extends IdentityVerificationController
-
-trait IdentityVerificationController extends BaseController with SessionProfile {
-
-  val ivService: IVService
+@Singleton
+class IdentityVerificationController @Inject()(val ivService: IVService,
+                                               val messagesApi: MessagesApi,
+                                               val authConnector: AuthClientConnector,
+                                               val keystoreConnector: KeystoreConnector) extends BaseController with SessionProfile {
 
   def redirectToIV: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivService.setupAndGetIVJourneyURL
-        .map(Redirect(_))
-        .recover{
-          case e: Exception =>
-          Logger.error(s"[IdentityVerificationController][redirectToIV] an error occurred while redirecting to IV with message: ${e.getMessage}")
-          Redirect(controllers.callbacks.routes.SignInOutController.errorShow())
-        }
+    implicit request =>
+      implicit profile =>
+        ivService.setupAndGetIVJourneyURL
+          .map(Redirect(_))
+          .recover {
+            case e: Exception =>
+              Logger.error(s"[IdentityVerificationController][redirectToIV] an error occurred while redirecting to IV with message: ${e.getMessage}")
+              Redirect(controllers.callbacks.routes.SignInOutController.errorShow())
+          }
   }
 
   def timeoutIV: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.error.timeoutIV()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.error.timeoutIV()))
   }
 
   def unableToConfirmIdentity: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.error.unabletoconfirmidentity()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.error.unabletoconfirmidentity()))
   }
 
   def failedIV: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.error.failediv()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.error.failediv()))
   }
 
   def lockedOut: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.error.lockedoutiv()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.error.lockedoutiv()))
   }
 
   def userAborted: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.error.useraborted()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.error.useraborted()))
   }
 
   def completedIVJourney: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivService.fetchAndSaveIVStatus map {
-        _ => controllers.routes.OfficerController.showFormerName()
-      } recover {
-        case e =>
-          Logger.error(s"[IdentityVerificationController][completedIVJourney] an error occurred with message: ${e.getMessage}")
-          controllers.callbacks.routes.SignInOutController.errorShow()
-      } map Redirect
+    implicit request =>
+      implicit profile =>
+        ivService.fetchAndSaveIVStatus map {
+          _ => controllers.routes.OfficerController.showFormerName()
+        } recover {
+          case e =>
+            Logger.error(s"[IdentityVerificationController][completedIVJourney] an error occurred with message: ${e.getMessage}")
+            controllers.callbacks.routes.SignInOutController.errorShow()
+        } map Redirect
   }
 
   def failedIVJourney(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivService.fetchAndSaveIVStatus map {
-        case IVResult.Timeout              => controllers.routes.IdentityVerificationController.timeoutIV()
-        case IVResult.InsufficientEvidence => controllers.routes.IdentityVerificationController.unableToConfirmIdentity()
-        case IVResult.FailedIV             => controllers.routes.IdentityVerificationController.failedIV()
-        case IVResult.LockedOut            => controllers.routes.IdentityVerificationController.lockedOut()
-        case IVResult.UserAborted          => controllers.routes.IdentityVerificationController.userAborted()
-      } recover {
-        case e =>
-          Logger.error(s"[IdentityVerificationController][failedIVJourney] an error occurred with message: ${e.getMessage}")
-          controllers.callbacks.routes.SignInOutController.errorShow()
-      } map Redirect
+    implicit request =>
+      implicit profile =>
+        ivService.fetchAndSaveIVStatus map {
+          case IVResult.Timeout => controllers.routes.IdentityVerificationController.timeoutIV()
+          case IVResult.InsufficientEvidence => controllers.routes.IdentityVerificationController.unableToConfirmIdentity()
+          case IVResult.FailedIV => controllers.routes.IdentityVerificationController.failedIV()
+          case IVResult.LockedOut => controllers.routes.IdentityVerificationController.lockedOut()
+          case IVResult.UserAborted => controllers.routes.IdentityVerificationController.userAborted()
+        } recover {
+          case e =>
+            Logger.error(s"[IdentityVerificationController][failedIVJourney] an error occurred with message: ${e.getMessage}")
+            controllers.callbacks.routes.SignInOutController.errorShow()
+        } map Redirect
   }
 }

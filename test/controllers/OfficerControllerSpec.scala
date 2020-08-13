@@ -18,19 +18,15 @@ package controllers
 
 import java.time.LocalDate
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import models.api.ScrsAddress
 import models.external.Name
 import models.view._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.{AddressLookupService, LodgingOfficerService, PrePopService}
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -43,14 +39,13 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   val applicant = Name(forename = Some("First Name"), otherForenames = None, surname = "Last Name")
 
   trait Setup {
-    val controller: OfficerController = new OfficerController {
-      override val lodgingOfficerService: LodgingOfficerService = mockLodgingOfficerService
-      override val prePopService: PrePopService = mockPPService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val messagesApi: MessagesApi = mockMessagesAPI
-      override val authConnector: AuthConnector = mockAuthClientConnector
-      override val addressLookupService: AddressLookupService = mockAddressService
-    }
+    val controller: OfficerController = new OfficerController(
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockLodgingOfficerService,
+      mockPrePopulationService,
+      mockAddressLookupService
+    )
 
     mockAllMessages
     mockAuthenticated()
@@ -310,7 +305,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "redirect the user to ALF" in new Setup {
-      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       submitAuthorised(controller.submitHomeAddress(),
@@ -322,7 +317,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${controllers.routes.OfficerController.acceptFromTxmHomeAddress()}" should {
     "save an address and redirect to next page" in new Setup {
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
-      when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
+      when(mockAddressLookupService.getAddressById(any())(any())).thenReturn(Future.successful(address))
 
       callAuthorised(controller.acceptFromTxmHomeAddress("addressId")) {
         _ redirectsTo s"${controllers.routes.OfficerController.showPreviousAddress().url}"
@@ -373,7 +368,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
     }
 
     "redirect the user to TxM address capture page with No selected" in new Setup {
-      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
 
       submitAuthorised(controller.submitPreviousAddress(),
         fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
@@ -384,7 +379,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${controllers.routes.OfficerController.acceptFromTxmPreviousAddress()}" should {
     "save an address and redirect to next page" in new Setup {
       when(mockLodgingOfficerService.saveLodgingOfficer(any())(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
-      when(mockAddressService.getAddressById(any())(any())).thenReturn(Future.successful(address))
+      when(mockAddressLookupService.getAddressById(any())(any())).thenReturn(Future.successful(address))
 
       callAuthorised(controller.acceptFromTxmPreviousAddress("addressId")) {
         _ redirectsTo s"${controllers.routes.BusinessContactDetailsController.showPPOB().url}"
@@ -395,7 +390,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
   s"GET ${controllers.routes.OfficerController.changePreviousAddress()}" should {
 
     "save an address and redirect to next page" in new Setup {
-      when(mockAddressService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any())).thenReturn(Future.successful(Call("GET", "TxM")))
 
       callAuthorised(controller.changePreviousAddress()) {
         _ redirectsTo "TxM"

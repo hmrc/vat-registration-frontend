@@ -20,7 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDate.{of => d}
 import java.util.concurrent.TimeoutException
 
-import connectors.BankHolidaysConnector
+import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
 import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Inspectors
@@ -40,7 +40,8 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
   private case class Test(date: LocalDate, daysToAdd: Int, expected: LocalDate)
 
   private class Setup {
-    val mockConnector = mock[BankHolidaysConnector]
+    val mockConnector = mock[WSBankHolidaysConnector]
+    val mockFallbackConnector = mock[FallbackBankHolidaysConnector]
     val mockCache = mock[CacheApi]
   }
 
@@ -66,12 +67,12 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
         new Setup {
           (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
             .expects("bankHolidaySet", 1 day, *, *).returns(fixedHolidaySet)
-          (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+          (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
             .expects("england-and-wales", *)
             .returns(Future.successful(fixedHolidaySet)).once()
 
           //must setup mocks prior to calling new constructor, as one mock is called during construction
-          val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
+          val service = new DateService(mockConnector, mockCache, mockFallbackConnector)
           service.addWorkingDays(test.date, test.daysToAdd) shouldBe test.expected
         }
       }
@@ -87,12 +88,12 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
         product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
       })
 
-      (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+      (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
         .expects("england-and-wales", *)
         .returns(Future.successful(fixedHolidaySet)).noMoreThanTwice()
 
       //must setup mocks prior to calling new constructor, as one mock is called during construction
-      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
+      val service = new DateService(mockConnector, mockCache, mockFallbackConnector)
 
       val date = d(2017, 3, 23)
       service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)
@@ -109,7 +110,7 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
           which will cause the default holiday schedule to be used temporarily
        */
       inSequence {
-        (mockConnector.bankHolidays(_: String)(_: HeaderCarrier))
+        (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
           .expects("england-and-wales", *)
           .returns(Future.successful(fixedHolidaySet))
 
@@ -124,7 +125,7 @@ class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
       }
 
       //must setup mocks prior to calling new constructor, as one mock is called during construction
-      val service = new DateServiceImpl(mockConnector, mockCache, mockConnector)
+      val service = new DateService(mockConnector, mockCache, mockFallbackConnector)
 
       val date = d(2017, 3, 23)
       service.addWorkingDays(date, 1) shouldBe d(2017, 3, 28)

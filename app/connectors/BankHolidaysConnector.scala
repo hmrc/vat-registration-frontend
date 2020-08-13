@@ -17,9 +17,9 @@
 package connectors
 
 import java.io.InputStream
-import javax.inject.Inject
 
 import config.WSHttp
+import javax.inject.{Inject, Singleton}
 import play.api.Environment
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,8 +29,13 @@ import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import scala.concurrent.Future
 
-class WSBankHolidaysConnector @Inject()(http: WSHttp, config: ServicesConfig) extends BankHolidaysConnector {
-  val url = config.getConfString("bank-holidays.url", "")
+@Singleton
+class WSBankHolidaysConnector @Inject()(http: WSHttp, config: ServicesConfig) {
+
+  protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
+  protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
+
+  lazy val url: String = config.getConfString("bank-holidays.url", "")
 
   def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
     http.GET[Map[String, BankHolidaySet]](url) map {
@@ -39,19 +44,17 @@ class WSBankHolidaysConnector @Inject()(http: WSHttp, config: ServicesConfig) ex
   }
 }
 
-class FallbackBankHolidaysConnector @Inject()(environment: Environment) extends BankHolidaysConnector {
-  override def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
+@Singleton
+class FallbackBankHolidaysConnector @Inject()(environment: Environment) {
+
+  protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
+  protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
+
+  def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
     logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")
     val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
     //if below .get fails, app startup fails. This is as expected. bank-holidays.json file must be on classpath
     val parsed = Json.parse(resourceAsStream).asOpt[Map[String, BankHolidaySet]].get
     Future.successful(parsed(division))
   }
-}
-
-trait BankHolidaysConnector {
-  protected implicit val bankHolidayReads: Reads[BankHoliday]       = Json.reads[BankHoliday]
-  protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
-
-  def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet]
 }

@@ -19,10 +19,13 @@ package connectors.test
 import models.IVResult
 import testHelpers.VatRegSpec
 
-class BusinessRegDynamicStubControllerSpec extends VatRegSpec {
+class BusinessRegDynamicStubConnectorSpec extends VatRegSpec {
+
   class Setup {
-    val testConnector = new BusinessRegDynamicStubConnector {
-      override val http            = mockWSHttp
+    val testConnector: BusinessRegDynamicStubConnector = new BusinessRegDynamicStubConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
       override val brdsUrl: String = "tst-url"
       override val brdsUri: String = "test-url"
     }

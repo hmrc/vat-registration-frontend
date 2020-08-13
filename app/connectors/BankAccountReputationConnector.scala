@@ -17,22 +17,19 @@
 package connectors
 
 import config.WSHttp
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.BankAccountDetails
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class BankAccountReputationConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) extends BankAccountReputationConnector{
-  val bankAccountReputationUrl: String = config.baseUrl("bank-account-reputation")
-}
+@Singleton
+class BankAccountReputationConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
 
-trait BankAccountReputationConnector {
-  val bankAccountReputationUrl: String
-  val http: CorePost
+  val bankAccountReputationUrl: String = config.baseUrl("bank-account-reputation")
 
   def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.POST[BankAccountDetails, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {

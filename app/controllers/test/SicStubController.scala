@@ -16,68 +16,65 @@
 
 package controllers.test
 
-import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import forms.test.SicStubForm
-import models.test.SicStub
-import views.html.test._
+import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
+import models.test.SicStub
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile, SicAndComplianceService}
+import views.html.test._
 
 import scala.concurrent.Future
 
-class SicStubControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                      val configConnect: ConfigConnector,
-                                      val keystoreConnector: KeystoreConnector,
-                                      val s4LService: S4LService,
-                                      val sicAndCompService: SicAndComplianceService,
-                                      val authConnector: AuthClientConnector) extends SicStubController
-
-trait SicStubController extends BaseController with SessionProfile {
-  val configConnect: ConfigConnector
-  val keystoreConnector: KeystoreConnector
-  val s4LService: S4LService
-  val sicAndCompService: SicAndComplianceService
+@Singleton
+class SicStubController @Inject()(val messagesApi: MessagesApi,
+                                  val configConnect: ConfigConnector,
+                                  val keystoreConnector: KeystoreConnector,
+                                  val s4LService: S4LService,
+                                  val sicAndCompService: SicAndComplianceService,
+                                  val authConnector: AuthClientConnector) extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        sicCodes  <- s4LService.fetchAndGet[SicStub]
-        sicStub   =  SicStub(
-          sicCodes.map(_.sicCode1.getOrElse("")),
-          sicCodes.map(_.sicCode2.getOrElse("")),
-          sicCodes.map(_.sicCode3.getOrElse("")),
-          sicCodes.map(_.sicCode4.getOrElse(""))
-        )
-        form       =  SicStubForm.form.fill(sicStub)
-      } yield Ok(sic_stub(form))
+    implicit request =>
+      implicit profile =>
+        for {
+          sicCodes <- s4LService.fetchAndGet[SicStub]
+          sicStub = SicStub(
+            sicCodes.map(_.sicCode1.getOrElse("")),
+            sicCodes.map(_.sicCode2.getOrElse("")),
+            sicCodes.map(_.sicCode3.getOrElse("")),
+            sicCodes.map(_.sicCode4.getOrElse(""))
+          )
+          form = SicStubForm.form.fill(sicStub)
+        } yield Ok(sic_stub(form))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      SicStubForm.form.bindFromRequest().fold(
-        badForm => Future.successful(BadRequest(sic_stub(badForm))),
-        data    => for {
-          _ <- s4LService.save[SicStub](data)
-          sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails).map ( s => s.copy(code = s.code.substring(0, 5)))
+    implicit request =>
+      implicit profile =>
+        SicStubForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(sic_stub(badForm))),
+          data => for {
+            _ <- s4LService.save[SicStub](data)
+            sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
 
-          _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
-          _ <- sicAndCompService.submitSicCodes(sicCodesList)
-        } yield {
-          if (sicCodesList.size == 1) {
-            if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-              Redirect(controllers.routes.SicAndComplianceController.showComplianceIntro())
+            _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
+            _ <- sicAndCompService.submitSicCodes(sicCodesList)
+          } yield {
+            if (sicCodesList.size == 1) {
+              if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
+                Redirect(controllers.routes.SicAndComplianceController.showComplianceIntro())
+              } else {
+                Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+              }
             } else {
-              Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+              Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
             }
-          } else {
-            Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
           }
-        }
-      )
+        )
   }
 }

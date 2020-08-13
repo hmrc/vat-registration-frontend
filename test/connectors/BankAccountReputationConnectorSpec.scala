@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.WSHttp
 import models.BankAccountDetails
 import org.mockito.Mockito._
 import org.mockito._
@@ -31,9 +30,11 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
 
   class Setup {
 
-    val connector = new BankAccountReputationConnector {
+    val connector: BankAccountReputationConnector = new BankAccountReputationConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
       override val bankAccountReputationUrl: String = "test-url"
-      override val http: WSHttp = mockWSHttp
     }
   }
 
@@ -41,16 +42,16 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
 
     val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
 
-    "return a valid JSON value" in new Setup{
+    "return a valid JSON value" in new Setup {
       mockHttpPOST[BankAccountDetails, JsValue](connector.bankAccountReputationUrl, validBankCheckJsonResponse)
 
       connector.bankAccountDetailsModulusCheck(bankDetails) returns validBankCheckJsonResponse
     }
 
-    "throw an exception" in new Setup{
+    "throw an exception" in new Setup {
       when(mockWSHttp.POST[BankAccountDetails, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-        (ArgumentMatchers.any(),ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString,500,500)))
+        (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, 500, 500)))
 
       connector.bankAccountDetailsModulusCheck(bankDetails) failedWith classOf[Upstream5xxResponse]
     }

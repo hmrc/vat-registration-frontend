@@ -16,29 +16,25 @@
 
 package controllers
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import mocks.SicAndComplianceServiceMock
 import models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
 import play.api.http.Status
-import play.api.i18n.MessagesApi
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.SicAndComplianceService
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
 class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-                                     with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
+  with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
 
   trait Setup {
-    val controller: LabourComplianceController = new LabourComplianceController {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
-      val authConnector: AuthConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-    }
+    val controller: LabourComplianceController = new LabourComplianceController(
+      mockMessagesAPI,
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockSicAndComplianceService
+    )
 
     mockAllMessages
     mockAuthenticated()

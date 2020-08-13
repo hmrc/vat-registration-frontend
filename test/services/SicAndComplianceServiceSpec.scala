@@ -17,7 +17,6 @@
 package services
 
 import common.enums.VatRegStatus
-import connectors.RegistrationConnector
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models._
@@ -32,15 +31,15 @@ import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.Future
 
 class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMocks with VatRegistrationFixture {
-  implicit val hc = HeaderCarrier()
-  implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   trait Setup {
-    val service: SicAndComplianceService = new SicAndComplianceService {
-      override val registrationConnector: RegistrationConnector = mockRegConnector
-      override val s4lService: S4LService = mockS4LService
-      override val vrs: VatRegistrationService = mockVatRegistrationService
-    }
+    val service: SicAndComplianceService = new SicAndComplianceService(
+      mockS4LService,
+      mockVatRegistrationService,
+      mockVatRegistrationConnector
+    )
   }
 
   "getSicAndCompliance" should {
@@ -62,7 +61,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     "return an empty Sic And Compiance view model" when {
 
       "there is no data in S4L or vat reg" in new Setup {
-        when(mockRegConnector.getSicAndCompliance(any(), any())).thenReturn(Future.successful(None))
+        when(mockVatRegistrationConnector.getSicAndCompliance(any(), any())).thenReturn(Future.successful(None))
         when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
           .thenReturn(Future.successful(None))
         when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
@@ -123,7 +122,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
@@ -142,7 +141,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
@@ -159,7 +158,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
@@ -178,7 +177,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
@@ -199,7 +198,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
@@ -224,7 +223,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(sicCodeList)) shouldBe expected
@@ -247,7 +246,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(List(newSicCode))) shouldBe expected
@@ -273,7 +272,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(List(newSicCode))) shouldBe expected
@@ -292,7 +291,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(sicCodeList)) shouldBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))

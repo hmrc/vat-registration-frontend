@@ -18,7 +18,6 @@ package connectors
 
 import java.time.LocalDate
 
-import config.WSHttp
 import fixtures.VatRegistrationFixture
 import models.{FlatRateScheme, Start}
 import play.api.libs.json.{JsObject, Json}
@@ -30,10 +29,12 @@ import scala.language.postfixOps
 class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new RegistrationConnector {
-      override val vatRegUrl: String = "tst-url"
-      override val vatRegElUrl: String = "test-url"
-      override val http: WSHttp = mockWSHttp
+    val connector: VatRegistrationConnector = new VatRegistrationConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
+      override lazy val vatRegUrl: String = "tst-url"
+      override lazy val vatRegElUrl: String = "test-url"
     }
   }
 
@@ -73,14 +74,14 @@ class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture
   "Calling getFlatRate" should {
     "return the correct VatResponse when the microservice completes and returns a FlatRateScheme model" in new Setup {
       val json: JsObject = Json.obj(
-        "joinFrs"                   -> true,
-        "frsDetails"                -> Json.obj(
-          "businessGoods"           -> Json.obj(
-              "estimatedTotalSales" -> 12345678L,
-              "overTurnover"        -> true),
-          "startDate"               -> start.date,
-          "categoryOfBusiness"      -> "testCategory",
-          "percent"                 -> 15
+        "joinFrs" -> true,
+        "frsDetails" -> Json.obj(
+          "businessGoods" -> Json.obj(
+            "estimatedTotalSales" -> 12345678L,
+            "overTurnover" -> true),
+          "startDate" -> start.date,
+          "categoryOfBusiness" -> "testCategory",
+          "percent" -> 15
         )
       )
       val resp = HttpResponse(200, Some(json))

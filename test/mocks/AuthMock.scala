@@ -16,19 +16,20 @@
 
 package mocks
 
+import config.AuthClientConnector
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mockito.MockitoSugar
 import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
-import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector, InsufficientConfidenceLevel, InvalidBearerToken}
+import uk.gov.hmrc.auth.core.{AffinityGroup, InsufficientConfidenceLevel, InvalidBearerToken}
 
 import scala.concurrent.Future
 
 trait AuthMock {
   this: MockitoSugar =>
 
-  lazy val mockAuthClientConnector = mock[AuthConnector]
+  lazy val mockAuthClientConnector: AuthClientConnector = mock[AuthClientConnector]
 
   def mockAuthenticated(): OngoingStubbing[Future[Unit]] = {
     when(

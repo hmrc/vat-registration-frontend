@@ -17,17 +17,17 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import play.api.i18n.MessagesApi
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 
 class ErrorControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   trait Setup {
-    val testErrorController = new ErrorController {
-      override val keystoreConnector = mockKeystoreConnector
-      val authConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val rejectedUrl = "rejection-url"
+    val testErrorController: ErrorController = new ErrorController(
+      mockServicesConfig,
+      mockAuthClientConnector,
+      mockKeystoreConnector
+    ) {
+      override lazy val rejectedUrl = "rejection-url"
     }
     mockAllMessages
     mockAuthenticated()

@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
-  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp, mockConfig)
+  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp, mockServicesConfig)
 
   "bankHolidays" must {
 

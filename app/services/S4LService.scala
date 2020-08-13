@@ -16,9 +16,8 @@
 
 package services
 
-import javax.inject.Inject
-
 import connectors._
+import javax.inject.{Inject, Singleton}
 import models.{CurrentProfile, S4LKey}
 import play.api.libs.json._
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -26,10 +25,8 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class S4LServiceImpl @Inject()(val s4LConnector: S4LConnector) extends S4LService
-
-trait S4LService {
-  val s4LConnector: S4LConnector
+@Singleton
+class S4LService @Inject()(val s4LConnector: S4LConnector) {
 
   def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)

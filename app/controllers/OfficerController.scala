@@ -20,195 +20,206 @@ import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, hom
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import deprecated.DeprecatedConstants
-import models.view.{HomeAddressView, PreviousAddressView}
 import forms._
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
+import models.view.{HomeAddressView, PreviousAddressView}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, LodgingOfficerService, PrePopService, SessionProfile}
+import services.{AddressLookupService, LodgingOfficerService, PrePopulationService, SessionProfile}
 
 import scala.concurrent.Future
 
-class OfficerControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                      val authConnector: AuthClientConnector,
-                                      val keystoreConnector: KeystoreConnector,
-                                      val lodgingOfficerService: LodgingOfficerService,
-                                      val prePopService: PrePopService,
-                                      val addressLookupService: AddressLookupService) extends OfficerController
-
-trait OfficerController extends BaseController with SessionProfile {
-  val prePopService: PrePopService
-  val lodgingOfficerService: LodgingOfficerService
-  val addressLookupService: AddressLookupService
-  implicit val messagesApi: MessagesApi
+@Singleton
+class OfficerController @Inject()(val authConnector: AuthClientConnector,
+                                  val keystoreConnector: KeystoreConnector,
+                                  val lodgingOfficerService: LodgingOfficerService,
+                                  val prePopService: PrePopulationService,
+                                  val addressLookupService: AddressLookupService
+                                 )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
 
   def showSecurityQuestions: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        officer    <- lodgingOfficerService.getLodgingOfficer
-        filledForm = officer.securityQuestions.fold(SecurityQuestionsForm.form)(SecurityQuestionsForm.form.fill)
-      } yield Ok(views.html.officer_security_questions(filledForm))
+    implicit request =>
+      implicit profile =>
+        for {
+          officer <- lodgingOfficerService.getLodgingOfficer
+          filledForm = officer.securityQuestions.fold(SecurityQuestionsForm.form)(SecurityQuestionsForm.form.fill)
+        } yield Ok(views.html.officer_security_questions(filledForm))
   }
 
   def submitSecurityQuestions: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      SecurityQuestionsForm.form.bindFromRequest().fold(
-        badForm => Future.successful(BadRequest(views.html.officer_security_questions(badForm))),
-        data => lodgingOfficerService.saveLodgingOfficer(data) map {
-          _ => Redirect(controllers.routes.IdentityVerificationController.redirectToIV())
-        }
-      )
+    implicit request =>
+      implicit profile =>
+        SecurityQuestionsForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(views.html.officer_security_questions(badForm))),
+          data => lodgingOfficerService.saveLodgingOfficer(data) map {
+            _ => Redirect(controllers.routes.IdentityVerificationController.redirectToIV())
+          }
+        )
   }
 
   def showFormerName: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          officer    <- lodgingOfficerService.getLodgingOfficer
-          applicant  <- lodgingOfficerService.getApplicantName
-          ccId       = applicant.id
-          filledForm = officer.formerName.fold(FormerNameForm.form(ccId))(FormerNameForm.form(ccId).fill)
-        } yield Ok(views.html.former_name(filledForm))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            officer <- lodgingOfficerService.getLodgingOfficer
+            applicant <- lodgingOfficerService.getApplicantName
+            ccId = applicant.id
+            filledForm = officer.formerName.fold(FormerNameForm.form(ccId))(FormerNameForm.form(ccId).fill)
+          } yield Ok(views.html.former_name(filledForm))
+        }
   }
 
   def submitFormerName: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        lodgingOfficerService.getApplicantName flatMap { applicant =>
-          FormerNameForm.form(applicant.id).bindFromRequest().fold(
-            badForm => Future.successful(BadRequest(views.html.former_name(badForm))),
-            data => lodgingOfficerService.saveLodgingOfficer(data) map { _ =>
-              if (data.yesNo) Redirect(controllers.routes.OfficerController.showFormerNameDate()) else Redirect(controllers.routes.OfficerController.showContactDetails())
-            }
-          )
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          lodgingOfficerService.getApplicantName flatMap { applicant =>
+            FormerNameForm.form(applicant.id).bindFromRequest().fold(
+              badForm => Future.successful(BadRequest(views.html.former_name(badForm))),
+              data => lodgingOfficerService.saveLodgingOfficer(data) map { _ =>
+                if (data.yesNo) Redirect(controllers.routes.OfficerController.showFormerNameDate()) else Redirect(controllers.routes.OfficerController.showContactDetails())
+              }
+            )
+          }
         }
-      }
   }
 
   def showFormerNameDate: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          officer <- lodgingOfficerService.getLodgingOfficer
-          formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
-          dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
-          filledForm = officer.formerNameDate.fold(FormerNameDateForm.form(dateOfBirth))(FormerNameDateForm.form(dateOfBirth).fill)
-        } yield Ok(views.html.former_name_date(filledForm, formerName))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            officer <- lodgingOfficerService.getLodgingOfficer
+            formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
+            dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
+            filledForm = officer.formerNameDate.fold(FormerNameDateForm.form(dateOfBirth))(FormerNameDateForm.form(dateOfBirth).fill)
+          } yield Ok(views.html.former_name_date(filledForm, formerName))
+        }
   }
 
   def submitFormerNameDate: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        lodgingOfficerService.getLodgingOfficer flatMap { officer =>
-          val dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
-          FormerNameDateForm.form(dateOfBirth).bindFromRequest().fold(
-            badForm => for {
-              officer <- lodgingOfficerService.getLodgingOfficer
-              formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
-            } yield BadRequest(views.html.former_name_date(badForm, formerName)),
-            data => lodgingOfficerService.saveLodgingOfficer(data) map {
-              _ => Redirect(controllers.routes.OfficerController.showContactDetails())
-            }
-          )
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          lodgingOfficerService.getLodgingOfficer flatMap { officer =>
+            val dateOfBirth = officer.securityQuestions.map(_.dob).getOrElse(throw new IllegalStateException("Missing Officer date of birth"))
+            FormerNameDateForm.form(dateOfBirth).bindFromRequest().fold(
+              badForm => for {
+                officer <- lodgingOfficerService.getLodgingOfficer
+                formerName = officer.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing officer former name"))
+              } yield BadRequest(views.html.former_name_date(badForm, formerName)),
+              data => lodgingOfficerService.saveLodgingOfficer(data) map {
+                _ => Redirect(controllers.routes.OfficerController.showContactDetails())
+              }
+            )
+          }
         }
-      }
   }
 
   def showContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          officer    <- lodgingOfficerService.getLodgingOfficer
-          filledForm = officer.contactDetails.fold(ContactDetailsForm.form)(ContactDetailsForm.form.fill)
-        } yield Ok(views.html.officer_contact_details(filledForm))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            officer <- lodgingOfficerService.getLodgingOfficer
+            filledForm = officer.contactDetails.fold(ContactDetailsForm.form)(ContactDetailsForm.form.fill)
+          } yield Ok(views.html.officer_contact_details(filledForm))
+        }
   }
 
   def submitContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ContactDetailsForm.form.bindFromRequest().fold(
-        badForm => Future.successful(BadRequest(views.html.officer_contact_details(badForm))),
-        data => lodgingOfficerService.saveLodgingOfficer(data) map {
-          _ => Redirect(controllers.routes.OfficerController.showHomeAddress())
-        }
-      )
+    implicit request =>
+      implicit profile =>
+        ContactDetailsForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(views.html.officer_contact_details(badForm))),
+          data => lodgingOfficerService.saveLodgingOfficer(data) map {
+            _ => Redirect(controllers.routes.OfficerController.showHomeAddress())
+          }
+        )
   }
 
   def showHomeAddress: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          officer    <- lodgingOfficerService.getLodgingOfficer
-          filledForm = officer.homeAddress.fold(HomeAddressForm.form)(HomeAddressForm.form.fill)
-        } yield Ok(views.html.officer_home_address(filledForm, DeprecatedConstants.emptyAddressList))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            officer <- lodgingOfficerService.getLodgingOfficer
+            filledForm = officer.homeAddress.fold(HomeAddressForm.form)(HomeAddressForm.form.fill)
+          } yield Ok(views.html.officer_home_address(filledForm, DeprecatedConstants.emptyAddressList))
+        }
   }
 
 
   def submitHomeAddress: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      lodgingOfficerService.getLodgingOfficer.flatMap {
-        officer => HomeAddressForm.form.bindFromRequest.fold(
-          badForm =>
-            Future.successful(BadRequest(views.html.officer_home_address(badForm, DeprecatedConstants.emptyAddressList)))
-          ,
-          data    =>
-            //Routes only to capturing "other" address as there will never be a previously captured address
-            addressLookupService.getJourneyUrl(homeAddress, controllers.routes.OfficerController.acceptFromTxmHomeAddress()) map Redirect
-        )
-      }
+    implicit request =>
+      implicit profile =>
+        lodgingOfficerService.getLodgingOfficer.flatMap {
+          officer =>
+            HomeAddressForm.form.bindFromRequest.fold(
+              badForm =>
+                Future.successful(BadRequest(views.html.officer_home_address(badForm, DeprecatedConstants.emptyAddressList)))
+              ,
+              data =>
+                //Routes only to capturing "other" address as there will never be a previously captured address
+                addressLookupService.getJourneyUrl(homeAddress, controllers.routes.OfficerController.acceptFromTxmHomeAddress()) map Redirect
+            )
+        }
   }
 
   def acceptFromTxmHomeAddress(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        address <- addressLookupService.getAddressById(id)
-        _ <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(address.id, Some(address.normalise())))
-      } yield Redirect(controllers.routes.OfficerController.showPreviousAddress())
+    implicit request =>
+      implicit profile =>
+        for {
+          address <- addressLookupService.getAddressById(id)
+          _ <- lodgingOfficerService.saveLodgingOfficer(HomeAddressView(address.id, Some(address.normalise())))
+        } yield Redirect(controllers.routes.OfficerController.showPreviousAddress())
   }
 
   def showPreviousAddress: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          officer    <- lodgingOfficerService.getLodgingOfficer
-          filledForm = officer.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
-        } yield Ok(views.html.previous_address(filledForm))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            officer <- lodgingOfficerService.getLodgingOfficer
+            filledForm = officer.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
+          } yield Ok(views.html.previous_address(filledForm))
+        }
   }
 
   def submitPreviousAddress: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        PreviousAddressForm.form.bindFromRequest.fold(
-          badForm => Future.successful(BadRequest(views.html.previous_address(badForm))),
-          data    => if (!data.yesNo) {
-            addressLookupService.getJourneyUrl(addressThreeYearsOrLess, controllers.routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
-          } else {
-            lodgingOfficerService.saveLodgingOfficer(data) map {
-             _ => Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          PreviousAddressForm.form.bindFromRequest.fold(
+            badForm => Future.successful(BadRequest(views.html.previous_address(badForm))),
+            data => if (!data.yesNo) {
+              addressLookupService.getJourneyUrl(addressThreeYearsOrLess, controllers.routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
+            } else {
+              lodgingOfficerService.saveLodgingOfficer(data) map {
+                _ => Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
+              }
             }
-          }
-        )
-      }
+          )
+        }
   }
 
   def acceptFromTxmPreviousAddress(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          address <- addressLookupService.getAddressById(id)
-          _       <- lodgingOfficerService.saveLodgingOfficer(PreviousAddressView(false, Some(address)))
-        } yield Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            address <- addressLookupService.getAddressById(id)
+            _ <- lodgingOfficerService.saveLodgingOfficer(PreviousAddressView(yesNo = false, Some(address)))
+          } yield Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
+        }
   }
 
   def changePreviousAddress: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        addressLookupService.getJourneyUrl(addressThreeYearsOrLess, controllers.routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          addressLookupService.getJourneyUrl(addressThreeYearsOrLess, controllers.routes.OfficerController.acceptFromTxmPreviousAddress()) map Redirect
+        }
   }
 }

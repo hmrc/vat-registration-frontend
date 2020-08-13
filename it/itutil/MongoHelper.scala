@@ -16,17 +16,10 @@
 
 package itutil
 
-import models.CurrentProfile
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.json.{JsValue, Json}
-import repositories.{ReactiveMongoRepository, SessionRepository}
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.mongo.MongoSpecSupport
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
-
 trait MongoHelper extends MongoSpecSupport {
-  me : GuiceOneServerPerSuite =>
-  
+  me: GuiceOneServerPerSuite =>
+
 }

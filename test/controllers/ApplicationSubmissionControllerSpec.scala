@@ -21,7 +21,6 @@ import models.Returns
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 
@@ -29,14 +28,14 @@ import scala.concurrent.Future
 
 class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
-  val testController = new ApplicationSubmissionController {
-    override val vatRegService = mockVatRegistrationService
-    override val returnsService = mockReturnsService
-    override val keystoreConnector = mockKeystoreConnector
-
-    val authConnector = mockAuthClientConnector
-    val messagesApi: MessagesApi = mockMessagesAPI
-  }
+  val testController = new ApplicationSubmissionController(
+    mockVatRegistrationService,
+    mockReturnsService,
+    mockAuthClientConnector,
+    mockKeystoreConnector,
+    mockMessagesAPI,
+    mockServicesConfig
+  )
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 

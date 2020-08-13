@@ -16,13 +16,11 @@
 
 package services
 
-import java.time.LocalDate.now
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import javax.inject.{Inject, Named}
 
 import common.DateConversions._
-import connectors.BankHolidaysConnector
+import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
+import javax.inject.{Inject, Named, Singleton}
 import play.api.cache.CacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays._
@@ -32,14 +30,10 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.Try
 
-class DateServiceImpl @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
-                                val cache: CacheApi,
-                                @Named("fallback") val fallbackBHConnector: BankHolidaysConnector) extends DateService
-
-trait DateService {
-  val cache: CacheApi
-  val fallbackBHConnector: BankHolidaysConnector
-  val bankHolidaysConnector: BankHolidaysConnector
+@Singleton
+class DateService @Inject()(val bankHolidaysConnector: WSBankHolidaysConnector,
+                            val cache: CacheApi,
+                            val fallbackBHConnector: FallbackBankHolidaysConnector) {
 
   private val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 

@@ -37,13 +37,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   val dateAfter2pmBH = LocalDateTime.parse("2018-03-28T14:00:00")
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile), currDate: LocalDateTime = dateBefore2pm, minDaysInFuture: Int = 3) {
-    val testController = new ReturnsController {
-      val timeService = mockTimeService
-      val returnsService = mockReturnsService
-      val keystoreConnector = mockKeystoreConnector
-      val authConnector = mockAuthClientConnector
-      val messagesApi = mockMessagesAPI
-    }
+    val testController = new ReturnsController(
+      mockKeystoreConnector,
+      mockAuthClientConnector,
+      mockReturnsService,
+      mockMessagesAPI,
+      mockTimeService
+    )
 
     mockAllMessages
     mockAuthenticated()
