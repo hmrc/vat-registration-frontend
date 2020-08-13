@@ -62,7 +62,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
   )
 
   class Setup {
-    val repository = new ReactiveMongoRepository(app.configuration, mongo)
+    val repository = app.injector.instanceOf[SessionRepository]
 
     val connector = app.injector.instanceOf[KeystoreConnector]
     await(repository.drop)

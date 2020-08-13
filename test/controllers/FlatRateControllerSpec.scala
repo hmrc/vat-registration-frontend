@@ -19,21 +19,16 @@ package controllers
 import java.time.LocalDate
 import java.util.MissingResourceException
 
-import connectors.{ConfigConnector, KeystoreConnector}
-import models.MainBusinessActivityView
 import fixtures.VatRegistrationFixture
-import models.{FlatRateScheme, TurnoverEstimates, _}
+import models.{FlatRateScheme, MainBusinessActivityView, TurnoverEstimates, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.{FlatRateService, SicAndComplianceService, TimeService, VatRegistrationService}
 import testHelpers.{ControllerSpec, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
@@ -59,16 +54,16 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         """.stripMargin).as[Seq[JsObject]]
 
   trait Setup {
-    val controller: FlatRateController = new FlatRateController {
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val flatRateService: FlatRateService = mockFlatRateService
-      override val vatRegistrationService: VatRegistrationService = mockVatRegistrationService
-      override val configConnector: ConfigConnector = mockConfigConnector
-      override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
-      val authConnector: AuthConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val timeService: TimeService = mockTimeService
-    }
+    val controller: FlatRateController = new FlatRateController(
+      mockMessagesAPI,
+      mockFlatRateService,
+      mockVatRegistrationService,
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockConfigConnector,
+      mockTimeService,
+      mockSicAndComplianceService
+    )
 
     mockAllMessages
     mockAuthenticated()
@@ -107,7 +102,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), emptyRequest){ result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts(), emptyRequest) { result =>
         status(result) mustBe 400
       }
     }
@@ -122,7 +117,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "annualCostsInclusiveRadio" -> "true"
       )
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.estimateTotalSales().url)
       }
@@ -137,7 +132,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "annualCostsInclusiveRadio" -> "false"
       )
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), request){ result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage().url)
       }
@@ -182,12 +177,12 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
+      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
         status(result) mustBe 400
       }
     }
 
-    "redirect to confirm business sector when user selects Yes" in new Setup{
+    "redirect to confirm business sector when user selects Yes" in new Setup {
 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
@@ -199,7 +194,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "annualCostsLimitedRadio" -> "true"
       )
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
+      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.confirmSectorFrsPage().url)
       }
@@ -217,7 +212,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "annualCostsLimitedRadio" -> "false"
       )
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request){ result =>
+      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage().url)
       }
@@ -230,7 +225,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
-      callAuthorised(controller.confirmSectorFrsPage()){ result =>
+      callAuthorised(controller.confirmSectorFrsPage()) { result =>
         status(result) mustBe 200
       }
     }
@@ -239,7 +234,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.failed(new MissingResourceException(s"Missing Business Type for id: testId", "ConfigConnector", "id")))
 
-      callAuthorised(controller.confirmSectorFrsPage()){ result =>
+      callAuthorised(controller.confirmSectorFrsPage()) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.businessType(true).url)
       }
@@ -259,7 +254,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitConfirmSectorFrs, request){ result =>
+      submitAuthorised(controller.submitConfirmSectorFrs, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/confirm-flat-rate")
       }
@@ -270,10 +265,10 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return HTML when there's a frs start date in S4L" in new Setup {
       when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
-        .thenReturn(Future.successful( (Some(FRSDateChoice.VATDate), None) ))
+        .thenReturn(Future.successful((Some(FRSDateChoice.VATDate), None)))
 
-      when(mockFlatRateService.fetchVatStartDate(any(),any()))
-          .thenReturn(Future.successful(None))
+      when(mockFlatRateService.fetchVatStartDate(any(), any()))
+        .thenReturn(Future.successful(None))
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
@@ -283,9 +278,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
       when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
-        .thenReturn(Future.successful( (None, None) ))
+        .thenReturn(Future.successful((None, None)))
 
-      when(mockFlatRateService.fetchVatStartDate(any(),any()))
+      when(mockFlatRateService.fetchVatStartDate(any(), any()))
         .thenReturn(Future.successful(None))
 
       callAuthorised(controller.frsStartDatePage) { result =>
@@ -446,7 +441,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      submitAuthorised(controller.submitJoinFRS(), fakeRequest.withFormUrlEncodedBody(("","")))(result =>
+      submitAuthorised(controller.submitJoinFRS(), fakeRequest.withFormUrlEncodedBody(("", "")))(result =>
         status(result) mustBe 400
       )
     }
@@ -480,7 +475,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "joinFrsRadio" -> "false"
       )
 
-      submitAuthorised(controller.submitJoinFRS(), request){ result =>
+      submitAuthorised(controller.submitJoinFRS(), request) { result =>
         redirectLocation(result) mustBe Some(s"$contextRoot/check-confirm-answers")
       }
     }
@@ -524,7 +519,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "registerForFrsRadio" -> "true"
       )
 
-      submitAuthorised(controller.submitRegisterForFrs(), request){ result =>
+      submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.frsStartDatePage().url)
       }
@@ -558,7 +553,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
-      callAuthorised(controller.yourFlatRatePage()){ result =>
+      callAuthorised(controller.yourFlatRatePage()) { result =>
         status(result) mustBe 200
         contentAsString(result) must include(MOCKED_MESSAGE)
       }
@@ -574,7 +569,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitYourFlatRate(), request){ result =>
+      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -591,7 +586,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "registerForFrsWithSectorRadio" -> "true"
       )
 
-      submitAuthorised(controller.submitYourFlatRate(), request){ result =>
+      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.frsStartDatePage().url)
       }
@@ -609,7 +604,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "registerForFrsWithSectorRadio" -> "false"
       )
 
-      submitAuthorised(controller.submitYourFlatRate(), request){ result =>
+      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
       }
@@ -632,7 +627,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      callAuthorised(controller.estimateTotalSales()){ result =>
+      callAuthorised(controller.estimateTotalSales()) { result =>
         status(result) mustBe 200
         contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
@@ -644,7 +639,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(30000L))))
 
-      callAuthorised(controller.estimateTotalSales()){ result =>
+      callAuthorised(controller.estimateTotalSales()) { result =>
         status(result) mustBe 200
         contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
@@ -659,7 +654,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return 400 with Empty data" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -669,7 +664,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "totalSalesEstimate" -> "0"
       )
 
-      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -679,7 +674,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "totalSalesEstimate" -> "100000000000"
       )
 
-      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -689,7 +684,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "totalSalesEstimate" -> "30000.36"
       )
 
-      submitAuthorised(controller.submitEstimateTotalSales(), request){ result =>
+      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -737,12 +732,12 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate.copy(categoryOfBusiness = None)))
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(SicAndCompliance(
-            mainBusinessActivity = Some(MainBusinessActivityView("12345678"))))
+          mainBusinessActivity = Some(MainBusinessActivityView("12345678"))))
         )
 
-      callAuthorised(controller.businessType()){ result =>
+      callAuthorised(controller.businessType()) { result =>
         status(result) mustBe 200
         contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
@@ -754,13 +749,13 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockSicAndComplianceService.getSicAndCompliance(any(),any()))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(SicAndCompliance(
           mainBusinessActivity = Some(MainBusinessActivityView("12345678"))))
         )
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      callAuthorised(controller.businessType()){ result =>
+      callAuthorised(controller.businessType()) { result =>
         status(result) mustBe 200
         contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
@@ -781,7 +776,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      submitAuthorised(controller.submitBusinessType(), request){ result =>
+      submitAuthorised(controller.submitBusinessType(), request) { result =>
         status(result) mustBe 400
       }
     }
@@ -793,7 +788,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      submitAuthorised(controller.submitBusinessType(), request){ result =>
+      submitAuthorised(controller.submitBusinessType(), request) { result =>
         status(result) mustBe 400
       }
     }

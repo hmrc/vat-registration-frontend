@@ -38,15 +38,17 @@ import scala.concurrent.Future
 class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   class Setup (iclStubbed:Boolean = false){
-    val controller: SicAndComplianceController = new SicAndComplianceController {
-      override val keystoreConnector: KeystoreConnector       = mockKeystoreConnector
-      override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
-      override val frsService: FlatRateService                = mockFlatRateService
-      val messagesApi: MessagesApi                            = mockMessagesAPI
-      val authConnector: AuthConnector                        = mockAuthClientConnector
-      override val vatRegFeatureSwitch: VATRegFeatureSwitches = mockFeatureSwitches
+    val controller: SicAndComplianceController = new SicAndComplianceController(
+      mockMessagesAPI,
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockSicAndComplianceService,
+      mockFlatRateService,
+      mockVatRegFeatureSwitches,
+      mockServicesConfig,
+      mockICLService
+    ) {
       override val useICLStub                                 = iclStubbed
-      override val iclService: ICLService                     = mockICLService
       override val iclFEurlwww: String                        = "www-url"
     }
 

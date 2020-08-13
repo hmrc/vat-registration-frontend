@@ -20,10 +20,9 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import connectors._
-import models.Start
 import fixtures.VatRegistrationFixture
-import models.{CurrentProfile, Frequency, Returns, Start}
 import models.view.Summary
+import models.{CurrentProfile, Frequency, Returns, Start}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -37,21 +36,19 @@ import scala.concurrent.Future
 class SummaryControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   trait Setup {
-    val testSummaryController = new SummaryController {
-      override val vrs                = mockVatRegistrationService
-      override val s4LService         = mockS4LService
-      override val keystoreConnector  = mockKeystoreConnector
-      override val authConnector      = mockAuthClientConnector
-      override val messagesApi        = mockMessagesAPI
-      override val summaryService     = mockSummaryService
-    }
+    val testSummaryController = new SummaryController(
+      mockKeystoreConnector,
+      mockAuthClientConnector,
+      mockVatRegistrationService,
+      mockS4LService,
+      mockMessagesAPI,
+      mockSummaryService
+    )
 
     mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
-
-  val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
 
   val fakeRequest = FakeRequest(routes.SummaryController.show())
   override val returns = Returns(Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
@@ -60,16 +57,16 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
   "Calling summary to show the summary page" should {
     "return HTML with a valid summary view pre-incorp" in new Setup {
       when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
-      when(mockSummaryService.getRegistrationSummary(any(),any())) thenReturn Future.successful(Summary(Seq.empty))
-      when(mockSummaryService.getEligibilityDataSummary(any(),any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+      when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
+      when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
 
     "return HTML with a valid summary view post-incorp" in new Setup {
-      when(mockS4LService.clear(any(),any())) thenReturn Future.successful(validHttpResponse)
-      when(mockSummaryService.getRegistrationSummary(any(),any())) thenReturn Future.successful(Summary(Seq.empty))
-      when(mockSummaryService.getEligibilityDataSummary(any(),any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+      when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
+      when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
+      when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
       callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
     }
@@ -97,7 +94,7 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any ()))
+      when(mockVatRegistrationService.submitRegistration()(any(), any()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
 
       when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))

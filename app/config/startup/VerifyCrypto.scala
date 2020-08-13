@@ -16,12 +16,10 @@
 
 package config.startup
 
-import javax.inject.Inject
-
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.crypto.ApplicationCryptoDI
 
-class VerifyCrypto @Inject()(applicationCrypto: ApplicationCryptoDI) extends VerifyCryptoConfig {
+@Singleton
+class VerifyCrypto @Inject()(applicationCrypto: ApplicationCryptoDI) {
   applicationCrypto.verifyConfiguration()
 }
-
-trait VerifyCryptoConfig

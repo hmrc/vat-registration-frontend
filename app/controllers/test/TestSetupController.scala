@@ -16,170 +16,165 @@
 
 package controllers.test
 
-import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.test.TestVatRegistrationConnector
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
-import models.view.LodgingOfficer
-import models.test.SicStub
-import models.TradingDetails
 import forms.test.{TestSetupEligibilityForm, TestSetupForm}
+import javax.inject.{Inject, Singleton}
+import models.test.SicStub
+import models.view.LodgingOfficer
 import models.view.test._
-import models.{BusinessContact, S4LKey, SicAndCompliance}
+import models._
 import play.api.i18n.MessagesApi
-import play.api.libs.json.{Format, JsValue, Json}
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
-import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.{AuthProviders, ConfidenceLevel}
-import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class TestSetupControllerImpl @Inject()(implicit val s4LService: S4LService,
-                                        val s4lConnector: S4LConnector,
-                                        val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnector,
-                                        val messagesApi: MessagesApi,
-                                        val testVatRegConnector: TestVatRegistrationConnector) extends TestSetupController
-
-trait TestSetupController extends BaseController with SessionProfile {
-  val s4LBuilder = TestS4LBuilder
-
-  val s4LService: S4LService
-  val s4lConnector: S4LConnector
-  val testVatRegConnector: TestVatRegistrationConnector
+@Singleton
+class TestSetupController @Inject()(implicit val s4LService: S4LService,
+                                    val s4lConnector: S4LConnector,
+                                    val authConnector: AuthClientConnector,
+                                    val keystoreConnector: KeystoreConnector,
+                                    val messagesApi: MessagesApi,
+                                    val testVatRegConnector: TestVatRegistrationConnector) extends BaseController with SessionProfile {
+  val s4LBuilder: TestS4LBuilder.type = TestS4LBuilder
 
   private val empty = Future.successful(CacheMap("", Map.empty))
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        sicStub <- s4LService.fetchAndGet[SicStub]
-        vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
-        lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
-        businessContact     <- s4lConnector.fetchAndGet[BusinessContact](profile.registrationId, "business-contact")
-        bankAccount       <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
-        flatRateScheme    <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
-        returns           <- s4LService.fetchAndGetNoAux(S4LKey.returns)
-        tradingDetails    <- s4LService.fetchAndGet[TradingDetails]
+    implicit request =>
+      implicit profile =>
+        for {
+          sicStub <- s4LService.fetchAndGet[SicStub]
+          vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
+          lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
+          businessContact <- s4lConnector.fetchAndGet[BusinessContact](profile.registrationId, "business-contact")
+          bankAccount <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
+          flatRateScheme <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
+          returns <- s4LService.fetchAndGetNoAux(S4LKey.returns)
+          tradingDetails <- s4LService.fetchAndGet[TradingDetails]
 
-        testSetup = TestSetup(
-          VatContactTestSetup(
-            email        = businessContact.flatMap(_.companyContactDetails).map(_.email),
-            daytimePhone = businessContact.flatMap(_.companyContactDetails).flatMap(_.phoneNumber),
-            mobile       = businessContact.flatMap(_.companyContactDetails).flatMap(_.mobileNumber),
-            website      = businessContact.flatMap(_.companyContactDetails).flatMap(_.websiteAddress),
-            line1        = businessContact.flatMap(_.ppobAddress).map(_.line1),
-            line2        = businessContact.flatMap(_.ppobAddress).map(_.line2),
-            line3        = businessContact.flatMap(_.ppobAddress).flatMap(_.line3),
-            line4        = businessContact.flatMap(_.ppobAddress).flatMap(_.line4),
-            postcode     = businessContact.flatMap(_.ppobAddress).flatMap(_.postcode),
-            country      = businessContact.flatMap(_.ppobAddress).flatMap(_.country)
-          ),
-          SicAndComplianceTestSetup(
-            businessActivityDescription = vatSicAndCompliance.flatMap(_.description.map(_.description)),
-            sicCode1 = sicStub.map(_.sicCode1.getOrElse("")),
-            sicCode2 = sicStub.map(_.sicCode2.getOrElse("")),
-            sicCode3 = sicStub.map(_.sicCode3.getOrElse("")),
-            sicCode4 = sicStub.map(_.sicCode4.getOrElse("")),
-            labourCompanyProvideWorkers = vatSicAndCompliance.flatMap(_.companyProvideWorkers.map(_.yesNo)),
-            labourWorkers = vatSicAndCompliance.flatMap(_.workers.map(_.numberOfWorkers.toString)),
-            labourTemporaryContracts = vatSicAndCompliance.flatMap(_.temporaryContracts.map(_.yesNo)),
-            labourSkilledWorkers = vatSicAndCompliance.flatMap(_.skilledWorkers.map(_.yesNo)),
-            mainBusinessActivityId = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.code),
-            mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
-            mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)
-          ),
-          officerHomeAddress = OfficerHomeAddressTestSetup(
-            line1 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
-            line2 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line2),
-            line3 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line3),
-            line4 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line4),
-            postcode = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.postcode),
-            country = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.country)),
-          officerPreviousAddress = OfficerPreviousAddressTestSetup(
-            threeYears = lodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
-            line1 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
-            line2 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
-            line3 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
-            line4 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
-            postcode = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
-            country = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
-          lodgingOfficer = LodgingOfficerTestSetup(
-            dobDay = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getDayOfMonth.toString),
-            dobMonth = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getMonthValue.toString),
-            dobYear = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getYear.toString),
-            email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
-            mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
-            phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),
-            formernameChoice = lodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
-            formername = lodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
-            formernameChangeDay = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
-            formernameChangeMonth = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
-            formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
-          ),
-          flatRateSchemeBlock = flatRateScheme,
-          bankAccountBlock = bankAccount,
-          returnsBlock = returns,
-          tradingDetailsBlock = tradingDetails
-        )
-        form = TestSetupForm.form.fill(testSetup)
-      } yield Ok(views.html.pages.test.test_setup(form))
+          testSetup = TestSetup(
+            VatContactTestSetup(
+              email = businessContact.flatMap(_.companyContactDetails).map(_.email),
+              daytimePhone = businessContact.flatMap(_.companyContactDetails).flatMap(_.phoneNumber),
+              mobile = businessContact.flatMap(_.companyContactDetails).flatMap(_.mobileNumber),
+              website = businessContact.flatMap(_.companyContactDetails).flatMap(_.websiteAddress),
+              line1 = businessContact.flatMap(_.ppobAddress).map(_.line1),
+              line2 = businessContact.flatMap(_.ppobAddress).map(_.line2),
+              line3 = businessContact.flatMap(_.ppobAddress).flatMap(_.line3),
+              line4 = businessContact.flatMap(_.ppobAddress).flatMap(_.line4),
+              postcode = businessContact.flatMap(_.ppobAddress).flatMap(_.postcode),
+              country = businessContact.flatMap(_.ppobAddress).flatMap(_.country)
+            ),
+            SicAndComplianceTestSetup(
+              businessActivityDescription = vatSicAndCompliance.flatMap(_.description.map(_.description)),
+              sicCode1 = sicStub.map(_.sicCode1.getOrElse("")),
+              sicCode2 = sicStub.map(_.sicCode2.getOrElse("")),
+              sicCode3 = sicStub.map(_.sicCode3.getOrElse("")),
+              sicCode4 = sicStub.map(_.sicCode4.getOrElse("")),
+              labourCompanyProvideWorkers = vatSicAndCompliance.flatMap(_.companyProvideWorkers.map(_.yesNo)),
+              labourWorkers = vatSicAndCompliance.flatMap(_.workers.map(_.numberOfWorkers.toString)),
+              labourTemporaryContracts = vatSicAndCompliance.flatMap(_.temporaryContracts.map(_.yesNo)),
+              labourSkilledWorkers = vatSicAndCompliance.flatMap(_.skilledWorkers.map(_.yesNo)),
+              mainBusinessActivityId = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.code),
+              mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
+              mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)
+            ),
+            officerHomeAddress = OfficerHomeAddressTestSetup(
+              line1 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
+              line2 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line2),
+              line3 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line3),
+              line4 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line4),
+              postcode = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.postcode),
+              country = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.country)),
+            officerPreviousAddress = OfficerPreviousAddressTestSetup(
+              threeYears = lodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
+              line1 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
+              line2 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
+              line3 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
+              line4 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
+              postcode = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
+              country = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
+            lodgingOfficer = LodgingOfficerTestSetup(
+              dobDay = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getDayOfMonth.toString),
+              dobMonth = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getMonthValue.toString),
+              dobYear = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getYear.toString),
+              email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
+              mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
+              phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),
+              formernameChoice = lodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
+              formername = lodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
+              formernameChangeDay = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
+              formernameChangeMonth = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
+              formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
+            ),
+            flatRateSchemeBlock = flatRateScheme,
+            bankAccountBlock = bankAccount,
+            returnsBlock = returns,
+            tradingDetailsBlock = tradingDetails
+          )
+          form = TestSetupForm.form.fill(testSetup)
+        } yield Ok(views.html.pages.test.test_setup(form))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile => {
-      implicit val flatRateKey = S4LKey.flatRateScheme
+    implicit request =>
+      implicit profile => {
+        implicit val flatRateKey: S4LKey[FlatRateScheme] = S4LKey.flatRateScheme
 
-      def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
-        userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
+        def saveToS4Later[T: Format : S4LKey](userEntered: Option[String], data: TestSetup, f: TestSetup => T): Future[Unit] =
+          userEntered.map(_ => s4LService.save(f(data)).map(_ => ())).getOrElse(Future.successful(()))
 
-      TestSetupForm.form.bindFromRequest().fold(
-        badForm => {
-          Future.successful(BadRequest(views.html.pages.test.test_setup(badForm)))
-        }, {
-          data: TestSetup => {
-            for {
-              _ <- saveToS4Later(data.sicAndCompliance.sicCode1, data, { x =>
-                SicStub(Some(x.sicAndCompliance.sicCode1.getOrElse("")),
-                  Some(x.sicAndCompliance.sicCode2.getOrElse("")),
-                  Some(x.sicAndCompliance.sicCode3.getOrElse("")),
-                  Some(x.sicAndCompliance.sicCode4.getOrElse("")))
-              })
+        TestSetupForm.form.bindFromRequest().fold(
+          badForm => {
+            Future.successful(BadRequest(views.html.pages.test.test_setup(badForm)))
+          }, {
+            data: TestSetup => {
+              for {
+                _ <- saveToS4Later(data.sicAndCompliance.sicCode1, data, { x =>
+                  SicStub(Some(x.sicAndCompliance.sicCode1.getOrElse("")),
+                    Some(x.sicAndCompliance.sicCode2.getOrElse("")),
+                    Some(x.sicAndCompliance.sicCode3.getOrElse("")),
+                    Some(x.sicAndCompliance.sicCode4.getOrElse("")))
+                })
 
-              _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
-              _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
-              _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
+                _ <- s4LService.save(s4LBuilder.vatSicAndComplianceFromData(data))
+                _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
+                _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
 
-              lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
-              _ <- s4LService.save(lodgingOfficer)
+                lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
+                _ <- s4LService.save(lodgingOfficer)
 
-              _ <- data.returnsBlock.fold(empty)(x => s4LService.save(x))
-              _ <- data.flatRateSchemeBlock.fold(empty)(x => s4LService.save(x))
-              _ <- data.bankAccountBlock.fold(empty)(x => s4LService.save(x))
-            } yield Ok("Test setup complete")
+                _ <- data.returnsBlock.fold(empty)(x => s4LService.save(x))
+                _ <- data.flatRateSchemeBlock.fold(empty)(x => s4LService.save(x))
+                _ <- data.bankAccountBlock.fold(empty)(x => s4LService.save(x))
+              } yield Ok("Test setup complete")
+            }
           }
-        }
-      )
-    }
+        )
+      }
   }
 
   def showEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.pages.test.test_setup_eligibility(TestSetupEligibilityForm.form)))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.pages.test.test_setup_eligibility(TestSetupEligibilityForm.form)))
   }
 
   def submitEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      TestSetupEligibilityForm.form.bindFromRequest().fold(
-        badForm => {
-          Future.successful(BadRequest(views.html.pages.test.test_setup_eligibility(badForm)))
-        }, { data: String =>
-          testVatRegConnector.updateEligibilityData(Json.parse(data)) map (_ => Ok("Eligibility updated"))
-        }
-      )
+    implicit request =>
+      implicit profile =>
+        TestSetupEligibilityForm.form.bindFromRequest().fold(
+          badForm => {
+            Future.successful(BadRequest(views.html.pages.test.test_setup_eligibility(badForm)))
+          }, { data: String =>
+            testVatRegConnector.updateEligibilityData(Json.parse(data)) map (_ => Ok("Eligibility updated"))
+          }
+        )
   }
 }

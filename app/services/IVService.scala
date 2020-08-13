@@ -19,8 +19,8 @@ package services
 import java.util.UUID
 
 import common.exceptions.InternalExceptions.ElementNotFoundException
-import connectors.{IVConnector, KeystoreConnector, RegistrationConnector}
-import javax.inject.Inject
+import connectors.{IVConnector, KeystoreConnector, VatRegistrationConnector}
+import javax.inject.{Inject, Singleton}
 import models.external.Name
 import models.view.LodgingOfficer
 import models.{CurrentProfile, IVResult, IVSetup, UserData}
@@ -32,28 +32,16 @@ import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-class IVServiceImpl @Inject()(config: ServicesConfig,
-                              val ivConnector: IVConnector,
-                              val vatRegistrationConnector: RegistrationConnector,
-                              val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                              val keystoreConnector: KeystoreConnector,
-                              val s4lService: S4LService) extends IVService {
-  val ORIGIN = config.getString("appName")
-  val vrfeBaseUrl = config.getConfString("vat-registration-frontend.www.url", "")
-  val vrfeBaseUri = config.getConfString("vat-registration-frontend.www.uri", "")
-}
-
-trait IVService {
-
-  val ivConnector: IVConnector
-  val vatRegistrationConnector: RegistrationConnector
-  val vatRegFeatureSwitch: VATRegFeatureSwitches
-  val s4lService: S4LService
-  val keystoreConnector: KeystoreConnector
-
-  val ORIGIN: String
-  val vrfeBaseUrl: String
-  val vrfeBaseUri: String
+@Singleton
+class IVService @Inject()(config: ServicesConfig,
+                          val ivConnector: IVConnector,
+                          val vatRegistrationConnector: VatRegistrationConnector,
+                          val vatRegFeatureSwitch: VATRegFeatureSwitches,
+                          val keystoreConnector: KeystoreConnector,
+                          val s4lService: S4LService) {
+  val ORIGIN: String = config.getString("appName")
+  val vrfeBaseUrl: String = config.getConfString("vat-registration-frontend.www.url", "")
+  val vrfeBaseUri: String = config.getConfString("vat-registration-frontend.www.uri", "")
 
   def useIVStub: Boolean = vatRegFeatureSwitch.useIvStub.enabled
 

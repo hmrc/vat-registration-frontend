@@ -16,32 +16,26 @@
 
 package controllers
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import models.{TradingNameView, _}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.i18n.MessagesApi
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.TradingDetailsServiceImpl
 import testHelpers.{ControllerSpec, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
 class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
-  val mockTradingDetailsService: TradingDetailsServiceImpl = mock[TradingDetailsServiceImpl]
 
   class Setup {
-    val testController = new TradingDetailsController {
-      override val tradingDetailsService: TradingDetailsServiceImpl = mockTradingDetailsService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      val authConnector: AuthConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-    }
-
+    val testController = new TradingDetailsController(
+      mockKeystoreConnector,
+      mockAuthClientConnector,
+      mockTradingDetailsService,
+      mockMessagesAPI
+    )
     mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))

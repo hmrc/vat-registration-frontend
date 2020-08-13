@@ -18,38 +18,37 @@ package controllers
 
 import java.util.NoSuchElementException
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import models.CompanyContactDetails
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
+import org.mockito.stubbing.OngoingStubbing
+import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import services.{AddressLookupService, BusinessContactService, PrePopService}
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.Future
 
 class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with FutureAssertions {
 
   class Setup {
-    val controller = new BusinessContactDetailsController {
-      override val addressLookupService: AddressLookupService = mockAddressService
-      override val businessContactService: BusinessContactService = mockBusinessContactService
-      override val prepopService: PrePopService = mockPrePopService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val authConnector: AuthConnector = mockAuthClientConnector
-      val dropoutUrl: String = "test otrs URL"
+    val controller: BusinessContactDetailsController = new BusinessContactDetailsController(
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockBusinessContactService,
+      mockPrePopulationService,
+      mockAddressLookupService,
+      mock[Configuration]
+    ) {
+      override lazy val dropoutUrl: String = "test otrs URL"
     }
     mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
-    def mockGetPpopAddressList = when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    def mockGetPpopAddressList: OngoingStubbing[Future[Seq[ScrsAddress]]] = when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(Seq(scrsAddress)))
   }
 
@@ -57,7 +56,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(validBusinessContactDetails))
 
-    when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(Seq(scrsAddress)))
   }
 
@@ -67,7 +66,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails))
 
-        when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Seq(scrsAddress)))
 
         callAuthorised(controller.showPPOB) {
@@ -78,7 +77,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails))
 
-        when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Seq()))
 
         callAuthorised(controller.showPPOB) {
@@ -89,7 +88,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.copy(ppobAddress = None)))
 
-        when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Seq(scrsAddress)))
 
         callAuthorised(controller.showPPOB) {
@@ -110,7 +109,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.copy(ppobAddress = None)))
 
-        when(mockPrePopService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
         callAuthorised(controller.showPPOB) {
@@ -133,7 +132,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
 
     "return a 303" when {
       "user selects other and redirects to alf address" in new SubmissionSetup {
-        when(mockAddressService.getJourneyUrl(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(Call("GET", "my-redirect-url")))
         submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "other")) {
           _ redirectsTo "my-redirect-url"
@@ -243,7 +242,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
   "return from TXM" should {
     "return a 303" when {
       "a valid id is passed" in new Setup {
-        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
+        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
         when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(scrsAddress))
 
@@ -254,14 +253,14 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
     "throw an exception" when {
       "getAddressById fails" in new Setup {
-        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(throw exception))
+        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(throw exception))
 
         callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
           _ failedWith exception
         }
       }
       "updateBusinessContact fails" in new Setup {
-        when(mockAddressService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
+        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
         when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(throw exception))
 
         callAuthorised(controller.returnFromTxm(scrsAddress.id)) {

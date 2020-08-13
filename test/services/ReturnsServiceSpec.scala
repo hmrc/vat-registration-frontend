@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import _root_.models._
 import _root_.models.api.Threshold
-import connectors.RegistrationConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.MustMatchers
@@ -36,12 +35,12 @@ import scala.concurrent.Future
 class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar {
 
   class Setup {
-    val service = new ReturnsService {
-      override val s4lService: S4LService = mockS4LService
-      override val vatService: RegistrationService = mockVatRegistrationService
-      override val vatRegConnector: RegistrationConnector = mockRegConnector
-      override val prePopService: PrePopService = mockPPService
-    }
+    val service = new ReturnsService(
+      mockVatRegistrationConnector,
+      mockVatRegistrationService,
+      mockS4LService,
+      mockPrePopulationService
+    )
   }
 
   val mockCacheMap = CacheMap("", Map("" -> JsString("")))
@@ -67,7 +66,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "return a model from MongoDB" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockRegConnector.getReturns(any())(any(), any()))
+      when(mockVatRegistrationConnector.getReturns(any())(any(), any()))
         .thenReturn(Future.successful(returns))
 
       await(service.getReturns) mustBe returns
@@ -76,7 +75,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "construct a blank model when nothing was found in Save4Later or Mongo" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockRegConnector.getReturns(any())(any(), any()))
+      when(mockVatRegistrationConnector.getReturns(any())(any(), any()))
         .thenReturn(Future.failed(new NotFoundException("404")))
 
       await(service.getReturns) mustBe emptyReturns
@@ -108,7 +107,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
   "submitReturns" should {
     "save a complete model to S4L" in new Setup {
-      when(mockRegConnector.patchReturns(any(), any[Returns])(any(), any()))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -127,7 +126,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "save a complete model" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
-      when(mockRegConnector.patchReturns(any(), any[Returns])(any(), any()))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -153,7 +152,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "save a complete model" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
-      when(mockRegConnector.patchReturns(any(), any[Returns])(any(), any()))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -176,7 +175,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "save a complete model" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
-      when(mockRegConnector.patchReturns(any(), any[Returns])(any(), any()))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -199,7 +198,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
     "save a complete model" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
-      when(mockRegConnector.patchReturns(any(), any[Returns])(any(), any()))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -340,7 +339,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
   "retrieveCTActiveDate" should {
     "return the CT Active Date" in new Setup {
-      when(mockPPService.getCTActiveDate(any(), any()))
+      when(mockPrePopulationService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(Some(date)))
 
       await(service.retrieveCTActiveDate) mustBe Some(date)
@@ -370,7 +369,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsWithVatDate(Some(businessStartDate)))))
 
-      when(mockPPService.getCTActiveDate(any(), any()))
+      when(mockPrePopulationService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(Some(businessStartDate)))
 
       await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
@@ -383,7 +382,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsWithVatDate(None))))
 
-      when(mockPPService.getCTActiveDate(any(), any()))
+      when(mockPrePopulationService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
@@ -398,7 +397,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsWithVatDate(Some(specificdate)))))
 
-      when(mockPPService.getCTActiveDate(any(), any()))
+      when(mockPrePopulationService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
@@ -411,7 +410,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockPPService.getCTActiveDate(any(), any()))
+      when(mockPrePopulationService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(None, None)

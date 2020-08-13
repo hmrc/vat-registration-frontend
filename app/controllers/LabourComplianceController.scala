@@ -18,122 +18,126 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import forms.WorkersForm
-import models.CompanyProvideWorkers.PROVIDE_WORKERS_YES
-import models.SicAndCompliance
-import views.html.labour.{company_provide_workers, skilled_workers, temporary_contracts, workers}
 import forms.{CompanyProvideWorkersForm, SkilledWorkersForm, TemporaryContractsForm, WorkersForm}
-import javax.inject.Inject
-import models.TemporaryContracts
+import javax.inject.{Inject, Singleton}
+import models.CompanyProvideWorkers.PROVIDE_WORKERS_YES
+import models.{SicAndCompliance, TemporaryContracts}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SicAndComplianceService}
+import views.html.labour.{company_provide_workers, skilled_workers, temporary_contracts, workers}
 
 import scala.concurrent.Future
 
-class LabourComplianceControllerImpl @Inject()(val messagesApi: MessagesApi,
-                                               val authConnector: AuthClientConnector,
-                                               val keystoreConnector: KeystoreConnector,
-                                               val sicAndCompService: SicAndComplianceService) extends LabourComplianceController
-
-trait LabourComplianceController extends BaseController with SessionProfile {
-  val sicAndCompService: SicAndComplianceService
+@Singleton
+class LabourComplianceController @Inject()(val messagesApi: MessagesApi,
+                                           val authConnector: AuthClientConnector,
+                                           val keystoreConnector: KeystoreConnector,
+                                           val sicAndCompService: SicAndComplianceService) extends BaseController with SessionProfile {
 
   def showProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled    = sicCompliance.companyProvideWorkers.fold(CompanyProvideWorkersForm.form)(CompanyProvideWorkersForm.form.fill)
-        } yield Ok(company_provide_workers(formFilled))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            sicCompliance <- sicAndCompService.getSicAndCompliance
+            formFilled = sicCompliance.companyProvideWorkers.fold(CompanyProvideWorkersForm.form)(CompanyProvideWorkersForm.form.fill)
+          } yield Ok(company_provide_workers(formFilled))
+        }
   }
 
   def submitProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        CompanyProvideWorkersForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(company_provide_workers(badForm))),
-          view => sicAndCompService.updateSicAndCompliance(view).map { _ =>
-            if (PROVIDE_WORKERS_YES == view.yesNo) {
-              routes.LabourComplianceController.showWorkers()
-            } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
-            }
-          } map Redirect
-        )
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          CompanyProvideWorkersForm.form.bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(company_provide_workers(badForm))),
+            view => sicAndCompService.updateSicAndCompliance(view).map { _ =>
+              if (PROVIDE_WORKERS_YES == view.yesNo) {
+                routes.LabourComplianceController.showWorkers()
+              } else {
+                controllers.routes.TradingDetailsController.tradingNamePage()
+              }
+            } map Redirect
+          )
+        }
   }
 
   def showWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled    = sicCompliance.workers.fold(WorkersForm.form)(WorkersForm.form.fill)
-        } yield Ok(workers(formFilled))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            sicCompliance <- sicAndCompService.getSicAndCompliance
+            formFilled = sicCompliance.workers.fold(WorkersForm.form)(WorkersForm.form.fill)
+          } yield Ok(workers(formFilled))
+        }
   }
 
   def submitWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        WorkersForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(workers(badForm))),
-          data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
-            if (data.numberOfWorkers >= SicAndCompliance.NUMBER_OF_WORKERS_THRESHOLD) {
-              routes.LabourComplianceController.showTemporaryContracts()
-            } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
-            }
-          } map Redirect
-        )
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          WorkersForm.form.bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(workers(badForm))),
+            data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
+              if (data.numberOfWorkers >= SicAndCompliance.NUMBER_OF_WORKERS_THRESHOLD) {
+                routes.LabourComplianceController.showTemporaryContracts()
+              } else {
+                controllers.routes.TradingDetailsController.tradingNamePage()
+              }
+            } map Redirect
+          )
+        }
   }
 
   def showTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled    = sicCompliance.temporaryContracts.fold(TemporaryContractsForm.form)(TemporaryContractsForm.form.fill)
-        } yield Ok(temporary_contracts(formFilled))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            sicCompliance <- sicAndCompService.getSicAndCompliance
+            formFilled = sicCompliance.temporaryContracts.fold(TemporaryContractsForm.form)(TemporaryContractsForm.form.fill)
+          } yield Ok(temporary_contracts(formFilled))
+        }
   }
 
   def submitTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        TemporaryContractsForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(temporary_contracts(badForm))),
-          data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
-            if(data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES) {
-              routes.LabourComplianceController.showSkilledWorkers()
-            } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
-            }
-          } map Redirect
-        )
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          TemporaryContractsForm.form.bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(temporary_contracts(badForm))),
+            data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
+              if (data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES) {
+                routes.LabourComplianceController.showSkilledWorkers()
+              } else {
+                controllers.routes.TradingDetailsController.tradingNamePage()
+              }
+            } map Redirect
+          )
+        }
   }
 
   def showSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.skilledWorkers.fold(SkilledWorkersForm.form)(SkilledWorkersForm.form.fill)
-        } yield Ok(skilled_workers(formFilled))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            sicCompliance <- sicAndCompService.getSicAndCompliance
+            formFilled = sicCompliance.skilledWorkers.fold(SkilledWorkersForm.form)(SkilledWorkersForm.form.fill)
+          } yield Ok(skilled_workers(formFilled))
+        }
   }
 
   def submitSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      SkilledWorkersForm.form.bindFromRequest().fold(
-        badForm => Future.successful(BadRequest(skilled_workers(badForm))),
-        view => for {
-          _ <- sicAndCompService.updateSicAndCompliance(view)
-        } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
-      )
+    implicit request =>
+      implicit profile =>
+        SkilledWorkersForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(skilled_workers(badForm))),
+          view => for {
+            _ <- sicAndCompService.updateSicAndCompliance(view)
+          } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+        )
   }
 }

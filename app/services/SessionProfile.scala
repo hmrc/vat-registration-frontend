@@ -39,7 +39,7 @@ trait SessionProfile {
         Future.successful(Redirect(routes.WelcomeController.show()))
       ) {
         profile =>
-          (profile.vatRegistrationStatus) match {
+          profile.vatRegistrationStatus match {
             case VatRegStatus.draft => f(profile)
             case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
             case VatRegStatus.held | VatRegStatus.locked if !checkStatus => f(profile)

@@ -16,25 +16,18 @@
 
 package services
 
-import connectors.RegistrationConnector
-import javax.inject.Inject
+import connectors.VatRegistrationConnector
+import javax.inject.{Inject, Singleton}
 import models.{CurrentProfile, S4LKey, TradingDetails, TradingNameView}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class TradingDetailsServiceImpl @Inject()(val s4lservice: S4LService,
-                                          val regConnector: RegistrationConnector,
-                                          val prePopService: PrePopService) extends TradingDetailsService {
-  val s4lService: S4LService = s4lservice
-  val registrationConnector: RegistrationConnector = regConnector
-}
-
-trait TradingDetailsService {
-  val s4lService: S4LService
-  val registrationConnector: RegistrationConnector
-  val prePopService: PrePopService
+@Singleton
+class TradingDetailsService @Inject()(val s4lService: S4LService,
+                                      val registrationConnector: VatRegistrationConnector,
+                                      val prePopService: PrePopulationService) {
 
   private val tradingDetailsS4LKey: S4LKey[TradingDetails] = S4LKey[TradingDetails]("tradingDetails")
 
@@ -66,7 +59,7 @@ trait TradingDetailsService {
     )
   }
 
-  def updateTradingDetails(regId: String)(newS4L: (TradingDetails => TradingDetails))
+  def updateTradingDetails(regId: String)(newS4L: TradingDetails => TradingDetails)
                           (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
     getTradingDetailsViewModel(regId) flatMap { storedData => submitTradingDetails(regId, newS4L(storedData)) }
   }

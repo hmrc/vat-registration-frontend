@@ -16,25 +16,19 @@
 
 package connectors.test
 
-import javax.inject.Inject
 import config.WSHttp
+import javax.inject.{Inject, Singleton}
 import models.IVResult
-import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class BusinessRegDynamicStubConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) extends BusinessRegDynamicStubConnector {
-  val brdsUrl = config.baseUrl("business-registration-dynamic-stub")
-  val brdsUri = config.getConfString("business-registration-dynamic-stub.uri", "")
-}
-
-trait BusinessRegDynamicStubConnector {
-  val http: WSHttp
-
-  val brdsUrl: String
-  val brdsUri: String
+@Singleton
+class BusinessRegDynamicStubConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
+  val brdsUrl: String = config.baseUrl("business-registration-dynamic-stub")
+  val brdsUri: String = config.getConfString("business-registration-dynamic-stub.uri", "")
 
   def setupIVOutcome(journeyId: String, outcome: IVResult.Value)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.POST[String, HttpResponse](s"$brdsUrl$brdsUri/setup-iv-outcome/$journeyId/$outcome", "")

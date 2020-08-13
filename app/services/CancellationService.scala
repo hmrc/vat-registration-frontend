@@ -16,10 +16,9 @@
 
 package services
 
-import javax.inject.Inject
-
 import common.enums.RegistrationDeletion
 import connectors._
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,16 +26,11 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class CancellationServiceImpl @Inject()(val keystoreConnector: KeystoreConnector,
-                                        val currentProfileService: CurrentProfileService,
-                                        val save4LaterConnector: S4LConnector,
-                                        val vatRegistrationConnector: RegistrationConnector) extends CancellationService
-
-trait CancellationService {
-  val keystoreConnector: KeystoreConnector
-  val currentProfileService: CurrentProfileService
-  val save4LaterConnector: S4LConnector
-  val vatRegistrationConnector: RegistrationConnector
+@Singleton
+class CancellationService @Inject()(val keystoreConnector: KeystoreConnector,
+                                    val currentProfileService: CurrentProfileService,
+                                    val save4LaterConnector: S4LConnector,
+                                    val vatRegistrationConnector: VatRegistrationConnector) {
 
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
@@ -44,7 +38,7 @@ trait CancellationService {
 
   def deleteVatRegistration(regId: String)(implicit hc: HeaderCarrier): Future[RegistrationDeletion.Value] = {
     getCurrentProfile(regId) flatMap { profile =>
-      if(profile.registrationId == regId) {
+      if (profile.registrationId == regId) {
         for {
           _ <- vatRegistrationConnector.deleteVREFESession(regId)
           _ <- save4LaterConnector.clear(regId)
@@ -67,6 +61,6 @@ trait CancellationService {
   }
 
   private def buildNewProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = for {
-    profile         <- currentProfileService.buildCurrentProfile(regId)
+    profile <- currentProfileService.buildCurrentProfile(regId)
   } yield profile
 }

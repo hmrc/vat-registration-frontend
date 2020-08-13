@@ -17,7 +17,7 @@
 package services
 
 import connectors.KeystoreConnector
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -25,14 +25,9 @@ import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
-class CurrentProfileServiceImpl @Inject()(
-                                           val vatRegistrationService: RegistrationService,
-                                           val keystoreConnector: KeystoreConnector) extends CurrentProfileService
-
-trait CurrentProfileService extends RegistrationWhitelist {
-
-  val keystoreConnector: KeystoreConnector
-  val vatRegistrationService: RegistrationService
+@Singleton
+class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistrationService,
+                                      val keystoreConnector: KeystoreConnector) extends RegistrationWhitelist {
 
   def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {

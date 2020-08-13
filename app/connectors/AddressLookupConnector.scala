@@ -16,9 +16,8 @@
 
 package connectors
 
-import javax.inject.Inject
-
 import config.WSHttp
+import javax.inject.{Inject, Singleton}
 import models.api.ScrsAddress
 import models.external.addresslookup.AddressJourneyBuilder
 import play.api.http.HeaderNames._
@@ -31,16 +30,12 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
 import scala.util.control.NoStackTrace
 
-class AddressLookupConnectorImpl @Inject()(val http: WSHttp, config: ServicesConfig) extends AddressLookupConnector {
-  lazy val addressLookupFrontendUrl = config.baseUrl("address-lookup-frontend")
-}
+@Singleton
+class AddressLookupConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
 
-trait AddressLookupConnector {
-  val addressLookupFrontendUrl: String
+  lazy val addressLookupFrontendUrl: String = config.baseUrl("address-lookup-frontend")
 
-  val http: WSHttp
-
-  implicit val reads = ScrsAddress.adressLookupReads
+  implicit val reads: ScrsAddress.adressLookupReads.type = ScrsAddress.adressLookupReads
 
   def getAddress(id: String)(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
     http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/confirmed?id=$id")

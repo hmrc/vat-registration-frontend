@@ -30,7 +30,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -58,7 +58,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)

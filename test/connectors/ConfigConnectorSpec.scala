@@ -16,7 +16,6 @@
 
 package connectors
 
-import java.io.File
 import java.util.MissingResourceException
 
 import mocks.VatMocks
@@ -27,16 +26,15 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
 
-class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
+class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks {
   val mockEnvironment: Environment = mock[Environment]
 
   class Setup {
-    val connector = new ConfigConnector {
-      override val config: ServicesConfig = mockConfig
-      override val environment: Environment = mockEnvironment
-
+    val connector: ConfigConnector = new ConfigConnector(
+      mockServicesConfig,
+      mockEnvironment
+    ) {
       override lazy val businessTypes: Seq[JsObject] = Seq(
         Json.parse(
           """
@@ -56,7 +54,7 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
 
   "Calling getSicCodeDetails" must {
     "return a SicCode successfully" in new Setup {
-      when(mockConfig.getString(ArgumentMatchers.any()))
+      when(mockServicesConfig.getString(ArgumentMatchers.any()))
         .thenReturn("Silk worm raising", "Raising of other animals")
 
       connector.getSicCodeDetails("01490") mustBe sicCode
@@ -65,8 +63,8 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
 
   "Calling getSicCodeFRSCategory" must {
     "return a FRS Category ID" in new Setup {
-      when(mockConfig.getString(ArgumentMatchers.any()))
-          .thenReturn("055")
+      when(mockServicesConfig.getString(ArgumentMatchers.any()))
+        .thenReturn("055")
 
       connector.getSicCodeFRSCategory("01490") mustBe "055"
     }
@@ -78,7 +76,7 @@ class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks{
       val businessType = "Pubs"
       val percent = 6.5
 
-      connector.getBusinessTypeDetails(id) mustBe (businessType, percent)
+      connector.getBusinessTypeDetails(id) mustBe(businessType, percent)
     }
 
     "does Not return a BusinessSectorView, instead throws an exception" in new Setup {

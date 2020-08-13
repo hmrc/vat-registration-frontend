@@ -17,17 +17,15 @@
 package services
 
 import connectors.BankAccountReputationConnector
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.BankAccountDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class BankAccountReputationServiceImpl @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector) extends BankAccountReputationService
-
-trait BankAccountReputationService {
-  val bankAccountReputationConnector: BankAccountReputationConnector
+@Singleton
+class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector) {
 
   def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
     bankAccountReputationConnector.bankAccountDetailsModulusCheck(account) map {
