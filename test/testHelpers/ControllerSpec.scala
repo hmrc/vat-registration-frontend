@@ -16,8 +16,6 @@
 
 package testHelpers
 
-import java.time.LocalDate
-
 import builders.AuthBuilder
 import common.enums.VatRegStatus
 import mocks.{AuthMock, VatMocks}
@@ -44,12 +42,8 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   val regId = "VAT123456"
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(
-    companyName = "Test Company",
     registrationId = regId,
-    transactionId = "000-434-1",
-    vatRegistrationStatus = VatRegStatus.draft,
-    incorporationDate = Some(LocalDate.of(2017, 12, 21)),
-    ivPassed = Some(true)
+    vatRegistrationStatus = VatRegStatus.draft
   )
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])

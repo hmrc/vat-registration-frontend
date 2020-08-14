@@ -42,9 +42,7 @@ trait TestIVController extends BaseController with SessionProfile {
 
   def setIVStatus(ivPassed: Boolean):Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(ivPassed = Some(ivPassed))) map {
-        _ => Ok(s"ivPassed set to $ivPassed in Current Profile (keystore)")
-      }
+      Future.successful(Ok)
   }
 
 

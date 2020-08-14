@@ -31,19 +31,17 @@ import scala.concurrent.Future
 class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
   val testController = new WelcomeController {
-    override val currentProfileService  = mockCurrentProfile
-    override val keystoreConnector      = mockKeystoreConnector
+    override val currentProfileService = mockCurrentProfile
+    override val keystoreConnector = mockKeystoreConnector
     override val vatRegistrationService = mockVatRegistrationService
-    override val eligibilityFE: Call    = Call("GET", "/test-url")
-    val authConnector                   = mockAuthClientConnector
-    val messagesApi: MessagesApi        = mockMessagesAPI
+    override val eligibilityFE: Call = Call("GET", "/test-url")
+    val authConnector = mockAuthClientConnector
+    val messagesApi: MessagesApi = mockMessagesAPI
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
 
-  val testCurrentProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
-  val testRejectedCTProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
-  val testNonRejectedCtProfile = CurrentProfile("testCompanyName", "testRegid", "testTxId", VatRegStatus.draft, None, None)
+  val testCurrentProfile = CurrentProfile("testRegid", VatRegStatus.draft)
 
   "GET /before-you-register-for-vat" should {
     "return HTML" when {
@@ -51,10 +49,9 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
         mockAllMessages
         mockAuthenticated()
 
-        when(mockVatRegistrationService.assertFootprintNeeded(any()))
-          .thenReturn(Future.successful(Some("schemeId","txId")))
-
-        when(mockCurrentProfile.buildCurrentProfile(any(),any())(any()))
+        when(mockVatRegistrationService.createRegistrationFootprint(any()))
+          .thenReturn(Future.successful(testRegId))
+        when(mockCurrentProfile.buildCurrentProfile(any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
@@ -64,21 +61,6 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
             status(result) mustBe OK
             contentType(result) mustBe Some("text/html")
             charset(result) mustBe Some("utf-8")
-        }
-      }
-    }
-    "Redirect to post-sign-in" when {
-      "if we couldn't make a footprint" in {
-        mockAllMessages
-        mockAuthenticated()
-
-        when(mockVatRegistrationService.assertFootprintNeeded(any()))
-          .thenReturn(Future.successful(None))
-
-        callAuthorisedOrg(testController.start) {
-          result =>
-            status(result) mustBe 303
-            redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
         }
       }
     }

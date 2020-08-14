@@ -51,16 +51,18 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
        |}""".stripMargin)
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -121,10 +123,10 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .audit.writesAuditMerged()
         .iv.startJourney(200)
 
-      insertCurrentProfileIntoDb(currentProfile.copy(ivPassed = Some(false)), sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(s"/start-iv-journey").get()
-      whenReady(response){res =>
+      whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION).get.contains("""/foo/bar/and/wizz""") mustBe true
       }
@@ -138,10 +140,10 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      insertCurrentProfileIntoDb(currentProfile.copy(ivPassed = Some(false)), sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(s"/start-iv-journey").get()
-      whenReady(response){res =>
+      whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION).get.contains("""test-iv-response""") mustBe true
       }

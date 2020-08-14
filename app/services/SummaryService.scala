@@ -37,7 +37,7 @@ class SummaryServiceImpl @Inject()(val vrs: RegistrationService,
                                    config: ServicesConfig
                                   ) extends SummaryService {
 
-  lazy val vatRegEFEUrl         = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
+  lazy val vatRegEFEUrl = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
   lazy val vatRegEFEQuestionUri = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
 }
 
@@ -52,29 +52,30 @@ trait SummaryService {
 
   private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrl + vatRegEFEQuestionUri + s"?pageId=$uri")
 
-  def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] ={
+  def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
 
-    vrs.getEligibilityData.map{_.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(eligibilityCall)).fold(
-      errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
-      identity
-    )}
+    vrs.getEligibilityData.map {
+      _.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(eligibilityCall)).fold(
+        errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
+        identity
+      )
+    }
   }
 
   def getRegistrationSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
     for {
       officer <- lodgingOfficerService.getLodgingOfficer
-      sac     <- sicAndComplianceService.getSicAndCompliance
+      sac <- sicAndComplianceService.getSicAndCompliance
       summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac))))
     } yield summary
   }
 
-  def registrationToSummary(vs: VatScheme)(implicit profile : CurrentProfile): Summary = {
+  def registrationToSummary(vs: VatScheme)(implicit profile: CurrentProfile): Summary = {
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(
         vs.tradingDetails,
         vs.threshold,
-        vs.returns,
-        profile.incorporationDate
+        vs.returns
       ).section,
       SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
       SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,

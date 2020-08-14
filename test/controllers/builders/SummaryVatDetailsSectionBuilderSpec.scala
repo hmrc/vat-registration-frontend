@@ -72,52 +72,6 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
         )
         builder.startDateRow mustBe SummaryRow("vatDetails.startDate", "pages.summary.vatDetails.mandatoryStartDate", None)
       }
-
-      "a date with format 'd MMMM y' if it's a voluntary registration where they are incorped" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          threshold = optVoluntaryRegistration,
-          incorpDate = Some(LocalDate.of(2017, 1, 21)),
-          returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21)))
-        )
-
-        val expectedRow = SummaryRow(
-          "vatDetails.startDate",
-          "21 March 2017",
-          Some(controllers.routes.ReturnsController.voluntaryStartPage())
-        )
-
-        builder.startDateRow mustBe expectedRow
-      }
-
-      "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked an earlier date" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          threshold = optMandatoryRegistrationThirtyDays,
-          incorpDate = Some(LocalDate.of(2017, 3, 21)),
-          returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 4, 26)))
-        )
-
-        val expectedRow = SummaryRow(
-          "vatDetails.startDate",
-          "26 April 2017",
-          Some(controllers.routes.ReturnsController.mandatoryStartPage())
-        )
-
-        builder.startDateRow mustBe expectedRow
-      }
-
-      "a date with format 'd MMMM y' if it's a mandatory registration where they are incorped and picked the latest date possible" in {
-        val builder = SummaryVatDetailsSectionBuilder(
-          threshold = optMandatoryRegistrationThirtyDays,
-          incorpDate = Some(LocalDate.of(2017, 3, 21)),
-          returnsBlock = returnsWithStartDate(None)
-        )
-
-        builder.startDateRow mustBe SummaryRow(
-          "vatDetails.startDate",
-          "pages.summary.vatDetails.mandatoryStartDate",
-          Some(controllers.routes.ReturnsController.mandatoryStartPage())
-        )
-      }
     }
     "with tradingNameRow render" should {
 

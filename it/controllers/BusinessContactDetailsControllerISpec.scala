@@ -37,16 +37,18 @@ import scala.concurrent.{Await, Future}
 class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures with MongoSpecSupport {
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -65,16 +67,16 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      insertCurrentProfileIntoDb(currentProfile.copy(incorporationDate = None), sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
       whenReady(response) { res =>
         res.status mustBe 200
 
         val document = Jsoup.parse(res.body)
-        val elems = document.getElementsByAttributeValue("name","ppobRadio")
+        val elems = document.getElementsByAttributeValue("name", "ppobRadio")
 
-        elems.size() mustBe 4
+        elems.size() mustBe 3
       }
     }
     "return 200 when s4l returns None and II returns a company that has an address not in the UK" in new Setup {
@@ -95,7 +97,7 @@ class BusinessContactDetailsControllerISpec extends PlaySpec with AppAndStubs wi
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
 
-        val elems = document.getElementsByAttributeValue("name","ppobRadio")
+        val elems = document.getElementsByAttributeValue("name", "ppobRadio")
         elems.first().attr("value") mustBe "other"
         elems.get(1).attr("value") mustBe "non-uk"
         elems.size() mustBe 2

@@ -82,7 +82,6 @@ class Module extends AbstractModule {
   private def bindTestControllers(): Unit = {
     bind(classOf[SicStubController]).to(classOf[SicStubControllerImpl]).asEagerSingleton()
     bind(classOf[BusinessContactDetailsController]).to(classOf[BusinessContactDetailsControllerImpl]).asEagerSingleton()
-    bind(classOf[IncorporationInformationStubsController]).to(classOf[IncorporationInformationStubsControllerImpl]).asEagerSingleton()
     bind(classOf[TestCacheController]).to(classOf[TestCacheControllerImpl]).asEagerSingleton()
     bind(classOf[TestCTController]).to(classOf[TestCTControllerImpl]).asEagerSingleton()
     bind(classOf[TestSetupController]).to(classOf[TestSetupControllerImpl]).asEagerSingleton()
@@ -94,7 +93,6 @@ class Module extends AbstractModule {
   private def bindServices(): Unit = {
     bind(classOf[CancellationService]).to(classOf[CancellationServiceImpl]).asEagerSingleton()
     bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
-    bind(classOf[IncorporationInformationService]).to(classOf[IncorporationInformationServiceImpl]).asEagerSingleton()
     bind(classOf[DateService]).to(classOf[DateServiceImpl]).asEagerSingleton()
     bind(classOf[S4LService]).to(classOf[S4LServiceImpl]).asEagerSingleton()
     bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
@@ -121,12 +119,9 @@ class Module extends AbstractModule {
     bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
     bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
     bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
-    bind(classOf[BusinessRegistrationConnector]).to(classOf[BusinessRegistrationConnectorImpl]).asEagerSingleton()
-    bind(classOf[CompanyRegistrationConnector]).to(classOf[CompanyRegistrationConnectorImpl]).asEagerSingleton()
     bind(classOf[S4LConnector]).to(classOf[S4LConnectorImpl]).asEagerSingleton()
     bind(classOf[KeystoreConnector]).to(classOf[KeystoreConnectorImpl]).asEagerSingleton()
     bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
-    bind(classOf[IncorporationInformationConnector]).to(classOf[IncorporationInformationConnectorImpl]).asEagerSingleton()
     bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
     bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
     bind(classOf[ICLConnector]).to(classOf[ICLConnectorImpl]).asEagerSingleton()
