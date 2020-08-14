@@ -14,10 +14,6 @@ GET         /working-days                      controllers.test.TestWorkingDaysV
 
 GET         /ct-registration                   controllers.test.TestCTController.show()
 
-GET         /setup-vat-user                    controllers.test.IncorporationInformationStubsController.postTestData()
-
-GET         /incorp-company/:incorpDate        controllers.test.IncorporationInformationStubsController.incorpCompany(incorpDate: String)
-
 GET         /feature-flag/:name/:state         controllers.test.FeatureSwitchController.switcher(name:String,state: String)
 
 GET         /test-iv-response/:journeyId       controllers.test.TestIVController.show(journeyId: String)

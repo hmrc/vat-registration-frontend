@@ -17,9 +17,8 @@
 package services
 
 import connectors.RegistrationConnector
-import models.{TradingNameView, _}
 import fixtures.VatRegistrationFixture
-import testHelpers.VatRegSpec
+import models.{TradingNameView, _}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import testHelpers.{S4LMockSugar, VatRegSpec}
@@ -33,7 +32,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
     val service = new TradingDetailsService {
       override val prePopService: PrePopService = mockPrePopService
       override val s4lService: S4LService = mockS4LService
-      override val registrationConnector : RegistrationConnector = mockRegConnector
+      override val registrationConnector: RegistrationConnector = mockRegConnector
     }
   }
 
@@ -127,26 +126,6 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
     }
 
   }
-  "Calling getTradingNamePrepop" should {
-    "return Some of pre pop trading name if trading name model is None" in new Setup {
-      when(mockPrePopService.getTradingName(any())(any())).thenReturn(Future.successful(Some("foo bar wizz")))
-
-      await(service.getTradingNamePrepop("12345",None)) mustBe Some("foo bar wizz")
-    }
-    "return None as the trading name model = Some of true" in new Setup {
-      await(service.getTradingNamePrepop("12345",Some(TradingNameView(true,Some("foo"))))) mustBe None
-    }
-    "return Some of pre pop trading name as the trading name model = Some of false" in new Setup {
-      when(mockPrePopService.getTradingName(any())(any())).thenReturn(Future.successful(Some("foo bar wizz")))
-
-      await(service.getTradingNamePrepop("12345",Some(TradingNameView(false,None)))) mustBe Some("foo bar wizz")
-    }
-    "return None if prep pop returns nothing and trading name model = None" in new Setup {
-      when(mockPrePopService.getTradingName(any())(any())).thenReturn(Future.successful(None))
-
-      await(service.getTradingNamePrepop("12345",None)) mustBe None
-    }
-  }
 
   "saveTradingName" should {
     "amend the trading name on a S4L model should not save to pre pop" in new Setup() {
@@ -156,17 +135,6 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
         .thenReturn(Future.successful(dummyCacheMap))
 
       await(service.saveTradingName(regId, tradingNameViewNo.yesNo, tradingNameViewNo.tradingName)) mustBe TradingDetails(Some(tradingNameViewNo))
-    }
-    "amend the trading name on a S4l model and should save to pre pop if answer is yes and string is defined" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      when(mockPrePopService.saveTradingName(any(), any())(any())).thenReturn(Future.successful(testTradingName))
-
-      await(service.saveTradingName(regId, tradingNameViewYes.yesNo, tradingNameViewYes.tradingName)) mustBe TradingDetails(Some(tradingNameViewYes))
-      verify(mockPrePopService,times(1)).saveTradingName(any(),any())(any())
     }
   }
 

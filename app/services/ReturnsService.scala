@@ -28,19 +28,19 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 case class VoluntaryPageViewModel(
-                                   form : Option[(DateSelection.Value, Option[LocalDate])],
-                                   ctActive : Option[LocalDate]
+                                   form: Option[(DateSelection.Value, Option[LocalDate])],
+                                   ctActive: Option[LocalDate]
                                  )
 
 case class MandatoryDateModel(
-                                calculatedDate: LocalDate,
-                                startDate: Option[LocalDate],
-                                selected: Option[DateSelection.Value]
+                               calculatedDate: LocalDate,
+                               startDate: Option[LocalDate],
+                               selected: Option[DateSelection.Value]
                              )
 
 class ReturnsServiceImpl @Inject()(val vatRegConnector: RegistrationConnector,
                                    val vatService: RegistrationService,
-                                   val s4lService : S4LService,
+                                   val s4lService: S4LService,
                                    val prePopService: PrePopService) extends ReturnsService
 
 trait ReturnsService {
@@ -50,19 +50,19 @@ trait ReturnsService {
   val prePopService: PrePopService
 
 
-  def retrieveMandatoryDates(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext): Future[MandatoryDateModel] = {
+  def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[MandatoryDateModel] = {
     for {
       calcDate <- retrieveCalculatedStartDate
       vatDate <- getVatStartDate
     } yield {
       vatDate.fold(MandatoryDateModel(calcDate, None, None)) { startDate =>
-        MandatoryDateModel(calcDate, vatDate, Some(if(startDate == calcDate) DateSelection.calculated_date else DateSelection.specific_date))
+        MandatoryDateModel(calcDate, vatDate, Some(if (startDate == calcDate) DateSelection.calculated_date else DateSelection.specific_date))
       }
     }
   }
 
-  def calculateMandatoryStartDate(threshold : Threshold): LocalDate = {
-    def calculatedCrossedThresholdDate(thresholdDate : Option[LocalDate]) = thresholdDate.map(_.withDayOfMonth(1).plusMonths(2))
+  def calculateMandatoryStartDate(threshold: Threshold): LocalDate = {
+    def calculatedCrossedThresholdDate(thresholdDate: Option[LocalDate]) = thresholdDate.map(_.withDayOfMonth(1).plusMonths(2))
 
     List[Option[LocalDate]](
       calculatedCrossedThresholdDate(threshold.thresholdInTwelveMonths),
@@ -79,16 +79,16 @@ trait ReturnsService {
     }
   }
 
-  def getVatStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[Option[LocalDate]] = {
+  def getVatStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[LocalDate]] = {
     getReturns map {
       returns => returns.start flatMap (_.date)
     }
   }
 
-  def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
+  def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
     s4lService.fetchAndGetNoAux[Returns](S4LKey.returns) flatMap {
       case Some(returns) => Future.successful(returns)
-      case _             => vatRegConnector.getReturns(profile.registrationId)
+      case _ => vatRegConnector.getReturns(profile.registrationId)
     } recover {
       case e =>
         Logger.warn("[ReturnsService] [getReturnsViewModel] " +
@@ -97,42 +97,39 @@ trait ReturnsService {
     }
   }
 
-  def retrieveCalculatedStartDate(implicit profile : CurrentProfile, hc : HeaderCarrier, ec : ExecutionContext) : Future[LocalDate] = {
+  def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[LocalDate] = {
     vatService.getThreshold(profile.registrationId) map calculateMandatoryStartDate
   }
 
-  def retrieveCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext) : Future[Option[LocalDate]] = {
+  def retrieveCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Option[LocalDate]] = {
     prePopService.getCTActiveDate recover {
       case e => Logger.error(s"[ReturnsService][retrieveCTActiveDate] an error occured for regId: ${profile.registrationId} with message: ${e.getMessage}")
         throw e
     }
   }
 
-  def voluntaryStartPageViewModel(incorpDate : Option[LocalDate])
-                                 (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext) : Future[VoluntaryPageViewModel] = {
+  def voluntaryStartPageViewModel()(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[VoluntaryPageViewModel] = {
     for {
       returns <- getReturns
       ctActive <- retrieveCTActiveDate
     } yield {
-      VoluntaryPageViewModel((ctActive, returns.start, incorpDate) match {
-        case (Some(cta), Some(Start(Some(vsd))), _) if cta == vsd => Some((DateSelection.business_start_date, Some(vsd)))
-        case (_, Some(Start(Some(vsd))), Some(icd)) if vsd == icd => Some((DateSelection.company_registration_date, Some(vsd)))
-        case (_, Some(Start(None)), None)                         => Some((DateSelection.company_registration_date, None))
-        case (_, Some(Start(Some(vsd))), _)                       => Some((DateSelection.specific_date, Some(vsd)))
-        case _                                                    => None
+      VoluntaryPageViewModel((ctActive, returns.start) match {
+        case (Some(cta), Some(Start(Some(vsd)))) if cta == vsd => Some((DateSelection.business_start_date, Some(vsd)))
+        case (_, Some(Start(None))) => Some((DateSelection.company_registration_date, None))
+        case (_, Some(Start(Some(vsd)))) => Some((DateSelection.specific_date, Some(vsd)))
+        case _ => None
       }, ctActive)
     }
   }
 
   def saveVoluntaryStartDate
-  (dateChoice : DateSelection.Value, startDate : Option[LocalDate], incorpDate : Option[LocalDate], ctActive : Option[LocalDate])
-  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
-    saveVatStartDate((dateChoice, startDate, incorpDate, ctActive) match {
-      case (DateSelection.company_registration_date, _, Some(icd), _)   => Some(icd)
-      case (DateSelection.company_registration_date, _, _, _)           => None
-      case (DateSelection.business_start_date,       _, _, Some(cta))   => Some(cta)
-      case (DateSelection.specific_date,             Some(vsd), _, _)   => Some(vsd)
-      case _                                                            => None
+  (dateChoice: DateSelection.Value, startDate: Option[LocalDate], ctActive: Option[LocalDate])
+  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
+    saveVatStartDate((dateChoice, startDate, ctActive) match {
+      case (DateSelection.company_registration_date, _, _) => None
+      case (DateSelection.business_start_date, _, Some(cta)) => Some(cta)
+      case (DateSelection.specific_date, Some(vsd), _) => Some(vsd)
+      case _ => None
     })
   }
 
@@ -140,10 +137,10 @@ trait ReturnsService {
     case Returns(Some(false), _, Some(_), Some(_)) =>
       Complete(returns.copy(frequency = Some(Frequency.quarterly)))
 
-    case Returns(Some(true),  Some(Frequency.quarterly), Some(_), Some(_)) =>
+    case Returns(Some(true), Some(Frequency.quarterly), Some(_), Some(_)) =>
       Complete(returns)
 
-    case Returns(Some(true),  Some(Frequency.monthly), _, Some(_)) =>
+    case Returns(Some(true), Some(Frequency.monthly), _, Some(_)) =>
       Complete(returns.copy(staggerStart = None))
 
     case _ =>
@@ -151,8 +148,8 @@ trait ReturnsService {
   }
 
   def submitReturns(returns: Returns)
-                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
-    handleView(returns) fold (
+                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
+    handleView(returns) fold(
       incomplete =>
         s4lService.saveNoAux(returns, S4LKey.returns),
 
@@ -160,11 +157,11 @@ trait ReturnsService {
         vatRegConnector.patchReturns(profile.registrationId, returns) map { _ =>
           s4lService.clear
         }
-    ) map { _ => returns}
+    ) map { _ => returns }
   }
 
-  def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
-    getReturns flatMap {storedData =>
+  def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
+    getReturns flatMap { storedData =>
       for {
         returns <- submitReturns(storedData.copy(
           reclaimVatOnMostReturns = Some(reclaimView),
@@ -177,30 +174,30 @@ trait ReturnsService {
   }
 
   def saveFrequency(frequencyView: Frequency.Value)
-                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
+                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(storedData.copy(frequency = Some(frequencyView)))
-    )
+      )
   }
 
   def saveStaggerStart(staggerStartView: Stagger.Value)
-                      (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
+                      (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(
         storedData.copy(staggerStart = Some(staggerStartView))
       )
-    )
+      )
   }
 
   def saveVatStartDate(vatStartDateView: Option[LocalDate])
-                      (implicit hc: HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Returns] = {
+                      (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
     getReturns flatMap (storedData =>
       submitReturns(storedData.copy(start = Some(Start(vatStartDateView))))
-    )
+      )
   }
 
   def getThreshold()
-                  (implicit hc:HeaderCarrier, profile: CurrentProfile, ec : ExecutionContext): Future[Boolean] = {
+                  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Boolean] = {
     vatService.getThreshold(profile.registrationId) map (!_.mandatoryRegistration)
   }
 

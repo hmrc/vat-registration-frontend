@@ -16,8 +16,6 @@
 
 package testHelpers
 
-import java.time.LocalDate
-
 import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
@@ -46,15 +44,13 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBui
   implicit val cp = currentProfile()
 
   def currentProfile(ivPassed: Option[Boolean] = Some(true)): CurrentProfile =
-    CurrentProfile("Test Me", testRegId, "000-434-1", VatRegStatus.draft,Some(LocalDate.of(2017, 12, 21)),ivPassed)
-
-  val currentNonincorpProfile: CurrentProfile = currentProfile().copy(incorporationDate = None)
+    CurrentProfile(testRegId, VatRegStatus.draft)
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
   implicit val duration = 5.seconds
 
-  def await[T](future : Awaitable[T]) : T = Await.result(future, duration)
+  def await[T](future: Awaitable[T]): T = Await.result(future, duration)
 
   // Placeholder for custom configuration
   // Use this if you want to configure the app
@@ -63,8 +59,8 @@ class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBui
   val mockVATFeatureSwitch = mock[VATRegFeatureSwitch]
   val mockFeatureManager = mock[FeatureManager]
 
-  val disabledFeatureSwitch = BooleanFeatureSwitch("test",false)
-  val enabledFeatureSwitch = BooleanFeatureSwitch("test",true)
+  val disabledFeatureSwitch = BooleanFeatureSwitch("test", false)
+  val enabledFeatureSwitch = BooleanFeatureSwitch("test", true)
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion): Unit =

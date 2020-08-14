@@ -33,6 +33,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
 class IdentityVerificationControllerSpec extends ControllerSpec with MockMessages {
+
   trait Setup {
     val testController = new IdentityVerificationController {
       val ivService: IVService = mockIVService
@@ -43,7 +44,7 @@ class IdentityVerificationControllerSpec extends ControllerSpec with MockMessage
 
     mockAllMessages
     mockAuthenticated()
-    mockWithCurrentProfile(Some(currentProfile.copy(ivPassed = None)))
+    mockWithCurrentProfile(Some(currentProfile))
   }
 
   "redirectToIV" should {

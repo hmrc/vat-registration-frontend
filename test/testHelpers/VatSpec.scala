@@ -16,8 +16,6 @@
 
 package testHelpers
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import config.AppConfig
 import fixtures.VatRegistrationFixture
@@ -38,15 +36,11 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
   with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterEach {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val ex: ExecutionContext =  scala.concurrent.ExecutionContext.Implicits.global
+  implicit val ex: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(
-    companyName = "Test Me",
     registrationId = testRegId,
-    transactionId = "000-434-1",
-    vatRegistrationStatus = VatRegStatus.draft,
-    incorporationDate = Some(LocalDate.of(2017, 12, 21)),
-    ivPassed = Some(true)
+    vatRegistrationStatus = VatRegStatus.draft
   )
 
   val dummyCacheMap: CacheMap = CacheMap("", Map.empty)
@@ -56,25 +50,25 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
   }
 
   //TODO: Complete this function to create the config
-  def generateConfig(newAnalyticsToken: String                    = "",
-                     newAnalyticsHost: String                     = "",
-                     newReportAProblemPartialUrl: String          = "",
-                     newReportAProblemNonJSUrl: String            = "",
-                     newTimeoutInSeconds: String                  = "",
-                     newContactFrontendPartialBaseUrl: String     = "",
-                     newWhitelistedPostIncorpRegIds: Seq[String]  = Seq(),
-                     newWhitelistedPreIncorpRegIds: Seq[String]   = Seq(),
-                     newWhitelistedOfficersList: Seq[Officer]     = Seq(),
-                     newWhitelistedCompanyName: JsValue           = Json.obj() ) = new AppConfig {
-    val analyticsToken: String                      = newAnalyticsToken
-    val analyticsHost: String                       = newAnalyticsHost
-    val reportAProblemPartialUrl: String            = newReportAProblemPartialUrl
-    val reportAProblemNonJSUrl: String              = newReportAProblemNonJSUrl
-    val timeoutInSeconds: String                    = newTimeoutInSeconds
-    val contactFrontendPartialBaseUrl: String       = newContactFrontendPartialBaseUrl
-    val whitelistedPostIncorpRegIds: Seq[String]    = newWhitelistedPostIncorpRegIds
-    val whitelistedPreIncorpRegIds: Seq[String]     = newWhitelistedPreIncorpRegIds
-    val defaultCompanyName: JsValue                 = newWhitelistedCompanyName
+  def generateConfig(newAnalyticsToken: String = "",
+                     newAnalyticsHost: String = "",
+                     newReportAProblemPartialUrl: String = "",
+                     newReportAProblemNonJSUrl: String = "",
+                     newTimeoutInSeconds: String = "",
+                     newContactFrontendPartialBaseUrl: String = "",
+                     newWhitelistedPostIncorpRegIds: Seq[String] = Seq(),
+                     newWhitelistedPreIncorpRegIds: Seq[String] = Seq(),
+                     newWhitelistedOfficersList: Seq[Officer] = Seq(),
+                     newWhitelistedCompanyName: JsValue = Json.obj()) = new AppConfig {
+    val analyticsToken: String = newAnalyticsToken
+    val analyticsHost: String = newAnalyticsHost
+    val reportAProblemPartialUrl: String = newReportAProblemPartialUrl
+    val reportAProblemNonJSUrl: String = newReportAProblemNonJSUrl
+    val timeoutInSeconds: String = newTimeoutInSeconds
+    val contactFrontendPartialBaseUrl: String = newContactFrontendPartialBaseUrl
+    val whitelistedPostIncorpRegIds: Seq[String] = newWhitelistedPostIncorpRegIds
+    val whitelistedPreIncorpRegIds: Seq[String] = newWhitelistedPreIncorpRegIds
+    val defaultCompanyName: JsValue = newWhitelistedCompanyName
     val defaultCohoROA: CoHoRegisteredOfficeAddress = CoHoRegisteredOfficeAddress("premises",
       "line1",
       Some("line2"),
@@ -83,6 +77,6 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
       Some("po_box"),
       Some("XX XX"),
       Some("region"))
-    val defaultOfficerList: OfficerList             = OfficerList(newWhitelistedOfficersList)
+    val defaultOfficerList: OfficerList = OfficerList(newWhitelistedOfficersList)
   }
 }

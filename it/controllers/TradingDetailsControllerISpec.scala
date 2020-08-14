@@ -16,10 +16,9 @@
 
 package controllers
 
-import com.github.tomakehurst.wiremock.client.WireMock.{findAll, postRequestedFor, urlMatching}
-import models.{TradingDetails, TradingNameView}
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import models.{TradingDetails, TradingNameView}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -29,23 +28,25 @@ import repositories.ReactiveMongoRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
-  val companyName = "Test Company Ltd"
+  val companyName = "FAKECOMPANY Ltd."
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -55,37 +56,13 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
   }
 
   "show Trading Name page" should {
-    "return 200 and populated trading name field from pre pop" in new Setup {
+    "return 200" in new Setup {
       given()
         .user.isAuthorised
-        .s4lContainer[TradingDetails].contains(tradingDetails)
-        .company.nameIs(companyName)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .businessRegistration.returnsGETTradingNamePrePopResponse("1", Some("foo bar from pre pop"), 200)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/trading-name").get()
-      whenReady(response) { res =>
-        res.status mustBe 200
-
-        val document = Jsoup.parse(res.body)
-        val elems = document.getElementById("pageHeading")
-        elems.text must include(companyName)
-        document.getElementById("tradingName").`val` mustBe "foo bar from pre pop"
-        document.getElementById("tradingNameRadio-false").attr("checked") mustBe "checked"
-      }
-    }
-    "return 200 and no pre pop populated or answers populated if s4l returns nothing and pre pop returns nothing" in new Setup {
-      given()
-        .user.isAuthorised
-        .s4lContainer[TradingDetails].isEmpty
         .vatScheme.doesNotHave("trading-details")
         .company.nameIs(companyName)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .businessRegistration.returnsGETTradingNamePrePopResponse("1", None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -102,8 +79,9 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
       }
     }
   }
+
   "submit Trading Name page" should {
-    "return 303 and post to pre pop" in new Setup {
+    "return 303" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)
@@ -112,7 +90,6 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
-        .businessRegistration.postsTradingNameToPrepop("1", Some("Test Trading Name"))
         .s4lContainer[TradingDetails].cleared
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -121,9 +98,6 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.euGoodsPage().url)
-        val prePopPost = findAll(postRequestedFor(urlMatching(s"/business-registration/1/trading-name")))
-        val jsonOfPrePopPost =  Json.parse(prePopPost.get(0).getBodyAsString)
-        (jsonOfPrePopPost \ "tradingName").as[String] mustBe "Test Trading Name"
       }
     }
   }

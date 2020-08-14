@@ -16,7 +16,6 @@
 
 package repositories
 
-import java.time.LocalDate
 import java.util.UUID
 
 import common.enums.VatRegStatus
@@ -57,13 +56,9 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
   val sId = UUID.randomUUID().toString
   implicit val hc = HeaderCarrier(sessionId = Some(SessionId(sId)))
 
-  def currentProfile(regId: String) = CurrentProfile(
-    companyName = "TestCompanyName",
+  def currentProfile(regId: String): CurrentProfile = CurrentProfile(
     registrationId = regId,
-    transactionId = "40-123456",
-    vatRegistrationStatus = VatRegStatus.draft,
-    incorporationDate = Some(LocalDate.of(2017, 11, 27)),
-    ivPassed = Some(true)
+    vatRegistrationStatus = VatRegStatus.draft
   )
 
   class Setup {
@@ -80,12 +75,12 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
 
   "SessionRepository" should {
     "cache" when {
-      "given a new currentProfile" in new Setup(){
+      "given a new currentProfile" in new Setup() {
         count shouldBe 0
         await(connector.cache("CurrentProfile", currentProfile("regId")))
         count shouldBe 1
       }
-      "given an existing currentProfile" in new Setup(){
+      "given an existing currentProfile" in new Setup() {
         await(connector.cache("CurrentProfile", currentProfile("regId")))
         count shouldBe 1
         await(connector.cache("CurrentProfile", currentProfile("newregId")))
@@ -93,8 +88,8 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
       }
     }
     "fetch" when {
-      "given a currentProfile exists" in new Setup(){
-        val currentProfileData: CurrentProfile = currentProfile("regId2").copy(incorpRejected = Some(true))
+      "given a currentProfile exists" in new Setup() {
+        val currentProfileData: CurrentProfile = currentProfile("regId2")
         val key: String = "CurrentProfile"
 
         await(connector.cache(key, currentProfileData))
@@ -104,24 +99,26 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
         res.get.data shouldBe Map(key -> Json.toJson(currentProfileData))
       }
     }
-    "addRejectionFlag" when {
-      "given a currentProfile exists" in new Setup(){
-        val currentProfileData: CurrentProfile = currentProfile("regId2")
-        val key: String = "CurrentProfile"
+    // TODO: Rejection flag doesnt exist anymore
 
-        val expectedResult = CacheMap(sId, Map("CurrentProfile" ->
-          Json.toJson(currentProfileData.copy(incorpRejected = Some(true))))
-        )
-
-        await(connector.cache(key, currentProfileData))
-
-        await(connector.addRejectionFlag("40-123456")) shouldBe Some("regId2")
-
-        await(connector.fetch(hc)).get shouldBe expectedResult
-      }
-    }
+    //    "addRejectionFlag" when {
+    //      "given a currentProfile exists" in new Setup(){
+    //        val currentProfileData: CurrentProfile = currentProfile("regId2")
+    //        val key: String = "CurrentProfile"
+    //
+    //        val expectedResult = CacheMap(sId, Map("CurrentProfile" ->
+    //          Json.toJson(currentProfileData.copy(incorpRejected = Some(true))))
+    //        )
+    //
+    //        await(connector.cache(key, currentProfileData))
+    //
+    //        await(connector.addRejectionFlag("40-123456")) shouldBe Some("regId2")
+    //
+    //        await(connector.fetch(hc)).get shouldBe expectedResult
+    //      }
+    //    }
     "fetchAndGet" when {
-      "given a currentProfile and key" in new Setup(){
+      "given a currentProfile and key" in new Setup() {
         val currentProfileData: CurrentProfile = currentProfile("regId3")
         val key: String = "CurrentProfile"
 
@@ -131,7 +128,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
         res.isDefined shouldBe true
         res.get shouldBe currentProfileData
       }
-      "given no current profile" in new Setup(){
+      "given no current profile" in new Setup() {
         val key: String = "CurrentProfile"
 
         val res: Option[CurrentProfile] = await(connector.fetchAndGet(key)(hc, CurrentProfile.format))
@@ -153,7 +150,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with MongoSpecSupport {
         res shouldBe false
         count shouldBe 0
       }
-      "there are two current profiles" in new Setup(){
+      "there are two current profiles" in new Setup() {
         val hc1 = hc.copy(sessionId = Some(SessionId("id1")))
 
         await(connector.cache("CurrentProfile", currentProfile("regId"))(hc1, CurrentProfile.format))

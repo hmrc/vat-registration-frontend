@@ -16,7 +16,6 @@
 
 package service
 
-import java.time.LocalDate
 import java.util.UUID
 
 import common.enums.VatRegStatus
@@ -52,43 +51,22 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
   val sId = UUID.randomUUID().toString
   implicit val hc = HeaderCarrier(sessionId = Some(SessionId(sId)))
 
-  def currentProfile(regId: String) = CurrentProfile(
-    companyName = "TestCompanyName",
+  def currentProfile(regId: String): CurrentProfile = CurrentProfile(
     registrationId = regId,
-    transactionId = "40-123456",
-    vatRegistrationStatus = VatRegStatus.draft,
-    incorporationDate = Some(LocalDate.of(2017, 11, 27)),
-    ivPassed = Some(true)
+    vatRegistrationStatus = VatRegStatus.draft
   )
 
   "submitRegistration" should {
 
     "get a Success response if submitted successfully" in {
       val regId = "12345"
-      val transId = "40-123456"
 
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
-
-      stubDelete(s"/test-incorporation-information/subscribe/$transId/regime/vatfe/subscriber/scrs", 200, "")
 
       val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
       val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
 
       await(response) shouldBe Success
-    }
-
-    "handle unexpected responses from cancelling a subscription" in {
-      val regId = "12345"
-      val transId = "40-123456"
-
-      stubPut(s"/vatreg/$regId/submit-registration", 200, "")
-
-      stubDelete(s"/test-incorporation-information/subscribe/$transId/regime/vatfe/subscriber/scrs", 404, "")
-
-      val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
-      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
-
-      await(response) shouldBe SubmissionFailedRetryable
     }
   }
 }

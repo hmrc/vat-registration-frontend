@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package  services
+package services
 
 import java.time.LocalDate
 
+import _root_.models._
 import _root_.models.api.Threshold
 import connectors.RegistrationConnector
-import _root_.models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.MustMatchers
@@ -46,12 +46,12 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
 
   val mockCacheMap = CacheMap("", Map("" -> JsString("")))
 
-  override val date         = LocalDate.now
-  override val returns      = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
+  override val date = LocalDate.now
+  override val returns = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
   val returnsFixed = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 25)))))
-  val returnsAlt   = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 12)))))
+  val returnsAlt = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 12)))))
 
-  def returnsWithVatDate(vd : Option[LocalDate]) = returns.copy(start = Some(Start(vd)))
+  def returnsWithVatDate(vd: Option[LocalDate]) = returns.copy(start = Some(Start(vd)))
 
   val emptyReturns = Returns(None, None, None, None)
   val incomplete = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
@@ -73,7 +73,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       await(service.getReturns) mustBe returns
     }
 
-    "construct a blank model when nothing was found in Save4Later or Mongo" in  new Setup {
+    "construct a blank model when nothing was found in Save4Later or Mongo" in new Setup {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockRegConnector.getReturns(any())(any(), any()))
@@ -373,24 +373,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockPPService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(Some(businessStartDate)))
 
-      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
         Some((DateSelection.business_start_date, Some(businessStartDate))),
         Some(businessStartDate)
-      )
-    }
-
-    "return a incorp date view model when the company is incorped" in new Setup {
-      val incorpDate = LocalDate.of(2017, 11, 11)
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(incorpDate)))))
-
-      when(mockPPService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      await(service.voluntaryStartPageViewModel(Some(incorpDate))) mustBe VoluntaryPageViewModel(
-        Some((DateSelection.company_registration_date, Some(incorpDate))),
-        None
       )
     }
 
@@ -401,7 +386,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockPPService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
-      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
         Some((DateSelection.company_registration_date, None)),
         None
       )
@@ -416,7 +401,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockPPService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
-      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(
+      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
         Some((DateSelection.specific_date, Some(specificdate))),
         None
       )
@@ -429,24 +414,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
       when(mockPPService.getCTActiveDate(any(), any()))
         .thenReturn(Future.successful(None))
 
-      await(service.voluntaryStartPageViewModel(None)) mustBe VoluntaryPageViewModel(None, None)
+      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(None, None)
     }
   }
 
   "saveVoluntaryStartDate" should {
-    "save a company registration date when the incorp date is known" in new Setup {
-      val incorpDate = LocalDate.of(2017, 10, 10)
-      val expected = incomplete.copy(start = Some(Start(Some(incorpDate))))
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
-        .thenReturn(Future.successful(mockCacheMap))
-
-      await(service.saveVoluntaryStartDate(
-        DateSelection.company_registration_date, None, Some(incorpDate), None
-      )) mustBe expected
-    }
 
     "save a company registration date when the incorp date in the future, to be incorped" in new Setup {
       val expected = incomplete.copy(start = Some(Start(None)))
@@ -457,7 +429,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.company_registration_date, None, None, None
+        DateSelection.company_registration_date, None, None
       )) mustBe expected
     }
 
@@ -471,7 +443,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.business_start_date, None, None, Some(businessStartDate)
+        DateSelection.business_start_date, None, Some(businessStartDate)
       )) mustBe expected
     }
 
@@ -485,7 +457,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.specific_date, Some(specificStartDate), None, None
+        DateSelection.specific_date, Some(specificStartDate), None
       )) mustBe expected
     }
 
@@ -498,7 +470,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar 
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.specific_date, None, None, None
+        DateSelection.specific_date, None, None
       )) mustBe expected
     }
   }

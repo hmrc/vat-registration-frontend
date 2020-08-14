@@ -16,8 +16,8 @@
 
 package services
 
+import connectors.KeystoreConnector
 import javax.inject.Inject
-import connectors.{IncorporationInformationConnector, KeystoreConnector}
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -25,36 +25,23 @@ import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
-class CurrentProfileServiceImpl @Inject()(val incorpInfoService: IncorporationInformationService,
-                                          val vatRegistrationService: RegistrationService,
-                                          val ivService: IVService,
-                                          val keystoreConnector: KeystoreConnector) extends CurrentProfileService
+class CurrentProfileServiceImpl @Inject()(
+                                           val vatRegistrationService: RegistrationService,
+                                           val keystoreConnector: KeystoreConnector) extends CurrentProfileService
 
 trait CurrentProfileService extends RegistrationWhitelist {
 
-  val incorpInfoService: IncorporationInformationService
   val keystoreConnector: KeystoreConnector
   val vatRegistrationService: RegistrationService
-  val ivService: IVService
 
-  def buildCurrentProfile(regId: String, txId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
+  def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
-      companyName           <- incorpInfoService.getCompanyName(regId, txId)
-      incorpDate            <- incorpInfoService.getIncorpDate(regId, txId)
-      status                <- vatRegistrationService.getStatus(regId)
-      ivStatus              <-  ifRegIdNotWhitelisted(regId) {
-        ivService.getIVStatus(regId)
-      }(returnDefaultPassedIV)
-      profile               =  CurrentProfile(
-        companyName           = companyName,
-        registrationId        = regId,
-        transactionId         = txId,
-        vatRegistrationStatus = status,
-        incorporationDate     = incorpDate,
-        ivPassed              = ivStatus
+      status <- vatRegistrationService.getStatus(regId)
+      profile = CurrentProfile(
+        registrationId = regId,
+        vatRegistrationStatus = status
       )
-      _                     <- incorpInfoService.registerInterest(regId, txId)
-      _                     <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
+      _ <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile
   }
 

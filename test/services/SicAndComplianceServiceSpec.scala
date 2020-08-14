@@ -20,8 +20,8 @@ import common.enums.VatRegStatus
 import connectors.RegistrationConnector
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
-import models.api.SicCode
 import models._
+import models.api.SicCode
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMocks with VatRegistrationFixture {
   implicit val hc = HeaderCarrier()
-  implicit val currentProfile = CurrentProfile("Test Me", testRegId, "000-434-1", VatRegStatus.draft, None)
+  implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   trait Setup {
     val service: SicAndComplianceService = new SicAndComplianceService {
@@ -62,10 +62,10 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     "return an empty Sic And Compiance view model" when {
 
       "there is no data in S4L or vat reg" in new Setup {
-        when(mockRegConnector.getSicAndCompliance(any(),any())).thenReturn(Future.successful(None))
+        when(mockRegConnector.getSicAndCompliance(any(), any())).thenReturn(Future.successful(None))
         when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
           .thenReturn(Future.successful(None))
-        when(mockS4LService.saveNoAux[SicAndCompliance](any(),any())(any(),any(),any())).thenReturn(Future.successful(validCacheMap))
+        when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
         await(service.getSicAndCompliance) shouldBe SicAndCompliance()
       }
@@ -113,7 +113,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete without labour" in new Setup {
-      val data = MainBusinessActivityView("foo",Some(sicCode))
+      val data = MainBusinessActivityView("foo", Some(sicCode))
       val incompleteViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
         mainBusinessActivity = None
@@ -123,8 +123,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
     }
@@ -133,7 +133,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val data = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
       val incompleteViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8))
       )
@@ -142,8 +142,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
     }
@@ -152,15 +152,15 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val data = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
       val incompleteViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode)))
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode)))
       )
       val expected = incompleteViewModel.copy(companyProvideWorkers = Some(data))
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
     }
@@ -169,7 +169,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val data = Workers(7)
       val incompleteViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = None
       )
@@ -178,8 +178,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
     }
@@ -188,7 +188,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val data = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)
       val incompleteViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -199,8 +199,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.updateSicAndCompliance(data)) shouldBe expected
     }
@@ -212,7 +212,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val sicCodeList = List(SicCode("66666", "test1", "desc1"), code)
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(code))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(code))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -224,8 +224,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(sicCodeList)) shouldBe expected
     }
@@ -241,14 +241,14 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
       val expected = completeViewModel.copy(
-         mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
-         otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode)))
+        mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
+        otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode)))
       )
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(List(newSicCode))) shouldBe expected
     }
@@ -273,8 +273,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(List(newSicCode))) shouldBe expected
     }
@@ -283,7 +283,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       val sicCodeList = List(SicCode("01610", "test1", "desc1"), SicCode("81223", "test2", "desc2"))
       val completeViewModel = SicAndCompliance(
         description = Some(BusinessActivityDescription("foobar")),
-        mainBusinessActivity = Some(MainBusinessActivityView("foo",Some(sicCode))),
+        mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode))),
         companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
         workers = Some(Workers(8)),
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -292,8 +292,8 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
-      when(mockRegConnector.updateSicAndCompliance(any())(any(),any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(),any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockRegConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
+      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
       await(service.submitSicCodes(sicCodeList)) shouldBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))
     }

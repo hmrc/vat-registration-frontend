@@ -17,12 +17,11 @@
 package connectors
 
 import java.time.LocalDate
-import java.util.Base64
 
 import common.enums.VatRegStatus
 import models.api.VatScheme
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.JsString
 import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
 import uk.gov.hmrc.play.test.UnitSpec
@@ -31,44 +30,42 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
   def vatregConnector: RegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
-  val nonWhitelistedRegId   = "normalUser"
-  val transactionID         = "000-431-TEST"
+  val nonWhitelistedRegId = "normalUser"
+  val transactionID = "000-431-TEST"
 
-  val currentProfileWhitelisted = models.CurrentProfile(
-    "fooBar","99","dummy",VatRegStatus.draft,None,None
-  )
+  val currentProfileWhitelisted: models.CurrentProfile = models.CurrentProfile("99", VatRegStatus.draft)
 
   def incorpInfo(backUrl: String = "http://localhost:9896/callbackUrl", txId: String = transactionID) = IncorporationInfo(
     IncorpSubscription(
       transactionId = txId,
-      regime        = "vat",
-      subscriber    = "scrs",
-      callbackUrl   = backUrl),
+      regime = "vat",
+      subscriber = "scrs",
+      callbackUrl = backUrl),
     IncorpStatusEvent(
-      status            = "accepted",
-      crn               = Some("90000001"),
+      status = "accepted",
+      crn = Some("90000001"),
       incorporationDate = Some(LocalDate.parse("2016-08-05")),
-      description       = None))
+      description = None))
 
-  val incorpInfoRaw  =
+  val incorpInfoRaw =
     s"""
-      |{
-      |  "statusEvent": {
-      |    "crn": "90000001",
-      |    "incorporationDate": "2016-08-05",
-      |    "status": "accepted"
-      |  },
-      |  "subscription": {
-      |    "callbackUrl": "#",
-      |    "regime": "vat",
-      |    "subscriber": "scrs",
-      |    "transactionId": "000-431-TEST"
-      |  }
-      |}
+       |{
+       |  "statusEvent": {
+       |    "crn": "90000001",
+       |    "incorporationDate": "2016-08-05",
+       |    "status": "accepted"
+       |  },
+       |  "subscription": {
+       |    "callbackUrl": "#",
+       |    "regime": "vat",
+       |    "subscriber": "scrs",
+       |    "transactionId": "000-431-TEST"
+       |  }
+       |}
     """.stripMargin
 
 
-  override  def additionalConfig: Map[String, String] =
+  override def additionalConfig: Map[String, String] =
     Map(
       "regIdPostIncorpWhitelist" -> "OTgsOTk=",
       "regIdPreIncorpWhitelist" -> "MTAyLDEwMw==",
@@ -82,7 +79,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         given()
           .vatRegistrationFootprint.exists()
 
-        await(vatregConnector.createNewRegistration) shouldBe VatScheme(id="1", status = VatRegStatus.draft)
+        await(vatregConnector.createNewRegistration) shouldBe VatScheme(id = "1", status = VatRegStatus.draft)
       }
     }
 
@@ -102,7 +99,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
     "return the default IncorpInfo for a post incorp whitelisted regId" in {
       val res = vatregConnector.getIncorporationInfo("99", transactionID)(hc)
-      await(res) shouldBe Some(incorpInfo("#","fakeTxId-99"))
+      await(res) shouldBe Some(incorpInfo("#", "fakeTxId-99"))
     }
 
     "return none for a pre incorp whitelisted regId" in {
@@ -112,7 +109,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
     "return an IncorpInfo for a non-whitelisted regId" in {
       given()
-          .company.isIncorporated
+        .company.isIncorporated
 
       val res = vatregConnector.getIncorporationInfo(nonWhitelistedRegId, transactionID)(hc)
       await(res) shouldBe Some(incorpInfo())

@@ -15,6 +15,7 @@
  */
 
 package client
+
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.enums.VatRegStatus
 import controllers.routes
@@ -22,6 +23,7 @@ import forms.EnterBankAccountDetailsForm._
 import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import helpers.ClientHelper
 import itutil.{IntegrationSpecBase, WiremockHelper}
+import models.CurrentProfile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Application
@@ -32,8 +34,8 @@ import repositories.ReactiveMongoRepository
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
@@ -42,7 +44,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
   val regId = "reg-12345"
 
-  val currentProfile = models.CurrentProfile("testingCompanyName", regId, "000-431-TEST", VatRegStatus.draft, None, Some(true))
+  val currentProfile: CurrentProfile = models.CurrentProfile(regId, VatRegStatus.draft)
   val userId = "user-id-12345"
 
   implicit override lazy val app: Application = new GuiceApplicationBuilder()
@@ -55,13 +57,14 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
     val repo = new ReactiveMongoRepository(app.configuration, mongo)
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
