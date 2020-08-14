@@ -18,13 +18,11 @@ package connectors
 
 import java.time.LocalDate
 
-import config.WSHttp
+import fixtures.VatRegistrationFixture
+import models.api._
+import models.external.IncorporationInfo
 import models.view.{LodgingOfficer, _}
 import models._
-import fixtures.VatRegistrationFixture
-import models.{BankAccount, BusinessActivityDescription, BusinessContact, CompanyProvideWorkers, MainBusinessActivityView, OtherBusinessActivities, Returns, SicAndCompliance, SkilledWorkers, TaxableThreshold, TemporaryContracts, TurnoverEstimates, Workers}
-import models.api._
-import models.external.{IncorporationInfo, Name, Officer}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import play.api.http.Status.{NO_CONTENT, OK}
@@ -37,10 +35,12 @@ import scala.concurrent.Future
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new RegistrationConnector {
-      override val vatRegUrl: String   = "tst-url"
-      override val vatRegElUrl: String = "test-url"
-      override val http: WSHttp        = mockWSHttp
+    val connector: VatRegistrationConnector = new VatRegistrationConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
+      override lazy val vatRegUrl: String = "tst-url"
+      override lazy val vatRegElUrl: String = "test-url"
     }
   }
 
@@ -144,7 +144,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.deleteVatScheme("regId") failedWith notFound
     }
   }
-
 
 
   "Calling updateBusinessContact" should {
@@ -257,12 +256,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return a IncorporationInfo when it can be retrieved from the microservice" in new Setup {
       mockHttpGET[IncorporationInfo]("tst-url", testIncorporationInfo)
-      connector.getIncorporationInfo("tstRegId","tstID") returnsSome testIncorporationInfo
+      connector.getIncorporationInfo("tstRegId", "tstID") returnsSome testIncorporationInfo
     }
 
     "fail when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[IncorporationInfo]("test-url", notFound)
-      connector.getIncorporationInfo("tstRegId","tstID") returnsNone
+      connector.getIncorporationInfo("tstRegId", "tstID") returnsNone
     }
   }
 
@@ -477,7 +476,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val sicAndCompliance = SicAndCompliance(
       description = Some(BusinessActivityDescription("test Bus Desc")),
       mainBusinessActivity = Some(MainBusinessActivityView(SicCode("testId", "test Desc", "test Details"))),
-      otherBusinessActivities  = Some(OtherBusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
+      otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
       companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
       workers = Some(Workers(8)),
       temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -613,7 +612,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "succeed" when {
       "saving a transactionID" in new Setup {
         mockHttpPATCH[String, HttpResponse]("tst-url", HttpResponse(200))
-        val resp : HttpResponse = await(connector.saveTransactionId("tstID", "transID"))
+        val resp: HttpResponse = await(connector.saveTransactionId("tstID", "transID"))
 
         resp.status mustBe 200
       }

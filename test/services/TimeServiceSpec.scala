@@ -38,12 +38,19 @@ class TimeServiceSpec extends UnitSpec with BeforeAndAfterEach with WithFakeAppl
     System.clearProperty("feature.system-date")
   }
 
-  def timeServiceMock(dateTime: JodaLocalDateTime, dayEnd: Int, bankHolidayDates : List[BankHoliday]) = new TimeService {
-    override val dayEndHour: Int = dayEnd
-    override def currentDateTime: JodaLocalDateTime = dateTime
-    override def currentLocalDate: JodaLocalDate = currentDateTime.toLocalDate
-    implicit val bankHolidaySet: BankHolidaySet = BankHolidaySet("england-and-wales", bankHolidayDates)
-  }
+  val mockEnv = mock[Environment]
+  val mockServicesConfig = mock[ServicesConfig]
+
+  def timeServiceMock(dateTime: JodaLocalDateTime, dayEnd: Int, bankHolidayDates: List[BankHoliday]): TimeService =
+    new TimeService(mockEnv, mockServicesConfig) {
+      override lazy val dayEndHour: Int = dayEnd
+
+      override def currentDateTime: JodaLocalDateTime = dateTime
+
+      override def currentLocalDate: JodaLocalDate = currentDateTime.toLocalDate
+
+      override lazy val bankHolidaySet: BankHolidaySet = BankHolidaySet("england-and-wales", bankHolidayDates)
+    }
 
   val bhDud = new BankHoliday(title = "testBH", date = new JodaLocalDate(2000, 10, 10))
   val bh3rd = new BankHoliday(title = "testBH", date = new JodaLocalDate(2017, 1, 3))
@@ -155,16 +162,15 @@ class TimeServiceSpec extends UnitSpec with BeforeAndAfterEach with WithFakeAppl
 
   "dynamicDateExample" must {
     import java.time.LocalDate.{of => d}
-    val mockEnv = mock[Environment]
-    val mockServicesConfig = mock[ServicesConfig]
-    val service = new TimeServiceImpl(mockEnv, mockServicesConfig)
+
+    val service = new TimeService(mockEnv, mockServicesConfig)
 
     "return a date 10 calendar days in the future" in {
       val testCases = Seq(
-        d(2016,1,1)   ->  "11 1 2016",
-        d(2016,2,19)  ->  "29 2 2016",
-        d(2017,2,19)  ->  "1 3 2017",
-        d(2016,12,22) ->  "1 1 2017"
+        d(2016, 1, 1) -> "11 1 2016",
+        d(2016, 2, 19) -> "29 2 2016",
+        d(2017, 2, 19) -> "1 3 2017",
+        d(2016, 12, 22) -> "1 1 2017"
       )
 
       testCases foreach { case (testInput, expectedOutput) =>
@@ -173,7 +179,7 @@ class TimeServiceSpec extends UnitSpec with BeforeAndAfterEach with WithFakeAppl
     }
 
     "return a date which is a specified number of calendar days in the future" in {
-      service.dynamicFutureDateExample(d(2016,1,1), 22) shouldBe "23 1 2016"
+      service.dynamicFutureDateExample(d(2016, 1, 1), 22) shouldBe "23 1 2016"
     }
   }
 }

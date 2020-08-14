@@ -18,26 +18,26 @@ package controllers
 
 import java.time.LocalDate
 
+import it.fixtures.ITRegistrationFixtures
 import models.view.LodgingOfficer
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
-import it.fixtures.ITRegistrationFixtures
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
-  val eligibilitySummaryUrl = (s:String) => s"http://$wiremockHost:$wiremockPort/uriELFE/foo?pageId=$s"
+  val eligibilitySummaryUrl = (s: String) => s"http://$wiremockHost:$wiremockPort/uriELFE/foo?pageId=$s"
   val officerJson = Json.parse(
     s"""
        |{
@@ -72,16 +72,18 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
        |}""".stripMargin)
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -91,51 +93,51 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
   }
 
   "GET Summary page" should {
-    "display the summary page correctly"  in new Setup {
-        given()
-          .user.isAuthorised
-          .vatScheme.contains(vatReg)
-          .vatScheme.has("officer-data", officerJson)
-          .s4lContainer[SicAndCompliance].isEmpty
-          .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
-          .vatScheme.has("sicAndComp",SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
-          .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
-          .s4lContainer[SicAndCompliance].cleared
-          .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .vatScheme.has("eligibility-data", fullEligibilityDataJson)
+    "display the summary page correctly" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.contains(vatReg)
+        .vatScheme.has("officer-data", officerJson)
+        .s4lContainer[SicAndCompliance].isEmpty
+        .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
+        .vatScheme.has("sicAndComp", SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
+        .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
+        .s4lContainer[SicAndCompliance].cleared
+        .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/check-confirm-answers").get()
-        whenReady(response) { res =>
-          res.status mustBe 200
-          val document = Jsoup.parse(res.body)
-          document.title() mustBe "Check and confirm your answers"
-          document.getElementById("pageHeading").text mustBe "Check and confirm your answers"
+      val response = buildClient("/check-confirm-answers").get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+        val document = Jsoup.parse(res.body)
+        document.title() mustBe "Check and confirm your answers"
+        document.getElementById("pageHeading").text mustBe "Check and confirm your answers"
 
-          document.getElementById("sectionA").text mustBe "section A"
-          document.getElementById("sectionA.0Question").text mustBe "Question 1"
-          document.getElementById("sectionA.0Answer").text mustBe "FOO"
-          document.getElementById("sectionA.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("mandatoryRegistration")
-          document.getElementById("sectionA.1Question").text mustBe "Question 2"
-          document.getElementById("sectionA.1Answer").text mustBe "BAR"
-          document.getElementById("sectionA.1ChangeLink").attr("href").contains(eligibilitySummaryUrl("voluntaryRegistration")) mustBe true
+        document.getElementById("sectionA").text mustBe "section A"
+        document.getElementById("sectionA.0Question").text mustBe "Question 1"
+        document.getElementById("sectionA.0Answer").text mustBe "FOO"
+        document.getElementById("sectionA.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("mandatoryRegistration")
+        document.getElementById("sectionA.1Question").text mustBe "Question 2"
+        document.getElementById("sectionA.1Answer").text mustBe "BAR"
+        document.getElementById("sectionA.1ChangeLink").attr("href").contains(eligibilitySummaryUrl("voluntaryRegistration")) mustBe true
 
-          document.getElementById("sectionB").text mustBe "section B"
-          document.getElementById("sectionB.0Question").text mustBe "Question 5"
-          document.getElementById("sectionB.0Answer").text mustBe "bang"
-          document.getElementById("sectionB.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("applicantUKNino")
-          document.getElementById("sectionB.1Question").text mustBe "Question 6"
-          document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
-          document.getElementById("sectionB.1ChangeLink").attr("href") mustBe eligibilitySummaryUrl("turnoverEstimate")
+        document.getElementById("sectionB").text mustBe "section B"
+        document.getElementById("sectionB.0Question").text mustBe "Question 5"
+        document.getElementById("sectionB.0Answer").text mustBe "bang"
+        document.getElementById("sectionB.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("applicantUKNino")
+        document.getElementById("sectionB.1Question").text mustBe "Question 6"
+        document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
+        document.getElementById("sectionB.1ChangeLink").attr("href") mustBe eligibilitySummaryUrl("turnoverEstimate")
 
-          document.getElementById("frs.joinFrsAnswer").text mustBe "No"
-          document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
-          document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
-        }
+        document.getElementById("frs.joinFrsAnswer").text mustBe "No"
+        document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
+        document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
       }
+    }
 
   }
 

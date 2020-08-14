@@ -17,36 +17,14 @@
 package config
 
 import com.google.inject.AbstractModule
-import com.google.inject.name.Names
-import config.startup.{VerifyCrypto, VerifyCryptoConfig}
-import connectors._
-import connectors.test._
-import controllers._
-import controllers.callbacks._
-import controllers.feedback._
-import controllers.internal._
-import controllers.test._
-import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
-import utils._
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-    startupBindings()
     hmrcDependencyBindings()
-    bindConnectors()
-    bindServices()
-    featureSwitches()
-    bindTestControllers()
-    bindInternalRoutes()
-    bindControllers()
-  }
-
-  private def startupBindings(): Unit = {
-    bind(classOf[VerifyCryptoConfig]).to(classOf[VerifyCrypto]).asEagerSingleton()
   }
 
   private def hmrcDependencyBindings(): Unit = {
@@ -56,79 +34,5 @@ class Module extends AbstractModule {
     bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
     bind(classOf[ShortLivedCache]).to(classOf[VatShortLivedCache]).asEagerSingleton()
     bind(classOf[WSHttp]).to(classOf[Http]).asEagerSingleton()
-  }
-
-  private def bindInternalRoutes(): Unit = {
-    bind(classOf[DeleteSessionItemsController]).to(classOf[DeleteSessionItemsControllerImpl])
-  }
-
-  private def bindControllers(): Unit = {
-    bind(classOf[FlatRateController]).to(classOf[FlatRateControllerImpl]).asEagerSingleton()
-    bind(classOf[BankAccountDetailsController]).to(classOf[BankAccountDetailsControllerImpl])
-    bind(classOf[ReturnsController]).to(classOf[ReturnsControllerImpl]).asEagerSingleton()
-    bind(classOf[OfficerController]).to(classOf[OfficerControllerImpl]).asEagerSingleton()
-    bind(classOf[TradingDetailsController]).to(classOf[TradingDetailsControllerImpl]).asEagerSingleton()
-    bind(classOf[SicAndComplianceController]).to(classOf[SicAndComplianceControllerImpl]).asEagerSingleton()
-    bind(classOf[LabourComplianceController]).to(classOf[LabourComplianceControllerImpl]).asEagerSingleton()
-    bind(classOf[SignInOutController]).to(classOf[SignInOutControllerImpl]).asEagerSingleton()
-    bind(classOf[FeedbackController]).to(classOf[FeedbackControllerImpl]).asEagerSingleton()
-    bind(classOf[ApplicationSubmissionController]).to(classOf[ApplicationSubmissionControllerImpl]).asEagerSingleton()
-    bind(classOf[SummaryController]).to(classOf[SummaryControllerImpl]).asEagerSingleton()
-    bind(classOf[WelcomeController]).to(classOf[WelcomeControllerImpl]).asEagerSingleton()
-    bind(classOf[IdentityVerificationController]).to(classOf[IdentityVerificationControllerImpl]).asEagerSingleton()
-    bind(classOf[ErrorController]).to(classOf[ErrorControllerImpl]).asEagerSingleton()
-  }
-
-  private def bindTestControllers(): Unit = {
-    bind(classOf[SicStubController]).to(classOf[SicStubControllerImpl]).asEagerSingleton()
-    bind(classOf[BusinessContactDetailsController]).to(classOf[BusinessContactDetailsControllerImpl]).asEagerSingleton()
-    bind(classOf[TestCacheController]).to(classOf[TestCacheControllerImpl]).asEagerSingleton()
-    bind(classOf[TestCTController]).to(classOf[TestCTControllerImpl]).asEagerSingleton()
-    bind(classOf[TestSetupController]).to(classOf[TestSetupControllerImpl]).asEagerSingleton()
-    bind(classOf[FeatureSwitchController]).to(classOf[FeatureSwitchControllerImpl]).asEagerSingleton()
-    bind(classOf[TestWorkingDaysValidationController]).to(classOf[TestWorkingDaysValidationControllerImpl]).asEagerSingleton()
-    bind(classOf[TestIVController]).to(classOf[TestIVControllerImpl]).asEagerSingleton()
-  }
-
-  private def bindServices(): Unit = {
-    bind(classOf[CancellationService]).to(classOf[CancellationServiceImpl]).asEagerSingleton()
-    bind(classOf[AddressLookupService]).to(classOf[AddressLookupServiceImpl]).asEagerSingleton()
-    bind(classOf[DateService]).to(classOf[DateServiceImpl]).asEagerSingleton()
-    bind(classOf[S4LService]).to(classOf[S4LServiceImpl]).asEagerSingleton()
-    bind(classOf[RegistrationService]).to(classOf[VatRegistrationService]).asEagerSingleton()
-    bind(classOf[PrePopService]).to(classOf[PrePopulationService]).asEagerSingleton()
-    bind(classOf[IVService]).to(classOf[IVServiceImpl]).asEagerSingleton()
-    bind(classOf[CurrentProfileService]).to(classOf[CurrentProfileServiceImpl]).asEagerSingleton()
-    bind(classOf[ReturnsService]).to(classOf[ReturnsServiceImpl]).asEagerSingleton()
-    bind(classOf[BankAccountReputationService]).to(classOf[BankAccountReputationServiceImpl]).asEagerSingleton()
-    bind(classOf[BankAccountDetailsService]).to(classOf[BankAccountDetailsServiceImpl]).asEagerSingleton()
-    bind(classOf[LodgingOfficerService]).to(classOf[LodgingOfficerServiceImpl]).asEagerSingleton()
-    bind(classOf[TradingDetailsService]).to(classOf[TradingDetailsServiceImpl]).asEagerSingleton()
-    bind(classOf[FlatRateService]).to(classOf[FlatRateServiceImpl]).asEagerSingleton()
-    bind(classOf[SicAndComplianceService]).to(classOf[SicAndComplianceServiceImpl]).asEagerSingleton()
-    bind(classOf[BusinessContactService]).to(classOf[BusinessContactServiceImpl]).asEagerSingleton()
-    bind(classOf[TimeService]).to(classOf[TimeServiceImpl]).asEagerSingleton()
-    bind(classOf[ICLService]).to(classOf[ICLServiceImpl]).asEagerSingleton()
-    bind(classOf[SummaryService]).to(classOf[SummaryServiceImpl]).asEagerSingleton()
-  }
-
-  private def bindConnectors(): Unit = {
-    bind(classOf[AddressLookupConnector]).to(classOf[AddressLookupConnectorImpl]).asEagerSingleton()
-    bind(classOf[TestRegistrationConnector]).to(classOf[TestVatRegistrationConnector]).asEagerSingleton()
-    bind(classOf[BankHolidaysConnector]).annotatedWith(Names.named("fallback")).to(classOf[FallbackBankHolidaysConnector]).asEagerSingleton()
-    bind(classOf[BankHolidaysConnector]).to(classOf[WSBankHolidaysConnector]).asEagerSingleton()
-    bind(classOf[IVConnector]).to(classOf[IVConnectorImpl]).asEagerSingleton()
-    bind(classOf[BankAccountReputationConnector]).to(classOf[BankAccountReputationConnectorImpl]).asEagerSingleton()
-    bind(classOf[S4LConnector]).to(classOf[S4LConnectorImpl]).asEagerSingleton()
-    bind(classOf[KeystoreConnector]).to(classOf[KeystoreConnectorImpl]).asEagerSingleton()
-    bind(classOf[RegistrationConnector]).to(classOf[VatRegistrationConnector]).asEagerSingleton()
-    bind(classOf[BusinessRegDynamicStubConnector]).to(classOf[BusinessRegDynamicStubConnectorImpl]).asEagerSingleton()
-    bind(classOf[ConfigConnector]).to(classOf[ConfigConnectorImpl]).asEagerSingleton()
-    bind(classOf[ICLConnector]).to(classOf[ICLConnectorImpl]).asEagerSingleton()
-  }
-
-  private def featureSwitches(): Unit = {
-    bind(classOf[FeatureManager]).to(classOf[FeatureSwitchManager]).asEagerSingleton()
-    bind(classOf[VATRegFeatureSwitches]).to(classOf[VATRegFeatureSwitch]).asEagerSingleton()
   }
 }

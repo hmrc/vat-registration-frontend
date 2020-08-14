@@ -16,62 +16,55 @@
 
 package controllers
 
-import javax.inject.Inject
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import config.AuthClientConnector
 import connectors._
-import controllers.builders._
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
-import models.api._
-import models.view._
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services.{FlatRateService, LodgingOfficerService, SicAndComplianceService, _}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
 
-class SummaryControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
-                                      val authConnector: AuthClientConnector,
-                                      val vrs: RegistrationService,
-                                      val s4LService: S4LService,
-                                      val messagesApi: MessagesApi,
-                                      val summaryService: SummaryService) extends SummaryController {
-}
-
-trait SummaryController extends BaseController with SessionProfile with ApplicativeSyntax {
-  val vrs: RegistrationService
-  val s4LService: S4LService
-  val summaryService: SummaryService
-
+@Singleton
+class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
+                                  val authConnector: AuthClientConnector,
+                                  val vrs: VatRegistrationService,
+                                  val s4LService: S4LService,
+                                  val messagesApi: MessagesApi,
+                                  val summaryService: SummaryService)
+  extends BaseController with SessionProfile with ApplicativeSyntax {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      ivPassedCheck {
-        for {
-          eligibilitySummary  <- summaryService.getEligibilityDataSummary
-          summary             <- summaryService.getRegistrationSummary
-          _                   <- s4LService.clear
-        } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
-      }
+    implicit request =>
+      implicit profile =>
+        ivPassedCheck {
+          for {
+            eligibilitySummary <- summaryService.getEligibilityDataSummary
+            summary <- summaryService.getRegistrationSummary
+            _ <- s4LService.clear
+          } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
+        }
   }
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => implicit profile =>
-      invalidSubmissionGuard() {
-        for {
-          _        <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-          response <- vrs.submitRegistration()
-          result   <- submissionRedirectLocation(response)
-        } yield {
-          result
+    implicit request =>
+      implicit profile =>
+        invalidSubmissionGuard() {
+          for {
+            _ <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+            response <- vrs.submitRegistration()
+            result <- submissionRedirectLocation(response)
+          } yield {
+            result
+          }
         }
-      }
   }
 
-  private def submissionRedirectLocation(response: DESResponse)(implicit hc : HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
+  private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
     response match {
       case Success => keystoreConnector.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
         _ => Redirect(controllers.routes.ApplicationSubmissionController.show())

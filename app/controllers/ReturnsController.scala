@@ -18,35 +18,26 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import forms._
-import models.DateSelection
-import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
-import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDateIncorpPage, start_date_view => VoluntaryStartDatePage}
-import forms.{AccountingPeriodForm, ChargeExpectancyForm, MandatoryDateForm, ReturnFrequencyForm, VoluntaryDateForm, VoluntaryDateFormIncorp}
-import javax.inject.Inject
-import models.{CurrentProfile, DateSelection, Frequency, MonthYearModel, Returns}
+import forms.{AccountingPeriodForm, ChargeExpectancyForm, ReturnFrequencyForm, VoluntaryDateForm}
+import javax.inject.{Inject, Singleton}
+import models.{CurrentProfile, Frequency, Returns}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{ReturnsService, SessionProfile, TimeService}
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
+import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
+import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, start_date_view => VoluntaryStartDatePage}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class ReturnsControllerImpl @Inject()(val keystoreConnector: KeystoreConnector,
-                                      val authConnector: AuthClientConnector,
-                                      val returnsService: ReturnsService,
-                                      val messagesApi: MessagesApi,
-                                      val timeService: TimeService) extends ReturnsController
-
-trait ReturnsController extends BaseController with SessionProfile {
-
-  val returnsService: ReturnsService
-  val authConnector: AuthConnector
-  val keystoreConnector: KeystoreConnector
-  val timeService: TimeService
+@Singleton
+class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
+                                  val authConnector: AuthClientConnector,
+                                  val returnsService: ReturnsService,
+                                  val messagesApi: MessagesApi,
+                                  val timeService: TimeService) extends BaseController with SessionProfile {
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

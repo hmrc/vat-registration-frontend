@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.ConfigConnector
 import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -26,23 +25,25 @@ import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
-class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture  {
+class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val testService = new SummaryService {
-      override val vrs: RegistrationService                         = mockVatRegistrationService
-      override val lodgingOfficerService: LodgingOfficerService     = mockLodgingOfficerService
-      override val sicAndComplianceService: SicAndComplianceService = mockSicAndComplianceService
-      override val flatRateService: FlatRateService                 = mockFlatRateService
-      override val configConnector: ConfigConnector                 = mockConfigConnector
-      override val vatRegEFEUrl: String                             = "http://vatRegEFEUrl"
-      override val vatRegEFEQuestionUri                             = "/question"
+    val testService: SummaryService = new SummaryService(
+      mockVatRegistrationService,
+      mockLodgingOfficerService,
+      mockSicAndComplianceService,
+      mockFlatRateService,
+      mockConfigConnector,
+      mockServicesConfig
+    ) {
+      override lazy val vatRegEFEUrl: String = "http://vatRegEFEUrl"
+      override lazy val vatRegEFEQuestionUri = "/question"
     }
   }
 
   "eligibilityCall" should {
     "return a full url" in new Setup {
-     val res = testService.eligibilityCall("page1OfEligibility")
+      val res: Call = testService.eligibilityCall("page1OfEligibility")
       res.url mustBe "http://vatRegEFEUrl/question?pageId=page1OfEligibility"
       res mustBe Call("GET", "http://vatRegEFEUrl/question?pageId=page1OfEligibility")
     }
@@ -55,7 +56,7 @@ class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture  {
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
 
-    testService.getRegistrationSummary.map(summary => summary.sections.length mustEqual 2)
+      testService.getRegistrationSummary.map(summary => summary.sections.length mustEqual 2)
     }
   }
 
@@ -77,12 +78,12 @@ class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture  {
 
   "getEligibilitySummary" should {
     "return a Summary when valid json is returned from vatregservice" in new Setup {
-      when(mockVatRegistrationService.getEligibilityData(any(),any())) thenReturn Future.successful(fullEligibilityDataJson.as[JsObject])
+      when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(fullEligibilityDataJson.as[JsObject])
 
       await(testService.getEligibilityDataSummary) mustBe fullSummaryModelFromFullEligiblityJson
     }
     "return an exception when json is invalid returned from vatregservice" in new Setup {
-      when(mockVatRegistrationService.getEligibilityData(any(),any())) thenReturn Future.successful(Json.obj("foo" -> "bar"))
+      when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(Json.obj("foo" -> "bar"))
 
       intercept[Exception](await(testService.getEligibilityDataSummary))
     }

@@ -16,13 +16,13 @@
 
 package controllers.test
 
-import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.BaseController
 import forms.test.TestIVForm
-import models.{CurrentProfile, IVResult}
+import javax.inject.{Inject, Singleton}
+import models.IVResult
 import models.view.test.TestIVResponse
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
@@ -30,40 +30,40 @@ import services.{S4LService, SessionProfile}
 
 import scala.concurrent.Future
 
-class TestIVControllerImpl @Inject()(val busRegDynStub: BusinessRegDynamicStubConnector,
-                                     val s4lService: S4LService,
-                                     val messagesApi: MessagesApi,
-                                     val authConnector: AuthClientConnector,
-                                     val keystoreConnector: KeystoreConnector) extends TestIVController
+@Singleton
+class TestIVController @Inject()(val busRegDynStub: BusinessRegDynamicStubConnector,
+                                 val s4lService: S4LService,
+                                 val messagesApi: MessagesApi,
+                                 val authConnector: AuthClientConnector,
+                                 val keystoreConnector: KeystoreConnector) extends BaseController with SessionProfile {
 
-trait TestIVController extends BaseController with SessionProfile {
-  val busRegDynStub: BusinessRegDynamicStubConnector
-  val s4lService: S4LService
-
-  def setIVStatus(ivPassed: Boolean):Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      Future.successful(Ok)
+  def setIVStatus(ivPassed: Boolean): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok)
   }
 
 
-  def show(journeyId:String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
-      Future.successful(Ok(views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
+  def show(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        val testIVResponse = TestIVResponse(journeyId, IVResult.Success)
+        Future.successful(Ok(views.html.test.testIVResponse(TestIVForm.form.fill(testIVResponse))))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      TestIVForm.form.bindFromRequest().fold(
-        badForm =>
-          Future.successful(BadRequest(views.html.test.testIVResponse(badForm))),
-        success => for {
-          _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
-          _ <- s4lService.save("IVJourneyID", success.journeyId)
-        } yield success.ivResult match {
-          case IVResult.Success => Redirect(controllers.routes.IdentityVerificationController.completedIVJourney())
-          case _                => Redirect(controllers.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
-        }
-      )
+    implicit request =>
+      implicit profile =>
+        TestIVForm.form.bindFromRequest().fold(
+          badForm =>
+            Future.successful(BadRequest(views.html.test.testIVResponse(badForm))),
+          success => for {
+            _ <- busRegDynStub.setupIVOutcome(success.journeyId, success.ivResult)
+            _ <- s4lService.save("IVJourneyID", success.journeyId)
+          } yield success.ivResult match {
+            case IVResult.Success => Redirect(controllers.routes.IdentityVerificationController.completedIVJourney())
+            case _ => Redirect(controllers.routes.IdentityVerificationController.failedIVJourney(success.journeyId))
+          }
+        )
   }
 }

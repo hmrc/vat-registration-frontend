@@ -20,33 +20,20 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import connectors._
-import javax.inject.Inject
-
-import models.{TurnoverEstimates, _}
+import javax.inject.{Inject, Singleton}
 import models.api._
-import models.external.CompanyRegistrationProfile
+import models.{TurnoverEstimates, _}
 import play.api.Logger
 import play.api.libs.json.{Format, JsObject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
+@Singleton
 class VatRegistrationService @Inject()(val s4LService: S4LService,
-                                       val vatRegConnector: RegistrationConnector,
-                                       val keystoreConnector: KeystoreConnector
-                                      ) extends RegistrationService
-
-trait RegistrationService extends LegacyServiceToBeRefactored {
-  val s4LService: S4LService
-  val vatRegConnector: RegistrationConnector
-}
-
-// TODO refactor in a similar way to FRS
-trait LegacyServiceToBeRefactored {
-  self: RegistrationService =>
-
-  val keystoreConnector: KeystoreConnector
+                                       val vatRegConnector: VatRegistrationConnector,
+                                       val keystoreConnector: KeystoreConnector) {
 
   type RegistrationFootprint = (String, String)
 
@@ -86,9 +73,9 @@ trait LegacyServiceToBeRefactored {
     } yield submit
 
   } recover {
-    case e => {
+    case e =>
       SubmissionFailedRetryable
-    }
+
   }
 
 

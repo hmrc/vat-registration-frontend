@@ -19,9 +19,8 @@ package services
 import java.io.InputStream
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate => JavaLocalDate, LocalDateTime => JavaLocalDateTime}
-import javax.inject.Inject
 
-import org.joda.time.format.DateTimeFormat
+import javax.inject.{Inject, Singleton}
 import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
 import play.api.Environment
 import play.api.libs.json.{Json, Reads}
@@ -32,13 +31,17 @@ import utils.SystemDate
 
 import scala.language.implicitConversions
 
-class TimeServiceImpl @Inject()(val environment: Environment,
-                                val servicesConfig: ServicesConfig) extends TimeService {
-  override lazy val dayEndHour  = servicesConfig.getInt("time-service.day-end-hour")
-  override def currentDateTime  = SystemDate.getSystemDate
-  override def currentLocalDate = SystemDate.getSystemDate
-  override lazy val bankHolidaySet: BankHolidaySet = {
-    implicit val bankHolidayReads: Reads[BankHoliday]       = Json.reads[BankHoliday]
+@Singleton
+class TimeService @Inject()(val environment: Environment,
+                            val servicesConfig: ServicesConfig) {
+  lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
+
+  def currentDateTime: JodaLocalDateTime = SystemDate.getSystemDate
+
+  def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate
+
+  lazy val bankHolidaySet: BankHolidaySet = {
+    implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
     implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
 
     val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
@@ -46,24 +49,16 @@ class TimeServiceImpl @Inject()(val environment: Environment,
     val parsed = Json.parse(resourceAsStream).asOpt[Map[String, BankHolidaySet]].get
     parsed("england-and-wales")
   }
-}
 
-trait TimeService {
   implicit def javaLDToJodaLDT(jldt: JavaLocalDateTime): JodaLocalDateTime = JodaLocalDateTime.parse(jldt.toString)
+
   implicit def javaToJoda(jld: JavaLocalDateTime): JodaLocalDate = JodaLocalDate.parse(jld.toLocalDate.toString)
 
   implicit def javaToJoda(jld: JavaLocalDate): JodaLocalDate = JodaLocalDate.parse(jld.toString)
+
   implicit def jodaToJava(jld: JodaLocalDate): JavaLocalDate = JavaLocalDate.parse(jld.toString)
 
   val DATE_FORMAT = "yyyy-MM-dd"
-
-  val bankHolidaySet: BankHolidaySet
-
-  val dayEndHour: Int
-
-  def currentDateTime: JodaLocalDateTime
-
-  def currentLocalDate: JodaLocalDate
 
   def isDateSomeWorkingDaysInFuture(futureDate: JavaLocalDate)(implicit bHS: BankHolidaySet): Boolean = {
     isEqualOrAfter(getMinWorkingDayInFuture, futureDate)

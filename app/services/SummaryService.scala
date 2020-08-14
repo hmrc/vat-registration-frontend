@@ -18,7 +18,7 @@ package services
 
 import connectors.ConfigConnector
 import controllers.builders._
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import models.api.VatScheme
 import models.view.{Summary, SummaryFromQuestionAnswerJson}
@@ -29,26 +29,16 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class SummaryServiceImpl @Inject()(val vrs: RegistrationService,
-                                   val lodgingOfficerService: LodgingOfficerService,
-                                   val sicAndComplianceService: SicAndComplianceService,
-                                   val flatRateService: FlatRateService,
-                                   val configConnector: ConfigConnector,
-                                   config: ServicesConfig
-                                  ) extends SummaryService {
+@Singleton
+class SummaryService @Inject()(val vrs: VatRegistrationService,
+                               val lodgingOfficerService: LodgingOfficerService,
+                               val sicAndComplianceService: SicAndComplianceService,
+                               val flatRateService: FlatRateService,
+                               val configConnector: ConfigConnector,
+                               config: ServicesConfig) {
 
-  lazy val vatRegEFEUrl = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
-  lazy val vatRegEFEQuestionUri = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
-}
-
-trait SummaryService {
-  val vrs: RegistrationService
-  val lodgingOfficerService: LodgingOfficerService
-  val sicAndComplianceService: SicAndComplianceService
-  val flatRateService: FlatRateService
-  val configConnector: ConfigConnector
-  val vatRegEFEUrl: String
-  val vatRegEFEQuestionUri: String
+  lazy val vatRegEFEUrl: String = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
+  lazy val vatRegEFEQuestionUri: String = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
 
   private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrl + vatRegEFEQuestionUri + s"?pageId=$uri")
 

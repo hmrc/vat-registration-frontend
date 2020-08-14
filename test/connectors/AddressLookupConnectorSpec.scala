@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.WSHttp
 import fixtures.VatRegistrationFixture
 import models.api.ScrsAddress
 import models.external.addresslookup._
@@ -31,9 +30,11 @@ import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new AddressLookupConnector {
-      override val addressLookupFrontendUrl: String = "tst-url"
-      override val http: WSHttp = mockWSHttp
+    val connector: AddressLookupConnector = new AddressLookupConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
+      override lazy val addressLookupFrontendUrl: String = "tst-url"
     }
 
     val dummyUrl = "test-url"
@@ -97,7 +98,6 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
       confirmPage = testConfirmPage
     )
   }
-
 
 
   "getAddress" should {

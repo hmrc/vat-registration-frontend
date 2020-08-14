@@ -19,14 +19,10 @@ package controllers
 import java.util.concurrent.TimeUnit
 
 import akka.util.Timeout
-import connectors.KeystoreConnector
 import models.IVResult
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
-import services.IVService
 import testHelpers.{ControllerSpec, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.Upstream5xxResponse
 
 import scala.concurrent.Future
@@ -35,12 +31,12 @@ import scala.concurrent.duration.FiniteDuration
 class IdentityVerificationControllerSpec extends ControllerSpec with MockMessages {
 
   trait Setup {
-    val testController = new IdentityVerificationController {
-      val ivService: IVService = mockIVService
-      val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val authConnector: AuthConnector = mockAuthClientConnector
-    }
+    val testController: IdentityVerificationController = new IdentityVerificationController(
+      mockIVService,
+      mockMessagesAPI,
+      mockAuthClientConnector,
+      mockKeystoreConnector
+    )
 
     mockAllMessages
     mockAuthenticated()

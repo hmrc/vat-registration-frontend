@@ -30,13 +30,15 @@ import scala.concurrent.Future
 
 class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
-  val testController = new WelcomeController {
-    override val currentProfileService = mockCurrentProfile
-    override val keystoreConnector = mockKeystoreConnector
-    override val vatRegistrationService = mockVatRegistrationService
+  val testController = new WelcomeController(
+    mockVatRegistrationService,
+    mockCurrentProfileService,
+    mockAuthClientConnector,
+    mockKeystoreConnector,
+    mockMessagesAPI,
+    mockServicesConfig
+  ) {
     override val eligibilityFE: Call = Call("GET", "/test-url")
-    val authConnector = mockAuthClientConnector
-    val messagesApi: MessagesApi = mockMessagesAPI
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
@@ -51,7 +53,7 @@ class WelcomeControllerSpec extends ControllerSpec with MockMessages with Future
 
         when(mockVatRegistrationService.createRegistrationFootprint(any()))
           .thenReturn(Future.successful(testRegId))
-        when(mockCurrentProfile.buildCurrentProfile(any())(any()))
+        when(mockCurrentProfileService.buildCurrentProfile(any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)

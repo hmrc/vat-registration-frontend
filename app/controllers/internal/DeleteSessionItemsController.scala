@@ -16,13 +16,11 @@
 
 package controllers.internal
 
-import javax.inject.Inject
-
 import common.enums.RegistrationDeletion
 import config.AuthClientConnector
 import connectors.{KeystoreConnector, S4LConnector, VatRegistrationConnector}
 import controllers.BaseController
-import models.IncorpUpdate
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent}
@@ -33,42 +31,37 @@ import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.concurrent.Future
 
-class DeleteSessionItemsControllerImpl @Inject()(val authConnector: AuthClientConnector,
-                                                 val vatRegistrationService: VatRegistrationService,
-                                                 val keystoreConnector: KeystoreConnector,
-                                                 val currentProfileService: CurrentProfileService,
-                                                 val s4LConnector: S4LConnector,
-                                                 val messagesApi: MessagesApi,
-                                                 val config: ServicesConfig,
-                                                 val cancellationService: CancellationService,
-                                                 val regConnector : VatRegistrationConnector) extends DeleteSessionItemsController
-
-trait DeleteSessionItemsController extends BaseController with SessionProfile {
-  val cancellationService: CancellationService
-  val vatRegistrationService: VatRegistrationService
-  val regConnector: VatRegistrationConnector
-  val currentProfileService: CurrentProfileService
-  val s4LConnector: S4LConnector
+@Singleton
+class DeleteSessionItemsController @Inject()(val authConnector: AuthClientConnector,
+                                             val vatRegistrationService: VatRegistrationService,
+                                             val keystoreConnector: KeystoreConnector,
+                                             val currentProfileService: CurrentProfileService,
+                                             val s4LConnector: S4LConnector,
+                                             val messagesApi: MessagesApi,
+                                             val config: ServicesConfig,
+                                             val cancellationService: CancellationService,
+                                             val regConnector: VatRegistrationConnector) extends BaseController with SessionProfile {
 
   def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      cancellationService.deleteVatRegistration(regId) map {
-        case RegistrationDeletion.deleted   => Ok
-        case RegistrationDeletion.forbidden =>
-          logger.warn(s"[deleteVatRegistration] - Requested document regId $regId to be deleted is not corresponding to the CurrentProfile regId")
-          BadRequest
-      } recover {
-        case ex =>
-          logger.error(s"[RegistrationController] [delete] - Received an error when deleting Registration regId: $regId - error: ${ex.getMessage}")
-          InternalServerError
-      }
+    implicit request =>
+      implicit profile =>
+        cancellationService.deleteVatRegistration(regId) map {
+          case RegistrationDeletion.deleted => Ok
+          case RegistrationDeletion.forbidden =>
+            logger.warn(s"[deleteVatRegistration] - Requested document regId $regId to be deleted is not corresponding to the CurrentProfile regId")
+            BadRequest
+        } recover {
+          case ex =>
+            logger.error(s"[RegistrationController] [delete] - Received an error when deleting Registration regId: $regId - error: ${ex.getMessage}")
+            InternalServerError
+        }
   }
 
   def deleteIfRejected(): Action[JsValue] = Action.async[JsValue](parse.json) {
     implicit request =>
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
       withJsonBody { incorpUpdate =>
-        if(incorpUpdate.status == "rejected") {
+        if (incorpUpdate.status == "rejected") {
           for {
             deleteData <- regConnector.clearVatScheme(incorpUpdate.transactionId)
             optRegId <- currentProfileService.addRejectionFlag(incorpUpdate.transactionId)
@@ -78,5 +71,5 @@ trait DeleteSessionItemsController extends BaseController with SessionProfile {
           Future.successful(Ok)
         }
       }
-    }
+  }
 }

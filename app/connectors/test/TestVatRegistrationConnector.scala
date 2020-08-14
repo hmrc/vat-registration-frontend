@@ -16,12 +16,11 @@
 
 package connectors.test
 
-import javax.inject.Inject
-
 import config.WSHttp
 import connectors._
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.config.inject.ServicesConfig
@@ -29,17 +28,12 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class TestVatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends TestRegistrationConnector {
-  val vatRegUrl = config.baseUrl("vat-registration")
+@Singleton
+class TestVatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
+  val vatRegUrl: String = config.baseUrl("vat-registration")
 
-  val incorporationFrontendStubsUrl = config.baseUrl("incorporation-frontend-stub")
-  val incorporationFrontendStubsUri = config.getConfString("incorporation-frontend-stub.uri", "")
-}
-
-trait TestRegistrationConnector {
-  val http: WSHttp
-
-  val vatRegUrl: String
+  val incorporationFrontendStubsUrl: String = config.baseUrl("incorporation-frontend-stub")
+  val incorporationFrontendStubsUri: String = config.getConfString("incorporation-frontend-stub.uri", "")
 
   def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)

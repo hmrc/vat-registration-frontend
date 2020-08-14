@@ -16,16 +16,14 @@
 
 package repositories
 
-import javax.inject.{Inject, Singleton}
-
 import cats.data.OptionT
 import cats.implicits._
+import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import org.joda.time.{DateTime, DateTimeZone}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import play.api.{Configuration, Logger}
-import play.modules.reactivemongo.MongoDbConnection
-import reactivemongo.api.DefaultDB
+import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.play.json.ImplicitBSONHandlers._
@@ -36,19 +34,14 @@ import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class DatedCacheMap(id: String,
-                         data: Map[String, JsValue],
-                         lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
-
-object DatedCacheMap {
-  implicit val dateFormat = ReactiveMongoFormats.dateTimeFormats
-  implicit val formats = Json.format[DatedCacheMap]
-
-  def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)
-}
-
-class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
-  extends ReactiveRepository[DatedCacheMap, BSONObjectID](config.getString("appName").get, mongo, DatedCacheMap.formats) {
+@Singleton
+class SessionRepository @Inject()(config: Configuration,
+                                  mongo: ReactiveMongoComponent)
+  extends ReactiveRepository[DatedCacheMap, BSONObjectID](
+    config.getString("appName").get,
+    mongo.mongoConnector.db,
+    DatedCacheMap.formats
+  ) {
 
   val fieldName = "lastUpdated"
   val createdIndexName = "userAnswersExpiry"
@@ -79,7 +72,7 @@ class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
   }
 
   def removeDocument(id: String): Future[Boolean] = {
-    collection.remove(BSONDocument("id" -> id)).map( lastError =>
+    collection.remove(BSONDocument("id" -> id)).map(lastError =>
       lastError.ok
     )
   }
@@ -91,24 +84,25 @@ class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
     val selector = BSONDocument("data.CurrentProfile.transactionID" -> id)
     val modifier = BSONDocument("$set" -> BSONDocument("data.CurrentProfile.incorpRejected" -> true))
 
-    collection.update(selector, modifier).map { lastError => lastError.ok}
+    collection.update(selector, modifier).map { lastError => lastError.ok }
   }
 
-  def getRegistrationID(transactionID: String) = {
+  def getRegistrationID(transactionID: String): Future[Option[String]] = {
     OptionT[Future, CacheMap](
       collection.find(Json.obj("data.CurrentProfile.transactionID" -> transactionID)).one[CacheMap]
-    ) .map (
+    ).map(
       _.getEntry[CurrentProfile]("CurrentProfile").map(_.registrationId)
     ).value map (_.flatten)
   }
 }
 
-@Singleton
-class SessionRepository @Inject()(config: Configuration) {
+case class DatedCacheMap(id: String,
+                         data: Map[String, JsValue],
+                         lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
-  class DbConnection extends MongoDbConnection
+object DatedCacheMap {
+  implicit val dateFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
+  implicit val formats: OFormat[DatedCacheMap] = Json.format[DatedCacheMap]
 
-  private lazy val sessionRepository = new ReactiveMongoRepository(config, new DbConnection().db)
-
-  def apply(): ReactiveMongoRepository = sessionRepository
+  def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)
 }

@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.WSHttp
 import play.api.libs.json.{JsObject, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HttpResponse
@@ -28,8 +27,11 @@ class ICLConnectorSpec extends VatRegSpec {
   class Setup {
     val jsResponse = Json.obj("link" -> "exampleaddress.co.uk")
     val successfulResponse = HttpResponse(200, Some(jsResponse))
-    val testConnector = new ICLConnector {
-      override val http: WSHttp = mockWSHttp
+
+    val testConnector: ICLConnector = new ICLConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
       override val IClInitialiseUrl: String = "example.url"
       override val IClFEinternal: String = "example.url2"
     }

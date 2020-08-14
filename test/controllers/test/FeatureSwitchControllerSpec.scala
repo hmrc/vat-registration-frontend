@@ -26,11 +26,11 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
 
 
   class Setup {
-    val controller = new FeatureSwitchController {
-      val vatRegFeatureSwitch = mockVATFeatureSwitch
-      override val featureManager = mockFeatureManager
-    }
-
+    val controller = new FeatureSwitchController(
+      mockFeatureManager,
+      mockVATFeatureSwitch,
+      mockAuthClientConnector
+    )
     when(mockFeatureManager.datePatternRegex)
       .thenReturn("""([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))(T(0[0-9]|1[0-9]|2[0-3]):([0-59]\d):([0-59]\d)Z?)?""")
   }
@@ -38,14 +38,14 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
 
   "switcher" should {
     "enable the feature switch and return an OK" when {
-      "the feature name and value are passed in the url" in new Setup{
+      "the feature name and value are passed in the url" in new Setup {
         when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(Some(enabledFeatureSwitch))
 
         when(mockFeatureManager.enable(ArgumentMatchers.any()))
           .thenReturn(enabledFeatureSwitch)
 
-        val result = await(controller.switcher("test","true")(FakeRequest()))
+        val result = await(controller.switcher("test", "true")(FakeRequest()))
         assertResult(OK)(result.header.status)
       }
     }
@@ -58,7 +58,7 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
         when(mockFeatureManager.disable(ArgumentMatchers.any()))
           .thenReturn(disabledFeatureSwitch)
 
-        val result = await(controller.switcher("test","someOtherState")(FakeRequest()))
+        val result = await(controller.switcher("test", "someOtherState")(FakeRequest()))
         assertResult(OK)(result.header.status)
       }
     }
@@ -68,7 +68,7 @@ class FeatureSwitchControllerSpec extends VatRegSpec {
         when(mockVATFeatureSwitch(ArgumentMatchers.any()))
           .thenReturn(None)
 
-        val result = await(controller.switcher("invalidName","invalidState")(FakeRequest()))
+        val result = await(controller.switcher("invalidName", "invalidState")(FakeRequest()))
         assertResult(BAD_REQUEST)(result.header.status)
       }
     }

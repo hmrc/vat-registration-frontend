@@ -41,11 +41,11 @@ class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture wi
     implicit def toOptionT(d: LocalDate): OptionT[Future, CorporationTaxRegistration] =
       OptionT.pure(CorporationTaxRegistration(Some(AccountingDetails("", Some(d.format(ofPattern("yyyy-MM-dd")))))))
 
-    val service = new PrePopService {
-
-      override val vatRegService = mockVatRegistrationService
-      override val save4later = mockS4LService
-      override val businessContactService: BusinessContactService = mockBusinessContactService
+    val service: PrePopulationService = new PrePopulationService(
+      mockS4LService,
+      mockBusinessContactService,
+      mockVatRegistrationService
+    ) {
       mockFetchRegId()
     }
   }

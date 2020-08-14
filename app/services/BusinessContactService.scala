@@ -18,18 +18,15 @@ package services
 
 import _root_.models.api.ScrsAddress
 import _root_.models.{BusinessContact, CompanyContactDetails, CurrentProfile}
-import connectors.RegistrationConnector
-import javax.inject.Inject
+import connectors.VatRegistrationConnector
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessContactServiceImpl @Inject()(val registrationConnector: RegistrationConnector,
-                                           val s4lService: S4LService) extends BusinessContactService
-
-trait BusinessContactService {
-  val registrationConnector: RegistrationConnector
-  val s4lService: S4LService
+@Singleton
+class BusinessContactService @Inject()(val registrationConnector: VatRegistrationConnector,
+                                       val s4lService: S4LService) {
 
   def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessContact] = {
     def getFromVatRegistration: Future[Option[BusinessContact]] = registrationConnector.getBusinessContact map {
@@ -38,7 +35,7 @@ trait BusinessContactService {
 
     s4lService.fetchAndGet[BusinessContact] flatMap {
       case Some(bc) => Future.successful(bc)
-      case _        => getFromVatRegistration flatMap { optBC =>
+      case _ => getFromVatRegistration flatMap { optBC =>
         val businessContact = optBC.getOrElse(BusinessContact())
         s4lService.save[BusinessContact](businessContact) map {
           _ => businessContact
@@ -50,9 +47,9 @@ trait BusinessContactService {
   def updateBusinessContact[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[T] = {
     getBusinessContact flatMap { businessContact =>
       isModelComplete(updateBusinessContactModel[T](data, businessContact)).fold(
-        incomplete => s4lService.save[BusinessContact](incomplete) map(_ => data),
-        complete   => registrationConnector.upsertBusinessContact(BusinessContact.toApi(complete)) flatMap { _ =>
-          s4lService.clear map(_ => data)
+        incomplete => s4lService.save[BusinessContact](incomplete) map (_ => data),
+        complete => registrationConnector.upsertBusinessContact(BusinessContact.toApi(complete)) flatMap { _ =>
+          s4lService.clear map (_ => data)
         }
       )
     }
@@ -60,13 +57,13 @@ trait BusinessContactService {
 
   private def updateBusinessContactModel[T](data: T, businessContact: BusinessContact): BusinessContact = {
     data match {
-      case address: ScrsAddress                   => businessContact.copy(ppobAddress = Some(address))
-      case contactDetails: CompanyContactDetails  => businessContact.copy(companyContactDetails = Some(contactDetails))
+      case address: ScrsAddress => businessContact.copy(ppobAddress = Some(address))
+      case contactDetails: CompanyContactDetails => businessContact.copy(companyContactDetails = Some(contactDetails))
     }
   }
 
   private val isModelComplete: BusinessContact => Completion[BusinessContact] = businessContact => {
-    if(businessContact.ppobAddress.isDefined && businessContact.companyContactDetails.isDefined) {
+    if (businessContact.ppobAddress.isDefined && businessContact.companyContactDetails.isDefined) {
       Complete(businessContact)
     } else {
       Incomplete(businessContact)

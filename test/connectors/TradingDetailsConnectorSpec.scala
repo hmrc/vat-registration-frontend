@@ -16,9 +16,8 @@
 
 package connectors
 
-import config.WSHttp
-import models.{TradingDetails, TradingNameView}
 import fixtures.VatRegistrationFixture
+import models.{TradingDetails, TradingNameView}
 import play.api.libs.json.{JsBoolean, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HttpResponse
@@ -28,10 +27,12 @@ import scala.language.postfixOps
 class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
   class Setup {
-    val connector = new RegistrationConnector {
-      override val vatRegUrl: String = "tst-url"
-      override val vatRegElUrl: String = "test-url"
-      override val http: WSHttp = mockWSHttp
+    val connector: VatRegistrationConnector = new VatRegistrationConnector(
+      mockWSHttp,
+      mockServicesConfig
+    ) {
+      override lazy val vatRegUrl: String = "tst-url"
+      override lazy val vatRegElUrl: String = "test-url"
     }
   }
 

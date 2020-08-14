@@ -24,13 +24,13 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import support.AppAndStubs
-import utils.VATRegFeatureSwitch
+import utils.VATRegFeatureSwitches
 
 class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
-  val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
+  val featureSwitch: VATRegFeatureSwitches = app.injector.instanceOf[VATRegFeatureSwitches]
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
