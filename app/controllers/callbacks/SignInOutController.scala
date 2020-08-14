@@ -18,44 +18,35 @@ package controllers.callbacks
 
 import java.io.File
 
-import javax.inject.Inject
 import config.AuthClientConnector
 import connectors.KeystoreConnector
 import controllers.BaseController
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.Future
 
-class SignInOutControllerImpl @Inject()(config: ServicesConfig,
-                                        val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnector,
-                                        val messagesApi: MessagesApi) extends SignInOutController {
+@Singleton
+class SignInOutController @Inject()(config: ServicesConfig,
+                                    val authConnector: AuthClientConnector,
+                                    val keystoreConnector: KeystoreConnector
+                                   )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
 
-  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url",
+  lazy val compRegFEURL: String = config.getConfString("company-registration-frontend.www.url",
     throw new Exception("Config: company-registration-frontend.www.url not found"))
 
-  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri",
+  lazy val compRegFEURI: String = config.getConfString("company-registration-frontend.www.uri",
     throw new Exception("Config: company-registration-frontend.www.uri not found"))
 
-  lazy val compRegFEQuestionnaire = config.getConfString("company-registration-frontend.www.questionnaire",
+  lazy val compRegFEQuestionnaire: String = config.getConfString("company-registration-frontend.www.questionnaire",
     throw new Exception("Config: company-registration-frontend.www.questionnaire not found"))
 
-  lazy val compRegFEPostSignIn = config.getConfString("company-registration-frontend.www.post-sign-in",
+  lazy val compRegFEPostSignIn: String = config.getConfString("company-registration-frontend.www.post-sign-in",
     throw new Exception("Config: company-registration-frontend.www.post-sign-in not found"))
-
-}
-
-trait SignInOutController extends BaseController with SessionProfile {
-
-  val compRegFEURI           : String
-  val compRegFEURL           : String
-  val compRegFEQuestionnaire : String
-  val compRegFEPostSignIn    : String
 
   def postSignIn: Action[AnyContent] = Action.async {
     implicit request =>
@@ -77,12 +68,12 @@ trait SignInOutController extends BaseController with SessionProfile {
       Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
   }
 
-  def timeoutShow = Action.async {
+  def timeoutShow: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(TimeoutView()))
   }
-  
-  def errorShow = Action.async{
+
+  def errorShow: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(InternalServerError(views.html.pages.error.restart()))
   }

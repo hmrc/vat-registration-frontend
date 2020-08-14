@@ -24,7 +24,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -40,7 +40,7 @@ class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with Scala
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)

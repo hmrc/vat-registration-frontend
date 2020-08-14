@@ -16,8 +16,6 @@
 
 package services
 
-import connectors.BankAccountReputationConnectorImpl
-import testHelpers.VatRegSpec
 import models.BankAccountDetails
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -25,12 +23,10 @@ import testHelpers.{S4LMockSugar, VatRegSpec}
 
 import scala.concurrent.Future
 
-class BankAccountReputationServiceImplSpec extends VatRegSpec with S4LMockSugar {
+class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
 
   class Setup {
-    val service: BankAccountReputationService = new BankAccountReputationService{
-      override val bankAccountReputationConnector: BankAccountReputationConnectorImpl = mockBankAccountReputationConnector
-    }
+    val service: BankAccountReputationService = new BankAccountReputationService(mockBankAccountReputationConnector)
   }
 
   "Calling bankDetailsModulusCheck" should {

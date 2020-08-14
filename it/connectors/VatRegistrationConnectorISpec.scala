@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
-  def vatregConnector: RegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
+  def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
   val nonWhitelistedRegId = "normalUser"
   val transactionID = "000-431-TEST"

@@ -16,17 +16,13 @@
 
 package controllers.test
 
-import connectors.{ConfigConnector, KeystoreConnector}
 import fixtures.VatRegistrationFixture
 import models.api.SicCode
 import models.test.SicStub
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.{S4LService, SicAndComplianceService}
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
@@ -35,15 +31,14 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
   with VatRegistrationFixture with MockMessages {
 
   trait Setup {
-    val controller: SicStubController = new SicStubController {
-      override val configConnect: ConfigConnector = mockConfigConnector
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      override val sicAndCompService: SicAndComplianceService = mockSicAndComplianceService
-      override val s4LService: S4LService = mockS4LService
-      val authConnector: AuthConnector = mockAuthClientConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-    }
-
+    val controller: SicStubController = new SicStubController(
+      mockMessagesAPI,
+      mockConfigConnector,
+      mockKeystoreConnector,
+      mockS4LService,
+      mockSicAndComplianceService,
+      mockAuthClientConnector
+    )
     mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
@@ -68,7 +63,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
         _ redirectsTo controllers.routes.SicAndComplianceController.showMainBusinessActivity().url
       }
@@ -78,7 +73,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
@@ -90,7 +85,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.submitSicCodes(any())(any(),any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {

@@ -34,15 +34,17 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
 
   class Setup(ivPassed: Boolean = true) {
     implicit val cp = currentProfile(Some(ivPassed))
-    val service = new IVService {
+    val service = new IVService(
+      mockServicesConfig,
+      mockIdentityVerificationConnector,
+      mockVatRegistrationConnector,
+      mockVATFeatureSwitch,
+      mockKeystoreConnector,
+      mockS4LService
+    ) {
       override val vrfeBaseUrl = """vrfe"""
       override val vrfeBaseUri: String = "/register-for-vat"
       override val ORIGIN = "vat-registration-frontend"
-      override val s4lService = mockS4LService
-      override val ivConnector = mockIdentityVerificationConnector
-      override val vatRegFeatureSwitch = mockVATFeatureSwitch
-      override val vatRegistrationConnector = mockRegConnector
-      override val keystoreConnector = mockKeystoreConnector
     }
   }
 
@@ -79,7 +81,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockVATFeatureSwitch.useIvStub).thenReturn(disabledFeatureSwitch)
       when(mockS4LService.save(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map("IVJourneyID" -> Json.toJson("foo")))))
-      when(mockRegConnector.getLodgingOfficer(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.getLodgingOfficer(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(jsonPartialLodgingOfficer)))
 
       when(mockIdentityVerificationConnector.setupIVJourney(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future.successful(Json.parse(
@@ -98,7 +100,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
         .thenReturn(Future.successful(Some(validPartialLodgingOfficer)))
       when(mockS4LService.save(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map("IVJourneyID" -> Json.toJson("foo")))))
-      when(mockRegConnector.getLodgingOfficer(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.getLodgingOfficer(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(jsonPartialLodgingOfficer)))
 
       val res = await(service.setupAndGetIVJourneyURL)
@@ -121,7 +123,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockIdentityVerificationConnector.getJourneyOutcome(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(IVResult.Success))
 
-      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
       when(mockKeystoreConnector.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -137,7 +139,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockIdentityVerificationConnector.getJourneyOutcome(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(IVResult.FailedIV))
 
-      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
       when(mockKeystoreConnector.cache(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -153,7 +155,7 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
       when(mockIdentityVerificationConnector.getJourneyOutcome(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.successful(IVResult.Success))
 
-      when(mockRegConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.updateIVStatus(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse("Error occurred while updating IV Status", 500, 500)))
 
       an[Exception] shouldBe thrownBy(await(service.fetchAndSaveIVStatus))
@@ -178,21 +180,21 @@ class IVServiceSpec extends VatRegSpec with Inspectors with LodgingOfficerFixtur
 
 
     "return none if no lodging officer exists" in new Setup {
-      when(mockRegConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(Option.empty[JsValue]))
 
       service.getIVStatus("testRegId") returns None
     }
 
     "return Some(true) if an IVstatus is passed" in new Setup {
-      when(mockRegConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(generateOfficerJson(Some(true))))
 
       service.getIVStatus("testRegId") returns Some(true)
     }
 
     "return Some(false) if an IVstatus is failed" in new Setup {
-      when(mockRegConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
+      when(mockVatRegistrationConnector.getLodgingOfficer(ArgumentMatchers.eq("testRegId"))(ArgumentMatchers.any()))
         .thenReturn(Future.successful(generateOfficerJson(Some(false))))
 
       service.getIVStatus("testRegId") returns Some(false)

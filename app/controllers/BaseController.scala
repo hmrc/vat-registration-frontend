@@ -20,7 +20,7 @@ import auth.VatExternalUrls
 import config.Logging
 import models.{CurrentProfile, IncorpUpdate}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsError, JsSuccess, JsValue}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
@@ -88,8 +88,8 @@ trait BaseController extends FrontendController with I18nSupport with Logging wi
       } handleErrorResult
   }
 
-  protected def withJsonBody(f: (IncorpUpdate) => Future[Result])(implicit request: Request[JsValue]) = {
-    implicit val jsonReads = IncorpUpdate.reads
+  protected def withJsonBody(f: IncorpUpdate => Future[Result])(implicit request: Request[JsValue]): Future[Result] = {
+    implicit val jsonReads: Reads[IncorpUpdate] = IncorpUpdate.reads
 
     Try(request.body.validate[IncorpUpdate]) match {
       case Success(JsSuccess(payload, _)) => f(payload)

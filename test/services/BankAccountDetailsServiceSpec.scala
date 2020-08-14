@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.VatRegistrationConnector
 import models.{BankAccount, BankAccountDetails, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -30,11 +29,11 @@ class BankAccountDetailsServiceSpec extends VatSpec {
   val mockBankAccountRepService: BankAccountReputationService = mock[BankAccountReputationService]
 
   trait Setup {
-    val service: BankAccountDetailsService = new BankAccountDetailsService {
-      override val vatRegConnector: VatRegistrationConnector = mockRegConnector
-      override val s4LService: S4LService = mockS4LService
-      override val bankAccountRepService: BankAccountReputationService = mockBankAccountRepService
-    }
+    val service: BankAccountDetailsService = new BankAccountDetailsService(
+      mockVatRegistrationConnector,
+      mockS4LService,
+      mockBankAccountRepService
+    )
   }
 
   val bankAccountS4LKey: S4LKey[BankAccount] = S4LKey.bankAccountKey
@@ -56,7 +55,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockRegConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
+      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
         .thenReturn(Future.successful(Some(bankAccount)))
 
       val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
@@ -68,7 +67,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockRegConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
+      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
         .thenReturn(Future.successful(None))
 
       val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
@@ -82,7 +81,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     "return a BankAccount and save to the backend and save4later if it is full" in new Setup {
       val fullBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
 
-      when(mockRegConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any(), any()))
+      when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
       when(mockS4LService.saveNoAux(eqTo(fullBankAccount), eqTo(bankAccountS4LKey))(any(), any(), any()))
@@ -91,7 +90,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
       result mustBe fullBankAccount
 
-      verify(mockRegConnector, times(1)).patchBankAccount(any(), any())(any(), any())
+      verify(mockVatRegistrationConnector, times(1)).patchBankAccount(any(), any())(any(), any())
     }
 
     "return a BankAccount and save to save 4 later if it is incomplete" in new Setup {

@@ -18,31 +18,25 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import services.{CurrentProfileService, RegistrationService, SessionProfile}
+import services.{CurrentProfileService, VatRegistrationService, SessionProfile}
 import uk.gov.hmrc.play.config.inject.ServicesConfig
 import views.html.pages.welcome
 
 import scala.concurrent.Future
 
-class WelcomeControllerImpl @Inject()(val vatRegistrationService: RegistrationService,
-                                      val currentProfileService: CurrentProfileService,
-                                      val authConnector: AuthClientConnector,
-                                      val keystoreConnector: KeystoreConnector,
-                                      val messagesApi: MessagesApi,
-                                      conf: ServicesConfig) extends WelcomeController {
-  val eligibilityFEUrl = conf.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
+@Singleton
+class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
+                                  val currentProfileService: CurrentProfileService,
+                                  val authConnector: AuthClientConnector,
+                                  val keystoreConnector: KeystoreConnector,
+                                  val messagesApi: MessagesApi,
+                                  conf: ServicesConfig) extends BaseController with SessionProfile {
+  val eligibilityFEUrl: String = conf.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
 
-  override val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
-}
-
-trait WelcomeController extends BaseController with SessionProfile {
-  val vatRegistrationService: RegistrationService
-  val currentProfileService: CurrentProfileService
-
-  val eligibilityFE: Call
+  val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
 
   def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
 

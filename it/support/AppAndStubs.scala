@@ -16,7 +16,6 @@
 
 package support
 
-
 import java.util.Base64
 
 import common.enums.VatRegStatus
@@ -31,7 +30,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -50,7 +49,7 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)

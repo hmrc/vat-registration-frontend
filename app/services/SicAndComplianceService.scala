@@ -16,8 +16,8 @@
 
 package services
 
-import connectors.RegistrationConnector
-import javax.inject.Inject
+import connectors.VatRegistrationConnector
+import javax.inject.{Inject, Singleton}
 import models.CompanyProvideWorkers.PROVIDE_WORKERS_NO
 import models.TemporaryContracts.TEMP_CONTRACTS_NO
 import models._
@@ -27,30 +27,25 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class SicAndComplianceServiceImpl @Inject()(val s4lService: S4LService,
-                                            val vrs: VatRegistrationService,
-                                            val registrationConnector: RegistrationConnector) extends SicAndComplianceService
+@Singleton
+class SicAndComplianceService @Inject()(val s4lService: S4LService,
+                                        val vrs: VatRegistrationService,
+                                        val registrationConnector: VatRegistrationConnector) {
 
-trait SicAndComplianceService {
-
-  val s4lService: S4LService
-  val vrs: VatRegistrationService
-  val registrationConnector: RegistrationConnector
-
-  def getSicAndCompliance(implicit hc:HeaderCarrier, cp:CurrentProfile):Future[SicAndCompliance] = {
-    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap{
+  def getSicAndCompliance(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
+    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap {
       _.fold(getFromApi)(a => Future.successful(a))
     }
   }
 
-  def updateSicAndCompliance[T](newData: T)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {
+  def updateSicAndCompliance[T](newData: T)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
     getSicAndCompliance.flatMap(sac => isModelComplete(updateModel(sac, newData)).fold(
       incomplete => s4lService.saveNoAux[SicAndCompliance](incomplete, SicAndCompliance.sicAndCompliance).map(_ => incomplete),
       complete => updateVatRegAndClearS4l(complete)
     ))
   }
 
-  def submitSicCodes(sicCodes: List[SicCode])(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
+  def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicAndCompliance] = {
     getSicAndCompliance flatMap { sac =>
 
       val sacWithCodes = sac.copy(otherBusinessActivities = Some(OtherBusinessActivities(sicCodes)))
@@ -74,24 +69,24 @@ trait SicAndComplianceService {
     }
   }
 
-  private def getFromApi(implicit cp:CurrentProfile, hc:HeaderCarrier): Future[SicAndCompliance] = {
+  private def getFromApi(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicAndCompliance] = {
     for {
       optView <- registrationConnector.getSicAndCompliance
-      view    =  optView.fold(SicAndCompliance())(SicAndCompliance.fromApi)
-      _       <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.sicAndCompliance)
+      view = optView.fold(SicAndCompliance())(SicAndCompliance.fromApi)
+      _ <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.sicAndCompliance)
     } yield view
   }
 
   private def updateModel[T](before: SicAndCompliance, newData: T): SicAndCompliance = {
     newData match {
       case a: BusinessActivityDescription => before.copy(description = Some(a))
-      case b: MainBusinessActivityView    => before.copy(mainBusinessActivity = Some(b))
-      case c: CompanyProvideWorkers       => before.copy(companyProvideWorkers = Some(c))
-      case d: Workers                     => before.copy(workers = Some(d))
-      case e: TemporaryContracts          => before.copy(temporaryContracts = Some(e))
-      case f: SkilledWorkers              => before.copy(skilledWorkers = Some(f))
-      case g: SicAndCompliance            => g
-      case _                              => before
+      case b: MainBusinessActivityView => before.copy(mainBusinessActivity = Some(b))
+      case c: CompanyProvideWorkers => before.copy(companyProvideWorkers = Some(c))
+      case d: Workers => before.copy(workers = Some(d))
+      case e: TemporaryContracts => before.copy(temporaryContracts = Some(e))
+      case f: SkilledWorkers => before.copy(skilledWorkers = Some(f))
+      case g: SicAndCompliance => g
+      case _ => before
     }
   }
 
@@ -106,13 +101,13 @@ trait SicAndComplianceService {
         Complete(view)
       case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(_), Some(_), Some(_)) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(sicCodes)), None, None, None, None) if(!needComplianceQuestions(sicCodes)) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(sicCodes)), None, None, None, None) if !needComplianceQuestions(sicCodes) =>
         Complete(view)
       case _ => Incomplete(view)
     }
   }
 
-  private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc:HeaderCarrier, cp:CurrentProfile): Future[SicAndCompliance] = {
+  private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
 
     for {
       _ <- registrationConnector.updateSicAndCompliance(completeModel)

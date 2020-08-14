@@ -25,9 +25,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
 
   trait Setup {
-    val service = new S4LService {
-      override val s4LConnector = mockS4LConnector
-    }
+    val service = new S4LService(mockS4LConnector)
   }
 
   "S4L Service" should {

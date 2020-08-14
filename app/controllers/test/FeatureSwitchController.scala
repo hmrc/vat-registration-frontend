@@ -16,35 +16,31 @@
 
 package controllers.test
 
-import javax.inject.Inject
-
 import config.AuthClientConnector
+import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils._
 
 import scala.concurrent.Future
 
-class FeatureSwitchControllerImpl @Inject()(val featureManager: FeatureManager,
-                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                            val authConnector: AuthClientConnector) extends FeatureSwitchController
+@Singleton
+class FeatureSwitchController @Inject()(val featureManager: FeatureSwitchManager,
+                                        val vatRegFeatureSwitch: VATRegFeatureSwitches,
+                                        val authConnector: AuthClientConnector) extends FrontendController {
 
-trait FeatureSwitchController extends FrontendController {
-  val featureManager: FeatureManager
-  val vatRegFeatureSwitch: VATRegFeatureSwitches
-
-  def switcher(name: String, state: String): Action[AnyContent] = Action.async{
+  def switcher(name: String, state: String): Action[AnyContent] = Action.async {
     implicit request =>
       def feature: FeatureSwitch = state match {
-        case "true"                                           => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
-        case x if x.matches(featureManager.datePatternRegex)  => featureManager.setSystemDate(ValueSetFeatureSwitch(name, state))
-        case x@"time-clear"                                   => featureManager.clearSystemDate(ValueSetFeatureSwitch(name, x))
-        case _                                                => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
+        case "true" => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
+        case x if x.matches(featureManager.datePatternRegex) => featureManager.setSystemDate(ValueSetFeatureSwitch(name, state))
+        case x@"time-clear" => featureManager.clearSystemDate(ValueSetFeatureSwitch(name, x))
+        case _ => featureManager.disable(BooleanFeatureSwitch(name, enabled = false))
       }
 
       vatRegFeatureSwitch(name) match {
         case Some(_) => Future.successful(Ok(feature.toString))
-        case None    => Future.successful(BadRequest)
+        case None => Future.successful(BadRequest)
       }
   }
 }

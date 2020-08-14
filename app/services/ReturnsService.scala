@@ -18,8 +18,8 @@ package services
 
 import java.time.LocalDate
 
-import connectors.RegistrationConnector
-import javax.inject.Inject
+import connectors.VatRegistrationConnector
+import javax.inject.{Inject, Singleton}
 import models._
 import models.api.Threshold
 import play.api.Logger
@@ -27,28 +27,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class VoluntaryPageViewModel(
-                                   form: Option[(DateSelection.Value, Option[LocalDate])],
-                                   ctActive: Option[LocalDate]
-                                 )
-
-case class MandatoryDateModel(
-                               calculatedDate: LocalDate,
-                               startDate: Option[LocalDate],
-                               selected: Option[DateSelection.Value]
-                             )
-
-class ReturnsServiceImpl @Inject()(val vatRegConnector: RegistrationConnector,
-                                   val vatService: RegistrationService,
-                                   val s4lService: S4LService,
-                                   val prePopService: PrePopService) extends ReturnsService
-
-trait ReturnsService {
-  val vatRegConnector: RegistrationConnector
-  val vatService: RegistrationService
-  val s4lService: S4LService
-  val prePopService: PrePopService
-
+@Singleton
+class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
+                               val vatService: VatRegistrationService,
+                               val s4lService: S4LService,
+                               val prePopService: PrePopulationService) {
 
   def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[MandatoryDateModel] = {
     for {
@@ -202,3 +185,10 @@ trait ReturnsService {
   }
 
 }
+
+case class VoluntaryPageViewModel(form: Option[(DateSelection.Value, Option[LocalDate])],
+                                  ctActive: Option[LocalDate])
+
+case class MandatoryDateModel(calculatedDate: LocalDate,
+                              startDate: Option[LocalDate],
+                              selected: Option[DateSelection.Value])

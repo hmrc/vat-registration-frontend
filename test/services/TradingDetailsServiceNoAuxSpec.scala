@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.RegistrationConnector
 import fixtures.VatRegistrationFixture
 import models.{TradingNameView, _}
 import org.mockito.ArgumentMatchers.any
@@ -29,11 +28,11 @@ import scala.concurrent.Future
 class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
 
   class Setup {
-    val service = new TradingDetailsService {
-      override val prePopService: PrePopService = mockPrePopService
-      override val s4lService: S4LService = mockS4LService
-      override val registrationConnector: RegistrationConnector = mockRegConnector
-    }
+    val service: TradingDetailsService = new TradingDetailsService(
+      mockS4LService,
+      mockVatRegistrationConnector,
+      mockPrePopulationService
+    )
   }
 
   val regId = "regID"
@@ -78,7 +77,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
 
       when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockRegConnector.getTradingDetails(any())(any()))
+      when(mockVatRegistrationConnector.getTradingDetails(any())(any()))
         .thenReturn(Future.successful(Some(tradingNameNoEu)))
 
       await(service.getTradingDetailsViewModel(regId)) mustBe tradingNameNoEu
@@ -87,7 +86,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
     "return an empty backend model if the S4L is not there and neither is the backend" in new Setup() {
       when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockRegConnector.getTradingDetails(any())(any()))
+      when(mockVatRegistrationConnector.getTradingDetails(any())(any()))
         .thenReturn(Future.successful(None))
 
       await(service.getTradingDetailsViewModel(regId)) mustBe emptyS4L
@@ -117,7 +116,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
     }
 
     "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
-      when(mockRegConnector.upsertTradingDetails(any(), any())(any()))
+      when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(202)))
@@ -144,7 +143,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixt
         .thenReturn(Future.successful(Some(incompleteS4L)))
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200)))
-      when(mockRegConnector.upsertTradingDetails(any(), any())(any()))
+      when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
       await(service.saveEuGoods(regId, euGoods = true)) mustBe incompleteS4L.copy(euGoods = Some(true))

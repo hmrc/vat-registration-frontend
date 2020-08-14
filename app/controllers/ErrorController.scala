@@ -16,10 +16,9 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.AuthClientConnector
 import connectors.KeystoreConnector
+import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
@@ -27,37 +26,34 @@ import uk.gov.hmrc.play.config.inject.ServicesConfig
 
 import scala.concurrent.Future
 
-class ErrorControllerImpl @Inject()(config: ServicesConfig,
-                                    val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector,
-                                    val messagesApi: MessagesApi) extends ErrorController {
+@Singleton
+class ErrorController @Inject()(config: ServicesConfig,
+                                val authConnector: AuthClientConnector,
+                                val keystoreConnector: KeystoreConnector
+                               )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
 
-  lazy val compRegFEURL = config.getConfString("company-registration-frontend.www.url",
+  lazy val compRegFEURL: String = config.getConfString("company-registration-frontend.www.url",
     throw new Exception("Config: company-registration-frontend.www.url not found"))
 
-  lazy val compRegFEURI = config.getConfString("company-registration-frontend.www.uri",
+  lazy val compRegFEURI: String = config.getConfString("company-registration-frontend.www.uri",
     throw new Exception("Config: company-registration-frontend.www.uri not found"))
 
-  lazy val compRegFERejected = config.getConfString("company-registration-frontend.www.rejected",
+  lazy val compRegFERejected: String = config.getConfString("company-registration-frontend.www.rejected",
     throw new Exception("Config: company-registration-frontend.www.rejected not found"))
 
-  override lazy val rejectedUrl = s"$compRegFEURL$compRegFEURI$compRegFERejected"
-
-}
-
-trait ErrorController extends BaseController with SessionProfile {
-
-  val rejectedUrl: String
+  lazy val rejectedUrl = s"$compRegFEURL$compRegFEURI$compRegFERejected"
 
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.pages.error.submissionTimeout()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.pages.error.submissionTimeout()))
   }
 
   def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => implicit profile =>
-      Future.successful(Ok(views.html.pages.error.submissionFailed()))
+    implicit request =>
+      implicit profile =>
+        Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
 
-  def redirectToCR() = Action(Redirect(rejectedUrl))
+  def redirectToCR(): Action[AnyContent] = Action(Redirect(rejectedUrl))
 }

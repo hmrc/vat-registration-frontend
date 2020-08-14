@@ -37,7 +37,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   class Setup {
     val service = new VatRegistrationService(
       mockS4LService,
-      mockRegConnector,
+      mockVatRegistrationConnector,
       mockKeystoreConnector
     )
   }
@@ -66,13 +66,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "Calling getAckRef" should {
     "retrieve Acknowledgement Reference (id) from the backend" in new Setup {
-      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
+      when(mockVatRegistrationConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
         .thenReturn(Future.successful("testRefNo"))
 
       await(service.getAckRef(testRegId)) mustBe "testRefNo"
     }
     "retrieve no Acknowledgement Reference if there's none in the backend" in new Setup {
-      when(mockRegConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
+      when(mockVatRegistrationConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
         .thenReturn(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException](await(service.getAckRef(testRegId)))
@@ -82,7 +82,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
-      when(mockRegConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
+      when(mockVatRegistrationConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
 
       await(service.deleteVatScheme) mustBe true
     }
@@ -90,7 +90,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
 
   "Calling submitRegistration" should {
     "return a Success DES response" in new Setup {
-      when(mockRegConnector.submitRegistration(any())(any()))
+      when(mockVatRegistrationConnector.submitRegistration(any())(any()))
         .thenReturn(Future.successful(Success))
 
       await(service.submitRegistration()) mustBe Success
@@ -101,20 +101,20 @@ class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture 
     val taxableThreshold = TaxableThreshold("50000", LocalDate.of(2018, 1, 1).toString)
 
     "return a taxable threshold" in new Setup {
-      when(mockRegConnector.getTaxableThreshold(any())(any())) thenReturn Future.successful(taxableThreshold)
+      when(mockVatRegistrationConnector.getTaxableThreshold(any())(any())) thenReturn Future.successful(taxableThreshold)
       await(service.getTaxableThreshold(date)) mustBe formattedThreshold
     }
   }
   "getEligibilityData" should {
     "return a JsObject" in new Setup {
       val json = Json.obj("foo" -> "bar")
-      when(mockRegConnector.getEligibilityData) thenReturn Future.successful(json)
+      when(mockVatRegistrationConnector.getEligibilityData) thenReturn Future.successful(json)
 
       await(service.getEligibilityData) mustBe json
 
     }
     "return an exception if the vat reg connector returns an exception" in new Setup {
-      when(mockRegConnector.getEligibilityData) thenReturn Future.failed(new Exception(""))
+      when(mockVatRegistrationConnector.getEligibilityData) thenReturn Future.failed(new Exception(""))
 
       intercept[Exception](await(service.getEligibilityData))
     }

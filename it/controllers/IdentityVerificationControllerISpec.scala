@@ -23,17 +23,17 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.VATRegFeatureSwitch
+import utils.VATRegFeatureSwitches
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with LodgingOfficerFixture {
 
-  val featureSwitch: VATRegFeatureSwitch = app.injector.instanceOf[VATRegFeatureSwitch]
+  val featureSwitch: VATRegFeatureSwitches = app.injector.instanceOf[VATRegFeatureSwitches]
 
   val blockKey = "officer-data"
 
@@ -56,7 +56,7 @@ class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)

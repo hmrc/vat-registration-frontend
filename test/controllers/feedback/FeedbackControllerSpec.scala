@@ -31,12 +31,13 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
 
   class Setup {
 
-    val controller = new FeedbackController {
-      override val contactFrontendPartialBaseUrl = "/test/uri"
-      override val contactFormServiceIdentifier  = "testId"
-      override val keystoreConnector             = mockKeystoreConnector
-      val authConnector                          = mockAuthClientConnector
-      val messagesApi: MessagesApi               = mockMessagesAPI
+    val controller: FeedbackController = new FeedbackController(
+      mockAuthClientConnector,
+      mockKeystoreConnector,
+      mockMessagesAPI
+    ) {
+      override lazy val contactFrontendPartialBaseUrl = "/test/uri"
+      override lazy val contactFormServiceIdentifier  = "testId"
     }
   }
 

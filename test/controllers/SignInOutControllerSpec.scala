@@ -17,21 +17,20 @@
 package controllers
 
 import controllers.callbacks.SignInOutController
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 
 class SignInOutControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
 
-  val testController = new SignInOutController {
-    override val compRegFEURI           = "/test/uri"
-    override val compRegFEURL           = "/test/uri"
-    override val compRegFEPostSignIn    = "/post-sign-test"
-    override val compRegFEQuestionnaire = "questionnaire-test"
-
-    override val keystoreConnector      = mockKeystoreConnector
-    val authConnector                   = mockAuthClientConnector
-    val messagesApi: MessagesApi        = mockMessagesAPI
+  val testController: SignInOutController = new SignInOutController(
+    mockServicesConfig,
+    mockAuthClientConnector,
+    mockKeystoreConnector
+  ) {
+    override lazy val compRegFEURI = "/test/uri"
+    override lazy val compRegFEURL = "/test/uri"
+    override lazy val compRegFEPostSignIn = "/post-sign-test"
+    override lazy val compRegFEQuestionnaire = "questionnaire-test"
   }
 
   "Post-sign-in" should {
@@ -52,17 +51,17 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
 
   "renewSession" should {
     "return 200 when hit with Authorised User" in {
-      callAuthorisedOrg(testController.renewSession()){ a =>
+      callAuthorisedOrg(testController.renewSession()) { a =>
         status(a) mustBe 200
         contentType(a) mustBe Some("image/jpeg")
-        await(a).body.dataStream.toString.contains("""renewSession.jpg""")  mustBe true
+        await(a).body.dataStream.toString.contains("""renewSession.jpg""") mustBe true
       }
     }
   }
 
   "destroySession" should {
     "return redirect to timeout show and get rid of headers" in {
-      val fr = FakeRequest().withHeaders(("playFoo","no more"))
+      val fr = FakeRequest().withHeaders(("playFoo", "no more"))
 
       val res = testController.destroySession()(fr)
       status(res) mustBe 303

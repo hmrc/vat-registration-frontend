@@ -16,15 +16,12 @@
 
 package controllers
 
-import connectors.{KeystoreConnector, S4LConnector}
 import controllers.internal.DeleteSessionItemsController
 import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
-import services.{CurrentProfileService, VatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
 import uk.gov.hmrc.http.HttpResponse
 
@@ -32,18 +29,18 @@ import scala.concurrent.Future
 
 class DeleteSessionItemsControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
 
-  val mockCurrentProfileService = mock[CurrentProfileService]
-
   trait Setup {
-    val deleteSessionController = new DeleteSessionItemsController {
-      val authConnector = mockAuthClientConnector
-      val cancellationService = mockCancellationService
-      val regConnector = mockRegConnector
-      val currentProfileService = mockCurrentProfileService
-      override val vatRegistrationService: VatRegistrationService = mockVatRegistrationService
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
-      val messagesApi: MessagesApi = mockMessagesAPI
-      val s4LConnector: S4LConnector = mockS4LConnector
+    val deleteSessionController: DeleteSessionItemsController = new DeleteSessionItemsController(
+      mockAuthClientConnector,
+      mockVatRegistrationService,
+      mockKeystoreConnector,
+      mockCurrentProfileService,
+      mockS4LConnector,
+      mockMessagesAPI,
+      mockServicesConfig,
+      mockCancellationService,
+      mockVatRegistrationConnector
+    ) {
       val rejectedUrl: String = "rejected-page"
     }
     mockAllMessages
@@ -54,29 +51,29 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with MockMessages 
   val fakeRequest: FakeRequest[JsObject] =
     FakeRequest(internal.routes.DeleteSessionItemsController.deleteIfRejected())
       .withBody[JsObject](Json.parse(
-      """{
-        |"SCRSIncorpStatus" : {
-        |"IncorpSubscriptionKey" : {
-        |"transactionId":"transId"
-        |},
-        |"IncorpStatusEvent" : {
-        |"status":"accepted"
-        |}
-        |}
-        |}""".stripMargin).as[JsObject])
+        """{
+          |"SCRSIncorpStatus" : {
+          |"IncorpSubscriptionKey" : {
+          |"transactionId":"transId"
+          |},
+          |"IncorpStatusEvent" : {
+          |"status":"accepted"
+          |}
+          |}
+          |}""".stripMargin).as[JsObject])
   val fakeRequestRejected: FakeRequest[JsObject] =
     FakeRequest(internal.routes.DeleteSessionItemsController.deleteIfRejected())
       .withBody[JsObject](Json.parse(
-      """{
-        |"SCRSIncorpStatus" : {
-        |"IncorpSubscriptionKey" : {
-        |"transactionId":"transId"
-        |},
-        |"IncorpStatusEvent" : {
-        |"status":"rejected"
-        |}
-        |}
-        |}""".stripMargin).as[JsObject])
+        """{
+          |"SCRSIncorpStatus" : {
+          |"IncorpSubscriptionKey" : {
+          |"transactionId":"transId"
+          |},
+          |"IncorpStatusEvent" : {
+          |"status":"rejected"
+          |}
+          |}
+          |}""".stripMargin).as[JsObject])
 
   "deleteIfRejected" should {
     "not clear a registration if the incorp update is accepted" in new Setup {
@@ -85,7 +82,7 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with MockMessages 
       status(resp) mustBe 200
     }
     "clear a registration if the incorp update is rejected" in new Setup {
-      when(mockRegConnector.clearVatScheme(any())(any(), any())) thenReturn Future.successful(HttpResponse(OK))
+      when(mockVatRegistrationConnector.clearVatScheme(any())(any(), any())) thenReturn Future.successful(HttpResponse(OK))
       when(mockCurrentProfileService.addRejectionFlag(any())(any())) thenReturn Future.successful(Some("regid"))
       when(mockS4LConnector.clear(any())(any())) thenReturn Future.successful(HttpResponse(200))
 

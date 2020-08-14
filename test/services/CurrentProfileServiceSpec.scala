@@ -31,12 +31,12 @@ import scala.concurrent.Future
 class CurrentProfileServiceSpec extends VatRegSpec {
 
   class Setup {
-    val service = new CurrentProfileService {
+    val service = new CurrentProfileService(
+      mockVatRegistrationService,
+      mockKeystoreConnector
+    ) {
       override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
         if (regId == "99") Future.successful(default(regId)) else f
-
-      override val vatRegistrationService = mockVatRegistrationService
-      override val keystoreConnector = mockKeystoreConnector
     }
   }
 

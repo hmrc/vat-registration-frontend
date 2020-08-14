@@ -17,8 +17,8 @@
 package services
 
 import config.Logging
-import connectors.RegistrationConnector
-import javax.inject.Inject
+import connectors.VatRegistrationConnector
+import javax.inject.{Inject, Singleton}
 import models.external.Name
 import models.view.{LodgingOfficer, _}
 import models.{CurrentProfile, S4LKey}
@@ -27,14 +27,9 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
-class LodgingOfficerServiceImpl @Inject()(val vatRegistrationConnector: RegistrationConnector,
-                                          val s4LService: S4LService) extends LodgingOfficerService
-
-trait LodgingOfficerService extends Logging {
-  val vatRegistrationConnector: RegistrationConnector
-  val s4LService: S4LService
-
-  private val N = None
+@Singleton
+class LodgingOfficerService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
+                                      val s4LService: S4LService) extends Logging {
 
   def getApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Name] = {
     vatRegistrationConnector.getLodgingOfficer(cp.registrationId) map { res =>
@@ -46,7 +41,7 @@ trait LodgingOfficerService extends Logging {
     s4LService.fetchAndGetNoAux[LodgingOfficer](S4LKey[LodgingOfficer]) flatMap {
       case Some(officer) => Future.successful(officer)
       case _ => vatRegistrationConnector.getLodgingOfficer(cp.registrationId) flatMap { json =>
-        val lodgingOfficer = json.fold(LodgingOfficer(N, N, N, N, N, N))(LodgingOfficer.fromApi)
+        val lodgingOfficer = json.fold(LodgingOfficer(None, None, None, None, None, None))(LodgingOfficer.fromApi)
         s4LService.saveNoAux[LodgingOfficer](lodgingOfficer, S4LKey[LodgingOfficer]) map (_ => lodgingOfficer)
       }
     }
@@ -61,7 +56,7 @@ trait LodgingOfficerService extends Logging {
   }
 
   private def isModelComplete(lodgingOfficer: LodgingOfficer): Completion[LodgingOfficer] = lodgingOfficer match {
-    case LodgingOfficer(Some(_), N, N, N, N, N) =>
+    case LodgingOfficer(Some(_), None, None, None, None, None) =>
       Complete(lodgingOfficer)
     case LodgingOfficer(Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(lodgingOfficer)

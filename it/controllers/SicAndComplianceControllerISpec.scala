@@ -19,15 +19,15 @@ package controllers
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import models.SicAndCompliance.{sicAndCompliance => sicAndCompKey}
+import models._
 import models.api.SicCode
 import models.test.SicStub
-import models._
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
-import repositories.ReactiveMongoRepository
+import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -40,24 +40,25 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   val sicCodeDisplay = "test2 display"
   val businessActivityDescription = "test business desc"
 
-  val jsonListSicCode = s"""
-                           |  [
-                           |    {
-                           |      "code": "01110004",
-                           |      "desc": "gdfgdg d",
-                           |      "indexes": "dfg dfg g fd"
-                           |    },
-                           |    {
-                           |      "code": "$sicCodeId",
-                           |      "desc": "$sicCodeDesc",
-                           |      "indexes": "$sicCodeDisplay"
-                           |    },
-                           |    {
-                           |      "code": "82190004",
-                           |      "desc": "ry rty try rty ",
-                           |      "indexes": " rtyrtyrty rt"
-                           |    }
-                           |  ]
+  val jsonListSicCode =
+    s"""
+       |  [
+       |    {
+       |      "code": "01110004",
+       |      "desc": "gdfgdg d",
+       |      "indexes": "dfg dfg g fd"
+       |    },
+       |    {
+       |      "code": "$sicCodeId",
+       |      "desc": "$sicCodeDesc",
+       |      "indexes": "$sicCodeDisplay"
+       |    },
+       |    {
+       |      "code": "82190004",
+       |      "desc": "ry rty try rty ",
+       |      "indexes": " rtyrtyrty rt"
+       |    }
+       |  ]
         """.stripMargin
 
   val mainBusinessActivityView = MainBusinessActivityView(sicCodeId, Some(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)))
@@ -66,7 +67,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     description = Some(BusinessActivityDescription(businessActivityDescription)),
     mainBusinessActivity = Some(mainBusinessActivityView),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-    workers =  Some(Workers(200)),
+    workers = Some(Workers(200)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)),
     otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
@@ -79,16 +80,18 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
 
 
   class Setup {
+
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-    val repo = new ReactiveMongoRepository(app.configuration, mongo)
+
+    val repo = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 5 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
 
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId : String): Boolean = {
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
@@ -96,10 +99,10 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       res
     }
 
-    def insertCurrentProfileSicCodeIntoDb(sessionId : String): Boolean = {
+    def insertCurrentProfileSicCodeIntoDb(sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val sicCodeMapping: Map[String, JsValue] = Map(
-        "CurrentProfile"        -> Json.toJson(currentProfile),
+        "CurrentProfile" -> Json.toJson(currentProfile),
         ModelKeys.SIC_CODES_KEY -> Json.parse(jsonListSicCode)
       )
       val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
@@ -107,11 +110,11 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
       res
     }
 
-    def insertCurrentProfileFetchUri(sessionId : String): Boolean = {
+    def insertCurrentProfileFetchUri(sessionId: String): Boolean = {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val sicCodeMapping: Map[String, JsValue] = Map(
-        "CurrentProfile"        -> Json.toJson(currentProfile),
-        "ICLFetchResultsUri"    -> JsString("/fetch-results")
+        "CurrentProfile" -> Json.toJson(currentProfile),
+        "ICLFetchResultsUri" -> JsString("/fetch-results")
       )
       val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
       customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
@@ -136,14 +139,15 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
   }
 
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
-    val simplifiedSicJson = """|{"otherBusinessActivities" : [
-                               |           {
-                               |               "code" : "43220",
-                               |               "desc" : "Plumbing, heat and air-conditioning installation",
-                               |               "indexes" : ""
-                               |           }
-                               |       ]
-                               |}""".stripMargin
+    val simplifiedSicJson =
+      """|{"otherBusinessActivities" : [
+         |           {
+         |               "code" : "43220",
+         |               "desc" : "Plumbing, heat and air-conditioning installation",
+         |               "indexes" : ""
+         |           }
+         |       ]
+         |}""".stripMargin
 
     given()
       .user.isAuthorised
@@ -181,7 +185,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
     val sicCode = SicCode("23456", "This is a fake description", "")
 
     given()
@@ -201,7 +205,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
     val sicCode1 = SicCode("23456", "This is a fake description", "")
     val sicCode2 = SicCode("12345", "This is another code", "")
 
@@ -221,7 +225,7 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     }
   }
 
-  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a 303"  in new Setup{
+  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
     val sicCode1 = SicCode("01610", "This is a compliance activity", "")
 
     given()
@@ -279,12 +283,12 @@ class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with Sca
     whenReady(response) { res =>
       res.status mustBe 303
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
-             val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
+      val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
-              (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
-              (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
-              (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
-              (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
+      (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
+      (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
+      (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
+      (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
     }
   }
 

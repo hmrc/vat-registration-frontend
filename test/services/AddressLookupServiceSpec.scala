@@ -21,6 +21,7 @@ import common.enums.AddressLookupJourneyIdentifier
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
@@ -31,10 +32,12 @@ class AddressLookupServiceSpec extends VatRegSpec {
 
   val testAddress = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
-  val testService = new AddressLookupService {
-    override val addressLookupConnector = mockAddressLookupConnector
-    override val addressConfig = ConfigFactory.load.getConfig("address-journeys")
-    override val addressLookupContinueUrl = "/test/uri"
+  val testService = new AddressLookupService(
+    mockAddressLookupConnector,
+    mock[Configuration]
+  ) {
+    override lazy val addressConfig = ConfigFactory.load.getConfig("address-journeys")
+    override lazy val addressLookupContinueUrl = "/test/uri"
   }
 
   implicit val messagesApi = app.injector.instanceOf(classOf[MessagesApi])
@@ -64,8 +67,8 @@ class AddressLookupServiceSpec extends VatRegSpec {
   }
 
   "buildJourneyJson" should {
-    val resultHomeAddress       = testService.buildJourneyJson(Call("GET", "/continue"), AddressLookupJourneyIdentifier.homeAddress)
-    val resultAddress4Years     = testService.buildJourneyJson(Call("GET", "/continue-1"), AddressLookupJourneyIdentifier.addressThreeYearsOrLess)
+    val resultHomeAddress = testService.buildJourneyJson(Call("GET", "/continue"), AddressLookupJourneyIdentifier.homeAddress)
+    val resultAddress4Years = testService.buildJourneyJson(Call("GET", "/continue-1"), AddressLookupJourneyIdentifier.addressThreeYearsOrLess)
     val resultBusinessActivites = testService.buildJourneyJson(Call("GET", "/continue-1"), AddressLookupJourneyIdentifier.businessActivities)
 
     "return an AddressJourneyBuilder and validate common items" in {
