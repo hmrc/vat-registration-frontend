@@ -378,17 +378,6 @@ pages.summary.directorAddresses.previousAddress               = Previous address
 pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
 pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
 
-## Summary Page Annual Accounting Scheme
-pages.summary.annualAccountingScheme.sectionHeading                     = Annual Accounting Scheme
-pages.summary.annualAccountingScheme.reclaimMoreVat                     = VAT claims and charges
-pages.summary.annualAccountingScheme.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
-pages.summary.annualAccountingScheme.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
-pages.summary.annualAccountingScheme.accountingPeriod                   = When do you want to submit VAT Returns?
-pages.summary.annualAccountingScheme.accountingPeriod.monthly           = Once a month
-pages.summary.annualAccountingScheme.accountingPeriod.jan               = January, April, July and October
-pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
-pages.summary.annualAccountingScheme.accountingPeriod.mar               = March, June, September and December
-
 ## Summary Page Labour Compliance
 pages.summary.labourCompliance.sectionHeading                 = Providing workers to other employers
 pages.summary.labourCompliance.providesWorkers                = Providing workers to other employers
