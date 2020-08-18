@@ -74,7 +74,6 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
       SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.businessContact).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
-      SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryFrsSectionBuilder(
         vs.flatRateScheme,
         vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
