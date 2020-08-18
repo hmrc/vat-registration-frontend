@@ -135,7 +135,6 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         document.getElementById("frs.joinFrsAnswer").text mustBe "No"
         document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
-        document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
       }
     }
 
