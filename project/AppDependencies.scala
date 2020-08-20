@@ -78,7 +78,6 @@ private object UnitTestDependencies extends TestDependencies {
   override val scope: Configuration = Test
   override val testDependencies: Seq[ModuleID] = Seq(
     "org.scalatestplus.play"  %% "scalatestplus-play"            % scalaTestPlusPlayVersion  % scope,
-    "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion          % scope,
     "org.pegdown"             % "pegdown"                        % pegdownVersion            % scope,
     "org.jsoup"               %  "jsoup"                         % jsoupVersion              % scope,
     "org.mockito"             %  "mockito-core"                  % mockitoVersion            % scope,
@@ -94,7 +93,6 @@ private object IntegrationTestDependencies extends TestDependencies {
     "org.scalatestplus.play"  %% "scalatestplus-play"            % scalaTestPlusPlayVersion % scope,
     "com.github.tomakehurst"  %  "wiremock-jre8"                 % wireMockVersion          % scope,
     "org.jsoup"               %  "jsoup"                         % jsoupVersion             % scope,
-    "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion         % scope,
     "uk.gov.hmrc"             %% "reactivemongo-test"            % "4.16.0-play-26"         % scope
   )
 
