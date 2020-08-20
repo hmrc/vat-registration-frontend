@@ -18,34 +18,34 @@ package controllers.callbacks
 
 import java.io.File
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
-import uk.gov.hmrc.play.config.inject.ServicesConfig
 import views.html.pages.error.TimeoutView
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SignInOutController @Inject()(config: ServicesConfig,
+class SignInOutController @Inject()(mcc: MessagesControllerComponents,
                                     val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector
-                                   )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+                                    val keystoreConnector: KeystoreConnector)
+                                   (implicit val appConfig: FrontendAppConfig,
+                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val compRegFEURL: String = config.getConfString("company-registration-frontend.www.url",
+  lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
     throw new Exception("Config: company-registration-frontend.www.url not found"))
 
-  lazy val compRegFEURI: String = config.getConfString("company-registration-frontend.www.uri",
+  lazy val compRegFEURI: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.uri",
     throw new Exception("Config: company-registration-frontend.www.uri not found"))
 
-  lazy val compRegFEQuestionnaire: String = config.getConfString("company-registration-frontend.www.questionnaire",
+  lazy val compRegFEQuestionnaire: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.questionnaire",
     throw new Exception("Config: company-registration-frontend.www.questionnaire not found"))
 
-  lazy val compRegFEPostSignIn: String = config.getConfString("company-registration-frontend.www.post-sign-in",
+  lazy val compRegFEPostSignIn: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.post-sign-in",
     throw new Exception("Config: company-registration-frontend.www.post-sign-in not found"))
 
   def postSignIn: Action[AnyContent] = Action.async {

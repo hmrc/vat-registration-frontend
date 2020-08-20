@@ -22,7 +22,8 @@
 @import views.html.helpers.templates._
 @import models.SkilledWorkers
 
-@(skilledWorkersForm: Form[SkilledWorkers])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(skilledWorkersForm: Form[SkilledWorkers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.labourCompliance.skilledWorkers.title")) {
 

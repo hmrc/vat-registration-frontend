@@ -18,6 +18,7 @@ package controllers
 
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
 import models.SicAndCompliance.{sicAndCompliance => sicAndCompKey}
 import models._
 import models.api.SicCode
@@ -34,7 +35,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class SicAndComplianceControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val sicCodeId = "81300003"
   val sicCodeDesc = "test2 desc"
   val sicCodeDisplay = "test2 display"

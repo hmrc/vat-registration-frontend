@@ -22,7 +22,7 @@ import models._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-class S4LServiceSpec extends VatRegSpec with VatRegistrationFixture {
+class S4LServiceSpec extends VatRegSpec {
 
   trait Setup {
     val service = new S4LService(mockS4LConnector)

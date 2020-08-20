@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.FrontendAppConfig
-@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+package config
+
+import javax.inject.Inject
+import play.api.Configuration
+import play.api.i18n.MessagesApi
+import play.api.mvc.Request
+import play.twirl.api.Html
+import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 
-@main_template(title = messages("pages.timeout.title"), backEnabled = false) {
-    <header class="page-header">
-        <h1 class="form-title heading-large" id="main-heading">@messages("pages.timeout.heading")</h1>
-    </header>
+class FrontendGlobal @Inject()(val messagesApi: MessagesApi, val appConfig: FrontendAppConfig) extends FrontendErrorHandler {
 
-    <p>@messages("pages.timeout.body.one")</p>
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
+    implicit val ac = appConfig
+    views.html.pages.error.restart()
+  }
 
-    <div class="form-group">
-        <p>@Html(messages("pages.timeout.body.url", controllers.callbacks.routes.SignInOutController.postSignIn.url))</p>
-    </div>
 }
+

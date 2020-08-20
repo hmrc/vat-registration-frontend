@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import views.html.{previous_address => PreviousAddressPage}
 import forms.PreviousAddressForm
 import models.view.PreviousAddressView
@@ -23,12 +24,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class PreviousAddressPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class PreviousAddressPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = PreviousAddressForm.form
 
@@ -37,8 +39,8 @@ class PreviousAddressPageSpec extends UnitSpec with WithFakeApplication with I18
       lazy val view = PreviousAddressPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size shouldBe 2
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
     }
 
     "display the page with form pre populated" in {
@@ -47,8 +49,8 @@ class PreviousAddressPageSpec extends UnitSpec with WithFakeApplication with I18
       lazy val view = PreviousAddressPage(form.fill(validPreviousAddress))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size shouldBe 2
-      document.getElementById("previousAddressQuestionRadio-true").attr("checked") shouldBe "checked"
+      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      document.getElementById("previousAddressQuestionRadio-true").attr("checked") mustBe "checked"
     }
   }
 }

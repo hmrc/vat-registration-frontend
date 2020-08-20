@@ -28,24 +28,23 @@ import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   trait Setup {
     val testSummaryController = new SummaryController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockS4LService,
-      mockMessagesAPI,
       mockSummaryService
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -55,20 +54,20 @@ class SummaryControllerSpec extends ControllerSpec with MockMessages with Future
   val emptyReturns = Returns(None, None, None, None)
 
   "Calling summary to show the summary page" should {
-    "return HTML with a valid summary view pre-incorp" in new Setup {
+    "return OK with a valid summary view pre-incorp" in new Setup {
       when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
       when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
       when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
-      callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
+      callAuthorised(testSummaryController.show)(status(_) mustBe OK)
     }
 
-    "return HTML with a valid summary view post-incorp" in new Setup {
+    "return OK with a valid summary view post-incorp" in new Setup {
       when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
       when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
       when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
 
-      callAuthorised(testSummaryController.show)(_ includesText MOCKED_MESSAGE)
+      callAuthorised(testSummaryController.show)(status(_) mustBe OK)
     }
   }
 

@@ -16,24 +16,25 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.{CompanyProvideWorkersForm, SkilledWorkersForm, TemporaryContractsForm, WorkersForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import models.{SicAndCompliance, TemporaryContracts}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionProfile, SicAndComplianceService}
 import views.html.labour.{company_provide_workers, skilled_workers, temporary_contracts, workers}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class LabourComplianceController @Inject()(val messagesApi: MessagesApi,
+class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
                                            val authConnector: AuthClientConnector,
                                            val keystoreConnector: KeystoreConnector,
-                                           val sicAndCompService: SicAndComplianceService) extends BaseController with SessionProfile {
+                                           val sicAndCompService: SicAndComplianceService)
+                                           (implicit val appConfig: FrontendAppConfig,
+                                            ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def showProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

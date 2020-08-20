@@ -17,13 +17,13 @@
 package testHelpers
 
 import common.enums.VatRegStatus
-import config.AppConfig
+import config.{AppConfig, FrontendAppConfig}
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models.CurrentProfile
 import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}

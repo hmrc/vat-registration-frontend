@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
 import scala.concurrent.Future
 
 
-class ReturnsServiceSpec extends VatRegSpec with MustMatchers with MockitoSugar {
+class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   class Setup {
     val service = new ReturnsService(

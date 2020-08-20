@@ -28,11 +28,12 @@ import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, MockMessages}
+import testHelpers.{ControllerSpec}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
+class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture {
   val jsonBusinessTypes = Json.parse(
     s"""
        |[
@@ -55,7 +56,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
   trait Setup {
     val controller: FlatRateController = new FlatRateController(
-      mockMessagesAPI,
+      messagesControllerComponents,
       mockFlatRateService,
       mockVatRegistrationService,
       mockAuthClientConnector,
@@ -65,7 +66,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       mockSicAndComplianceService
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -73,23 +73,21 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   s"GET ${controllers.routes.FlatRateController.annualCostsInclusivePage()}" should {
 
     "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.annualCostsInclusivePage()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
     "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(FlatRateScheme()))
 
       callAuthorised(controller.annualCostsInclusivePage) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
@@ -146,23 +144,21 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
 
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
 
       callAuthorised(controller.annualCostsLimitedPage()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       callAuthorised(controller.annualCostsLimitedPage()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
@@ -172,7 +168,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return a 400 when the request is empty" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
@@ -184,7 +180,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "redirect to confirm business sector when user selects Yes" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       when(mockFlatRateService.saveOverBusinessGoodsPercent(any())(any(), any()))
@@ -202,7 +198,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       when(mockFlatRateService.saveOverBusinessGoodsPercent(any())(any(), any()))
@@ -272,7 +268,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
@@ -285,7 +280,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       callAuthorised(controller.frsStartDatePage) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
@@ -370,7 +364,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
-        when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        when(mockFlatRateService.getFlatRate(any(), any()))
           .thenReturn(Future.successful(validFlatRate))
 
         when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -383,7 +377,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
           status(result) mustBe 200
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("mocked message")
         }
       }
 
@@ -395,14 +388,13 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
-        when(mockFlatRateService.getFlatRate(any(), any(), any()))
+        when(mockFlatRateService.getFlatRate(any(), any()))
           .thenReturn(Future.successful(validFlatRate))
 
         callAuthorised(controller.joinFrsPage) { result =>
           status(result) mustBe 200
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include("mocked message")
         }
       }
     }
@@ -485,12 +477,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return a 200 and render the page" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.registerForFrsPage()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
@@ -548,14 +539,13 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return a 200 and render the page" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
       callAuthorised(controller.yourFlatRatePage()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
   }
@@ -624,24 +614,22 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     )
 
     "return a 200 and render the page without pre population" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.estimateTotalSales()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
         document.getElementById("totalSalesEstimate").attr("value") mustBe ""
       }
     }
 
     "return a 200 and render the page with pre populated data" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(30000L))))
 
       callAuthorised(controller.estimateTotalSales()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
         document.getElementById("totalSalesEstimate").attr("value") mustBe "30000"
       }
@@ -728,7 +716,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     )
 
     "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(categoryOfBusiness = None)))
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
@@ -739,14 +727,13 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       callAuthorised(controller.businessType()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
         document.getElementsByAttributeValue("checked", "checked").size mustBe 0
       }
     }
 
     "return a 200 and render the page with radio pre selected" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
@@ -757,7 +744,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       callAuthorised(controller.businessType()) { result =>
         status(result) mustBe 200
-        contentAsString(result) must include(MOCKED_MESSAGE)
         val document = Jsoup.parse(contentAsString(result))
         val id = s"businessType-${validFlatRate.categoryOfBusiness.get}"
         val elements = document.getElementsByAttributeValue("checked", "checked")

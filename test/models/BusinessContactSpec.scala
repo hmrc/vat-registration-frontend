@@ -18,9 +18,9 @@ package models
 
 import models.api.ScrsAddress
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class BusinessContactSpec extends UnitSpec {
+class BusinessContactSpec extends VatRegSpec {
 
   "fromApi" should {
     "parse the full json into a BusinessContactModel" in {
@@ -60,7 +60,7 @@ class BusinessContactSpec extends UnitSpec {
         ))
       )
 
-      BusinessContact.fromApi(jsonToParse) shouldBe expectedModel
+      BusinessContact.fromApi(jsonToParse) mustBe expectedModel
     }
 
     "parse the minimal json into a BusinessContactModel" in {
@@ -95,7 +95,7 @@ class BusinessContactSpec extends UnitSpec {
         ))
       )
 
-      BusinessContact.fromApi(jsonToParse) shouldBe expectedModel
+      BusinessContact.fromApi(jsonToParse) mustBe expectedModel
     }
   }
 
@@ -137,7 +137,7 @@ class BusinessContactSpec extends UnitSpec {
         ))
       )
 
-      BusinessContact.toApi(modelToTransform) shouldBe expectedJson
+      BusinessContact.toApi(modelToTransform) mustBe expectedJson
     }
 
     "transform a minimal BusinessContact into a minimal set of Json" in {
@@ -172,7 +172,7 @@ class BusinessContactSpec extends UnitSpec {
         ))
       )
 
-      BusinessContact.toApi(modelToTransform) shouldBe expectedJson
+      BusinessContact.toApi(modelToTransform) mustBe expectedJson
     }
   }
 }

@@ -18,6 +18,7 @@ package controllers
 
 import fixtures.LodgingOfficerFixture
 import helpers.RequestsFinder
+import itutil.IntegrationSpecBase
 import models.IVResult
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -31,7 +32,7 @@ import utils.VATRegFeatureSwitches
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class IdentityVerificationControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with LodgingOfficerFixture {
+class IdentityVerificationControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with LodgingOfficerFixture {
 
   val featureSwitch: VATRegFeatureSwitches = app.injector.instanceOf[VATRegFeatureSwitches]
 

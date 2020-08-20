@@ -19,10 +19,11 @@ package support
 import java.util.Base64
 
 import common.enums.VatRegStatus
+import itutil.WiremockHelper
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatestplus.play.guice.{GuiceOneAppPerSuite, GuiceOneServerPerSuite}
 import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -31,16 +32,13 @@ import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import repositories.SessionRepository
-import support.SessionBuilder.getSessionCookie
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.mongo.MongoSpecSupport
-import uk.gov.hmrc.play.it.Port
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration with MongoSpecSupport {
+trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
   trait StandardTestHelpers {
@@ -78,26 +76,23 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
       timeout = Span(4, Seconds),
       interval = Span(50, Millis))
 
-  override lazy val port: Int = Port.randomAvailable
-
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
-  def buildClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> getSessionCookie()) = {
+  def buildClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie()) = {
     val removeRegisterWithPath = path.replace("""/register-for-vat""", "")
-    ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHeaders(headers, "Csrf-Token" -> "nocheck")
+    ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHttpHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
-  def buildInternalClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> getSessionCookie()) = {
-    ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHeaders(headers, "Csrf-Token" -> "nocheck")
+  def buildInternalClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie()) = {
+    ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHttpHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
   val encryptedRegIdList1 = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
 
   def additionalConfig: Map[String, String] = Map(
     "regIdWhitelist" -> s"OTgsOTk=",
-    "mongodb.uri" -> s"$mongoUri"
+    "mongodb.uri" -> s"mongodb://127.0.0.1:27017/test?rm.monitorRefreshMS=1000&rm.failover=default"
   )
-
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure(replaceWithWiremock(Seq(
@@ -124,22 +119,22 @@ trait AppAndStubs extends StartAndStopWireMock with StubUtils with GuiceOneServe
   private def replaceWithWiremock(services: Seq[String]) =
     services.foldLeft(Map.empty[String, Any]) { (configMap, service) =>
       configMap + (
-        s"microservice.services.$service.host" -> wiremockHost,
-        s"microservice.services.$service.port" -> wiremockPort)
+        s"microservice.services.$service.host" -> WiremockHelper.wiremockHost,
+        s"microservice.services.$service.port" -> WiremockHelper.wiremockPort)
     } +
-      (s"auditing.consumer.baseUri.host" -> wiremockHost, s"auditing.consumer.baseUri.port" -> wiremockPort) +
+      (s"auditing.consumer.baseUri.host" -> WiremockHelper.wiremockHost, s"auditing.consumer.baseUri.port" -> WiremockHelper.wiremockPort) +
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
       ("microservice.services.business-registration.uri" -> "/business-registration") +
-      ("microservice.services.iv.identity-verification-proxy.host" -> wiremockHost) +
-      ("microservice.services.iv.identity-verification-proxy.port" -> wiremockPort) +
-      ("microservice.services.iv.identity-verification-frontend.host" -> wiremockHost) +
-      ("microservice.services.iv.identity-verification-frontend.port" -> wiremockPort) +
+      ("microservice.services.iv.identity-verification-proxy.host" -> WiremockHelper.wiremockHost) +
+      ("microservice.services.iv.identity-verification-proxy.port" -> WiremockHelper.wiremockPort) +
+      ("microservice.services.iv.identity-verification-frontend.host" -> WiremockHelper.wiremockHost) +
+      ("microservice.services.iv.identity-verification-frontend.port" -> WiremockHelper.wiremockPort) +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
-      ("microservice.services.vat-registration-eligibility-frontend.uri" -> s"http://$wiremockHost:$wiremockPort/uriELFE") +
+      ("microservice.services.vat-registration-eligibility-frontend.uri" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE") +
       ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo") +
-      ("microservice.services.vat-registration-eligibility-frontend.host" -> wiremockHost) +
-      ("microservice.services.vat-registration-eligibility-frontend.port" -> wiremockPort)
+      ("microservice.services.vat-registration-eligibility-frontend.host" -> WiremockHelper.wiremockHost) +
+      ("microservice.services.vat-registration-eligibility-frontend.port" -> WiremockHelper.wiremockPort)
 }
 
 

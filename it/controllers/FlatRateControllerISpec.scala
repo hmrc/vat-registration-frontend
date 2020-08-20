@@ -3,6 +3,7 @@ package controllers
 
 import java.time.LocalDate
 
+import itutil.IntegrationSpecBase
 import models.{FRSDateChoice, FlatRateScheme, Returns, Start}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
@@ -11,7 +12,7 @@ import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import support.AppAndStubs
 
-class FlatRateControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
+class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
 
   override def beforeEach(): Unit = {
     super.beforeEach()

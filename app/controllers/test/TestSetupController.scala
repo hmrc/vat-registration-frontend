@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.test.TestVatRegistrationConnector
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
@@ -28,19 +28,22 @@ import models.view.test._
 import models._
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{Format, Json}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestSetupController @Inject()(implicit val s4LService: S4LService,
+class TestSetupController @Inject()(mcc: MessagesControllerComponents,
+                                    val s4LService: S4LService,
                                     val s4lConnector: S4LConnector,
                                     val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector,
-                                    val messagesApi: MessagesApi,
-                                    val testVatRegConnector: TestVatRegistrationConnector) extends BaseController with SessionProfile {
+                                    val testVatRegConnector: TestVatRegistrationConnector)
+                                   (implicit val appConfig: FrontendAppConfig,
+                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+
   val s4LBuilder: TestS4LBuilder.type = TestS4LBuilder
 
   private val empty = Future.successful(CacheMap("", Map.empty))

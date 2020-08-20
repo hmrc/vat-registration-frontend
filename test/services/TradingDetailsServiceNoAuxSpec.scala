@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
-class TradingDetailsServiceNoAuxSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
   class Setup {
     val service: TradingDetailsService = new TradingDetailsService(

@@ -19,7 +19,6 @@ package config
 import com.google.inject.AbstractModule
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.play.config.inject.{DefaultServicesConfig, ServicesConfig}
 
 class Module extends AbstractModule {
 
@@ -29,10 +28,8 @@ class Module extends AbstractModule {
 
   private def hmrcDependencyBindings(): Unit = {
     bind(classOf[AuthConnector]).to(classOf[AuthClientConnector]).asEagerSingleton()
-    bind(classOf[ServicesConfig]).to(classOf[DefaultServicesConfig]).asEagerSingleton()
     bind(classOf[SessionCache]).to(classOf[VatSessionCache]).asEagerSingleton()
     bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
     bind(classOf[ShortLivedCache]).to(classOf[VatShortLivedCache]).asEagerSingleton()
-    bind(classOf[WSHttp]).to(classOf[Http]).asEagerSingleton()
   }
 }

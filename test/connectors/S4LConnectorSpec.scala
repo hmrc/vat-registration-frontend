@@ -19,24 +19,21 @@ package connectors
 import models.TradingNameView
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class S4LConnectorSpec extends UnitSpec with MockitoSugar {
+class S4LConnectorSpec extends VatRegSpec {
 
   val mockShortLivedCache = mock[ShortLivedCache]
 
   object S4LConnectorTest extends S4LConnector(
     mockShortLivedCache
   )
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val sTradingModel = TradingNameView(true, Some("test"))
   val cacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
@@ -48,7 +45,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
         .thenReturn(Future.successful(Option(sTradingModel)))
 
       val result = S4LConnectorTest.fetchAndGet[TradingNameView]("", "")
-      await(result) shouldBe Some(sTradingModel)
+      await(result) mustBe Some(sTradingModel)
     }
   }
 
@@ -60,7 +57,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
         .thenReturn(Future.successful(returnCacheMap))
 
       val result = S4LConnectorTest.save[TradingNameView]("", "", sTradingModel)
-      await(result) shouldBe returnCacheMap
+      await(result) mustBe returnCacheMap
     }
   }
 
@@ -70,7 +67,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
         .thenReturn(Future.successful(HttpResponse(OK)))
 
       val result = S4LConnectorTest.clear("test")
-      await(result).status shouldBe HttpResponse(OK).status
+      await(result).status mustBe HttpResponse(OK).status
     }
   }
 
@@ -80,7 +77,7 @@ class S4LConnectorSpec extends UnitSpec with MockitoSugar {
         .thenReturn(Future.successful(Some(cacheMap)))
 
       val result = S4LConnectorTest.fetchAll("testUserId")
-      await(result) shouldBe Some(cacheMap)
+      await(result) mustBe Some(cacheMap)
     }
   }
 }

@@ -15,10 +15,13 @@
  */
 package controllers
 
+import java.time.LocalDate
+
+import itutil.IntegrationSpecBase
+import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import models.test.SicStub
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -26,7 +29,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures {
+class DeleteSessionItemsControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
 
   class Setup {
 
@@ -82,17 +85,20 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val json = Json.parse(
-          s"""{
-            "SCRSIncorpStatus" : {
-              "IncorpSubscriptionKey" : {
-                "transactionId":"$txId"
-              },
-              "IncorpStatusEvent" : {
-                "status":"acccepted"
-              }
-            }
-          }""".stripMargin).as[JsObject]
+        val json = Json.toJson(
+          IncorporationInfo(
+            IncorpSubscription(
+              transactionId = txId,
+              regime = "vat",
+              subscriber = "scrs",
+              callbackUrl = "backUrl"),
+            IncorpStatusEvent(
+              status = "accepted",
+              crn = Some("90000001"),
+              incorporationDate = Some(LocalDate.parse("2016-08-05")),
+              description = None)
+          )
+        )
 
         val response = buildInternalClient("/incorp-update").post(json)
 
@@ -109,17 +115,20 @@ class DeleteSessionItemsControllerISpec extends PlaySpec with AppAndStubs with S
           .audit.writesAuditMerged()
           .vatRegistration.clearsUserData()
 
-        val json = Json.parse(
-          s"""{
-            "SCRSIncorpStatus" : {
-              "IncorpSubscriptionKey" : {
-                "transactionId":"$txId"
-              },
-              "IncorpStatusEvent" : {
-                "status":"rejected"
-              }
-            }
-          }""".stripMargin).as[JsObject]
+        val json = Json.toJson(
+          IncorporationInfo(
+            IncorpSubscription(
+              transactionId = txId,
+              regime = "vat",
+              subscriber = "scrs",
+              callbackUrl = "backUrl"),
+            IncorpStatusEvent(
+              status = "rejected",
+              crn = Some("90000001"),
+              incorporationDate = Some(LocalDate.parse("2016-08-05")),
+              description = None)
+          )
+        )
 
         val response = buildInternalClient("/incorp-update").post(json)
 

@@ -19,6 +19,9 @@ package deprecated
 import java.time.{LocalDate, Month}
 
 import models.api.ScrsAddress
+import play.api.libs.json.JodaWrites.{DefaultJodaLocalDateWrites, JodaDateTimeWrites}
+import org.joda.time.{DateTime, LocalDate => JodaLocalDate}
+import play.api.libs.json.{Format, JodaReads, JsResult, JsValue}
 
 object DeprecatedConstants {
   @Deprecated
@@ -29,4 +32,16 @@ object DeprecatedConstants {
 
   @Deprecated
   val emptyAddressList: Seq[ScrsAddress] = Nil
+
+  @Deprecated // Migrate to Java LocalDate
+  implicit val jodaLocalDateFormat = new Format[JodaLocalDate] {
+    override def reads(json: JsValue): JsResult[JodaLocalDate] = JodaReads.DefaultJodaLocalDateReads.reads(json)
+    override def writes(o: JodaLocalDate): JsValue = DefaultJodaLocalDateWrites.writes(o)
+  }
+
+  @Deprecated // Migrate to Java LocalDate
+  implicit val jodaDateTimeFormat = new Format[DateTime] {
+    override def reads(json: JsValue): JsResult[DateTime] = JodaReads.DefaultJodaDateTimeReads.reads(json)
+    override def writes(o: DateTime): JsValue = JodaDateTimeWrites.writes(o)
+  }
 }

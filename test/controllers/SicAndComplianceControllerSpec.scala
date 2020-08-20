@@ -16,43 +16,35 @@
 
 package controllers
 
-import connectors.KeystoreConnector
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
 import models.SicAndCompliance
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import services.{FlatRateService, ICLService, SicAndComplianceService}
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
-import uk.gov.hmrc.auth.core.AuthConnector
+import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import utils.VATRegFeatureSwitches
 
 import scala.concurrent.Future
 
-
-class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   class Setup (iclStubbed:Boolean = false){
     val controller: SicAndComplianceController = new SicAndComplianceController(
-      mockMessagesAPI,
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
       mockFlatRateService,
       mockVatRegFeatureSwitches,
-      mockServicesConfig,
       mockICLService
     ) {
       override val useICLStub                                 = iclStubbed
       override val iclFEurlwww: String                        = "www-url"
     }
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -147,20 +139,19 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
   }
 
   s"GET ${routes.SicAndComplianceController.showBusinessActivityDescription()}" should {
-    "return HTML Business Activity Description page with no data in the form" in new Setup {
+    "return OK" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
       callAuthorised(controller.showBusinessActivityDescription) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
-    "return HTML where getSicAndCompliance returns empty viewModels for labour" in new Setup {
+    "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
       mockGetSicAndCompliance(Future.successful(SicAndCompliance()))
 
       callAuthorised(controller.showBusinessActivityDescription) { result =>
-        result includesText MOCKED_MESSAGE
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
     }
   }
@@ -185,7 +176,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
   s"GET ${routes.SicAndComplianceController.showComplianceIntro()}" should {
     "display the introduction page to a set of compliance questions" in new Setup {
       callAuthorised(controller.showComplianceIntro) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }
@@ -200,12 +191,12 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
   }
 
   s"GET ${routes.SicAndComplianceController.showMainBusinessActivity()}" should {
-    "return HTML when view present in S4L" in new Setup {
+    "return OK when view present in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
       callAuthorised(controller.showMainBusinessActivity()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -214,8 +205,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with MockMessages wi
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
       callAuthorised(controller.showMainBusinessActivity) { result =>
-        result includesText MOCKED_MESSAGE
-        status(result) mustBe 200
+        status(result) mustBe OK
       }
     }
   }

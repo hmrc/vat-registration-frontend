@@ -22,12 +22,11 @@ import org.joda.time.{LocalDate => JodaLocalDate}
 import forms.FormValidation
 import forms.FormValidation.ErrorCode
 import models.DateModel
-import org.scalatest.{Inside, Inspectors}
+import org.scalatest.{Inside, Inspectors, Matchers, WordSpec}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-class FormValidationSpec extends UnitSpec with Inside with Inspectors {
+class FormValidationSpec extends WordSpec with Inside with Inspectors with Matchers {
 
   "mandatoryText" must {
 

@@ -18,13 +18,15 @@ package testHelpers
 
 import builders.AuthBuilder
 import common.enums.VatRegStatus
+import config.FrontendAppConfig
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Assertion, BeforeAndAfterEach}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.{HeaderNames, Status}
 import play.api.i18n.{Lang, Messages, MessagesApi}
@@ -34,11 +36,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with AuthMock with AuthBuilder with BeforeAndAfterEach
+trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with AuthMock with AuthBuilder with BeforeAndAfterEach
   with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
+  val messagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val regId = "VAT123456"
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(
@@ -64,20 +68,3 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with OneAppPerSuite with
   override protected def beforeEach(): Unit = resetMocks()
 }
 
-trait MockMessages {
-
-  val mockMessagesAPI: MessagesApi
-
-  val lang = Lang("en")
-  val messages = Messages(lang, mockMessagesAPI)
-
-  val MOCKED_MESSAGE = "mocked message"
-
-  def mockAllMessages: OngoingStubbing[String] = {
-    when(mockMessagesAPI.preferred(any[RequestHeader]()))
-      .thenReturn(messages)
-
-    when(mockMessagesAPI.apply(any[String](), any())(any()))
-      .thenReturn(MOCKED_MESSAGE)
-  }
-}

@@ -32,9 +32,9 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
   class Setup {
 
     val controller: FeedbackController = new FeedbackController(
+      messagesControllerComponents,
       mockAuthClientConnector,
-      mockKeystoreConnector,
-      mockMessagesAPI
+      mockKeystoreConnector
     ) {
       override lazy val contactFrontendPartialBaseUrl = "/test/uri"
       override lazy val contactFormServiceIdentifier  = "testId"
@@ -59,7 +59,7 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
     val fakeRequest = FakeRequest("GET", "/")
     val fakePostRequest = FakeRequest("POST", "/register-for-paye/feedback").withFormUrlEncodedBody("test" -> "test")
     "return form with thank you for valid selections" in new Setup {
-      when(mockWSHttp.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
+      when(mockHttpClient.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
         Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
     }
   }

@@ -34,7 +34,7 @@ import utils.SystemDate
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
-class PrePopulationServiceSpec extends VatRegSpec with VatRegistrationFixture with Inspectors with S4LMockSugar {
+class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSugar {
 
   private class Setup {
 

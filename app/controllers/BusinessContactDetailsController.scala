@@ -17,31 +17,30 @@
 package controllers
 
 import common.enums.AddressLookupJourneyIdentifier
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.{CompanyContactDetailsForm, PpobForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
 import models.api.ScrsAddress
 import models.view.vatContact.ppob.PpobView
-import play.api.Configuration
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
 import views.html.{business_contact_details, ppob, ppob_drop_out}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessContactDetailsController @Inject()(val authConnector: AuthClientConnector,
+class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                 val authConnector: AuthClientConnector,
                                                  val keystoreConnector: KeystoreConnector,
                                                  val businessContactService: BusinessContactService,
                                                  val prepopService: PrePopulationService,
-                                                 val addressLookupService: AddressLookupService,
-                                                 val conf: Configuration
-                                                )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
-  lazy val dropoutUrl: String = conf.getString("microservice.services.otrs.url").getOrElse("")
+                                                 val addressLookupService: AddressLookupService)
+                                                (implicit val appConfig: FrontendAppConfig,
+                                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
+  lazy val dropoutUrl: String = appConfig.servicesConfig.getString("microservice.services.otrs.url")
   private val ppobForm = PpobForm.form
   private val companyContactForm = CompanyContactDetailsForm.form
 

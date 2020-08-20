@@ -26,20 +26,19 @@ import models.{FRSDateChoice, Start, _}
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FlatRateService @Inject()(val s4LService: S4LService,
                                 val sicAndComplianceService: SicAndComplianceService,
                                 val configConnector: ConfigConnector,
-                                val vatRegConnector: VatRegistrationConnector) {
+                                val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
 
   private val defaultFlatRate: BigDecimal = 16.5
 
   def applyPercentRoundUp(l: Long): Long = Math.ceil(l * 0.005).toLong
 
-  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[FlatRateScheme] =
+  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     s4LService.fetchAndGetNoAux(FlatRateScheme.s4lkey) flatMap {
       case Some(s4l) => Future.successful(s4l)
       case None => vatRegConnector.getFlatRate(profile.registrationId) map {

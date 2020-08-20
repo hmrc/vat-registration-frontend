@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import forms.WorkersForm
 import views.html.labour.workers
 import models.Workers
@@ -23,12 +24,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class WorkersPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class WorkersPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = WorkersForm.form
 
@@ -37,14 +39,14 @@ class WorkersPageSpec extends UnitSpec with WithFakeApplication with I18nSupport
       lazy val view = workers(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("numberOfWorkers").attr("value") shouldBe ""
+      document.getElementById("numberOfWorkers").attr("value") mustBe ""
     }
 
     "display page pre populated" in {
       lazy val view = workers(form.fill(Workers(5)))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("numberOfWorkers").attr("value") shouldBe "5"
+      document.getElementById("numberOfWorkers").attr("value") mustBe "5"
     }
   }
 }

@@ -19,7 +19,8 @@
 @import play.api.i18n.Messages
 @import views.html.main_template
 
-@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}

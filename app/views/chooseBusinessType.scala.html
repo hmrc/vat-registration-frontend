@@ -20,7 +20,8 @@
 @import views.html.main_template
 @import views.html.helpers.templates._
 
-@(chooseBusinessTypeForm: Form[String], groupingBusinessTypes: Map[String, Seq[(String, String)]], mainBusActIdToGA: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(chooseBusinessTypeForm: Form[String], groupingBusinessTypes: Map[String, Seq[(String, String)]], mainBusActIdToGA: Option[String] = None)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}

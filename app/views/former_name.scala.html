@@ -22,7 +22,8 @@
 @import views.html.helpers.templates._
 @import models.view.FormerNameView
 
-@(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @fieldSetClasses = @{
     if(formerNameForm.hasErrors && (formerNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""

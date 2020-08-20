@@ -15,7 +15,8 @@
  *@
 
 @import forms.TradingNameForm
-@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""

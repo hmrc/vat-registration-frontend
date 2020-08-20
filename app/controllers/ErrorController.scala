@@ -16,29 +16,28 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
-import uk.gov.hmrc.play.config.inject.ServicesConfig
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ErrorController @Inject()(config: ServicesConfig,
+class ErrorController @Inject()(mcc: MessagesControllerComponents,
                                 val authConnector: AuthClientConnector,
-                                val keystoreConnector: KeystoreConnector
-                               )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+                                val keystoreConnector: KeystoreConnector)
+                               (implicit val appConfig: FrontendAppConfig,
+                                ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val compRegFEURL: String = config.getConfString("company-registration-frontend.www.url",
+  lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
     throw new Exception("Config: company-registration-frontend.www.url not found"))
 
-  lazy val compRegFEURI: String = config.getConfString("company-registration-frontend.www.uri",
+  lazy val compRegFEURI: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.uri",
     throw new Exception("Config: company-registration-frontend.www.uri not found"))
 
-  lazy val compRegFERejected: String = config.getConfString("company-registration-frontend.www.rejected",
+  lazy val compRegFERejected: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.rejected",
     throw new Exception("Config: company-registration-frontend.www.rejected not found"))
 
   lazy val rejectedUrl = s"$compRegFEURL$compRegFEURI$compRegFERejected"

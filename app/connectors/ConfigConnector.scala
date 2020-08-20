@@ -22,7 +22,7 @@ import javax.inject.{Inject, Singleton}
 import models.api.SicCode
 import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.io.Source
 

@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import forms.test.SicStubForm
@@ -24,19 +24,21 @@ import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.test.SicStub
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile, SicAndComplianceService}
 import views.html.test._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SicStubController @Inject()(val messagesApi: MessagesApi,
+class SicStubController @Inject()(mcc: MessagesControllerComponents,
                                   val configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val s4LService: S4LService,
                                   val sicAndCompService: SicAndComplianceService,
-                                  val authConnector: AuthClientConnector) extends BaseController with SessionProfile {
+                                  val authConnector: AuthClientConnector)
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

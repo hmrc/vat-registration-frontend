@@ -26,12 +26,12 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
 class OfficerControllerSpec extends ControllerSpec with FutureAwaits with DefaultAwaitTimeout
-  with VatRegistrationFixture with MockMessages with FutureAssertions {
+  with VatRegistrationFixture with FutureAssertions {
 
   val officerSecu = SecurityQuestionsView(LocalDate.of(1998, 7, 12))
   val partialLodgingOfficer = LodgingOfficer(Some(officerSecu), None, None, None, None, None)
@@ -40,6 +40,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
 
   trait Setup {
     val controller: OfficerController = new OfficerController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockLodgingOfficerService,
@@ -47,27 +48,26 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       mockAddressLookupService
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 
   s"GET ${controllers.routes.OfficerController.showSecurityQuestions()}" should {
-    "return HTML and form populated" in new Setup {
+    "return OK" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showSecurityQuestions()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
-    "return HTML with empty form" in new Setup {
+    "return OK if the lodging officer is empty" in new Setup {
       val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None, None)
 
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(emptyLodgingOfficer))
 
       callAuthorised(controller.showSecurityQuestions()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -103,7 +103,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getApplicantName(any(), any())).thenReturn(Future.successful(applicant))
 
       callAuthorised(controller.showFormerName()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -112,7 +112,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getApplicantName(any(), any())).thenReturn(Future.successful(applicant))
 
       callAuthorised(controller.showFormerName()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }
@@ -178,7 +178,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficerWithData))
 
       callAuthorised(controller.showFormerNameDate()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -186,7 +186,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficerNoData))
 
       callAuthorised(controller.showFormerNameDate()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }
@@ -235,7 +235,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
 
       callAuthorised(controller.showContactDetails()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -243,7 +243,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showContactDetails()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }
@@ -282,7 +282,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -290,7 +290,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showHomeAddress()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }
@@ -338,7 +338,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialIncompleteLodgingOfficer))
 
       callAuthorised(controller.showPreviousAddress()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
 
@@ -346,7 +346,7 @@ class OfficerControllerSpec extends ControllerSpec with FutureAwaits with Defaul
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any())).thenReturn(Future.successful(partialLodgingOfficer))
 
       callAuthorised(controller.showPreviousAddress()) {
-        _ includesText MOCKED_MESSAGE
+        status(_) mustBe OK
       }
     }
   }

@@ -16,35 +16,39 @@
 
 package controllers
 
-import auth.VatExternalUrls
-import config.Logging
+import config.{FrontendAppConfig, Logging}
+import javax.inject.Inject
 import models.{CurrentProfile, IncorpUpdate}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc._
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-trait BaseController extends FrontendController with I18nSupport with Logging with AuthorisedFunctions {
-  self: SessionProfile =>
+abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  extends FrontendController(mcc)
+  with I18nSupport
+  with Logging
+  with AuthorisedFunctions
+  with SessionProfile {
 
-  implicit val messagesApi: MessagesApi
+  implicit val appConfig: FrontendAppConfig
 
   implicit class HandleResult(res: Future[Result])(implicit hc: HeaderCarrier) {
     def handleErrorResult: Future[Result] = {
       res recoverWith {
         case _: NoActiveSession =>
-          Future.successful(Redirect(VatExternalUrls.loginUrl, Map(
-            "continue" -> Seq(VatExternalUrls.continueUrl),
-            "origin" -> Seq(VatExternalUrls.defaultOrigin)
+          Future.successful(Redirect(appConfig.loginUrl, Map(
+            "continue" -> Seq(appConfig.continueUrl),
+            "origin" -> Seq(appConfig.defaultOrigin)
           )))
         case uag: UnsupportedAffinityGroup =>
           logger.warn(s"User tried to access with a non organisation account", uag)

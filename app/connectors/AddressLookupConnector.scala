@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.WSHttp
 import javax.inject.{Inject, Singleton}
 import models.api.ScrsAddress
 import models.external.addresslookup.AddressJourneyBuilder
@@ -24,14 +23,15 @@ import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
 import play.api.mvc.Call
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
 
 @Singleton
-class AddressLookupConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
+class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+                                      (implicit ec: ExecutionContext) {
 
   lazy val addressLookupFrontendUrl: String = config.baseUrl("address-lookup-frontend")
 

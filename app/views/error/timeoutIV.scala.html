@@ -18,7 +18,8 @@
 @import play.api.i18n.Messages
 @import views.html.main_template
 
-@()(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.timeoutiv.title"), backEnabled = false) {
     <header class="page-header">

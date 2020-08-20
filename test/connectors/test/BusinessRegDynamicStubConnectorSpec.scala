@@ -23,7 +23,7 @@ class BusinessRegDynamicStubConnectorSpec extends VatRegSpec {
 
   class Setup {
     val testConnector: BusinessRegDynamicStubConnector = new BusinessRegDynamicStubConnector(
-      mockWSHttp,
+      mockHttpClient,
       mockServicesConfig
     ) {
       override val brdsUrl: String = "tst-url"

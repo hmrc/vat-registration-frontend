@@ -17,22 +17,23 @@
 package controllers
 
 import _root_.connectors.KeystoreConnector
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
 import javax.inject.{Inject, Singleton}
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BankAccountDetailsService, SessionProfile}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsController @Inject()(val messagesApi: MessagesApi,
+class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
                                              val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
-                                             val keystoreConnector: KeystoreConnector) extends BaseController with SessionProfile {
+                                             val keystoreConnector: KeystoreConnector)
+                                            (implicit val appConfig: FrontendAppConfig,
+                                             ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   private val hasCompanyBankAccountForm: Form[Boolean] = HasCompanyBankAccountForm.form
   private val enterBankAccountDetailsForm: Form[BankAccountDetails] = EnterBankAccountDetailsForm.form

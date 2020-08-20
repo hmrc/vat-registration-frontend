@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import forms.MainBusinessActivityForm
 import models.MainBusinessActivityView
 import models.api.SicCode
@@ -23,13 +24,14 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 import views.html.{main_business_activity => MainBusinessActivityPage}
 
-class MainBusinessActivityPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class MainBusinessActivityPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = MainBusinessActivityForm.form
 
@@ -40,12 +42,12 @@ class MainBusinessActivityPageSpec extends UnitSpec with WithFakeApplication wit
       lazy val view = MainBusinessActivityPage(form, sicCodeList)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "mainBusinessActivityRadio").size shouldBe 3
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+      document.getElementsByAttributeValue("name", "mainBusinessActivityRadio").size mustBe 3
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
 
-      document.getElementById("mainBusinessActivityRadio-id1").attr("value") shouldBe "id1"
-      document.getElementById("mainBusinessActivityRadio-id2").attr("value") shouldBe "id2"
-      document.getElementById("mainBusinessActivityRadio-id3").attr("value") shouldBe "id3"
+      document.getElementById("mainBusinessActivityRadio-id1").attr("value") mustBe "id1"
+      document.getElementById("mainBusinessActivityRadio-id2").attr("value") mustBe "id2"
+      document.getElementById("mainBusinessActivityRadio-id3").attr("value") mustBe "id3"
     }
 
     "display a list of Sic Code description pre selected" in {
@@ -54,11 +56,11 @@ class MainBusinessActivityPageSpec extends UnitSpec with WithFakeApplication wit
       lazy val view = MainBusinessActivityPage(form.fill(mainBus), sicCodeList)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "mainBusinessActivityRadio").size shouldBe 3
+      document.getElementsByAttributeValue("name", "mainBusinessActivityRadio").size mustBe 3
 
       val preSelected = document.getElementsByAttributeValue("checked", "checked")
-      preSelected.size shouldBe 1
-      preSelected.get(0).attr("value") shouldBe "id2"
+      preSelected.size mustBe 1
+      preSelected.get(0).attr("value") mustBe "id2"
     }
   }
 }

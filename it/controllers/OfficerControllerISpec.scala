@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
 import models.api.ScrsAddress
 import models.external.{Name, Officer}
 import models.view._
@@ -34,7 +35,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class OfficerControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val keyBlock = "officer-data"
 
   val email = "test@test.com"

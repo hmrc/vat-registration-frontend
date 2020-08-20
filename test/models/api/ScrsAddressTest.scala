@@ -17,45 +17,45 @@
 package models.api
 
 import org.scalatest._
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class ScrsAddressTest extends UnitSpec with Matchers {
+class ScrsAddressTest extends VatRegSpec {
 
   "equals" should {
     "match given same line1 and postcode" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, Some("AA1 1AA"), None)
       val a2 = ScrsAddress("1 Address Line", "line 2", None, None, Some("AA1 1AA"), None)
-      a1 shouldBe a2
+      a1 mustBe a2
     }
 
     "not match given same line1 and different postcode" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, Some("AA1 1AA"), None)
       val a2 = ScrsAddress("1 Address Line", "line 2", None, None, Some("AA2 1AA"), None)
-      a1 should not equal a2
+      a1 must not equal a2
     }
 
     "not match given different line1 and same postcode" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, Some("AA1 1AA"), None)
       val a2 = ScrsAddress("9 Address Line", "line 2", None, None, Some("AA1 1AA"), None)
-      a1 should not equal a2
+      a1 must not equal a2
     }
 
     "match given same line1 and country" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some("Slovakia"))
       val a2 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some("Slovakia"))
-      a1 shouldBe a2
+      a1 mustBe a2
     }
 
     "not match given same line1 and different country" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some("Slovakia"))
       val a2 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some("Romania"))
-      a1 should not equal a2
+      a1 must not equal a2
     }
 
     "not match given different line1 and same country" in {
       val a1 = ScrsAddress("1 Address Line", "line 2", None, None, None, Some("Slovakia"))
       val a2 = ScrsAddress("9 Address Line", "line 2", None, None, None, Some("Slovakia"))
-      a1 should not equal a2
+      a1 must not equal a2
     }
 
   }
@@ -63,20 +63,20 @@ class ScrsAddressTest extends UnitSpec with Matchers {
   "normalise" should {
     "leave normal address as-is" in {
       val a1 = ScrsAddress("line 1", "line 2", None, None, Some("postcode"), None)
-      a1.normalise shouldBe a1
+      a1.normalise mustBe a1
 
       val a2 = ScrsAddress("line 1", "line 2", Some("l3"), Some("l4"), None, Some("uk"))
-      a2.normalise shouldBe a2
+      a2.normalise mustBe a2
     }
 
     "convert empty some to none " in {
       val a1 = ScrsAddress("line 1", "line 2", Some(""), Some("    "), Some("  "), Some("UK"))
       val expected1 = ScrsAddress("line 1", "line 2", None, None, None, Some("UK"))
-      a1.normalise shouldBe expected1
+      a1.normalise mustBe expected1
 
       val a2 = ScrsAddress("line 1", "line 2", Some(""), Some("  "), Some("postcode"), Some("   "))
       val expected2 = ScrsAddress("line 1", "line 2", None, None, Some("postcode"), None)
-      a2.normalise shouldBe expected2
+      a2.normalise mustBe expected2
     }
   }
 }

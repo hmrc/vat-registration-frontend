@@ -16,28 +16,29 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.{AccountingPeriodForm, ChargeExpectancyForm, ReturnFrequencyForm, VoluntaryDateForm}
 import javax.inject.{Inject, Singleton}
 import models.{CurrentProfile, Frequency, Returns}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{ReturnsService, SessionProfile, TimeService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
 import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, start_date_view => VoluntaryStartDatePage}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
 
 @Singleton
-class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
+class ReturnsController @Inject()(mcc: MessagesControllerComponents,
+                                  val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val returnsService: ReturnsService,
-                                  val messagesApi: MessagesApi,
-                                  val timeService: TimeService) extends BaseController with SessionProfile {
+                                  val timeService: TimeService)
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

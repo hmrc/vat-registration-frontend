@@ -24,27 +24,26 @@ import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with FutureAssertions {
+class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   class Setup {
     val controller: BusinessContactDetailsController = new BusinessContactDetailsController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockBusinessContactService,
       mockPrePopulationService,
-      mockAddressLookupService,
-      mock[Configuration]
+      mockAddressLookupService
     ) {
       override lazy val dropoutUrl: String = "test otrs URL"
     }
-    mockAllMessages
+
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 

@@ -14,11 +14,12 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messagesApi: MessagesApi, messages: Messages)
+@import config.FrontendAppConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-@main_template(title = messagesApi("pages.retrySubmission.title"), backEnabled = false) {
+@main_template(title = messages("pages.retrySubmission.title"), backEnabled = false) {
 
     <h1 class="heading-large">@Messages("pages.retrySubmission.heading")</h1>
 
