@@ -19,10 +19,14 @@ package config
 import java.nio.charset.Charset
 import java.util.Base64
 
+import controllers.callbacks.routes
+import javax.inject.{Inject, Singleton}
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
-import play.api.Play.{configuration, current}
+import play.api.Mode.Mode
+import play.api.{Configuration, Mode}
 import play.api.libs.json.{JsValue, Json, Reads}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
 
 trait AppConfig {
   val analyticsToken: String
@@ -39,31 +43,43 @@ trait AppConfig {
   lazy val whitelistedRegIds: Seq[String] = whitelistedPostIncorpRegIds ++ whitelistedPreIncorpRegIds
 }
 
-object FrontendAppConfig extends AppConfig with ServicesConfig {
+@Singleton
+class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig {
 
-  private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+  private def loadConfig(key: String) = servicesConfig.getString(key)
 
   val contactFormServiceIdentifier = "SCRS"
 
-  override lazy val contactFrontendPartialBaseUrl = loadConfig("microservice.services.contact-frontend.url")
-  override lazy val analyticsToken                = loadConfig(s"google-analytics.token")
-  override lazy val analyticsHost                 = loadConfig(s"google-analytics.host")
-  override lazy val reportAProblemPartialUrl      = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl        = s"$contactFrontendPartialBaseUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val contactFrontendPartialBaseUrl = loadConfig("microservice.services.contact-frontend.url")
+  lazy val analyticsToken                = loadConfig(s"google-analytics.token")
+  lazy val analyticsHost                 = loadConfig(s"google-analytics.host")
+  lazy val reportAProblemPartialUrl      = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl        = s"$contactFrontendPartialBaseUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
-  override val timeoutInSeconds = loadConfig("timeoutInSeconds")
+  val timeoutInSeconds = loadConfig("timeoutInSeconds")
+
+  lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
+  lazy val loginCallback   = servicesConfig.getString("microservice.services.auth.login-callback.url")
+  lazy val loginPath       = servicesConfig.getString("microservice.services.auth.login_path")
+
+  val loginUrl                                 = s"$companyAuthHost$loginPath"
+  val continueUrl                              = s"$loginCallback${routes.SignInOutController.postSignIn()}"
+  final lazy val defaultOrigin: String = {
+    lazy val appName = runModeConfiguration.getString("appName").getOrElse("undefined")
+    runModeConfiguration.getString("sosOrigin").getOrElse(appName)
+  }
 
   private def whitelistConfig(key: String): Seq[String] = {
-    Some(new String(Base64.getDecoder.decode(configuration.getString(key).getOrElse("")), "UTF-8"))
+    Some(new String(Base64.getDecoder.decode(servicesConfig.getString(key)), "UTF-8"))
       .map(_.split(",")).getOrElse(Array.empty).toSeq
   }
 
   private def loadStringConfigBase64(key : String) : String = {
-    new String(Base64.getDecoder.decode(configuration.getString(key).getOrElse("")), Charset.forName("UTF-8"))
+    new String(Base64.getDecoder.decode(servicesConfig.getString(key)), Charset.forName("UTF-8"))
   }
 
   private def loadJsonConfigBase64[T](key: String)(implicit reads: Reads[T]): T = {
-    val json = Json.parse(Base64.getDecoder.decode(configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))))
+    val json = Json.parse(Base64.getDecoder.decode(runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))))
     json.validate[T].fold(
       errors => throw new Exception(s"Incorrect data for the key: $key and ##  $errors"),
       valid  => valid
@@ -73,7 +89,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   lazy val whitelist          = whitelistConfig("whitelist")
   lazy val whitelistExcluded  = whitelistConfig("whitelist-excluded")
 
-  lazy val uriWhiteList     = configuration.getStringSeq("csrfexceptions.whitelist").getOrElse(Seq.empty).toSet
+  lazy val uriWhiteList     = runModeConfiguration.getStringSeq("csrfexceptions.whitelist").getOrElse(Seq.empty).toSet
   lazy val csrfBypassValue  = loadStringConfigBase64("Csrf-Bypass-value")
 
   // Defaulted Values for default regId
@@ -85,7 +101,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   lazy val whitelistedPostIncorpRegIds:Seq[String] = whitelistConfig("regIdPostIncorpWhitelist")
 
   lazy val noneOnsSicCodes = new String(
-      Base64.getDecoder.decode(configuration.getString("noneOnsSicCodes").getOrElse("")), Charset.forName("UTF-8")
+      Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")
     ).split(",").toSet
 
 }

@@ -22,7 +22,7 @@ import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.Configuration
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
@@ -40,7 +40,8 @@ class AddressLookupServiceSpec extends VatRegSpec {
     override lazy val addressLookupContinueUrl = "/test/uri"
   }
 
-  implicit val messagesApi = app.injector.instanceOf(classOf[MessagesApi])
+  val messagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getByAddressId" should {
     "return an ScrsAddress" when {

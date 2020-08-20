@@ -16,22 +16,22 @@
 
 package connectors.test
 
-import config.WSHttp
 import connectors._
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import play.api.libs.json.JsValue
 import play.api.mvc.{Result, Results}
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestVatRegistrationConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
-  val vatRegUrl: String = config.baseUrl("vat-registration")
+class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+                                            (implicit ec: ExecutionContext) {
 
+  val vatRegUrl: String = config.baseUrl("vat-registration")
   val incorporationFrontendStubsUrl: String = config.baseUrl("incorporation-frontend-stub")
   val incorporationFrontendStubsUri: String = config.getConfString("incorporation-frontend-stub.uri", "")
 

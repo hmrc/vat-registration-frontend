@@ -15,7 +15,8 @@
  *@
 
 @import models.view.test.TestSetup
-@(testSetupForm:  Form[TestSetup])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(testSetupForm:  Form[TestSetup])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.vatInput
 

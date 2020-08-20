@@ -31,7 +31,7 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
   class Setup {
 
     val connector: BankAccountReputationConnector = new BankAccountReputationConnector(
-      mockWSHttp,
+      mockHttpClient,
       mockServicesConfig
     ) {
       override val bankAccountReputationUrl: String = "test-url"
@@ -49,7 +49,7 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
     }
 
     "throw an exception" in new Setup {
-      when(mockWSHttp.POST[BankAccountDetails, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      when(mockHttpClient.POST[BankAccountDetails, JsValue](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, 500, 500)))
 

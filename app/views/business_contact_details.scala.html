@@ -22,9 +22,10 @@
 @import views.html.main_template
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{vatInput, errorSummary}
-@import utils.ViewErrorHelpers._
+@import viewmodels.VatRegViewErrorHelpers._
 
-@(companyContactDetailsForm: Form[CompanyContactDetails])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(companyContactDetailsForm: Form[CompanyContactDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
 @main_template(title = messages("pages.businessContactDetails.title")) {

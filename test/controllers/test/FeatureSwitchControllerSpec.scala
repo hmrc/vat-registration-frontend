@@ -18,15 +18,18 @@ package controllers.test
 
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{BAD_REQUEST, OK}
 import testHelpers.VatRegSpec
 
 class FeatureSwitchControllerSpec extends VatRegSpec {
 
+  val messagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   class Setup {
     val controller = new FeatureSwitchController(
+      messagesControllerComponents,
       mockFeatureManager,
       mockVATFeatureSwitch,
       mockAuthClientConnector

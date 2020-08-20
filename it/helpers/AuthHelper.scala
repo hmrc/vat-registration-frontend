@@ -23,16 +23,18 @@ import java.util.UUID
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.HeaderNames
 import play.api.libs.Crypto
+import play.api.libs.crypto.{CookieSigner, DefaultCookieSigner}
 import play.api.libs.ws.WSCookie
+import play.libs.crypto.DefaultCookieSigner
+import support.{AppAndStubs, SessionCookieBaker}
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
 import uk.gov.hmrc.http.SessionKeys
 
-trait AuthHelper extends SessionCookieBaker {
+trait AuthHelper {
+  this: AppAndStubs =>
 
   private[helpers] val defaultUser = "/foo/bar"
   //  private val defaultUser = "/auth/oid/1234567890"
-
-  val sessionId = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
 
   private def cookieData(additionalData: Map[String, String], userId: String = defaultUser): Map[String, String] = {
     Map(
@@ -45,7 +47,7 @@ trait AuthHelper extends SessionCookieBaker {
   }
 
   def getSessionCookie(additionalData: Map[String, String] = Map(), userId: String = defaultUser) = {
-    cookieValue(cookieData(additionalData, userId))
+    SessionCookieBaker.cookieValue(cookieData(additionalData, userId))
   }
 
   def stubSuccessfulLogin(userId: String = defaultUser, withSignIn: Boolean = false) = {
@@ -80,6 +82,9 @@ trait AuthHelper extends SessionCookieBaker {
 }
 
 trait SessionCookieBaker {
+
+  val signer: CookieSigner
+
   val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
   def cookieValue(sessionData: Map[String,String]) = {
     def encode(data: Map[String, String]): PlainText = {
@@ -87,7 +92,7 @@ trait SessionCookieBaker {
         case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
       }.mkString("&")
       val key = "yNhI04vHs9<_HWbC`]20u`37=NGLGYY5:0Tg5?y`W<NoJnXWqmjcgZBec@rOxb^G".getBytes
-      PlainText(Crypto.sign(encoded, key) + "-" + encoded)
+      PlainText(signer.sign(encoded, key) + "-" + encoded)
     }
 
     val encodedCookie = encode(sessionData)
@@ -97,7 +102,7 @@ trait SessionCookieBaker {
   }
 
   def getCookieData(cookie: WSCookie): Map[String, String] = {
-    getCookieData(cookie.value.get)
+    getCookieData(cookie.value)
   }
 
   def getCookieData(cookieData: String): Map[String, String] = {

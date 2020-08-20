@@ -19,9 +19,9 @@ package models
 import fixtures.VatRegistrationFixture
 import models.external.{Name, Officer, OfficerList}
 import play.api.libs.json.{JsSuccess, JsValue, Json, __}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
+class OfficerListSpec extends VatRegSpec with VatRegistrationFixture {
 
   val reader = OfficerList.reads
 
@@ -75,7 +75,7 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
         officer,
         Officer(Name(Some("Jingly"), None, "Jingles", Some("Mx")), "secretary", None, None)
       ))
-      reader.reads(json) shouldBe JsSuccess(officerList, (__ \ "officers"))
+      reader.reads(json) mustBe JsSuccess(officerList, (__ \ "officers"))
     }
   }
 
@@ -91,21 +91,21 @@ class OfficerListSpec extends UnitSpec with VatRegistrationFixture {
           |    "officer_role" : "director"
           |}""".stripMargin)
 
-       Officer.wt.writes(officer) shouldBe bobJson
+       Officer.wt.writes(officer) mustBe bobJson
     }
 
     "have equality equal" in {
       val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
       val officer2 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
 
-      (officer1 == officer2) shouldBe true
+      (officer1 == officer2) mustBe true
     }
 
     "have equality not-equal" in {
       val officer1 = Officer(name = Name(Some("forename"), Some("other names"), "surname"), role = "director")
       val officer2 = Officer(name = Name(Some("forename"), None, "surname"), role = "director")
 
-      (officer1 == officer2) shouldBe false
+      (officer1 == officer2) mustBe false
     }
   }
 }

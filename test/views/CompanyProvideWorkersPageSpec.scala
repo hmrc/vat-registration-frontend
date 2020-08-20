@@ -16,19 +16,21 @@
 
 package views
 
+import config.FrontendAppConfig
 import forms.CompanyProvideWorkersForm
 import models.CompanyProvideWorkers
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 import views.html.labour.{company_provide_workers => CompanyProvideWorkersPage}
 
-class CompanyProvideWorkersPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class CompanyProvideWorkersPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = CompanyProvideWorkersForm.form
 
@@ -37,19 +39,19 @@ class CompanyProvideWorkersPageSpec extends UnitSpec with WithFakeApplication wi
       lazy val view = CompanyProvideWorkersPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "companyProvideWorkersRadio").size shouldBe 2
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+      document.getElementsByAttributeValue("name", "companyProvideWorkersRadio").size mustBe 2
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
     }
 
     "display radio button not selected" in {
       lazy val view = CompanyProvideWorkersPage(form.fill(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "companyProvideWorkersRadio").size shouldBe 2
+      document.getElementsByAttributeValue("name", "companyProvideWorkersRadio").size mustBe 2
 
       val preSelected = document.getElementsByAttributeValue("checked", "checked")
-      preSelected.size shouldBe 1
-      preSelected.get(0).attr("value") shouldBe CompanyProvideWorkers.PROVIDE_WORKERS_YES
+      preSelected.size mustBe 1
+      preSelected.get(0).attr("value") mustBe CompanyProvideWorkers.PROVIDE_WORKERS_YES
     }
   }
 }

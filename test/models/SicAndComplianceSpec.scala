@@ -21,9 +21,9 @@ import models.SkilledWorkers._
 import models.TemporaryContracts._
 import models.api.SicCode
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class SicAndComplianceSpec extends UnitSpec {
+class SicAndComplianceSpec extends VatRegSpec {
   val sicCodeNoneLabour = SicCode(code = "123", description = "none labour", displayDetails = "none labour")
   val sicCodeLabour = SicCode(code = "123", description = "labour", displayDetails = "labour")
 
@@ -213,49 +213,49 @@ class SicAndComplianceSpec extends UnitSpec {
 
   "fromApi" should {
     "return a valid view model for a none labour SIC Code" in {
-      SicAndCompliance.fromApi(jsonNoneLabour) shouldBe noneLabour
+      SicAndCompliance.fromApi(jsonNoneLabour) mustBe noneLabour
     }
 
     "return a valid view model for a labour SIC Code without workers" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutWorkers) shouldBe labourWithoutWorkers
+      SicAndCompliance.fromApi(jsonLabourWithoutWorkers) mustBe labourWithoutWorkers
     }
 
     "return a valid view model for a labour SIC Code with workers (less than 8)" in {
-      SicAndCompliance.fromApi(jsonLabourWith7Workers) shouldBe labourWith7Workers
+      SicAndCompliance.fromApi(jsonLabourWith7Workers) mustBe labourWith7Workers
     }
 
     "return a valid view model for a labour SIC Code with workers (more than 8)" in {
-      SicAndCompliance.fromApi(jsonLabourWith8PlusWorkers) shouldBe labourWith8PlusWorkers
+      SicAndCompliance.fromApi(jsonLabourWith8PlusWorkers) mustBe labourWith8PlusWorkers
     }
 
     "return a valid view model for a labour SIC Code without skilled workers" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutSkilledWorkers) shouldBe labourWithoutSkilledWorkers
+      SicAndCompliance.fromApi(jsonLabourWithoutSkilledWorkers) mustBe labourWithoutSkilledWorkers
     }
 
     "return a valid view model for a labour SIC Code without temporary contracts" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutTemporaryContracts) shouldBe labourWithoutTemporaryContracts
+      SicAndCompliance.fromApi(jsonLabourWithoutTemporaryContracts) mustBe labourWithoutTemporaryContracts
     }
   }
 
   "toApiWrites" should {
     "return a valid api model json for a none labour SIC Code" in {
-      Json.toJson(noneLabour)(SicAndCompliance.toApiWrites) shouldBe jsonNoneLabour
+      Json.toJson(noneLabour)(SicAndCompliance.toApiWrites) mustBe jsonNoneLabour
     }
 
     "return a valid api model json for a labour SIC Code without workers" in {
-      Json.toJson(labourWithoutWorkers)(SicAndCompliance.toApiWrites) shouldBe jsonLabourWithoutWorkers
+      Json.toJson(labourWithoutWorkers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWithoutWorkers
     }
 
     "return a valid view model for a labour SIC Code with workers (less than 8)" in {
-      Json.toJson(labourWith7Workers)(SicAndCompliance.toApiWrites) shouldBe jsonLabourWith7Workers
+      Json.toJson(labourWith7Workers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWith7Workers
     }
 
     "return a valid view model for a labour SIC Code with workers (more than 8)" in {
-      Json.toJson(labourWith8PlusWorkers)(SicAndCompliance.toApiWrites) shouldBe jsonLabourWith8PlusWorkers
+      Json.toJson(labourWith8PlusWorkers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWith8PlusWorkers
     }
 
     "return a valid view model for a labour SIC Code without temporary contracts" in {
-      Json.toJson(labourWithoutTemporaryContracts)(SicAndCompliance.toApiWrites) shouldBe jsonLabourWithoutTemporaryContracts
+      Json.toJson(labourWithoutTemporaryContracts)(SicAndCompliance.toApiWrites) mustBe jsonLabourWithoutTemporaryContracts
     }
 
     "return an Exception" when {

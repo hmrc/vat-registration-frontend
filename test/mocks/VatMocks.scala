@@ -16,22 +16,24 @@
 
 package mocks
 
+import config.FrontendAppConfig
 import connectors.{BankAccountReputationConnector, _}
 import org.mockito.Mockito.reset
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
 import services.{BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{CascadeUpsert, VATRegFeatureSwitches}
 
 trait VatMocks
   extends SaveForLaterMock
     with AuthMock
     with KeystoreMock
-    with WSHTTPMock
+    with HttpClientMock
     with SicAndComplianceServiceMock {
   this: MockitoSugar =>
 
@@ -72,6 +74,7 @@ trait VatMocks
 
   def resetMocks() {
     reset(
+      mockHttpClient,
       mockVatRegistrationService,
       mockS4LConnector,
       mockS4LConnector,
@@ -87,7 +90,6 @@ trait VatMocks
       mockDateService,
       mockConfigConnector,
       mockAddressLookupConnector,
-      mockWSHttp,
       mockCurrentProfileService,
       mockIdentityVerificationConnector,
       mockIVService,

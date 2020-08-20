@@ -17,7 +17,7 @@
 package builders
 
 import mocks.AuthMock
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc._
 import play.api.test.FakeRequest
 

@@ -20,18 +20,18 @@ import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
 import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.Json
 import support.AppAndStubs
 import utils.VATRegFeatureSwitches
 
-class WelcomeControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
+class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
   val featureSwitch: VATRegFeatureSwitches = app.injector.instanceOf[VATRegFeatureSwitches]
-
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
 

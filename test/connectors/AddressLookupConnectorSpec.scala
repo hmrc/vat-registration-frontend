@@ -31,7 +31,7 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
 
   class Setup {
     val connector: AddressLookupConnector = new AddressLookupConnector(
-      mockWSHttp,
+      mockHttpClient,
       mockServicesConfig
     ) {
       override lazy val addressLookupFrontendUrl: String = "tst-url"

@@ -16,19 +16,24 @@
 
 package views
 
+import config.FrontendAppConfig
 import forms.BusinessActivityDescriptionForm
 import models.BusinessActivityDescription
 import org.jsoup.Jsoup
+import org.scalatest.Matchers
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 import views.html.{business_activity_description => BusinessActivityDescriptionPage}
 
-class BusinessActivityDescriptionPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class BusinessActivityDescriptionPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
-  val injector : Injector = fakeApplication.injector
+  val injector : Injector = app.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = BusinessActivityDescriptionForm.form
 
@@ -37,14 +42,14 @@ class BusinessActivityDescriptionPageSpec extends UnitSpec with WithFakeApplicat
       lazy val view = BusinessActivityDescriptionPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("description").text shouldBe ""
+      document.getElementById("description").text mustBe ""
     }
 
     "display the page pre populated" in {
       lazy val view = BusinessActivityDescriptionPage(form.fill(BusinessActivityDescription("TEST DESCRIPTION")))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("description").text shouldBe "TEST DESCRIPTION"
+      document.getElementById("description").text mustBe "TEST DESCRIPTION"
     }
   }
 }

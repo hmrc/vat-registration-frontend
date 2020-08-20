@@ -20,12 +20,12 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class S4LConnector @Inject()(val shortCache: ShortLivedCache) {
+class S4LConnector @Inject()(val shortCache: ShortLivedCache)
+                            (implicit ec: ExecutionContext) {
 
   def save[T](Id: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     shortCache.cache[T](Id, formId, data)

@@ -16,70 +16,51 @@
 
 package config
 
-import javax.inject.Inject
-
+import javax.inject.{Inject, Singleton}
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.mvc.Call
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
-import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.http.hooks.{HttpHook, HttpHooks}
-import uk.gov.hmrc.play.audit.http.HttpAuditing
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.{AuthConnector => OldAuthConnector}
-import uk.gov.hmrc.play.frontend.config.LoadAuditingConfig
-import uk.gov.hmrc.play.frontend.filters.MicroserviceFilterSupport
-import uk.gov.hmrc.play.http.ws._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.whitelist.AkamaiWhitelistFilter
 
-object FrontendAuditConnector extends Auditing {
-  override lazy val auditingConfig = LoadAuditingConfig("auditing")
-}
+import scala.concurrent.ExecutionContext
 
-trait Hooks extends HttpHooks with HttpAuditing {
-  override lazy val auditConnector: Auditing = FrontendAuditConnector
-}
+class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+                                   (implicit ec: ExecutionContext) extends PlayAuthConnector {
 
-trait WSHttp extends
-  HttpGet with WSGet with
-  HttpPut with WSPut with
-  HttpPatch with WSPatch with
-  HttpPost with WSPost with
-  HttpDelete with WSDelete with Hooks
-
-class Http @Inject()(config: ServicesConfig) extends WSHttp {
-  override def appName = config.getString("appName")
-  override val hooks   = Seq(AuditingHook)
-}
-
-class AuthClientConnector @Inject()(val http: WSHttp, config: ServicesConfig) extends PlayAuthConnector {
   override val serviceUrl: String = config.baseUrl("auth")
+
 }
 
-class VatShortLivedHttpCaching @Inject()(val http: WSHttp, config: ServicesConfig) extends ShortLivedHttpCaching {
+class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesConfig)
+                                        (implicit ec: ExecutionContext) extends ShortLivedHttpCaching {
+
   override lazy val defaultSource = config.getString("appName")
   override lazy val baseUri       = config.baseUrl("cachable.short-lived-cache")
   override lazy val domain        = config.getConfString("cachable.short-lived-cache.domain",
     throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
+
 }
 
-class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching) extends ShortLivedCache {
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = ApplicationCrypto.JsonCrypto
+@Singleton
+class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching,
+                                   applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
+
+  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+
 }
 
-class VatSessionCache @Inject()(val http: WSHttp, config: ServicesConfig) extends SessionCache {
+class VatSessionCache @Inject()(val http: HttpClient, config: ServicesConfig)
+                               (implicit ec: ExecutionContext) extends SessionCache {
+
   override lazy val defaultSource = config.getString("appName")
   override lazy val baseUri       = config.baseUrl("cachable.session-cache")
   override lazy val domain        = config.getConfString("cachable.session-cache.domain",
     throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
-}
 
-object WhitelistFilter extends AkamaiWhitelistFilter with MicroserviceFilterSupport {
-  override def whitelist: Seq[String]   = FrontendAppConfig.whitelist
-  override def excludedPaths: Seq[Call] = FrontendAppConfig.whitelistExcluded map(Call("GET", _))
-  override def destination: Call        = Call("GET", "https://www.tax.service.gov.uk/outage-register-for-vat")
 }
 
 trait Logging {

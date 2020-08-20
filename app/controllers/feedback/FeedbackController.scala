@@ -26,14 +26,17 @@ import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FeedbackController @Inject()(val authConnector: AuthClientConnector,
-                                   val keystoreConnector: KeystoreConnector,
-                                   val messagesApi: MessagesApi) extends BaseController with SessionProfile {
-  lazy val contactFrontendPartialBaseUrl: String = FrontendAppConfig.contactFrontendPartialBaseUrl
-  lazy val contactFormServiceIdentifier: String = FrontendAppConfig.contactFormServiceIdentifier
+class FeedbackController @Inject()(mcc: MessagesControllerComponents,
+                                   val authConnector: AuthClientConnector,
+                                   val keystoreConnector: KeystoreConnector)
+                                  (implicit val appConfig: FrontendAppConfig,
+                                   ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+
+  lazy val contactFrontendPartialBaseUrl: String = appConfig.contactFrontendPartialBaseUrl
+  lazy val contactFormServiceIdentifier: String = appConfig.contactFormServiceIdentifier
 
   def contactFormReferrer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 

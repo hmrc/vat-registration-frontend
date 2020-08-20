@@ -18,26 +18,26 @@ package models
 
 import org.scalatest.Inspectors
 import play.api.libs.json.{JsArray, JsString, JsSuccess}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class FormattersSpec extends UnitSpec with Inspectors {
+class FormattersSpec extends VatRegSpec with Inspectors {
 
   "NINO" should {
     "be formatted correctly" in {
-      Formatters.ninoFormatter("AB123456X") shouldBe "AB 12 34 56 X"
+      Formatters.ninoFormatter("AB123456X") mustBe "AB 12 34 56 X"
     }
   }
 
   "String reads" should {
     "be normalized" in {
-      Formatters.normalizeReads.reads(JsString("Peter Perháč")) shouldBe JsSuccess("Peter Perhac")
+      Formatters.normalizeReads.reads(JsString("Peter Perháč")) mustBe JsSuccess("Peter Perhac")
     }
   }
 
   "List[String] reads" should {
     "be normalized" in {
       val jsonStringArray = JsArray(Seq(JsString("Peter Perháč"), JsString("Perháč Peter")))
-      Formatters.normalizeListReads.reads(jsonStringArray) shouldBe JsSuccess(Seq("Peter Perhac", "Perhac Peter"))
+      Formatters.normalizeListReads.reads(jsonStringArray) mustBe JsSuccess(Seq("Peter Perhac", "Perhac Peter"))
     }
   }
 

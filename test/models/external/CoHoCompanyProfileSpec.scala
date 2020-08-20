@@ -17,9 +17,9 @@
 package models.external
 
 import play.api.libs.json.{JsSuccess, JsValue, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class CoHoCompanyProfileSpec extends UnitSpec {
+class CoHoCompanyProfileSpec extends VatRegSpec {
 
   val reader = CoHoCompanyProfile.reader
   val writer = CoHoCompanyProfile.writer
@@ -37,10 +37,10 @@ class CoHoCompanyProfileSpec extends UnitSpec {
 
     "CoHoCompanyProfile" should {
       "reads should return coHoCompanyProfile" in {
-        reader.reads(json) shouldBe JsSuccess(coHoCompanyProfile)
+        reader.reads(json) mustBe JsSuccess(coHoCompanyProfile)
       }
       "writes should return json" in {
-        writer.writes(coHoCompanyProfile) shouldBe json
+        writer.writes(coHoCompanyProfile) mustBe json
       }
     }
 }

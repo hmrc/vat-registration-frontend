@@ -19,15 +19,15 @@ package models
 import java.time.LocalDate
 
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class FlatRateSchemeSpec extends UnitSpec {
+class FlatRateSchemeSpec extends VatRegSpec {
   val validDate = LocalDate.now
-  val startDate = validDate
+  override val startDate = validDate
 
   implicit val frmt = FlatRateScheme.apiFormat
 
-  val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(startDate))), Some("test"), Some(15.00))
+  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(startDate))), Some("test"), Some(15.00))
 
   val validFlateRateJoinFrsFalse = FlatRateScheme(Some(false), None, None,None,None,None,None, None)
 
@@ -50,7 +50,7 @@ class FlatRateSchemeSpec extends UnitSpec {
     "successfully construct json from the model" when {
 
       s"joinFrs is true and frsDetails defined with Business Goods - overBusinessGoods set to true" in {
-        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(true)))(FlatRateScheme.apiFormat) shouldBe validJson
+        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(true)))(FlatRateScheme.apiFormat) mustBe validJson
       }
 
       "joinFrs is true and frsDetails defined without Business Goods" in {
@@ -64,7 +64,7 @@ class FlatRateSchemeSpec extends UnitSpec {
              |  }
              |}""".stripMargin)
 
-        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(false)))(FlatRateScheme.apiFormat) shouldBe expectedJson
+        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(false)))(FlatRateScheme.apiFormat) mustBe expectedJson
       }
 
       "joinFrs is false and frsDetails defined" in {
@@ -83,7 +83,7 @@ class FlatRateSchemeSpec extends UnitSpec {
              |}""".stripMargin
         )
 
-        Json.toJson(validFlatRate.copy(joinFrs = Some(false)))(FlatRateScheme.apiFormat) shouldBe expectedJson
+        Json.toJson(validFlatRate.copy(joinFrs = Some(false)))(FlatRateScheme.apiFormat) mustBe expectedJson
       }
 
       "joinFrs is false and frsDetails not defined" in {
@@ -93,14 +93,14 @@ class FlatRateSchemeSpec extends UnitSpec {
              |}""".stripMargin
         )
 
-        Json.toJson(validFlateRateJoinFrsFalse)(FlatRateScheme.apiFormat) shouldBe expectedJson
+        Json.toJson(validFlateRateJoinFrsFalse)(FlatRateScheme.apiFormat) mustBe expectedJson
       }
     }
 
     "Successfully construct a valid view model from API json" when {
       "joinFrs is true and Frs details is defined with Business Goods" in {
         val res = Json.fromJson[FlatRateScheme](validJson)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(true),
+        res mustBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(true),
           overBusinessGoodsPercent = Some(true)))
       }
 
@@ -117,7 +117,7 @@ class FlatRateSchemeSpec extends UnitSpec {
         )
 
         val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(false), overBusinessGoodsPercent = None, estimateTotalSales = None))
+        res mustBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(false), overBusinessGoodsPercent = None, estimateTotalSales = None))
       }
 
       "successfully populate startDate in view Model joinFrs true, startDate does not exist" in {
@@ -131,7 +131,7 @@ class FlatRateSchemeSpec extends UnitSpec {
              |}""".stripMargin
         )
         val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlatRate.copy(
+        res mustBe JsSuccess(validFlatRate.copy(
           overBusinessGoods = Some(false),
           overBusinessGoodsPercent = None,
           estimateTotalSales = None,
@@ -150,7 +150,7 @@ class FlatRateSchemeSpec extends UnitSpec {
              |}""".stripMargin
         )
         val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlatRate.copy(
+        res mustBe JsSuccess(validFlatRate.copy(
           overBusinessGoods = Some(false),
           overBusinessGoodsPercent = None,
           joinFrs = Some(false),
@@ -166,7 +166,7 @@ class FlatRateSchemeSpec extends UnitSpec {
              |}""".stripMargin
         )
         val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res shouldBe JsSuccess(validFlateRateJoinFrsFalse)
+        res mustBe JsSuccess(validFlateRateJoinFrsFalse)
       }
     }
   }

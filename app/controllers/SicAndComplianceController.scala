@@ -16,34 +16,34 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import models.{CurrentProfile, MainBusinessActivityView}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.i18n.Messages
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
 import utils.VATRegFeatureSwitches
 import views.html._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SicAndComplianceController @Inject()(val messagesApi: MessagesApi,
+class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
                                            val authConnector: AuthClientConnector,
                                            val keystoreConnector: KeystoreConnector,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                           val config: ServicesConfig,
-                                           val iclService: ICLService) extends BaseController with SessionProfile {
+                                           val iclService: ICLService)
+                                          (implicit val appConfig: FrontendAppConfig,
+                                           ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val iclFEurlwww: String = config.getConfString("industry-classification-lookup-frontend.www.url",
+  val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
 
   def useICLStub: Boolean = vatRegFeatureSwitch.useIclStub.enabled
@@ -135,14 +135,14 @@ class SicAndComplianceController @Inject()(val messagesApi: MessagesApi,
         }
   }
 
-  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[Result] = {
+  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
     if (useICLStub) {
-      Future.successful(Redirect(test.routes.SicStubController.show()))
+      Future.successful(Redirect(controllers.test.routes.SicStubController.show()))
     } else {
       val customICLMessages: CustomICLMessages = CustomICLMessages(
-        messagesApi("pages.icl.heading"),
-        messagesApi("pages.icl.lead"),
-        messagesApi("pages.icl.hint")
+        messages("pages.icl.heading"),
+        messages("pages.icl.lead"),
+        messages("pages.icl.hint")
       )
 
       iclService.journeySetup(customICLMessages) map (redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))

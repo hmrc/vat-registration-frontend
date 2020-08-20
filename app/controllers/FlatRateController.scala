@@ -19,30 +19,31 @@ package controllers
 import java.text.DecimalFormat
 import java.util.MissingResourceException
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
-import play.api.i18n.MessagesApi
 import play.api.libs.json.JsObject
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 
 import scala.collection.immutable.ListMap
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FlatRateController @Inject()(val messagesApi: MessagesApi,
+class FlatRateController @Inject()(mcc: MessagesControllerComponents,
                                    val flatRateService: FlatRateService,
                                    val vatRegistrationService: VatRegistrationService,
                                    val authConnector: AuthClientConnector,
                                    val keystoreConnector: KeystoreConnector,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
-                                   val sicAndComplianceService: SicAndComplianceService) extends BaseController with SessionProfile {
+                                   val sicAndComplianceService: SicAndComplianceService)
+                                  (implicit val appConfig: FrontendAppConfig,
+                                   ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")

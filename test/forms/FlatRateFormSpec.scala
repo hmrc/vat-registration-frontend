@@ -20,9 +20,9 @@ import java.time.LocalDate
 
 import helpers.FormInspectors._
 import models.FRSDateChoice
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class FlatRateFormSpec extends UnitSpec {
+class FlatRateFormSpec extends VatRegSpec {
   val minDate: LocalDate       = LocalDate.of(2018, 5, 29)
   val now: LocalDate           = LocalDate.of(2018, 5, 28)
   val testformNoVatStartDate   = FRSStartDateForm.form(minDate, None)

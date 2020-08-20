@@ -18,6 +18,7 @@ package views
 
 import java.time.LocalDate
 
+import config.FrontendAppConfig
 import views.html.{officer_security_questions => SecurityQuestionsPage}
 import forms.SecurityQuestionsForm
 import models.view.SecurityQuestionsView
@@ -25,12 +26,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class SecurityQuestionsPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class SecurityQuestionsPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = SecurityQuestionsForm.form
 
@@ -39,9 +41,9 @@ class SecurityQuestionsPageSpec extends UnitSpec with WithFakeApplication with I
       lazy val view = SecurityQuestionsPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("dob.day").attr("value") shouldBe ""
-      document.getElementById("dob.month").attr("value") shouldBe ""
-      document.getElementById("dob.year").attr("value") shouldBe ""
+      document.getElementById("dob.day").attr("value") mustBe ""
+      document.getElementById("dob.month").attr("value") mustBe ""
+      document.getElementById("dob.year").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
@@ -50,9 +52,9 @@ class SecurityQuestionsPageSpec extends UnitSpec with WithFakeApplication with I
       lazy val view = SecurityQuestionsPage(form.fill(validOfficerSecurityQuestions))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("dob.day").attr("value") shouldBe "12"
-      document.getElementById("dob.month").attr("value") shouldBe "7"
-      document.getElementById("dob.year").attr("value") shouldBe "1998"
+      document.getElementById("dob.day").attr("value") mustBe "12"
+      document.getElementById("dob.month").attr("value") mustBe "7"
+      document.getElementById("dob.year").attr("value") mustBe "1998"
     }
   }
 }

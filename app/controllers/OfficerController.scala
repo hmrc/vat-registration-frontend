@@ -17,25 +17,26 @@
 package controllers
 
 import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, homeAddress}
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import deprecated.DeprecatedConstants
 import forms._
 import javax.inject.{Inject, Singleton}
 import models.view.{HomeAddressView, PreviousAddressView}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, LodgingOfficerService, PrePopulationService, SessionProfile}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OfficerController @Inject()(val authConnector: AuthClientConnector,
+class OfficerController @Inject()(mcc: MessagesControllerComponents,
+                                  val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val lodgingOfficerService: LodgingOfficerService,
                                   val prePopService: PrePopulationService,
-                                  val addressLookupService: AddressLookupService
-                                 )(implicit val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+                                  val addressLookupService: AddressLookupService)
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def showSecurityQuestions: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

@@ -43,8 +43,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings()
   .settings(
-    scalaVersion                                  :=  "2.11.11",
+    scalaVersion                                  :=  "2.12.10",
     libraryDependencies                           ++= AppDependencies(),
+    dependencyOverrides                           :=  AppDependencies.overrides(),
     resolvers                                     ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
     PlayKeys.playDefaultPort                      :=  9895,
     retrieveManaged                               :=  true,

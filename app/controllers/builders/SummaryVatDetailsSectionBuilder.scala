@@ -19,12 +19,12 @@ package controllers.builders
 import models.api.Threshold
 import models.view.{SummaryRow, SummarySection}
 import models.{Returns, TradingDetails}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 case class SummaryVatDetailsSectionBuilder(tradingDetails: Option[TradingDetails] = None,
                                            threshold: Option[Threshold],
                                            returnsBlock: Option[Returns]
-                                          ) extends SummarySectionBuilder with ServicesConfig {
+                                          ) extends SummarySectionBuilder {
 
   override val sectionId: String = "vatDetails"
   private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))

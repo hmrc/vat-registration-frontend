@@ -18,12 +18,12 @@ package controllers
 
 import controllers.callbacks.SignInOutController
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
-class SignInOutControllerSpec extends ControllerSpec with MockMessages with FutureAssertions {
+class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
 
   val testController: SignInOutController = new SignInOutController(
-    mockServicesConfig,
+    messagesControllerComponents,
     mockAuthClientConnector,
     mockKeystoreConnector
   ) {
@@ -54,7 +54,6 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
       callAuthorisedOrg(testController.renewSession()) { a =>
         status(a) mustBe 200
         contentType(a) mustBe Some("image/jpeg")
-        await(a).body.dataStream.toString.contains("""renewSession.jpg""") mustBe true
       }
     }
   }
@@ -73,16 +72,12 @@ class SignInOutControllerSpec extends ControllerSpec with MockMessages with Futu
 
   "timeoutShow" should {
     "return 200" in {
-      mockAllMessages
-
       val res = testController.timeoutShow()(FakeRequest())
       status(res) mustBe 200
     }
   }
   "errorShow" should {
     "return 500" in {
-      mockAllMessages
-
       val res = testController.errorShow()(FakeRequest())
       status(res) mustBe 500
     }

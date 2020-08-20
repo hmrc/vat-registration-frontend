@@ -18,9 +18,9 @@ package forms
 
 import helpers.FormInspectors._
 import models.BusinessActivityDescription
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class SicAndComplianceFormsSpec extends UnitSpec {
+class SicAndComplianceFormsSpec extends VatRegSpec {
   "Business Activity Description form" must {
     val testForm = BusinessActivityDescriptionForm.form
     val desc = "bla bla , bla  & blo-bli ble/blip"

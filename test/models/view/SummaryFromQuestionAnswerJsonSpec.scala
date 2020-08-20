@@ -20,14 +20,13 @@ import fixtures.VatRegistrationFixture
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.play.test.UnitSpec
 
-class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFixture {
+class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationFixture {
 
   "summaryReads" should {
     "return a summary with 2 sections from Full Json" in {
       val res = Json.fromJson[Summary](fullEligibilityDataJson)(SummaryFromQuestionAnswerJson.summaryReads).get
-      res shouldBe fullSummaryModelFromFullEligiblityJson
+      res mustBe fullSummaryModelFromFullEligiblityJson
     }
 
     "one section exists with questionId's with dashes in. all dashes and characters after the dash are removed for change links" in {
@@ -43,7 +42,7 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
                                              |              ]
                                              |            }]}""".stripMargin)
       val res = Json.fromJson[Summary](eligibilityJsonWithQuestionIdDashes)(SummaryFromQuestionAnswerJson.summaryReads).get
-      res shouldBe Summary(section1 :: Nil)
+      res mustBe Summary(section1 :: Nil)
     }
     "return a JsError if section is missing an answer" in {
       val invalidJson = Json.parse("""
@@ -60,8 +59,8 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
         """.stripMargin)
 
       val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
-      res.isError shouldBe true
-      res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0][1].answer"
+      res.isError mustBe true
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0][1].answer"
     }
 
     "return a JsError if section is missing a question" in {
@@ -79,8 +78,8 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
         """.stripMargin)
 
       val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
-      res.isError shouldBe true
-      res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0][0].question"
+      res.isError mustBe true
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0][0].question"
     }
     "return a JsError if title is missing for a section" in {
       val invalidJson = Json.parse("""
@@ -95,8 +94,8 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
                                    """.stripMargin)
 
       val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
-      res.isError shouldBe true
-      res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0]"
+      res.isError mustBe true
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0]"
     }
     "return a JsError if section doesn't have data block" in {
       val invalidJson = Json.parse("""
@@ -109,8 +108,8 @@ class SummaryFromQuestionAnswerJsonSpec  extends UnitSpec with VatRegistrationFi
                                    """.stripMargin)
 
       val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
-      res.isError shouldBe true
-      res.asEither.left.get.head._1.toJsonString shouldBe "obj.sections[0]"
+      res.isError mustBe true
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0]"
     }
   }
 }

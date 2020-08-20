@@ -17,19 +17,22 @@
 package connectors
 
 import common.enums.AddressLookupJourneyIdentifier._
+import itutil.IntegrationSpecBase
 import models.api.ScrsAddress
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
 import services.AddressLookupService
 import support.AppAndStubs
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers._
 
-class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
+class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
   val alfConnector: AddressLookupConnector       = app.injector.instanceOf(classOf[AddressLookupConnector])
   val addressLookupService: AddressLookupService = app.injector.instanceOf(classOf[AddressLookupService])
   implicit val messagesApi: MessagesApi          = app.injector.instanceOf(classOf[MessagesApi])
+
+  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getting an address out of Address Lookup Frontend" should {
 
@@ -39,7 +42,7 @@ class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
         given()
           .address("addressId", "16 Coniston Court", "Holland road", "United Kingdom", "BN3 1JU").isFound
 
-        await(alfConnector.getAddress("addressId")) shouldBe ScrsAddress(
+        await(alfConnector.getAddress("addressId")) mustBe ScrsAddress(
           line1 = "16 Coniston court",
           line2 = "Holland road",
           country = Some("United Kingdom"),
@@ -71,7 +74,7 @@ class AddressLookupConnectorISpec extends UnitSpec with AppAndStubs {
 
         val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
-        await(alfConnector.getOnRampUrl(journeyModel)) shouldBe Call("GET", "continueUrl")
+        await(alfConnector.getOnRampUrl(journeyModel)) mustBe Call("GET", "continueUrl")
       }
     }
 

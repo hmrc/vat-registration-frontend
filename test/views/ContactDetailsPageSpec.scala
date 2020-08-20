@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import views.html.{officer_contact_details => ContactDetailsPage}
 import forms.ContactDetailsForm
 import models.view.ContactDetailsView
@@ -23,12 +24,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class ContactDetailsPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class ContactDetailsPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = ContactDetailsForm.form
 
@@ -37,9 +39,9 @@ class ContactDetailsPageSpec extends UnitSpec with WithFakeApplication with I18n
       lazy val view = ContactDetailsPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("email").attr("value") shouldBe ""
-      document.getElementById("daytimePhone").attr("value") shouldBe ""
-      document.getElementById("mobile").attr("value") shouldBe ""
+      document.getElementById("email").attr("value") mustBe ""
+      document.getElementById("daytimePhone").attr("value") mustBe ""
+      document.getElementById("mobile").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
@@ -48,9 +50,9 @@ class ContactDetailsPageSpec extends UnitSpec with WithFakeApplication with I18n
       lazy val view = ContactDetailsPage(form.fill(validContactDetails))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("email").attr("value") shouldBe "t@t.tt.co.tt"
-      document.getElementById("daytimePhone").attr("value") shouldBe "1234"
-      document.getElementById("mobile").attr("value") shouldBe "5678"
+      document.getElementById("email").attr("value") mustBe "t@t.tt.co.tt"
+      document.getElementById("daytimePhone").attr("value") mustBe "1234"
+      document.getElementById("mobile").attr("value") mustBe "5678"
     }
   }
 }

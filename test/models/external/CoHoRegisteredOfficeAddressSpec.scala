@@ -18,9 +18,9 @@ package models.external
 
 import models.api.ScrsAddress
 import play.api.libs.json.{JsSuccess, JsValue, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class CoHoRegisteredOfficeAddressSpec extends UnitSpec {
+class CoHoRegisteredOfficeAddressSpec extends VatRegSpec {
 
   val reader = CoHoRegisteredOfficeAddress.formatModel
 
@@ -59,17 +59,17 @@ class CoHoRegisteredOfficeAddressSpec extends UnitSpec {
 
   "CoHoRegisteredOfficeAddress" should {
     "reads should return coHoCompanyProfile" in {
-      reader.reads(json) shouldBe JsSuccess(coHoRegisteredOfficeAddress)
+      reader.reads(json) mustBe JsSuccess(coHoRegisteredOfficeAddress)
     }
   }
 
   "convertToAddress" should {
     "convert a complete CoHoRegisteredOfficeAddress to a ScsrAddress" in {
-      CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress) shouldBe scsrAddress
+      CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress) mustBe scsrAddress
     }
     "convert a partial CoHoRegisteredOfficeAddress to a ScsrAddress" in {
       val partial = ScrsAddress(line1 = "premises address_line_1",line2 = "locality", postcode = Some("postal_code"))
-      CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress2) shouldBe partial
+      CoHoRegisteredOfficeAddress.convertToAddress(coHoRegisteredOfficeAddress2) mustBe partial
     }
   }
 }
