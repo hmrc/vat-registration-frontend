@@ -18,7 +18,7 @@ package controllers
 
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors._
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
@@ -27,16 +27,17 @@ import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
+class SummaryController @Inject()(mcc: MessagesControllerComponents,
+                                  val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val vrs: VatRegistrationService,
                                   val s4LService: S4LService,
-                                  val messagesApi: MessagesApi,
                                   val summaryService: SummaryService)
-  extends BaseController with SessionProfile with ApplicativeSyntax {
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile with ApplicativeSyntax {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

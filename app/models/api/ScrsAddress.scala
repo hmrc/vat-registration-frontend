@@ -22,7 +22,6 @@ import models.api.ScrsAddress.inlineShow.inline
 import models.view.vatContact.ppob.PpobView
 import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
 case class ScrsAddress(line1: String,
@@ -78,9 +77,9 @@ object ScrsAddress {
       val countryCode = (address \ "country" \ "code").asOpt[String]
       val countryName = (address \ "country" \ "name").asOpt[String]
       if (postcode.isEmpty && countryCode.isEmpty) {
-        JsError(ValidationError("neither postcode nor country were defined"))
+        JsError(JsonValidationError("neither postcode nor country were defined"))
       } else if (lineMap.size < 2) {
-        JsError(ValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
+        JsError(JsonValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
       } else {
         JsSuccess(ScrsAddress(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, countryName.fold(countryCode)(_ => countryName)))
       }

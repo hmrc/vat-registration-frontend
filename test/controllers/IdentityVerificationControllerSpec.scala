@@ -22,23 +22,23 @@ import akka.util.Timeout
 import models.IVResult
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import testHelpers.{ControllerSpec, MockMessages}
+import testHelpers.{ControllerSpec}
 import uk.gov.hmrc.http.Upstream5xxResponse
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class IdentityVerificationControllerSpec extends ControllerSpec with MockMessages {
+class IdentityVerificationControllerSpec extends ControllerSpec {
 
   trait Setup {
     val testController: IdentityVerificationController = new IdentityVerificationController(
+      messagesControllerComponents,
       mockIVService,
-      mockMessagesAPI,
       mockAuthClientConnector,
       mockKeystoreConnector
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -86,31 +86,31 @@ class IdentityVerificationControllerSpec extends ControllerSpec with MockMessage
 
   "GET timeoutIV" should {
     "display the timeout IV error page" in new Setup {
-      callAuthorised(testController.timeoutIV)(contentAsString(_) must include(MOCKED_MESSAGE))
+      callAuthorised(testController.timeoutIV)(status(_) mustBe OK)
     }
   }
 
   "GET unableToConfirmIdentity" should {
     "display the Unable to confirme identity error page" in new Setup {
-      callAuthorised(testController.unableToConfirmIdentity)(contentAsString(_) must include(MOCKED_MESSAGE))
+      callAuthorised(testController.unableToConfirmIdentity)(status(_) mustBe OK)
     }
   }
 
   "GET failedIV" should {
     "display the Failed IV error page" in new Setup {
-      callAuthorised(testController.failedIV)(contentAsString(_) must include(MOCKED_MESSAGE))
+      callAuthorised(testController.failedIV)(status(_) mustBe OK)
     }
   }
 
   "GET lockedOut" should {
     "display the Locked out error page" in new Setup {
-      callAuthorised(testController.lockedOut)(contentAsString(_) must include(MOCKED_MESSAGE))
+      callAuthorised(testController.lockedOut)(status(_) mustBe OK)
     }
   }
 
   "GET userAborted" should {
     "display the User aborted error page" in new Setup {
-      callAuthorised(testController.userAborted)(contentAsString(_) must include(MOCKED_MESSAGE))
+      callAuthorised(testController.userAborted)(status(_) mustBe OK)
     }
   }
   "GET failedIVJourney" should {

@@ -17,6 +17,7 @@
 package views
 
 import _root_.models.api.ScrsAddress
+import config.FrontendAppConfig
 import models.{BusinessContact, CompanyContactDetails}
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
@@ -34,6 +35,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
     mockVatRegistrationConnector,
     mockS4LService
   )
+
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   "getBusinessContact" should {
     "return a populated BusinessContact model" when {

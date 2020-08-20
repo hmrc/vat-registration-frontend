@@ -27,6 +27,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import services.VatRegistrationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.SessionId
+import play.api.test.Helpers._
 
 class VatRegistrationServiceISpec extends IntegrationSpecBase {
   val mockHost = WiremockHelper.wiremockHost
@@ -66,7 +67,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
       val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
       val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
 
-      await(response) shouldBe Success
+      await(response) mustBe Success
     }
   }
 }

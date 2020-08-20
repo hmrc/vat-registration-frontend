@@ -16,22 +16,23 @@
 
 package connectors
 
-import config.WSHttp
 import javax.inject.{Inject, Singleton}
 import models.{IVResult, IVSetup}
 import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.VATRegFeatureSwitches
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IVConnector @Inject()(vatRegFeatureSwitch: VATRegFeatureSwitches,
                             config: ServicesConfig,
-                            val http: WSHttp) {
+                            val http: HttpClient)
+                           (implicit ec: ExecutionContext) {
+
   val brdsUrl: String = config.baseUrl("business-registration-dynamic-stub")
   val brdsUri: String = config.getConfString("business-registration-dynamic-stub.uri", throw new Exception)
   val ivProxyUrl: String = config.baseUrl("iv.identity-verification-proxy")

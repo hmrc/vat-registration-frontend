@@ -19,44 +19,56 @@ import sbt._
 
 object AppDependencies {
   def apply(): Seq[ModuleID] = CompileDependencies() ++ UnitTestDependencies() ++ IntegrationTestDependencies()
+
+  def overrides(): Set[ModuleID] = Set(
+    "com.typesafe.akka" %% "akka-actor" % "2.5.23",
+    "com.typesafe.akka" %% "akka-protobuf" % "2.5.23",
+    "com.typesafe.akka" %% "akka-stream" % "2.5.23",
+    "com.typesafe.akka" %% "akka-slf4j" % "2.5.23"
+  )
 }
 
 private object CompileDependencies {
-  private val playReactivemongoVersion = "6.2.0"
-  private val bootstrapVersion         = "10.9.0"
-  private val partialsVersion          = "6.3.0"
-  private val cachingClientVersion     = "7.2.0"
-  private val formMappingVersion       = "0.2.0"
-  private val timeVersion              = "3.2.0"
-  private val whitelistFilterVersion   = "2.0.0"
+  private val simpleReactivemongoVersion = "7.30.0-play-26"
+  private val bootstrapVersion         = "1.14.0"
+  private val partialsVersion          = "6.11.0-play-26"
+  private val cachingClientVersion     = "9.1.0-play-26"
+  private val formMappingVersion       = "1.3.0-play-26"
+  private val timeVersion              = "3.9.0"
+  private val whitelistFilterVersion   = "3.4.0-play-26"
   private val catsVersion              = "1.0.0"
-  private val authClientVersion        = "2.17.0-play-25"
-
+  private val authClientVersion        = "2.17.0-play-26"
+  private val govukTemplateVersion     = "5.55.0-play-26"
+  private val playUiVersion            = "8.11.0-play-26"
+  private val playJsonJodaVersion      = "2.6.14"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
-    "uk.gov.hmrc"   %% "play-reactivemongo"            % playReactivemongoVersion,
-    "uk.gov.hmrc"   %% "frontend-bootstrap"            % bootstrapVersion,
+    "uk.gov.hmrc"   %% "simple-reactivemongo"          % simpleReactivemongoVersion,
+    "uk.gov.hmrc"   %% "bootstrap-play-26"             % bootstrapVersion,
     "uk.gov.hmrc"   %% "play-partials"                 % partialsVersion,
     "uk.gov.hmrc"   %% "http-caching-client"           % cachingClientVersion,
     "uk.gov.hmrc"   %% "play-conditional-form-mapping" % formMappingVersion,
     "uk.gov.hmrc"   %% "time"                          % timeVersion,
     "uk.gov.hmrc"   %% "play-whitelist-filter"         % whitelistFilterVersion,
     "uk.gov.hmrc"   %% "auth-client"                   % authClientVersion,
-    "org.typelevel" %% "cats-core"                     % catsVersion
+    "org.typelevel" %% "cats-core"                     % catsVersion,
+    "uk.gov.hmrc"   %% "govuk-template"                % govukTemplateVersion,
+    "uk.gov.hmrc"   %% "play-ui"                       % playUiVersion,
+    "com.typesafe.play" %% "play-json-joda"            % playJsonJodaVersion
   )
 
   def apply(): Seq[ModuleID] = compileDependencies
 }
 
 private trait TestDependencies {
-  val scalaTestPlusPlayVersion = "2.0.1"
+  val scalaTestPlusPlayVersion = "3.1.3"
+  val pegdownVersion           = "1.6.0"
   val scoverageVersion         = "1.3.1"
   val jsoupVersion             = "1.11.2"
   val mockitoVersion           = "2.13.0"
   val scalaMockVersion         = "3.6.0"
-  val wireMockVersion          = "2.6.0"
-  val hmrcTestVersion          = "3.2.0"
+  val wireMockVersion          = "2.26.3"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]
@@ -65,9 +77,9 @@ private trait TestDependencies {
 private object UnitTestDependencies extends TestDependencies {
   override val scope: Configuration = Test
   override val testDependencies: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"             %% "hmrctest"                      % hmrcTestVersion           % scope,
     "org.scalatestplus.play"  %% "scalatestplus-play"            % scalaTestPlusPlayVersion  % scope,
     "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion          % scope,
+    "org.pegdown"             % "pegdown"                        % pegdownVersion            % scope,
     "org.jsoup"               %  "jsoup"                         % jsoupVersion              % scope,
     "org.mockito"             %  "mockito-core"                  % mockitoVersion            % scope,
     "org.scalamock"           %% "scalamock-scalatest-support"   % scalaMockVersion          % scope
@@ -79,12 +91,11 @@ private object UnitTestDependencies extends TestDependencies {
 private object IntegrationTestDependencies extends TestDependencies {
   override val scope: Configuration = IntegrationTest
   override val testDependencies: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"             %% "hmrctest"                      % hmrcTestVersion          % scope,
     "org.scalatestplus.play"  %% "scalatestplus-play"            % scalaTestPlusPlayVersion % scope,
-    "com.github.tomakehurst"  %  "wiremock"                      % wireMockVersion          % scope,
+    "com.github.tomakehurst"  %  "wiremock-jre8"                 % wireMockVersion          % scope,
     "org.jsoup"               %  "jsoup"                         % jsoupVersion             % scope,
     "org.scoverage"           %  "scalac-scoverage-runtime_2.11" % scoverageVersion         % scope,
-    "uk.gov.hmrc"             %% "reactivemongo-test"            % "3.1.0"                  % scope
+    "uk.gov.hmrc"             %% "reactivemongo-test"            % "4.16.0-play-26"         % scope
   )
 
   def apply(): Seq[ModuleID] = testDependencies

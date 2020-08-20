@@ -23,10 +23,10 @@ import java.util.concurrent.TimeoutException
 import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
 import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.Inspectors
+import org.scalatest.{Inspectors, Matchers, WordSpec}
 import play.api.cache.CacheApi
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ import scala.language.postfixOps
 import scala.reflect.ClassTag
 
 
-class DateServiceSpec extends UnitSpec with MockFactory with Inspectors {
+class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Matchers {
 
   private case class Test(date: LocalDate, daysToAdd: Int, expected: LocalDate)
 

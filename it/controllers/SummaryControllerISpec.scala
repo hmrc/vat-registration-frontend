@@ -19,6 +19,7 @@ package controllers
 import java.time.LocalDate
 
 import it.fixtures.ITRegistrationFixtures
+import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.view.LodgingOfficer
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import org.jsoup.Jsoup
@@ -33,11 +34,11 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
+class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
-  val eligibilitySummaryUrl = (s: String) => s"http://$wiremockHost:$wiremockPort/uriELFE/foo?pageId=$s"
+  val eligibilitySummaryUrl = (s: String) => s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE/foo?pageId=$s"
   val officerJson = Json.parse(
     s"""
        |{
@@ -135,6 +136,7 @@ class SummaryControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures
 
         document.getElementById("frs.joinFrsAnswer").text mustBe "No"
         document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
+        document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
       }
     }
 

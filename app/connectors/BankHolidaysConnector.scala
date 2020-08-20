@@ -18,19 +18,20 @@ package connectors
 
 import java.io.InputStream
 
-import config.WSHttp
 import javax.inject.{Inject, Singleton}
 import play.api.Environment
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import deprecated.DeprecatedConstants.jodaLocalDateFormat
 
 @Singleton
-class WSBankHolidaysConnector @Inject()(http: WSHttp, config: ServicesConfig) {
+class WSBankHolidaysConnector @Inject()(http: HttpClient, config: ServicesConfig)
+                                       (implicit ec: ExecutionContext) {
 
   protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
   protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]

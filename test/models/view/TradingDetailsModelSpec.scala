@@ -20,9 +20,9 @@ import fixtures.VatRegistrationFixture
 import models.{TradingDetails, TradingNameView}
 import org.scalatest.Inspectors
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class TradingDetailsModelSpec extends UnitSpec with Inspectors with VatRegistrationFixture {
+class TradingDetailsModelSpec extends VatRegSpec with Inspectors with VatRegistrationFixture {
   "S4LTradingDetails" should {
     implicit val frmt = TradingDetails.apiFormat
 
@@ -30,7 +30,7 @@ class TradingDetailsModelSpec extends UnitSpec with Inspectors with VatRegistrat
       Json.toJson(TradingDetails(
         Some(TradingNameView(yesNo = true, Some("test"))),
         Some(true)
-      )) shouldBe Json.parse(
+      )) mustBe Json.parse(
         """{
           |"tradingName":"test",
           |"eoriRequested":true
@@ -43,7 +43,7 @@ class TradingDetailsModelSpec extends UnitSpec with Inspectors with VatRegistrat
           |"tradingName":"test",
           |"eoriRequested":true
           |}"""
-          .stripMargin).as[TradingDetails] shouldBe TradingDetails(
+          .stripMargin).as[TradingDetails] mustBe TradingDetails(
         Some(TradingNameView(yesNo = true, Some("test"))),
         Some(true)
       )

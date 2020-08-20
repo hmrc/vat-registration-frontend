@@ -25,7 +25,8 @@
 @import models.DateSelection
 @import models.DateSelection._
 
-@(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], ctActiveDate : Option[LocalDate], dateExample: String)(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], ctActiveDate : Option[LocalDate], dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
 @main_template(title = messages("pages.startDate.title")) {

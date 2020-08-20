@@ -18,7 +18,8 @@
 @import helpers.templates.genericSummaryRow
 @import models.view.Summary
 @import uk.gov.hmrc.play.views.html.helpers.form
-@(eligibilityDataSummary: Summary, summaryModel: Summary)(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(eligibilityDataSummary: Summary, summaryModel: Summary)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.summary.title")) {
 

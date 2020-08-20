@@ -18,6 +18,7 @@ package controllers
 
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
 import models.{TradingDetails, TradingNameView}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
@@ -31,7 +32,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class TradingDetailsControllerISpec extends PlaySpec with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val companyName = "FAKECOMPANY Ltd."
 
   class Setup {

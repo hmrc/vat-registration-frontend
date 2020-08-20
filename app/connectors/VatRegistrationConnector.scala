@@ -19,7 +19,7 @@ package connectors
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import config.WSHttp
+import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
@@ -27,18 +27,20 @@ import models.external.IncorporationInfo
 import models.view.LodgingOfficer
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.RegistrationWhitelist
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 // scalastyle:off
 @Singleton
-class VatRegistrationConnector @Inject()(val http: WSHttp, conf: ServicesConfig) extends RegistrationWhitelist {
-  lazy val vatRegUrl: String = conf.baseUrl("vat-registration")
-  lazy val vatRegElUrl: String = conf.baseUrl("vat-registration-eligibility-frontend")
+class VatRegistrationConnector @Inject()(val http: HttpClient,
+                                         override val config: FrontendAppConfig)
+                                        (implicit ec: ExecutionContext) extends RegistrationWhitelist {
+
+  lazy val vatRegUrl: String = config.servicesConfig.baseUrl("vat-registration")
+  lazy val vatRegElUrl: String = config.servicesConfig.baseUrl("vat-registration-eligibility-frontend")
 
   def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
     http.POSTEmpty[VatScheme](s"$vatRegUrl/vatreg/new").recover {

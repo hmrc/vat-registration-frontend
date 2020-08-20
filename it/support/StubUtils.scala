@@ -16,10 +16,13 @@
 
 package support
 
+import javax.inject.Inject
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
+import config.AppConfig
+import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.{IVResult, S4LKey}
 import models.api.{SicCode, VatScheme}
 import models.external.{CoHoRegisteredOfficeAddress, Officer}
@@ -29,7 +32,6 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 
 trait StubUtils {
-  me: StartAndStopWireMock =>
 
   final class RequestHolder(var request: FakeRequest[AnyContentAsFormUrlEncoded])
 
@@ -126,11 +128,11 @@ trait StubUtils {
     }
   }
 
-  trait S4LStub {
+  object S4LStub extends IntegrationSpecBase {
     import uk.gov.hmrc.crypto._
     import uk.gov.hmrc.crypto.json.JsonEncryptor
 
-    implicit lazy val jsonCrypto = ApplicationCrypto.JsonCrypto
+    implicit lazy val jsonCrypto = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
     implicit lazy val encryptionFormat = new JsonEncryptor[JsValue]()
 
     def stubS4LGetNoAux(key: String, data: String): MappingBuilder = {
@@ -217,9 +219,9 @@ trait StubUtils {
       delete(urlPathMatching("/save4later/vat-registration-frontend/1")).willReturn(ok(""))
   }
 
-  case class S4L(scenario: String = "S4L Scenario")(implicit builder: PreconditionBuilder) extends S4LStub {
+  case class S4L(scenario: String = "S4L Scenario")(implicit builder: PreconditionBuilder) {
     def contains(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = stubS4LGetNoAux(key, data).inScenario(scenario)
+      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNoAux(key, data).inScenario(scenario)
       val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
@@ -227,7 +229,7 @@ trait StubUtils {
     }
 
     def isUpdatedWith(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioPUT = stubS4LPut(key, data).inScenario(scenario)
+      val mappingBuilderScenarioPUT = S4LStub.stubS4LPut(key, data).inScenario(scenario)
       val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
@@ -235,7 +237,7 @@ trait StubUtils {
     }
 
     def isEmpty(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = stubS4LGetNothing().inScenario(scenario)
+      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNothing().inScenario(scenario)
       val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
@@ -243,7 +245,7 @@ trait StubUtils {
     }
 
     def cleared(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioDELETE = stubS4LClear().inScenario(scenario)
+      val mappingBuilderScenarioDELETE = S4LStub.stubS4LClear().inScenario(scenario)
       val mappingBuilderDELETE = currentState.fold(mappingBuilderScenarioDELETE)(mappingBuilderScenarioDELETE.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderDELETE)(mappingBuilderDELETE.willSetStateTo))
@@ -252,26 +254,26 @@ trait StubUtils {
   }
 
   @deprecated("please change the types on this once all refactoring has been completed, both should be same type instead of C & T")
-  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends S4LStub {
+  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) {
 
     def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
-      stubFor(stubS4LGet[C, T](t))
+      stubFor(S4LStub.stubS4LGet[C, T](t))
       builder
     }
 
     def isUpdatedWith[T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
 
-      stubFor(stubS4LPut(key.key, fmt.writes(t).toString()))
+      stubFor(S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()))
       builder
     }
 
     def isEmpty: PreconditionBuilder = {
-      stubFor(stubS4LGetNothing())
+      stubFor(S4LStub.stubS4LGetNothing())
       builder
     }
 
     def cleared: PreconditionBuilder = {
-      stubFor(stubS4LClear())
+      stubFor(S4LStub.stubS4LClear())
       builder
     }
   }
@@ -281,7 +283,7 @@ trait StubUtils {
 
     def contains[T](t: T, currentState: Option[String] = None, nextState: Option[String] = None)
                    (implicit fmt: Format[T]): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = stubS4LGet[C, T](t).inScenario(scenario)
+      val mappingBuilderScenarioGET = S4LStub.stubS4LGet[C, T](t).inScenario(scenario)
       val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
@@ -290,7 +292,7 @@ trait StubUtils {
 
     def isUpdatedWith[T](t: T, currentState: Option[String] = None, nextState: Option[String] = None)
                         (implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
-      val mappingBuilderScenarioPUT = stubS4LPut(key.key, fmt.writes(t).toString()).inScenario(scenario)
+      val mappingBuilderScenarioPUT = S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()).inScenario(scenario)
       val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
@@ -298,7 +300,7 @@ trait StubUtils {
     }
 
     def isEmpty(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = stubS4LGetNothing().inScenario(scenario)
+      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNothing().inScenario(scenario)
       val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
@@ -306,7 +308,7 @@ trait StubUtils {
     }
 
     def cleared(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioDELETE = stubS4LClear().inScenario(scenario)
+      val mappingBuilderScenarioDELETE = S4LStub.stubS4LClear().inScenario(scenario)
       val mappingBuilderDELETE = currentState.fold(mappingBuilderScenarioDELETE)(mappingBuilderScenarioDELETE.whenScenarioStateIs)
 
       stubFor(nextState.fold(mappingBuilderDELETE)(mappingBuilderDELETE.willSetStateTo))
@@ -728,10 +730,10 @@ trait StubUtils {
     }
   }
 
-  case class UserStub()(implicit builder: PreconditionBuilder) extends SessionBuilder {
+  case class UserStub()(implicit builder: PreconditionBuilder) {
 
     def isAuthorised(implicit requestHolder: RequestHolder): PreconditionBuilder = {
-      requestHolder.request = requestWithSession(requestHolder.request, "anyUserId")
+      requestHolder.request = SessionCookieBaker.requestWithSession(requestHolder.request, "anyUserId")
 
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))

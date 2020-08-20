@@ -16,23 +16,25 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import deprecated.DeprecatedConstants
 import forms.{EuGoodsForm, TradingNameForm}
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionProfile, TradingDetailsService}
 import views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TradingDetailsController @Inject()(val keystoreConnector: KeystoreConnector,
+class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                         val keystoreConnector: KeystoreConnector,
                                          val authConnector: AuthClientConnector,
-                                         val tradingDetailsService: TradingDetailsService,
-                                         val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+                                         val tradingDetailsService: TradingDetailsService)
+                                        (implicit val appConfig: FrontendAppConfig,
+                                         ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val tradingNamePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

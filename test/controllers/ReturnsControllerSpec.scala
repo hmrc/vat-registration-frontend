@@ -26,11 +26,11 @@ import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.VoluntaryPageViewModel
-import testHelpers.{ControllerSpec, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages with TimeServiceMock {
+class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
   val dateBefore2pm = LocalDateTime.parse("2018-03-19T13:59:59")
   val dateAfter2pm = LocalDateTime.parse("2018-03-19T14:00:00")
   val dateBefore2pmBH = LocalDateTime.parse("2018-03-28T13:59:59")
@@ -38,14 +38,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile), currDate: LocalDateTime = dateBefore2pm, minDaysInFuture: Int = 3) {
     val testController = new ReturnsController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,
-      mockMessagesAPI,
       mockTimeService
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(cp)
     mockAllTimeService(currDate, minDaysInFuture)

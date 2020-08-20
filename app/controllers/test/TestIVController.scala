@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import connectors.test.BusinessRegDynamicStubConnector
 import controllers.BaseController
@@ -25,17 +25,19 @@ import javax.inject.{Inject, Singleton}
 import models.IVResult
 import models.view.test.TestIVResponse
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestIVController @Inject()(val busRegDynStub: BusinessRegDynamicStubConnector,
+class TestIVController @Inject()(mcc: MessagesControllerComponents,
+                                 val busRegDynStub: BusinessRegDynamicStubConnector,
                                  val s4lService: S4LService,
-                                 val messagesApi: MessagesApi,
                                  val authConnector: AuthClientConnector,
-                                 val keystoreConnector: KeystoreConnector) extends BaseController with SessionProfile {
+                                 val keystoreConnector: KeystoreConnector)
+                                (implicit val appConfig: FrontendAppConfig,
+                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def setIVStatus(ivPassed: Boolean): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

@@ -23,7 +23,8 @@
 @import views.html.main_template
 @import views.html.helpers.templates._
 
-@(officerHomeAddressForm: Form[HomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(officerHomeAddressForm: Form[HomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.officerHomeAddress.title")) {
 

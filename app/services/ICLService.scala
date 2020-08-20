@@ -23,7 +23,7 @@ import models.api.SicCode
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json, OWrites}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future

@@ -18,62 +18,47 @@ package controllers
 
 import controllers.internal.DeleteSessionItemsController
 import fixtures.VatRegistrationFixture
+import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
-class DeleteSessionItemsControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class DeleteSessionItemsControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   trait Setup {
     val deleteSessionController: DeleteSessionItemsController = new DeleteSessionItemsController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockKeystoreConnector,
       mockCurrentProfileService,
       mockS4LConnector,
-      mockMessagesAPI,
-      mockServicesConfig,
       mockCancellationService,
       mockVatRegistrationConnector
     ) {
       val rejectedUrl: String = "rejected-page"
     }
-    mockAllMessages
+
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 
+  def body(status: String) = IncorporationInfo(
+    subscription = IncorpSubscription("txId", "regime", "subscriber", "callbackUrl"),
+    statusEvent = IncorpStatusEvent(status, None, None, None)
+  )
+
   val fakeRequest: FakeRequest[JsObject] =
     FakeRequest(internal.routes.DeleteSessionItemsController.deleteIfRejected())
-      .withBody[JsObject](Json.parse(
-        """{
-          |"SCRSIncorpStatus" : {
-          |"IncorpSubscriptionKey" : {
-          |"transactionId":"transId"
-          |},
-          |"IncorpStatusEvent" : {
-          |"status":"accepted"
-          |}
-          |}
-          |}""".stripMargin).as[JsObject])
+      .withBody(Json.toJson(body("accepted")).as[JsObject])
   val fakeRequestRejected: FakeRequest[JsObject] =
     FakeRequest(internal.routes.DeleteSessionItemsController.deleteIfRejected())
-      .withBody[JsObject](Json.parse(
-        """{
-          |"SCRSIncorpStatus" : {
-          |"IncorpSubscriptionKey" : {
-          |"transactionId":"transId"
-          |},
-          |"IncorpStatusEvent" : {
-          |"status":"rejected"
-          |}
-          |}
-          |}""".stripMargin).as[JsObject])
+      .withBody[JsObject](Json.toJson(body("rejected")).as[JsObject])
 
   "deleteIfRejected" should {
     "not clear a registration if the incorp update is accepted" in new Setup {

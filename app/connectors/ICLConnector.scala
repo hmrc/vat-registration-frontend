@@ -16,18 +16,19 @@
 
 package connectors
 
-import config.WSHttp
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.JsObject
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ICLConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
+class ICLConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+                            (implicit ec: ExecutionContext) {
+
   val baseUri: String = config.getConfString("industry-classification-lookup-frontend.uri",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.uri'"))
   val iclFEurl: String = config.baseUrl("industry-classification-lookup-frontend") + baseUri

@@ -74,7 +74,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val formattedThreshold = "50,000"
 
   //Responses
-  val IM_A_TEAPOT = 418
   val forbidden = Upstream4xxResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
   val noContent = HttpResponse(204)
   val upstream4xx = Upstream4xxResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)

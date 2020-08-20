@@ -16,18 +16,19 @@
 
 package connectors
 
-import config.WSHttp
+
 import javax.inject.{Inject, Singleton}
 import models.BankAccountDetails
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountReputationConnector @Inject()(val http: WSHttp, config: ServicesConfig) {
+class BankAccountReputationConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+                                              (implicit ec: ExecutionContext) {
 
   val bankAccountReputationUrl: String = config.baseUrl("bank-account-reputation")
 

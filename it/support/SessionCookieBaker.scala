@@ -19,16 +19,55 @@ package support
 import java.net.{URLDecoder, URLEncoder}
 import java.util.UUID
 
+import itutil.IntegrationSpecBase
+import play.api.Application
+import play.api.http.SecretConfiguration
 import play.api.libs.Crypto
+import play.api.libs.crypto.{CookieSigner, DefaultCookieSigner}
 import play.api.libs.ws.WSCookie
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
 import uk.gov.hmrc.http.SessionKeys
 
-object SessionBuilder extends SessionBuilder {}
+object SessionCookieBaker extends IntegrationSpecBase {
 
-trait SessionBuilder extends SessionCookieBaker {
+  val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
+
+  def cookieValue(sessionData: Map[String, String]) = {
+    def encode(data: Map[String, String]): PlainText = {
+      val encoded = data.map {
+        case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
+      }.mkString("&")
+      val key = "yNhI04vHs9<_HWbC`]20u`37=NGLGYY5:0Tg5?y`W<NoJnXWqmjcgZBec@rOxb^G".getBytes
+
+      val cookieSignerCache: Application => CookieSigner = Application.instanceCache[CookieSigner]
+      def cookieSigner: CookieSigner = cookieSignerCache(app)
+
+      PlainText(cookieSigner.sign(encoded, key) + "-" + encoded)
+    }
+
+    val encodedCookie = encode(sessionData)
+    val encrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).encrypt(encodedCookie).value
+
+    s"""mdtp="$encrypted"; Path=/; HTTPOnly"; Path=/; HTTPOnly"""
+  }
+
+  def getCookieData(cookie: WSCookie): Map[String, String] = {
+    getCookieData(cookie.value)
+  }
+
+  def getCookieData(cookieData: String): Map[String, String] = {
+
+    val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
+    val result = decrypted.split("&")
+      .map(_.split("="))
+      .map { case Array(k, v) => (k, URLDecoder.decode(v))}
+      .toMap
+
+    result
+  }
+
   def cookieData(userId: String = "anyUserId"): Map[String, String] = {
     Map(
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
@@ -44,38 +83,5 @@ trait SessionBuilder extends SessionCookieBaker {
 
   def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0) = {
     cookieValue(cookieData())
-  }
-}
-
-trait SessionCookieBaker {
-  val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
-  def cookieValue(sessionData: Map[String,String]) = {
-    def encode(data: Map[String, String]): PlainText = {
-      val encoded = data.map {
-        case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
-      }.mkString("&")
-      val key = "yNhI04vHs9<_HWbC`]20u`37=NGLGYY5:0Tg5?y`W<NoJnXWqmjcgZBec@rOxb^G".getBytes
-      PlainText(Crypto.sign(encoded, key) + "-" + encoded)
-    }
-
-    val encodedCookie = encode(sessionData)
-    val encrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).encrypt(encodedCookie).value
-
-    s"""mdtp="$encrypted"; Path=/; HTTPOnly"; Path=/; HTTPOnly"""
-  }
-
-  def getCookieData(cookie: WSCookie): Map[String, String] = {
-    getCookieData(cookie.value.get)
-  }
-
-  def getCookieData(cookieData: String): Map[String, String] = {
-
-    val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
-    val result = decrypted.split("&")
-      .map(_.split("="))
-      .map { case Array(k, v) => (k, URLDecoder.decode(v))}
-      .toMap
-
-    result
   }
 }

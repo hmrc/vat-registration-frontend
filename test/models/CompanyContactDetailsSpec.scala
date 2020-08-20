@@ -17,9 +17,9 @@
 package models
 
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class CompanyContactDetailsSpec extends UnitSpec {
+class CompanyContactDetailsSpec extends VatRegSpec {
 
   "apiReads" should {
     "parse the full json into a CompanyContactDetailsModel" in {
@@ -45,7 +45,7 @@ class CompanyContactDetailsSpec extends UnitSpec {
       )
 
 
-      Json.fromJson[CompanyContactDetails](jsonToParse)(CompanyContactDetails.apiReads) shouldBe JsSuccess(expectedModel)
+      Json.fromJson[CompanyContactDetails](jsonToParse)(CompanyContactDetails.apiReads) mustBe JsSuccess(expectedModel)
     }
 
     "parse minimal json into a CompanyContactDetailsModel" in {
@@ -67,7 +67,7 @@ class CompanyContactDetailsSpec extends UnitSpec {
       )
 
 
-      Json.fromJson[CompanyContactDetails](jsonToParse)(CompanyContactDetails.apiReads) shouldBe JsSuccess(expectedModel)
+      Json.fromJson[CompanyContactDetails](jsonToParse)(CompanyContactDetails.apiReads) mustBe JsSuccess(expectedModel)
     }
   }
 
@@ -93,7 +93,7 @@ class CompanyContactDetailsSpec extends UnitSpec {
         websiteAddress = Some("/test/url")
       )
 
-      Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) shouldBe expectedJson
+      Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) mustBe expectedJson
     }
 
     "transform a minimal CompanyContactDetails into a minimal set of Json" in {
@@ -114,7 +114,7 @@ class CompanyContactDetailsSpec extends UnitSpec {
         websiteAddress = None
       )
 
-      Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) shouldBe expectedJson
+      Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) mustBe expectedJson
     }
   }
 }

@@ -24,7 +24,7 @@ trait ApiModelTransformer[VM] {
 }
 
 object ApiModelTransformer {
-  def apply[T: ApiModelTransformer]: ApiModelTransformer[T] = implicitly
+  //def apply[T: ApiModelTransformer]: ApiModelTransformer[T] = implicitly
 
   def apply[T](f: VatScheme => Option[T]): ApiModelTransformer[T] = new ApiModelTransformer[T] {
     override def toViewModel(vatScheme: VatScheme): Option[T] = f(vatScheme)

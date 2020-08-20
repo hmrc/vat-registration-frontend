@@ -18,20 +18,24 @@ package controllers.test
 
 import java.time.format.DateTimeFormatter
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.{PrePopulationService, SessionProfile}
 
+import scala.concurrent.ExecutionContext
+
 @Singleton
-class TestCTController @Inject()(val prePopService: PrePopulationService,
+class TestCTController @Inject()(mcc: MessagesControllerComponents,
+                                 val prePopService: PrePopulationService,
                                  val authConnector: AuthClientConnector,
-                                 val keystoreConnector: KeystoreConnector,
-                                 val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+                                 val keystoreConnector: KeystoreConnector)
+                                (implicit val appConfig: FrontendAppConfig,
+                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>

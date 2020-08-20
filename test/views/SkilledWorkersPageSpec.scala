@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import forms.SkilledWorkersForm
 import views.html.labour.skilled_workers
 import models.SkilledWorkers
@@ -23,12 +24,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class SkilledWorkersPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class SkilledWorkersPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = SkilledWorkersForm.form
 
@@ -37,19 +39,19 @@ class SkilledWorkersPageSpec extends UnitSpec with WithFakeApplication with I18n
       lazy val view = skilled_workers(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "skilledWorkersRadio").size shouldBe 2
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+      document.getElementsByAttributeValue("name", "skilledWorkersRadio").size mustBe 2
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
     }
 
     "display radio button not selected" in {
       lazy val view = skilled_workers(form.fill(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "skilledWorkersRadio").size shouldBe 2
+      document.getElementsByAttributeValue("name", "skilledWorkersRadio").size mustBe 2
 
       val preSelected = document.getElementsByAttributeValue("checked", "checked")
-      preSelected.size shouldBe 1
-      preSelected.get(0).attr("value") shouldBe SkilledWorkers.SKILLED_WORKERS_YES
+      preSelected.size mustBe 1
+      preSelected.get(0).attr("value") mustBe SkilledWorkers.SKILLED_WORKERS_YES
     }
   }
 }

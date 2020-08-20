@@ -16,14 +16,16 @@
 
 package auth
 
+import config.FrontendAppConfig
 import controllers.callbacks.routes
-import uk.gov.hmrc.play.config.{RunMode, ServicesConfig}
+import javax.inject.Inject
+import play.api.Configuration
 
-object VatExternalUrls extends RunMode with ServicesConfig {
+class VatExternalUrls @Inject()(appConfig: FrontendAppConfig, runModeConfiguration: Configuration) {
 
-  private[VatExternalUrls] val companyAuthHost = getConfString("auth.company-auth.url", "")
-  private[VatExternalUrls] val loginCallback   = getConfString("auth.login-callback.url", "")
-  private[VatExternalUrls] val loginPath       = getConfString("auth.login_path", "")
+  private[VatExternalUrls] val companyAuthHost = appConfig.servicesConfig.getString("auth.company-auth.url")
+  private[VatExternalUrls] val loginCallback   = appConfig.servicesConfig.getString("auth.login-callback.url")
+  private[VatExternalUrls] val loginPath       = appConfig.servicesConfig.getString("auth.login_path")
 
   val loginUrl                                 = s"$companyAuthHost$loginPath"
   val continueUrl                              = s"$loginCallback${routes.SignInOutController.postSignIn()}"

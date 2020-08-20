@@ -21,7 +21,6 @@ import play.api.libs.json.Format
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import utils.CascadeUpsert
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class KeystoreConnector @Inject()(val sessionCache: SessionCache,
                                   val sessionRepository: SessionRepository,
-                                  val cascadeUpsert: CascadeUpsert) {
+                                  val cascadeUpsert: CascadeUpsert)
+                                 (implicit ec: ExecutionContext) {
 
   def sessionID(implicit hc: HeaderCarrier): String = hc.sessionId.getOrElse(throw new RuntimeException("Active User had no Session ID")).value
 

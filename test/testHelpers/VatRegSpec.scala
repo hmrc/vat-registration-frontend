@@ -20,13 +20,15 @@ import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
+import config.FrontendAppConfig
 import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors}
+import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors, Matchers}
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -36,12 +38,14 @@ import utils.{BooleanFeatureSwitch, FeatureSwitchManager, VATRegFeatureSwitches}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Awaitable, Future}
 
-class VatRegSpec extends PlaySpec with OneAppPerSuite with AuthMock with AuthBuilder
+class VatRegSpec extends PlaySpec with GuiceOneAppPerSuite with AuthMock with AuthBuilder
   with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
   implicit val cp = currentProfile()
+
+  val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   def currentProfile(ivPassed: Option[Boolean] = Some(true)): CurrentProfile =
     CurrentProfile(testRegId, VatRegStatus.draft)

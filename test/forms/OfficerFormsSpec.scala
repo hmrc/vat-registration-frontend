@@ -22,9 +22,9 @@ import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
 import models.api.ScrsAddress
 import models.view._
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class OfficerFormsSpec extends UnitSpec {
+class OfficerFormsSpec extends VatRegSpec {
   "SecurityQuestionsForm" should {
     val testForm = SecurityQuestionsForm.form
     val testData = SecurityQuestionsView(LocalDate.of(1998, 7, 12))

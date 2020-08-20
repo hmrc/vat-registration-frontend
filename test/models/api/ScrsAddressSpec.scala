@@ -18,10 +18,9 @@ package models.api
 
 import org.scalatest.Inspectors
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-
-class ScrsAddressSpec extends UnitSpec with Inspectors {
+class ScrsAddressSpec extends VatRegSpec with Inspectors {
 
 
   "ScrsAddress" should {
@@ -40,7 +39,7 @@ class ScrsAddressSpec extends UnitSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] shouldBe JsSuccess(
+      validJson.validate[ScrsAddress] mustBe JsSuccess(
         ScrsAddress(
           line1 = "line 1",
           line2 = "line 2",
@@ -63,7 +62,7 @@ class ScrsAddressSpec extends UnitSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] shouldBe JsSuccess(ScrsAddress("line 1", "line 2", postcode = Some("BN3 1JU")))
+      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", postcode = Some("BN3 1JU")))
     }
 
 
@@ -80,7 +79,7 @@ class ScrsAddressSpec extends UnitSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] shouldBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("UK")))
+      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("UK")))
     }
 
     "read from valid minimal Json - no postcode - country name present" in {
@@ -96,7 +95,7 @@ class ScrsAddressSpec extends UnitSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] shouldBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("United Kingdom")))
+      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("United Kingdom")))
     }
 
   }

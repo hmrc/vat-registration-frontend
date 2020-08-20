@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class WSBankHolidaysConnectorSpec extends VatRegSpec {
 
-  lazy val testConnector = new WSBankHolidaysConnector(mockWSHttp, mockServicesConfig)
+  lazy val testConnector = new WSBankHolidaysConnector(mockHttpClient, mockServicesConfig)
 
   "bankHolidays" must {
 
@@ -39,7 +39,7 @@ class WSBankHolidaysConnectorSpec extends VatRegSpec {
           BankHoliday("another", new LocalDate(2017, 3, 23))))
       )
 
-      when(mockWSHttp.GET[Map[String, BankHolidaySet]](any())(any(), any(), any()))
+      when(mockHttpClient.GET[Map[String, BankHolidaySet]](any())(any(), any(), any()))
         .thenReturn(Future.successful(testHolidaySet))
 
       testConnector.bankHolidays("division1") returns BankHolidaySet("division1", List(

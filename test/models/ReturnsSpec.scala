@@ -19,17 +19,17 @@ package models
 import java.time.LocalDate
 
 import play.api.libs.json.{JsSuccess, Json}
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class ReturnsSpec extends UnitSpec {
+class ReturnsSpec extends VatRegSpec {
 
   val validDate = LocalDate.now
 
-  val reclaimOnReturns = true
-  val returnsFrequency = Frequency.monthly
-  val startDate        = validDate
+  override val reclaimOnReturns = true
+  override val returnsFrequency = Frequency.monthly
+  override val startDate        = validDate
 
-  val validReturns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
+  override val validReturns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
   val validJson    = Json.parse(
     s"""{
        |  "reclaimVatOnMostReturns" : true,
@@ -43,16 +43,16 @@ class ReturnsSpec extends UnitSpec {
 
   "Returns" should {
     "construct valid Json from the model" in {
-      Json.toJson[Returns](validReturns) shouldBe validJson
+      Json.toJson[Returns](validReturns) mustBe validJson
     }
     "construct a valid model from the Json" in {
-      Json.fromJson[Returns](validJson) shouldBe JsSuccess(validReturns)
+      Json.fromJson[Returns](validJson) mustBe JsSuccess(validReturns)
     }
   }
 
   "empty" should {
     "construct an empty Returns model" in {
-      Returns.empty shouldBe Returns(None, None, None, None)
+      Returns.empty mustBe Returns(None, None, None, None)
     }
   }
 }

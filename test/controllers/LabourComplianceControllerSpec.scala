@@ -21,22 +21,21 @@ import mocks.SicAndComplianceServiceMock
 import models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts}
 import play.api.http.Status
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
 class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with MockMessages with SicAndComplianceServiceMock {
+  with VatRegistrationFixture with SicAndComplianceServiceMock {
 
   trait Setup {
     val controller: LabourComplianceController = new LabourComplianceController(
-      mockMessagesAPI,
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService
     )
 
-    mockAllMessages
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -47,7 +46,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
       callAuthorised(controller.showProvideWorkers()) { result =>
-        result includesText MOCKED_MESSAGE
         status(result) mustBe 200
       }
     }
@@ -56,7 +54,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       callAuthorised(controller.showProvideWorkers) { result =>
-        result includesText MOCKED_MESSAGE
         status(result) mustBe 200
       }
     }
@@ -96,7 +93,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
@@ -104,7 +100,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       callAuthorised(controller.showWorkers) { result =>
-        result includesText MOCKED_MESSAGE
         status(result) mustBe 200
       }
     }
@@ -153,7 +148,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
@@ -161,7 +155,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       callAuthorised(controller.showTemporaryContracts) { result =>
-        result includesText MOCKED_MESSAGE
         status(result) mustBe 200
       }
     }
@@ -212,7 +205,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          contentAsString(result) must include(MOCKED_MESSAGE)
       }
     }
 
@@ -220,7 +212,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
 
       callAuthorised(controller.showSkilledWorkers) { result =>
-        result includesText MOCKED_MESSAGE
         status(result) mustBe 200
       }
     }

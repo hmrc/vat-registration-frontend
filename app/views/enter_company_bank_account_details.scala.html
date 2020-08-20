@@ -22,7 +22,8 @@
 @import views.html.main_template
 @import views.html.helpers.templates._
 
-@(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.bankDetails.title")) {
 

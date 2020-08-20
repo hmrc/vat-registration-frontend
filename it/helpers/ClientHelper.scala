@@ -16,20 +16,12 @@
 
 package helpers
 
-import itutil.FakeAppConfig
-import org.scalatestplus.play.BaseOneServerPerSuite
-import play.api.Application
 import play.api.http.HeaderNames
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.libs.ws.{WSRequest, WSResponse}
+import support.AppAndStubs
 
-trait ClientHelper extends AuthHelper with FakeAppConfig {
-  self: BaseOneServerPerSuite =>
-
-  def buildClient(path: String)(implicit app: Application): WSRequest = {
-    app.injector.instanceOf[WSClient]
-      .url(s"http://localhost:$port/register-for-vat$path")
-      .withFollowRedirects(false)
-  }
+trait ClientHelper extends AuthHelper {
+  this: AppAndStubs =>
 
   def redirectLocation(response: WSResponse): Option[String] = response.header("Location")
 

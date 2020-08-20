@@ -20,12 +20,12 @@
 @import views.html.main_template
 @import views.html.helpers.templates._
 
-@()(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.confirmsic.title")) {
 
-
-        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.confirmsic.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.confirmsic.heading")</h1>
 
     <p>@messages("pages.confirmsic.p1")</p>
     <p>@messages("pages.confirmsic.p2")</p>
