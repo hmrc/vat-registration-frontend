@@ -24,7 +24,7 @@ import models.api.VatScheme
 import models.view.{Summary, SummaryFromQuestionAnswerJson}
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
@@ -74,6 +74,7 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
       SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,
       SummaryCompanyContactDetailsSectionBuilder(vs.businessContact).section,
       SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
+      SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
       SummaryFrsSectionBuilder(
         vs.flatRateScheme,
         vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),

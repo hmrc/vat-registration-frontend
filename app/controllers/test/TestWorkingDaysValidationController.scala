@@ -18,24 +18,28 @@ package controllers.test
 
 import java.time.LocalDate
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import play.twirl.api.Html
 import services.{DateService, SessionProfile}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
-@Singleton
-class TestWorkingDaysValidationController @Inject()(val dateService: DateService,
-                                                    val authConnector: AuthClientConnector,
-                                                    val keystoreConnector: KeystoreConnector,
-                                                    val messagesApi: MessagesApi) extends BaseController with SessionProfile {
+import scala.concurrent.ExecutionContext
 
-  override implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+@Singleton
+class TestWorkingDaysValidationController @Inject()(mcc: MessagesControllerComponents,
+                                                    val dateService: DateService,
+                                                    val authConnector: AuthClientConnector,
+                                                    val keystoreConnector: KeystoreConnector)
+                                                   (implicit val appConfig: FrontendAppConfig,
+                                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+
+  implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
   def show(): Action[AnyContent] = Action { implicit req =>
     Ok(Html((1 to 100).map(n =>

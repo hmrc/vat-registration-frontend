@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import views.html.{officer_home_address => HomeAddressPage}
 import forms.HomeAddressForm
 import models.api.ScrsAddress
@@ -24,12 +25,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class HomeAddressPageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class HomeAddressPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   val address1 = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val address2 = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE 1ST"))
@@ -42,11 +44,11 @@ class HomeAddressPageSpec extends UnitSpec with WithFakeApplication with I18nSup
       lazy val view = HomeAddressPage(form, addressList)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "homeAddressRadio").size shouldBe 3
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
+      document.getElementsByAttributeValue("name", "homeAddressRadio").size mustBe 3
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
 
-      document.getElementById(s"homeAddressRadio-${address1.id.toLowerCase}").attr("value") shouldBe address1.id
-      document.getElementById(s"homeAddressRadio-${address2.id.toLowerCase}").attr("value") shouldBe address2.id
+      document.getElementById(s"homeAddressRadio-${address1.id.toLowerCase}").attr("value") mustBe address1.id
+      document.getElementById(s"homeAddressRadio-${address2.id.toLowerCase}").attr("value") mustBe address2.id
     }
 
     "display the page with form pre populated" in {
@@ -55,11 +57,11 @@ class HomeAddressPageSpec extends UnitSpec with WithFakeApplication with I18nSup
       lazy val view = HomeAddressPage(form.fill(validContactDetails), addressList)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "homeAddressRadio").size shouldBe 3
+      document.getElementsByAttributeValue("name", "homeAddressRadio").size mustBe 3
 
       val preSelected = document.getElementsByAttributeValue("checked", "checked")
-      preSelected.size shouldBe 1
-      preSelected.get(0).attr("value") shouldBe address2.id
+      preSelected.size mustBe 1
+      preSelected.get(0).attr("value") mustBe address2.id
     }
   }
 }

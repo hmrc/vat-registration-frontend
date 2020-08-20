@@ -24,7 +24,8 @@
 
 @import models.FRSDateChoice
 
-@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String, vatStartDate: Option[LocalDate])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String, vatStartDate: Option[LocalDate])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 

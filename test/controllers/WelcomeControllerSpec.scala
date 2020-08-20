@@ -21,34 +21,31 @@ import fixtures.VatRegistrationFixture
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.i18n.MessagesApi
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class WelcomeControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val testController = new WelcomeController(
+    messagesControllerComponents,
     mockVatRegistrationService,
     mockCurrentProfileService,
     mockAuthClientConnector,
-    mockKeystoreConnector,
-    mockMessagesAPI,
-    mockServicesConfig
+    mockKeystoreConnector
   ) {
     override val eligibilityFE: Call = Call("GET", "/test-url")
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
-
   val testCurrentProfile = CurrentProfile("testRegid", VatRegStatus.draft)
 
   "GET /before-you-register-for-vat" should {
     "return HTML" when {
       "user is authorized to access" in {
-        mockAllMessages
+
         mockAuthenticated()
 
         when(mockVatRegistrationService.createRegistrationFootprint(any()))

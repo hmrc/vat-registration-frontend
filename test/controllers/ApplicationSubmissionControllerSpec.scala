@@ -22,27 +22,24 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val testController = new ApplicationSubmissionController(
+    messagesControllerComponents,
     mockVatRegistrationService,
     mockReturnsService,
     mockAuthClientConnector,
-    mockKeystoreConnector,
-    mockMessagesAPI,
-    mockServicesConfig
+    mockKeystoreConnector
   )
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
-      mockAllMessages
-
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
@@ -56,7 +53,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with MockMessag
         .thenReturn(Future.successful(Returns(None, None, None, None)))
 
       callAuthorised(testController.show) { res =>
-        res includesText MOCKED_MESSAGE
+        status(res) mustBe OK
       }
     }
   }

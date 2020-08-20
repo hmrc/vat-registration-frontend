@@ -18,6 +18,7 @@ package views
 
 import java.time.LocalDate
 
+import config.FrontendAppConfig
 import views.html.{former_name_date => FormerNameDatePage}
 import forms.FormerNameDateForm
 import models.view.FormerNameDateView
@@ -25,12 +26,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class FormerNameDatePageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class FormerNameDatePageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
 
@@ -39,9 +41,9 @@ class FormerNameDatePageSpec extends UnitSpec with WithFakeApplication with I18n
       lazy val view = FormerNameDatePage(form, "Test Old Name")
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("formerNameDate.day").attr("value") shouldBe ""
-      document.getElementById("formerNameDate.month").attr("value") shouldBe ""
-      document.getElementById("formerNameDate.year").attr("value") shouldBe ""
+      document.getElementById("formerNameDate.day").attr("value") mustBe ""
+      document.getElementById("formerNameDate.month").attr("value") mustBe ""
+      document.getElementById("formerNameDate.year").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
@@ -50,9 +52,9 @@ class FormerNameDatePageSpec extends UnitSpec with WithFakeApplication with I18n
       lazy val view = FormerNameDatePage(form.fill(validFormerNameDate), "Test Old Name")
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("formerNameDate.day").attr("value") shouldBe "12"
-      document.getElementById("formerNameDate.month").attr("value") shouldBe "7"
-      document.getElementById("formerNameDate.year").attr("value") shouldBe "1998"
+      document.getElementById("formerNameDate.day").attr("value") mustBe "12"
+      document.getElementById("formerNameDate.month").attr("value") mustBe "7"
+      document.getElementById("formerNameDate.year").attr("value") mustBe "1998"
     }
   }
 }

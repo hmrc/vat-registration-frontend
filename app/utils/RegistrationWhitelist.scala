@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 trait RegistrationWhitelist {
 
-  private[utils] lazy val config: AppConfig = FrontendAppConfig
+  val config: AppConfig
 
   val returnDefaultIncorpInfo: (String) => Option[IncorporationInfo] = {
     case regId if config.whitelistedPostIncorpRegIds.contains(regId) =>

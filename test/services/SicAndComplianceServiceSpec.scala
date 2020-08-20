@@ -25,13 +25,13 @@ import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMocks with VatRegistrationFixture {
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+class SicAndComplianceServiceSpec extends VatRegSpec {
+  override implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   trait Setup {
@@ -48,14 +48,14 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
         when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
           .thenReturn(Future.successful(Some(s4lVatSicAndComplianceWithLabour)))
 
-        await(service.getSicAndCompliance) shouldBe s4lVatSicAndComplianceWithLabour
+        await(service.getSicAndCompliance) mustBe s4lVatSicAndComplianceWithLabour
       }
 
       "there is no data in S4L but present in backend" in new Setup {
         when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
           .thenReturn(Future.successful(Some(s4lVatSicAndComplianceWithLabour)))
 
-        await(service.getSicAndCompliance) shouldBe s4lVatSicAndComplianceWithLabour
+        await(service.getSicAndCompliance) mustBe s4lVatSicAndComplianceWithLabour
       }
     }
     "return an empty Sic And Compiance view model" when {
@@ -66,7 +66,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
           .thenReturn(Future.successful(None))
         when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
-        await(service.getSicAndCompliance) shouldBe SicAndCompliance()
+        await(service.getSicAndCompliance) mustBe SicAndCompliance()
       }
     }
   }
@@ -77,7 +77,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
         .thenReturn(Future.successful(Some(SicAndCompliance())))
       when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
-      await(service.updateSicAndCompliance(Workers(200))) shouldBe SicAndCompliance(workers = Some(Workers(200)))
+      await(service.updateSicAndCompliance(Workers(200))) mustBe SicAndCompliance(workers = Some(Workers(200)))
     }
 
     "update S4l and not vat reg because the model is incomplete without SIC code and return the sicAndCompliance" in new Setup {
@@ -90,7 +90,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
         .thenReturn(Future.successful(Some(incompleteSicAndCompliance)))
       when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
-      await(service.updateSicAndCompliance(data)) shouldBe incompleteSicAndCompliance.copy(mainBusinessActivity = Some(data))
+      await(service.updateSicAndCompliance(data)) mustBe incompleteSicAndCompliance.copy(mainBusinessActivity = Some(data))
     }
 
     "update S4l and not vat reg because the model is incomplete without skilled workers and return the sicAndCompliance" in new Setup {
@@ -108,7 +108,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
         .thenReturn(Future.successful(Some(incompleteSicAndCompliance)))
       when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
-      await(service.updateSicAndCompliance(data)) shouldBe incompleteSicAndCompliance.copy(temporaryContracts = Some(data))
+      await(service.updateSicAndCompliance(data)) mustBe incompleteSicAndCompliance.copy(temporaryContracts = Some(data))
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete without labour" in new Setup {
@@ -119,13 +119,17 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       )
       val expected = incompleteViewModel.copy(mainBusinessActivity = Some(data))
 
+
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
+
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.updateSicAndCompliance(data)) shouldBe expected
+      await(service.updateSicAndCompliance(data)) mustBe expected
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete with labour but no temporary workers" in new Setup {
@@ -141,10 +145,13 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.updateSicAndCompliance(data)) shouldBe expected
+      await(service.updateSicAndCompliance(data)) mustBe expected
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete with labour but no workers" in new Setup {
@@ -158,10 +165,13 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.updateSicAndCompliance(data)) shouldBe expected
+      await(service.updateSicAndCompliance(data)) mustBe expected
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete with workers less than 8" in new Setup {
@@ -177,10 +187,13 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.updateSicAndCompliance(data)) shouldBe expected
+      await(service.updateSicAndCompliance(data)) mustBe expected
     }
 
     "update vat reg (not s4l) and clear S4l when model is complete with labour with workers" in new Setup {
@@ -198,10 +211,13 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.updateSicAndCompliance(data)) shouldBe expected
+      await(service.updateSicAndCompliance(data)) mustBe expected
     }
   }
 
@@ -223,10 +239,14 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
+
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(sicCodeList)) shouldBe expected
+      await(service.submitSicCodes(sicCodeList)) mustBe expected
     }
 
     "return a view model with Main Business Activity updated when only one Labour SIC Code is provided" in new Setup {
@@ -249,7 +269,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(List(newSicCode))) shouldBe expected
+      await(service.submitSicCodes(List(newSicCode))) mustBe expected
     }
 
     "return a view model with Main Business Activity updated & Labour Compliance removed when only one none Labour SIC Code is provided" in new Setup {
@@ -275,7 +295,7 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(List(newSicCode))) shouldBe expected
+      await(service.submitSicCodes(List(newSicCode))) mustBe expected
     }
 
     "return a view model without Labour Compliance being removed when SIC Code Labour is provided" in new Setup {
@@ -291,10 +311,14 @@ class SicAndComplianceServiceSpec extends UnitSpec with MockitoSugar with VatMoc
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
+
+      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
+
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(sicCodeList)) shouldBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))
+      await(service.submitSicCodes(sicCodeList)) mustBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))
     }
   }
 }

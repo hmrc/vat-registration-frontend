@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package utils
+package viewmodels
 
 import play.api.data.{Form, FormError}
 
-object ViewErrorHelpers {
+object VatRegViewErrorHelpers {
   def getErrorsForArgument(form: Form[_], argName: String): Seq[FormError] = form.globalErrors.filter(_.args.contains(argName))
   def doesFormHaveErrors(form: Form[_], argName: String): Boolean = form.globalErrors.exists(_.args.contains(argName))
 }

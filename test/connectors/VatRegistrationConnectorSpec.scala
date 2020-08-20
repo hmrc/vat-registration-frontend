@@ -25,7 +25,7 @@ import models.view.{LodgingOfficer, _}
 import models._
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
-import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.http.Status.{NO_CONTENT, OK, NOT_FOUND}
 import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
@@ -36,8 +36,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   class Setup {
     val connector: VatRegistrationConnector = new VatRegistrationConnector(
-      mockWSHttp,
-      mockServicesConfig
+      mockHttpClient,
+      frontendAppConfig
     ) {
       override lazy val vatRegUrl: String = "tst-url"
       override lazy val vatRegElUrl: String = "test-url"
@@ -126,22 +126,15 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling deleteVatScheme" should {
-
-    val okStatus = new HttpResponse {
-      override def status = 200
-    }
-
-    val otherRepsonse = new HttpResponse {
-      override def status = 500
-    }
+    val notFoundException = new Exception(NOT_FOUND.toString)
 
     "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[HttpResponse]("tst-url", okStatus)
+      mockHttpDELETE[HttpResponse]("tst-url", HttpResponse(OK))
       connector.deleteVatScheme("regId")
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
-      mockHttpFailedDELETE[HttpResponse]("tst-url", notFound)
-      connector.deleteVatScheme("regId") failedWith notFound
+      mockHttpFailedDELETE[HttpResponse]("tst-url", notFoundException)
+      connector.deleteVatScheme("regId") failedWith notFoundException
     }
   }
 
@@ -272,13 +265,13 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       await(connector.submitRegistration("tstID")) mustBe Success
     }
     "return a SubmissionFailed" in new Setup {
-      when(mockWSHttp.PUT[String, HttpResponse](anyString(), any())(any(), any(), any(), any()))
+      when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Upstream4xxResponse("400", 400, 400)))
 
       await(connector.submitRegistration("tstID")) mustBe SubmissionFailed
     }
     "return a SubmissionFailedRetryable" in new Setup {
-      when(mockWSHttp.PUT[String, HttpResponse](anyString(), any())(any(), any(), any(), any()))
+      when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Upstream5xxResponse("502", 502, 502)))
 
       await(connector.submitRegistration("tstID")) mustBe SubmissionFailedRetryable

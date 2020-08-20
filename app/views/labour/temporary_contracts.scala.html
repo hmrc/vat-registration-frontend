@@ -22,7 +22,8 @@
 @import views.html.helpers.templates._
 @import models.TemporaryContracts
 
-@(temporaryContractsForm: Form[TemporaryContracts])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(temporaryContractsForm: Form[TemporaryContracts])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.labourCompliance.temporaryContracts.title")) {
 

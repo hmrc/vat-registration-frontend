@@ -23,11 +23,13 @@ import java.time.{LocalDate => JavaLocalDate, LocalDateTime => JavaLocalDateTime
 import javax.inject.{Inject, Singleton}
 import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
 import play.api.Environment
-import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.play.config.inject.ServicesConfig
+import play.api.libs.json.JodaWrites.DefaultJodaLocalDateWrites
+import play.api.libs.json.{Format, JodaReads, JodaWrites, JsResult, JsValue, Json, Reads}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.time.DateTimeUtils._
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet, LocalDateWithHolidays}
 import utils.SystemDate
+
 
 import scala.language.implicitConversions
 
@@ -35,7 +37,7 @@ import scala.language.implicitConversions
 class TimeService @Inject()(val environment: Environment,
                             val servicesConfig: ServicesConfig) {
   lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
-
+  import deprecated.DeprecatedConstants.jodaLocalDateFormat
   def currentDateTime: JodaLocalDateTime = SystemDate.getSystemDate
 
   def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate

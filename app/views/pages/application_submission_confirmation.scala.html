@@ -17,7 +17,8 @@
 @import models.Stagger
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@(refNo: String, staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(refNo: String, staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @pageScripts = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/VatGAEvent.js")'></script>
@@ -28,7 +29,9 @@
     <div class="box-shaded-grey">
         <h1 id="heading-application-submitted" class="heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
     </div>
-    <p>@messages("pages.application.submission.confirmation.reference.number") <strong class="bold">@refNo.</strong></p>
+    <p>@messages("pages.application.submission.confirmation.reference.number") <strong class="bold">
+        @refNo.
+    </strong></p>
     <p>@messages("pages.application.submission.confirmation.email")</p>
 
     <div class="form-group">

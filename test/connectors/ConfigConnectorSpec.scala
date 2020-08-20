@@ -26,8 +26,9 @@ import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
+import testHelpers.VatRegSpec
 
-class ConfigConnectorSpec extends PlaySpec with MockitoSugar with VatMocks {
+class ConfigConnectorSpec extends VatRegSpec with VatMocks {
   val mockEnvironment: Environment = mock[Environment]
 
   class Setup {

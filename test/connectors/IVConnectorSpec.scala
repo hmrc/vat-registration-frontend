@@ -27,7 +27,7 @@ class IVConnectorSpec extends VatRegSpec {
     val connector: IVConnector = new IVConnector(
       mockVatRegFeatureSwitches,
       mockServicesConfig,
-      mockWSHttp
+      mockHttpClient
     ) {
       override val ivProxyUrl = "tst-url"
       override val ivProxyUri = "tst-url"

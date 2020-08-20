@@ -24,7 +24,7 @@ import org.mockito.Mockito.when
 import services.S4LService
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 trait S4LMockSugar {
   self: VatRegSpec =>
@@ -32,9 +32,11 @@ trait S4LMockSugar {
   implicit val dummyCacheMap = CacheMap("", Map.empty)
 
   def save4laterReturnsNothing[T: S4LKey]()(implicit s4l: S4LService, ec: ExecutionContext): Unit =
-    when(s4l.fetchAndGet[T](ArgumentMatchers.eq(S4LKey[T]), any(), any(), any())).thenReturn(None.pure)
+    when(s4l.fetchAndGet[T](ArgumentMatchers.eq(S4LKey[T]), any(), any(), any()))
+      .thenReturn(Future.successful(None.pure))
 
   def save4laterReturns[T: S4LKey](t: T)(implicit s4l: S4LService, ec: ExecutionContext): Unit =
-    when(s4l.fetchAndGet[T](ArgumentMatchers.eq(S4LKey[T]), any(), any(), any())).thenReturn(OptionT.pure(t).value)
+    when(s4l.fetchAndGet[T](ArgumentMatchers.eq(S4LKey[T]), any(), any(), any()))
+      .thenReturn(Future.successful(OptionT.pure(t).value))
 
 }

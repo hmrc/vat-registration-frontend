@@ -19,14 +19,16 @@ package connectors
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import itutil.IntegrationSpecBase
 import models.api.VatScheme
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
+import org.scalatest.WordSpec
 import play.api.libs.json.JsString
 import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers._
 
-class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
+class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
@@ -79,7 +81,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         given()
           .vatRegistrationFootprint.exists()
 
-        await(vatregConnector.createNewRegistration) shouldBe VatScheme(id = "1", status = VatRegStatus.draft)
+        await(vatregConnector.createNewRegistration) mustBe VatScheme(id = "1", status = VatRegStatus.draft)
       }
     }
 
@@ -99,12 +101,12 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
     "return the default IncorpInfo for a post incorp whitelisted regId" in {
       val res = vatregConnector.getIncorporationInfo("99", transactionID)(hc)
-      await(res) shouldBe Some(incorpInfo("#", "fakeTxId-99"))
+      await(res) mustBe Some(incorpInfo("#", "fakeTxId-99"))
     }
 
     "return none for a pre incorp whitelisted regId" in {
       val res = vatregConnector.getIncorporationInfo("102", transactionID)(hc)
-      await(res) shouldBe None
+      await(res) mustBe None
     }
 
     "return an IncorpInfo for a non-whitelisted regId" in {
@@ -112,7 +114,7 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
         .company.isIncorporated
 
       val res = vatregConnector.getIncorporationInfo(nonWhitelistedRegId, transactionID)(hc)
-      await(res) shouldBe Some(incorpInfo())
+      await(res) mustBe Some(incorpInfo())
     }
   }
 
@@ -120,14 +122,14 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
 
     "return success response and not submit to the backend for a whitelisted regId" in {
       val res = vatregConnector.submitRegistration("99")(hc)
-      await(res) shouldBe Success
+      await(res) mustBe Success
     }
     "return a success response and submit to the backend for a non-whitelisted regId" in {
       given()
         .vatScheme.isSubmittedSuccessfully(nonWhitelistedRegId)
 
       val res = vatregConnector.submitRegistration(nonWhitelistedRegId)(hc)
-      await(res) shouldBe Success
+      await(res) mustBe Success
     }
   }
 
@@ -135,14 +137,14 @@ class VatRegistrationConnectorISpec extends UnitSpec with AppAndStubs {
     "return default ackref for a whitelisted regId" in {
 
       val res = vatregConnector.getAckRef("99")(hc)
-      await(res) shouldBe "fooBarWizzFAKEAckRef"
+      await(res) mustBe "fooBarWizzFAKEAckRef"
     }
     "return an ackref for a non-whitelisted regId" in {
       given()
         .vatScheme.has("acknowledgement-reference", JsString("fudgeAndFooAndBar"))
 
       val res = vatregConnector.getAckRef("1")(hc)
-      await(res) shouldBe "fudgeAndFooAndBar"
+      await(res) mustBe "fudgeAndFooAndBar"
     }
   }
 }

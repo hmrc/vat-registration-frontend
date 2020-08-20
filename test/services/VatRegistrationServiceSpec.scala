@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class VatRegistrationServiceSpec extends VatRegSpec with VatRegistrationFixture with S4LMockSugar {
+class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
 
   class Setup {
     val service = new VatRegistrationService(

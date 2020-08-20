@@ -24,6 +24,7 @@ import org.apache.commons.lang3.text.WordUtils
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import deprecated.DeprecatedConstants.jodaDateTimeFormat
 
 case class Name(forename: Option[String],
                 otherForenames: Option[String],

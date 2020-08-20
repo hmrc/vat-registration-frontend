@@ -29,7 +29,7 @@ class ICLConnectorSpec extends VatRegSpec {
     val successfulResponse = HttpResponse(200, Some(jsResponse))
 
     val testConnector: ICLConnector = new ICLConnector(
-      mockWSHttp,
+      mockHttpClient,
       mockServicesConfig
     ) {
       override val IClInitialiseUrl: String = "example.url"

@@ -25,7 +25,8 @@
 @import models.view.vatContact.ppob.PpobView
 @import models.api.ScrsAddress
 
-@(ppobform: Form[PpobView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(ppobform: Form[PpobView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.ppob.title")) {
 

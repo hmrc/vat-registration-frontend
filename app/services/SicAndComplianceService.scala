@@ -23,14 +23,14 @@ import models.TemporaryContracts.TEMP_CONTRACTS_NO
 import models._
 import models.api.SicCode
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SicAndComplianceService @Inject()(val s4lService: S4LService,
                                         val vrs: VatRegistrationService,
-                                        val registrationConnector: VatRegistrationConnector) {
+                                        val registrationConnector: VatRegistrationConnector)
+                                       (implicit ec: ExecutionContext) {
 
   def getSicAndCompliance(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
     s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap {

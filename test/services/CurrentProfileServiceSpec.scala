@@ -33,7 +33,8 @@ class CurrentProfileServiceSpec extends VatRegSpec {
   class Setup {
     val service = new CurrentProfileService(
       mockVatRegistrationService,
-      mockKeystoreConnector
+      mockKeystoreConnector,
+      frontendAppConfig
     ) {
       override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
         if (regId == "99") Future.successful(default(regId)) else f

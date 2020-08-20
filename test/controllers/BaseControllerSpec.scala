@@ -16,19 +16,22 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import testHelpers.ControllerSpec
 import play.api.test.FakeRequest
 import services.SessionProfile
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class BaseControllerSpec extends ControllerSpec {
 
-  object TestController extends BaseController with SessionProfile {
+  object TestController extends BaseController(messagesControllerComponents) with SessionProfile {
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
 
-    val messagesApi = mockMessagesAPI
+    override implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
+
     val authConnector = mockAuthClientConnector
 
     def callAuthenticated = isAuthenticated {
@@ -42,13 +45,15 @@ class BaseControllerSpec extends ControllerSpec {
     }
 
     def callAuthenticatedWithProfile = isAuthenticatedWithProfile {
-      _ => profile =>
-        Future.successful(Ok(s"ALL GOOD with profile: ${profile.registrationId}"))
+      _ =>
+        profile =>
+          Future.successful(Ok(s"ALL GOOD with profile: ${profile.registrationId}"))
     }
 
     def callAuthenticatedWithProfileButError = isAuthenticatedWithProfile {
-      _ => profile =>
-        Future.failed(new Exception(s"Something wrong for profile: ${profile.registrationId}"))
+      _ =>
+        profile =>
+          Future.failed(new Exception(s"Something wrong for profile: ${profile.registrationId}"))
     }
   }
 

@@ -23,7 +23,8 @@
 @import views.html.main_template
 @import views.html.helpers.templates._
 
-@(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages)
+@import config.FrontendAppConfig
+@(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.frs.registerForWithSector.title", percentFormat)) {
 

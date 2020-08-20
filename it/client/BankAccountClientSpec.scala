@@ -17,39 +17,29 @@
 package client
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.enums.VatRegStatus
 import controllers.routes
 import forms.EnterBankAccountDetailsForm._
 import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import helpers.ClientHelper
-import itutil.{IntegrationSpecBase, WiremockHelper}
-import models.CurrentProfile
+import itutil.IntegrationSpecBase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
 import repositories.SessionRepository
+import support.AppAndStubs
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
+class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with ClientHelper {
+  val regId = "1"
 
-  override val mockHost: String = WiremockHelper.wiremockHost
-  override val mockPort: Int = WiremockHelper.wiremockPort
-
-  val regId = "reg-12345"
-
-  val currentProfile: CurrentProfile = models.CurrentProfile(regId, VatRegStatus.draft)
   val userId = "user-id-12345"
-
-  implicit override lazy val app: Application = new GuiceApplicationBuilder()
-    .configure(fakeConfig())
-    .build()
 
   class Setup {
     stubSuccessfulLogin(userId)
@@ -68,7 +58,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       val preawait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) shouldBe preawait + 1
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
       res
     }
   }
@@ -95,9 +85,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
   val bankAccountNotProvidedJson: JsObject = Json.obj("isProvided" -> false)
   val bankAccountProvidedPartialJson: JsObject = Json.obj("isProvided" -> true)
 
-  s"""GET ${routes.BankAccountDetailsController.showHasCompanyBankAccountView()}""" should {
+  s"""GET ${controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()}""" should {
 
-    val url = routes.BankAccountDetailsController.showHasCompanyBankAccountView().url
+    val url = controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url
     val client = buildClient(url)
 
     "return a 200 and render the page with nothing pre-popped when it's the first time on the page" in new Setup {
@@ -107,12 +97,12 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: WSResponse = client.withSessionCookieHeader(userId).get()
-      response.status shouldBe 200
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).get())
+      response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") shouldBe false
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") shouldBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
     }
 
     "return a 200 and render the page with the 'yes' radio pre-popped from save4later" in new Setup {
@@ -121,12 +111,12 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: WSResponse = client.withSessionCookieHeader(userId).get()
-      response.status shouldBe 200
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).get())
+      response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") shouldBe true
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") shouldBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe true
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
     }
 
     "return a 200 and render the page with the 'yes' radio pre-popped from VAT Backend" in new Setup {
@@ -136,12 +126,12 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: WSResponse = client.withSessionCookieHeader(userId).get()
-      response.status shouldBe 200
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).get())
+      response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") shouldBe true
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") shouldBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe true
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
     }
   }
 
@@ -160,10 +150,11 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> true)
-      val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
+      val response = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
-      response.status shouldBe 303
-      redirectLocation(response) shouldBe Some(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails().url)
+
+      response.status mustBe 303
+      redirectLocation(response) mustBe Some(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails().url)
     }
 
     "save the form data to VAT backend and S4L when 'no' was selected and return a 303 and redirect to the 'join frs' page" in new Setup {
@@ -181,11 +172,11 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
 
       When("The 'has a bank account' page is submitted with the 'no' radio button selected")
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> false)
-      val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
       Then(s"The client is served a 303 and redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
-      response.status shouldBe 303
-      redirectLocation(response) shouldBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
+      response.status mustBe 303
+      redirectLocation(response) mustBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
     }
   }
 
@@ -200,9 +191,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
       stubAuthWithAffinity(Organisation)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: WSResponse = client.withSessionCookieHeader(userId).get()
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).get())
 
-      response.status shouldBe 200
+      response.status mustBe 200
     }
   }
 
@@ -231,11 +222,11 @@ class BankAccountClientSpec extends IntegrationSpecBase with ClientHelper {
         ACCOUNT_NUMBER -> "12345678",
         SORT_CODE -> Json.obj("part1" -> "12", "part2" -> "34", "part3" -> "56")
       )
-      val response: WSResponse = client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody)
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
       Then(s"the client is served a 303 response and is redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
-      response.status shouldBe 303
-      redirectLocation(response) shouldBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
+      response.status mustBe 303
+      redirectLocation(response) mustBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
     }
   }
 }

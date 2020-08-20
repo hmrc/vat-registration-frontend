@@ -33,16 +33,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import testHelpers.FutureAssertions
+import testHelpers.{FutureAssertions, VatRegSpec}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class LodgingOfficerServiceSpec extends PlaySpec with MockitoSugar with VatMocks with FutureAssertions with LodgingOfficerFixtures with BeforeAndAfterEach {
-  val testRegId = "testRegId"
+class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
+  override val testRegId = "testRegId"
 
-  implicit val hc = HeaderCarrier()
   implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val validFullLodgingOfficerNoFormerName = validFullLodgingOfficer.copy(

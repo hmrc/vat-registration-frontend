@@ -15,17 +15,18 @@
  */
 package itutil
 
+import com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 
-trait IntegrationSpecBase extends UnitSpec
+trait IntegrationSpecBase extends WordSpec
   with GivenWhenThen
-  with OneServerPerSuite with ScalaFutures with IntegrationPatience with Matchers
+  with GuiceOneServerPerSuite with ScalaFutures with IntegrationPatience with MustMatchers
   with WiremockHelper with BeforeAndAfterEach with BeforeAndAfterAll {
 
   override def beforeEach() = {
+    resetAllScenarios()
     resetWiremock()
   }
 

@@ -16,10 +16,10 @@
 
 package common
 
-import org.scalatest.{Inside, Inspectors}
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.{Inside, Inspectors, Matchers, WordSpec}
 
-class MaskedStringConverterSpec extends UnitSpec with Inside with Inspectors {
+
+class MaskedStringConverterSpec extends WordSpec with Inside with Inspectors with Matchers {
 
   import StringMasking._
 

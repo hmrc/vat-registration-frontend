@@ -22,12 +22,12 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.Application
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
+import uk.gov.hmrc.crypto.Protected
+import uk.gov.hmrc.crypto.CryptoWithKeysFromConfig
 
 object WiremockHelper {
   val wiremockPort = 11111
@@ -36,7 +36,6 @@ object WiremockHelper {
 }
 
 trait WiremockHelper extends WiremockS4LHelper {
-  self: OneServerPerSuite =>
 
   import WiremockHelper._
 
@@ -44,8 +43,8 @@ trait WiremockHelper extends WiremockS4LHelper {
   val wireMockServer = new WireMockServer(wmConfig)
 
   def startWiremock() = {
+    configureFor(wiremockHost, wiremockPort)
     wireMockServer.start()
-    WireMock.configureFor(wiremockHost, wiremockPort)
   }
 
   def stopWiremock() = wireMockServer.stop()
@@ -146,7 +145,7 @@ trait WiremockHelper extends WiremockS4LHelper {
 trait WiremockS4LHelper {
 
   private def encryptJson(body: JsObject)(implicit app: Application): String = {
-    val crypto = CryptoWithKeysFromConfig(baseConfigKey = "json.encryption", app.configuration)
+    val crypto = new CryptoWithKeysFromConfig(baseConfigKey = "json.encryption", app.configuration.underlying)
     val encryptionFormat = new JsonEncryptor[JsObject]()(crypto, implicitly)
     encryptionFormat.writes(Protected(body)).toString()
   }

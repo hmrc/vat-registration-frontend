@@ -19,9 +19,9 @@ package forms
 import helpers.FormInspectors._
 import models.CompanyContactDetails
 import play.api.data.FormError
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class CompanyContactDetailsFormSpec extends UnitSpec {
+class CompanyContactDetailsFormSpec extends VatRegSpec {
 
   val testForm = CompanyContactDetailsForm.form
 

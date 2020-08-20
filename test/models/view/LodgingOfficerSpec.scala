@@ -22,9 +22,9 @@ import models.api.ScrsAddress
 import models.external.Name
 import org.scalatest.Matchers
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.test.UnitSpec
+import testHelpers.VatRegSpec
 
-class LodgingOfficerSpec extends UnitSpec with Matchers {
+class LodgingOfficerSpec extends VatRegSpec {
   val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val previousAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
@@ -44,7 +44,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
            |}
          """.stripMargin)
 
-      LodgingOfficer.fromJsonToName(json) shouldBe Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last")
+      LodgingOfficer.fromJsonToName(json) mustBe Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last")
     }
 
     "return a correct name with min json" in {
@@ -60,7 +60,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
            |}
          """.stripMargin)
 
-      LodgingOfficer.fromJsonToName(json) shouldBe Name(forename = None, otherForenames = None, surname = "Last")
+      LodgingOfficer.fromJsonToName(json) mustBe Name(forename = None, otherForenames = None, surname = "Last")
     }
   }
 
@@ -89,7 +89,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = None
       )
 
-      LodgingOfficer.fromApi(json) shouldBe lodgingOfficer
+      LodgingOfficer.fromApi(json) mustBe lodgingOfficer
     }
 
     "return a correct partial LodgingOfficer view model with partial name and no dob" in {
@@ -114,7 +114,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = None
       )
 
-      LodgingOfficer.fromApi(json) shouldBe lodgingOfficer
+      LodgingOfficer.fromApi(json) mustBe lodgingOfficer
     }
 
     "return a correct full LodgingOfficer view model with max data" in {
@@ -167,7 +167,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
       )
 
-      LodgingOfficer.fromApi(json) shouldBe lodgingOfficer
+      LodgingOfficer.fromApi(json) mustBe lodgingOfficer
     }
 
     "return a correct full LodgingOfficer view model with min data" in {
@@ -205,7 +205,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
-      LodgingOfficer.fromApi(json) shouldBe lodgingOfficer
+      LodgingOfficer.fromApi(json) mustBe lodgingOfficer
     }
   }
 
@@ -226,7 +226,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
            |  "dob": "1998-07-12"
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) mustBe validJson
     }
 
     "return a correct full JsValue with maximum data" in {
@@ -270,7 +270,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) mustBe validJson
     }
 
     "return a correct full JsValue with minimum data" in {
@@ -301,7 +301,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(LodgingOfficer.apiWrites) shouldBe validJson
+      Json.toJson(data)(LodgingOfficer.apiWrites) mustBe validJson
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer security data" in {
@@ -314,7 +314,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
+      an[IllegalStateException] mustBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address view data" in {
@@ -327,7 +327,7 @@ class LodgingOfficerSpec extends UnitSpec with Matchers {
         previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
       )
 
-      an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
+      an[IllegalStateException] mustBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
     }
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address data" in {

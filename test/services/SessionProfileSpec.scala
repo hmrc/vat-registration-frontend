@@ -27,7 +27,7 @@ import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
-class SessionProfileSpec extends VatRegSpec with VatRegistrationFixture {
+class SessionProfileSpec extends VatRegSpec {
   val mockMessages = mock[Messages]
 
   class Setup {

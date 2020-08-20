@@ -28,8 +28,8 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
 
   class Setup {
     val connector: VatRegistrationConnector = new VatRegistrationConnector(
-      mockWSHttp,
-      mockServicesConfig
+      mockHttpClient,
+      frontendAppConfig
     ) {
       override lazy val vatRegUrl: String = "tst-url"
       override lazy val vatRegElUrl: String = "test-url"

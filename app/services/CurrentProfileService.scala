@@ -16,6 +16,7 @@
 
 package services
 
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
@@ -27,7 +28,8 @@ import scala.concurrent.Future
 
 @Singleton
 class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistrationService,
-                                      val keystoreConnector: KeystoreConnector) extends RegistrationWhitelist {
+                                      val keystoreConnector: KeystoreConnector,
+                                      override val config: FrontendAppConfig) extends RegistrationWhitelist {
 
   def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {

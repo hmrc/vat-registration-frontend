@@ -17,19 +17,19 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import testHelpers.{ControllerSpec, FutureAssertions, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
-class ErrorControllerSpec extends ControllerSpec with MockMessages with FutureAssertions with VatRegistrationFixture {
+class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   trait Setup {
     val testErrorController: ErrorController = new ErrorController(
-      mockServicesConfig,
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector
     ) {
       override lazy val rejectedUrl = "rejection-url"
     }
-    mockAllMessages
+
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
@@ -41,8 +41,6 @@ class ErrorControllerSpec extends ControllerSpec with MockMessages with FutureAs
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          result includesText MOCKED_MESSAGE
-          result includesText "submissionFailedReportAProblem"
       }
     }
     "return the SubmissionRetryable view" in new Setup {
@@ -51,8 +49,6 @@ class ErrorControllerSpec extends ControllerSpec with MockMessages with FutureAs
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
-          result includesText MOCKED_MESSAGE
-          result includesText "continue"
       }
     }
   }

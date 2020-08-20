@@ -23,20 +23,20 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, MockMessages}
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFixture with MockMessages {
+class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   class Setup {
     val testController = new TradingDetailsController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
-      mockTradingDetailsService,
-      mockMessagesAPI
+      mockTradingDetailsService
     )
-    mockAllMessages
+
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }

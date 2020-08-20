@@ -25,7 +25,7 @@ import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
-class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryServiceSpec extends VatRegSpec {
 
   class Setup {
     val testService: SummaryService = new SummaryService(
@@ -65,13 +65,13 @@ class SummaryServiceSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.32)))
 
-      testService.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 9
+      testService.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
     }
     "map a valid empty VatScheme object to a Summary object" in new Setup {
       when(mockLodgingOfficerService.getLodgingOfficer(any(), any()))
         .thenReturn(Future.successful(validFullLodgingOfficer))
 
-      testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 9
+      testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
 
     }
   }

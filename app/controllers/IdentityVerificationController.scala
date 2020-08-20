@@ -16,22 +16,23 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import models.IVResult
 import play.api.Logger
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{IVService, SessionProfile}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IdentityVerificationController @Inject()(val ivService: IVService,
-                                               val messagesApi: MessagesApi,
+class IdentityVerificationController @Inject()(mcc: MessagesControllerComponents,
+                                               val ivService: IVService,
                                                val authConnector: AuthClientConnector,
-                                               val keystoreConnector: KeystoreConnector) extends BaseController with SessionProfile {
+                                               val keystoreConnector: KeystoreConnector)
+                                              (implicit val appConfig: FrontendAppConfig,
+                                               ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def redirectToIV: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

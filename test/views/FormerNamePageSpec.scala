@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import views.html.{former_name => FormerNamePage}
 import forms.FormerNameForm
 import models.view.FormerNameView
@@ -23,12 +24,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import testHelpers.VatRegSpec
 
-class FormerNamePageSpec extends UnitSpec with WithFakeApplication with I18nSupport {
+class FormerNamePageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
   lazy val form = FormerNameForm.form("TestCurrentName")
 
@@ -37,9 +39,9 @@ class FormerNamePageSpec extends UnitSpec with WithFakeApplication with I18nSupp
       lazy val view = FormerNamePage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "formerNameRadio").size shouldBe 2
-      document.getElementsByAttributeValue("checked", "checked").size shouldBe 0
-      document.getElementById("formerName").attr("value") shouldBe ""
+      document.getElementsByAttributeValue("name", "formerNameRadio").size mustBe 2
+      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
+      document.getElementById("formerName").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
@@ -48,8 +50,8 @@ class FormerNamePageSpec extends UnitSpec with WithFakeApplication with I18nSupp
       lazy val view = FormerNamePage(form.fill(validFormerName))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("formerNameRadio-true").attr("checked") shouldBe "checked"
-      document.getElementById("formerName").attr("value") shouldBe "Test Old Name"
+      document.getElementById("formerNameRadio-true").attr("checked") mustBe "checked"
+      document.getElementById("formerName").attr("value") mustBe "Test Old Name"
     }
   }
 }
