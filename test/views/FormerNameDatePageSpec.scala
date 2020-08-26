@@ -19,7 +19,6 @@ package views
 import java.time.LocalDate
 
 import config.FrontendAppConfig
-import views.html.{former_name_date => FormerNameDatePage}
 import forms.FormerNameDateForm
 import models.view.FormerNameDateView
 import org.jsoup.Jsoup
@@ -27,14 +26,15 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
+import views.html.{former_name_date => FormerNameDatePage}
 
 class FormerNameDatePageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
-  val injector : Injector = fakeApplication.injector
-  implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  val injector: Injector = fakeApplication.injector
+  implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
   implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
-  lazy val form = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
+  lazy val form = FormerNameDateForm.form
 
   "Former Name Date Page" should {
     "display the page without pre populated data" in {

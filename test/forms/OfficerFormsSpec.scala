@@ -25,59 +25,10 @@ import models.view._
 import testHelpers.VatRegSpec
 
 class OfficerFormsSpec extends VatRegSpec {
-  "SecurityQuestionsForm" should {
-    val testForm = SecurityQuestionsForm.form
-    val testData = SecurityQuestionsView(LocalDate.of(1998, 7, 12))
 
-    "bind successfully with data" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.month" -> "7",
-        "dob.year" -> "1998"
-      )
-
-      val result = testForm.bind(data).fold(
-        errors => errors,
-        success => success
-      )
-
-      result shouldBe testData
-    }
-
-    "have the correct error if no dob month is provided" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.year" -> "1998"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("dob.month" -> "error.required")
-    }
-
-    "have the correct error if no correct dob is provided" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.month" -> "13",
-        "dob.year" -> "1998"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("dob" -> "validation.security.questions.dob.invalid")
-    }
-
-    "Unbind successfully with full data" in {
-      val data = Map(
-        "dob.day" -> "12",
-        "dob.month" -> "7",
-        "dob.year" -> "1998"
-      )
-
-      testForm.fill(testData).data shouldBe data
-    }
-  }
 
   "FormerNameForm" should {
-    val testForm = FormerNameForm.form("TestCurrentName")
+    val testForm = FormerNameForm.form
     val testDataWithName = FormerNameView(true, Some("Test Old Name"))
     val testDataNoName = FormerNameView(false, None)
 
@@ -149,26 +100,6 @@ class OfficerFormsSpec extends VatRegSpec {
       boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.maxlen")
     }
 
-    "have the correct error if true is selected and the name provided is exact same as the completion capacity" in {
-      val data = Map(
-        "formerNameRadio" -> "true",
-        "formerName" -> "Test Current Name"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.match.cc")
-    }
-
-    "have the correct error if true is selected and the name provided is same as the completion capacity (case insensitive)" in {
-      val data = Map(
-        "formerNameRadio" -> "true",
-        "formerName" -> "test current name"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.match.cc")
-    }
-
     "Unbind successfully with true and valid name" in {
       val data = Map(
         "formerNameRadio" -> "true",
@@ -187,8 +118,9 @@ class OfficerFormsSpec extends VatRegSpec {
     }
   }
 
+
   "FormerNameDateForm" should {
-    val testForm = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
+    val testForm = FormerNameDateForm.form
     val testData = FormerNameDateView(LocalDate.of(2000, 1, 1))
 
     "bind successfully with data" in {
@@ -414,7 +346,7 @@ class OfficerFormsSpec extends VatRegSpec {
   "PreviousAddressForm" should {
     val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val testForm = PreviousAddressForm.form
-    val testData = PreviousAddressView(false, Some(address))
+    val testData = PreviousAddressView(yesNo = false, Some(address))
 
     "bind successfully with data" in {
       val data = Map(
@@ -426,7 +358,7 @@ class OfficerFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe PreviousAddressView(true, None)
+      result shouldBe PreviousAddressView(yesNo = true, None)
     }
 
     "have the correct error if no data is provided" in {

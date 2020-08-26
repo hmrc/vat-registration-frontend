@@ -22,11 +22,10 @@ import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
 import forms.test.{TestSetupEligibilityForm, TestSetupForm}
 import javax.inject.{Inject, Singleton}
+import models._
 import models.test.SicStub
 import models.view.LodgingOfficer
 import models.view.test._
-import models._
-import play.api.i18n.MessagesApi
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile}
@@ -104,9 +103,6 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
               postcode = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
               country = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
             lodgingOfficer = LodgingOfficerTestSetup(
-              dobDay = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getDayOfMonth.toString),
-              dobMonth = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getMonthValue.toString),
-              dobYear = lodgingOfficer.flatMap(_.securityQuestions).map(_.dob.getYear.toString),
               email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
               mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
               phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),

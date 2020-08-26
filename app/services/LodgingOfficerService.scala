@@ -31,17 +31,11 @@ import scala.concurrent.Future
 class LodgingOfficerService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
                                       val s4LService: S4LService) extends Logging {
 
-  def getApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Name] = {
-    vatRegistrationConnector.getLodgingOfficer(cp.registrationId) map { res =>
-      res.fold(throw new IllegalStateException(s"[LodgingOfficerService] [getApplicantName] Can't determine applicant Name for regId: ${cp.registrationId}"))(LodgingOfficer.fromJsonToName)
-    }
-  }
-
   def getLodgingOfficer(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
     s4LService.fetchAndGetNoAux[LodgingOfficer](S4LKey[LodgingOfficer]) flatMap {
       case Some(officer) => Future.successful(officer)
       case _ => vatRegistrationConnector.getLodgingOfficer(cp.registrationId) flatMap { json =>
-        val lodgingOfficer = json.fold(LodgingOfficer(None, None, None, None, None, None))(LodgingOfficer.fromApi)
+        val lodgingOfficer = json.fold(LodgingOfficer(None, None, None, None, None))(LodgingOfficer.fromApi)
         s4LService.saveNoAux[LodgingOfficer](lodgingOfficer, S4LKey[LodgingOfficer]) map (_ => lodgingOfficer)
       }
     }
@@ -56,11 +50,11 @@ class LodgingOfficerService @Inject()(val vatRegistrationConnector: VatRegistrat
   }
 
   private def isModelComplete(lodgingOfficer: LodgingOfficer): Completion[LodgingOfficer] = lodgingOfficer match {
-    case LodgingOfficer(Some(_), None, None, None, None, None) =>
+    case LodgingOfficer(None, None, None, None, None) =>
       Complete(lodgingOfficer)
-    case LodgingOfficer(Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
+    case LodgingOfficer(Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(lodgingOfficer)
-    case LodgingOfficer(Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
+    case LodgingOfficer(Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
       Complete(lodgingOfficer)
     case _ =>
       Incomplete(lodgingOfficer)
@@ -69,7 +63,6 @@ class LodgingOfficerService @Inject()(val vatRegistrationConnector: VatRegistrat
   def saveLodgingOfficer[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[LodgingOfficer] = {
     def updateModel(data: T, before: LodgingOfficer): LodgingOfficer = {
       data match {
-        case secu: SecurityQuestionsView => before.copy(securityQuestions = Some(secu))
         case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
         case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
         case fName: FormerNameView => before.copy(formerName = Some(fName))

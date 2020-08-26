@@ -70,12 +70,9 @@ class FeatureSwitchManager {
 
 @Singleton
 class VATRegFeatureSwitches @Inject()(val manager: FeatureSwitchManager) {
-  val ivStubbed: String = "ivStubbed"
   val crStubbed: String = "crStubbed"
   val setSystemDate = "system-date"
   val iclStubbed: String = "iclStubbed"
-
-  def useIvStub: FeatureSwitch = manager.getProperty(ivStubbed)
 
   def useCrStubbed: FeatureSwitch = manager.getProperty(crStubbed)
 
@@ -84,7 +81,6 @@ class VATRegFeatureSwitches @Inject()(val manager: FeatureSwitchManager) {
   def useIclStub: FeatureSwitch = manager.getProperty(iclStubbed)
 
   def apply(name: String): Option[FeatureSwitch] = name match {
-    case `ivStubbed` => Some(useIvStub)
     case `crStubbed` => Some(useCrStubbed)
     case `iclStubbed` => Some(useIclStub)
     case `setSystemDate` => Some(systemDate)

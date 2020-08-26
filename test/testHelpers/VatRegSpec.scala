@@ -20,16 +20,15 @@ import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
-import config.FrontendAppConfig
 import fixtures.{LoginFixture, VatRegistrationFixture}
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors, Matchers}
+import org.scalatest.{Assertion, BeforeAndAfterEach, Inside, Inspectors}
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
@@ -43,11 +42,9 @@ class VatRegSpec extends PlaySpec with GuiceOneAppPerSuite with AuthMock with Au
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()
-  implicit val cp = currentProfile()
+  implicit val cp = currentProfile
 
-  val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
-
-  def currentProfile(ivPassed: Option[Boolean] = Some(true)): CurrentProfile =
+  def currentProfile =
     CurrentProfile(testRegId, VatRegStatus.draft)
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))

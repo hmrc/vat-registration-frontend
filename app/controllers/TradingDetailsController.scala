@@ -21,7 +21,6 @@ import connectors.KeystoreConnector
 import deprecated.DeprecatedConstants
 import forms.{EuGoodsForm, TradingNameForm}
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionProfile, TradingDetailsService}
 import views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
@@ -39,42 +38,36 @@ class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
   val tradingNamePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          for {
-            tradingDetailsView <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
-            form = TradingNameForm.fillWithPrePop(tradingDetailsView.tradingNameView)
-          } yield Ok(TradingNamePage(form, DeprecatedConstants.fakeCompanyName))
-        }
+        for {
+          tradingDetailsView <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
+          form = TradingNameForm.fillWithPrePop(tradingDetailsView.tradingNameView)
+        } yield Ok(TradingNamePage(form, DeprecatedConstants.fakeCompanyName))
   }
 
   val submitTradingName: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          TradingNameForm.form.bindFromRequest.fold(
-            errors => {
-              Future.successful(BadRequest(TradingNamePage(errors, DeprecatedConstants.fakeCompanyName)))
+        TradingNameForm.form.bindFromRequest.fold(
+          errors => {
+            Future.successful(BadRequest(TradingNamePage(errors, DeprecatedConstants.fakeCompanyName)))
 
-            },
-            success => {
-              val (hasName, name) = success
-              tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
-                _ => Redirect(controllers.routes.TradingDetailsController.euGoodsPage())
-              }
+          },
+          success => {
+            val (hasName, name) = success
+            tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
+              _ => Redirect(controllers.routes.TradingDetailsController.euGoodsPage())
             }
-          )
-        }
+          }
+        )
   }
 
   val euGoodsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
-            _.euGoods match {
-              case Some(goods) => Ok(EuGoodsPage(EuGoodsForm.form.fill(goods)))
-              case None => Ok(EuGoodsPage(EuGoodsForm.form))
-            }
+        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
+          _.euGoods match {
+            case Some(goods) => Ok(EuGoodsPage(EuGoodsForm.form.fill(goods)))
+            case None => Ok(EuGoodsPage(EuGoodsForm.form))
           }
         }
   }
@@ -82,13 +75,11 @@ class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
   val submitEuGoods: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          EuGoodsForm.form.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(EuGoodsPage(errors))),
-            success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-              Redirect(controllers.routes.ReturnsController.chargeExpectancyPage())
-            }
-          )
-        }
+        EuGoodsForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(EuGoodsPage(errors))),
+          success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
+            Redirect(controllers.routes.ReturnsController.chargeExpectancyPage())
+          }
+        )
   }
 }

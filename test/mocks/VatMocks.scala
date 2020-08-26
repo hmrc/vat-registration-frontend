@@ -16,7 +16,6 @@
 
 package mocks
 
-import config.FrontendAppConfig
 import connectors.{BankAccountReputationConnector, _}
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
@@ -25,7 +24,6 @@ import repositories.SessionRepository
 import services.{BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{CascadeUpsert, VATRegFeatureSwitches}
 
@@ -51,7 +49,6 @@ trait VatMocks
   implicit lazy val mockVatRegistrationConnector = mock[VatRegistrationConnector]
   implicit lazy val mockConfigConnector = mock[ConfigConnector]
   implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
-  implicit lazy val mockIdentityVerificationConnector = mock[IVConnector]
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
@@ -61,7 +58,6 @@ trait VatMocks
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
   implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
-  implicit lazy val mockIVService = mock[IVService]
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
@@ -91,8 +87,6 @@ trait VatMocks
       mockConfigConnector,
       mockAddressLookupConnector,
       mockCurrentProfileService,
-      mockIdentityVerificationConnector,
-      mockIVService,
       mockReturnsService,
       mockLodgingOfficerService,
       mockFlatRateService,

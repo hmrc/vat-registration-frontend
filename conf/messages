@@ -511,21 +511,6 @@ pages.officerHomeAddress.heading                         = What is your home add
 pages.officerHomeAddress.different.address               = A different address
 validation.officerHomeAddress.missing                    = Tell us your home address
 
-## Officer Security questions
-pages.security.questions.title                                   = Applicant date of birth
-pages.security.questions.heading                                 = What is your date of birth?
-
-pages.security.questions.date.of.birth.hint                      = For example, 12 3 1976
-pages.security.questions.day.label                               = Day
-pages.security.questions.month.label                             = Month
-pages.security.questions.year.label                              = Year
-
-validation.security.questions.dob.missing                        = Enter your date of birth
-validation.security.questions.dob.invalid                        = Enter a valid date of birth
-validation.security.questions.dob.range.above                    = Date of birth must not be in the future
-validation.security.questions.dob.range.below                    = Date of birth must be after 1 Jan 1900
-
-
 ## Officer Completion Capacity
 pages.completionCapacity.title                           = Who is registering the company for VAT?
 pages.completionCapacity.heading                         = Who is registering the company for VAT?

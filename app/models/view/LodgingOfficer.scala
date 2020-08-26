@@ -23,8 +23,7 @@ import models.api.ScrsAddress
 import models.external.Name
 import play.api.libs.json._
 
-case class LodgingOfficer(securityQuestions: Option[SecurityQuestionsView],
-                          homeAddress: Option[HomeAddressView],
+case class LodgingOfficer(homeAddress: Option[HomeAddressView],
                           contactDetails: Option[ContactDetailsView],
                           formerName: Option[FormerNameView],
                           formerNameDate: Option[FormerNameDateView],
@@ -34,12 +33,6 @@ object LodgingOfficer {
   implicit val format: Format[LodgingOfficer] = Json.format[LodgingOfficer]
   implicit val s4lKey: S4LKey[LodgingOfficer] = S4LKey("LodgingOfficer")
 
-  def ivStatusfromApi(lodgingOfficer: JsValue): Option[Boolean] = {
-
-    (lodgingOfficer \ "ivPassed").validateOpt[Boolean].get
-
-  }
-
   def fromJsonToName(json: JsValue): Name = Name(
     forename = (json \ "name" \ "first").validateOpt[String].get,
     otherForenames = (json \ "name" \ "middle").validateOpt[String].get,
@@ -48,10 +41,8 @@ object LodgingOfficer {
   )
 
   def fromApi(lodgingOfficer: JsValue): LodgingOfficer = {
-    val officerSecurity = (lodgingOfficer \ "dob").validateOpt[LocalDate].get.map(dob => SecurityQuestionsView(dob))
 
     val lodgingOfficerView = LodgingOfficer(
-      securityQuestions = officerSecurity,
       homeAddress = None,
       contactDetails = None,
       formerName = None,
@@ -89,16 +80,16 @@ object LodgingOfficer {
   private def splitName(fullName: String): (Option[String], Option[String], Option[String]) = {
     val split = fullName.trim.split("\\s+")
 
-    val lastName = if(fullName.trim.isEmpty) None else Some(split.last)
+    val lastName = if (fullName.trim.isEmpty) None else Some(split.last)
     val middleName = {
       val middleSplit = split
         .drop(1)
         .dropRight(1)
         .toList
 
-      if(middleSplit.nonEmpty) Some(middleSplit.mkString(" ")) else None
+      if (middleSplit.nonEmpty) Some(middleSplit.mkString(" ")) else None
     }
-    val firstName = if(split.length < 2) None else Some(split.head)
+    val firstName = if (split.length < 2) None else Some(split.head)
 
     (firstName, middleName, lastName)
   }
@@ -141,27 +132,18 @@ object LodgingOfficer {
   }
 
   def apiWrites: Writes[LodgingOfficer] = new Writes[LodgingOfficer] {
-    override def writes(o: LodgingOfficer) = {
-      val officerSecurityQuestions = o.securityQuestions.getOrElse(throw new IllegalStateException("Missing officer security data to save into backend"))
-
-      val otherData = Json.parse(
-        s"""
-           |{
-           |  "dob": "${officerSecurityQuestions.dob}"
-           |}
-        """.stripMargin
-      ).as[JsObject]
+    override def writes(o: LodgingOfficer): JsObject = {
 
       val officerDetails = o match {
-        case LodgingOfficer(_, None, None, None, None, None) =>
+        case LodgingOfficer(None, None, None, None, None) =>
           Json.obj()
-        case LodgingOfficer(_, Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
+        case LodgingOfficer(Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
           Json.obj("details" -> buildJsonOfficerDetails(currAddr, contact, fName, fNameDate, prevAddr))
         case _ =>
           throw new IllegalStateException("Missing officer details data to save into backend")
       }
 
-      otherData ++ officerDetails
+      officerDetails
     }
   }
 }

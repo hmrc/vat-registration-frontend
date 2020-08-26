@@ -18,18 +18,17 @@ package controllers.test
 
 import java.time.LocalDate
 
-import models.{BusinessActivityDescription, BusinessContact, CompanyContactDetails, CompanyProvideWorkers, MainBusinessActivityView, SicAndCompliance, SkilledWorkers, TemporaryContracts, Workers}
-import models.view._
-import models.TradingDetails
 import models.api._
+import models.view._
 import models.view.test.TestSetup
+import models._
 
 object TestS4LBuilder {
 
   def tradingDetailsFromData(data: TestSetup): TradingDetails = {
     data.tradingDetailsBlock match {
       case Some(tdb) => TradingDetails(tdb.tradingNameView, tdb.euGoods)
-      case None      => TradingDetails()
+      case None => TradingDetails()
     }
   }
 
@@ -37,11 +36,10 @@ object TestS4LBuilder {
     val base = data.sicAndCompliance
     val compliance: SicAndCompliance = base.labourCompanyProvideWorkers.fold(SicAndCompliance())(_ =>
       SicAndCompliance(
-          companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
-          workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
-          temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
-          skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x)))))
-
+        companyProvideWorkers = base.labourCompanyProvideWorkers.flatMap(x => Some(CompanyProvideWorkers(x))),
+        workers = base.labourWorkers.flatMap(x => Some(Workers(x.toInt))),
+        temporaryContracts = base.labourTemporaryContracts.flatMap(x => Some(TemporaryContracts(x))),
+        skilledWorkers = base.labourSkilledWorkers.flatMap(x => Some(SkilledWorkers(x)))))
 
 
     compliance.copy(
@@ -81,23 +79,23 @@ object TestS4LBuilder {
 
   def buildLodgingOfficerFromTestData(data: TestSetup): LodgingOfficer = {
     val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ => ScrsAddress(
-      line1    = data.officerHomeAddress.line1.getOrElse(""),
-      line2    = data.officerHomeAddress.line2.getOrElse(""),
-      line3    = data.officerHomeAddress.line3,
-      line4    = data.officerHomeAddress.line4,
+      line1 = data.officerHomeAddress.line1.getOrElse(""),
+      line2 = data.officerHomeAddress.line2.getOrElse(""),
+      line3 = data.officerHomeAddress.line3,
+      line4 = data.officerHomeAddress.line4,
       postcode = data.officerHomeAddress.postcode,
-      country  = data.officerHomeAddress.country)
+      country = data.officerHomeAddress.country)
     )
 
     val threeYears: Option[String] = data.officerPreviousAddress.threeYears
 
     val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ => ScrsAddress(
-      line1    = data.officerPreviousAddress.line1.getOrElse(""),
-      line2    = data.officerPreviousAddress.line2.getOrElse(""),
-      line3    = data.officerPreviousAddress.line3,
-      line4    = data.officerPreviousAddress.line4,
+      line1 = data.officerPreviousAddress.line1.getOrElse(""),
+      line2 = data.officerPreviousAddress.line2.getOrElse(""),
+      line3 = data.officerPreviousAddress.line3,
+      line4 = data.officerPreviousAddress.line4,
       postcode = data.officerPreviousAddress.postcode,
-      country  = data.officerPreviousAddress.country)
+      country = data.officerPreviousAddress.country)
     )
 
     val dob: Option[LocalDate] = data.lodgingOfficer.dobDay.map(_ =>
@@ -107,13 +105,13 @@ object TestS4LBuilder {
         data.lodgingOfficer.dobDay.getOrElse("1").toInt))
 
     val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ => ContactDetailsView(
-      email         = data.lodgingOfficer.email,
-      mobile        = data.lodgingOfficer.mobile,
-      daytimePhone  = data.lodgingOfficer.phone)
+      email = data.lodgingOfficer.email,
+      mobile = data.lodgingOfficer.mobile,
+      daytimePhone = data.lodgingOfficer.phone)
     )
 
     val formerName: Option[FormerNameView] = data.lodgingOfficer.formernameChoice.collect {
-      case "true"  => FormerNameView(true, data.lodgingOfficer.formername)
+      case "true" => FormerNameView(true, data.lodgingOfficer.formername)
       case "false" => FormerNameView(false, None)
     }
 
@@ -125,12 +123,11 @@ object TestS4LBuilder {
     })
 
     LodgingOfficer(
-      previousAddress     = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
-      homeAddress         = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
-      securityQuestions   = dob.map(SecurityQuestionsView(_)),
-      contactDetails      = contactDetails,
-      formerName          = formerName,
-      formerNameDate      = formerNameDate
+      previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
+      homeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
+      contactDetails = contactDetails,
+      formerName = formerName,
+      formerNameDate = formerNameDate
     )
   }
 }

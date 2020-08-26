@@ -41,63 +41,55 @@ class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
   val showHasCompanyBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          bankAccountDetailsService.fetchBankAccountDetails map { details =>
-            val form: Form[Boolean] = details match {
-              case Some(BankAccount(hasBankAccount, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
-              case None => hasCompanyBankAccountForm
-            }
-            Ok(views.html.has_company_bank_account(form))
+        bankAccountDetailsService.fetchBankAccountDetails map { details =>
+          val form: Form[Boolean] = details match {
+            case Some(BankAccount(hasBankAccount, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case None => hasCompanyBankAccountForm
           }
+          Ok(views.html.has_company_bank_account(form))
         }
   }
 
   val submitHasCompanyBankAccount: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          hasCompanyBankAccountForm.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(views.html.has_company_bank_account(errors))),
-            hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
-              if (hasBankAccount) {
-                Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
-              } else {
-                Redirect(controllers.routes.FlatRateController.joinFrsPage())
-              }
+        hasCompanyBankAccountForm.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(views.html.has_company_bank_account(errors))),
+          hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
+            if (hasBankAccount) {
+              Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+            } else {
+              Redirect(controllers.routes.FlatRateController.joinFrsPage())
             }
-          )
-        }
+          }
+        )
   }
 
   val showEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          bankAccountDetailsService.fetchBankAccountDetails map { account =>
-            val form: Form[BankAccountDetails] = account match {
-              case Some(BankAccount(_, Some(details))) => enterBankAccountDetailsForm.fill(details)
-              case _ => enterBankAccountDetailsForm
-            }
-            Ok(views.html.enter_company_bank_account_details(form))
+        bankAccountDetailsService.fetchBankAccountDetails map { account =>
+          val form: Form[BankAccountDetails] = account match {
+            case Some(BankAccount(_, Some(details))) => enterBankAccountDetailsForm.fill(details)
+            case _ => enterBankAccountDetailsForm
           }
+          Ok(views.html.enter_company_bank_account_details(form))
         }
   }
 
   val submitEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          enterBankAccountDetailsForm.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
-            accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
-              if (accountDetailsValid) {
-                Redirect(controllers.routes.FlatRateController.joinFrsPage())
-              } else {
-                val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
-                Ok(views.html.enter_company_bank_account_details(invalidDetails))
-              }
+        enterBankAccountDetailsForm.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
+          accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
+            if (accountDetailsValid) {
+              Redirect(controllers.routes.FlatRateController.joinFrsPage())
+            } else {
+              val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
+              Ok(views.html.enter_company_bank_account_details(invalidDetails))
             }
-          )
-        }
+          }
+        )
   }
 }

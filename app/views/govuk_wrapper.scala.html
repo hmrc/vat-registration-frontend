@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 @import views.html.helpers.{mainContentHeader, phaseBanner}
 @import views.html.layouts.govuk_template
+@import uk.gov.hmrc.http.SessionKeys
 
 @import config.FrontendAppConfig
 @(appConfig: config.AppConfig,
@@ -47,7 +48,7 @@
 
 @headerNavLinks = {
     <li>
-    @if(request.cookies.get("mdtp").fold(false)(cookie => cookie.value.contains("authToken=Bearer+"))){
+    @if(request.session.get(SessionKeys.authToken).isDefined){
         <a id="signOut" href="@controllers.callbacks.routes.SignInOutController.signOut()" data-journey-click="primary-navigation:Click:Sign out">Sign out</a>
     } else {
         <a id="signIn" href="@controllers.callbacks.routes.SignInOutController.postSignIn()" data-journey-click="primary-navigation:Click:Sign in">Sign in</a>
