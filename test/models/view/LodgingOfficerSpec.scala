@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import models.api.ScrsAddress
 import models.external.Name
-import org.scalatest.Matchers
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
@@ -81,7 +80,6 @@ class LodgingOfficerSpec extends VatRegSpec {
          """.stripMargin)
 
       val lodgingOfficer = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = None,
         contactDetails = None,
         formerName = None,
@@ -92,7 +90,7 @@ class LodgingOfficerSpec extends VatRegSpec {
       LodgingOfficer.fromApi(json) mustBe lodgingOfficer
     }
 
-    "return a correct partial LodgingOfficer view model with partial name and no dob" in {
+    "return a correct partial LodgingOfficer view model with partial name" in {
       val json = Json.parse(
         s"""
            |{
@@ -106,7 +104,6 @@ class LodgingOfficerSpec extends VatRegSpec {
          """.stripMargin)
 
       val lodgingOfficer = LodgingOfficer(
-        securityQuestions = None,
         homeAddress = None,
         contactDetails = None,
         formerName = None,
@@ -159,12 +156,11 @@ class LodgingOfficerSpec extends VatRegSpec {
       val formerName = Name(forename = Some("New"), otherForenames = Some("Name"), surname = "Cosmo")
 
       val lodgingOfficer = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some(formerName.asLabel))),
+        formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       LodgingOfficer.fromApi(json) mustBe lodgingOfficer
@@ -197,12 +193,11 @@ class LodgingOfficerSpec extends VatRegSpec {
          """.stripMargin)
 
       val lodgingOfficer = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(false, None)),
+        formerName = Some(FormerNameView(yesNo = false, None)),
         formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, None))
+        previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
       LodgingOfficer.fromApi(json) mustBe lodgingOfficer
@@ -212,7 +207,6 @@ class LodgingOfficerSpec extends VatRegSpec {
   "Calling apiWrites" should {
     "return a correct partial JsValue with data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = None,
         contactDetails = None,
         formerName = None,
@@ -223,7 +217,6 @@ class LodgingOfficerSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "dob": "1998-07-12"
            |}""".stripMargin)
 
       Json.toJson(data)(LodgingOfficer.apiWrites) mustBe validJson
@@ -231,18 +224,16 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "return a correct full JsValue with maximum data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       val validJson = Json.parse(
         s"""
            |{
-           |  "dob": "1998-07-12",
            |  "details": {
            |    "currentAddress": {
            |      "line1": "TestLine1",
@@ -275,18 +266,16 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "return a correct full JsValue with minimum data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(false, None)),
+        formerName = Some(FormerNameView(yesNo = false, None)),
         formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, None))
+        previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
       val validJson = Json.parse(
         s"""
            |{
-           |  "dob": "1998-07-12",
            |  "details": {
            |    "currentAddress": {
            |      "line1": "TestLine1",
@@ -304,27 +293,13 @@ class LodgingOfficerSpec extends VatRegSpec {
       Json.toJson(data)(LodgingOfficer.apiWrites) mustBe validJson
     }
 
-    "throw an IllegalStateException when trying to convert to Json with missing Officer security data" in {
-      val data = LodgingOfficer(
-        securityQuestions = None,
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
-        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
-      )
-
-      an[IllegalStateException] mustBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
-    }
-
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address view data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = None,
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] mustBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -332,12 +307,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer current address data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, None)),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -345,12 +319,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer contact data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = None,
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -358,12 +331,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name view data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = None,
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -371,12 +343,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, None)),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, None)),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -384,12 +355,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer former name change date" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(false, Some(previousAddress)))
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))
@@ -397,10 +367,9 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer previous address view data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = None
       )
@@ -410,12 +379,11 @@ class LodgingOfficerSpec extends VatRegSpec {
 
     "throw an IllegalStateException when trying to convert to Json with missing Officer previous address data" in {
       val data = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"),Some("test@t.test"), Some("5678"))),
-        formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(false, None))
+        previousAddress = Some(PreviousAddressView(yesNo = false, None))
       )
 
       an[IllegalStateException] shouldBe thrownBy(Json.toJson(data)(LodgingOfficer.apiWrites))

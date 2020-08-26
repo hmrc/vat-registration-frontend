@@ -16,16 +16,14 @@
 
 package connectors
 
-import java.time.LocalDate
-
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
-import models.api._
-import models.external.IncorporationInfo
-import models.view.{LodgingOfficer, _}
 import models._
+import models.api._
+import models.view.{LodgingOfficer, _}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
-import play.api.http.Status.{NO_CONTENT, OK, NOT_FOUND}
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
@@ -33,6 +31,8 @@ import uk.gov.hmrc.http._
 import scala.concurrent.Future
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+
+  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
     val connector: VatRegistrationConnector = new VatRegistrationConnector(
@@ -245,19 +245,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling getIncorporationInfo" should {
-
-    "return a IncorporationInfo when it can be retrieved from the microservice" in new Setup {
-      mockHttpGET[IncorporationInfo]("tst-url", testIncorporationInfo)
-      connector.getIncorporationInfo("tstRegId", "tstID") returnsSome testIncorporationInfo
-    }
-
-    "fail when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[IncorporationInfo]("test-url", notFound)
-      connector.getIncorporationInfo("tstRegId", "tstID") returnsNone
-    }
-  }
-
   "calling submitRegistration" should {
     "return a Success" in new Setup {
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
@@ -346,7 +333,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling patchLodgingOfficer" should {
     val partialLodgingOfficer = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(LocalDate.of(1998, 7, 12))),
       homeAddress = None,
       contactDetails = None,
       formerName = None,
@@ -357,7 +343,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val partialJson = Json.parse(
       s"""
          |{
-         |  "dob": "1998-07-12"
          |}""".stripMargin)
 
     "return a JsValue with a partial Lodging Officer view model" in new Setup {
@@ -377,7 +362,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       val fullJson = Json.parse(
         s"""
            |{
-           |  "dob": "1998-07-12",
            |  "details": {
            |    "currentAddress": {
            |      "line1": "TestLine1",

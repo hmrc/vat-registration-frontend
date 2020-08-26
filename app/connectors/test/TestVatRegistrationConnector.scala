@@ -22,8 +22,8 @@ import models.CurrentProfile
 import play.api.libs.json.JsValue
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,8 +32,6 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
                                             (implicit ec: ExecutionContext) {
 
   val vatRegUrl: String = config.baseUrl("vat-registration")
-  val incorporationFrontendStubsUrl: String = config.baseUrl("incorporation-frontend-stub")
-  val incorporationFrontendStubsUri: String = config.getConfString("incorporation-frontend-stub.uri", "")
 
   def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)

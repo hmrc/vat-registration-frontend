@@ -18,6 +18,7 @@ package connectors
 
 import java.time.LocalDate
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models.{FlatRateScheme, Start}
 import play.api.libs.json.{JsObject, Json}
@@ -27,6 +28,8 @@ import uk.gov.hmrc.http.HttpResponse
 import scala.language.postfixOps
 
 class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+
+  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
     val connector: VatRegistrationConnector = new VatRegistrationConnector(

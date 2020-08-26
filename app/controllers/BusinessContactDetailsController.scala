@@ -47,84 +47,72 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
   def showPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          for {
-            businessContact <- businessContactService.getBusinessContact
-            form = businessContact.ppobAddress.fold(ppobForm)(x => ppobForm.fill(PpobView(x.id, Some(x))))
-            addressList <- prepopService.getPpobAddressList
-          } yield Ok(ppob(form, addressList))
-        }
+        for {
+          businessContact <- businessContactService.getBusinessContact
+          form = businessContact.ppobAddress.fold(ppobForm)(x => ppobForm.fill(PpobView(x.id, Some(x))))
+          addressList <- prepopService.getPpobAddressList
+        } yield Ok(ppob(form, addressList))
   }
 
 
   def submitPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          ppobForm.bindFromRequest.fold(
-            hasErrors => prepopService.getPpobAddressList map { addressList =>
-              BadRequest(ppob(hasErrors, addressList))
-            },
-            address => if (address.addressId.equals("other")) {
-              addressLookupService.getJourneyUrl(
-                AddressLookupJourneyIdentifier.businessActivities,
-                routes.BusinessContactDetailsController.returnFromTxm()
-              ) map Redirect
-            } else if (address.addressId.equals("non-uk")) {
-              Future.successful(Redirect(routes.BusinessContactDetailsController.showPPOBDropOut()))
-            } else {
-              for {
-                addressList <- prepopService.getPpobAddressList
-                _ <- businessContactService.updateBusinessContact[ScrsAddress](addressList.find(_.id == address.addressId).get)
-              } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
-            }
-          )
-        }
+        ppobForm.bindFromRequest.fold(
+          hasErrors => prepopService.getPpobAddressList map { addressList =>
+            BadRequest(ppob(hasErrors, addressList))
+          },
+          address => if (address.addressId.equals("other")) {
+            addressLookupService.getJourneyUrl(
+              AddressLookupJourneyIdentifier.businessActivities,
+              routes.BusinessContactDetailsController.returnFromTxm()
+            ) map Redirect
+          } else if (address.addressId.equals("non-uk")) {
+            Future.successful(Redirect(routes.BusinessContactDetailsController.showPPOBDropOut()))
+          } else {
+            for {
+              addressList <- prepopService.getPpobAddressList
+              _ <- businessContactService.updateBusinessContact[ScrsAddress](addressList.find(_.id == address.addressId).get)
+            } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+          }
+        )
   }
 
   def showPPOBDropOut: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          Future.successful(Ok(ppob_drop_out(dropoutUrl)))
-        }
+        Future.successful(Ok(ppob_drop_out(dropoutUrl)))
   }
 
   def returnFromTxm(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          for {
-            address <- addressLookupService.getAddressById(id)
-            _ <- businessContactService.updateBusinessContact[ScrsAddress](address)
-          } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
-        }
+        for {
+          address <- addressLookupService.getAddressById(id)
+          _ <- businessContactService.updateBusinessContact[ScrsAddress](address)
+        } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   }
 
 
   def showCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          for {
-            businessContact <- businessContactService.getBusinessContact
-            form = businessContact.companyContactDetails.fold(companyContactForm)(x => companyContactForm.fill(x))
-          } yield Ok(business_contact_details(form))
-        }
+        for {
+          businessContact <- businessContactService.getBusinessContact
+          form = businessContact.companyContactDetails.fold(companyContactForm)(x => companyContactForm.fill(x))
+        } yield Ok(business_contact_details(form))
   }
 
   def submitCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          companyContactForm.bindFromRequest.fold(
-            formError => {
-              Future.successful(BadRequest(business_contact_details(CompanyContactDetailsForm.transformErrors(formError))))
-            },
-            contact => businessContactService.updateBusinessContact[CompanyContactDetails](contact) map {
-              _ => Redirect(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
-            }
-          )
-        }
+        companyContactForm.bindFromRequest.fold(
+          formError => {
+            Future.successful(BadRequest(business_contact_details(CompanyContactDetailsForm.transformErrors(formError))))
+          },
+          contact => businessContactService.updateBusinessContact[CompanyContactDetails](contact) map {
+            _ => Redirect(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+          }
+        )
   }
 }

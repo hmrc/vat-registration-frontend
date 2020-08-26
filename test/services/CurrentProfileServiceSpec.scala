@@ -19,6 +19,7 @@ package services
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
+import config.FrontendAppConfig
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -29,6 +30,8 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.Future
 
 class CurrentProfileServiceSpec extends VatRegSpec {
+
+  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
     val service = new CurrentProfileService(

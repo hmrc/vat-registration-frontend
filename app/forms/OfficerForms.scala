@@ -28,29 +28,6 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-object SecurityQuestionsForm {
-
-  implicit object LocalDateOrdering extends Ordering[LocalDate] {
-    override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
-  }
-
-  val minDate: LocalDate = LocalDate.of(1900, 1, 1)
-  val maxDate: LocalDate = LocalDate.now()
-
-  val form = Form(
-    mapping(
-      "dob" -> {
-        implicit val errorCodeDob: ErrorCode = "security.questions.dob"
-        mapping(
-          "day" -> text,
-          "month" -> text,
-          "year" -> text
-        )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
-      }
-    )(SecurityQuestionsView.bind)(SecurityQuestionsView.unbind)
-  )
-}
-
 object FormerNameForm {
   val FORMER_NAME_MAX_LENGTH = 70
   val RADIO_YES_NO: String = "formerNameRadio"
@@ -60,20 +37,14 @@ object FormerNameForm {
 
   implicit val errorCode: ErrorCode = INPUT_FORMER_NAME
 
-  def isNotMatchingCompletionCapacityId(matcher: String, errorMsg: String): Constraint[String] = Constraint[String] {
-    input: String =>
-      if (matcher.toLowerCase != input.replaceAll(" ", "").toLowerCase) Valid else Invalid(errorMsg)
-  }
-
-  def form(completionCapacityId: String) = Form(
+  def form = Form(
     mapping(
       RADIO_YES_NO -> missingBooleanFieldMapping()("formerName.choice"),
       INPUT_FORMER_NAME -> mandatoryIf(
         isEqual(RADIO_YES_NO, "true"),
         text.verifying(StopOnFirstFail(
           nonEmptyValidText(FORMER_NAME_REGEX),
-          maxLenText(FORMER_NAME_MAX_LENGTH),
-          isNotMatchingCompletionCapacityId(completionCapacityId, "validation.formerName.match.cc")
+          maxLenText(FORMER_NAME_MAX_LENGTH)
         ))
       )
     )(FormerNameView.apply)(FormerNameView.unapply)
@@ -87,27 +58,28 @@ object FormerNameDateForm {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
 
-  val maxDate: LocalDate = LocalDate.now()
+  val minDate: LocalDate = LocalDate.of(2000, 1, 1)
+  val maxDate: LocalDate = LocalDate.now().plusDays(1)
 
-  def form(dateOfBirth: LocalDate) = Form(
+  val form = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,
         "month" -> text,
         "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(dateOfBirth, maxDate))))
+      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
     )(FormerNameDateView.bind)(FormerNameDateView.unbind)
   )
 }
 
 object ContactDetailsForm {
-  val EMAIL_MAX_LENGTH      = 70
+  val EMAIL_MAX_LENGTH = 70
 
   private val FORM_NAME = "officerContactDetails"
 
-  private val EMAIL         = "email"
+  private val EMAIL = "email"
   private val DAYTIME_PHONE = "daytimePhone"
-  private val MOBILE        = "mobile"
+  private val MOBILE = "mobile"
   private val PROVIDE_ONE_CONTACT = "atLeastOneContact"
 
   implicit val errorCode: ErrorCode = "officerContactDetails.email"
@@ -116,15 +88,15 @@ object ContactDetailsForm {
 
   val form = Form(
     mapping(
-      DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
-      EMAIL         -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"),maxLenText(EMAIL_MAX_LENGTH)))),
-      MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
+      DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
+      EMAIL -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"), maxLenText(EMAIL_MAX_LENGTH)))),
+      MOBILE -> optional(text.transform(removeSpaces, identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
     )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
   )
 
   def atLeastOneContactDetail: Constraint[ContactDetailsView] = Constraint {
     case ContactDetailsView(None, None, None) => Invalid(validationError(PROVIDE_ONE_CONTACT))
-    case _                                    => Valid
+    case _ => Valid
   }
 }
 

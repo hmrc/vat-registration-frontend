@@ -25,7 +25,6 @@ import models.api.ScrsAddress
 import models.external.{Name, Officer}
 import models.view._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import repositories.SessionRepository
@@ -74,10 +73,10 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
     customAwait(repo.drop)(defaultTimeout)
 
     def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
+      val preAwait = customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      customAwait(repo.count)(defaultTimeout) mustBe preAwait + 1
       res
     }
   }
@@ -85,7 +84,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
   "POST Former Name page" should {
     val jsonApplicantName = Json.obj("name" -> Json.obj("first" -> officer.name.forename, "middle" -> officer.name.otherForenames, "last" -> officer.name.surname))
     val s4lData = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -122,7 +120,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
       given()
         .user.isAuthorised
         .s4lContainer[LodgingOfficer].contains(s4lData)
-        .vatScheme.has(keyBlock, jsonApplicantName)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
@@ -136,7 +133,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.OfficerController.showContactDetails().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "dob").as[LocalDate] mustBe dob
         (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
         (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
         (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
@@ -184,7 +180,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
       given()
         .user.isAuthorised
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None))))
-        .vatScheme.has(keyBlock, jsonApplicantName)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[LodgingOfficer].cleared
         .audit.writesAudit()
@@ -213,7 +208,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
       given()
         .user.isAuthorised
-        .vatScheme.has(keyBlock, jsonApplicantName)
         .s4lContainer[LodgingOfficer].contains(s4lData.copy(formerName = Some(FormerNameView(false, None)), formerNameDate = None))
         .s4lContainer[LodgingOfficer].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
@@ -234,7 +228,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "POST Home Address page" should {
     val s4lData = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -260,7 +253,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "GET Txm ALF callback for Home Address" should {
     val s4lData = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
@@ -327,7 +319,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "POST Previous Address page" should {
     val s4lData = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
@@ -388,7 +379,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
         (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
         (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
         (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
-        (json \ "dob").as[LocalDate] mustBe dob
         (json \ "details" \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
         (json \ "details" \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
         (json \ "details" \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
@@ -401,7 +391,6 @@ class OfficerControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "GET Txm ALF callback for Previous Address" should {
     val s4lData = LodgingOfficer(
-      securityQuestions = Some(SecurityQuestionsView(dob)),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(false, None)),
