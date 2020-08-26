@@ -22,7 +22,6 @@ import config.{AuthClientConnector, FrontendAppConfig}
 import connectors._
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -42,13 +41,11 @@ class SummaryController @Inject()(mcc: MessagesControllerComponents,
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          for {
-            eligibilitySummary <- summaryService.getEligibilityDataSummary
-            summary <- summaryService.getRegistrationSummary
-            _ <- s4LService.clear
-          } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
-        }
+        for {
+          eligibilitySummary <- summaryService.getEligibilityDataSummary
+          summary <- summaryService.getRegistrationSummary
+          _ <- s4LService.clear
+        } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
   }
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {

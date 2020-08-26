@@ -20,7 +20,6 @@ import common.enums.VatRegStatus
 import connectors.KeystoreConnector
 import controllers.routes
 import models.CurrentProfile
-import play.api.i18n.Messages
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,10 +46,5 @@ trait SessionProfile {
           }
       }
     }
-  }
-
-  //todo - remove this check - always passes currently
-  def ivPassedCheck(f: => Future[Result])(implicit cp: CurrentProfile, request: Request[_], messages: Messages): Future[Result] = {
-    f
   }
 }

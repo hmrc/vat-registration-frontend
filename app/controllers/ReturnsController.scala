@@ -43,12 +43,10 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          returnsService.getReturns map { returns =>
-            returns.reclaimVatOnMostReturns match {
-              case Some(chargeExpectancy) => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form.fill(chargeExpectancy)))
-              case None => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form))
-            }
+        returnsService.getReturns map { returns =>
+          returns.reclaimVatOnMostReturns match {
+            case Some(chargeExpectancy) => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form.fill(chargeExpectancy)))
+            case None => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form))
           }
         }
   }
@@ -56,27 +54,23 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val submitChargeExpectancy: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          ChargeExpectancyForm.form.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(ChargeExpectancyPage(errors))),
-            success => {
-              returnsService.saveReclaimVATOnMostReturns(success) flatMap { _ =>
-                correctVatStartDatePage()
-              }
+        ChargeExpectancyForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(ChargeExpectancyPage(errors))),
+          success => {
+            returnsService.saveReclaimVATOnMostReturns(success) flatMap { _ =>
+              correctVatStartDatePage()
             }
-          )
-        }
+          }
+        )
   }
 
   val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          returnsService.getReturns map { returns =>
-            returns.staggerStart match {
-              case Some(stagger) => Ok(AccountingPeriodPage(AccountingPeriodForm.form.fill(stagger)))
-              case None => Ok(AccountingPeriodPage(AccountingPeriodForm.form))
-            }
+        returnsService.getReturns map { returns =>
+          returns.staggerStart match {
+            case Some(stagger) => Ok(AccountingPeriodPage(AccountingPeriodForm.form.fill(stagger)))
+            case None => Ok(AccountingPeriodPage(AccountingPeriodForm.form))
           }
         }
   }
@@ -89,25 +83,21 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          AccountingPeriodForm.form.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(AccountingPeriodPage(errors))),
-            success => returnsService.saveStaggerStart(success) map { _ =>
-              Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-            }
-          )
-        }
+        AccountingPeriodForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(AccountingPeriodPage(errors))),
+          success => returnsService.saveStaggerStart(success) map { _ =>
+            Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+          }
+        )
   }
 
   val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          returnsService.getReturns map { returns =>
-            returns.frequency match {
-              case Some(frequency) => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form.fill(frequency)))
-              case None => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form))
-            }
+        returnsService.getReturns map { returns =>
+          returns.frequency match {
+            case Some(frequency) => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form.fill(frequency)))
+            case None => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form))
           }
         }
   }
@@ -115,18 +105,16 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val submitReturnsFrequency: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          ReturnFrequencyForm.form.bindFromRequest.fold(
-            errors => Future.successful(BadRequest(ReturnFrequencyPage(errors))),
-            success => returnsService.saveFrequency(success) map { _ =>
-              if (success == Frequency.monthly) {
-                Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-              } else {
-                Redirect(routes.ReturnsController.accountPeriodsPage())
-              }
+        ReturnFrequencyForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(ReturnFrequencyPage(errors))),
+          success => returnsService.saveFrequency(success) map { _ =>
+            if (success == Frequency.monthly) {
+              Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+            } else {
+              Redirect(routes.ReturnsController.accountPeriodsPage())
             }
-          )
-        }
+          }
+        )
   }
 
   private def startDateGuard(pageVoluntary: Boolean)(intendedLocation: => Future[Result])
@@ -148,17 +136,15 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
 
   val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
-      ivPassedCheck {
-        startDateGuard(pageVoluntary = true) {
-          returnsService.voluntaryStartPageViewModel() map { viewModel =>
-            implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-            val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
-            val filledForm = viewModel.form.fold(voluntaryDateForm) {
-              case (dateSelection, date) => voluntaryDateForm.fill((dateSelection, date))
-            }
-            val dynamicDate = timeService.dynamicFutureDateExample()
-            Ok(VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate))
+      startDateGuard(pageVoluntary = true) {
+        returnsService.voluntaryStartPageViewModel() map { viewModel =>
+          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+          val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
+          val filledForm = viewModel.form.fold(voluntaryDateForm) {
+            case (dateSelection, date) => voluntaryDateForm.fill((dateSelection, date))
           }
+          val dynamicDate = timeService.dynamicFutureDateExample()
+          Ok(VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate))
         }
       }
   }
@@ -166,37 +152,31 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-          val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
-          returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
-            voluntaryDateForm.bindFromRequest.fold(
-              errors => {
-                val dynamicDate = timeService.dynamicFutureDateExample()
-                Future.successful(BadRequest(VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)))
-              },
-              success => returnsService.saveVoluntaryStartDate(success._1, success._2, ctActiveDate) map redirectBasedOnReclaim
-            )
-          }
+        implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+        val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
+        returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
+          voluntaryDateForm.bindFromRequest.fold(
+            errors => {
+              val dynamicDate = timeService.dynamicFutureDateExample()
+              Future.successful(BadRequest(VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)))
+            },
+            success => returnsService.saveVoluntaryStartDate(success._1, success._2, ctActiveDate) map redirectBasedOnReclaim
+          )
         }
   }
 
   val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          startDateGuard(pageVoluntary = false) {
-            Future.successful(Ok(MandatoryStartDateConfirmationPage()))
-          }
+        startDateGuard(pageVoluntary = false) {
+          Future.successful(Ok(MandatoryStartDateConfirmationPage()))
         }
   }
 
   val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ivPassedCheck {
-          returnsService.saveVatStartDate(None) map redirectBasedOnReclaim
-        }
+        returnsService.saveVatStartDate(None) map redirectBasedOnReclaim
   }
 
   private def redirectBasedOnReclaim(returns: Returns): Result = {

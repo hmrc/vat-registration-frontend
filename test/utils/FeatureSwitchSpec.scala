@@ -29,9 +29,9 @@ class FeatureSwitchSpec extends PlaySpec with BeforeAndAfterEach {
     super.beforeEach()
   }
 
-  val featureSwitch         = new FeatureSwitchManager
-  val vatFeatureSwitch      = new VATRegFeatureSwitches(featureSwitch)
-  val booleanFeatureSwitch  = BooleanFeatureSwitch("test", false)
+  val featureSwitch = new FeatureSwitchManager
+  val vatFeatureSwitch = new VATRegFeatureSwitches(featureSwitch)
+  val booleanFeatureSwitch = BooleanFeatureSwitch("test", false)
   val datetimeFeatureSwitch = ValueSetFeatureSwitch("testDateTime", "2018-01-13T00:18:58")
 
   "getProperty" should {
@@ -95,21 +95,6 @@ class FeatureSwitchSpec extends PlaySpec with BeforeAndAfterEach {
   }
 
   "VATRegFeatureSwitches" should {
-    "return a disabled feature when the associated system property doesn't exist" in {
-      vatFeatureSwitch.useIvStub.enabled mustBe false
-    }
-
-    "return an enabled feature when the associated system property is true" in {
-      featureSwitch.enable(vatFeatureSwitch.useIvStub)
-
-      vatFeatureSwitch.useIvStub.enabled mustBe true
-    }
-
-    "return a disable feature when the associated system property is false" in {
-      featureSwitch.disable(vatFeatureSwitch.useIvStub)
-
-      vatFeatureSwitch.useIvStub.enabled mustBe false
-    }
 
     "return true if the crStubbed system property is true" in {
       System.setProperty("feature.crStubbed", "true")

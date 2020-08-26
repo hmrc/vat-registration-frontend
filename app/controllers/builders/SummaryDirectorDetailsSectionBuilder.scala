@@ -16,8 +16,7 @@
 
 package controllers.builders
 
-import models.view.LodgingOfficer
-import models.view.{SummaryRow, SummarySection}
+import models.view.{LodgingOfficer, SummaryRow, SummarySection}
 
 case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
 
@@ -32,12 +31,6 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
     s"$sectionId.formerNameDate",
     vatLodgingOfficer.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
     Some(controllers.routes.OfficerController.showFormerNameDate())
-  )
-
-  val dob: SummaryRow = SummaryRow(
-    s"$sectionId.dob",
-    vatLodgingOfficer.securityQuestions.map(_.dob.format(presentationFormatter)).getOrElse(""),
-    Some(controllers.routes.OfficerController.showSecurityQuestions())
   )
 
   val email: SummaryRow = SummaryRow(
@@ -63,7 +56,6 @@ case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOffice
     Seq(
       (formerName, true),
       (formerNameDate, vatLodgingOfficer.formerName.exists(_.yesNo)),
-      (dob, true),
       (email, vatLodgingOfficer.contactDetails.flatMap(_.email).isDefined),
       (daytimePhone, vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).isDefined),
       (mobile, vatLodgingOfficer.contactDetails.flatMap(_.mobile).isDefined)

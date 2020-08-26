@@ -23,11 +23,10 @@ import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
-import models.external.IncorporationInfo
 import models.view.LodgingOfficer
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.RegistrationWhitelist
 
@@ -115,14 +114,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$transId/clear-scheme", Json.obj())
   }
 
-  def getIncorporationInfo(regId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporationInfo]] = {
-    ifRegIdNotWhitelisted[Option[IncorporationInfo]](regId) {
-      http.GET[IncorporationInfo](s"$vatRegUrl/vatreg/incorporation-information/$transactionId").map(Some(_)).recover {
-        case _ => Option.empty[IncorporationInfo]
-      }
-    }(returnDefaultIncorpInfo)
-  }
-
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")
   }
@@ -132,12 +123,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       (json \ "status").as[VatRegStatus.Value]
     } recover {
       case e: Exception => throw logResponse(e, "getStatus")
-    }
-  }
-
-  def updateIVStatus(regId: String, ivData: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.PATCH[JsValue, HttpResponse](s"$vatRegUrl/vatreg/$regId/update-iv-status/${ivData.toString}", Json.obj()).recover {
-      case e: Exception => throw logResponse(e, "updateIVStatus")
     }
   }
 

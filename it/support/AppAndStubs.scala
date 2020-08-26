@@ -23,7 +23,7 @@ import itutil.WiremockHelper
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{Suite, TestSuite}
-import org.scalatestplus.play.guice.{GuiceOneAppPerSuite, GuiceOneServerPerSuite}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -100,17 +100,9 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "auth",
       "auth.company-auth",
       "vat-registration",
-      "business-registration",
-      "company-registration",
-      "company-registration-frontend",
-      "incorporation-frontend-stub",
-      "incorporation-information",
       "cachable.short-lived-cache",
       "cachable.session-cache",
-      "business-registration-dynamic-stub",
       "bank-account-reputation",
-      "identity-verification-proxy",
-      "identity-verification-frontend",
       "industry-classification-lookup-frontend",
       "industry-classification-lookup-frontend-internal"
     )) ++ additionalConfig)

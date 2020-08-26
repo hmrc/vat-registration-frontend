@@ -13,17 +13,6 @@ GET /error                                                                      
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow
 
-##IDENTITY VERIFICATION
-GET         /start-iv-journey                                                                  controllers.IdentityVerificationController.redirectToIV
-GET         /timed-out-inactivity                                                              controllers.IdentityVerificationController.timeoutIV
-GET         /cant-confirm-identity                                                             controllers.IdentityVerificationController.unableToConfirmIdentity
-GET         /couldnt-confirm-identity                                                          controllers.IdentityVerificationController.failedIV
-GET         /locked-out                                                                        controllers.IdentityVerificationController.lockedOut
-GET         /incomplete-identity-check                                                         controllers.IdentityVerificationController.userAborted
-
-GET         /ivComplete                                                                        controllers.IdentityVerificationController.completedIVJourney
-GET         /ivFailure                                                                         controllers.IdentityVerificationController.failedIVJourney(journeyId: String)
-
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
@@ -121,9 +110,6 @@ GET         /home-address                                                       
 POST        /home-address                                                                       controllers.OfficerController.submitHomeAddress
 GET         /home-address/acceptFromTxm                                                         controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
 
-## OFFICER DOB PAGE
-GET         /pass-security                                                                     controllers.OfficerController.showSecurityQuestions
-POST        /pass-security                                                                     controllers.OfficerController.submitSecurityQuestions
 
 ## OFFICER CONTACT DETAILS PAGE
 GET         /contact-application                                                               controllers.OfficerController.showContactDetails

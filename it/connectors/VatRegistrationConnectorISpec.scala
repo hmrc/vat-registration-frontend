@@ -22,11 +22,10 @@ import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.api.VatScheme
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
-import org.scalatest.WordSpec
 import play.api.libs.json.JsString
+import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
-import play.api.test.Helpers._
 
 class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
@@ -94,27 +93,6 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
           await(vatregConnector.createNewRegistration)
         }
       }
-    }
-  }
-
-  "getIncorporationInfo" should {
-
-    "return the default IncorpInfo for a post incorp whitelisted regId" in {
-      val res = vatregConnector.getIncorporationInfo("99", transactionID)(hc)
-      await(res) mustBe Some(incorpInfo("#", "fakeTxId-99"))
-    }
-
-    "return none for a pre incorp whitelisted regId" in {
-      val res = vatregConnector.getIncorporationInfo("102", transactionID)(hc)
-      await(res) mustBe None
-    }
-
-    "return an IncorpInfo for a non-whitelisted regId" in {
-      given()
-        .company.isIncorporated
-
-      val res = vatregConnector.getIncorporationInfo(nonWhitelistedRegId, transactionID)(hc)
-      await(res) mustBe Some(incorpInfo())
     }
   }
 

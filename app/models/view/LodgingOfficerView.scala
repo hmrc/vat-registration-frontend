@@ -20,28 +20,16 @@ import java.time.LocalDate
 
 import models.DateModel
 import models.api.ScrsAddress
-import models.external.Officer
 import play.api.libs.json.{Json, OFormat}
 
-case class SecurityQuestionsView(dob: LocalDate)
-object SecurityQuestionsView {
-
-
-  def bind(dateModel: DateModel): SecurityQuestionsView =
-    SecurityQuestionsView(dateModel.toLocalDate.get) // form ensures valid date
-
-  def unbind(dobView: SecurityQuestionsView): Option[DateModel] =
-    Some(DateModel.fromLocalDate(dobView.dob)) // form ensures valid date
-
-  implicit val format = Json.format[SecurityQuestionsView]
-}
-
 case class FormerNameView(yesNo: Boolean, formerName: Option[String] = None)
+
 object FormerNameView {
   implicit val format = Json.format[FormerNameView]
 }
 
 case class FormerNameDateView(date: LocalDate)
+
 object FormerNameDateView {
 
   def bind(dateModel: DateModel): FormerNameDateView =
@@ -53,17 +41,20 @@ object FormerNameDateView {
   implicit val format = Json.format[FormerNameDateView]
 }
 
-case class ContactDetailsView(daytimePhone: Option[String] = None,email: Option[String] = None, mobile: Option[String] = None)
+case class ContactDetailsView(daytimePhone: Option[String] = None, email: Option[String] = None, mobile: Option[String] = None)
+
 object ContactDetailsView {
   implicit val format: OFormat[ContactDetailsView] = Json.format[ContactDetailsView]
 }
 
 case class HomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
+
 object HomeAddressView {
   implicit val format = Json.format[HomeAddressView]
 }
 
 case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
+
 object PreviousAddressView {
   implicit val format = Json.format[PreviousAddressView]
 }
