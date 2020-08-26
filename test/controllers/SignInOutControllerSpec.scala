@@ -27,8 +27,8 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
     mockAuthClientConnector,
     mockKeystoreConnector
   ) {
-    override lazy val compRegFEURI = "/test/uri"
     override lazy val compRegFEURL = "/test/uri"
+    override lazy val compRegFEURI = "/test/uri"
     override lazy val compRegFEPostSignIn = "/post-sign-test"
     override lazy val compRegFEQuestionnaire = "questionnaire-test"
   }

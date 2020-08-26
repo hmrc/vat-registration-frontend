@@ -19,9 +19,7 @@ package services
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import connectors.VatRegistrationConnector
 import fixtures.LodgingOfficerFixtures
-import mocks.VatMocks
 import models.CurrentProfile
 import models.api.ScrsAddress
 import models.external.Name
@@ -29,11 +27,8 @@ import models.view._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
-import testHelpers.{FutureAssertions, VatRegSpec}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -42,7 +37,7 @@ import scala.concurrent.Future
 class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
   override val testRegId = "testRegId"
 
-  implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
+  override implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val validFullLodgingOfficerNoFormerName = validFullLodgingOfficer.copy(
     formerName = Some(FormerNameView(false, None)),
@@ -163,7 +158,6 @@ class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
 
     "return a partial LodgingOfficer view model from backend" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
       val expected = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = None,
         contactDetails = None,
         formerName = None,
@@ -176,7 +170,6 @@ class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
     "return a full LodgingOfficer view model from backend with an email" in new Setup(None, Some(jsonFullLodgingOfficerWithEmail)) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: LodgingOfficer = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(None, Some("test@t.test"), None)),
         formerName = Some(FormerNameView(false, None)),
@@ -189,7 +182,6 @@ class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
     "return a full LodgingOfficer view model from backend without an email" in new Setup(None, Some(jsonFullLodgingOfficerNoEmail)) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: LodgingOfficer = LodgingOfficer(
-        securityQuestions = Some(SecurityQuestionsView(dob = LocalDate.of(1998, 7, 12))),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(None, None, Some("1234567890"))),
         formerName = Some(FormerNameView(false, None)),
@@ -202,14 +194,6 @@ class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
 
   "Calling updateLodgingOfficer" should {
     "return a LodgingOfficer" when {
-      "updating security questions" that {
-        "makes the block complete and save to backend" in new SetupForBackendSave {
-          val officerSecurityQuestions = SecurityQuestionsView(LocalDate.of(2000, 7, 23))
-          val expected = validPartialLodgingOfficer.copy(securityQuestions = Some(officerSecurityQuestions))
-
-          service.saveLodgingOfficer(officerSecurityQuestions) returns expected
-        }
-      }
 
       "updating current address" that {
         val currentAddress = ScrsAddress(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
@@ -309,17 +293,4 @@ class LodgingOfficerServiceSpec extends VatRegSpec with LodgingOfficerFixtures {
     }
   }
 
-  "Calling getApplicantName" should {
-    "return an applicant Name" in new Setup(None, Some(jsonPartialLodgingOfficer)) {
-      service.getApplicantName returns Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last")
-    }
-
-    "throw an Exception if nothing is returned from backend" in new Setup(None, None) {
-      service.getApplicantName failedWith classOf[IllegalStateException]
-    }
-
-    "return a NoSuchElementException if data returns is not correct" in new Setup(None, Some(Json.obj("test" -> "val test"))) {
-      service.getApplicantName failedWith classOf[NoSuchElementException]
-    }
-  }
 }

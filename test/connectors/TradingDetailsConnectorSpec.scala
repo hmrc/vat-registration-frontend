@@ -16,6 +16,7 @@
 
 package connectors
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models.{TradingDetails, TradingNameView}
 import play.api.libs.json.{JsBoolean, Json}
@@ -25,6 +26,8 @@ import uk.gov.hmrc.http.HttpResponse
 import scala.language.postfixOps
 
 class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture {
+
+  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
     val connector: VatRegistrationConnector = new VatRegistrationConnector(

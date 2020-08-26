@@ -17,13 +17,10 @@
 package services
 
 import common.enums.VatRegStatus
-import fixtures.VatRegistrationFixture
-import mocks.VatMocks
 import models._
 import models.api.SicCode
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,7 +29,7 @@ import scala.concurrent.Future
 
 class SicAndComplianceServiceSpec extends VatRegSpec {
   override implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
+  override implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   trait Setup {
     val service: SicAndComplianceService = new SicAndComplianceService(

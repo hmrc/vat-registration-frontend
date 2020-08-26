@@ -16,14 +16,12 @@
 
 package support
 
-import javax.inject.Inject
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
-import config.AppConfig
-import itutil.{IntegrationSpecBase, WiremockHelper}
-import models.{IVResult, S4LKey}
+import itutil.IntegrationSpecBase
+import models.S4LKey
 import models.api.{SicCode, VatScheme}
 import models.external.{CoHoRegisteredOfficeAddress, Officer}
 import play.api.libs.json._
@@ -65,6 +63,7 @@ trait StubUtils {
     def vatRegistration = VatRegistrationStub()
 
     def currentProfile = CurrentProfile()
+
     def icl = ICL()
 
     def company = IncorporationStub()
@@ -72,14 +71,13 @@ trait StubUtils {
     def bankAccountReputation = BankAccountReputationServiceStub()
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
+
     def s4lContainerInScenario[C: S4LKey]: ViewModelScenarioStub[C] = new ViewModelScenarioStub[C]()
 
     def audit = AuditStub()
 
-    def iv = IVStub()
-    def setIvStatus = setIVStatusInVat()
-
     def vrefe = VREFE()
+
     def s4l = S4L()
   }
 
@@ -129,6 +127,7 @@ trait StubUtils {
   }
 
   object S4LStub extends IntegrationSpecBase {
+
     import uk.gov.hmrc.crypto._
     import uk.gov.hmrc.crypto.json.JsonEncryptor
 
@@ -139,18 +138,19 @@ trait StubUtils {
       val s4lData = Json.parse(data).as[JsValue]
       val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
 
-      val json = s"""
-                    |{
-                    |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-                    |  "data": {
-                    |    "$key": $encData
-                    |  },
-                    |  "id": "1",
-                    |  "modifiedDetails": {
-                    |    "createdAt": { "$$date": 1502097615710 },
-                    |    "lastUpdated": { "$$date": 1502189409725 }
-                    |  }
-                    |}
+      val json =
+        s"""
+           |{
+           |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
+           |  "data": {
+           |    "$key": $encData
+           |  },
+           |  "id": "1",
+           |  "modifiedDetails": {
+           |    "createdAt": { "$$date": 1502097615710 },
+           |    "lastUpdated": { "$$date": 1502189409725 }
+           |  }
+           |}
             """.stripMargin
 
       get(urlPathMatching("/save4later/vat-registration-frontend/1"))
@@ -420,6 +420,7 @@ trait StubUtils {
       )
       builder
     }
+
     def status(url: String, status: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(url))
@@ -433,6 +434,7 @@ trait StubUtils {
       )
       builder
     }
+
     def submit(url: String): PreconditionBuilder = {
       stubFor(
         put(urlPathEqualTo(url))
@@ -440,6 +442,7 @@ trait StubUtils {
       )
       builder
     }
+
     def savesTransactionId(regId: String = "1"): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/transaction-id"))
@@ -447,6 +450,7 @@ trait StubUtils {
       )
       builder
     }
+
     def clearsUserData(txId: String = "000-431-TEST"): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$txId/clear-scheme"))
@@ -469,6 +473,7 @@ trait StubUtils {
       )
       builder
     }
+
     def returnsRejectedIncorpUpdate(): PreconditionBuilder = {
       stubFor(
         post(urlMatching(s"/incorporation-information/subscribe/000-431-TEST/regime/vatfe/subscriber/scrs"))
@@ -485,6 +490,7 @@ trait StubUtils {
       )
       builder
     }
+
     def cancelsSubscription(): PreconditionBuilder = {
       stubFor(
         delete(urlEqualTo(s"/incorporation-information/subscribe/000-431-TEST/regime/vatfe/subscriber/scrs"))
@@ -549,7 +555,7 @@ trait StubUtils {
       builder
     }
 
-    def fetchResults(sicCodeList : List[SicCode]): PreconditionBuilder = {
+    def fetchResults(sicCodeList: List[SicCode]): PreconditionBuilder = {
       val sicJsArray = Json.toJson(sicCodeList).as[JsArray]
 
       stubFor(
@@ -613,14 +619,15 @@ trait StubUtils {
           )))
       builder
     }
-    def doesNotExistForKey(blockKey:String): PreconditionBuilder = {
+
+    def doesNotExistForKey(blockKey: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/vatreg/1/$blockKey"))
           .willReturn(notFound()))
       builder
     }
 
-    def isNotUpdatedWith[T](t:T,statusCode:Int = 500)(implicit tFmt: Format[T]) = {
+    def isNotUpdatedWith[T](t: T, statusCode: Int = 500)(implicit tFmt: Format[T]) = {
       stubFor(
         patch(urlPathMatching(s"/vatreg/1/.*"))
           .willReturn(aResponse().withStatus(statusCode).withBody(tFmt.writes(t).toString())))
@@ -644,6 +651,7 @@ trait StubUtils {
       stubFor(get(urlPathEqualTo(s"/vatreg/1/$key")).willReturn(ok(data.toString())))
       builder
     }
+
     def doesNotHave(blockKey: String): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/1/$blockKey")).willReturn(noContent()))
       builder
@@ -660,7 +668,8 @@ trait StubUtils {
           .willReturn(aResponse().withStatus(202).withBody(json.toString)))
       builder
     }
-    def isSubmittedSuccessfully(regId:String = "1"): PreconditionBuilder = {
+
+    def isSubmittedSuccessfully(regId: String = "1"): PreconditionBuilder = {
       stubFor(
         put(urlPathMatching(s"/vatreg/$regId/submit-registration"))
           .willReturn(aResponse().withStatus(200).withBody("fooBar")))
@@ -701,12 +710,13 @@ trait StubUtils {
 
       builder
     }
-    def returnsGETTradingNamePrePopResponse(regId:String, tradingName: Option[String] = None, status: Int = 204) = {
+
+    def returnsGETTradingNamePrePopResponse(regId: String, tradingName: Option[String] = None, status: Int = 204) = {
       val json = tradingName.map(t => s"""{"tradingName" : "$t"}""")
       stubFor(
         get(urlPathEqualTo(s"/business-registration/$regId/trading-name"))
           .willReturn(ok(
-           json.getOrElse("")
+            json.getOrElse("")
           )))
 
       builder
@@ -742,7 +752,7 @@ trait StubUtils {
       builder
     }
 
-    def isNotAuthorised  = {
+    def isNotAuthorised = {
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))
           .willReturn(unauthorized()))
@@ -812,7 +822,7 @@ trait StubUtils {
   }
 
   case class AuditStub()(implicit builder: PreconditionBuilder) {
-    def writesAudit(status:Int =204) = {
+    def writesAudit(status: Int = 204) = {
       stubFor(post(urlMatching("/write/audit"))
         .willReturn(
           aResponse().
@@ -823,7 +833,7 @@ trait StubUtils {
       builder
     }
 
-    def writesAuditMerged(status:Int =204) = {
+    def writesAuditMerged(status: Int = 204) = {
       stubFor(post(urlMatching("/write/audit/merged"))
         .willReturn(
           aResponse().
@@ -836,30 +846,6 @@ trait StubUtils {
 
     def failsToWriteAudit() = {
       writesAudit(404)
-    }
-  }
-
-
-  case class IVStub()(implicit builder: PreconditionBuilder) {
-    def startJourney(status:Int = 200) = {
-      stubFor(post(urlMatching(s"/identity-verification-proxy/journey/start"))
-        .willReturn(
-          aResponse().
-            withStatus(status).
-            withBody(
-              """{"link":"/foo/bar/and/wizz",
-                |"journeyLink":"/foo/bar/and/wizz/and/pop"}""".stripMargin)
-        )
-      )
-    }
-    def outcome(journeyId: String, result: IVResult.Value) = {
-      stubFor(get(urlMatching(s"/iv-uri/mdtp/journey/journeyId/$journeyId"))
-        .willReturn(aResponse()
-          .withStatus(200)
-          .withBody(s"""{"result": "$result", "token": "aaa-bbb-ccc"}""")
-        )
-      )
-      builder
     }
   }
 
@@ -901,12 +887,5 @@ trait StubUtils {
       builder
     }
   }
-  case class setIVStatusInVat(implicit builder: PreconditionBuilder){
-    def setStatus(regId: String = "1", ivPassed: Boolean = true, status: Int = 200) = {
-      stubFor(
-        patch(urlPathMatching(s"/vatreg/$regId/update-iv-status/$ivPassed"))
-          .willReturn(aResponse().withStatus(status)))
-      builder
-    }
-  }
+
 }
