@@ -1,6 +1,9 @@
 # microservice specific routes
 
-GET         /assets/*file                                                                      controllers.Assets.at(path="/public", file)
+->          /govuk-frontend                                                                    govuk.Routes
+->          /hmrc-frontend                                                                     hmrcfrontend.Routes
+
+GET         /assets/*file                                                                      controllers.Assets.versioned(path="/public", file: Asset)
 
 ##SESSION
 GET         /renew-session                                                                     controllers.callbacks.SignInOutController.renewSession
