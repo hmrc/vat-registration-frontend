@@ -1,6 +1,11 @@
 ## Global
-app.title                               = Register your company
+service.name                            = Register for VAT
+
+app.title                               = Register for VAT
 app.phaseBannerFeedback                 = This is a new service - your <a href="{0}">feedback</a> will help us to improve it.
+app.phaseBanner1                        = This is a new service - your
+app.phaseBanner2                        = feedback
+app.phaseBanner3                        = will help us to improve it.
 app.common.not.applied                  = Not applied
 app.common.applied                      = Applied
 app.common.yes                          = Yes
@@ -13,16 +18,26 @@ app.common.change                       = Change
 app.common.gbp.symbol                   = £
 app.common.back                         = Back
 app.common.openInNewWindow              = (opens in a new window)
+app.common.signOut                      = Sign out
 error.required                          = Select an option
 error.unknown                           = Invalid input
 validation.numeric                      = Enter a numeric value
+footer.cookies                          = Cookies
+footer.privacy                          = Privacy policy
+footer.termsConditions                  = Terms and conditions
+footer.govukHelp                        = Help using GOV.UK
+footer.accessibilityStatement           = Accessibility statement
+date.day                                = Day
+date.month                              = Month
+date.year                               = Year
+
 #Feedback
 page.feedback.title                     = Feedback
 page.feedback.thank-you.title           = Thank you
 
 #Address journeys
 addressLookup.common.homeNavHref                            = http://www.hmrc.gov.uk/
-addressLookup.common.navTitle                               = Register your company
+addressLookup.common.navTitle                               = Register for VAT
 addressLookup.common.phaseBannerHtml                        = This is a new service. Help us improve it - send your <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">feedback</a>.
 addressLookup.common.deskProServiceName                     = SCRS
 

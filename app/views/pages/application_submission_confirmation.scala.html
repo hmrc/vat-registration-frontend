@@ -21,7 +21,7 @@
 @(refNo: String, staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.at("javascripts/VatGAEvent.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/VatGAEvent.js")'></script>
 }
 
 @main_template(title = Messages("pages.application.submission.confirmation.title"), scriptElem = Some(pageScripts), backEnabled = false) {
