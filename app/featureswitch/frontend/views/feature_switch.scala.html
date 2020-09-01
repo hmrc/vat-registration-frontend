@@ -1,0 +1,66 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import featureswitch.frontend.models.FeatureSwitchProvider
+@import featureswitch.core.models.FeatureSwitchSetting
+@import config.FrontendAppConfig
+@import views.html.components.h1
+@import views.html.layouts.layout
+
+@this(layout: layout,
+        h1: h1,
+        govukFieldset: GovukFieldset,
+        govukCheckboxes: GovukCheckboxes,
+        govukButton: GovukButton,
+        formWithCSRF: FormWithCSRF
+)
+
+@(featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some("Choose which features to enable.")) {
+
+    @h1("Choose which features to enable.")
+
+    @formWithCSRF(action = formAction) {
+        @for(featureSwitches <- featureSwitchList) {
+            @govukCheckboxes(Checkboxes(
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(featureSwitches._1.appName),
+                        classes = "govuk-fieldset__legend--m",
+                        isPageHeading = false
+                    ))
+                )),
+                idPrefix = Some(featureSwitches._1.id),
+                name = "feature-switch",
+                items = featureSwitches._2.map {
+                    featureSwitchSettings =>
+                        CheckboxItem(
+                            id = Some(featureSwitchSettings.configName),
+                            name = Some(s"${featureSwitches._1.id}.${featureSwitchSettings.configName}"),
+                            content = Text(featureSwitchSettings.displayName),
+                            checked = featureSwitchSettings.isEnabled
+                        )
+                }
+            ))
+        }
+
+        @govukButton(Button(
+            classes = "govuk-!-margin-right-1",
+            content = Text("Submit")
+        ))
+    }
+}

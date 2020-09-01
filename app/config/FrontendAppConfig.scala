@@ -47,6 +47,8 @@ trait AppConfig {
 class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig {
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
+  lazy val host: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
+  lazy val backendHost: String = loadConfig("microservice.services.vat-registration.www.url")
 
   val contactFormServiceIdentifier = "SCRS"
 
@@ -61,6 +63,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
   lazy val loginCallback   = servicesConfig.getString("microservice.services.auth.login-callback.url")
   lazy val loginPath       = servicesConfig.getString("microservice.services.auth.login_path")
+  lazy val feedbackUrl = loadConfig(s"microservice.services.vat-registration-frontend.feedbackUrl")
 
   val loginUrl                                 = s"$companyAuthHost$loginPath"
   val continueUrl                              = s"$loginCallback${routes.SignInOutController.postSignIn()}"
@@ -104,4 +107,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
       Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")
     ).split(",").toSet
 
+  //Footer Links
+  lazy val cookies: String = host + servicesConfig.getString("urls.footer.cookies")
+  lazy val privacy: String = host + servicesConfig.getString("urls.footer.privacy")
+  lazy val termsConditions: String = host + servicesConfig.getString("urls.footer.termsConditions")
+  lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 }
