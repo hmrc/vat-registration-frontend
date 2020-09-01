@@ -18,7 +18,7 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 import models.api.ScrsAddress
-import models.external.addresslookup.AddressJourneyBuilder
+import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
 import play.api.mvc.Call
@@ -41,9 +41,9 @@ class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesCon
     http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/confirmed?id=$id")
   }
 
-  def getOnRampUrl(initialiserModel: AddressJourneyBuilder)(implicit hc: HeaderCarrier): Future[Call] = {
-    val postUrl = s"$addressLookupFrontendUrl/api/init"
-    http.POST[AddressJourneyBuilder, HttpResponse](postUrl, initialiserModel).map { resp =>
+  def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] = {
+    val postUrl = s"$addressLookupFrontendUrl/api/v2/init"
+    http.POST[AddressLookupConfigurationModel, HttpResponse](postUrl, alfConfig).map { resp =>
       resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
         logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
         throw new ALFLocationHeaderNotSetException

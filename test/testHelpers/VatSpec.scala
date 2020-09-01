@@ -78,5 +78,7 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
       Some("XX XX"),
       Some("region"))
     val defaultOfficerList: OfficerList = OfficerList(newWhitelistedOfficersList)
+    val betaFeedbackUrl: String = "http://feedbackUrl"
+    val host: String = "http://localhost:9895"
   }
 }
