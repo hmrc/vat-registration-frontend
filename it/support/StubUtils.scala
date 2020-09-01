@@ -763,7 +763,7 @@ trait StubUtils {
 
   case class JourneyStub()(implicit builder: PreconditionBuilder) {
 
-    val journeyInitUrl: UrlPathPattern = urlPathMatching(s".*/api/init")
+    val journeyInitUrl: UrlPathPattern = urlPathMatching(s".*/api/v2/init")
 
     def initialisedSuccessfully(): PreconditionBuilder = {
       stubFor(post(journeyInitUrl).willReturn(aResponse.withStatus(202).withHeader("Location", "continueUrl")))
