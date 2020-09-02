@@ -1,6 +1,6 @@
 ## Global
-service.name                            = Register for VAT
 
+service.name                            = Register for VAT
 app.title                               = Register for VAT
 app.phaseBannerFeedback                 = This is a new service - your <a href="{0}">feedback</a> will help us to improve it.
 app.phaseBanner1                        = This is a new service - your
@@ -60,7 +60,6 @@ addressLookup.homeAddress.editPage.line3Label                = Address line 3
 addressLookup.homeAddress.editPage.postcodeLabel             = Postcode
 addressLookup.homeAddress.editPage.countryLabel              = Country
 addressLookup.homeAddress.editPage.submitLabel               = Next
-addressLookup.homeAddress.editPage.searchAgainLinkText       = Search again
 
 addressLookup.homeAddress.confirmPage.title                  = Confirm address
 addressLookup.homeAddress.confirmPage.heading                = Review and confirm

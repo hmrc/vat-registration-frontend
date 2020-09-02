@@ -18,7 +18,10 @@ package services
 
 import com.typesafe.config.ConfigFactory
 import common.enums.AddressLookupJourneyIdentifier
+import config.{AddressLookupConfiguration, FrontendAppConfig}
+import fixtures.AddressLookupConstants
 import models.api.ScrsAddress
+import models.external.addresslookup.AddressLookupConfigurationModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.Configuration
@@ -30,15 +33,15 @@ import scala.concurrent.Future
 
 class AddressLookupServiceSpec extends VatRegSpec {
 
+  implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
   val testAddress = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
-  val testService = new AddressLookupService(
-    mockAddressLookupConnector,
-    mock[Configuration]
-  ) {
-    override lazy val addressConfig = ConfigFactory.load.getConfig("address-journeys")
-    override lazy val addressLookupContinueUrl = "/test/uri"
+  object Config extends AddressLookupConfiguration {
+    override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call): AddressLookupConfigurationModel =
+      AddressLookupConstants.testAlfConfig
   }
+
+  object Service extends AddressLookupService(mockAddressLookupConnector, Config)
 
   val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
@@ -50,7 +53,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
         when(mockAddressLookupConnector.getAddress(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(testAddress))
 
-        val result = await(testService.getAddressById("testId")) mustBe testAddress
+        val result = await(Service.getAddressById("testId")) mustBe testAddress
       }
     }
   }
@@ -58,29 +61,12 @@ class AddressLookupServiceSpec extends VatRegSpec {
   "getJourneyUrl" should {
     "return a future call" when {
       "given a journey id and a call" in {
-
         when(mockAddressLookupConnector.getOnRampUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(Call("GET", "/test/uri/continue")))
 
-        val result = await(testService.getJourneyUrl(AddressLookupJourneyIdentifier.homeAddress, Call("", "/continue"))) mustBe Call("GET", "/test/uri/continue")
+        val result = await(Service.getJourneyUrl(AddressLookupJourneyIdentifier.homeAddress, Call("", "/continue"))) mustBe Call("GET", "/test/uri/continue")
       }
     }
   }
 
-  "buildJourneyJson" should {
-    val resultHomeAddress = testService.buildJourneyJson(Call("GET", "/continue"), AddressLookupJourneyIdentifier.homeAddress)
-    val resultAddress4Years = testService.buildJourneyJson(Call("GET", "/continue-1"), AddressLookupJourneyIdentifier.addressThreeYearsOrLess)
-    val resultBusinessActivites = testService.buildJourneyJson(Call("GET", "/continue-1"), AddressLookupJourneyIdentifier.businessActivities)
-
-    "return an AddressJourneyBuilder and validate common items" in {
-
-      resultHomeAddress.showPhaseBanner mustBe true
-      resultAddress4Years.showPhaseBanner mustBe true
-      resultBusinessActivites.showPhaseBanner mustBe true
-
-      resultHomeAddress.ukMode mustBe false
-      resultAddress4Years.ukMode mustBe false
-      resultBusinessActivites.ukMode mustBe true
-    }
-  }
 }
