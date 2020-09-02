@@ -17,6 +17,7 @@
 package connectors
 
 import common.enums.AddressLookupJourneyIdentifier._
+import config.{AddressLookupConfiguration, FrontendAppConfig}
 import itutil.IntegrationSpecBase
 import models.api.ScrsAddress
 import play.api.i18n.{Lang, MessagesApi}
@@ -28,9 +29,10 @@ import play.api.test.Helpers._
 
 class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
-  val alfConnector: AddressLookupConnector       = app.injector.instanceOf(classOf[AddressLookupConnector])
-  val addressLookupService: AddressLookupService = app.injector.instanceOf(classOf[AddressLookupService])
-  implicit val messagesApi: MessagesApi          = app.injector.instanceOf(classOf[MessagesApi])
+  val alfConnector: AddressLookupConnector = app.injector.instanceOf[AddressLookupConnector]
+  val addressLookupService: AddressLookupService = app.injector.instanceOf[AddressLookupService]
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
 
@@ -66,13 +68,12 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
   "initialising ALF journey" should {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
+    val journeyModel = new AddressLookupConfiguration()(appConfig, messagesApi)(homeAddress, Call("GET", "continueUrl"))
 
     "return a URL for redirecting the user off to ALF" when {
       "Location header is present" in {
         given()
           .alfeJourney.initialisedSuccessfully()
-
-        val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
         await(alfConnector.getOnRampUrl(journeyModel)) mustBe Call("GET", "continueUrl")
       }
@@ -82,8 +83,6 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
       "no Location header received from ALF" in {
         given()
           .alfeJourney.notInitialisedAsExpected()
-
-        val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
         intercept[ALFLocationHeaderNotSetException] {
           await(alfConnector.getOnRampUrl(journeyModel))
@@ -95,8 +94,6 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
       "ALF fails to handle the request" in {
         given()
           .alfeJourney.failedToInitialise()
-
-        val journeyModel = addressLookupService.buildJourneyJson(Call("GET", "continueUrl"), homeAddress)
 
         intercept[Upstream5xxResponse] {
           await(alfConnector.getOnRampUrl(journeyModel))

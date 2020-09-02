@@ -16,21 +16,13 @@
 
 package models.external.addresslookup
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Writes}
 
-case class LookupPage(title: String,
-                      heading: String,
-                      filterLabel: String,
-                      submitLabel: String,
-                      manualAddressLinkText: String)
+case class AddressLookupConfirmConfigModel(showChangeLinkcontinueUrl: Boolean,
+                                           showSubHeadingAndInfo: Boolean,
+                                           showSearchAgainLink: Boolean,
+                                           showConfirmChangeText: Boolean)
 
-object LookupPage {
-  implicit val writes: Writes[LookupPage] = (
-    (__ \ "title").write[String] and
-    (__ \ "heading").write[String] and
-    (__ \ "filterLabel").write[String] and
-    (__ \ "submitLabel").write[String] and
-    (__ \ "manualAddressLinkText").write[String]
-  )(unlift(LookupPage.unapply))
+object AddressLookupConfirmConfigModel {
+  implicit val writes: Writes[AddressLookupConfirmConfigModel] = Json.writes[AddressLookupConfirmConfigModel]
 }
