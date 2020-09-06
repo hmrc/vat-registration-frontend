@@ -21,3 +21,5 @@ POST        /feature-switches                  featureswitch.frontend.controller
 
 GET         /api/feature-switches              featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
 POST        /api/feature-switches              featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+
+GET         /api/incorp-id-journey             controllers.test.IncorpIdApiStubController.createJourney
