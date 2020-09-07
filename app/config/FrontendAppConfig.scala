@@ -20,6 +20,7 @@ import java.nio.charset.Charset
 import java.util.Base64
 
 import controllers.callbacks.routes
+import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import javax.inject.{Inject, Singleton}
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Configuration
@@ -44,9 +45,11 @@ trait AppConfig {
 }
 
 @Singleton
-class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig {
+class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig with FeatureSwitching {
+
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
+
   lazy val host: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
   lazy val backendHost: String = loadConfig("microservice.services.vat-registration.www.url")
 
@@ -115,4 +118,10 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val privacy: String = host + servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = host + servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+
+  lazy val incorpIdUrl: String = loadConfig("microservice.services.incorporated-entity-identification-frontend.url")
+
+  def getCreateIncorpIdJourneyUrl(): String =
+    if (isEnabled(StubIncorpIdJourney)) s"$host/test-only/api/incorp-id-journey"
+    else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
 }
