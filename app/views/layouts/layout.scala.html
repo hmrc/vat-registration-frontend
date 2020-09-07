@@ -36,7 +36,7 @@
     @hmrcBanner(Banner(if(messages.lang.code == "cy") {Cy} else {En}))
 
     @if(backLink == true) {
-        @govukBackLink(BackLink(href = "#", content = Text(messages("site.back")), attributes = Map("id" -> "back-link")))
+        @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
     }
 }
 
