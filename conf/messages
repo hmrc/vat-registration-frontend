@@ -721,3 +721,9 @@ pages.summary.frs.startDate.dateOfRegistration          = Date of registration
 pages.icl.heading                                       = Check and confirm the company''s Standard Industry Classification (SIC) codes for VAT
 pages.icl.lead                                          = This is the information we have on record. Any changes you make here will not affect what''s on the company''s public record.
 pages.icl.hint                                          = Make sure the company''s SIC codes for VAT reflect all the company''s business activities. It makes it quicker and easier to process VAT Returns.
+
+## HONESTY DECLARATION MESSAGES
+pages.honesty-declaration.title                         = Declaration
+pages.honesty-declaration.heading                       = Declaration
+pages.honesty-declaration.paragraph                     = By submitting this application to register for VAT, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.
+pages.honesty-declaration.button                        = Accept and continue
