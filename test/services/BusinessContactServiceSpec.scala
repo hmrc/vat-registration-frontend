@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package services
 
 import _root_.models.api.ScrsAddress
 import config.FrontendAppConfig
@@ -22,7 +22,6 @@ import models.{BusinessContact, CompanyContactDetails}
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
-import services.BusinessContactService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.CacheMap

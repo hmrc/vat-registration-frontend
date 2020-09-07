@@ -21,6 +21,10 @@ GET         /                                                                   
 GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
 GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
+## HONESTY DECLARATION PAGE
+GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show
+POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit
+
 ## VOLUNTARY START DATE PAGE
 GET         /vat-start-date                                                                    controllers.ReturnsController.voluntaryStartPage
 POST        /vat-start-date                                                                    controllers.ReturnsController.submitVoluntaryStart
