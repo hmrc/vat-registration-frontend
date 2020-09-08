@@ -90,7 +90,6 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
   val encryptedRegIdList1 = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
 
   def additionalConfig: Map[String, String] = Map(
-    "regIdWhitelist" -> s"OTgsOTk=",
     "mongodb.uri" -> s"mongodb://127.0.0.1:27017/test?rm.monitorRefreshMS=1000&rm.failover=default"
   )
 

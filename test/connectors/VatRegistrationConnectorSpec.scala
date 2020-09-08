@@ -94,7 +94,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling getAckRef" should {
     "return a Acknowldegement Reference when it can be retrieved from the microservice" in new Setup {
-      mockHttpGET[String]("tst-url", "Fake Ref No")
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(OK, "Fake Ref No"))
       await(connector.getAckRef("tstID")) mustBe "Fake Ref No"
     }
 
