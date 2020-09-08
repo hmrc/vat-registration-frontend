@@ -31,10 +31,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
-  val nonWhitelistedRegId = "normalUser"
   val transactionID = "000-431-TEST"
-
-  val currentProfileWhitelisted: models.CurrentProfile = models.CurrentProfile("99", VatRegStatus.draft)
 
   def incorpInfo(backUrl: String = "http://localhost:9896/callbackUrl", txId: String = transactionID) = IncorporationInfo(
     IncorpSubscription(
@@ -68,8 +65,6 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
   override def additionalConfig: Map[String, String] =
     Map(
-      "regIdPostIncorpWhitelist" -> "OTgsOTk=",
-      "regIdPreIncorpWhitelist" -> "MTAyLDEwMw==",
       "default-incorporation-info" -> "ew0KICAic3RhdHVzRXZlbnQiOiB7DQogICAgImNybiI6ICI5MDAwMDAwMSIsDQogICAgImluY29ycG9yYXRpb25EYXRlIjogIjIwMTYtMDgtMDUiLA0KICAgICJzdGF0dXMiOiAiYWNjZXB0ZWQiDQogIH0sDQogICJzdWJzY3JpcHRpb24iOiB7DQogICAgImNhbGxiYWNrVXJsIjogIiMiLA0KICAgICJyZWdpbWUiOiAidmF0IiwNCiAgICAic3Vic2NyaWJlciI6ICJzY3JzIiwNCiAgICAidHJhbnNhY3Rpb25JZCI6ICIwMDAtNDM0LTEiDQogIH0NCn0="
     )
 
@@ -98,31 +93,19 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
   "submitRegistration" should {
 
-    "return success response and not submit to the backend for a whitelisted regId" in {
+    "return success response and not submit to the backend for an allowed regId" in {
+      given().vatRegistration.submit("/vatreg/99/submit-registration")
       val res = vatregConnector.submitRegistration("99")(hc)
-      await(res) mustBe Success
-    }
-    "return a success response and submit to the backend for a non-whitelisted regId" in {
-      given()
-        .vatScheme.isSubmittedSuccessfully(nonWhitelistedRegId)
-
-      val res = vatregConnector.submitRegistration(nonWhitelistedRegId)(hc)
       await(res) mustBe Success
     }
   }
 
   "getAckRef" should {
-    "return default ackref for a whitelisted regId" in {
-
+    "return an acknowledgement reference" in {
+      val testAckRef = "testAckRef"
+      given().vatRegistration.acknowledgementReference("99", testAckRef)
       val res = vatregConnector.getAckRef("99")(hc)
-      await(res) mustBe "fooBarWizzFAKEAckRef"
-    }
-    "return an ackref for a non-whitelisted regId" in {
-      given()
-        .vatScheme.has("acknowledgement-reference", JsString("fudgeAndFooAndBar"))
-
-      val res = vatregConnector.getAckRef("1")(hc)
-      await(res) mustBe "fudgeAndFooAndBar"
+      await(res) mustBe testAckRef
     }
   }
 }
