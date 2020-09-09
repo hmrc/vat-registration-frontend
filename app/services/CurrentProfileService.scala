@@ -22,14 +22,13 @@ import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import utils.RegistrationWhitelist
 
 import scala.concurrent.Future
 
 @Singleton
 class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistrationService,
                                       val keystoreConnector: KeystoreConnector,
-                                      override val config: FrontendAppConfig) extends RegistrationWhitelist {
+                                      val config: FrontendAppConfig) {
 
   def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {

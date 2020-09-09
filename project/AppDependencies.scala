@@ -34,7 +34,6 @@ private object CompileDependencies {
   private val partialsVersion = "6.11.0-play-26"
   private val cachingClientVersion = "9.1.0-play-26"
   private val formMappingVersion = "1.3.0-play-26"
-  private val whitelistFilterVersion = "3.4.0-play-26"
   private val catsVersion = "1.0.0"
   private val govukTemplateVersion = "5.55.0-play-26"
   private val playUiVersion = "8.11.0-play-26"
@@ -51,7 +50,6 @@ private object CompileDependencies {
     "uk.gov.hmrc" %% "play-partials" % partialsVersion,
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % formMappingVersion,
-    "uk.gov.hmrc" %% "play-whitelist-filter" % whitelistFilterVersion,
     "org.typelevel" %% "cats-core" % catsVersion,
     "uk.gov.hmrc" %% "govuk-template" % govukTemplateVersion,
     "uk.gov.hmrc" %% "play-ui" % playUiVersion,

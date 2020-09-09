@@ -443,6 +443,14 @@ trait StubUtils {
       builder
     }
 
+    def acknowledgementReference(regId: String, ackRef: String): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(s"/vatreg/$regId/acknowledgement-reference"))
+          .willReturn(ok(ackRef))
+      )
+      builder
+    }
+
     def savesTransactionId(regId: String = "1"): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/transaction-id"))

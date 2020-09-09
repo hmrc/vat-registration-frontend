@@ -38,10 +38,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
       mockVatRegistrationService,
       mockKeystoreConnector,
       frontendAppConfig
-    ) {
-      override def ifRegIdNotWhitelisted[T](regId: String)(f: => Future[T])(implicit default: (String) => T): Future[T] =
-        if (regId == "99") Future.successful(default(regId)) else f
-    }
+    )
   }
 
   val now = LocalDate.now()

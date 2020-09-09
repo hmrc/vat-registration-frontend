@@ -28,15 +28,14 @@ import play.api.http.Status._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import utils.RegistrationWhitelist
 
 import scala.concurrent.{ExecutionContext, Future}
 
 // scalastyle:off
 @Singleton
 class VatRegistrationConnector @Inject()(val http: HttpClient,
-                                         override val config: FrontendAppConfig)
-                                        (implicit ec: ExecutionContext) extends RegistrationWhitelist {
+                                         val config: FrontendAppConfig)
+                                        (implicit ec: ExecutionContext) {
 
   lazy val vatRegUrl: String = config.servicesConfig.baseUrl("vat-registration")
   lazy val vatRegElUrl: String = config.servicesConfig.baseUrl("vat-registration-eligibility-frontend")
@@ -54,11 +53,11 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    ifRegIdNotWhitelisted(regId) {
-      http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference").recover {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference")
+      .map(_.body)
+      .recover {
         case e: Exception => throw logResponse(e, "getAckRef")
       }
-    }(returnDefaultAckRef)
   }
 
   def getTaxableThreshold(date: LocalDate)(implicit hc: HeaderCarrier): Future[TaxableThreshold] = {
@@ -135,16 +134,14 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def submitRegistration(regId: String)(implicit hc: HeaderCarrier): Future[DESResponse] = {
-    ifRegIdNotWhitelisted[DESResponse](regId) {
-      http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
-        _.status match {
-          case OK => Success
-        }
-      } recover {
-        case e: Upstream5xxResponse => SubmissionFailedRetryable
-        case _ => SubmissionFailed
+    http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
+      _.status match {
+        case OK => Success
       }
-    }(preventSubmissionForWhitelist)
+    } recover {
+      case e: Upstream5xxResponse => SubmissionFailedRetryable
+      case _ => SubmissionFailed
+    }
   }
 
   def getTradingDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
