@@ -27,13 +27,16 @@ import support.AppAndStubs
 
 class IncorpIdControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
   "/start-incorp-id-journey" should {
-    "redirect to the returned journey url" in {
+    "redirect to the returned journey url" in new StandardTestHelpers {
       implicit val request = FakeRequest()
 
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised
+        .audit.writesAudit()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
 
