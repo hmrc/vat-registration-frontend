@@ -56,19 +56,15 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
                      newReportAProblemNonJSUrl: String = "",
                      newTimeoutInSeconds: String = "",
                      newContactFrontendPartialBaseUrl: String = "",
-                     newWhitelistedPostIncorpRegIds: Seq[String] = Seq(),
-                     newWhitelistedPreIncorpRegIds: Seq[String] = Seq(),
-                     newWhitelistedOfficersList: Seq[Officer] = Seq(),
-                     newWhitelistedCompanyName: JsValue = Json.obj()) = new AppConfig {
+                     newAllowedOfficersList: Seq[Officer] = Seq(),
+                     newAllowedCompanyName: JsValue = Json.obj()) = new AppConfig {
     val analyticsToken: String = newAnalyticsToken
     val analyticsHost: String = newAnalyticsHost
     val reportAProblemPartialUrl: String = newReportAProblemPartialUrl
     val reportAProblemNonJSUrl: String = newReportAProblemNonJSUrl
     val timeoutInSeconds: String = newTimeoutInSeconds
     val contactFrontendPartialBaseUrl: String = newContactFrontendPartialBaseUrl
-    val whitelistedPostIncorpRegIds: Seq[String] = newWhitelistedPostIncorpRegIds
-    val whitelistedPreIncorpRegIds: Seq[String] = newWhitelistedPreIncorpRegIds
-    val defaultCompanyName: JsValue = newWhitelistedCompanyName
+    val defaultCompanyName: JsValue = newAllowedCompanyName
     val defaultCohoROA: CoHoRegisteredOfficeAddress = CoHoRegisteredOfficeAddress("premises",
       "line1",
       Some("line2"),
@@ -77,7 +73,7 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
       Some("po_box"),
       Some("XX XX"),
       Some("region"))
-    val defaultOfficerList: OfficerList = OfficerList(newWhitelistedOfficersList)
+    val defaultOfficerList: OfficerList = OfficerList(newAllowedOfficersList)
     val betaFeedbackUrl: String = "http://feedbackUrl"
     val host: String = "http://localhost:9895"
   }

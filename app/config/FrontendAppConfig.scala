@@ -39,14 +39,10 @@ trait AppConfig {
   val defaultCompanyName: JsValue
   val defaultCohoROA: CoHoRegisteredOfficeAddress
   val defaultOfficerList: OfficerList
-  val whitelistedPreIncorpRegIds: Seq[String]
-  val whitelistedPostIncorpRegIds: Seq[String]
-  lazy val whitelistedRegIds: Seq[String] = whitelistedPostIncorpRegIds ++ whitelistedPreIncorpRegIds
 }
 
 @Singleton
 class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig with FeatureSwitching {
-
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
 
@@ -78,11 +74,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     runModeConfiguration.getString("sosOrigin").getOrElse(appName)
   }
 
-  private def whitelistConfig(key: String): Seq[String] = {
-    Some(new String(Base64.getDecoder.decode(servicesConfig.getString(key)), "UTF-8"))
-      .map(_.split(",")).getOrElse(Array.empty).toSeq
-  }
-
   private def loadStringConfigBase64(key: String): String = {
     new String(Base64.getDecoder.decode(servicesConfig.getString(key)), Charset.forName("UTF-8"))
   }
@@ -95,19 +86,12 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     )
   }
 
-  lazy val whitelist = whitelistConfig("whitelist")
-  lazy val whitelistExcluded = whitelistConfig("whitelist-excluded")
-
-  lazy val uriWhiteList = runModeConfiguration.getStringSeq("csrfexceptions.whitelist").getOrElse(Seq.empty).toSet
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
   // Defaulted Values for default regId
   lazy val defaultCompanyName: JsValue = loadJsonConfigBase64[JsValue]("default-company-name")
   lazy val defaultCohoROA: CoHoRegisteredOfficeAddress = loadJsonConfigBase64[CoHoRegisteredOfficeAddress]("default-coho-registered-office-address")
   lazy val defaultOfficerList: OfficerList = loadJsonConfigBase64[OfficerList]("default-officer-list")(OfficerList.reads)
-
-  lazy val whitelistedPreIncorpRegIds: Seq[String] = whitelistConfig("regIdPreIncorpWhitelist")
-  lazy val whitelistedPostIncorpRegIds: Seq[String] = whitelistConfig("regIdPostIncorpWhitelist")
 
   lazy val noneOnsSicCodes = new String(
     Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")
