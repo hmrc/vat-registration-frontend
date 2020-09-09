@@ -32,7 +32,8 @@ trait VatMocks
     with AuthMock
     with KeystoreMock
     with HttpClientMock
-    with SicAndComplianceServiceMock {
+    with SicAndComplianceServiceMock
+    with IncorpIdServiceMock {
   this: MockitoSugar =>
 
 
