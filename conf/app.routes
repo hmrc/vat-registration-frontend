@@ -193,3 +193,5 @@ POST        /flat-rate-date                                                     
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
 GET         /redirect-to-rejection                                                             controllers.ErrorController.redirectToCR
+
+GET         /start-incorp-id-journey                                                           controllers.IncorpIdController.startIncorpIdJourney()
