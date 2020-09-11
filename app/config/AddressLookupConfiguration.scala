@@ -18,8 +18,7 @@ package config
 
 import common.enums.AddressLookupJourneyIdentifier
 import javax.inject.Inject
-import models.addressLookup.{AddressMessageLanguageModel, AddressMessagesModel}
-import models.external.addresslookup.{AddressLookupConfigurationModel, AddressLookupConfirmConfigModel, AddressLookupConfirmTimeoutModel, AddressLookupOptionsModel, AddressLookupSelectConfigModel, _}
+import models.external.addresslookup._
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl

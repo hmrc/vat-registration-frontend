@@ -16,8 +16,7 @@
 
 package fixtures
 
-import models.addressLookup.{AddressMessageLanguageModel, AddressMessagesModel, AppLevelMessagesModel, ConfirmPageMessagesModel, EditPageMessagesModel, LookupPageMessagesModel, SelectPageMessagesModel}
-import models.external.addresslookup.{AddressLookupConfigurationModel, AddressLookupConfirmConfigModel, AddressLookupConfirmTimeoutModel, AddressLookupOptionsModel, AddressLookupSelectConfigModel}
+import models.external.addresslookup._
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 object AddressLookupConstants {
