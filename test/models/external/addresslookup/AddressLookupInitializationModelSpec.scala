@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.external.addressLookup
+package models.external.addresslookup
 
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}

@@ -117,35 +117,16 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  private def startDateGuard(pageVoluntary: Boolean)(intendedLocation: => Future[Result])
-                            (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
-    returnsService.getThreshold flatMap { documentVoluntary =>
-      if (documentVoluntary == pageVoluntary) {
-        intendedLocation
-      } else {
-        Future.successful(
-          if (documentVoluntary) {
-            Redirect(routes.ReturnsController.voluntaryStartPage())
-          } else {
-            Redirect(routes.ReturnsController.mandatoryStartPage())
-          }
-        )
-      }
-    }
-  }
-
   val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
-      startDateGuard(pageVoluntary = true) {
-        returnsService.voluntaryStartPageViewModel() map { viewModel =>
-          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-          val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
-          val filledForm = viewModel.form.fold(voluntaryDateForm) {
-            case (dateSelection, date) => voluntaryDateForm.fill((dateSelection, date))
-          }
-          val dynamicDate = timeService.dynamicFutureDateExample()
-          Ok(VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate))
+      returnsService.voluntaryStartPageViewModel() map { viewModel =>
+        implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
+        val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
+        val filledForm = viewModel.form.fold(voluntaryDateForm) {
+          case (dateSelection, date) => voluntaryDateForm.fill((dateSelection, date))
         }
+        val dynamicDate = timeService.dynamicFutureDateExample()
+        Ok(VoluntaryStartDatePage(filledForm, viewModel.ctActive, dynamicDate))
       }
   }
 
@@ -168,9 +149,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        startDateGuard(pageVoluntary = false) {
-          Future.successful(Ok(MandatoryStartDateConfirmationPage()))
-        }
+        Future.successful(Ok(MandatoryStartDateConfirmationPage()))
   }
 
   val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile {

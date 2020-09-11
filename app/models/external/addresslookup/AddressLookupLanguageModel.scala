@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.addressLookup
+package models.external.addresslookup
 
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, Writes}

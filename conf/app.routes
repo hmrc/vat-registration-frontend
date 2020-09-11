@@ -30,8 +30,8 @@ GET         /vat-start-date                                                     
 POST        /vat-start-date                                                                    controllers.ReturnsController.submitVoluntaryStart
 
 ## MANDATORY START DATE PAGE
-GET         /vat-start-date                                                                    controllers.ReturnsController.mandatoryStartPage
-POST        /vat-start-date                                                                    controllers.ReturnsController.submitMandatoryStart
+GET         /mandatory-vat-start-date                                                          controllers.ReturnsController.mandatoryStartPage
+POST        /mandatory-vat-start-date                                                          controllers.ReturnsController.submitMandatoryStart
 
 ## TRADING NAME PAGE
 GET         /trading-name                                                                      controllers.TradingDetailsController.tradingNamePage
