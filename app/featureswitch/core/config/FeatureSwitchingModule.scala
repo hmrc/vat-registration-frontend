@@ -24,7 +24,7 @@ import featureswitch.core.models.FeatureSwitch
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(StubIncorpIdJourney, StubEmailVerification)
+  val switches = Seq(StubIncorpIdJourney, StubPersonalDetailsValidation, StubEmailVerification)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -41,4 +41,9 @@ case object StubIncorpIdJourney extends FeatureSwitch {
 case object StubEmailVerification extends FeatureSwitch {
   val configName = "feature-switch.stub-email-verification"
   val displayName = "Stub email verification flow"
+}
+
+case object StubPersonalDetailsValidation extends FeatureSwitch {
+  val configName = "feature-switch.stub-personal-details-validation"
+  val displayName = "Stub personal details validation flow"
 }

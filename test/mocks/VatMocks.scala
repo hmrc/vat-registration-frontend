@@ -33,7 +33,8 @@ trait VatMocks
     with KeystoreMock
     with HttpClientMock
     with SicAndComplianceServiceMock
-    with IncorpIdServiceMock {
+    with IncorpIdServiceMock
+    with PersonalDetailsValidationServiceMock {
   this: MockitoSugar =>
 
 
