@@ -20,7 +20,7 @@ import java.nio.charset.Charset
 import java.util.Base64
 
 import controllers.callbacks.routes
-import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
+import featureswitch.core.config.{FeatureSwitching, StubEmailVerification, StubIncorpIdJourney}
 import javax.inject.{Inject, Singleton}
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Configuration
@@ -105,7 +105,18 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val incorpIdUrl: String = loadConfig("microservice.services.incorporated-entity-identification-frontend.url")
 
+  lazy val emailVerificationBaseUrl: String = loadConfig("microservice.services.email-verification.url")
+
   def getCreateIncorpIdJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) s"$host/test-only/api/incorp-id-journey"
     else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
+
+  def requestEmailVerificationPasscodeUrl(): String =
+    if (isEnabled(StubEmailVerification)) s"$host/test-only/api/request-passcode"
+    else s"$emailVerificationBaseUrl/email-verification/request-passcode"
+
+  def verifyEmailVerificationPasscodeUrl(): String =
+    if (isEnabled(StubEmailVerification)) s"$host/test-only/api/verify-passcode"
+    else s"$emailVerificationBaseUrl/email-verification/verify-passcode"
+
 }
