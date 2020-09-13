@@ -18,23 +18,21 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.http.Status.CREATED
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import models.TransactorDetails
+import models.TransactorDetails._
+import play.api.http.Status.OK
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
-  def createJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
-    val url = config.getCreateIncorpIdJourneyUrl()
-
-    httpClient.POST(url, journeyConfig).map {
-      case response@HttpResponse(CREATED, _, _) =>
-        (response.json \ "journeyStartUrl").as[String]
+class PersonalDetailsValidationConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+  def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+    httpClient.GET(config.getRetrievePersonalDetailsValidationResultUrl(validationId)).map {
+      case response if response.status == OK =>
+        (response.json \ "personalDetails").as[TransactorDetails]
       case response =>
-        throw new InternalServerException(s"Invalid response from incorporated entity identification: Status: ${response.status} Body: ${response.body}")
+        throw new InternalServerException(s"Invalid response from personal details validation: Status: ${response.status} Body: ${response.body}")
     }
-  }
 }

@@ -128,6 +128,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       ("microservice.services.vat-registration-eligibility-frontend.port" -> WiremockHelper.wiremockPort) +
       ("microservice.services.vat-registration-frontend.www.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
       ("microservice.services.incorporated-entity-identification-frontend.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
+      ("microservice.services.personal-details-validation.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
       ("microservice.services.email-verification.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}")
 
 }
