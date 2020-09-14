@@ -23,3 +23,6 @@ GET         /api/feature-switches              featureswitch.api.controllers.Fea
 POST        /api/feature-switches              featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 GET         /api/incorp-id-journey             controllers.test.IncorpIdApiStubController.createJourney
+
+POST        /api/request-passcode              controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
+POST        /api/verify-passcode               controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
