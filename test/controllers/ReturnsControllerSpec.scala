@@ -89,7 +89,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitChargeExpectancy, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
+        redirectLocation(result) mustBe Some("/register-for-vat/mandatory-vat-start-date")
       }
     }
 
@@ -315,18 +315,6 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         }
       }
     }
-
-    "redirect to a different page" when {
-      "redirect to the voluntary vat start page if they are on a voluntary journey" in new Setup {
-        when(mockReturnsService.getThreshold()(any(), any(), any()))
-          .thenReturn(Future.successful(voluntary))
-
-        callAuthorised(testController.mandatoryStartPage) { result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
-        }
-      }
-    }
   }
 
   "submitMandatoryStart" should {
@@ -359,18 +347,6 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         callAuthorised(testController.voluntaryStartPage) { result =>
           status(result) mustBe OK
-        }
-      }
-    }
-
-    "redirect to a different page" when {
-      "redirect to the mandatory vat start page if they are on a mandatory journey" in new Setup {
-        when(mockReturnsService.getThreshold()(any(), any(), any()))
-          .thenReturn(Future.successful(!voluntary))
-
-        callAuthorised(testController.voluntaryStartPage) { result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/register-for-vat/vat-start-date")
         }
       }
     }
