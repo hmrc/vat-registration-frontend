@@ -16,7 +16,6 @@
 
 package models.external.addresslookup
 
-import models.addressLookup.AddressMessageLanguageModel
 import play.api.libs.json.{Json, Writes}
 
 case class AddressLookupConfigurationModel(version: Int,

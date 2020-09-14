@@ -43,7 +43,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 0)
   .settings()
   .settings(
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.12.12",
     libraryDependencies ++= AppDependencies(),
     dependencyOverrides := AppDependencies.overrides(),
     resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
@@ -66,13 +66,6 @@ lazy val microservice = Project(appName, file("."))
       "uk.gov.hmrc.hmrcfrontend.views.html.components._",
       "uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._",
       "views.ViewUtils._"
-    ),
-    // ***************
-    // Use the silencer plugin to suppress warnings from unused imports in compiled twirl templates
-    scalacOptions += "-P:silencer:pathFilters=views;routes",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
     )
-    // ***************
+
   )
