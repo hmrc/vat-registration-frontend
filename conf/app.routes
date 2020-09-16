@@ -195,3 +195,6 @@ GET         /something-went-wrong                                               
 GET         /redirect-to-rejection                                                             controllers.ErrorController.redirectToCR
 
 GET         /start-incorp-id-journey                                                           controllers.IncorpIdController.startIncorpIdJourney()
+
+GET         /start-personal-details-validation-journey                                         controllers.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+GET         /personal-details-validation-callback                                              controllers.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
