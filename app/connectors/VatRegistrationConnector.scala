@@ -23,7 +23,7 @@ import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
-import models.view.LodgingOfficer
+import models.view.ApplicantDetails
 import play.api.http.Status._
 import play.api.libs.json.{Format, JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
@@ -74,11 +74,11 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getLodgingOfficer(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/officer-data") map { response =>
+  def getApplicantDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/applicant-details") map { response =>
       if (response.status == NO_CONTENT) None else Some(response.json)
     } recover {
-      case e => throw logResponse(e, "getLodgingOfficer")
+      case e => throw logResponse(e, "getApplicantDetails")
     }
   }
 
@@ -90,12 +90,12 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def patchLodgingOfficer(data: LodgingOfficer)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
-    val json = Json.toJson(data)(LodgingOfficer.apiWrites)
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/officer-data", json) map {
+  def patchApplicantDetails(data: ApplicantDetails)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
+    val json = Json.toJson(data)(ApplicantDetails.apiWrites)
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/applicant-details", json) map {
       _ => json
     } recover {
-      case e: Exception => throw logResponse(e, "patchLodgingOfficer")
+      case e: Exception => throw logResponse(e, "patchApplicantDetails")
     }
   }
 

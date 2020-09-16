@@ -16,49 +16,50 @@
 
 package controllers.builders
 
-import models.view.{LodgingOfficer, SummaryRow, SummarySection}
+import models.view.{ApplicantDetails, SummaryRow, SummarySection}
+import controllers.registration.applicant.{routes => applicantRoutes}
 
-case class SummaryDirectorDetailsSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
+case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDetails) extends SummarySectionBuilder {
 
   override val sectionId: String = "directorDetails"
 
   val formerName: SummaryRow = SummaryRow(
     s"$sectionId.formerName",
-    vatLodgingOfficer.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
-    Some(controllers.routes.OfficerController.showFormerName())
+    vatApplicantDetails.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
+    Some(applicantRoutes.FormerNameController.show())
   )
   val formerNameDate: SummaryRow = SummaryRow(
     s"$sectionId.formerNameDate",
-    vatLodgingOfficer.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
-    Some(controllers.routes.OfficerController.showFormerNameDate())
+    vatApplicantDetails.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
+    Some(applicantRoutes.FormerNameController.show())
   )
 
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
-    vatLodgingOfficer.contactDetails.flatMap(_.email).getOrElse(""),
-    Some(controllers.routes.OfficerController.showContactDetails())
+    vatApplicantDetails.contactDetails.flatMap(_.email).getOrElse(""),
+    Some(applicantRoutes.ContactDetailsController.show())
   )
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
-    vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).getOrElse(""),
-    Some(controllers.routes.OfficerController.showContactDetails())
+    vatApplicantDetails.contactDetails.flatMap(_.daytimePhone).getOrElse(""),
+    Some(applicantRoutes.ContactDetailsController.show())
   )
 
   val mobile: SummaryRow = SummaryRow(
     s"$sectionId.mobile",
-    vatLodgingOfficer.contactDetails.flatMap(_.mobile).getOrElse(""),
-    Some(controllers.routes.OfficerController.showContactDetails())
+    vatApplicantDetails.contactDetails.flatMap(_.mobile).getOrElse(""),
+    Some(applicantRoutes.ContactDetailsController.show())
   )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
       (formerName, true),
-      (formerNameDate, vatLodgingOfficer.formerName.exists(_.yesNo)),
-      (email, vatLodgingOfficer.contactDetails.flatMap(_.email).isDefined),
-      (daytimePhone, vatLodgingOfficer.contactDetails.flatMap(_.daytimePhone).isDefined),
-      (mobile, vatLodgingOfficer.contactDetails.flatMap(_.mobile).isDefined)
+      (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
+      (email, vatApplicantDetails.contactDetails.flatMap(_.email).isDefined),
+      (daytimePhone, vatApplicantDetails.contactDetails.flatMap(_.daytimePhone).isDefined),
+      (mobile, vatApplicantDetails.contactDetails.flatMap(_.mobile).isDefined)
     )
   )
 }

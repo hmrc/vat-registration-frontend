@@ -22,9 +22,9 @@ import play.api.libs.json.{Json, OFormat}
 case class TestSetup(
                       vatContact: VatContactTestSetup,
                       sicAndCompliance: SicAndComplianceTestSetup,
-                      officerHomeAddress: OfficerHomeAddressTestSetup,
-                      officerPreviousAddress: OfficerPreviousAddressTestSetup,
-                      lodgingOfficer: LodgingOfficerTestSetup,
+                      applicantHomeAddress: ApplicantHomeAddressTestSetup,
+                      applicantPreviousAddress: ApplicantPreviousAddressTestSetup,
+                      applicantDetails: ApplicantDetailsTestSetup,
                       flatRateSchemeBlock: Option[FlatRateScheme],
                       bankAccountBlock: Option[BankAccount],
                       returnsBlock: Option[Returns],

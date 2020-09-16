@@ -84,7 +84,7 @@ object Name {
 
 }
 
-case class Officer(
+case class Applicant(
                     name: Name,
                     role: String,
                     resignedOn: Option[DateTime] = None,
@@ -92,7 +92,7 @@ case class Officer(
                   ) {
 
   override def equals(obj: Any): Boolean = obj match {
-    case Officer(nameObj, roleObj, _, _)
+    case Applicant(nameObj, roleObj, _, _)
       if role.equalsIgnoreCase(roleObj) && (nameObj == name) => true
     case _ => false
   }
@@ -100,25 +100,19 @@ case class Officer(
   override def hashCode: Int = 1 // bit of a hack, but works
 }
 
-object Officer {
+object Applicant {
 
-  implicit val rd: Reads[Officer] = (
+  implicit val rd: Reads[Applicant] = (
     (__ \ "name_elements").read[Name](Name.normalizeNameReads) and
-      (__ \ "officer_role").read[String] and
+      (__ \ "applicant_role").read[String] and
       (__ \ "resigned_on").readNullable[DateTime] and
       (__ \ "appointment_link").readNullable[String]
-    ) (Officer.apply _)
+    ) (Applicant.apply _)
 
-  implicit val wt: Writes[Officer] = (
+  implicit val wt: Writes[Applicant] = (
     (__ \ "name_elements").write[Name] and
-      (__ \ "officer_role").write[String] and
+      (__ \ "applicant_role").write[String] and
       (__ \ "resigned_on").writeNullable[DateTime] and
       (__ \ "appointment_link").writeNullable[String]
-    ) (unlift(Officer.unapply))
-}
-
-case class OfficerList(items: Seq[Officer])
-
-object OfficerList {
-  implicit val reads: Reads[OfficerList] = (__ \ "officers").read[Seq[Officer]] map OfficerList.apply
+    ) (unlift(Applicant.unapply))
 }

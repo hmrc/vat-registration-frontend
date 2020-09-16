@@ -519,17 +519,17 @@ validation.invalid.businessContactDetails.tooLong            = Enter a contact n
 validation.invalid.businessContactDetails.tooShort           = Enter a contact number using 10 digits or more
 
 
-## Officer Home Address Page
-pages.officerHomeAddress.title                           = What is the applicant''s home address?
-pages.officerHomeAddress.heading                         = What is your home address?
-pages.officerHomeAddress.different.address               = A different address
-validation.officerHomeAddress.missing                    = Tell us your home address
+## Applicant Home Address Page
+pages.applicantHomeAddress.title                           = What is the applicant''s home address?
+pages.applicantHomeAddress.heading                         = What is your home address?
+pages.applicantHomeAddress.different.address               = A different address
+validation.applicantHomeAddress.missing                    = Tell us your home address
 
-## Officer Completion Capacity
+## Applicant Completion Capacity
 pages.completionCapacity.title                           = Who is registering the company for VAT?
 pages.completionCapacity.heading                         = Who is registering the company for VAT?
-pages.completionCapacity.panel.title                     = What if these company officers are wrong?
-pages.completionCapacity.panel.p1                        = If the company officers shown are wrong,
+pages.completionCapacity.panel.title                     = What if these company applicants are wrong?
+pages.completionCapacity.panel.p1                        = If the company applicants shown are wrong,
 pages.completionCapacity.panel.p1.link                   = tell Companies House
 pages.completionCapacity.panel.p1.1                      = It will take less than 24 hours for Companies House to confirm the changes via email.
 pages.completionCapacity.panel.p2                        = After you get the email,
@@ -539,21 +539,21 @@ pages.completionCapacity.panel.p3                        = If you''re an agent f
 pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
-## Officer Contact Details
-pages.officerContact.title                               = How can we contact the applicant?
-pages.officerContact.heading                             = How can we get in touch with the business after it is registered for VAT?
-pages.officerContact.p1                                  = We''ll only do this when we have questions about the business''s VAT.
-pages.officerContact.p2                                  = This cannot be a third-party agent or external accountant.
-pages.officerContact.daytimePhone.label                  = Contact number
-pages.officerContact.emailAddress.label                  = Email address (optional)
-pages.officerContact.mobile.label                        = Other contact number (optional)
+## Applicant Contact Details
+pages.applicantContact.title                               = How can we contact the applicant?
+pages.applicantContact.heading                             = How can we get in touch with the business after it is registered for VAT?
+pages.applicantContact.p1                                  = We''ll only do this when we have questions about the business''s VAT.
+pages.applicantContact.p2                                  = This cannot be a third-party agent or external accountant.
+pages.applicantContact.daytimePhone.label                  = Contact number
+pages.applicantContact.emailAddress.label                  = Email address (optional)
+pages.applicantContact.mobile.label                        = Other contact number (optional)
 
-validation.officerContact.atLeastOneContact.missing      = Enter your contact details
-validation.officerContactDetails.email.invalid           = Enter a valid email address
-validation.officerContactDetails.email.maxlen            = Enter an email address using 70 characters or less
-validation.invalid.officerContactDetails.tooLong         = Enter a contact number using 20 digits or less
-validation.invalid.officerContactDetails.tooShort        = Enter a contact number using 10 digits or more
-validation.invalid.officerContactDetails                 = Enter a valid contact number
+validation.applicantContact.atLeastOneContact.missing      = Enter your contact details
+validation.applicantContactDetails.email.invalid           = Enter a valid email address
+validation.applicantContactDetails.email.maxlen            = Enter an email address using 70 characters or less
+validation.invalid.applicantContactDetails.tooLong         = Enter a contact number using 20 digits or less
+validation.invalid.applicantContactDetails.tooShort        = Enter a contact number using 10 digits or more
+validation.invalid.applicantContactDetails                 = Enter a valid contact number
 
 
 ## Former Name

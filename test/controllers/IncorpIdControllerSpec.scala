@@ -29,6 +29,7 @@ import services.VoluntaryPageViewModel
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 class IncorpIdControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
 
@@ -47,7 +48,7 @@ class IncorpIdControllerSpec extends ControllerSpec with VatRegistrationFixture 
   "startIncorpIdJourney" should {
     "redirect to the journeyStartUrl" in new Setup {
       implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      lazy val testContinueUrl: String = controllers.routes.OfficerController.showFormerName().absoluteURL()
+      lazy val testContinueUrl: String = applicantRoutes.FormerNameController.show().absoluteURL()
       lazy val testJourneyStartUrl = "/test"
       mockCreateJourney(testContinueUrl)(Future.successful(testJourneyStartUrl))
 

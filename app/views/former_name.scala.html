@@ -23,6 +23,8 @@
 @import models.view.FormerNameView
 
 @import config.FrontendAppConfig
+@import controllers.registration.applicant.{routes => applicantRoutes}
+
 @(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @fieldSetClasses = @{
@@ -40,7 +42,7 @@
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.formerName.heading")</h1>
     <p>@messages("pages.formerName.married")</p>
 
-    @govHelpers.form(action = controllers.routes.OfficerController.submitFormerName()) {
+    @govHelpers.form(action = applicantRoutes.FormerNameController.submit()) {
         <div class="form-group">
             @vatInputRadioGroup(
                 field = formerNameForm("formerNameRadio"),

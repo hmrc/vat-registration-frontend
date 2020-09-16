@@ -38,11 +38,12 @@ class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesCon
   implicit val reads: ScrsAddress.adressLookupReads.type = ScrsAddress.adressLookupReads
 
   def getAddress(id: String)(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
-    http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/confirmed?id=$id")
+    http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id")
   }
 
   def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] = {
     val postUrl = s"$addressLookupFrontendUrl/api/v2/init"
+
     http.POST[AddressLookupConfigurationModel, HttpResponse](postUrl, alfConfig).map { resp =>
       resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
         logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
