@@ -20,7 +20,7 @@ import java.nio.charset.Charset
 import java.util.Base64
 
 import controllers.callbacks.routes
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification, StubIncorpIdJourney}
+import featureswitch.core.config._
 import javax.inject.{Inject, Singleton}
 import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
 import play.api.Configuration
@@ -108,8 +108,30 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val emailVerificationBaseUrl: String = loadConfig("microservice.services.email-verification.url")
 
   def getCreateIncorpIdJourneyUrl(): String =
-    if (isEnabled(StubIncorpIdJourney)) s"$host/test-only/api/incorp-id-journey"
-    else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
+    if (isEnabled(StubIncorpIdJourney)) {
+      s"$host/register-for-vat/test-only/api/incorp-id-journey"
+    } else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
+
+  lazy val personalDetailsValidationUrl: String = loadConfig("microservice.services.personal-details-validation.url")
+
+  def getRetrievePersonalDetailsValidationResultUrl(validationId: String): String =
+    if (isEnabled(StubPersonalDetailsValidation)) {
+      s"$host/register-for-vat/test-only/personal-details-validation/$validationId"
+    } else {
+      s"$personalDetailsValidationUrl/personal-details-validation/$validationId"
+    }
+
+  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
+
+  def getPersonalDetailsValidationJourneyUrl(): String =
+    if (isEnabled(StubPersonalDetailsValidation)) {
+      controllers.routes.PersonalDetailsValidationController.personalDetailsValidationCallback("testValidationId").url
+    } else {
+      s"$personalDetailsValidationFrontendUrl/personal-details-validation/start"
+    }
+
+  def getPersonalDetailsCallbackUrl(): String =
+    s"$host/register-for-vat/personal-details-validation-callback"
 
   def requestEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/test-only/api/request-passcode"

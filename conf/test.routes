@@ -1,28 +1,33 @@
 
-GET         /s4l-teardown                      controllers.test.TestCacheController.tearDownS4L
+GET         /s4l-teardown                                     controllers.test.TestCacheController.tearDownS4L
 
-GET         /test-setup                        controllers.test.TestSetupController.show()
-POST        /test-setup                        controllers.test.TestSetupController.submit()
+GET         /test-setup                                       controllers.test.TestSetupController.show()
+POST        /test-setup                                       controllers.test.TestSetupController.submit()
 
-GET         /test-setup-eligibility            controllers.test.TestSetupController.showEligibility()
-POST        /test-setup-eligibility            controllers.test.TestSetupController.submitEligibility()
+GET         /test-setup-eligibility                           controllers.test.TestSetupController.showEligibility()
+POST        /test-setup-eligibility                           controllers.test.TestSetupController.submitEligibility()
 
-GET         /sic-stub                          controllers.test.SicStubController.show()
-POST        /sic-stub                          controllers.test.SicStubController.submit()
+GET         /sic-stub                                         controllers.test.SicStubController.show()
+POST        /sic-stub                                         controllers.test.SicStubController.submit()
 
-GET         /working-days                      controllers.test.TestWorkingDaysValidationController.show()
+GET         /working-days                                     controllers.test.TestWorkingDaysValidationController.show()
 
-GET         /ct-registration                   controllers.test.TestCTController.show()
+GET         /ct-registration                                  controllers.test.TestCTController.show()
 
-GET         /feature-flag/:name/:state         controllers.test.FeatureSwitchController.switcher(name:String,state: String)
+GET         /feature-flag/:name/:state                        controllers.test.FeatureSwitchController.switcher(name:String,state: String)
 
-GET         /feature-switches                  featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
-POST        /feature-switches                  featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
+GET         /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
+POST        /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
 
-GET         /api/feature-switches              featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
-POST        /api/feature-switches              featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+GET         /api/feature-switches                             featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+POST        /api/feature-switches                             featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
-GET         /api/incorp-id-journey             controllers.test.IncorpIdApiStubController.createJourney
++ nocsrf
+POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney
 
-POST        /api/request-passcode              controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
-POST        /api/verify-passcode               controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
+GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)
+
++ nocsrf
+POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
++ nocsrf
+POST        /api/verify-passcode                              controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
