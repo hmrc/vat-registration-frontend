@@ -24,6 +24,7 @@ import services.SessionProfile
 import views.html.honesty_declaration
 
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 @Singleton
 class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
@@ -43,6 +44,6 @@ class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Future.successful(Redirect(routes.OfficerController.showFormerName()))
+        Future.successful(Redirect(applicantRoutes.FormerNameController.show()))
   }
 }

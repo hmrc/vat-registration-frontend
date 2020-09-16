@@ -24,26 +24,28 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
-@(officerHomeAddressForm: Form[HomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@import controllers.registration.applicant.{routes => applicantRoutes}
 
-@main_template(title = messages("pages.officerHomeAddress.title")) {
+@(applicantHomeAddressForm: Form[HomeAddressView], addresses: Seq[ScrsAddress])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@main_template(title = messages("pages.applicantHomeAddress.title")) {
 
   @errorSummary(
   messages("app.common.errorSummaryLabel"),
-  officerHomeAddressForm
+  applicantHomeAddressForm
   )
 
   <header class="page-header">
-      <h1 class="form-title heading-large" id="pageHeading">@messages("pages.officerHomeAddress.heading")</h1>
+      <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applicantHomeAddress.heading")</h1>
   </header>
 
-  @govHelpers.form(action = controllers.routes.OfficerController.submitHomeAddress()) {
+  @govHelpers.form(action = applicantRoutes.HomeAddressController.submit()) {
     <div class="form-group" id="homeAddressRadio">
         @vatInputRadioGroup(
-          field = officerHomeAddressForm("homeAddressRadio"),
+          field = applicantHomeAddressForm("homeAddressRadio"),
           addresses.map( a => (a.id, a.asLabel)) :+
-                  ("other" -> messages("pages.officerHomeAddress.different.address")),
-          '_legend -> messages("pages.officerHomeAddress.heading"),
+                  ("other" -> messages("pages.applicantHomeAddress.different.address")),
+          '_legend -> messages("pages.applicantHomeAddress.heading"),
           '_legendClass -> "visually-hidden",
           '_labelAfter -> true,
           '_labelClass -> "block-label"

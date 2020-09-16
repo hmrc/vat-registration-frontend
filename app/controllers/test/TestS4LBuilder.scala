@@ -77,52 +77,52 @@ object TestS4LBuilder {
     )).getOrElse(BusinessContact())
   }
 
-  def buildLodgingOfficerFromTestData(data: TestSetup): LodgingOfficer = {
-    val homeAddress: Option[ScrsAddress] = data.officerHomeAddress.line1.map(_ => ScrsAddress(
-      line1 = data.officerHomeAddress.line1.getOrElse(""),
-      line2 = data.officerHomeAddress.line2.getOrElse(""),
-      line3 = data.officerHomeAddress.line3,
-      line4 = data.officerHomeAddress.line4,
-      postcode = data.officerHomeAddress.postcode,
-      country = data.officerHomeAddress.country)
+  def buildApplicantDetailsFromTestData(data: TestSetup): ApplicantDetails = {
+    val homeAddress: Option[ScrsAddress] = data.applicantHomeAddress.line1.map(_ => ScrsAddress(
+      line1 = data.applicantHomeAddress.line1.getOrElse(""),
+      line2 = data.applicantHomeAddress.line2.getOrElse(""),
+      line3 = data.applicantHomeAddress.line3,
+      line4 = data.applicantHomeAddress.line4,
+      postcode = data.applicantHomeAddress.postcode,
+      country = data.applicantHomeAddress.country)
     )
 
-    val threeYears: Option[String] = data.officerPreviousAddress.threeYears
+    val threeYears: Option[String] = data.applicantPreviousAddress.threeYears
 
-    val previousAddress: Option[ScrsAddress] = data.officerPreviousAddress.line1.map(_ => ScrsAddress(
-      line1 = data.officerPreviousAddress.line1.getOrElse(""),
-      line2 = data.officerPreviousAddress.line2.getOrElse(""),
-      line3 = data.officerPreviousAddress.line3,
-      line4 = data.officerPreviousAddress.line4,
-      postcode = data.officerPreviousAddress.postcode,
-      country = data.officerPreviousAddress.country)
+    val previousAddress: Option[ScrsAddress] = data.applicantPreviousAddress.line1.map(_ => ScrsAddress(
+      line1 = data.applicantPreviousAddress.line1.getOrElse(""),
+      line2 = data.applicantPreviousAddress.line2.getOrElse(""),
+      line3 = data.applicantPreviousAddress.line3,
+      line4 = data.applicantPreviousAddress.line4,
+      postcode = data.applicantPreviousAddress.postcode,
+      country = data.applicantPreviousAddress.country)
     )
 
-    val dob: Option[LocalDate] = data.lodgingOfficer.dobDay.map(_ =>
+    val dob: Option[LocalDate] = data.applicantDetails.dobDay.map(_ =>
       LocalDate.of(
-        data.lodgingOfficer.dobYear.getOrElse("1900").toInt,
-        data.lodgingOfficer.dobMonth.getOrElse("1").toInt,
-        data.lodgingOfficer.dobDay.getOrElse("1").toInt))
+        data.applicantDetails.dobYear.getOrElse("1900").toInt,
+        data.applicantDetails.dobMonth.getOrElse("1").toInt,
+        data.applicantDetails.dobDay.getOrElse("1").toInt))
 
-    val contactDetails: Option[ContactDetailsView] = data.lodgingOfficer.email.map(_ => ContactDetailsView(
-      email = data.lodgingOfficer.email,
-      mobile = data.lodgingOfficer.mobile,
-      daytimePhone = data.lodgingOfficer.phone)
+    val contactDetails: Option[ContactDetailsView] = data.applicantDetails.email.map(_ => ContactDetailsView(
+      email = data.applicantDetails.email,
+      mobile = data.applicantDetails.mobile,
+      daytimePhone = data.applicantDetails.phone)
     )
 
-    val formerName: Option[FormerNameView] = data.lodgingOfficer.formernameChoice.collect {
-      case "true" => FormerNameView(true, data.lodgingOfficer.formername)
+    val formerName: Option[FormerNameView] = data.applicantDetails.formernameChoice.collect {
+      case "true" => FormerNameView(true, data.applicantDetails.formername)
       case "false" => FormerNameView(false, None)
     }
 
-    val formerNameDate: Option[FormerNameDateView] = data.lodgingOfficer.formernameChangeDay.map(_ => {
+    val formerNameDate: Option[FormerNameDateView] = data.applicantDetails.formernameChangeDay.map(_ => {
       FormerNameDateView(LocalDate.of(
-        data.lodgingOfficer.formernameChangeYear.getOrElse("1900").toInt,
-        data.lodgingOfficer.formernameChangeMonth.getOrElse("1").toInt,
-        data.lodgingOfficer.formernameChangeDay.getOrElse("1").toInt))
+        data.applicantDetails.formernameChangeYear.getOrElse("1900").toInt,
+        data.applicantDetails.formernameChangeMonth.getOrElse("1").toInt,
+        data.applicantDetails.formernameChangeDay.getOrElse("1").toInt))
     })
 
-    LodgingOfficer(
+    ApplicantDetails(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       homeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
       contactDetails = contactDetails,

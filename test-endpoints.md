@@ -22,7 +22,7 @@ lists upcoming working days
 gets CTActiveDate and displays it on screen
 
 `GET         /insert-ii-stub-data`  
-this will load some officer details and home addresses into II Frontend Stub.
+this will load some applicant details and home addresses into II Frontend Stub.
 
 `GET         /incorp-company`         
 inserts the required data directly into II through our backend which will essentially incorporate which ever user you are authenticated as via their transaction ID, used for testing post incorporated journeys.

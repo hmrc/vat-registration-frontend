@@ -24,7 +24,7 @@ import forms.test.{TestSetupEligibilityForm, TestSetupForm}
 import javax.inject.{Inject, Singleton}
 import models._
 import models.test.SicStub
-import models.view.LodgingOfficer
+import models.view.ApplicantDetails
 import models.view.test._
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -53,7 +53,7 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
         for {
           sicStub <- s4LService.fetchAndGet[SicStub]
           vatSicAndCompliance <- s4LService.fetchAndGet[SicAndCompliance]
-          lodgingOfficer <- s4LService.fetchAndGet[LodgingOfficer]
+          applicantDetails <- s4LService.fetchAndGet[ApplicantDetails]
           businessContact <- s4lConnector.fetchAndGet[BusinessContact](profile.registrationId, "business-contact")
           bankAccount <- s4LService.fetchAndGetNoAux(S4LKey.bankAccountKey)
           flatRateScheme <- s4LService.fetchAndGetNoAux(S4LKey.flatRateScheme)
@@ -87,30 +87,30 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
               mainBusinessActivityDescription = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.description),
               mainBusinessActivityDisplayDetails = vatSicAndCompliance.flatMap(_.mainBusinessActivity).flatMap(_.mainBusinessActivity).map(_.displayDetails)
             ),
-            officerHomeAddress = OfficerHomeAddressTestSetup(
-              line1 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
-              line2 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).map(_.line2),
-              line3 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line3),
-              line4 = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line4),
-              postcode = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.postcode),
-              country = lodgingOfficer.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.country)),
-            officerPreviousAddress = OfficerPreviousAddressTestSetup(
-              threeYears = lodgingOfficer.flatMap(_.previousAddress).map(_.yesNo.toString),
-              line1 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
-              line2 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
-              line3 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
-              line4 = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
-              postcode = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
-              country = lodgingOfficer.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
-            lodgingOfficer = LodgingOfficerTestSetup(
-              email = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.email),
-              mobile = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.daytimePhone),
-              phone = lodgingOfficer.flatMap(_.contactDetails).flatMap(_.mobile),
-              formernameChoice = lodgingOfficer.flatMap(_.formerName).map(_.yesNo.toString),
-              formername = lodgingOfficer.flatMap(_.formerName).flatMap(_.formerName),
-              formernameChangeDay = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
-              formernameChangeMonth = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
-              formernameChangeYear = lodgingOfficer.flatMap(_.formerNameDate).map(_.date.getYear.toString)
+            applicantHomeAddress = ApplicantHomeAddressTestSetup(
+              line1 = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).map(_.line1),
+              line2 = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).map(_.line2),
+              line3 = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line3),
+              line4 = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.line4),
+              postcode = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.postcode),
+              country = applicantDetails.flatMap(_.homeAddress).flatMap(_.address).flatMap(_.country)),
+            applicantPreviousAddress = ApplicantPreviousAddressTestSetup(
+              threeYears = applicantDetails.flatMap(_.previousAddress).map(_.yesNo.toString),
+              line1 = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).map(_.line1),
+              line2 = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).map(_.line2),
+              line3 = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line3),
+              line4 = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.line4),
+              postcode = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.postcode),
+              country = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
+            applicantDetails = ApplicantDetailsTestSetup(
+              email = applicantDetails.flatMap(_.contactDetails).flatMap(_.email),
+              mobile = applicantDetails.flatMap(_.contactDetails).flatMap(_.daytimePhone),
+              phone = applicantDetails.flatMap(_.contactDetails).flatMap(_.mobile),
+              formernameChoice = applicantDetails.flatMap(_.formerName).map(_.yesNo.toString),
+              formername = applicantDetails.flatMap(_.formerName).flatMap(_.formerName),
+              formernameChangeDay = applicantDetails.flatMap(_.formerNameDate).map(_.date.getDayOfMonth.toString),
+              formernameChangeMonth = applicantDetails.flatMap(_.formerNameDate).map(_.date.getMonthValue.toString),
+              formernameChangeYear = applicantDetails.flatMap(_.formerNameDate).map(_.date.getYear.toString)
             ),
             flatRateSchemeBlock = flatRateScheme,
             bankAccountBlock = bankAccount,
@@ -146,8 +146,8 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
                 _ <- s4LService.save(s4LBuilder.tradingDetailsFromData(data))
                 _ <- s4lConnector.save[BusinessContact](profile.registrationId, "business-contact", s4LBuilder.vatContactFromData(data))
 
-                lodgingOfficer = s4LBuilder.buildLodgingOfficerFromTestData(data)
-                _ <- s4LService.save(lodgingOfficer)
+                applicantDetails = s4LBuilder.buildApplicantDetailsFromTestData(data)
+                _ <- s4LService.save(applicantDetails)
 
                 _ <- data.returnsBlock.fold(empty)(x => s4LService.save(x))
                 _ <- data.flatRateSchemeBlock.fold(empty)(x => s4LService.save(x))

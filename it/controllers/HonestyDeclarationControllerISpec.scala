@@ -24,6 +24,7 @@ import play.api.libs.ws.WSResponse
 import support.AppAndStubs
 
 import scala.concurrent.Future
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
 
@@ -47,7 +48,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
   }
 
   s"POST $url" must {
-    "return a redirect to Officer Name" in new StandardTestHelpers {
+    "return a redirect to Applicant Name" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -57,7 +58,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
       val response: Future[WSResponse] = buildClient(url).post(Json.obj())
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.OfficerController.showFormerName().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameController.show().url)
       }
     }
   }

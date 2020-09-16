@@ -19,7 +19,7 @@ package models.view.test
 import play.api.libs.json.Json
 
 
-case class OfficerHomeAddressTestSetup(
+case class ApplicantHomeAddressTestSetup(
                                         line1: Option[String],
                                         line2: Option[String],
                                         line3: Option[String],
@@ -29,11 +29,11 @@ case class OfficerHomeAddressTestSetup(
                                       )
 
 
-object OfficerHomeAddressTestSetup {
-  implicit val format = Json.format[OfficerHomeAddressTestSetup]
+object ApplicantHomeAddressTestSetup {
+  implicit val format = Json.format[ApplicantHomeAddressTestSetup]
 }
 
-case class OfficerPreviousAddressTestSetup (
+case class ApplicantPreviousAddressTestSetup (
                                         threeYears: Option[String],
                                         line1: Option[String],
                                         line2: Option[String],
@@ -44,6 +44,6 @@ case class OfficerPreviousAddressTestSetup (
                                       )
 
 
-object OfficerPreviousAddressTestSetup {
-  implicit val format = Json.format[OfficerPreviousAddressTestSetup]
+object ApplicantPreviousAddressTestSetup {
+  implicit val format = Json.format[ApplicantPreviousAddressTestSetup]
 }

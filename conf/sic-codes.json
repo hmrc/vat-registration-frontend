@@ -59620,7 +59620,7 @@
    "frsCategory": "008"
  },
  "56290009": {
-   "description": "Officers' messes",
+   "description": "Applicants' messes",
    "displayDetails": "Other food services",
    "frsCategory": "008"
  },
@@ -62125,7 +62125,7 @@
    "frsCategory": "024"
  },
  "69109019": {
-   "description": "Sheriff's officer",
+   "description": "Sheriff's applicant",
    "displayDetails": "Activities of patent and copyright agents; other legal activities n.e.c.",
    "frsCategory": "024"
  },
@@ -67840,7 +67840,7 @@
    "frsCategory": "004"
  },
  "86210008": {
-   "description": "School medical officer",
+   "description": "School medical applicant",
    "displayDetails": "General medical practice activities",
    "frsCategory": "004"
  },

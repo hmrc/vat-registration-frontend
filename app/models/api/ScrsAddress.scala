@@ -108,7 +108,7 @@ object ScrsAddress {
     implicit val inline = show((a: ScrsAddress) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformerOfficerHomeAddressView(implicit t: MT[HomeAddressView]): MT[ScrsAddress] =
+  implicit def modelTransformerApplicantHomeAddressView(implicit t: MT[HomeAddressView]): MT[ScrsAddress] =
     MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 
   implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[ScrsAddress] =

@@ -16,37 +16,38 @@
 
 package controllers.builders
 
-import models.view.LodgingOfficer
+import models.view.ApplicantDetails
 import models.api.ScrsAddress
 import models.view.{SummaryRow, SummarySection}
+import controllers.registration.applicant.{routes => applicantRoutes}
 
-case class SummaryDirectorAddressesSectionBuilder(vatLodgingOfficer: LodgingOfficer) extends SummarySectionBuilder {
+case class SummaryDirectorAddressesSectionBuilder(vatApplicantDetails: ApplicantDetails) extends SummarySectionBuilder {
 
   override val sectionId: String = "directorAddresses"
 
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
-    vatLodgingOfficer.homeAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
-    Some(controllers.routes.OfficerController.showHomeAddress())
+    vatApplicantDetails.homeAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
+    Some(applicantRoutes.HomeAddressController.show())
   )
 
   val currentAddressThreeYears: SummaryRow = yesNoRow(
     "currentAddressThreeYears",
-    vatLodgingOfficer.previousAddress.map(_.yesNo),
-    controllers.routes.OfficerController.showPreviousAddress()
+    vatApplicantDetails.previousAddress.map(_.yesNo),
+    applicantRoutes.PreviousAddressController.show()
   )
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
-    vatLodgingOfficer.previousAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
-    Some(controllers.routes.OfficerController.changePreviousAddress())
+    vatApplicantDetails.previousAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
+    Some(applicantRoutes.PreviousAddressController.show())
   )
 
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (homeAddress, vatLodgingOfficer.homeAddress.exists(_.address.isDefined)),
+      (homeAddress, vatApplicantDetails.homeAddress.exists(_.address.isDefined)),
       (currentAddressThreeYears, true),
-      (previousAddress, vatLodgingOfficer.previousAddress.exists(_.address.isDefined))
+      (previousAddress, vatApplicantDetails.previousAddress.exists(_.address.isDefined))
     )
   )
 }

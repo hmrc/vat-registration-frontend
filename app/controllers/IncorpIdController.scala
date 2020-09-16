@@ -24,6 +24,7 @@ import services.{IncorpIdService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 @Singleton
 class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
@@ -34,7 +35,7 @@ class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
   def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
       _ =>
-        val continueUrl = controllers.routes.OfficerController.showFormerName().absoluteURL()
+        val continueUrl = applicantRoutes.FormerNameController.show().absoluteURL()
 
         incorpIdService.createJourney(continueUrl).map(
           journeyStartUrl =>

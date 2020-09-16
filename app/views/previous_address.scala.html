@@ -23,6 +23,8 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
+@import controllers.registration.applicant.{routes => applicantRoutes}
+
 @(previousAddressQuestionForm: Form[PreviousAddressView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = messages("pages.previousAddressQuestion.title")) {
@@ -34,7 +36,7 @@
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
 
-    @govHelpers.form(action = controllers.routes.OfficerController.submitPreviousAddress()) {
+    @govHelpers.form(action = applicantRoutes.PreviousAddressController.submit()) {
         <div class="form-group">
             @vatInputRadioGroup(
                 field = previousAddressQuestionForm("previousAddressQuestionRadio"),
