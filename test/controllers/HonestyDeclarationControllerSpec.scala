@@ -22,6 +22,7 @@ import testHelpers.ControllerSpec
 import views.html.honesty_declaration
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 class HonestyDeclarationControllerSpec extends ControllerSpec {
 
@@ -52,11 +53,11 @@ class HonestyDeclarationControllerSpec extends ControllerSpec {
   }
 
   "submit" must {
-    "return a SEE_OTHER with a redirect to Officer Former Name Page" in {
+    "return a SEE_OTHER with a redirect to Applicant Former Name Page" in {
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(routes.OfficerController.showFormerName().url)
+      redirectLocation(res) mustBe Some(applicantRoutes.FormerNameController.show().url)
     }
   }
 }

@@ -17,7 +17,7 @@
 package views
 
 import config.FrontendAppConfig
-import views.html.{officer_home_address => HomeAddressPage}
+import views.html.{applicant_home_address => HomeAddressPage}
 import forms.HomeAddressForm
 import models.api.ScrsAddress
 import models.view.HomeAddressView

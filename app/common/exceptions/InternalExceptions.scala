@@ -33,5 +33,5 @@ object InternalExceptions {
 
   class ElementNotFoundException(msg: String) extends Exception(msg)
 
-  class NoOfficerFoundException(regId: String) extends Exception(s"There was a problem matching the officer for regId $regId")
+  class NoApplicantFoundException(regId: String) extends Exception(s"There was a problem matching the applicant for regId $regId")
 }

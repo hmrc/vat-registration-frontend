@@ -20,14 +20,14 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import models.{BankAccount, BankAccountDetails, BusinessActivityDescription, BusinessContact, CompanyContactDetails, FlatRateScheme, Frequency, MainBusinessActivityView, OtherBusinessActivities, Returns, SicAndCompliance, Stagger, TurnoverEstimates}
-import fixtures.LodgingOfficerFixture
+import fixtures.ApplicantDetailsFixture
 import models.BusinessActivityDescription
 import models.{TradingDetails, TradingNameView}
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
 import play.api.libs.json.Json
 
-trait ITRegistrationFixtures extends LodgingOfficerFixture {
+trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
 
 
@@ -111,7 +111,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     id                  = "1",
     status              = VatRegStatus.draft,
     tradingDetails      = Some(tradingDetails),
-    lodgingOfficer      = None,
+    applicantDetails      = None,
     sicAndCompliance    = Some(sicAndCompliance),
     businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(voluntaryThreshold),
@@ -125,7 +125,7 @@ trait ITRegistrationFixtures extends LodgingOfficerFixture {
     id                  = "1",
     status              = VatRegStatus.draft,
     tradingDetails      = Some(tradingDetails),
-    lodgingOfficer      = None,
+    applicantDetails      = None,
     sicAndCompliance    = Some(sicAndCompliance),
     businessContact     = Some(validBusinessContactDetails),
     threshold           = Some(threshold),

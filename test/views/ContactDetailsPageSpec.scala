@@ -17,7 +17,7 @@
 package views
 
 import config.FrontendAppConfig
-import views.html.{officer_contact_details => ContactDetailsPage}
+import views.html.{applicant_contact_details => ContactDetailsPage}
 import forms.ContactDetailsForm
 import models.view.ContactDetailsView
 import org.jsoup.Jsoup

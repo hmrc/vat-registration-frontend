@@ -63,7 +63,7 @@ trait BaseFixture {
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
-  with LodgingOfficerFixtures with ReturnsFixture {
+  with ApplicantDetailsFixtures with ReturnsFixture {
 
   val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
@@ -137,7 +137,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
 
   //View models
-  val validOfficerContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
+  val validApplicantContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
@@ -145,7 +145,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
 
   //Api models
-  val officer = Officer(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
+  val applicant = Applicant(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
 
@@ -185,7 +185,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
     businessContact = Some(validBusinessContactDetails),
-    lodgingOfficer = Some(validFullLodgingOfficer),
+    applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validBankAccount),
@@ -198,7 +198,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     status = VatRegStatus.draft,
     id = testRegId,
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
-    lodgingOfficer = Some(emptyLodgingOfficer),
+    applicantDetails = Some(emptyApplicantDetails),
     bankAccount = Some(validBankAccount),
     turnOverEstimates = Some(TurnoverEstimates(100L))
   )

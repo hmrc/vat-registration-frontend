@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 @Singleton
 class SummaryService @Inject()(val vrs: VatRegistrationService,
-                               val lodgingOfficerService: LodgingOfficerService,
+                               val applicantDetailsService: ApplicantDetailsService,
                                val sicAndComplianceService: SicAndComplianceService,
                                val flatRateService: FlatRateService,
                                val configConnector: ConfigConnector,
@@ -54,9 +54,9 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
 
   def getRegistrationSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
     for {
-      officer <- lodgingOfficerService.getLodgingOfficer
+      applicant <- applicantDetailsService.getApplicantDetails
       sac <- sicAndComplianceService.getSicAndCompliance
-      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(lodgingOfficer = Some(officer), sicAndCompliance = Some(sac))))
+      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(applicantDetails = Some(applicant), sicAndCompliance = Some(sac))))
     } yield summary
   }
 
@@ -67,8 +67,8 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
         vs.threshold,
         vs.returns
       ).section,
-      SummaryDirectorDetailsSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
-      SummaryDirectorAddressesSectionBuilder(vs.lodgingOfficer.getOrElse(throw new IllegalStateException("Missing Lodging Officer data to show summary"))).section,
+      SummaryDirectorDetailsSectionBuilder(vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary"))).section,
+      SummaryDirectorAddressesSectionBuilder(vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary"))).section,
       SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
       SummaryBusinessActivitiesSectionBuilder(vs.sicAndCompliance).section,
       SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,

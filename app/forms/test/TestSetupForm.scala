@@ -61,7 +61,7 @@ object TestSetupForm {
     "country" -> optional(text)
   )(VatContactTestSetup.apply)(VatContactTestSetup.unapply)
 
-  val vatLodgingOfficerTestSetup = mapping(
+  val vatApplicantDetailsTestSetup = mapping(
     "dobDay" -> optional(text),
     "dobMonth" -> optional(text),
     "dobYear" -> optional(text),
@@ -73,7 +73,7 @@ object TestSetupForm {
     "formernameChangeDay" -> optional(text),
     "formernameChangeMonth" -> optional(text),
     "formernameChangeYear" -> optional(text)
-  )(LodgingOfficerTestSetup.apply)(LodgingOfficerTestSetup.unapply)
+  )(ApplicantDetailsTestSetup.apply)(ApplicantDetailsTestSetup.unapply)
 
   val officeHomeAddressMapping = mapping(
     "line1" -> optional(text),
@@ -82,7 +82,7 @@ object TestSetupForm {
     "line4" -> optional(text),
     "postcode" -> optional(text),
     "country" -> optional(text)
-  )(OfficerHomeAddressTestSetup.apply)(OfficerHomeAddressTestSetup.unapply)
+  )(ApplicantHomeAddressTestSetup.apply)(ApplicantHomeAddressTestSetup.unapply)
 
   val officePreviousAddressMapping = mapping(
     "threeYears" -> optional(text),
@@ -92,7 +92,7 @@ object TestSetupForm {
     "line4" -> optional(text),
     "postcode" -> optional(text),
     "country" -> optional(text)
-  )(OfficerPreviousAddressTestSetup.apply)(OfficerPreviousAddressTestSetup.unapply)
+  )(ApplicantPreviousAddressTestSetup.apply)(ApplicantPreviousAddressTestSetup.unapply)
 
   val flatRateSchemeMapping = mapping(
     "joinFrs" -> optional(boolean),
@@ -136,9 +136,9 @@ object TestSetupForm {
   val form = Form(mapping(
     "vatContact" -> vatContactTestSetupMapping,
     "sicAndCompliance" -> sicAndComplianceTestSetupMapping,
-    "officerHomeAddress" -> officeHomeAddressMapping,
-    "officerPreviousAddress" -> officePreviousAddressMapping,
-    "vatLodgingOfficer" -> vatLodgingOfficerTestSetup,
+    "applicantHomeAddress" -> officeHomeAddressMapping,
+    "applicantPreviousAddress" -> officePreviousAddressMapping,
+    "vatApplicantDetails" -> vatApplicantDetailsTestSetup,
     "flatRateScheme" -> optional(flatRateSchemeMapping),
     "bankAccount" -> optional(bankAccountMapping),
     "returns" -> optional(returnsMapping),

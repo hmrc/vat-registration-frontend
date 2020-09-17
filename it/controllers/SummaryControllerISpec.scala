@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import it.fixtures.ITRegistrationFixtures
 import itutil.{IntegrationSpecBase, WiremockHelper}
-import models.view.LodgingOfficer
+import models.view.ApplicantDetails
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
@@ -39,17 +39,17 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
   val eligibilitySummaryUrl = (s: String) => s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE/foo?pageId=$s"
-  val officerJson = Json.parse(
+  val applicantJson = Json.parse(
     s"""
        |{
        |  "name": {
-       |    "first": "${validOfficer.name.forename}",
-       |    "middle": "${validOfficer.name.otherForenames}",
-       |    "last": "${validOfficer.name.surname}"
+       |    "first": "${validApplicant.name.forename}",
+       |    "middle": "${validApplicant.name.otherForenames}",
+       |    "last": "${validApplicant.name.surname}"
        |  },
-       |  "role": "${validOfficer.role}",
-       |  "dob": "$officerDob",
-       |  "nino": "$officerNino",
+       |  "role": "${validApplicant.role}",
+       |  "dob": "$applicantDob",
+       |  "nino": "$applicantNino",
        |  "details": {
        |    "currentAddress": {
        |      "line1": "${validCurrentAddress.line1}",
@@ -57,7 +57,7 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
        |      "postcode": "${validCurrentAddress.postcode}"
        |    },
        |    "contact": {
-       |      "email": "$officerEmail",
+       |      "email": "$applicantEmail",
        |      "tel": "1234",
        |      "mobile": "5678"
        |    },
@@ -98,11 +98,11 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
       given()
         .user.isAuthorised
         .vatScheme.contains(vatReg)
-        .vatScheme.has("officer-data", officerJson)
+        .vatScheme.has("applicant-details", applicantJson)
         .s4lContainer[SicAndCompliance].isEmpty
         .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
         .vatScheme.has("sicAndComp", SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
-        .s4lContainer[LodgingOfficer].isUpdatedWith(validFullLodgingOfficer)
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[SicAndCompliance].cleared
         .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
         .audit.writesAudit()

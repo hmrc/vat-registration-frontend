@@ -75,16 +75,16 @@ object FormerNameDateForm {
 object ContactDetailsForm {
   val EMAIL_MAX_LENGTH = 70
 
-  private val FORM_NAME = "officerContactDetails"
+  private val FORM_NAME = "applicantContactDetails"
 
   private val EMAIL = "email"
   private val DAYTIME_PHONE = "daytimePhone"
   private val MOBILE = "mobile"
   private val PROVIDE_ONE_CONTACT = "atLeastOneContact"
 
-  implicit val errorCode: ErrorCode = "officerContactDetails.email"
+  implicit val errorCode: ErrorCode = "applicantContactDetails.email"
 
-  private def validationError(field: String) = ValidationError(s"validation.officerContact.$field.missing", field)
+  private def validationError(field: String) = ValidationError(s"validation.applicantContact.$field.missing", field)
 
   val form = Form(
     mapping(
@@ -105,7 +105,7 @@ object HomeAddressForm {
 
   val form = Form(
     mapping(
-      ADDRESS_ID -> textMapping()("officerHomeAddress")
+      ADDRESS_ID -> textMapping()("applicantHomeAddress")
     )(HomeAddressView(_))(view => Option(view.addressId))
   )
 }

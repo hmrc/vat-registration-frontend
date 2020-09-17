@@ -21,7 +21,7 @@ import config.{AppConfig, FrontendAppConfig}
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models.CurrentProfile
-import models.external.{CoHoRegisteredOfficeAddress, Officer, OfficerList}
+import models.external.{CoHoRegisteredOfficeAddress, Applicant}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -56,7 +56,7 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
                      newReportAProblemNonJSUrl: String = "",
                      newTimeoutInSeconds: String = "",
                      newContactFrontendPartialBaseUrl: String = "",
-                     newAllowedOfficersList: Seq[Officer] = Seq(),
+                     newAllowedApplicantsList: Seq[Applicant] = Seq(),
                      newAllowedCompanyName: JsValue = Json.obj()) = new AppConfig {
     val analyticsToken: String = newAnalyticsToken
     val analyticsHost: String = newAnalyticsHost
@@ -73,7 +73,6 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
       Some("po_box"),
       Some("XX XX"),
       Some("region"))
-    val defaultOfficerList: OfficerList = OfficerList(newAllowedOfficersList)
     val betaFeedbackUrl: String = "http://feedbackUrl"
     val host: String = "http://localhost:9895"
   }

@@ -23,60 +23,61 @@
 @import views.html.helpers.templates._
 @import config.FrontendAppConfig
 @import viewmodels.VatRegViewErrorHelpers._
+@import controllers.registration.applicant.{routes => applicantRoutes}
 
-@(officerContactDetailsForm: Form[ContactDetailsView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(applicantContactDetailsForm: Form[ContactDetailsView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.officerContact.title")) {
+@main_template(title = messages("pages.applicantContact.title")) {
 
   @errorSummary(
     messages("app.common.errorSummaryLabel"),
-    officerContactDetailsForm
+    applicantContactDetailsForm
   )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.officerContact.heading")</h1>
-  <p>@Html(messages("pages.officerContact.p1"))</p>
+  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.applicantContact.heading")</h1>
+  <p>@Html(messages("pages.applicantContact.p1"))</p>
 
   <div class="panel panel-border-wide" id="details-content-0">
-      <p>@Html(messages("pages.officerContact.p2"))</p>
+      <p>@Html(messages("pages.applicantContact.p2"))</p>
   </div>
   <br />
 
-  @govHelpers.form(action = controllers.routes.OfficerController.submitContactDetails()) {
+  @govHelpers.form(action = applicantRoutes.ContactDetailsController.submit()) {
       <div class="form-group">
           <fieldset>
-            <legend class="visually-hidden">@messages("pages.officerContact.heading")</legend>
-              @officerContactDetailsForm.errors.find(_.args.contains("officerContactDetails")).map { error =>
-                  @govHelpers.errorInline("officerContactDetails", messages(error.message))
+            <legend class="visually-hidden">@messages("pages.applicantContact.heading")</legend>
+              @applicantContactDetailsForm.errors.find(_.args.contains("applicantContactDetails")).map { error =>
+                  @govHelpers.errorInline("applicantContactDetails", messages(error.message))
               }
 
-              <div id="atLeastOneContact" class="@if(doesFormHaveErrors(officerContactDetailsForm, "atLeastOneContact")){ form-group-error }">
+              <div id="atLeastOneContact" class="@if(doesFormHaveErrors(applicantContactDetailsForm, "atLeastOneContact")){ form-group-error }">
 
-              @getErrorsForArgument(officerContactDetailsForm, "atLeastOneContact").map { error =>
-                  @govHelpers.errorInline("officerContactDetails", messages(error.message))
+              @getErrorsForArgument(applicantContactDetailsForm, "atLeastOneContact").map { error =>
+                  @govHelpers.errorInline("applicantContactDetails", messages(error.message))
               }
               @vatInput(
-              officerContactDetailsForm("daytimePhone"),
+              applicantContactDetailsForm("daytimePhone"),
               '_type -> "tel",
               '_inputClass -> "form-control form-group",
               '_labelClass -> "cascading",
               '_maxlength -> 20,
-              '_label -> messages("pages.officerContact.daytimePhone.label")
+              '_label -> messages("pages.applicantContact.daytimePhone.label")
               )
               @vatInput(
-                  officerContactDetailsForm("email"),
+                  applicantContactDetailsForm("email"),
                   '_divClass -> "form-group",
                   '_inputClass -> "form-control",
                   '_labelClass -> "cascading",
                   '_maxlength -> 70,
-                  '_label -> messages("pages.officerContact.emailAddress.label")
+                  '_label -> messages("pages.applicantContact.emailAddress.label")
               )
               @vatInput(
-                  officerContactDetailsForm("mobile"),
+                  applicantContactDetailsForm("mobile"),
                   '_type -> "tel",
                   '_inputClass -> "form-control",
                   '_labelClass -> "cascading",
                   '_maxlength -> 20,
-                  '_label -> messages("pages.officerContact.mobile.label")
+                  '_label -> messages("pages.applicantContact.mobile.label")
               )
               </div>
 
