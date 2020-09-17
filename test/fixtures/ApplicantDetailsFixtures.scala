@@ -19,23 +19,16 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.ScrsAddress
-import models.external.{Name, Officer}
+import models.external.{Name, Applicant}
 import models.view._
 
-trait LodgingOfficerFixtures {
-
-  val validOfficer = Officer(
-    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
-    role = "Director"
-  )
-
-  val emptyLodgingOfficer = LodgingOfficer(None, None, None, None, None)
+trait ApplicantDetailsFixtures {
 
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
-  val validPartialLodgingOfficer = LodgingOfficer(
+  val emptyApplicantDetails = ApplicantDetails(
     homeAddress = None,
     contactDetails = None,
     formerName = None,
@@ -43,7 +36,7 @@ trait LodgingOfficerFixtures {
     previousAddress = None
   )
 
-  val validFullLodgingOfficer = LodgingOfficer(
+  val completeApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),

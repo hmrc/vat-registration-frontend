@@ -17,7 +17,7 @@
 package models.api
 
 import common.enums.VatRegStatus
-import models.view.LodgingOfficer
+import models.view.ApplicantDetails
 import models.{BankAccount, BusinessContact, FlatRateScheme, Returns, SicAndCompliance, TradingDetails, TurnoverEstimates}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -25,7 +25,7 @@ import play.api.libs.json._
 
 case class VatScheme(
                       id: String,
-                      lodgingOfficer: Option[LodgingOfficer] = None,
+                      applicantDetails: Option[ApplicantDetails] = None,
                       tradingDetails: Option[TradingDetails] = None,
                       sicAndCompliance: Option[SicAndCompliance] = None,
                       businessContact: Option[BusinessContact] = None,
@@ -40,7 +40,7 @@ case class VatScheme(
 object VatScheme {
   implicit val format: OFormat[VatScheme] = (
       (__ \ "registrationId").format[String] and
-      (__ \ "lodgingOfficer").formatNullable[LodgingOfficer].inmap[Option[LodgingOfficer]](_ => Option.empty[LodgingOfficer], _ => Option.empty[LodgingOfficer]) and
+      (__ \ "applicantDetails").formatNullable[ApplicantDetails].inmap[Option[ApplicantDetails]](_ => Option.empty[ApplicantDetails], _ => Option.empty[ApplicantDetails]) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance](SicAndCompliance.apiFormat)
         .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and

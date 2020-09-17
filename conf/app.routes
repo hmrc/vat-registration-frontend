@@ -113,29 +113,29 @@ POST        /company-contact-details                                            
 
 
 ## OFFICER ADDRESS PAGE
-GET         /home-address                                                                       controllers.OfficerController.showHomeAddress
-POST        /home-address                                                                       controllers.OfficerController.submitHomeAddress
-GET         /home-address/acceptFromTxm                                                         controllers.OfficerController.acceptFromTxmHomeAddress(id: String ?= "")
+GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.show
+POST        /home-address                                                                      controllers.registration.applicant.HomeAddressController.submit
+GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
 
 
 ## OFFICER CONTACT DETAILS PAGE
-GET         /contact-application                                                               controllers.OfficerController.showContactDetails
-POST        /contact-application                                                               controllers.OfficerController.submitContactDetails
+GET         /contact-application                                                               controllers.registration.applicant.ContactDetailsController.show
+POST        /contact-application                                                               controllers.registration.applicant.ContactDetailsController.submit
 
 ## FORMER NAME PAGE
-GET         /changed-name                                                                      controllers.OfficerController.showFormerName
-POST        /changed-name                                                                      controllers.OfficerController.submitFormerName
+GET         /changed-name                                                                      controllers.registration.applicant.FormerNameController.show
+POST        /changed-name                                                                      controllers.registration.applicant.FormerNameController.submit
 
 ## FORMER NAME DATE PAGE
-GET         /when-change                                                                       controllers.OfficerController.showFormerNameDate
-POST        /when-change                                                                       controllers.OfficerController.submitFormerNameDate
+GET         /when-change                                                                       controllers.registration.applicant.FormerNameDateController.show
+POST        /when-change                                                                       controllers.registration.applicant.FormerNameDateController.submit
 
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address                                                                   controllers.OfficerController.showPreviousAddress
-POST        /current-address                                                                   controllers.OfficerController.submitPreviousAddress
-GET         /current-address/changePreviousAddress                                             controllers.OfficerController.changePreviousAddress
-GET         /current-address/acceptFromTxm                                                     controllers.OfficerController.acceptFromTxmPreviousAddress(id: String ?= "")
+GET         /current-address                                                                   controllers.registration.applicant.PreviousAddressController.show
+POST        /current-address                                                                   controllers.registration.applicant.PreviousAddressController.submit
+GET         /current-address/changePreviousAddress                                             controllers.registration.applicant.PreviousAddressController.change
+GET         /current-address/acceptFromTxm                                                     controllers.registration.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
 
 ## SUMMARY
 GET         /check-confirm-answers                                                             controllers.SummaryController.show

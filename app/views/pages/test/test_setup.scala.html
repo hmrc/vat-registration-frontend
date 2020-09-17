@@ -85,52 +85,52 @@
 
             <b>VAT LODGING OFFICER</b>
 
-            <p><em>Officer's Role and Name</em></p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.role"),   '_label -> "Role (director or secretary)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.firstname"),   '_label -> "First name") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.othernames"), '_label -> "Other names") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.surname"),  '_label -> "Surname") </p>
+            <p><em>Applicant's Role and Name</em></p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.role"),   '_label -> "Role (director or secretary)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.firstname"),   '_label -> "First name") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.othernames"), '_label -> "Other names") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.surname"),  '_label -> "Surname") </p>
 
-            <em>Officer's Former Name</em>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.formernameChoice"), '_label -> "Former name choice (true, false)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.formername"), '_label -> "Former name") </p>
+            <em>Applicant's Former Name</em>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.formernameChoice"), '_label -> "Former name choice (true, false)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.formername"), '_label -> "Former name") </p>
 
-            <em>Officer's Former Name Changed Date</em>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.formernameChangeDay"),   '_label -> "Day (1 - 31)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.formernameChangeMonth"), '_label -> "Month (1 - 12)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.formernameChangeYear"),  '_label -> "Year (1900 - present)") </p>
+            <em>Applicant's Former Name Changed Date</em>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.formernameChangeDay"),   '_label -> "Day (1 - 31)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.formernameChangeMonth"), '_label -> "Month (1 - 12)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.formernameChangeYear"),  '_label -> "Year (1900 - present)") </p>
 
-            <em>Officer's Date of Birth</em>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.dobDay"),   '_label -> "Day (1 - 31)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.dobMonth"), '_label -> "Month (1 - 12)") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.dobYear"),  '_label -> "Year (1900 - present)") </p>
+            <em>Applicant's Date of Birth</em>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.dobDay"),   '_label -> "Day (1 - 31)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.dobMonth"), '_label -> "Month (1 - 12)") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.dobYear"),  '_label -> "Year (1900 - present)") </p>
 
-            <em>Officer's National Insurance number</em>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.nino"),   '_label -> "Nino (eg. NB686868D)") </p>
+            <em>Applicant's National Insurance number</em>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.nino"),   '_label -> "Nino (eg. NB686868D)") </p>
 
-            <em>Officer's Contact Details</em>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.email"), '_label -> "Email") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.mobile"), '_label -> "Mobile number") </p>
-            <p>@vatInput(testSetupForm("vatLodgingOfficer.phone"), '_label -> "Daytime phone number") </p>
+            <em>Applicant's Contact Details</em>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.email"), '_label -> "Email") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.mobile"), '_label -> "Mobile number") </p>
+            <p>@vatInput(testSetupForm("vatApplicantDetails.phone"), '_label -> "Daytime phone number") </p>
 
-            <em>Officer's Home Address</em>
-            <p>@vatInput(testSetupForm("officerHomeAddress.line1"), '_label -> "Line 1") </p>
-            <p>@vatInput(testSetupForm("officerHomeAddress.line2"), '_label -> "Line 2")</p>
-            <p>@vatInput(testSetupForm("officerHomeAddress.line3"), '_label -> "Line 3")</p>
-            <p>@vatInput(testSetupForm("officerHomeAddress.line4"), '_label -> "Line 4")</p>
-            <p>@vatInput(testSetupForm("officerHomeAddress.postcode"), '_label -> "Post code")</p>
-            <p>@vatInput(testSetupForm("officerHomeAddress.country"), '_label -> "Country")</p>
+            <em>Applicant's Home Address</em>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.line1"), '_label -> "Line 1") </p>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.line2"), '_label -> "Line 2")</p>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.line3"), '_label -> "Line 3")</p>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.line4"), '_label -> "Line 4")</p>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.postcode"), '_label -> "Post code")</p>
+            <p>@vatInput(testSetupForm("applicantHomeAddress.country"), '_label -> "Country")</p>
 
-            <em>Officer's Previous Address</em>
+            <em>Applicant's Previous Address</em>
 
-            <p>@vatInput(testSetupForm("officerPreviousAddress.threeYears"), '_label -> "Three years or more (true or false)") </p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.threeYears"), '_label -> "Three years or more (true or false)") </p>
 
-            <p>@vatInput(testSetupForm("officerPreviousAddress.line1"), '_label -> "Line 1") </p>
-            <p>@vatInput(testSetupForm("officerPreviousAddress.line2"), '_label -> "Line 2")</p>
-            <p>@vatInput(testSetupForm("officerPreviousAddress.line3"), '_label -> "Line 3")</p>
-            <p>@vatInput(testSetupForm("officerPreviousAddress.line4"), '_label -> "Line 4")</p>
-            <p>@vatInput(testSetupForm("officerPreviousAddress.postcode"), '_label -> "Post code")</p>
-            <p>@vatInput(testSetupForm("officerPreviousAddress.country"), '_label -> "Country")</p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.line1"), '_label -> "Line 1") </p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.line2"), '_label -> "Line 2")</p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.line3"), '_label -> "Line 3")</p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.line4"), '_label -> "Line 4")</p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.postcode"), '_label -> "Post code")</p>
+            <p>@vatInput(testSetupForm("applicantPreviousAddress.country"), '_label -> "Country")</p>
 
             <b>VAT FRS</b>
             <p>@vatInput(testSetupForm("flatRateScheme.joinFrs"), '_label -> "Join FRS (true or false)") </p>

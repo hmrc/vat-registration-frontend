@@ -18,7 +18,7 @@ package models.view.test
 
 import play.api.libs.json.Json
 
-case class LodgingOfficerTestSetup(
+case class ApplicantDetailsTestSetup(
                                   dobDay: Option[String] = None,
                                   dobMonth: Option[String] = None,
                                   dobYear: Option[String] = None,
@@ -31,6 +31,6 @@ case class LodgingOfficerTestSetup(
                                   formernameChangeMonth: Option[String] = None,
                                   formernameChangeYear: Option[String] = None)
 
-object LodgingOfficerTestSetup {
-  implicit val format = Json.format[LodgingOfficerTestSetup]
+object ApplicantDetailsTestSetup {
+  implicit val format = Json.format[ApplicantDetailsTestSetup]
 }

@@ -24,7 +24,7 @@ import models.api.ScrsAddress
 import models.view._
 import testHelpers.VatRegSpec
 
-class OfficerFormsSpec extends VatRegSpec {
+class ApplicantFormsSpec extends VatRegSpec {
 
 
   "FormerNameForm" should {
@@ -209,7 +209,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveGlobalErrors "validation.officerContact.atLeastOneContact.missing"
+      boundForm shouldHaveGlobalErrors "validation.applicantContact.atLeastOneContact.missing"
     }
 
     "have the correct error if invalid email is provided" in {
@@ -220,7 +220,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("email" -> "validation.officerContactDetails.email.invalid")
+      boundForm shouldHaveErrors Seq("email" -> "validation.applicantContactDetails.email.invalid")
     }
 
     "have the correct error if too long email is provided" in {
@@ -231,7 +231,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("email" -> "validation.officerContactDetails.email.maxlen")
+      boundForm shouldHaveErrors Seq("email" -> "validation.applicantContactDetails.email.maxlen")
     }
 
     "have the correct error if too short daytimePhone is provided" in {
@@ -242,7 +242,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails.tooShort")
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.applicantContactDetails.tooShort")
     }
 
     "have the correct error if too short mobile is provided" in {
@@ -253,7 +253,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails.tooShort")
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.applicantContactDetails.tooShort")
     }
 
     "have the correct error if too long mobile is provided" in {
@@ -264,7 +264,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails.tooLong")
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.applicantContactDetails.tooLong")
     }
 
     "have the correct error if too long daytimePhone is provided" in {
@@ -275,7 +275,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails.tooLong")
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.applicantContactDetails.tooLong")
     }
 
     "have the correct error if invalid daytimePhone is provided" in {
@@ -286,7 +286,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.officerContactDetails")
+      boundForm shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.applicantContactDetails")
     }
 
     "have the correct error if invalid mobile is provided" in {
@@ -297,7 +297,7 @@ class OfficerFormsSpec extends VatRegSpec {
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.officerContactDetails")
+      boundForm shouldHaveErrors Seq("mobile" -> "validation.invalid.applicantContactDetails")
     }
 
     "Unbind successfully with full data" in {
@@ -311,7 +311,7 @@ class OfficerFormsSpec extends VatRegSpec {
     }
   }
 
-  "OfficerHomeAddressForm" should {
+  "ApplicantHomeAddressForm" should {
     val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val testForm = HomeAddressForm.form
     val testData = HomeAddressView(address.id, Some(address))
@@ -333,7 +333,7 @@ class OfficerFormsSpec extends VatRegSpec {
       val data: Map[String, String] = Map()
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq(ADDRESS_ID -> "validation.officerHomeAddress.missing")
+      boundForm shouldHaveErrors Seq(ADDRESS_ID -> "validation.applicantHomeAddress.missing")
     }
 
     "Unbind successfully with full data" in {

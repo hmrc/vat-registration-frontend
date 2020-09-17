@@ -23,7 +23,7 @@ import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.S4LKey
 import models.api.{SicCode, VatScheme}
-import models.external.{CoHoRegisteredOfficeAddress, Officer}
+import models.external.{CoHoRegisteredOfficeAddress, Applicant}
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -341,13 +341,13 @@ trait StubUtils {
       builder
     }
 
-    def hasOfficerList(officerList: Seq[Officer]): PreconditionBuilder = {
+    def hasApplicantList(applicantList: Seq[Applicant]): PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo(s"/incorporation-information/000-431-TEST/officer-list"))
+        get(urlPathEqualTo(s"/incorporation-information/000-431-TEST/applicant-list"))
           .willReturn(ok(
             s"""
                |{
-               |  "officers": ${Json.toJson(officerList).as[JsArray]}
+               |  "applicants": ${Json.toJson(applicantList).as[JsArray]}
                |}
              """.stripMargin
           )))
@@ -794,7 +794,7 @@ trait StubUtils {
   (id: String, line1: String, line2: String, country: String, postcode: String)
   (implicit builder: PreconditionBuilder) {
 
-    val confirmedAddressPath = s""".*/api/confirmed[?]id=$id"""
+    val confirmedAddressPath = s""".*/api/v2/confirmed[?]id=$id"""
 
     def isFound: PreconditionBuilder = {
       stubFor(

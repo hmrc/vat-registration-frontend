@@ -21,8 +21,8 @@ trait ModelKeys {
 }
 object ModelKeys {
 
-  implicit val OFFICER_LIST_KEY = "OfficerList"
-  implicit val REGISTERING_OFFICER_KEY = "RegisteringOfficer"
+  implicit val OFFICER_LIST_KEY = "ApplicantList"
+  implicit val REGISTERING_OFFICER_KEY = "RegisteringApplicant"
   implicit val SIC_CODES_KEY = "SicCodes"
   implicit val FORMER_NAME = "FormerName"
   implicit val REGISTRATION_ID = "RegistrationId"

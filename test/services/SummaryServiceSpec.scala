@@ -30,7 +30,7 @@ class SummaryServiceSpec extends VatRegSpec {
   class Setup {
     val testService: SummaryService = new SummaryService(
       mockVatRegistrationService,
-      mockLodgingOfficerService,
+      mockApplicantDetailsServiceOld,
       mockSicAndComplianceService,
       mockFlatRateService,
       mockConfigConnector,
@@ -53,8 +53,8 @@ class SummaryServiceSpec extends VatRegSpec {
     "map a valid VatScheme object to a Summary object" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)))
-      when(mockLodgingOfficerService.getLodgingOfficer(any(), any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
+      when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
+        .thenReturn(Future.successful(completeApplicantDetails))
 
       testService.getRegistrationSummary.map(summary => summary.sections.length mustEqual 2)
     }
@@ -68,8 +68,8 @@ class SummaryServiceSpec extends VatRegSpec {
       testService.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
     }
     "map a valid empty VatScheme object to a Summary object" in new Setup {
-      when(mockLodgingOfficerService.getLodgingOfficer(any(), any()))
-        .thenReturn(Future.successful(validFullLodgingOfficer))
+      when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
+        .thenReturn(Future.successful(completeApplicantDetails))
 
       testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
 

@@ -22,7 +22,7 @@ import java.util.Base64
 import controllers.callbacks.routes
 import featureswitch.core.config._
 import javax.inject.{Inject, Singleton}
-import models.external.{CoHoRegisteredOfficeAddress, OfficerList}
+import models.external.CoHoRegisteredOfficeAddress
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json, Reads}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -38,7 +38,6 @@ trait AppConfig {
   val contactFrontendPartialBaseUrl: String
   val defaultCompanyName: JsValue
   val defaultCohoROA: CoHoRegisteredOfficeAddress
-  val defaultOfficerList: OfficerList
 }
 
 @Singleton
@@ -91,7 +90,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   // Defaulted Values for default regId
   lazy val defaultCompanyName: JsValue = loadJsonConfigBase64[JsValue]("default-company-name")
   lazy val defaultCohoROA: CoHoRegisteredOfficeAddress = loadJsonConfigBase64[CoHoRegisteredOfficeAddress]("default-coho-registered-office-address")
-  lazy val defaultOfficerList: OfficerList = loadJsonConfigBase64[OfficerList]("default-officer-list")(OfficerList.reads)
 
   lazy val noneOnsSicCodes = new String(
     Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")

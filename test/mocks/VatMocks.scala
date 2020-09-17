@@ -21,7 +21,7 @@ import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
-import services.{BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, LodgingOfficerService, ReturnsService, _}
+import services.{BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, ApplicantDetailsService, ReturnsService, _}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -61,7 +61,7 @@ trait VatMocks
   implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockReturnsService = mock[ReturnsService]
-  implicit lazy val mockLodgingOfficerService = mock[LodgingOfficerService]
+  implicit lazy val mockApplicantDetailsServiceOld = mock[ApplicantDetailsService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockPrePopulationService: PrePopulationService = mock[PrePopulationService]
   lazy val mockTradingDetailsService = mock[TradingDetailsService]
@@ -90,7 +90,7 @@ trait VatMocks
       mockAddressLookupConnector,
       mockCurrentProfileService,
       mockReturnsService,
-      mockLodgingOfficerService,
+      mockApplicantDetailsServiceOld,
       mockFlatRateService,
       mockSicAndComplianceService,
       mockMessagesAPI,
