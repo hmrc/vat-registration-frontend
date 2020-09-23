@@ -29,5 +29,6 @@ GET         /personal-details-validation/:validationId        controllers.test.P
 
 + nocsrf
 POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
+
 + nocsrf
 POST        /api/verify-passcode                              controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode

@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.test
+package forms.constraints.utils
 
-import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.data.validation.{Invalid, Valid, ValidationResult}
 
-@Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
+object ValidationHelper {
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
-  )
+  def validate(constraint: Boolean, errMsg: String): ValidationResult = if (constraint) Invalid(errMsg) else Valid
+
+  def validateNot(constraint: Boolean, errMsg: String): ValidationResult = validate(!constraint, errMsg)
+
 }

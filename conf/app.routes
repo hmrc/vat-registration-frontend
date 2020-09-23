@@ -189,6 +189,16 @@ POST        /confirm-business-type                                              
 GET         /flat-rate-date                                                                    controllers.FlatRateController.frsStartDatePage
 POST        /flat-rate-date                                                                    controllers.FlatRateController.submitFrsStartDate
 
+## Email Verification Pages
+GET         /email-address                                                                     controllers.CaptureEmailAddressController.show
+POST        /email-address                                                                     controllers.CaptureEmailAddressController.submit
+
+GET         /email-address-verification                                                        controllers.CaptureEmailPasscodeController.show
+POST        /email-address-verification                                                        controllers.CaptureEmailPasscodeController.submit
+
+GET         /email-address-verified                                                            controllers.EmailAddressVerifiedController.show
+POST        /email-address-verified                                                            controllers.EmailAddressVerifiedController.submit
+
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed

@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package models.external
+package forms
 
-sealed trait EmailVerificationResult
+import forms.constraints.EmailAddressConstraints
+import play.api.data.Form
+import play.api.data.Forms.{single, text}
 
-case object RequestEmailPasscodeSuccessful extends EmailVerificationResult
-case object EmailAlreadyVerified extends EmailVerificationResult
-case object EmailVerifiedSuccessfully extends EmailVerificationResult
+object EmailAddressForm {
+
+  val emailKey = "email-address"
+
+  val form: Form[String] =
+    Form(
+      single(
+        emailKey -> text.verifying(EmailAddressConstraints.emailAddressFormat)
+      )
+    )
+
+}

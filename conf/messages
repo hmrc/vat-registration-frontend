@@ -727,3 +727,23 @@ pages.honesty-declaration.title                         = Declaration
 pages.honesty-declaration.heading                       = Declaration
 pages.honesty-declaration.paragraph                     = By submitting this application to register for VAT, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.
 pages.honesty-declaration.button                        = Accept and continue
+
+## CAPTURE EMAIL ADDRESS MESSAGES
+capture-email-address.title                             = What''s your email address?
+capture-email-address.heading                           = What''s your email address?
+capture-email-address.paragraph                         = We use this to send you communications and updates about your VAT
+capture-email-address.privacyInformation                = Full details of how we use your information are in the <a href="{0}" target="_blank">HMRC Privacy Notice (opens in a new tab)</a>.
+capture-email-address.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
+
+## CAPTURE EMAIL PASSCODE MESSAGES
+capture-email-passcode.title                            = Enter code to confirm your email address
+capture-email-passcode.heading                          = Enter code to confirm your email address
+capture-email-passcode.paragraph                        = We have sent a code to: <strong>{0}.</strong>
+capture-email-passcode.inset-text                       = If you use a browser to access your email, you may need to open a new window or tab to see the code.
+capture-email-passcode.label                            = Confirmation code
+capture-email-passcode.hint                             = For example, DNCLRK
+capture-email-passcode.error.incorrect_passcode         = Enter the correct confirmation code
+capture-email-passcode.error.nothing_entered            = Enter the 6 digit confirmation code
+
+## EMAIL VERIFIED MESSAGES
+email-verified.title                                    = Email address confirmed

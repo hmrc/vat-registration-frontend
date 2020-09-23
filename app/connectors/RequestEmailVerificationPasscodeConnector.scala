@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.external.{EmailAlreadyVerified, EmailVerificationResult, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
 import play.api.http.Status.{CONFLICT, CREATED}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, Upstream4xxResponse}
@@ -31,7 +31,7 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
                                                           config: FrontendAppConfig
                                                          )(implicit ec: ExecutionContext) {
 
-  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier): Future[EmailVerificationResult] = {
+  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier): Future[RequestEmailPasscodeResult] = {
 
     val url = config.requestEmailVerificationPasscodeUrl()
 
@@ -40,7 +40,7 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
     httpClient.POST(url, jsonBody).map {
       case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
     }.recover {
-      case Upstream4xxResponse(_, CONFLICT, _, _) => EmailAlreadyVerified
+      case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
     }
   }
 
