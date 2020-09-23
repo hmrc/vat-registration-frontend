@@ -132,11 +132,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     s"$host/register-for-vat/personal-details-validation-callback"
 
   def requestEmailVerificationPasscodeUrl(): String =
-    if (isEnabled(StubEmailVerification)) s"$host/test-only/api/request-passcode"
+    if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/request-passcode"
     else s"$emailVerificationBaseUrl/email-verification/request-passcode"
 
   def verifyEmailVerificationPasscodeUrl(): String =
-    if (isEnabled(StubEmailVerification)) s"$host/test-only/api/verify-passcode"
+    if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/verify-passcode"
     else s"$emailVerificationBaseUrl/email-verification/verify-passcode"
+
+  lazy val privacyNoticeUrl = "https://www.gov.uk/government/publications/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you"
 
 }

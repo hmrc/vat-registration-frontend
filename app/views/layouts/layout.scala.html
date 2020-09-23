@@ -20,6 +20,7 @@
 
 @this(hmrcBanner: HmrcBanner,
     govukBackLink: GovukBackLink,
+    govukLayout: GovukLayout,
     phaseBanner: components.phaseBanner
 )
 
@@ -35,7 +36,7 @@
     @phaseBanner("alpha")
     @hmrcBanner(Banner(if(messages.lang.code == "cy") {Cy} else {En}))
 
-    @if(backLink == true) {
+    @if(backLink) {
         @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
     }
 }
@@ -46,7 +47,7 @@
     <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
 }
 
-@GovukLayout(
+@govukLayout(
     pageTitle = pageTitle,
     headBlock = Some(head),
     beforeContentBlock = Some(beforeContentBlock),

@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.test
+package models.external
 
-import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+sealed trait RequestEmailPasscodeResult
 
-@Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
-
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
-  )
-}
+case object RequestEmailPasscodeSuccessful extends RequestEmailPasscodeResult
+case object AlreadyVerifiedEmailAddress extends RequestEmailPasscodeResult
