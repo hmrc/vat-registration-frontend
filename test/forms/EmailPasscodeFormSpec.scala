@@ -26,8 +26,8 @@ class EmailPasscodeFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val passcodeForm: Form[String] = EmailPasscodeForm.form
   val testPasscode: String = "ABCDEF"
   val maxPasscodeLength: Int = 6
-  val invalid_format_error_key: String = "capture-email-passcode.error.incorrect_passcode"
-  val passcode_not_entered_error_key: String = "capture-email-passcode.error.nothing_entered"
+  val incorrect_format_error_key: String = "capture-email-passcode.error.incorrect_passcode"
+  val incorrect_length_error_key: String = "capture-email-passcode.error.incorrect_length"
 
   "The passcodeForm" should {
     "validate that testPasscode is valid" in {
@@ -36,10 +36,16 @@ class EmailPasscodeFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form shouldBe Some(testPasscode)
     }
 
-    "validate that data has been entered" in {
+    "validate that the field is not empty" in {
       val formWithError = passcodeForm.bind(Map(EmailPasscodeForm.passcodeKey -> ""))
 
-      formWithError.errors should contain(FormError(EmailPasscodeForm.passcodeKey, passcode_not_entered_error_key))
+      formWithError.errors should contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
+    }
+
+    "validate that the passcode is not greater than 6 characters" in {
+      val formWithError = passcodeForm.bind(Map(EmailPasscodeForm.passcodeKey -> "1234567"))
+
+      formWithError.errors should contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
     }
   }
 

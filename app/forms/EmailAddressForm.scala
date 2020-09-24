@@ -17,6 +17,7 @@
 package forms
 
 import forms.constraints.EmailAddressConstraints
+import forms.constraints.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 
@@ -27,7 +28,7 @@ object EmailAddressForm {
   val form: Form[String] =
     Form(
       single(
-        emailKey -> text.verifying(EmailAddressConstraints.emailAddressFormat)
+        emailKey -> text.verifying(EmailAddressConstraints.emailAddressLength andThen EmailAddressConstraints.emailAddressFormat)
       )
     )
 
