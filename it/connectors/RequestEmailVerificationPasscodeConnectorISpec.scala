@@ -18,7 +18,7 @@ package connectors
 
 import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
 import itutil.IntegrationSpecBase
-import models.external.{EmailAlreadyVerified, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeSuccessful}
 import play.api.test.Helpers._
 import support.AppAndStubs
 
@@ -33,7 +33,7 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
       "the feature switch is enabled and successfully calls the stub" in {
         enable(StubEmailVerification)
 
-        stubPost("/test-only/api/request-passcode", CREATED, "")
+        stubPost("/register-for-vat/test-only/api/request-passcode", CREATED, "")
 
         val res = await(connector.requestEmailVerificationPasscode(testEmail))
 
@@ -45,11 +45,11 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
       "the feature switch is enabled and the stub returns Conflict" in {
         enable(StubEmailVerification)
 
-        stubPost("/test-only/api/request-passcode", CONFLICT, "")
+        stubPost("/register-for-vat/test-only/api/request-passcode", CONFLICT, "")
 
         val res = await(connector.requestEmailVerificationPasscode(testEmail))
 
-        res mustBe EmailAlreadyVerified
+        res mustBe AlreadyVerifiedEmailAddress
       }
     }
 
@@ -73,7 +73,7 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
 
         val res = await(connector.requestEmailVerificationPasscode(testEmail))
 
-        res mustBe EmailAlreadyVerified
+        res mustBe AlreadyVerifiedEmailAddress
       }
     }
   }

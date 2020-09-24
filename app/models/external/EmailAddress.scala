@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.test
+package models.external
 
-import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
+import models.S4LKey
 import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-@Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
+case class EmailAddress(email: String)
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
-  )
+object EmailAddress {
+  implicit val emailAddress: S4LKey[EmailAddress] = S4LKey("email-address")
+  implicit val format = Json.format[EmailAddress]
 }

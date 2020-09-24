@@ -22,10 +22,11 @@ import play.api.mvc.{Action, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
-class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponents)
+  extends FrontendController(mcc) {
 
-  val requestEmailVerificationPasscode: Action[JsValue] = Action(parse.json){
-    implicit request =>
+  def requestEmailVerificationPasscode: Action[JsValue] = Action(parse.json) {
+     request =>
       val email = (request.body \ "email").as[String]
 
       email match {
@@ -34,8 +35,8 @@ class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponent
       }
   }
 
-  val verifyEmailVerificationPasscode: Action[JsValue] = Action(parse.json){
-    implicit request =>
+  def verifyEmailVerificationPasscode: Action[JsValue] = Action(parse.json) {
+     request =>
       val passcode = (request.body \ "passcode").as[String]
 
       passcode match {

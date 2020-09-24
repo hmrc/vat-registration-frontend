@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.test
+package forms.constraints
 
-import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import forms.constraints.utils.ValidationHelper.validate
+import play.api.data.validation.Constraint
 
-@Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
+object EmailPasscodeConstraints {
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
+  def emailPasscodeEmpty: Constraint[String] = Constraint("email_passcode.not_entered")(
+    emailPasscode => validate(
+      constraint = emailPasscode.isEmpty,
+      errMsg = "capture-email-passcode.error.nothing_entered"
+    )
   )
+
 }
