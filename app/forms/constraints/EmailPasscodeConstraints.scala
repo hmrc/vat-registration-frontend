@@ -21,10 +21,12 @@ import play.api.data.validation.Constraint
 
 object EmailPasscodeConstraints {
 
-  def emailPasscodeEmpty: Constraint[String] = Constraint("email_passcode.not_entered")(
+  private val passcodeMaxLength = 6
+
+  def emailPasscodeLength: Constraint[String] = Constraint("email_passcode.incorrect_length")(
     emailPasscode => validate(
-      constraint = emailPasscode.isEmpty,
-      errMsg = "capture-email-passcode.error.nothing_entered"
+      constraint = emailPasscode.isEmpty || emailPasscode.trim.length > passcodeMaxLength,
+      errMsg = "capture-email-passcode.error.incorrect_length"
     )
   )
 
