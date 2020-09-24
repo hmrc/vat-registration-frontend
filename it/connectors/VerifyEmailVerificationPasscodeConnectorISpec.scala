@@ -27,15 +27,16 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
   lazy val connector: VerifyEmailVerificationPasscodeConnector = app.injector.instanceOf[VerifyEmailVerificationPasscodeConnector]
 
   lazy val testPasscode: String = "123456"
+  lazy val testEmail: String = "test@test.com"
 
   "verifyEmailVerificationPasscode" should {
     "return a successful response" when {
       "the feature switch is enabled ans the stub returns Created" in {
         enable(StubEmailVerification)
 
-        stubPost("/test-only/api/verify-passcode", CREATED, "")
+        stubPost("/register-for-vat/test-only/api/verify-passcode", CREATED, "")
 
-        val res = await(connector.verifyEmailVerificationPasscode(testPasscode))
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
 
         res mustBe EmailVerifiedSuccessfully
       }
@@ -45,9 +46,9 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
       "the feature switch is enabled ans the stub returns NoContent" in {
         enable(StubEmailVerification)
 
-        stubPost("/test-only/api/verify-passcode", NO_CONTENT, "")
+        stubPost("/register-for-vat/test-only/api/verify-passcode", NO_CONTENT, "")
 
-        val res = await(connector.verifyEmailVerificationPasscode(testPasscode))
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
 
         res mustBe EmailAlreadyVerified
       }
@@ -59,7 +60,7 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
 
         stubPost("/email-verification/verify-passcode", CREATED, "")
 
-        val res = await(connector.verifyEmailVerificationPasscode(testPasscode))
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
 
         res mustBe EmailVerifiedSuccessfully
       }
@@ -71,7 +72,7 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
 
         stubPost("/email-verification/verify-passcode", NO_CONTENT, "")
 
-        val res = await(connector.verifyEmailVerificationPasscode(testPasscode))
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
 
         res mustBe EmailAlreadyVerified
       }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package controllers.test
+package forms
 
-import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import forms.constraints.EmailPasscodeConstraints
+import play.api.data.Form
+import play.api.data.Forms.{single, text}
 
-@Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
+object EmailPasscodeForm {
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
+  val passcodeKey = "email-passcode"
+
+  val form: Form[String] = Form(
+    single(
+      passcodeKey -> text.verifying(EmailPasscodeConstraints.emailPasscodeEmpty)
+    )
   )
+
 }

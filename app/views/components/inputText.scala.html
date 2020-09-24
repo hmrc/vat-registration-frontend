@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@this()
+@this(govukInput: GovukInput)
 
 @(
         form: Form[_],
@@ -30,14 +30,14 @@
         inputType: String = "text"
 )(implicit messages: Messages)
 
-@GovukInput(Input(
+@govukInput(Input(
   id,
   name,
   classes = classes.fold("")(x => x),
   label = Label(
     content = Text(messages(label, headingMessageArgs:_*)),
     isPageHeading = isPageHeading,
-    classes = if(isPageHeading) "govuk-label--xl" else "govuk-visually-hidden"
+    classes = if(isPageHeading) "govuk-label--l" else if (hint.isDefined) "govuk-!-font-weight-bold" else "govuk-visually-hidden"
   ),
   hint = hint.map(hintHtml => Hint(
       content = HtmlContent(hintHtml)

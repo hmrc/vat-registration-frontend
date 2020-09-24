@@ -16,7 +16,7 @@
 
 package mocks
 
-import models.external.EmailVerificationResult
+import models.external.{RequestEmailPasscodeResult, VerifyEmailPasscodeResult}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,12 +30,15 @@ trait EmailVerificationServiceMock {
 
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
-  def mockRequestEmailVerificationPasscode(email: String)(response: Future[EmailVerificationResult]): Unit =
+  def mockRequestEmailVerificationPasscode(email: String)(response: Future[RequestEmailPasscodeResult]): Unit =
     when(mockEmailVerificationService.requestEmailVerificationPasscode(ArgumentMatchers.eq(email))(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 
-  def mockVerifyEmailVerificationPasscode(passcode: String)(response: Future[EmailVerificationResult]): Unit =
-    when(mockEmailVerificationService.verifyEmailVerificationPasscode(ArgumentMatchers.eq(passcode))(ArgumentMatchers.any[HeaderCarrier]))
+  def mockVerifyEmailVerificationPasscode(email: String, passcode: String)(response: Future[VerifyEmailPasscodeResult]): Unit =
+    when(mockEmailVerificationService.verifyEmailVerificationPasscode(
+      ArgumentMatchers.eq(email),
+      ArgumentMatchers.eq(passcode)
+    )(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 
 }
