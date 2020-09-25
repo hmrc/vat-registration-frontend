@@ -30,10 +30,19 @@ object EmailAddressConstraints {
     |[0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\
     |x09\x0b\x0c\x0e-\x7f])+)\])$""".stripMargin
 
+  private val emailMaxLength = 132
+
   def emailAddressFormat: Constraint[String] = Constraint("email_address.incorrect_format")(
     emailAddress => validateNot(
       constraint = emailAddress matches emailRegex,
       errMsg = "capture-email-address.error.incorrect_format"
+    )
+  )
+
+  def emailAddressLength: Constraint[String] = Constraint("email_address.incorrect_format")(
+    emailAddress => validate(
+      constraint = emailAddress.isEmpty || emailAddress.trim.length > emailMaxLength,
+      errMsg = "capture-email-address.error.incorrect_length"
     )
   )
 

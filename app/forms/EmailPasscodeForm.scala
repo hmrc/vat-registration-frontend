@@ -26,7 +26,7 @@ object EmailPasscodeForm {
 
   val form: Form[String] = Form(
     single(
-      passcodeKey -> text.verifying(EmailPasscodeConstraints.emailPasscodeEmpty)
+      passcodeKey -> text.verifying(EmailPasscodeConstraints.emailPasscodeLength)
     )
   )
 
