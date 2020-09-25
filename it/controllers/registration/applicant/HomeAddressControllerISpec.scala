@@ -53,7 +53,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
   val postcode = "TE1 1ST"
 
   val applicant = Applicant(
-    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
     role = role
   )
 
@@ -112,17 +112,15 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
            |  "role": "Director",
            |  "dob": "1998-07-12",
            |  "nino": "AA112233Z",
-           |  "details": {
-           |    "currentAddress": {
-           |      "line1": "$addressLine1",
-           |      "line2": "$addressLine2",
-           |      "postcode": "$addressPostcode"
-           |    },
-           |    "contact": {
-           |      "email": "test@t.test",
-           |      "tel": "1234",
-           |      "mobile": "5678"
-           |    }
+           |  "currentAddress": {
+           |    "line1": "$addressLine1",
+           |    "line2": "$addressLine2",
+           |    "postcode": "$addressPostcode"
+           |  },
+           |  "contact": {
+           |    "email": "test@t.test",
+           |    "tel": "1234",
+           |    "mobile": "5678"
            |  }
            |}""".stripMargin)
 
@@ -143,10 +141,10 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PreviousAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe addressLine1
-        (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe addressLine2
-        (json \ "details" \ "currentAddress" \ "country").as[JsString].value mustBe addressCountry
-        (json \ "details" \ "currentAddress" \ "postcode").as[JsString].value mustBe addressPostcode
+        (json \ "currentAddress" \ "line1").as[JsString].value mustBe addressLine1
+        (json \ "currentAddress" \ "line2").as[JsString].value mustBe addressLine2
+        (json \ "currentAddress" \ "country").as[JsString].value mustBe addressCountry
+        (json \ "currentAddress" \ "postcode").as[JsString].value mustBe addressPostcode
       }
     }
   }

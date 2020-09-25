@@ -43,9 +43,9 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
     s"""
        |{
        |  "name": {
-       |    "first": "${validApplicant.name.forename}",
-       |    "middle": "${validApplicant.name.otherForenames}",
-       |    "last": "${validApplicant.name.surname}"
+       |    "first": "${validApplicant.name.first}",
+       |    "middle": "${validApplicant.name.middle}",
+       |    "last": "${validApplicant.name.last}"
        |  },
        |  "role": "${validApplicant.role}",
        |  "dob": "$applicantDob",

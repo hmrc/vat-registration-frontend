@@ -10,7 +10,7 @@ trait ApplicantDetailsFixture {
 
 
   def generateApplicant(first: String, middle: Option[String], last: String, role: String) = Applicant(
-    name = Name(forename = Some(first), otherForenames = middle, surname = last),
+    name = Name(first = Some(first), middle = middle, last = last),
     role = role
   )
 

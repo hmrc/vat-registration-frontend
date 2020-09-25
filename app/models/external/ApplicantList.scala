@@ -26,9 +26,9 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import deprecated.DeprecatedConstants.jodaDateTimeFormat
 
-case class Name(forename: Option[String],
-                otherForenames: Option[String],
-                surname: String,
+case class Name(first: Option[String],
+                middle: Option[String],
+                last: String,
                 title: Option[String] = None) {
 
   import cats.instances.option._
@@ -36,9 +36,9 @@ case class Name(forename: Option[String],
   import models.external.Name.inlineShow.inline
 
   val id: String = List(title,
-    forename,
-    otherForenames,
-    surname.pure
+    first,
+    middle,
+    last.pure
   ).flatten.mkString.replaceAll(" ", "")
 
   val asLabel: String = inline show this
@@ -46,20 +46,7 @@ case class Name(forename: Option[String],
 }
 
 object Name {
-  implicit val format: OFormat[Name] = (
-    (__ \ "forename").formatNullable[String] and
-      (__ \ "other_forenames").formatNullable[String] and
-      (__ \ "surname").format[String] and
-      (__ \ "title").formatNullable[String]
-    ) (Name.apply, unlift(Name.unapply))
-
-  val normalizeNameReads = (
-    (__ \ "forename").readNullable[String](Formatters.normalizeReads) and
-      (__ \ "other_forenames").readNullable[String](Formatters.normalizeReads) and
-      (__ \ "surname").read[String](Formatters.normalizeReads) and
-      (__ \ "title").readNullable[String](Formatters.normalizeReads)
-    ) (Name.apply _)
-
+  implicit val format: Format[Name] = Json.format[Name]
 
   private def normalisedSeq(name: Name): Seq[String] = {
     import cats.instances.option._
@@ -67,9 +54,9 @@ object Name {
 
     Seq[Option[String]](
       name.title,
-      name.forename,
-      name.otherForenames,
-      name.surname.pure
+      name.first,
+      name.middle,
+      name.last.pure
     ) flatMap (_ map WordUtils.capitalizeFully)
 
   }
@@ -103,7 +90,7 @@ case class Applicant(
 object Applicant {
 
   implicit val rd: Reads[Applicant] = (
-    (__ \ "name_elements").read[Name](Name.normalizeNameReads) and
+    (__ \ "name_elements").read[Name] and
       (__ \ "applicant_role").read[String] and
       (__ \ "resigned_on").readNullable[DateTime] and
       (__ \ "appointment_link").readNullable[String]

@@ -84,7 +84,8 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
     http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold-data").map {
-      result => if (result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get
+      result => println(s"\n\nEGG\n${result.body}\n\n\n")
+        if (result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get
     }.recover {
       case e => throw logResponse(e, "getThreshold")
     }
