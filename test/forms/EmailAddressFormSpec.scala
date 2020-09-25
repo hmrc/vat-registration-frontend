@@ -25,7 +25,8 @@ class EmailAddressFormSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   val emailForm: Form[String] = EmailAddressForm.form
   val testEmail: String = "test@test.com"
-  val invalid_email_format_error_key: String = "capture-email-address.error.incorrect_format"
+  val incorrect_email_format_error_key: String = "capture-email-address.error.incorrect_format"
+  val email_length_error_key: String = "capture-email-address.error.incorrect_length"
 
   "The emailForm" should {
     "validate that testEmail is valid" in {
@@ -34,10 +35,23 @@ class EmailAddressFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form shouldBe Some(testEmail)
     }
 
-    "validate that invalid email fails" in {
+    "validate that incorrect email format fails" in {
       val formWithError = emailForm.bind(Map(EmailAddressForm.emailKey -> "invalid"))
 
-      formWithError.errors should contain(FormError(EmailAddressForm.emailKey, invalid_email_format_error_key))
+      formWithError.errors should contain(FormError(EmailAddressForm.emailKey, incorrect_email_format_error_key))
+    }
+
+    "validate that an email exceeding max length fails" in {
+      val exceedMaxLengthEmail: String = ("a" * 132) + "@test.com"
+      val formWithError = emailForm.bind(Map(EmailAddressForm.emailKey -> exceedMaxLengthEmail))
+
+      formWithError.errors should contain(FormError(EmailAddressForm.emailKey, email_length_error_key))
+    }
+
+    "validate that an empty field fails" in {
+      val formWithError = emailForm.bind(Map(EmailAddressForm.emailKey -> ""))
+
+      formWithError.errors should contain(FormError(EmailAddressForm.emailKey, email_length_error_key))
     }
 
   }
