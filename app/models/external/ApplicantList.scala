@@ -19,12 +19,11 @@ package models.external
 
 import cats.Show
 import cats.Show.show
-import models.Formatters
+import deprecated.DeprecatedConstants.jodaDateTimeFormat
 import org.apache.commons.lang3.text.WordUtils
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import deprecated.DeprecatedConstants.jodaDateTimeFormat
 
 case class Name(first: Option[String],
                 middle: Option[String],

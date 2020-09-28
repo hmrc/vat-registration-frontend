@@ -51,31 +51,38 @@ object ApplicantDetails {
       previousAddress = None
     )
 
-    val detailsBase = (applicantDetails \ "details").validateOpt[JsObject].get
-    detailsBase.fold(applicantDetailsView) { details =>
-      val currentAddress: ScrsAddress = (details \ "currentAddress").as[ScrsAddress]
-      val homeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
+    val email = (applicantDetails \ "contact" \ "email").validateOpt[String].get
+    val daytimePhone = (applicantDetails \ "contact" \ "tel").validateOpt[String].get
+    val mobile = (applicantDetails \ "contact" \ "mobile").validateOpt[String].get
 
-      val digitalContact = ContactDetailsView(
-        email = (details \ "contact" \ "email").validateOpt[String].get,
-        daytimePhone = (details \ "contact" \ "tel").validateOpt[String].get,
-        mobile = (details \ "contact" \ "mobile").validateOpt[String].get
-      )
-
-      val changeOfName: Option[JsObject] = (details \ "changeOfName").validateOpt[JsObject].get
-      val formerNameView: FormerNameView = FormerNameView(changeOfName.isDefined, changeOfName.map(fromJsonToName(_).asLabel))
-      val formerNameDateView: Option[FormerNameDateView] = changeOfName.map(json => FormerNameDateView((json \ "change").as[LocalDate]))
-
-      val previousAddress: Option[ScrsAddress] = (details \ "previousAddress").validateOpt[ScrsAddress].get
-
-      applicantDetailsView.copy(
-        homeAddress = Some(homeAddress),
-        contactDetails = Some(digitalContact),
-        formerName = Some(formerNameView),
-        formerNameDate = formerNameDateView,
-        previousAddress = Some(PreviousAddressView(previousAddress.isEmpty, previousAddress))
-      )
+    val currentAddress = (applicantDetails \ "currentAddress").validateOpt[ScrsAddress].get
+    val homeAddress = currentAddress match {
+      case None =>
+        None
+      case Some(address) =>
+        Some(HomeAddressView(address.id, currentAddress))
     }
+
+    val digitalContact = ContactDetailsView(daytimePhone, email, mobile)
+    val contactDetailsView = if (mobile.isEmpty && daytimePhone.isEmpty && email.isEmpty) None else Some(
+      ContactDetailsView(daytimePhone, email, mobile)
+    )
+
+    val changeOfName: Option[JsObject] = (applicantDetails \ "changeOfName").validateOpt[JsObject].get
+
+    val formerNameView = FormerNameView(changeOfName.isDefined, changeOfName.map(fromJsonToName(_).asLabel))
+
+    val formerNameDateView: Option[FormerNameDateView] = changeOfName.map(json => FormerNameDateView((json \ "change").as[LocalDate]))
+
+    val previousAddress = (applicantDetails \ "previousAddress").validateOpt[ScrsAddress].get
+
+    applicantDetailsView.copy(
+      homeAddress = homeAddress,
+      contactDetails = contactDetailsView,
+      formerName = Some(formerNameView),
+      formerNameDate = formerNameDateView,
+      previousAddress = Some(PreviousAddressView(previousAddress.isEmpty, previousAddress))
+    )
   }
 
   private def splitName(fullName: String): (Option[String], Option[String], Option[String]) = {

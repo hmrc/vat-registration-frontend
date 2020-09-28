@@ -50,25 +50,23 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
        |  "role": "${validApplicant.role}",
        |  "dob": "$applicantDob",
        |  "nino": "$applicantNino",
-       |  "details": {
-       |    "currentAddress": {
-       |      "line1": "${validCurrentAddress.line1}",
-       |      "line2": "${validCurrentAddress.line2}",
-       |      "postcode": "${validCurrentAddress.postcode}"
+       |  "currentAddress": {
+       |    "line1": "${validCurrentAddress.line1}",
+       |    "line2": "${validCurrentAddress.line2}",
+       |    "postcode": "${validCurrentAddress.postcode}"
+       |  },
+       |  "contact": {
+       |    "email": "$applicantEmail",
+       |    "tel": "1234",
+       |    "mobile": "5678"
+       |  },
+       |  "changeOfName": {
+       |    "name": {
+       |      "first": "New",
+       |      "middle": "Name",
+       |      "last": "Cosmo"
        |    },
-       |    "contact": {
-       |      "email": "$applicantEmail",
-       |      "tel": "1234",
-       |      "mobile": "5678"
-       |    },
-       |    "changeOfName": {
-       |      "name": {
-       |        "first": "New",
-       |        "middle": "Name",
-       |        "last": "Cosmo"
-       |      },
-       |      "change": "2000-07-12"
-       |    }
+       |    "change": "2000-07-12"
        |  }
        |}""".stripMargin)
 

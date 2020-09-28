@@ -156,9 +156,9 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       val expected = ApplicantDetails(
         homeAddress = None,
         contactDetails = None,
-        formerName = None,
+        formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
-        previousAddress = None
+        previousAddress = Some(PreviousAddressView(true, None))
       )
       service.getApplicantDetails returns expected
     }
