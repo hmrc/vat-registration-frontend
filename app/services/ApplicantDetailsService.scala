@@ -51,7 +51,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = applicantDetails match {
     case ApplicantDetails(None, None, None, None, None) =>
-      Complete(applicantDetails)
+      Incomplete(applicantDetails)
     case ApplicantDetails(Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(applicantDetails)
     case ApplicantDetails(Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>

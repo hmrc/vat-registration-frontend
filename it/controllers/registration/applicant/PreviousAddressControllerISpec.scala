@@ -54,7 +54,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
   val postcode = "TE1 1ST"
 
   val applicant = Applicant(
-    name = Name(forename = Some("First"), otherForenames = Some("Middle"), surname = "Last"),
+    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
     role = role
   )
 
@@ -80,25 +80,23 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
          |  "role": "$role",
          |  "dob": "$dob",
          |  "nino": "$nino",
-         |  "details": {
-         |    "currentAddress": {
-         |      "line1": "$addrLine1",
-         |      "line2": "$addrLine2",
-         |      "postcode": "$postcode"
+         |  "currentAddress": {
+         |    "line1": "$addrLine1",
+         |    "line2": "$addrLine2",
+         |    "postcode": "$postcode"
+         |  },
+         |  "contact": {
+         |    "email": "$email",
+         |    "tel": "1234",
+         |    "mobile": "5678"
+         |  },
+         |  "changeOfName": {
+         |    "name": {
+         |      "first": "New",
+         |      "middle": "Name",
+         |      "last": "Cosmo"
          |    },
-         |    "contact": {
-         |      "email": "$email",
-         |      "tel": "1234",
-         |      "mobile": "5678"
-         |    },
-         |    "changeOfName": {
-         |      "name": {
-         |        "first": "New",
-         |        "middle": "Name",
-         |        "last": "Cosmo"
-         |      },
-         |      "change": "2000-07-12"
-         |    }
+         |    "change": "2000-07-12"
          |  }
          |}""".stripMargin)
 
@@ -119,15 +117,15 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "details" \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
-        (json \ "details" \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
-        (json \ "details" \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
-        (json \ "details" \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
-        (json \ "details" \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
-        (json \ "details" \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
-        (json \ "details" \ "changeOfName" \ "name" \ "last").as[JsString].value mustBe "Cosmo"
-        (json \ "details" \ "contact" \ "email").as[JsString].value mustBe email
-        (json \ "details" \ "previousAddress").validateOpt[JsObject].get mustBe None
+        (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
+        (json \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
+        (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
+        (json \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
+        (json \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
+        (json \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
+        (json \ "changeOfName" \ "name" \ "last").as[JsString].value mustBe "Cosmo"
+        (json \ "contact" \ "email").as[JsString].value mustBe email
+        (json \ "previousAddress").validateOpt[JsObject].get mustBe None
       }
     }
   }
@@ -159,23 +157,21 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
            |  "role": "Director",
            |  "dob": "1998-07-12",
            |  "nino": "AA112233Z",
-           |  "details": {
-           |    "currentAddress": {
-           |      "line1": "$addressLine1",
-           |      "line2": "$addressLine2",
-           |      "postcode": "$addressPostcode"
-           |    },
-           |    "contact": {
-           |      "email": "test@t.test",
-           |      "tel": "1234",
-           |      "mobile": "5678"
-           |    },
-           |    "previousAddress": {
-           |      "line1": "$addressLine1",
-           |      "line2": "$addressLine2",
-           |      "postcode": "$addressPostcode",
-           |      "country": "$addressCountry"
-           |    }
+           |  "currentAddress": {
+           |    "line1": "$addressLine1",
+           |    "line2": "$addressLine2",
+           |    "postcode": "$addressPostcode"
+           |  },
+           |  "contact": {
+           |    "email": "test@t.test",
+           |    "tel": "1234",
+           |    "mobile": "5678"
+           |  },
+           |  "previousAddress": {
+           |    "line1": "$addressLine1",
+           |    "line2": "$addressLine2",
+           |    "postcode": "$addressPostcode",
+           |    "country": "$addressCountry"
            |  }
            |}""".stripMargin)
 
@@ -196,10 +192,10 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "details" \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1
-        (json \ "details" \ "previousAddress" \ "line2").as[JsString].value mustBe addressLine2
-        (json \ "details" \ "previousAddress" \ "country").as[JsString].value mustBe addressCountry
-        (json \ "details" \ "previousAddress" \ "postcode").as[JsString].value mustBe addressPostcode
+        (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1
+        (json \ "previousAddress" \ "line2").as[JsString].value mustBe addressLine2
+        (json \ "previousAddress" \ "country").as[JsString].value mustBe addressCountry
+        (json \ "previousAddress" \ "postcode").as[JsString].value mustBe addressPostcode
       }
     }
   }

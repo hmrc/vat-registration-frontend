@@ -115,15 +115,13 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
          |  "role": "Director",
          |  "dob": "1998-07-12",
          |  "nino": "SR123456Z",
-         |  "details": {
-         |    "currentAddress": {
-         |      "line1": "TestLine1",
-         |      "line2": "TestLine2",
-         |      "postcode": "TE 1ST"
-         |    },
-         |    "contact": {
-         |      "email": "test@t.test"
-         |    }
+         |  "currentAddress": {
+         |    "line1": "TestLine1",
+         |    "line2": "TestLine2",
+         |    "postcode": "TE 1ST"
+         |  },
+         |  "contact": {
+         |    "email": "test@t.test"
          |  }
          |}
        """.stripMargin)
@@ -139,15 +137,13 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
          |  "role": "Director",
          |  "dob": "1998-07-12",
          |  "nino": "SR123456Z",
-         |  "details": {
-         |    "currentAddress": {
-         |      "line1": "TestLine1",
-         |      "line2": "TestLine2",
-         |      "postcode": "TE 1ST"
-         |    },
-         |    "contact": {
-         |      "mobile": "1234567890"
-         |    }
+         |  "currentAddress": {
+         |    "line1": "TestLine1",
+         |    "line2": "TestLine2",
+         |    "postcode": "TE 1ST"
+         |  },
+         |  "contact": {
+         |    "mobile": "1234567890"
          |  }
          |}
        """.stripMargin)
@@ -160,9 +156,9 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       val expected = ApplicantDetails(
         homeAddress = None,
         contactDetails = None,
-        formerName = None,
+        formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
-        previousAddress = None
+        previousAddress = Some(PreviousAddressView(true, None))
       )
       service.getApplicantDetails returns expected
     }
