@@ -20,14 +20,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
-import models.{BankAccount, BankAccountDetails, BusinessActivityDescription, BusinessContact, CompanyContactDetails, CompanyProvideWorkers, FlatRateScheme, Frequency, MainBusinessActivityView, Returns, SicAndCompliance, SkilledWorkers, Start, TaxableThreshold, TemporaryContracts, TurnoverEstimates, Workers}
-import models.view._
-import fixtures.ReturnsFixture
-import models._
-import models.TradingDetails
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.{Summary, SummaryRow, SummarySection}
+import models.view.{Summary, SummaryRow, SummarySection, _}
+import models._
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call

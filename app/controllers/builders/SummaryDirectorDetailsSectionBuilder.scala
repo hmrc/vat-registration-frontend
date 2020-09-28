@@ -42,7 +42,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDe
 
   val daytimePhone: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhone",
-    vatApplicantDetails.contactDetails.flatMap(_.daytimePhone).getOrElse(""),
+    vatApplicantDetails.contactDetails.flatMap(_.tel).getOrElse(""),
     Some(applicantRoutes.ContactDetailsController.show())
   )
 
@@ -58,7 +58,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDe
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
       (email, vatApplicantDetails.contactDetails.flatMap(_.email).isDefined),
-      (daytimePhone, vatApplicantDetails.contactDetails.flatMap(_.daytimePhone).isDefined),
+      (daytimePhone, vatApplicantDetails.contactDetails.flatMap(_.tel).isDefined),
       (mobile, vatApplicantDetails.contactDetails.flatMap(_.mobile).isDefined)
     )
   )

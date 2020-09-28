@@ -340,10 +340,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       previousAddress = None
     )
 
-    val partialJson = Json.parse(
-      s"""
-         |{
-         |}""".stripMargin)
+    val partialJson = Json.obj()
 
     "return a JsValue with a partial Applicant Details view model" in new Setup {
       mockHttpPATCH[JsValue, JsValue]("tst-url", partialJson)
@@ -362,16 +359,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       val fullJson = Json.parse(
         s"""
            |{
-           |  "role": "secretary",
            |  "contact": {
            |    "email": "test@t.test"
            |  },
-           |  "name": {
-           |    "first": "fakeName",
-           |    "last": "fakeSurname"
-           |  },
-           |  "dateOfBirth": "2020-01-01",
-           |  "nino": "AB123456C",
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
