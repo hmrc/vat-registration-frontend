@@ -43,32 +43,30 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
     s"""
        |{
        |  "name": {
-       |    "first": "${validApplicant.name.forename}",
-       |    "middle": "${validApplicant.name.otherForenames}",
-       |    "last": "${validApplicant.name.surname}"
+       |    "first": "${validApplicant.name.first}",
+       |    "middle": "${validApplicant.name.middle}",
+       |    "last": "${validApplicant.name.last}"
        |  },
        |  "role": "${validApplicant.role}",
        |  "dob": "$applicantDob",
        |  "nino": "$applicantNino",
-       |  "details": {
-       |    "currentAddress": {
-       |      "line1": "${validCurrentAddress.line1}",
-       |      "line2": "${validCurrentAddress.line2}",
-       |      "postcode": "${validCurrentAddress.postcode}"
+       |  "currentAddress": {
+       |    "line1": "${validCurrentAddress.line1}",
+       |    "line2": "${validCurrentAddress.line2}",
+       |    "postcode": "${validCurrentAddress.postcode}"
+       |  },
+       |  "contact": {
+       |    "email": "$applicantEmail",
+       |    "tel": "1234",
+       |    "mobile": "5678"
+       |  },
+       |  "changeOfName": {
+       |    "name": {
+       |      "first": "New",
+       |      "middle": "Name",
+       |      "last": "Cosmo"
        |    },
-       |    "contact": {
-       |      "email": "$applicantEmail",
-       |      "tel": "1234",
-       |      "mobile": "5678"
-       |    },
-       |    "changeOfName": {
-       |      "name": {
-       |        "first": "New",
-       |        "middle": "Name",
-       |        "last": "Cosmo"
-       |      },
-       |      "change": "2000-07-12"
-       |    }
+       |    "change": "2000-07-12"
        |  }
        |}""".stripMargin)
 

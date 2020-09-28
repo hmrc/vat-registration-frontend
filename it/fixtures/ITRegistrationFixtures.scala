@@ -151,8 +151,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
                                              |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
                                              |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
                                              |                "name": {
-                                             |                    "forename": "This is my forename",
-                                             |                    "other_forenames": "This is my middle name",
+                                             |                    "first": "This is my first",
+                                             |                    "middle": "This is my middle name",
                                              |                    "surname": "This is my surname"
                                              |                    },
                                              |                "role": "director"

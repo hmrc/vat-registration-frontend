@@ -18,6 +18,7 @@ package models.view
 
 import java.time.LocalDate
 
+import deprecated.DeprecatedConstants
 import models.S4LKey
 import models.api.ScrsAddress
 import models.external.Name
@@ -34,9 +35,9 @@ object ApplicantDetails {
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
 
   def fromJsonToName(json: JsValue): Name = Name(
-    forename = (json \ "name" \ "first").validateOpt[String].get,
-    otherForenames = (json \ "name" \ "middle").validateOpt[String].get,
-    surname = (json \ "name" \ "last").validate[String].get,
+    first = (json \ "name" \ "first").validateOpt[String].get,
+    middle = (json \ "name" \ "middle").validateOpt[String].get,
+    last = (json \ "name" \ "last").validate[String].get,
     title = None
   )
 
@@ -50,31 +51,38 @@ object ApplicantDetails {
       previousAddress = None
     )
 
-    val detailsBase = (applicantDetails \ "details").validateOpt[JsObject].get
-    detailsBase.fold(applicantDetailsView) { details =>
-      val currentAddress: ScrsAddress = (details \ "currentAddress").as[ScrsAddress]
-      val homeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
+    val email = (applicantDetails \ "contact" \ "email").validateOpt[String].get
+    val daytimePhone = (applicantDetails \ "contact" \ "tel").validateOpt[String].get
+    val mobile = (applicantDetails \ "contact" \ "mobile").validateOpt[String].get
 
-      val digitalContact = ContactDetailsView(
-        email = (details \ "contact" \ "email").validateOpt[String].get,
-        daytimePhone = (details \ "contact" \ "tel").validateOpt[String].get,
-        mobile = (details \ "contact" \ "mobile").validateOpt[String].get
-      )
-
-      val changeOfName: Option[JsObject] = (details \ "changeOfName").validateOpt[JsObject].get
-      val formerNameView: FormerNameView = FormerNameView(changeOfName.isDefined, changeOfName.map(fromJsonToName(_).asLabel))
-      val formerNameDateView: Option[FormerNameDateView] = changeOfName.map(json => FormerNameDateView((json \ "change").as[LocalDate]))
-
-      val previousAddress: Option[ScrsAddress] = (details \ "previousAddress").validateOpt[ScrsAddress].get
-
-      applicantDetailsView.copy(
-        homeAddress = Some(homeAddress),
-        contactDetails = Some(digitalContact),
-        formerName = Some(formerNameView),
-        formerNameDate = formerNameDateView,
-        previousAddress = Some(PreviousAddressView(previousAddress.isEmpty, previousAddress))
-      )
+    val currentAddress = (applicantDetails \ "currentAddress").validateOpt[ScrsAddress].get
+    val homeAddress = currentAddress match {
+      case None =>
+        None
+      case Some(address) =>
+        Some(HomeAddressView(address.id, currentAddress))
     }
+
+    val digitalContact = ContactDetailsView(daytimePhone, email, mobile)
+    val contactDetailsView = if (mobile.isEmpty && daytimePhone.isEmpty && email.isEmpty) None else Some(
+      ContactDetailsView(daytimePhone, email, mobile)
+    )
+
+    val changeOfName: Option[JsObject] = (applicantDetails \ "changeOfName").validateOpt[JsObject].get
+
+    val formerNameView = FormerNameView(changeOfName.isDefined, changeOfName.map(fromJsonToName(_).asLabel))
+
+    val formerNameDateView: Option[FormerNameDateView] = changeOfName.map(json => FormerNameDateView((json \ "change").as[LocalDate]))
+
+    val previousAddress = (applicantDetails \ "previousAddress").validateOpt[ScrsAddress].get
+
+    applicantDetailsView.copy(
+      homeAddress = homeAddress,
+      contactDetails = contactDetailsView,
+      formerName = Some(formerNameView),
+      formerNameDate = formerNameDateView,
+      previousAddress = Some(PreviousAddressView(previousAddress.isEmpty, previousAddress))
+    )
   }
 
   private def splitName(fullName: String): (Option[String], Option[String], Option[String]) = {
@@ -138,7 +146,12 @@ object ApplicantDetails {
         case ApplicantDetails(None, None, None, None, None) =>
           Json.obj()
         case ApplicantDetails(Some(currAddr), Some(contact), Some(fName), _@fNameDate, Some(prevAddr)) =>
-          Json.obj("details" -> buildJsonApplicantDetails(currAddr, contact, fName, fNameDate, prevAddr))
+          Json.obj(
+            "nino" -> DeprecatedConstants.fakeNino,
+            "name" -> DeprecatedConstants.fakeName,
+            "role" -> DeprecatedConstants.fakeRole,
+            "dateOfBirth" -> DeprecatedConstants.fakeDateOfBirth
+          ) ++ buildJsonApplicantDetails(currAddr, contact, fName, fNameDate, prevAddr)
         case _ =>
           throw new IllegalStateException("Missing applicant details data to save into backend")
       }
