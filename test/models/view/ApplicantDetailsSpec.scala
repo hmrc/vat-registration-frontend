@@ -82,9 +82,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val applicantDetails = ApplicantDetails(
         homeAddress = None,
         contactDetails = None,
-        formerName = None,
+        formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
-        previousAddress = None
+        previousAddress = Some(PreviousAddressView(true, None))
       )
 
       ApplicantDetails.fromApi(json) mustBe applicantDetails
@@ -106,9 +106,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val applicantDetails = ApplicantDetails(
         homeAddress = None,
         contactDetails = None,
-        formerName = None,
+        formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
-        previousAddress = None
+        previousAddress = Some(PreviousAddressView(true, None))
       )
 
       ApplicantDetails.fromApi(json) mustBe applicantDetails
@@ -230,28 +230,35 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "currentAddress": {
-           |    "line1": "TestLine1",
-           |    "line2": "TestLine2",
-           |    "postcode": "TE 1ST"
-           |  },
-           |  "contact": {
-           |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
-           |  },
+           |  "role": "secretary",
            |  "changeOfName": {
+           |    "change": "2000-07-12",
            |    "name": {
-           |      "first": "New",
            |      "middle": "Name",
-           |      "last": "Cosmo"
-           |    },
-           |    "change": "2000-07-12"
+           |      "last": "Cosmo",
+           |      "first": "New"
+           |    }
            |  },
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
            |    "postcode": "TE1 1ST"
+           |  },
+           |  "contact": {
+           |    "mobile": "5678",
+           |    "tel": "1234",
+           |    "email": "test@t.test"
+           |  },
+           |  "name": {
+           |    "first": "fakeName",
+           |    "last": "fakeSurname"
+           |  },
+           |  "dateOfBirth": "2020-01-01",
+           |  "nino": "AB123456C",
+           |  "currentAddress": {
+           |    "line1": "TestLine1",
+           |    "line2": "TestLine2",
+           |    "postcode": "TE 1ST"
            |  }
            |}""".stripMargin)
 
@@ -270,15 +277,22 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
+           |  "role": "secretary",
+           |  "contact": {
+           |    "mobile": "5678",
+           |    "tel": "1234",
+           |    "email": "test@t.test"
+           |  },
+           |  "name": {
+           |    "first": "fakeName",
+           |    "last": "fakeSurname"
+           |  },
+           |  "dateOfBirth": "2020-01-01",
+           |  "nino": "AB123456C",
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
            |    "postcode": "TE 1ST"
-           |  },
-           |  "contact": {
-           |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
            |  }
            |}""".stripMargin)
 
