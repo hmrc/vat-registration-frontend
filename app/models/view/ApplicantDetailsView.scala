@@ -41,7 +41,7 @@ object FormerNameDateView {
   implicit val format = Json.format[FormerNameDateView]
 }
 
-case class ContactDetailsView(daytimePhone: Option[String] = None, email: Option[String] = None, mobile: Option[String] = None)
+case class ContactDetailsView(tel: Option[String] = None, email: Option[String] = None, mobile: Option[String] = None)
 
 object ContactDetailsView {
   implicit val format: OFormat[ContactDetailsView] = Json.format[ContactDetailsView]

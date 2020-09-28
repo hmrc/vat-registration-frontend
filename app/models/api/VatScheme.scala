@@ -23,24 +23,22 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 
-case class VatScheme(
-                      id: String,
-                      applicantDetails: Option[ApplicantDetails] = None,
-                      tradingDetails: Option[TradingDetails] = None,
-                      sicAndCompliance: Option[SicAndCompliance] = None,
-                      businessContact: Option[BusinessContact] = None,
-                      threshold: Option[Threshold] = None,
-                      returns: Option[Returns] = None,
-                      turnOverEstimates: Option[TurnoverEstimates] = None,
-                      bankAccount : Option[BankAccount] = None,
-                      flatRateScheme: Option[FlatRateScheme] = None,
-                      status: VatRegStatus.Value
-                    )
+case class VatScheme(id: String,
+                     applicantDetails: Option[ApplicantDetails] = None,
+                     tradingDetails: Option[TradingDetails] = None,
+                     sicAndCompliance: Option[SicAndCompliance] = None,
+                     businessContact: Option[BusinessContact] = None,
+                     threshold: Option[Threshold] = None,
+                     returns: Option[Returns] = None,
+                     turnOverEstimates: Option[TurnoverEstimates] = None,
+                     bankAccount : Option[BankAccount] = None,
+                     flatRateScheme: Option[FlatRateScheme] = None,
+                     status: VatRegStatus.Value)
 
 object VatScheme {
   implicit val format: OFormat[VatScheme] = (
       (__ \ "registrationId").format[String] and
-      (__ \ "applicantDetails").formatNullable[ApplicantDetails].inmap[Option[ApplicantDetails]](_ => Option.empty[ApplicantDetails], _ => Option.empty[ApplicantDetails]) and
+      (__ \ "applicantDetails").formatNullable[JsValue].inmap[Option[ApplicantDetails]](_.map(ApplicantDetails.apiReads.reads(_).get), _.map(ApplicantDetails.apiWrites.writes(_))) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance](SicAndCompliance.apiFormat)
         .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
