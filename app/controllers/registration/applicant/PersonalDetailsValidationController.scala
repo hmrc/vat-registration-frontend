@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{PersonalDetailsValidationService, SessionProfile}
+import services.{ApplicantDetailsService, PersonalDetailsValidationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,8 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerComponents,
                                                     val authConnector: AuthConnector,
                                                     val keystoreConnector: KeystoreConnector,
-                                                    config: FrontendAppConfig,
-                                                    personalDetailsValidationService: PersonalDetailsValidationService
+                                                    personalDetailsValidationService: PersonalDetailsValidationService,
+                                                    applicantDetailsService: ApplicantDetailsService
                                                    )(implicit val appConfig: FrontendAppConfig, ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
   def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
@@ -43,12 +45,11 @@ class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerCompo
   }
 
   def personalDetailsValidationCallback(validationId: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit req =>
-      _ =>
-        personalDetailsValidationService.retrieveValidationResult(validationId).map(
-          transactorDetails => Ok(Json.toJson(transactorDetails))
-          //TODO Update to store this data in the backend and redirect to next page
-        )
+    implicit req => implicit profile =>
+      for {
+        details <- personalDetailsValidationService.retrieveValidationResult(validationId)
+        _ <- applicantDetailsService.saveApplicantDetails(details)
+      } yield Redirect(applicantRoutes.FormerNameController.show())
   }
 
 }

@@ -206,5 +206,5 @@ GET         /redirect-to-rejection                                              
 
 GET         /start-incorp-id-journey                                                           controllers.IncorpIdController.startIncorpIdJourney()
 
-GET         /start-personal-details-validation-journey                                         controllers.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-GET         /personal-details-validation-callback                                              controllers.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
+GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+GET         /personal-details-validation-callback                                              controllers.registration.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)

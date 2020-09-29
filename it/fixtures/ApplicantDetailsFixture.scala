@@ -2,8 +2,9 @@ package fixtures
 
 import java.time.LocalDate
 
+import models.TransactorDetails
 import models.api.ScrsAddress
-import models.external.{Name, Applicant}
+import models.external.{Applicant, Name}
 import models.view._
 
 trait ApplicantDetailsFixture {
@@ -20,7 +21,7 @@ trait ApplicantDetailsFixture {
 
   val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
 
-  val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None)
+  val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
 
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
@@ -28,7 +29,15 @@ trait ApplicantDetailsFixture {
 
   val applicantEmail = "test@test"
 
+  val testFirstName = "testFirstName"
+  val testLastName = "testLastName"
+  val testApplicantNino = "AB123456C"
+  val testApplicantDob = LocalDate.of(2020,1,1)
+
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
+
   val validFullApplicantDetails = ApplicantDetails(
+    transactorDetails = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     contactDetails = Some(ContactDetailsView(Some(applicantEmail), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),

@@ -32,7 +32,7 @@ class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
                                              val authConnector: AuthClientConnector,
                                              val keystoreConnector: KeystoreConnector
                                             )(implicit val appConfig: FrontendAppConfig,
-                                              executionContext: ExecutionContext)
+                                             executionContext: ExecutionContext)
   extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -44,6 +44,7 @@ class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Future.successful(Redirect(applicantRoutes.FormerNameController.show()))
+        //Future.successful(Redirect(applicantRoutes.FormerNameController.show()))
+      Future.successful(Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()))
   }
 }

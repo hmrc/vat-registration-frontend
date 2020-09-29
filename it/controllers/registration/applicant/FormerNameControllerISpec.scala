@@ -60,6 +60,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
 
   "POST Former Name page" should {
     val s4lData = ApplicantDetails(
+      transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
