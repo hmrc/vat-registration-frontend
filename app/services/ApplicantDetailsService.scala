@@ -20,7 +20,7 @@ import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
 import models.view.{ApplicantDetails, _}
-import models.{CurrentProfile, S4LKey}
+import models.{CurrentProfile, S4LKey, TransactorDetails}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
@@ -53,11 +53,11 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   }
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = applicantDetails match {
-    case ApplicantDetails(None, None, None, None, None) =>
+    case ApplicantDetails(None, None, None, None, None, None) =>
       Incomplete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
       Complete(applicantDetails)
     case _ =>
       Incomplete(applicantDetails)
@@ -66,6 +66,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     def updateModel(data: T, before: ApplicantDetails): ApplicantDetails = {
       data match {
+        case transactorDetails: TransactorDetails => before.copy(transactorDetails = Some(transactorDetails))
         case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
         case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
         case fName: FormerNameView =>

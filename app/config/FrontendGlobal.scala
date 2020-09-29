@@ -32,4 +32,3 @@ class FrontendGlobal @Inject()(val messagesApi: MessagesApi, val appConfig: Fron
   }
 
 }
-

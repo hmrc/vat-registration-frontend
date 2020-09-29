@@ -57,7 +57,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec {
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(applicantRoutes.FormerNameController.show().url)
+      redirectLocation(res) mustBe Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
     }
   }
 }
