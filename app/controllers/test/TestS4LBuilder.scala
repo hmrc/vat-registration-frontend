@@ -107,7 +107,7 @@ object TestS4LBuilder {
     val contactDetails: Option[ContactDetailsView] = data.applicantDetails.email.map(_ => ContactDetailsView(
       email = data.applicantDetails.email,
       mobile = data.applicantDetails.mobile,
-      daytimePhone = data.applicantDetails.phone)
+      tel = data.applicantDetails.phone)
     )
 
     val formerName: Option[FormerNameView] = data.applicantDetails.formernameChoice.collect {

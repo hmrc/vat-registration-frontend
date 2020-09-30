@@ -104,7 +104,7 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
               country = applicantDetails.flatMap(_.previousAddress).flatMap(_.address).flatMap(_.country)),
             applicantDetails = ApplicantDetailsTestSetup(
               email = applicantDetails.flatMap(_.contactDetails).flatMap(_.email),
-              mobile = applicantDetails.flatMap(_.contactDetails).flatMap(_.daytimePhone),
+              mobile = applicantDetails.flatMap(_.contactDetails).flatMap(_.tel),
               phone = applicantDetails.flatMap(_.contactDetails).flatMap(_.mobile),
               formernameChoice = applicantDetails.flatMap(_.formerName).map(_.yesNo.toString),
               formername = applicantDetails.flatMap(_.formerName).flatMap(_.formerName),

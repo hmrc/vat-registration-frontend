@@ -22,7 +22,6 @@ import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
 import models.CurrentProfile
 import models.api.ScrsAddress
-import models.external.Name
 import models.view._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -242,7 +241,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         }
 
         "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(formerName = Some(formerNameFalse))
+          val expected = completeApplicantDetails.copy(formerName = Some(formerNameFalse), formerNameDate = None)
 
           service.saveApplicantDetails(formerNameFalse) returns expected
         }
