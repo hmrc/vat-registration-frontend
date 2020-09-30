@@ -19,12 +19,10 @@ package it.fixtures
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import models.{BankAccount, BankAccountDetails, BusinessActivityDescription, BusinessContact, CompanyContactDetails, FlatRateScheme, Frequency, MainBusinessActivityView, OtherBusinessActivities, Returns, SicAndCompliance, Stagger, TurnoverEstimates}
 import fixtures.ApplicantDetailsFixture
-import models.BusinessActivityDescription
-import models.{TradingDetails, TradingNameView}
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
+import models._
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {

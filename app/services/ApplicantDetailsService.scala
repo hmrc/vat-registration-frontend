@@ -19,9 +19,9 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
-import models.external.Name
 import models.view.{ApplicantDetails, _}
 import models.{CurrentProfile, S4LKey}
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -35,7 +35,10 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
     s4LService.fetchAndGetNoAux[ApplicantDetails](S4LKey[ApplicantDetails]) flatMap {
       case Some(applicant) => Future.successful(applicant)
       case _ => vatRegistrationConnector.getApplicantDetails(cp.registrationId) flatMap { json =>
-        val applicantDetails = json.fold(ApplicantDetails(None, None, None, None, None))(ApplicantDetails.fromApi)
+        val applicantDetails = json.fold(ApplicantDetails(None, None, None, None, None))(ApplicantDetails.apiReads.reads(_) match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw new Exception(errors.toString())
+        })
         s4LService.saveNoAux[ApplicantDetails](applicantDetails, S4LKey[ApplicantDetails]) map (_ => applicantDetails)
       }
     }
@@ -65,7 +68,9 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       data match {
         case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
         case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
-        case fName: FormerNameView => before.copy(formerName = Some(fName))
+        case fName: FormerNameView =>
+          if (!fName.yesNo) before.copy(formerName = Some(fName), formerNameDate = None)
+          else before.copy(formerName = Some(fName))
         case fNameDate: FormerNameDateView => before.copy(formerNameDate = Some(fNameDate))
         case prevAddr: PreviousAddressView => before.copy(previousAddress = Some(prevAddr))
       }
