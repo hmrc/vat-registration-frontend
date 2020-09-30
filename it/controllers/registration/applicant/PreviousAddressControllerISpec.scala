@@ -62,6 +62,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
 
   "POST Previous Address page" should {
     val s4lData = ApplicantDetails(
+      incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
@@ -133,6 +134,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
 
   "GET Txm ALF callback for Previous Address" should {
     val s4lData = ApplicantDetails(
+      incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),

@@ -48,7 +48,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
   }
 
   s"POST $url" must {
-    "return a redirect to Applicant Name" in new StandardTestHelpers {
+    "return a redirect to Incorp ID" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -58,7 +58,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
       val response: Future[WSResponse] = buildClient(url).post(Json.obj())
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startIncorpIdJourney().url)
       }
     }
   }

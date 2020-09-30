@@ -15,7 +15,6 @@
  */
 package itutil
 
-import com.github.tomakehurst.wiremock.client.WireMock.resetAllScenarios
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -26,7 +25,6 @@ trait IntegrationSpecBase extends WordSpec
   with WiremockHelper with BeforeAndAfterEach with BeforeAndAfterAll {
 
   override def beforeEach() = {
-    resetAllScenarios()
     resetWiremock()
   }
 

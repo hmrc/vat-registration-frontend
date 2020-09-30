@@ -204,7 +204,8 @@ GET         /submission-failure                                                 
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
 GET         /redirect-to-rejection                                                             controllers.ErrorController.redirectToCR
 
-GET         /start-incorp-id-journey                                                           controllers.IncorpIdController.startIncorpIdJourney()
+GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startIncorpIdJourney()
+GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
 
 GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
 GET         /personal-details-validation-callback                                              controllers.registration.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)

@@ -16,6 +16,7 @@
 
 package mocks
 
+import models.IncorporationDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,4 +33,9 @@ trait IncorpIdServiceMock {
   def mockCreateJourney(continueUrl: String)(response: Future[String]): Unit =
     when(mockIncorpIdService.createJourney(ArgumentMatchers.eq(continueUrl))(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
+
+  def mockGetDetails(journeyId: String)(response: Future[IncorporationDetails]): Unit =
+    when(mockIncorpIdService.getDetails(ArgumentMatchers.eq(journeyId))(ArgumentMatchers.any[HeaderCarrier]))
+      .thenReturn(response)
+
 }

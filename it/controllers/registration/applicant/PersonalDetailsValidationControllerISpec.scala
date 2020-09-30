@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import fixtures.ApplicantDetailsFixture
 import itutil.IntegrationSpecBase
-import models.TransactorDetails
 import models.view.ApplicantDetails
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
