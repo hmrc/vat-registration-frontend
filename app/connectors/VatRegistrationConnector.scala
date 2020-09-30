@@ -93,12 +93,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
 
   def patchApplicantDetails(data: ApplicantDetails)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
     val json = Json.toJson(data)(ApplicantDetails.apiWrites).as[JsObject]
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/applicant-details", json ++ Json.obj(
-      "nino" -> DeprecatedConstants.fakeNino,
-      "name" -> DeprecatedConstants.fakeName,
-      "role" -> DeprecatedConstants.fakeRole,
-      "dateOfBirth" -> DeprecatedConstants.fakeDateOfBirth
-    )) map {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/applicant-details", json) map {
       _ => json
     } recover {
       case e: Exception => throw logResponse(e, "patchApplicantDetails")

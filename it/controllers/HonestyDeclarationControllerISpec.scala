@@ -58,7 +58,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
       val response: Future[WSResponse] = buildClient(url).post(Json.obj())
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
       }
     }
   }

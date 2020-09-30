@@ -18,23 +18,25 @@ package models.view
 
 import java.time.LocalDate
 
-import models.S4LKey
+import models.{S4LKey, TransactorDetails}
 import models.api.ScrsAddress
 import models.external.Name
 import play.api.libs.json.{Json, _}
 import play.api.libs.functional.syntax._
 
-case class ApplicantDetails(homeAddress: Option[HomeAddressView],
-                          contactDetails: Option[ContactDetailsView],
-                          formerName: Option[FormerNameView],
-                          formerNameDate: Option[FormerNameDateView],
-                          previousAddress: Option[PreviousAddressView])
+case class ApplicantDetails(transactorDetails: Option[TransactorDetails] = None,
+                            homeAddress: Option[HomeAddressView] = None,
+                            contactDetails: Option[ContactDetailsView] = None,
+                            formerName: Option[FormerNameView] = None,
+                            formerNameDate: Option[FormerNameDateView] = None,
+                            previousAddress: Option[PreviousAddressView] = None)
 
 object ApplicantDetails {
   implicit val format: Format[ApplicantDetails] = Json.format[ApplicantDetails]
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
 
   val apiReads: Reads[ApplicantDetails] = (
+    (__).readNullable[TransactorDetails](TransactorDetails.apiFormat) orElse Reads.pure(None) and
     (__ \ "currentAddress").readNullable[ScrsAddress]
       .fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
     (__ \ "contact").readNullable[ContactDetailsView] and
@@ -46,10 +48,10 @@ object ApplicantDetails {
       .orElse(Reads.pure(None)) and
     (__ \ "previousAddress").readNullable[ScrsAddress]
       .fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
-  )(ApplicantDetails.apply(_, _, _, _, _))
-    .map(details => if (details.formerName.isEmpty) details.copy(formerNameDate = None) else details)
+  )(ApplicantDetails.apply(_, _, _, _, _, _))
 
   val apiWrites: Writes[ApplicantDetails] = (
+    (__).writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
     (__ \ "currentAddress").writeNullable[ScrsAddress]
       .contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
     (__ \ "contact").writeNullable[ContactDetailsView] and
@@ -60,7 +62,6 @@ object ApplicantDetails {
     (__ \ "previousAddress").writeNullable[ScrsAddress]
       .contramap[Option[PreviousAddressView]](_.flatMap(_.address))
   )(unlift(ApplicantDetails.unapply))
-    .contramap(details => if (details.formerName.isEmpty) details.copy(formerNameDate = None) else details)
 
   private def splitName(fullName: String): Name = {
     val split = fullName.trim.split("\\s+")

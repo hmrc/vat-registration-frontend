@@ -18,7 +18,8 @@ package models
 
 import java.time.LocalDate
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 case class TransactorDetails(firstName: String,
                              lastName: String,
@@ -27,4 +28,21 @@ case class TransactorDetails(firstName: String,
 
 object TransactorDetails {
   implicit val format: OFormat[TransactorDetails] = Json.format[TransactorDetails]
+
+  val apiReads: Reads[TransactorDetails] = (
+    (__ \ "name" \ "first").read[String] orElse Reads.pure("") and
+    (__ \ "name" \ "last").read[String] and
+    (__ \ "nino").read[String] and
+    (__ \ "dateOfBirth").read[LocalDate]
+  )(TransactorDetails.apply(_, _, _, _))
+
+  val apiWrites: Writes[TransactorDetails] = (
+    (__ \ "name" \ "first").write[String] and
+    (__ \ "name"\ "last").write[String] and
+    (__ \ "nino").write[String] and
+    (__ \ "dateOfBirth").write[LocalDate]
+  )(unlift(TransactorDetails.unapply))
+
+  val apiFormat: Format[TransactorDetails] = Format(apiReads, apiWrites)
+
 }

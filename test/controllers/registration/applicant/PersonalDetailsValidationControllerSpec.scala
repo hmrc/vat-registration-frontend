@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import java.time.LocalDate
 
@@ -23,6 +23,7 @@ import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
+import mocks.mockservices.MockApplicantDetailsService
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
@@ -30,15 +31,20 @@ import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 
-class PersonalDetailsValidationControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions with FeatureSwitching {
+class PersonalDetailsValidationControllerSpec extends ControllerSpec
+  with VatRegistrationFixture
+  with TimeServiceMock
+  with FutureAssertions
+  with FeatureSwitching
+  with MockApplicantDetailsService {
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController: PersonalDetailsValidationController = new PersonalDetailsValidationController(
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      app.injector.instanceOf[FrontendAppConfig],
-      mockPersonalDetailsValidationService
+      mockPersonalDetailsValidationService,
+      mockApplicantDetailsService
     )
 
     mockAuthenticated()
@@ -82,19 +88,13 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec with VatReg
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
         val testValidationId = "testValidationId"
 
-        val testTransactorDetails: TransactorDetails = TransactorDetails(
-          firstName = "testFirstName",
-          lastName = "testLastName",
-          nino = "AA123456A",
-          dateOfBirth = LocalDate.of(1990, 1, 1)
-        )
-
         mockRetrieveValidationResult(testValidationId)(Future.successful(testTransactorDetails))
+        mockSaveApplicantDetails(testTransactorDetails)(completeApplicantDetails)
 
         lazy val res: Future[Result] = testController.personalDetailsValidationCallback(testValidationId)(fakeRequest)
 
-        status(res) mustBe OK
-        contentAsJson(res) mustBe Json.toJson(testTransactorDetails)
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
       }
     }
   }
