@@ -16,17 +16,22 @@
 
 package controllers
 
-import java.time.LocalDate
-
+import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
+import fixtures.ApplicantDetailsFixture
 import itutil.IntegrationSpecBase
+import models.TransactorDetails
+import models.view.ApplicantDetails
 import org.scalatest.concurrent.IntegrationPatience
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}
 import support.AppAndStubs
 
-class PersonalDetailsValidationControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
+class PersonalDetailsValidationControllerISpec extends IntegrationSpecBase
+  with AppAndStubs
+  with FeatureSwitching
+  with IntegrationPatience with ApplicantDetailsFixture {
   "GET /start-personal-details-validation-journey" should {
     "redirect to the personal details validation service" in new StandardTestHelpers {
       disable(StubPersonalDetailsValidation)
@@ -37,7 +42,7 @@ class PersonalDetailsValidationControllerISpec extends IntegrationSpecBase with 
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(controllers.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url).get)
+      val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some("http://localhost:9968/personal-details-validation/start?completionUrl=http://localhost:11111/register-for-vat/personal-details-validation-callback")
@@ -46,31 +51,27 @@ class PersonalDetailsValidationControllerISpec extends IntegrationSpecBase with 
   }
 
   "GET /personal-details-validation-callback" should {
-    "retrieve the captured transactor details and play them back" in new StandardTestHelpers {
+    "retrieve the captured transactor details and redirect" in new StandardTestHelpers {
       disable(StubPersonalDetailsValidation)
 
       val testValidationId: String = "testValidationId"
+      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiWrites)
 
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .vatScheme.has("applicant-details", applicantJson)
+        .vatScheme.patched("applicant-details", applicantJson)
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].cleared
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val testTransactorDetails: JsObject = Json.obj(
-        "personalDetails" -> Json.obj(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
-          "nino" -> "AA123456A",
-          "dateOfBirth" -> LocalDate.of(1990, 1, 1)
-        )
-      )
+      stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testTransactorDetails)).toString)
 
-      stubGet(s"/personal-details-validation/$testValidationId", OK, testTransactorDetails.toString)
+      val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
 
-      val res: WSResponse = await(buildClient(controllers.routes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
-
-      res.status mustBe OK
+      res.status mustBe SEE_OTHER
     }
   }
 }

@@ -44,6 +44,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
          """.stripMargin)
 
       val applicantDetails = ApplicantDetails(
+
         homeAddress = None,
         contactDetails = None,
         formerName = Some(FormerNameView(false, None)),
