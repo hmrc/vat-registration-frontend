@@ -18,13 +18,14 @@ package models.view
 
 import java.time.LocalDate
 
-import models.{S4LKey, TransactorDetails}
+import models.{IncorporationDetails, S4LKey, TransactorDetails}
 import models.api.ScrsAddress
 import models.external.Name
 import play.api.libs.json.{Json, _}
 import play.api.libs.functional.syntax._
 
-case class ApplicantDetails(transactorDetails: Option[TransactorDetails] = None,
+case class ApplicantDetails(incorporationDetails: Option[IncorporationDetails] = None,
+                            transactorDetails: Option[TransactorDetails] = None,
                             homeAddress: Option[HomeAddressView] = None,
                             contactDetails: Option[ContactDetailsView] = None,
                             formerName: Option[FormerNameView] = None,
@@ -36,7 +37,8 @@ object ApplicantDetails {
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
 
   val apiReads: Reads[ApplicantDetails] = (
-    (__).readNullable[TransactorDetails](TransactorDetails.apiFormat) orElse Reads.pure(None) and
+    JsPath.readNullable[IncorporationDetails].orElse(Reads.pure(None)) and
+    JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
     (__ \ "currentAddress").readNullable[ScrsAddress]
       .fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
     (__ \ "contact").readNullable[ContactDetailsView] and
@@ -48,10 +50,11 @@ object ApplicantDetails {
       .orElse(Reads.pure(None)) and
     (__ \ "previousAddress").readNullable[ScrsAddress]
       .fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
-  )(ApplicantDetails.apply(_, _, _, _, _, _))
+  )(ApplicantDetails.apply(_, _, _, _, _, _, _))
 
   val apiWrites: Writes[ApplicantDetails] = (
-    (__).writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
+    JsPath.writeNullable[IncorporationDetails] and
+    JsPath.writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
     (__ \ "currentAddress").writeNullable[ScrsAddress]
       .contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
     (__ \ "contact").writeNullable[ContactDetailsView] and

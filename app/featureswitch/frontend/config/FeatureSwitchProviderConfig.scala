@@ -41,6 +41,13 @@ class FeatureSwitchProviderConfig @Inject()(config: FrontendAppConfig) {
     url = backendFeatureSwitchUrl
   )
 
+  lazy val incorpFeatureSwitchUrl = s"${config.incorpIdHost}/incorporated-entity-identification/test-only/api/feature-switches"
+  lazy val incorpFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
+    id = "incorporated-entity-identification",
+    appName = "Incorporated entity identification",
+    url = incorpFeatureSwitchUrl
+  )
+
   lazy val featureSwitchProviders: Seq[FeatureSwitchProvider] =
-    Seq(frontendFeatureSwitchProvider, backendFeatureSwitchProvider)
+    Seq(frontendFeatureSwitchProvider, backendFeatureSwitchProvider, incorpFeatureSwitchProvider)
 }

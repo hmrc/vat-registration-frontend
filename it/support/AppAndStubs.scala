@@ -48,7 +48,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
     val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
+    val defaultTimeout: FiniteDuration = 2 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)

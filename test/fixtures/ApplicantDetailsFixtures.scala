@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.TransactorDetails
+import models.{IncorporationDetails, TransactorDetails}
 import models.api.ScrsAddress
 import models.external.{Applicant, Name}
 import models.view._
@@ -32,6 +32,11 @@ trait ApplicantDetailsFixtures {
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
+  val testCrn = "testCrn"
+  val testCompanyName = "testCompanyName"
+  val testCtUtr = "testCtUtr"
+  val testIncorpDate = LocalDate.of(2020, 2, 3)
+
   val emptyApplicantDetails = ApplicantDetails(
     transactorDetails = None,
     homeAddress = None,
@@ -43,12 +48,15 @@ trait ApplicantDetailsFixtures {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+
   val completeApplicantDetails = ApplicantDetails(
+    incorporationDetails = Some(testIncorpDetails),
     transactorDetails = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
+    previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))
   )
 }

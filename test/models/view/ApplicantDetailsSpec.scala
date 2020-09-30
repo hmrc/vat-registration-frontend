@@ -44,11 +44,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
          """.stripMargin)
 
       val applicantDetails = ApplicantDetails(
-
-        homeAddress = None,
-        contactDetails = None,
         formerName = Some(FormerNameView(false, None)),
-        formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
@@ -69,10 +65,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
          """.stripMargin)
 
       val applicantDetails = ApplicantDetails(
-        homeAddress = None,
-        contactDetails = None,
         formerName = Some(FormerNameView(false, None)),
-        formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
@@ -84,12 +77,16 @@ class ApplicantDetailsSpec extends VatRegSpec {
         s"""
            |{
            |  "name": {
-           |    "first": "First",
-           |    "last": "Last"
+           |    "first": "testFirstName",
+           |    "last": "testLastName"
            |  },
            |  "role": "Director",
-           |  "dob": "1998-07-12",
-           |  "nino": "AA123456Z",
+           |  "dateOfBirth": "2020-01-01",
+           |  "nino": "AB123456C",
+           |  "companyNumber": "testCrn",
+           |  "companyName": "testCompanyName",
+           |  "ctutr": "testCtUtr",
+           |  "dateOfIncorporation": "2020-02-03",
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
@@ -119,6 +116,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val formerName = Name(first = Some("New"), middle = Some("Name"), last = "Cosmo")
 
       val applicantDetails = ApplicantDetails(
+        incorporationDetails = Some(testIncorpDetails),
+        transactorDetails = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
@@ -157,7 +156,6 @@ class ApplicantDetailsSpec extends VatRegSpec {
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(yesNo = false, None)),
-        formerNameDate = None,
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
@@ -167,18 +165,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
   "Calling apiWrites" should {
     "return a correct partial JsValue with data" in {
-      val data = ApplicantDetails(
-        homeAddress = None,
-        contactDetails = None,
-        formerName = None,
-        formerNameDate = None,
-        previousAddress = None
-      )
-
-      val validJson = Json.parse(
-        s"""
-           |{
-           |}""".stripMargin)
+      val data = ApplicantDetails()
+      val validJson = Json.obj()
 
       Json.toJson(data)(ApplicantDetails.apiWrites) mustBe validJson
     }
@@ -228,7 +216,6 @@ class ApplicantDetailsSpec extends VatRegSpec {
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
         formerName = Some(FormerNameView(yesNo = false, None)),
-        formerNameDate = None,
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 

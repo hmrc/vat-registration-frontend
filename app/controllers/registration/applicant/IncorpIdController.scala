@@ -14,32 +14,42 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.BaseController
+import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{IncorpIdService, SessionProfile}
+import services.{ApplicantDetailsService, IncorpIdService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
-import scala.concurrent.ExecutionContext
-import controllers.registration.applicant.{routes => applicantRoutes}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
                                    val authConnector: AuthConnector,
                                    val keystoreConnector: KeystoreConnector,
-                                   incorpIdService: IncorpIdService
+                                   incorpIdService: IncorpIdService,
+                                   applicantDetailsService: ApplicantDetailsService,
                                   )(implicit val appConfig: FrontendAppConfig, ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+
   def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
       _ =>
-        val continueUrl = applicantRoutes.FormerNameController.show().absoluteURL()
-
-        incorpIdService.createJourney(continueUrl).map(
-          journeyStartUrl =>
-            SeeOther(journeyStartUrl)
+        incorpIdService.createJourney(appConfig.incorpIdCallbackUrl).map(
+          journeyStartUrl => SeeOther(journeyStartUrl).addingToSession()
         )
   }
+
+  def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request => implicit profile =>
+      for {
+        incorpDetails <- incorpIdService.getDetails(journeyId)
+        _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
+      } yield Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+  }
+
 }
