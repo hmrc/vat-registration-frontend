@@ -63,6 +63,11 @@ object ApplicantDetails {
       .contramap[Option[PreviousAddressView]](_.flatMap(_.address))
   )(unlift(ApplicantDetails.unapply))
 
+  val apiFormat: Format[ApplicantDetails] = Format(
+    apiReads,
+    apiWrites
+  )
+
   private def splitName(fullName: String): Name = {
     val split = fullName.trim.split("\\s+")
 
