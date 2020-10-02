@@ -26,9 +26,6 @@ trait TradingDetailsFixtures extends BaseFixture {
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
-
-  val validThresholdWithExpectedThreshold = generateOptionalThreshold(thresholdPreviousThirtyDays = Some(testDate))
-
   def generateTradingDetails(
                       tradingNameSelection: Boolean = true,
                       tradingName: Option[String] = Some("ACME Ltd."),
