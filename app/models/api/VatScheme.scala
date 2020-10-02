@@ -18,36 +18,33 @@ package models.api
 
 import common.enums.VatRegStatus
 import models.view.ApplicantDetails
-import models.{BankAccount, BusinessContact, FlatRateScheme, Returns, SicAndCompliance, TradingDetails, TurnoverEstimates}
+import models._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-
 
 case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
                      tradingDetails: Option[TradingDetails] = None,
                      sicAndCompliance: Option[SicAndCompliance] = None,
                      businessContact: Option[BusinessContact] = None,
-                     threshold: Option[Threshold] = None,
                      returns: Option[Returns] = None,
-                     turnOverEstimates: Option[TurnoverEstimates] = None,
                      bankAccount : Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
-                     status: VatRegStatus.Value)
+                     status: VatRegStatus.Value,
+                     eligibilitySubmissionData: Option[EligibilitySubmissionData] = None)
 
 object VatScheme {
   implicit val format: OFormat[VatScheme] = (
       (__ \ "registrationId").format[String] and
-      (__ \ "applicantDetails").formatNullable[JsValue].inmap[Option[ApplicantDetails]](_.map(ApplicantDetails.apiReads.reads(_).get), _.map(ApplicantDetails.apiWrites.writes(_))) and
+      (__ \ "applicantDetails").formatNullable[ApplicantDetails](ApplicantDetails.apiFormat) and
       (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "sicAndCompliance").formatNullable[SicAndCompliance](SicAndCompliance.apiFormat)
         .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
       (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
-      (__ \ "threshold").formatNullable[Threshold] and
       (__ \ "returns").formatNullable[Returns] and
-      (__ \ "turnoverEstimates").formatNullable[TurnoverEstimates] and
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "flatRateScheme").formatNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
-      (__ \ "status").format[VatRegStatus.Value]
+      (__ \ "status").format[VatRegStatus.Value] and
+      (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData]
     )(VatScheme.apply, unlift(VatScheme.unapply))
 }

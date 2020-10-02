@@ -64,7 +64,7 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
     Summary(Seq(
       SummaryVatDetailsSectionBuilder(
         vs.tradingDetails,
-        vs.threshold,
+        vs.eligibilitySubmissionData.map(_.threshold),
         vs.returns
       ).section,
       SummaryDirectorDetailsSectionBuilder(vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary"))).section,
@@ -79,7 +79,7 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
         vs.flatRateScheme,
         vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
         vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-        vs.turnOverEstimates
+        vs.eligibilitySubmissionData.map(_.estimates)
       ).section
     ))
   }

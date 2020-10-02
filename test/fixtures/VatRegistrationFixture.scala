@@ -20,10 +20,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import common.enums.VatRegStatus
+import models._
 import models.api._
 import models.external.{IncorporationInfo, _}
 import models.view.{Summary, SummaryRow, SummarySection, _}
-import models._
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
@@ -37,31 +37,30 @@ trait BaseFixture {
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validExpectedOverTrue = Some(testDate)
+
   def generateThreshold(mandatory: Boolean = false,
                         thresholdPreviousThirtyDays: Option[LocalDate] = None,
                         thresholdInTwelveMonths: Option[LocalDate] = None) =
     (mandatory, thresholdPreviousThirtyDays, thresholdInTwelveMonths) match {
-      case (false, None, None)                              => Threshold(false)
+      case (false, None, None) => Threshold(false)
       case (_, ptd, itm) if List(ptd, itm).flatten.nonEmpty => Threshold(true, ptd, itm)
-      case _                                                => Threshold(false)
+      case _ => Threshold(false)
     }
-  def generateOptionalThreshold(mandatory: Boolean = false, thresholdPreviousThirtyDays: Option[LocalDate] = None) = {
-    Some(generateThreshold(mandatory, thresholdPreviousThirtyDays))
-  }
-  val validVoluntaryRegistration            = generateThreshold()
-  val validMandatoryRegistrationThirtyDays  = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
-  val validMandatoryRegistrationBothDates   = generateThreshold(thresholdPreviousThirtyDays = Some(testDate), thresholdInTwelveMonths = Some(testDate))
-  val validMandatoryRegistrationTwelve      = generateThreshold(thresholdInTwelveMonths = Some(testDate))
-  val optVoluntaryRegistration              = Some(validVoluntaryRegistration)
-  val optMandatoryRegistrationThirtyDays    = Some(validMandatoryRegistrationThirtyDays)
-  val optMandatoryRegistrationBothDates     = Some(validMandatoryRegistrationBothDates)
-  val optMandatoryRegistrationTwelve        = Some(validMandatoryRegistrationTwelve)
+
+  val validVoluntaryRegistration = generateThreshold()
+  val validMandatoryRegistrationThirtyDays = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
+  val validMandatoryRegistrationBothDates = generateThreshold(thresholdPreviousThirtyDays = Some(testDate), thresholdInTwelveMonths = Some(testDate))
+  val validMandatoryRegistrationTwelve = generateThreshold(thresholdInTwelveMonths = Some(testDate))
+  val optVoluntaryRegistration = Some(validVoluntaryRegistration)
+  val optMandatoryRegistrationThirtyDays = Some(validMandatoryRegistrationThirtyDays)
+  val optMandatoryRegistrationBothDates = Some(validMandatoryRegistrationBothDates)
+  val optMandatoryRegistrationTwelve = Some(validMandatoryRegistrationTwelve)
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
   with ApplicantDetailsFixtures with ReturnsFixture {
 
-  val bankAccount       = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
+  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
 
   val sicCode = SicCode("88888", "description", "displayDetails")
 
@@ -77,7 +76,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validHttpResponse = HttpResponse(OK)
 
   // CacheMap from S4l
-  val validCacheMap = CacheMap("fooBarWizzBand",Map("foo" -> Json.toJson("wizz")))
+  val validCacheMap = CacheMap("fooBarWizzBand", Map("foo" -> Json.toJson("wizz")))
 
   //Exceptions
   val badRequest = new BadRequestException(BAD_REQUEST.toString)
@@ -169,12 +168,20 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
-      email          = "test@foo.com",
-      phoneNumber    = Some("123"),
-      mobileNumber   = Some("987654"),
+      email = "test@foo.com",
+      phoneNumber = Some("123"),
+      mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
     ppobAddress = Some(scrsAddress)
+  )
+
+  val validTurnoverEstimates: TurnoverEstimates = TurnoverEstimates(100L)
+
+  val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
+    validMandatoryRegistrationThirtyDays,
+    validTurnoverEstimates,
+    MTDfB
   )
 
   val validVatScheme = VatScheme(
@@ -187,7 +194,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     bankAccount = Some(validBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
-    turnOverEstimates = Some(TurnoverEstimates(100L))
+    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
   val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
@@ -196,7 +203,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     applicantDetails = Some(emptyApplicantDetails),
     bankAccount = Some(validBankAccount),
-    turnOverEstimates = Some(TurnoverEstimates(100L))
+    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
   val testIncorporationInfo = IncorporationInfo(
@@ -210,23 +217,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       crn = Some("90000001"),
       incorporationDate = Some(LocalDate.of(2016, 8, 5)),
       description = Some("Some description")))
-
-  def vatScheme(
-                 id: String = testRegId,
-                 tradingDetails: Option[TradingDetails] = None,
-                 sicAndComp: Option[SicAndCompliance] = None,
-                 businessContact: Option[BusinessContact] = None,
-                 flatRateScheme: Option[FlatRateScheme] = None,
-                 threshold: Option[Threshold] = None
-               ): VatScheme = VatScheme(
-    id = id,
-    tradingDetails = tradingDetails,
-    sicAndCompliance = sicAndComp,
-    businessContact = businessContact,
-    flatRateScheme = flatRateScheme,
-    threshold = threshold,
-    status = VatRegStatus.draft
-  )
 
   // ICL
   val iclMultipleResults = Json.parse(
@@ -254,7 +244,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       | }
     """.stripMargin).as[JsObject]
 
-  val iclMultipleResultsSicCode1 = SicCode("12345","Whale farming", "")
+  val iclMultipleResultsSicCode1 = SicCode("12345", "Whale farming", "")
   val iclMultipleResultsSicCode2 = SicCode("23456", "Dog walking", "")
 
   val iclSingleResult = Json.parse(
@@ -273,53 +263,56 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       |       ]
       |     }
     """.stripMargin).as[JsObject]
-  implicit def urlCreator: String => Call = (s:String) => Call("GET", s"http://vatRegEFEUrl/question?pageId=$s")
-    val fullEligibilityDataJson = Json.parse("""
-                                             |{ "sections": [
-                                             |            {
-                                             |              "title": "section_1",
-                                             |              "data": [
-                                             |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
-                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
-                                             |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
-                                             |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
-                                             |              ]
-                                             |            },
-                                             |            {
-                                             |              "title": "section_2",
-                                             |              "data": [
-                                             |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
-                                             |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
-                                             |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
-                                             |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
-                                             |                "name": {
-                                             |                    "first": "This is my first",
-                                             |                    "middle": "This is my middle name",
-                                             |                    "surname": "This is my surname"
-                                             |                    },
-                                             |                "role": "director"
-                                             |                 }
-                                             |                }
-                                             |              ]
-                                             |            }
-                                             |          ]
-                                             |         }
+
+  implicit def urlCreator: String => Call = (s: String) => Call("GET", s"http://vatRegEFEUrl/question?pageId=$s")
+
+  val fullEligibilityDataJson = Json.parse(
+    """
+      |{ "sections": [
+      |            {
+      |              "title": "section_1",
+      |              "data": [
+      |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
+      |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+      |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+      |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+      |              ]
+      |            },
+      |            {
+      |              "title": "section_2",
+      |              "data": [
+      |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
+      |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
+      |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
+      |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
+      |                "name": {
+      |                    "first": "This is my first",
+      |                    "middle": "This is my middle name",
+      |                    "surname": "This is my surname"
+      |                    },
+      |                "role": "director"
+      |                 }
+      |                }
+      |              ]
+      |            }
+      |          ]
+      |         }
                                            """.stripMargin)
 
   val section1 = SummarySection("section_1",
     Seq(
-      (SummaryRow("Question 1",Seq("FOO"),Some(urlCreator("mandatoryRegistration"))), true),
-      (SummaryRow("Question 2",Seq("BAR"),Some(urlCreator("voluntaryRegistration"))), true),
-      (SummaryRow("Question 3",Seq("wizz"),Some(urlCreator("thresholdPreviousThirtyDays"))), true),
-      (SummaryRow("Question 4",Seq("woosh"),Some(urlCreator("thresholdInTwelveMonths"))), true)
-    ),true)
+      (SummaryRow("Question 1", Seq("FOO"), Some(urlCreator("mandatoryRegistration"))), true),
+      (SummaryRow("Question 2", Seq("BAR"), Some(urlCreator("voluntaryRegistration"))), true),
+      (SummaryRow("Question 3", Seq("wizz"), Some(urlCreator("thresholdPreviousThirtyDays"))), true),
+      (SummaryRow("Question 4", Seq("woosh"), Some(urlCreator("thresholdInTwelveMonths"))), true)
+    ), true)
 
   val section2 = SummarySection("section_2",
     Seq(
-      (SummaryRow("Question 5",Seq("bang"),Some(urlCreator("applicantUKNino"))), true),
-      (SummaryRow("Question 6",Seq("BUZZ"),Some(urlCreator("turnoverEstimate"))), true),
-      (SummaryRow("Question 7",Seq("cablam"),Some(urlCreator("completionCapacity"))), true),
-      (SummaryRow("Question 8",Seq("weez"),Some(urlCreator("completionCapacityFillingInFor"))), true)
-    ),true)
+      (SummaryRow("Question 5", Seq("bang"), Some(urlCreator("applicantUKNino"))), true),
+      (SummaryRow("Question 6", Seq("BUZZ"), Some(urlCreator("turnoverEstimate"))), true),
+      (SummaryRow("Question 7", Seq("cablam"), Some(urlCreator("completionCapacity"))), true),
+      (SummaryRow("Question 8", Seq("weez"), Some(urlCreator("completionCapacityFillingInFor"))), true)
+    ), true)
   val fullSummaryModelFromFullEligiblityJson = Summary(section1 :: section2 :: Nil)
 }
