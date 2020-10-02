@@ -16,7 +16,6 @@
 
 package services
 
-import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
@@ -52,7 +51,7 @@ class SummaryServiceSpec extends VatRegSpec {
   "getRegistrationSummary" should {
     "map a valid VatScheme object to a Summary object" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)))
+        .thenReturn(Future.successful(validVatScheme))
       when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
         .thenReturn(Future.successful(completeApplicantDetails))
 
@@ -65,13 +64,13 @@ class SummaryServiceSpec extends VatRegSpec {
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.32)))
 
-      testService.registrationToSummary(validVatScheme.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
+      testService.registrationToSummary(validVatScheme).sections.length mustEqual 10
     }
     "map a valid empty VatScheme object to a Summary object" in new Setup {
       when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
         .thenReturn(Future.successful(completeApplicantDetails))
 
-      testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency.copy(threshold = optMandatoryRegistrationThirtyDays)).sections.length mustEqual 10
+      testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 10
 
     }
   }

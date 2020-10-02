@@ -20,9 +20,9 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixture
+import models._
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
-import models._
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
@@ -43,26 +43,31 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
 
-
   val voluntaryThreshold = Threshold(
     mandatoryRegistration = false
   )
 
   val threshold = Threshold(
-    mandatoryRegistration     = true,
+    mandatoryRegistration = true,
     thresholdPreviousThirtyDays = Some(LocalDate.of(2016, 9, 30)),
     thresholdInTwelveMonths = Some(LocalDate.of(2017, 1, 1))
   )
 
-  val flatRateScheme     = FlatRateScheme(joinFrs = Some(false))
+  val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
 
   val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
-  val bankAccount     = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
 
-  val returns         = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
+  val returns = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+
+  val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
+    threshold,
+    turnOverEstimates,
+    MTDfB
+  )
 
   val coHoRegisteredOfficeAddress =
     CoHoRegisteredOfficeAddress("premises",
@@ -76,9 +81,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
-      email          = "test@foo.com",
-      phoneNumber    = Some("123"),
-      mobileNumber   = Some("987654"),
+      email = "test@foo.com",
+      phoneNumber = Some("123"),
+      mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
     ppobAddress = Some(scrsAddress)
@@ -106,60 +111,60 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
 
   val vatReg = VatScheme(
-    id                  = "1",
-    status              = VatRegStatus.draft,
-    tradingDetails      = Some(tradingDetails),
-    applicantDetails      = None,
-    sicAndCompliance    = Some(sicAndCompliance),
-    businessContact     = Some(validBusinessContactDetails),
-    threshold           = Some(voluntaryThreshold),
-    flatRateScheme      = Some(flatRateScheme),
-    turnOverEstimates   = Some(turnOverEstimates),
-    bankAccount         = Some(bankAccount),
-    returns             = Some(returns)
+    id = "1",
+    status = VatRegStatus.draft,
+    tradingDetails = Some(tradingDetails),
+    applicantDetails = None,
+    sicAndCompliance = Some(sicAndCompliance),
+    businessContact = Some(validBusinessContactDetails),
+    flatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount),
+    returns = Some(returns),
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
 
   val vatRegIncorporated = VatScheme(
-    id                  = "1",
-    status              = VatRegStatus.draft,
-    tradingDetails      = Some(tradingDetails),
-    applicantDetails      = None,
-    sicAndCompliance    = Some(sicAndCompliance),
-    businessContact     = Some(validBusinessContactDetails),
-    threshold           = Some(threshold),
-    flatRateScheme      = Some(flatRateScheme),
-    bankAccount         = Some(bankAccount)
+    id = "1",
+    status = VatRegStatus.draft,
+    tradingDetails = Some(tradingDetails),
+    applicantDetails = None,
+    sicAndCompliance = Some(sicAndCompliance),
+    businessContact = Some(validBusinessContactDetails),
+    flatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount),
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
-  val fullEligibilityDataJson = Json.parse("""
-                                             |{ "sections": [
-                                             |            {
-                                             |              "title": "section A",
-                                             |              "data": [
-                                             |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
-                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
-                                             |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
-                                             |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
-                                             |              ]
-                                             |            },
-                                             |            {
-                                             |              "title": "section B",
-                                             |              "data": [
-                                             |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
-                                             |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
-                                             |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
-                                             |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
-                                             |                "name": {
-                                             |                    "first": "This is my first",
-                                             |                    "middle": "This is my middle name",
-                                             |                    "surname": "This is my surname"
-                                             |                    },
-                                             |                "role": "director"
-                                             |                 }
-                                             |                }
-                                             |              ]
-                                             |            }
-                                             |          ]
-                                             |         }
+  val fullEligibilityDataJson = Json.parse(
+    """
+      |{ "sections": [
+      |            {
+      |              "title": "section A",
+      |              "data": [
+      |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
+      |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+      |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+      |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+      |              ]
+      |            },
+      |            {
+      |              "title": "section B",
+      |              "data": [
+      |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
+      |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
+      |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
+      |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
+      |                "name": {
+      |                    "first": "This is my first",
+      |                    "middle": "This is my middle name",
+      |                    "surname": "This is my surname"
+      |                    },
+      |                "role": "director"
+      |                 }
+      |                }
+      |              ]
+      |            }
+      |          ]
+      |         }
                                            """.stripMargin)
 
 }
