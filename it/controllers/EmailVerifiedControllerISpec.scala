@@ -20,6 +20,7 @@ import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
 import itutil.IntegrationSpecBase
 import models.external.EmailAddress
 import org.scalatest.concurrent.IntegrationPatience
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -55,8 +56,8 @@ class EmailVerifiedControllerISpec extends IntegrationSpecBase with AppAndStubs 
 
         val res: WSResponse = await(buildClient("/email-address-verified").post(""))
 
-        res.status mustBe NOT_IMPLEMENTED
-        // TODO should route to next page when the flow is decided
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessContactDetailsController.showPPOB().url)
       }
     }
 
