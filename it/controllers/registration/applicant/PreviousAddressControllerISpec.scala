@@ -116,7 +116,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       val response = buildClient(applicantRoutes.PreviousAddressController.submit().url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
@@ -193,7 +193,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       val response = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1
