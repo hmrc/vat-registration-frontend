@@ -40,38 +40,48 @@ class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
                                           ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        applicant <- applicantDetailsService.getApplicantDetails
-        filledForm = applicant.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
-      } yield Ok(views.html.previous_address(filledForm))
+    implicit request =>
+      implicit profile =>
+        for {
+          applicant <- applicantDetailsService.getApplicantDetails
+          filledForm = applicant.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
+        } yield
+          Ok(views.html.previous_address(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      PreviousAddressForm.form.bindFromRequest.fold(
-        badForm => Future.successful(BadRequest(views.html.previous_address(badForm))),
-        data => if (!data.yesNo) {
-          addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
-        } else {
-          applicantDetailsService.saveApplicantDetails(data) map {
-            _ => Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
-          }
-        }
-      )
+    implicit request =>
+      implicit profile =>
+        PreviousAddressForm.form.bindFromRequest.fold(
+          badForm =>
+            Future.successful(BadRequest(views.html.previous_address(badForm))),
+          data =>
+            if (data.yesNo) {
+              applicantDetailsService.saveApplicantDetails(data) map {
+                _ => Redirect(controllers.routes.CaptureEmailAddressController.show())
+              }
+            } else {
+              addressLookupService.getJourneyUrl(
+                addressThreeYearsOrLess,
+                applicantRoutes.PreviousAddressController.addressLookupCallback()
+              ) map Redirect
+            }
+        )
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        address <- addressLookupService.getAddressById(id)
-        _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
-      } yield Redirect(controllers.routes.BusinessContactDetailsController.showPPOB())
+    implicit request =>
+      implicit profile =>
+        for {
+          address <- addressLookupService.getAddressById(id)
+          _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
+        } yield Redirect(controllers.routes.CaptureEmailAddressController.show())
   }
 
   def change: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
+    implicit request =>
+      implicit profile =>
+        addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
   }
 
 }

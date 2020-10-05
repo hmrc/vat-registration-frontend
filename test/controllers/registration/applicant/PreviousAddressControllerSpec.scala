@@ -92,7 +92,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
         "previousAddressQuestionRadio" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
+        redirectLocation(res) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
       }
     }
 
@@ -117,7 +117,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
       callAuthorised(controller.addressLookupCallback("addressId")) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.BusinessContactDetailsController.showPPOB().url)
+        redirectLocation(res) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
       }
     }
   }
