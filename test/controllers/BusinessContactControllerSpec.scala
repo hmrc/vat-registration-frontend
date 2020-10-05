@@ -22,6 +22,7 @@ import fixtures.VatRegistrationFixture
 import models.CompanyContactDetails
 import models.api.ScrsAddress
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import play.api.mvc.Call
@@ -59,119 +60,16 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       .thenReturn(Future(Seq(scrsAddress)))
   }
 
-  "showing the ppob page" should {
-    "return a 200" when {
-      "everything is okay" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails))
+  "redirectToAlf" should {
+    "redirect to ALF" in new Setup {
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Call("GET", "TxM")))
 
-        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(Seq(scrsAddress)))
-
-        callAuthorised(controller.showPPOB) {
-          _ isA 200
-        }
-      }
-      "everything is okay and no address exists in prepop" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails))
-
-        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(Seq()))
-
-        callAuthorised(controller.showPPOB) {
-          _ isA 200
-        }
-      }
-      "everything is okay and no address exists in the business contact" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails.copy(ppobAddress = None)))
-
-        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(Seq(scrsAddress)))
-
-        callAuthorised(controller.showPPOB) {
-          _ isA 200
-        }
-      }
-    }
-    "throw an exception" when {
-      "getBussinesContact Fails" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(throw exception))
-
-        callAuthorised(controller.showPPOB) {
-          _ failedWith exception
-        }
-      }
-      "getPpobAddressList Fails" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails.copy(ppobAddress = None)))
-
-        when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(throw exception))
-
-        callAuthorised(controller.showPPOB) {
-          _ failedWith exception
-        }
+      callAuthorised(controller.ppobRedirectToAlf) {
+        _ isA SEE_OTHER
       }
     }
   }
-
-  "submitting the ppob page" should {
-    val fakeRequest = FakeRequest(routes.BusinessContactDetailsController.showPPOB())
-
-    "return a 400" when {
-      "form is empty" in new SubmissionSetup {
-        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody()) {
-          _ isA 400
-        }
-      }
-    }
-
-    "return a 303" when {
-      "user selects other and redirects to alf address" in new SubmissionSetup {
-        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(Call("GET", "my-redirect-url")))
-        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "other")) {
-          _ redirectsTo "my-redirect-url"
-        }
-      }
-      "user selects other and redirect to alf address" in new SubmissionSetup {
-        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(scrsAddress))
-        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> scrsAddress.id)) {
-          _ redirectsTo routes.BusinessContactDetailsController.showCompanyContactDetails().url
-        }
-      }
-
-      "user selects non-uk and redirect to drop out page address" in new SubmissionSetup {
-        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(scrsAddress))
-        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "non-uk")) {
-          _ redirectsTo routes.BusinessContactDetailsController.showPPOBDropOut().url
-        }
-      }
-
-    }
-
-    "return an exception" when {
-      "the address selected is not on the list" in new SubmissionSetup {
-        submitAuthorised(controller.submitPPOB, fakeRequest.withFormUrlEncodedBody("ppobRadio" -> "fake address")) {
-          _ failedWith classOf[NoSuchElementException]
-        }
-      }
-    }
-  }
-
-  "show ppob dropout page" should {
-    "return a 200" in new SubmissionSetup {
-      callAuthorised(controller.showPPOBDropOut) {
-        _ isA 200
-      }
-    }
-  }
-
 
   "showing the company contact details page" should {
     "return a 200" when {
@@ -198,7 +96,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
-        callAuthorised(controller.showPPOB) {
+        callAuthorised(controller.showCompanyContactDetails) {
           _ failedWith exception
         }
       }

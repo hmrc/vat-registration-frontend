@@ -100,12 +100,10 @@ GET         /provides-skilled-workers                                           
 POST        /provides-skilled-workers                                                          controllers.LabourComplianceController.submitSkilledWorkers
 
 ## PPOB ADDRESS
-GET         /principal-place-business                                                          controllers.BusinessContactDetailsController.showPPOB
-POST        /principal-place-business                                                          controllers.BusinessContactDetailsController.submitPPOB
+GET         /principal-place-business                                                          controllers.BusinessContactDetailsController.ppobRedirectToAlf
 GET         /principal-place-business/acceptFromTxm                                            controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
 
 ## PPOB ADDRESS Drop out page
-GET         /cant-register-vat                                                                 controllers.BusinessContactDetailsController.showPPOBDropOut
 
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /company-contact-details                                                           controllers.BusinessContactDetailsController.showCompanyContactDetails
@@ -113,8 +111,7 @@ POST        /company-contact-details                                            
 
 
 ## OFFICER ADDRESS PAGE
-GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.show
-POST        /home-address                                                                      controllers.registration.applicant.HomeAddressController.submit
+GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.redirectToAlf
 GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
 
 

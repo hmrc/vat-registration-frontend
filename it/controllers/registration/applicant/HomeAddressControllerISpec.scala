@@ -60,7 +60,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
   val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
 
-  "POST Home Address page" should {
+  "GET redirectToAlf" should {
     val s4lData = ApplicantDetails(
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
@@ -79,7 +79,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.HomeAddressController.submit().url).post(Map("homeAddressRadio" -> Seq(currentAddress.id)))
+      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf().url).get()
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
