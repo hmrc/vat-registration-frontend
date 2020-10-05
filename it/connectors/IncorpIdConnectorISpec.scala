@@ -17,15 +17,18 @@
 package connectors
 
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
+import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.IncorpIdJourneyConfig
+import models.{IncorpIdJourneyConfig, IncorporationDetails}
+import org.scalatestplus.play.ConfiguredServer
 import play.api.libs.json.Json
 import support.AppAndStubs
 import play.api.test.Helpers._
 
-class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
+class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with ITRegistrationFixtures {
 
   lazy val connector: IncorpIdConnector = app.injector.instanceOf[IncorpIdConnector]
+  val testIncorpId = "testIncorpId"
 
   "createJourney" when {
     "the stub Incorp ID feature switch is enabled" should {
@@ -58,4 +61,30 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       }
     }
   }
+
+  "getDetails" when {
+    "incorp ID returns valid incorporation details" should {
+      "return the incorporation details" in {
+        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+        disable(StubIncorpIdJourney)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse).toString)
+
+        val res = await(connector.getDetails(testIncorpId))
+
+        res mustBe(validResponse)
+      }
+    }
+    "incorp ID returns invalid incorporation details" should {
+      "throw and exception" in {
+        val validResponse = Json.toJson(IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate))
+        disable(StubIncorpIdJourney)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
+
+        intercept[Exception] {
+          val res = await(connector.getDetails(testIncorpId))
+        }
+      }
+    }
+  }
+
 }

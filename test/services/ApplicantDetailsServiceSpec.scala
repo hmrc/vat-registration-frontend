@@ -72,13 +72,13 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
-  class SetupForS4LSave(t: ApplicantDetails = emptyApplicantDetails) {
+  class SetupForS4LSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
       mockVatRegistrationConnector,
       mockS4LService
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
-        Future.successful(t)
+        Future.successful(applicantDetails)
       }
     }
 
@@ -86,17 +86,18 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
-  class SetupForBackendSave(t: ApplicantDetails = emptyApplicantDetails) {
+  class SetupForBackendSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
       mockVatRegistrationConnector,
       mockS4LService
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
-        Future.successful(t)
+        Future.successful(applicantDetails)
       }
     }
 
-    when(mockVatRegistrationConnector.patchApplicantDetails(any())(any(), any())).thenReturn(Future.successful(Json.toJson("""{}""")))
+    when(mockVatRegistrationConnector.patchApplicantDetails(any())(any(), any()))
+      .thenReturn(Future.successful(Json.toJson(applicantDetails)))
 
     when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(200)))
@@ -174,7 +175,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       service.getApplicantDetails returns expected
     }
 
-    "return a full ApplicantDetails view model from backend without an email" in new Setup(None, Some(jsonFullApplicantDetailsNoEmail)) {
+    "return a full ApplicantDetails view model from backend without an email" in new Setup(None, Some(Json.toJson(completeApplicantDetails)(ApplicantDetails.apiWrites))) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: ApplicantDetails = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
@@ -183,13 +184,12 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
       )
-      service.getApplicantDetails returns expected
+      service.getApplicantDetails returns completeApplicantDetails
     }
   }
 
   "Calling updateApplicantDetails" should {
     "return a ApplicantDetails" when {
-
       "updating current address" that {
         val currentAddress = ScrsAddress(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
         val applicantHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
@@ -207,6 +207,19 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         }
       }
 
+      "updating incorporation details" should {
+        "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
+          val expected = emptyApplicantDetails.copy(incorporationDetails = Some(testIncorpDetails))
+
+          service.saveApplicantDetails(testIncorpDetails) returns expected
+        }
+        "store successfully in the backned if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(incorporationDetails = None)) {
+          val expected = completeApplicantDetails
+
+          service.saveApplicantDetails(testIncorpDetails) returns expected
+        }
+      }
+
       "updating applicant contact" that {
         val applicantContactDetails = ContactDetailsView(Some("tt@dd.uk"))
 
@@ -216,7 +229,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
           service.saveApplicantDetails(applicantContactDetails) returns expected
         }
 
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
+        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(contactDetails = None)) {
           val expected = completeApplicantDetails.copy(contactDetails = Some(applicantContactDetails))
 
           service.saveApplicantDetails(applicantContactDetails) returns expected
