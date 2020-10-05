@@ -20,16 +20,14 @@ import common.enums.AddressLookupJourneyIdentifier.homeAddress
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
-import deprecated.DeprecatedConstants
-import forms.HomeAddressForm
+import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
 import models.view.HomeAddressView
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
-import controllers.registration.applicant.{routes => applicantRoutes}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class HomeAddressController @Inject()(mcc: MessagesControllerComponents,
@@ -40,25 +38,9 @@ class HomeAddressController @Inject()(mcc: MessagesControllerComponents,
                                      (implicit val appConfig: FrontendAppConfig,
                                       ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      for {
-        applicant <- applicantDetailsService.getApplicantDetails
-        filledForm = applicant.homeAddress.fold(HomeAddressForm.form)(HomeAddressForm.form.fill)
-      } yield Ok(views.html.applicant_home_address(filledForm, DeprecatedConstants.emptyAddressList))
-  }
-
-
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      applicantDetailsService.getApplicantDetails.flatMap { _ =>
-        HomeAddressForm.form.bindFromRequest.fold(
-          badForm =>
-            Future.successful(BadRequest(views.html.applicant_home_address(badForm, DeprecatedConstants.emptyAddressList)))
-          , _ =>
-            addressLookupService.getJourneyUrl(homeAddress, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
-        )
-      }
+      addressLookupService.getJourneyUrl(homeAddress, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {

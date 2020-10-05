@@ -41,12 +41,12 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
         includeHMRCBranding = false,
         ukMode = false,
         selectPageConfig = AddressLookupSelectConfigModel (
-          showSearchAgainLink = true
+          showSearchAgainLink = false
         ),
         confirmPageConfig = AddressLookupConfirmConfigModel(
           showChangeLinkcontinueUrl = true,
           showSubHeadingAndInfo = false,
-          showSearchAgainLink = true,
+          showSearchAgainLink = false,
           showConfirmChangeText = false
         ),
         timeoutConfig = AddressLookupConfirmTimeoutModel(

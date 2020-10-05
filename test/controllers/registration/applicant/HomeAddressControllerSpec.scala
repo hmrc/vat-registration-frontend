@@ -59,45 +59,14 @@ class HomeAddressControllerSpec extends ControllerSpec
     previousAddress = None
   )
 
-  "show" should {
-    "return OK when there's data" in new Setup {
+  "redirectToAlf" should {
+    "redirect to ALF" in new Setup {
       mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
-
-      callAuthorised(controller.show()) {
-        status(_) mustBe OK
-      }
-    }
-
-    "return OK when there's no data" in new Setup {
-      when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any())).thenReturn(Future.successful(emptyApplicantDetails))
-
-      callAuthorised(controller.show()) {
-        status(_) mustBe OK
-      }
-    }
-  }
-
- "submit" should {
-    val fakeRequest = FakeRequest(applicantRoutes.HomeAddressController.show())
-
-    "return BAD_REQUEST with Empty data" in new Setup {
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()) {
-        result => status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "redirect the user to ALF" in new Setup {
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
-      submitAuthorised(controller.submit(),
-        fakeRequest.withFormUrlEncodedBody("homeAddressRadio" -> "other")
-      ) { res =>
+      callAuthorised(controller.redirectToAlf()) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some("TxM")
       }
     }
   }
