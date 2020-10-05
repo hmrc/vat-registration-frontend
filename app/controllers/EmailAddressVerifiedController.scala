@@ -43,7 +43,7 @@ class EmailAddressVerifiedController @Inject()(view: email_verified,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Future.successful(NotImplemented) // TODO add routing back into rest of service
+        Future.successful(Redirect(routes.BusinessContactDetailsController.showPPOB()))
   }
 
 }
