@@ -90,7 +90,7 @@ class ContactDetailsControllerSpec extends ControllerSpec
         "mobile" -> mobile
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.show().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
       }
     }
   }

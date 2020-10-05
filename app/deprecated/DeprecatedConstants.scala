@@ -16,23 +16,13 @@
 
 package deprecated
 
-import java.time.{LocalDate, Month}
-
-import models.api.ScrsAddress
-import models.external.Name
-import play.api.libs.json.JodaWrites.{DefaultJodaLocalDateWrites, JodaDateTimeWrites}
 import org.joda.time.{DateTime, LocalDate => JodaLocalDate}
+import play.api.libs.json.JodaWrites.{DefaultJodaLocalDateWrites, JodaDateTimeWrites}
 import play.api.libs.json.{Format, JodaReads, JsResult, JsValue}
 
 object DeprecatedConstants {
   @Deprecated
   val fakeCompanyName: String = "FAKECOMPANY Ltd."
-
-  @Deprecated
-  val fakeIncorpDate: LocalDate = LocalDate.of(2020, Month.JANUARY, 1)
-
-  @Deprecated
-  val emptyAddressList: Seq[ScrsAddress] = Nil
 
   @Deprecated // Migrate to Java LocalDate
   implicit val jodaLocalDateFormat = new Format[JodaLocalDate] {
@@ -46,15 +36,4 @@ object DeprecatedConstants {
     override def writes(o: DateTime): JsValue = JodaDateTimeWrites.writes(o)
   }
 
-  @Deprecated
-  val fakeNino = "AB123456C"
-
-  @Deprecated
-  val fakeName = Name(first = Some("fakeName"), middle = None, last = "fakeSurname")
-
-  @Deprecated
-  val fakeRole = "secretary"
-
-  @Deprecated
-  val fakeDateOfBirth = LocalDate.of(2020, 1, 1)
 }

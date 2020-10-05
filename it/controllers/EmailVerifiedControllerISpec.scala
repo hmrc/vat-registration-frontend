@@ -57,7 +57,7 @@ class EmailVerifiedControllerISpec extends IntegrationSpecBase with AppAndStubs 
         val res: WSResponse = await(buildClient("/email-address-verified").post(""))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessContactDetailsController.showPPOB().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessContactDetailsController.ppobRedirectToAlf().url)
       }
     }
 

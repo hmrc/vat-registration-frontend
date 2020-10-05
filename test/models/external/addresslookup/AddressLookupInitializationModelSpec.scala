@@ -34,35 +34,36 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     new AddressLookupConfiguration()(frontendAppConfig, messagesApi).apply(testJourneyId, testContinueUrl)
 
   object LookupPageOptions {
-    val title = "Search for your address"
-    val heading = "Search address"
-    val filterLabel = "House name or number (optional)"
-    val submitLabel = "Search address"
-    val manualAddressLinkText = "I don't have these details"
+    val title = "Find your home address"
+    val heading = "Find your home address"
+    val filterLabel = "Property name or number"
+    val submitLabel = "Continue"
+    val manualAddressLinkText = "The address does not have a UK postcode"
   }
 
   object SelectPageOptions {
-    val title = "Choose an address"
-    val heading = "Choose an address"
-    val searchAgainLinkText = "Search again"
+    val title = "Choose the address"
+    val heading = "Choose the address"
     val editAddressLinkText = "Enter address manually"
+    val submitLabel = "Continue"
   }
 
   object EditPageOptions {
-    val title = "Enter your address"
-    val heading = "Enter address"
+    val title = "Enter your home address"
+    val heading = "Enter your home address"
     val line1Label = "Address line 1"
     val line2Label = "Address line 2"
     val line3Label = "Address line 3"
     val countryLabel = "Country"
     val postcodeLabel = "Postcode"
-    val submitLabel = "Next"
+    val submitLabel = "Continue"
   }
 
   object ConfirmPageLabels {
-    val title = "Confirm address"
-    val heading = "Review and confirm"
-    val submitLabel = "Save and continue"
+    val title = "Confirm your home address"
+    val heading = "Confirm your home address"
+    val submitLabel = "Continue"
+    val changeLinkText = "Edit this address"
   }
 
   val addressInitializationJson: JsValue = Json.obj(
@@ -77,12 +78,12 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "includeHMRCBranding" -> false,
       "ukMode" -> false,
       "selectPageConfig" -> Json.obj(
-        "showSearchAgainLink" -> true
+        "showSearchAgainLink" -> false
       ),
       "confirmPageConfig" -> Json.obj(
         "showChangeLinkcontinueUrl" -> true,
         "showSubHeadingAndInfo" -> false,
-        "showSearchAgainLink" -> true,
+        "showSearchAgainLink" -> false,
         "showConfirmChangeText" -> false
       ),
       "timeoutConfig" -> Json.obj(
@@ -106,7 +107,7 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
         "selectPageLabels" -> Json.obj(
           "title" -> SelectPageOptions.title,
           "heading" -> SelectPageOptions.heading,
-          "searchAgainLinkText" -> SelectPageOptions.searchAgainLinkText,
+          "submitLabel" -> SelectPageOptions.submitLabel,
           "editAddressLinkText" -> SelectPageOptions.editAddressLinkText
         ),
         "editPageLabels" -> Json.obj(
@@ -122,7 +123,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
         "confirmPageLabels" -> Json.obj(
           "title" -> ConfirmPageLabels.title,
           "heading" -> ConfirmPageLabels.heading,
-          "submitLabel" -> ConfirmPageLabels.submitLabel
+          "submitLabel" -> ConfirmPageLabels.submitLabel,
+          "changeLinkText" -> ConfirmPageLabels.changeLinkText
         )
       ),
       "cy" -> Json.obj(
@@ -140,8 +142,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
         "selectPageLabels" -> Json.obj(
           "title" -> SelectPageOptions.title,
           "heading" -> SelectPageOptions.heading,
-          "searchAgainLinkText" -> SelectPageOptions.searchAgainLinkText,
-          "editAddressLinkText" -> SelectPageOptions.editAddressLinkText
+          "editAddressLinkText" -> SelectPageOptions.editAddressLinkText,
+          "submitLabel" -> SelectPageOptions.submitLabel
         ),
         "editPageLabels" -> Json.obj(
           "title" -> EditPageOptions.title,
@@ -156,7 +158,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
         "confirmPageLabels" -> Json.obj(
           "title" -> ConfirmPageLabels.title,
           "heading" -> ConfirmPageLabels.heading,
-          "submitLabel" -> ConfirmPageLabels.submitLabel
+          "submitLabel" -> ConfirmPageLabels.submitLabel,
+          "changeLinkText" -> ConfirmPageLabels.changeLinkText
         )
       )
     )

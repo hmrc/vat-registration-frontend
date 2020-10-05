@@ -51,7 +51,7 @@ class ContactDetailsController @Inject()(mcc: MessagesControllerComponents,
           Future.successful(BadRequest(views.html.applicant_contact_details(badForm))),
         data =>
           applicantDetailsService.saveApplicantDetails(data) map {
-            _ => Redirect(applicantRoutes.HomeAddressController.show())
+            _ => Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
           }
       )
   }
