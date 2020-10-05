@@ -33,7 +33,7 @@ class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
                                    val authConnector: AuthConnector,
                                    val keystoreConnector: KeystoreConnector,
                                    incorpIdService: IncorpIdService,
-                                   applicantDetailsService: ApplicantDetailsService,
+                                   applicantDetailsService: ApplicantDetailsService
                                   )(implicit val appConfig: FrontendAppConfig, ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
