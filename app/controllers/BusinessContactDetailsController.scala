@@ -23,10 +23,9 @@ import forms.{CompanyContactDetailsForm, PpobForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
 import models.api.ScrsAddress
-import models.view.vatContact.ppob.PpobView
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
-import views.html.{business_contact_details, ppob, ppob_drop_out}
+import views.html.business_contact_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,44 +43,13 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
   private val ppobForm = PpobForm.form
   private val companyContactForm = CompanyContactDetailsForm.form
 
-  def showPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
+  def ppobRedirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        for {
-          businessContact <- businessContactService.getBusinessContact
-          form = businessContact.ppobAddress.fold(ppobForm)(x => ppobForm.fill(PpobView(x.id, Some(x))))
-          addressList <- prepopService.getPpobAddressList
-        } yield Ok(ppob(form, addressList))
-  }
-
-
-  def submitPPOB: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        ppobForm.bindFromRequest.fold(
-          hasErrors => prepopService.getPpobAddressList map { addressList =>
-            BadRequest(ppob(hasErrors, addressList))
-          },
-          address => if (address.addressId.equals("other")) {
-            addressLookupService.getJourneyUrl(
-              AddressLookupJourneyIdentifier.businessActivities,
-              routes.BusinessContactDetailsController.returnFromTxm()
-            ) map Redirect
-          } else if (address.addressId.equals("non-uk")) {
-            Future.successful(Redirect(routes.BusinessContactDetailsController.showPPOBDropOut()))
-          } else {
-            for {
-              addressList <- prepopService.getPpobAddressList
-              _ <- businessContactService.updateBusinessContact[ScrsAddress](addressList.find(_.id == address.addressId).get)
-            } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
-          }
-        )
-  }
-
-  def showPPOBDropOut: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Ok(ppob_drop_out(dropoutUrl)))
+        addressLookupService.getJourneyUrl(
+          journeyId = AddressLookupJourneyIdentifier.businessActivities,
+          continueUrl = routes.BusinessContactDetailsController.returnFromTxm()
+        ) map Redirect
   }
 
   def returnFromTxm(id: String): Action[AnyContent] = isAuthenticatedWithProfile {

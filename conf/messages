@@ -41,81 +41,84 @@ addressLookup.common.navTitle                               = Register for VAT
 addressLookup.common.phaseBannerHtml                        = This is a new service. Help us improve it - send your <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">feedback</a>.
 addressLookup.common.deskProServiceName                     = SCRS
 
-addressLookup.homeAddress.lookupPage.title                   = Search for your address
-addressLookup.homeAddress.lookupPage.heading                 = Search address
-addressLookup.homeAddress.lookupPage.filterLabel             = House name or number (optional)
-addressLookup.homeAddress.lookupPage.submitLabel             = Search address
-addressLookup.homeAddress.lookupPage.manualAddressLinkText   = I don''t have these details
+addressLookup.homeAddress.lookupPage.title                   = Find your home address
+addressLookup.homeAddress.lookupPage.heading                 = Find your home address
+addressLookup.homeAddress.lookupPage.filterLabel             = Property name or number
+addressLookup.homeAddress.lookupPage.submitLabel             = Continue
+addressLookup.homeAddress.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
 
-addressLookup.homeAddress.selectPage.title                   = Choose an address
-addressLookup.homeAddress.selectPage.heading                 = Choose an address
-addressLookup.homeAddress.selectPage.searchAgainLinkText     = Search again
+addressLookup.homeAddress.selectPage.title                   = Choose the address
+addressLookup.homeAddress.selectPage.heading                 = Choose the address
 addressLookup.homeAddress.selectPage.editAddressLinkText     = Enter address manually
+addressLookup.homeAddress.selectPage.submitLabel             = Continue
 
-addressLookup.homeAddress.editPage.title                     = Enter your address
-addressLookup.homeAddress.editPage.heading                   = Enter address
+addressLookup.homeAddress.editPage.title                     = Enter your home address
+addressLookup.homeAddress.editPage.heading                   = Enter your home address
 addressLookup.homeAddress.editPage.line1Label                = Address line 1
 addressLookup.homeAddress.editPage.line2Label                = Address line 2
 addressLookup.homeAddress.editPage.line3Label                = Address line 3
 addressLookup.homeAddress.editPage.postcodeLabel             = Postcode
 addressLookup.homeAddress.editPage.countryLabel              = Country
-addressLookup.homeAddress.editPage.submitLabel               = Next
+addressLookup.homeAddress.editPage.submitLabel               = Continue
 
-addressLookup.homeAddress.confirmPage.title                  = Confirm address
-addressLookup.homeAddress.confirmPage.heading                = Review and confirm
-addressLookup.homeAddress.confirmPage.submitLabel            = Save and continue
+addressLookup.homeAddress.confirmPage.title                  = Confirm your home address
+addressLookup.homeAddress.confirmPage.heading                = Confirm your home address
+addressLookup.homeAddress.confirmPage.changeLinkText         = Edit this address
+addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 
-addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Director Home Address
-addressLookup.addressThreeYearsOrLess.lookupPage.heading                 = What is your previous home address?
-addressLookup.addressThreeYearsOrLess.lookupPage.filterLabel             = House name or number (optional)
-addressLookup.addressThreeYearsOrLess.lookupPage.submitLabel             = Search address
-addressLookup.addressThreeYearsOrLess.lookupPage.manualAddressLinkText   = Enter address manually or a foreign address
+addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Find your previous home address
+addressLookup.addressThreeYearsOrLess.lookupPage.heading                 = Find your previous home address
+addressLookup.addressThreeYearsOrLess.lookupPage.filterLabel             = Property name or number (optional)
+addressLookup.addressThreeYearsOrLess.lookupPage.submitLabel             = Continue
+addressLookup.addressThreeYearsOrLess.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
 
-addressLookup.addressThreeYearsOrLess.selectPage.title                   = Choose an address
-addressLookup.addressThreeYearsOrLess.selectPage.heading                 = Choose an address
+addressLookup.addressThreeYearsOrLess.selectPage.title                   = Choose the address
+addressLookup.addressThreeYearsOrLess.selectPage.heading                 = Choose the address
 addressLookup.addressThreeYearsOrLess.selectPage.searchAgainLinkText     = Search again
 addressLookup.addressThreeYearsOrLess.selectPage.editAddressLinkText     = Enter address
+addressLookup.addressThreeYearsOrLess.selectPage.submitLabel             = Continue
 
-addressLookup.addressThreeYearsOrLess.editPage.title                     = Enter your address
-addressLookup.addressThreeYearsOrLess.editPage.heading                   = Enter your address
+addressLookup.addressThreeYearsOrLess.editPage.title                     = Enter your previous home address
+addressLookup.addressThreeYearsOrLess.editPage.heading                   = Enter your previous home address
 addressLookup.addressThreeYearsOrLess.editPage.line1Label                = Address line 1
 addressLookup.addressThreeYearsOrLess.editPage.line2Label                = Address line 2
 addressLookup.addressThreeYearsOrLess.editPage.line3Label                = Address line 3
 addressLookup.addressThreeYearsOrLess.editPage.postcodeLabel             = Postcode
 addressLookup.addressThreeYearsOrLess.editPage.countryLabel              = Country
-addressLookup.addressThreeYearsOrLess.editPage.submitLabel               = Next
+addressLookup.addressThreeYearsOrLess.editPage.submitLabel               = Continue
 addressLookup.addressThreeYearsOrLess.editPage.searchAgainLinkText       = Search again
 
-addressLookup.addressThreeYearsOrLess.confirmPage.title                  = Confirm previous address
-addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Review and confirm your previous home address
-addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Save and continue
-addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Change address
+addressLookup.addressThreeYearsOrLess.confirmPage.title                  = Confirm your previous home address
+addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Confirm your previous home address
+addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
+addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this addresss
 
-addressLookup.businessActivities.lookupPage.title                   = Search for your address
-addressLookup.businessActivities.lookupPage.heading                 = Search address
-addressLookup.businessActivities.lookupPage.filterLabel             = House name or number (optional)
-addressLookup.businessActivities.lookupPage.submitLabel             = Search address
-addressLookup.businessActivities.lookupPage.manualAddressLinkText   = Enter address manually or a foreign address
+addressLookup.businessActivities.lookupPage.title                   = What is the business address?
+addressLookup.businessActivities.lookupPage.heading                 = What is the business address?
+addressLookup.businessActivities.lookupPage.filterLabel             = Property name or number
+addressLookup.businessActivities.lookupPage.submitLabel             = Continue
+addressLookup.businessActivities.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
 
-addressLookup.businessActivities.selectPage.title                   = Choose an address
-addressLookup.businessActivities.selectPage.heading                 = Choose an address
+addressLookup.businessActivities.selectPage.title                   = Choose the address
+addressLookup.businessActivities.selectPage.heading                 = Choose the address
 addressLookup.businessActivities.selectPage.searchAgainLinkText     = Search again
 addressLookup.businessActivities.selectPage.editAddressLinkText     = Edit address
+addressLookup.businessActivities.selectPage.submitLabel             = Continue
 
-addressLookup.businessActivities.editPage.title                     = Enter your address
-addressLookup.businessActivities.editPage.heading                   = Enter your address
+addressLookup.businessActivities.editPage.title                     = Enter the business address
+addressLookup.businessActivities.editPage.heading                   = Enter the business address
 addressLookup.businessActivities.editPage.line1Label                = Address line 1
 addressLookup.businessActivities.editPage.line2Label                = Address line 2
 addressLookup.businessActivities.editPage.line3Label                = Address line 3
 addressLookup.businessActivities.editPage.postcodeLabel             = Postal code
 addressLookup.businessActivities.editPage.countryLabel              = Country
-addressLookup.businessActivities.editPage.submitLabel               = Next
+addressLookup.businessActivities.editPage.submitLabel               = Continue
 addressLookup.businessActivities.editPage.searchAgainLinkText       = Search again
 
-addressLookup.businessActivities.confirmPage.title                  = Company address
-addressLookup.businessActivities.confirmPage.heading                = Review and confirm where you''ll carry out most of your business activities
-addressLookup.businessActivities.confirmPage.submitLabel            = Save and continue
-addressLookup.businessActivities.confirmPage.changeLinkText         = Change
+addressLookup.businessActivities.confirmPage.title                  = Confirm the business address
+addressLookup.businessActivities.confirmPage.heading                = Confirm the business address
+addressLookup.businessActivities.confirmPage.submitLabel            = Continue
+addressLookup.businessActivities.confirmPage.changeLinkText         = Edit this address
 
 #Timeout Page
 pages.timeout.title                     = Your session has timed out

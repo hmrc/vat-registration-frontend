@@ -52,7 +52,7 @@ case class SummaryCompanyContactDetailsSectionBuilder(businessContact: Option[Bu
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
     businessContact.map(bc => ScrsAddress.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
-    Some(controllers.routes.BusinessContactDetailsController.showPPOB())
+    Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
   )
 
 

@@ -58,50 +58,20 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
     }
   }
 
-  "show PPOB" should {
-    "return 200 when S4l returns view model" in new Setup {
+  "GET redirectToAlf" should {
+    "redirect to ALF" in new Setup {
       given()
         .user.isAuthorised
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .vatScheme.contains(vatReg)
-        .company.hasROAddress(coHoRegisteredOfficeAddress)
+        .alfeJourney.initialisedSuccessfully()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf().url).get()
+
       whenReady(response) { res =>
-        res.status mustBe 200
-
-        val document = Jsoup.parse(res.body)
-        val elems = document.getElementsByAttributeValue("name", "ppobRadio")
-
-        elems.size() mustBe 3
-      }
-    }
-    "return 200 when s4l returns None and II returns a company that has an address not in the UK" in new Setup {
-      given()
-        .user.isAuthorised
-        .s4lContainer[BusinessContact].isEmpty
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
-        .vatScheme.doesNotHave("business-contact")
-        .vatScheme.contains(VatScheme("foo", status = VatRegStatus.draft))
-        .company.hasROAddress(coHoRegisteredOfficeAddress.copy(country = Some("foo BAR land")))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
-      whenReady(response) { res =>
-        res.status mustBe 200
-        val document = Jsoup.parse(res.body)
-
-        val elems = document.getElementsByAttributeValue("name", "ppobRadio")
-        elems.first().attr("value") mustBe "other"
-        elems.get(1).attr("value") mustBe "non-uk"
-        elems.size() mustBe 2
+        res.status mustBe 303
       }
     }
     "return 500 when not authorised" in new Setup {
@@ -110,67 +80,10 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.showPPOB().url).get()
+      val response = buildClient(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf().url).get()
       whenReady(response) { res =>
         res.status mustBe 500
 
-      }
-    }
-  }
-  "submit PPOB" should {
-    "return 303 to Address Lookup frontend" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .company.hasROAddress(coHoRegisteredOfficeAddress)
-        .alfeJourney.initialisedSuccessfully()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("other")))
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
-      }
-    }
-    "return 303 to company contact details page (full model)" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .vatScheme.contains(vatReg)
-        .company.hasROAddress(coHoRegisteredOfficeAddress)
-        .vatScheme.isUpdatedWith(validBusinessContactDetails)
-        .s4lContainer[BusinessContact].cleared
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails().url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
-        json mustBe validBusinessContactDetailsJson
-
-      }
-    }
-    "return 500 when model is complete and vat reg returns 500 (s4l is not cleared)" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.contains(vatReg)
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient(controllers.routes.BusinessContactDetailsController.submitPPOB().url).post(Map("ppobRadio" -> Seq("line1XXXX")))
-      whenReady(response) { res =>
-        res.status mustBe 500
       }
     }
   }

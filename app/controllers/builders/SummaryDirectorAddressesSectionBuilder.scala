@@ -28,7 +28,7 @@ case class SummaryDirectorAddressesSectionBuilder(vatApplicantDetails: Applicant
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
     vatApplicantDetails.homeAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
-    Some(applicantRoutes.HomeAddressController.show())
+    Some(applicantRoutes.HomeAddressController.redirectToAlf())
   )
 
   val currentAddressThreeYears: SummaryRow = yesNoRow(
