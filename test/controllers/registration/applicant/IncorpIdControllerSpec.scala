@@ -14,43 +14,47 @@
  * limitations under the License.
  */
 
-package controllers
-
-import java.time.{LocalDate, LocalDateTime}
+package controllers.registration.applicant
 
 import _root_.models._
+import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import play.api.mvc.{Action, AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Result}
+import mocks.mockservices.MockApplicantDetailsService
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import services.VoluntaryPageViewModel
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 import controllers.registration.applicant.{routes => applicantRoutes}
 
-class IncorpIdControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
+class IncorpIdControllerSpec extends ControllerSpec
+  with VatRegistrationFixture
+  with TimeServiceMock
+  with FutureAssertions
+  with MockApplicantDetailsService {
+
+  val testJourneyId = "testJourneyId"
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController: IncorpIdController = new IncorpIdController(
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockIncorpIdService
+      mockIncorpIdService,
+      mockApplicantDetailsService
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(cp)
   }
 
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
   "startIncorpIdJourney" should {
     "redirect to the journeyStartUrl" in new Setup {
-      implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-      lazy val testContinueUrl: String = applicantRoutes.FormerNameController.show().absoluteURL()
       lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(testContinueUrl)(Future.successful(testJourneyStartUrl))
+      mockCreateJourney(appConfig.incorpIdCallbackUrl)(Future.successful(testJourneyStartUrl))
 
       lazy val res: Future[Result] = testController.startIncorpIdJourney()(fakeRequest)
 
@@ -58,4 +62,18 @@ class IncorpIdControllerSpec extends ControllerSpec with VatRegistrationFixture 
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
     }
   }
+
+  "incorpIdCallback" should {
+    "store the incorporation details and redirect to the next page when the response is valid" in new Setup {
+      val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+      mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
+      mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
+
+      val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) must contain(onwardUrl)
+    }
+  }
+
 }

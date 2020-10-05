@@ -44,7 +44,7 @@ class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        //Future.successful(Redirect(applicantRoutes.FormerNameController.show()))
-      Future.successful(Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()))
+        //Future.successful(Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()))
+        Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
   }
 }

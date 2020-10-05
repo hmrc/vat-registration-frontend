@@ -23,6 +23,7 @@ import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
 import models.external.CoHoRegisteredOfficeAddress
+import models.view.{ApplicantDetails, ContactDetailsView, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
@@ -166,5 +167,22 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       |          ]
       |         }
                                            """.stripMargin)
+
+  val testCrn = "testCrn"
+  val testCompanyName = "testCompanyName"
+  val testCtUtr = "testCtUtr"
+  val testIncorpDate = LocalDate.of(2020, 2, 3)
+
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+
+  val completeApplicantDetails = ApplicantDetails(
+    incorporationDetails = Some(testIncorpDetails),
+    transactorDetails = Some(testTransactorDetails),
+    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
+    contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+    formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
+  )
 
 }

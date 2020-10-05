@@ -18,16 +18,22 @@ package services
 
 import connectors.IncorpIdConnector
 import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
+import models.{IncorpIdJourneyConfig, IncorporationDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 @Singleton
 class IncorpIdService @Inject()(incorpIdConnector: IncorpIdConnector) {
+
   def createJourney(continueUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
     val journeyConfig = IncorpIdJourneyConfig(continueUrl)
 
     incorpIdConnector.createJourney(journeyConfig)
   }
+
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporationDetails] = {
+    incorpIdConnector.getDetails(journeyId)
+  }
+
 }

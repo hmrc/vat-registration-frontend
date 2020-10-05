@@ -47,6 +47,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val host: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
   lazy val backendHost: String = loadConfig("microservice.services.vat-registration.www.url")
+  lazy val incorpIdHost: String = loadConfig("microservice.services.incorporated-entity-identification-frontend.url")
 
   val contactFormServiceIdentifier = "VATREG"
 
@@ -109,6 +110,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey"
     } else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
+
+  def getIncorpIdDetailsUrl(journeyId: String): String =
+    if (isEnabled(StubIncorpIdJourney)) {
+      s"$host/register-for-vat/test-only/api/incorp-id-journey/$journeyId"
+    } else s"$incorpIdUrl/incorporated-entity-identification/api/journey/$journeyId"
+
+  def incorpIdCallbackUrl: String = s"$host/register-for-vat/incorp-id-callback"
 
   lazy val personalDetailsValidationUrl: String = loadConfig("microservice.services.personal-details-validation.url")
 

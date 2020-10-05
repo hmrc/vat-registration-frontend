@@ -41,7 +41,10 @@ lazy val microservice = Project(appName, file("."))
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
   .settings(integrationTestSettings())
   .settings(majorVersion := 0)
-  .settings()
+  .settings(
+    Keys.fork in IntegrationTest := true,
+    parallelExecution in IntegrationTest := false
+  )
   .settings(
     scalaVersion := "2.12.12",
     libraryDependencies ++= AppDependencies(),

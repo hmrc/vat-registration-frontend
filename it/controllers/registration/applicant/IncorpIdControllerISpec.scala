@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import itutil.IntegrationSpecBase
@@ -24,8 +24,10 @@ import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CREATED, await, _}
 import support.AppAndStubs
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 class IncorpIdControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
+
   "/start-incorp-id-journey" should {
     "redirect to the returned journey url" in new StandardTestHelpers {
       implicit val request = FakeRequest()
@@ -42,11 +44,12 @@ class IncorpIdControllerISpec extends IntegrationSpecBase with AppAndStubs with 
 
       stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl).toString)
 
-      val res: WSResponse = await(buildClient(controllers.routes.IncorpIdController.startIncorpIdJourney().url).get)
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startIncorpIdJourney().url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
 
     }
   }
+
 }
