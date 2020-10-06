@@ -20,7 +20,8 @@ import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
 import models.{IncorpIdJourneyConfig, IncorporationDetails}
 import play.api.http.Status.CREATED
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,9 +43,15 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
   def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporationDetails] = {
     val url = config.getIncorpIdDetailsUrl(journeyId)
 
-    httpClient.GET[IncorporationDetails](url) recover {
-      case error => throw error
-    }
+    httpClient.GET[JsValue](url)
+      .map(json => {
+        println(Json.prettyPrint(json))
+        IncorporationDetails.apiFormat.reads(json) match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw new Exception(s"Incorp ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+        }
+      }
+      )
   }
 
 }

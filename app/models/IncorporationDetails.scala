@@ -18,7 +18,8 @@ package models
 
 import java.time.LocalDate
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 case class IncorporationDetails(companyNumber: String,
                                 companyName: String,
@@ -26,5 +27,12 @@ case class IncorporationDetails(companyNumber: String,
                                 dateOfIncorporation: LocalDate)
 
 object IncorporationDetails {
+  val apiFormat: Format[IncorporationDetails] = (
+    (__ \ "companyProfile" \ "companyNumber").format[String] and
+    (__ \ "companyProfile" \ "companyName").format[String] and
+    (__ \ "ctutr").format[String] and
+    (__ \ "companyProfile" \ "dateOfIncorporation").format[LocalDate]
+  )(IncorporationDetails.apply, unlift(IncorporationDetails.unapply))
+
   implicit val format: Format[IncorporationDetails] = Json.format[IncorporationDetails]
 }
