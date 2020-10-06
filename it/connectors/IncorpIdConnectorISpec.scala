@@ -67,7 +67,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "return the incorporation details" in {
         val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
         disable(StubIncorpIdJourney)
-        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse).toString)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
 
