@@ -103,7 +103,9 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "cachable.session-cache",
       "bank-account-reputation",
       "industry-classification-lookup-frontend",
-      "industry-classification-lookup-frontend-internal"
+      "industry-classification-lookup-frontend-internal",
+      "vat-registration-frontend.internal",
+      "vat-registration"
     )) ++ additionalConfig)
     .build()
 

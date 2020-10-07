@@ -45,13 +45,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
 
-  lazy val host: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
-  lazy val backendHost: String = loadConfig("microservice.services.vat-registration.www.url")
-  lazy val incorpIdHost: String = loadConfig("microservice.services.incorporated-entity-identification-frontend.url")
+  lazy val host: String = servicesConfig.baseUrl("vat-registration-frontend.internal")
+  lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
+  lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
 
   val contactFormServiceIdentifier = "VATREG"
 
-  lazy val contactFrontendPartialBaseUrl = loadConfig("microservice.services.contact-frontend.url")
+  lazy val contactFrontendPartialBaseUrl = servicesConfig.baseUrl("contact-frontend")
   lazy val analyticsToken = loadConfig(s"google-analytics.token")
   lazy val analyticsHost = loadConfig(s"google-analytics.host")
   lazy val reportAProblemPartialUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
