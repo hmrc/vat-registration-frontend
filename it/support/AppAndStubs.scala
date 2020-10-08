@@ -105,7 +105,9 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "industry-classification-lookup-frontend",
       "industry-classification-lookup-frontend-internal",
       "vat-registration-frontend.internal",
-      "vat-registration"
+      "vat-registration",
+      "email-verification",
+      "incorporated-entity-identification-frontend"
     )) ++ additionalConfig)
     .build()
 
