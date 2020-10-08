@@ -48,6 +48,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val host: String = servicesConfig.baseUrl("vat-registration-frontend.internal")
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
+  lazy val personalDetailsValidationFrontendUrl: String = servicesConfig.baseUrl("personal-details-validation-frontend")
+  lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
 
   val contactFormServiceIdentifier = "VATREG"
 
@@ -102,19 +104,15 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val termsConditions: String = host + servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
-  lazy val incorpIdUrl: String = loadConfig("microservice.services.incorporated-entity-identification-frontend.url")
-
-  lazy val emailVerificationBaseUrl: String = loadConfig("microservice.services.email-verification.url")
-
   def getCreateIncorpIdJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey"
-    } else s"$incorpIdUrl/incorporated-entity-identification/api/journey"
+    } else s"$incorpIdHost/incorporated-entity-identification/api/journey"
 
   def getIncorpIdDetailsUrl(journeyId: String): String =
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey/$journeyId"
-    } else s"$incorpIdUrl/incorporated-entity-identification/api/journey/$journeyId"
+    } else s"$incorpIdHost/incorporated-entity-identification/api/journey/$journeyId"
 
   def incorpIdCallbackUrl: String = s"$host/register-for-vat/incorp-id-callback"
 
@@ -126,8 +124,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     } else {
       s"$personalDetailsValidationUrl/personal-details-validation/$validationId"
     }
-
-  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
 
   def getPersonalDetailsValidationJourneyUrl(): String =
     if (isEnabled(StubPersonalDetailsValidation)) {
