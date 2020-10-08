@@ -22,8 +22,8 @@ import views.html.capture_email_address
 
 class CaptureEmailAddressViewSpec extends VatRegViewSpec {
 
-  val title = "What's your email address?"
-  val heading = "What's your email address?"
+  val title = "What’s your email address?"
+  val heading = "What’s your email address?"
   val paragraph = "We use this to send you communications and updates about your VAT"
   val privacyInformation = "Full details of how we use your information are in the HMRC Privacy Notice (opens in a new tab)."
   val buttonText = "Continue"
@@ -35,7 +35,7 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
     val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
-      doc.title must include(title) // TODO review titles as they seem to be missing a message key 'site.govuk'
+      doc.title must include(title)
     }
 
     "have the correct heading" in {

@@ -133,7 +133,7 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
       whenReady(response) { res =>
         res.status mustBe 400
         val document = Jsoup.parse(res.body)
-        document.html().contains("Enter a date that is on or after the date the business's registered for VAT") mustBe true
+        document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
       }
     }
     "return 500 when no returns exists" in new StandardTestHelpers {

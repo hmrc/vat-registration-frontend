@@ -38,7 +38,7 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
     val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
-      doc.title must include(title) // TODO review titles as they seem to be missing a message key 'site.govuk'
+      doc.title must include(title)
     }
 
     "have the correct heading" in {

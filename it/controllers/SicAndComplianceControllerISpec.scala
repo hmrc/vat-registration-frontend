@@ -293,7 +293,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "CompanyProvideWorkers should return 200 on Show AND users answer is prepopped on page" in new Setup {
+  "CompanyProvideWorkers should return 200 on Show AND users answer is pre-popped on page" in new Setup {
 
     given()
       .user.isAuthorised
@@ -350,7 +350,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "SkilledWorkers should return 200 on show and users answer is prepopped on page" in new Setup {
+  "SkilledWorkers should return 200 on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -414,7 +414,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "TemporaryContracts should return 200 on show and users answer is prepopped on page" in new Setup {
+  "TemporaryContracts should return 200 on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -450,7 +450,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "Workers should return 200 on show and users answer is prepopped on page" in new Setup {
+  "Workers should return 200 on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -486,7 +486,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "BusinessActivityDescription should return 200 on show and users answer is prepopped on page" in new Setup {
+  "BusinessActivityDescription should return 200 on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
