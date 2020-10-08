@@ -1,5 +1,6 @@
 ## Global
 
+site.govuk                              = GOV.UK
 service.name                            = Register for VAT
 app.title                               = Register for VAT
 app.phaseBannerFeedback                 = This is a new service - your <a href="{0}">feedback</a> will help us to improve it.
@@ -132,48 +133,24 @@ pages.timeoutiv.heading                 = Your session has timed out due to inac
 pages.timeoutiv.body.url                = You need to <a href="{0}">restart the identity check</a>.
 
 ##Submission Timeout Page
-pages.retrySubmission.title             = We couldn''t process your application
-pages.retrySubmission.heading           = We couldn''t process your application
-pages.retrySubmission.p1                = Sorry, there is a technical problem and we couldn''t process your application. Any details you entered have been saved.
+pages.retrySubmission.title             = We couldn’t process your application
+pages.retrySubmission.heading           = We couldn’t process your application
+pages.retrySubmission.p1                = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.
 pages.retrySubmission.p2                = Please resend your application.
 pages.retrySubmission.button            = Resend
 
 ##Submission Failed Page
-pages.failedSubmission.description      = We couldn''t process your application
-pages.failedSubmission.p1               = Sorry, there is a technical problem and we couldn''t process your application. Any details you entered have been saved.
+pages.failedSubmission.description      = We couldn’t process your application
+pages.failedSubmission.p1               = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.
 pages.failedSubmission.p2               = Fill out the form below so we can help you complete your application.
 
 ## Unable to confirm identity page
-pages.cantconfirmidentity.title         = We won''t be able to confirm your identity
-pages.cantconfirmidentity.heading       = We won''t be able to confirm your identity
-pages.cantconfirmidentity.body.one      = We don''t hold enough information for us to check who you are.
-pages.cantconfirmidentity.body.two      = If you have the company''s name and registration date, you can register for VAT
+pages.cantconfirmidentity.title         = We won’t be able to confirm your identity
+pages.cantconfirmidentity.heading       = We won’t be able to confirm your identity
+pages.cantconfirmidentity.body.one      = We don’t hold enough information for us to check who you are.
+pages.cantconfirmidentity.body.two      = If you have the company’s name and registration date, you can register for VAT
 pages.cantconfirmidentity.body.link     = using another HMRC service
 pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
-
-## Failediv
-pages.failediv.title                   = We couldn''t confirm your identity
-pages.failediv.heading                 = We couldn''t confirm your identity
-pages.failediv.body.one                = The information you provided doesn''t match the details HMRC holds on you.
-pages.failediv.body.url                = You''ll need to try again, or you can
-pages.failediv.body.link               = use another HMRC service.
-pages.failediv.button.try              = Try again
-
-## Lockedoutiv
-pages.lockedoutiv.title                = You''ve been locked out
-pages.lockedoutiv.heading              = You''ve been locked out
-pages.lockedoutiv.body.one             = You''ve made too many attempts to confirm your identity.
-pages.lockedoutiv.body1.url            = You''ll have to try again after 24 hours by
-pages.lockedoutiv.body1.link           = logging back into the service from GOV.UK.
-pages.lockedoutiv.body2.url            = If you have the company''s name and the registration date, you can
-pages.lockedoutiv.body2.link           = use another HMRC service.
-
-## Useraborted
-pages.useraborted.title                = You haven''t completed the identity check
-pages.useraborted.heading              = You haven''t completed the identity check
-pages.useraborted.body1.url            = You need to <a href="{0}">restart the identity check</a>.
-pages.useraborted.body2.url            = If you have the company''s name and registration date, you can
-pages.useraborted.body2.link           = use another HMRC service.
 
 ## Welcome Page
 pages.welcome.title                     = Before you start
@@ -181,8 +158,8 @@ pages.welcome.heading                   = Register for VAT
 
 pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
 
-pages.welcome.bullet1                   = the company''s ''VAT taxable sales'' - this is everything the company sells that isn''t exempt from VAT
-pages.welcome.bullet2                   = the ''VAT registration threshold'' - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £{0})
+pages.welcome.bullet1                   = the company’s ’VAT taxable sales’ - this is everything the company sells that isn’t exempt from VAT
+pages.welcome.bullet2                   = the ’VAT registration threshold’ - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £{0})
 
 pages.welcome.h2                        = Mandatory registration
 pages.welcome.p2                        = You must register a company for VAT if any of these apply:
@@ -191,9 +168,9 @@ pages.welcome.bullet4                   = you thought its VAT taxable sales woul
 pages.welcome.bullet5                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
 pages.welcome.h3                        = Voluntary registration
 
-pages.welcome.p3                        = You can still register voluntarily if the company doesn''t meet these criteria if the company sells or intends to sell VAT taxable goods or services. You''ll be able to reclaim VAT on any business-related purchases.
+pages.welcome.p3                        = You can still register voluntarily if the company doesn’t meet these criteria if the company sells or intends to sell VAT taxable goods or services. You’ll be able to reclaim VAT on any business-related purchases.
 pages.welcome.button.start              = Start now
-pages.welcome.p4                        = You''ll need:
+pages.welcome.p4                        = You’ll need:
 pages.welcome.h4                        = Before you start
 pages.welcome.bullet6                   = to be a company director or company secretary
 pages.welcome.bullet7                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
@@ -201,7 +178,7 @@ pages.welcome.bullet8                   = your UK National Insurance number
 
 ## Start Date Page
 pages.startDate.title                                 = What do you want the business’s VAT registration date to be?
-pages.startDate.heading                               = What do you want the company''s VAT start date to be?
+pages.startDate.heading                               = What do you want the company’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
 pages.startDate.para1.post                            = You can choose the date the company becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
@@ -219,7 +196,7 @@ pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
 pages.startDate.warning                               = Once the company is successfully registered for VAT you cannot change its VAT start date.
-validation.startDate.choice.missing                   = Tell us what you want the company''s VAT registration date to be
+validation.startDate.choice.missing                   = Tell us what you want the company’s VAT registration date to be
 validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past
 validation.startDate.range                            = Enter a date between {0} and {1}
 validation.startDate.invalid                          = Enter a valid date
@@ -227,12 +204,12 @@ validation.startDate.missing                          = Enter a date
 
 ## Trading Name Page
 pages.tradingName.title                             = Does or will the business trade using a different name?
-pages.tradingName.heading                           = Does or will the business trade using a name that''s different from {0}?
+pages.tradingName.heading                           = Does or will the business trade using a name that’s different from {0}?
 pages.tradingName.tradingNameLabel                  = Enter the trading name
 pages.tradingName.panel.para1                       = What is a trading name?
-pages.tradingName.panel.para2                       = A business can trade using a name that''s different from its registered name. This is also known as a ''business name''.
+pages.tradingName.panel.para2                       = A business can trade using a name that’s different from its registered name. This is also known as a ’business name’.
 pages.tradingName.panel.para3                       = Some businesses choose a different trading name to help with branding or getting a domain name for their website.
-pages.tradingdetails.input.hint-text                = You can''t include ''limited'', ''Ltd'', ''limited liability partnership'', ''LLP'', ''public limited company'' or ''plc''
+pages.tradingdetails.input.hint-text                = You can’t include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’
 
 validation.tradingName.invalid                      = Enter a valid trading name
 validation.tradingName.maxlen                       = Enter a trading name using 35 characters or less
@@ -244,10 +221,10 @@ pages.summary.voluntaryReason.sells                           = The company is a
 pages.summary.voluntaryReason.intendsToSell                   = The company intends to sell good or services in the future
 
 ## Mandatory Start Date Confirmation page
-pages.start.date.confirmation.title                          = The company''s VAT start date
-pages.start.date.confirmation.heading                        = The company''s VAT start date
+pages.start.date.confirmation.title                          = The company’s VAT start date
+pages.start.date.confirmation.heading                        = The company’s VAT start date
 pages.start.date.confirmation.para1                          = This is when the company needs to start accounting for VAT.
-pages.start.date.confirmation.para2                          = The company''s VAT start date will be the same as the date Companies House set it up. The company can''t be registered for VAT before this happens.
+pages.start.date.confirmation.para2                          = The company’s VAT start date will be the same as the date Companies House set it up. The company can’t be registered for VAT before this happens.
 
 
 ## Mandatory Start Date Incorp page
@@ -262,22 +239,22 @@ validation.startDateManIncorp.range.below4y                  = Enter a date whic
 
 ## Estimate Vat Turnover Page
 pages.estimate.vat.turnover.title                           = Estimate value of sales
-pages.estimate.vat.turnover.heading                         = Estimate the company''s VAT-taxable turnover for the next 12 months
+pages.estimate.vat.turnover.heading                         = Estimate the company’s VAT-taxable turnover for the next 12 months
 pages.estimate.vat.turnover.info                            = Give an estimate rounded to the nearest £10,000.
 pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
-pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company''s UK sales of VAT-taxable goods and services. Include any zero-rated items.
+pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company’s UK sales of VAT-taxable goods and services. Include any zero-rated items.
 pages.estimate.vat.turnover.include.para1                   = Find out more about
 pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
 pages.estimate.vat.turnover.include.para1.2                 = .
 validation.estimate.vat.turnover.low                        = Enter a positive estimate
 validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
-validation.estimate.vat.turnover.missing                    = Enter what the company''s VAT taxable turnover will be during the next 12 months
+validation.estimate.vat.turnover.missing                    = Enter what the company’s VAT taxable turnover will be during the next 12 months
 validation.estimate.vat.turnover.invalid                    = Enter a valid number
 
 ## Vat Charge Expectancy Page
 pages.vat.charge.expectancy.title                           = Do you expect the business to regularly claim VAT refunds from HMRC?
 pages.vat.charge.expectancy.heading                         = Do you expect the business to regularly claim VAT refunds from HMRC?
-pages.vat.charge.expectancy.para1                           = Most businesses do not claim VAT refunds. It''s only possible when the VAT a business pays on business-related purchases is more than the VAT it charges customers.
+pages.vat.charge.expectancy.para1                           = Most businesses do not claim VAT refunds. It’s only possible when the VAT a business pays on business-related purchases is more than the VAT it charges customers.
 pages.pages.vat.charge.expectancy.example                   = Show me an example
 pages.pages.vat.charge.expectancy.example.para1             = If a business sells mainly zero-rated items (the VAT on them is 0%), it may pay more VAT to run its business than it can charge. For example, most books are zero-rated, so a bookshop may find itself in this situation.
 validation.vat.charge.expectancy.missing                    = Tell us if you expect the business to regularly claim VAT refunds from HMRC
@@ -292,7 +269,7 @@ validation.vat.return.frequency.missing                    = Tell us how often y
 ## Accounting Period Page
 pages.accounting.period.title                               = When do you want the business to do its VAT Returns?
 pages.accounting.period.heading                             = When do you want the business to do its VAT Returns?
-pages.accounting.period.para1                               = VAT Returns are usually done quarterly. The quarters you choose are known as the VAT ''stagger''.
+pages.accounting.period.para1                               = VAT Returns are usually done quarterly. The quarters you choose are known as the VAT ’stagger’.
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
@@ -302,7 +279,7 @@ validation.accounting.period.missing                        = Tell us when you w
 pages.summary.title                                         = Check and confirm your answers
 pages.summary.heading                                       = Check and confirm your answers
 pages.summary.subheading                                    = Now send your application
-pages.summary.para1                                         = By submitting this application you''re confirming that the details you''re providing are correct and reflect the company''s current position.
+pages.summary.para1                                         = By submitting this application you’re confirming that the details you’re providing are correct and reflect the company’s current position.
 pages.summary.continue                                      = Confirm and send application
 pages.summary.print                                         = Print Page
 
@@ -310,9 +287,9 @@ pages.summary.print                                         = Print Page
 pages.application.submission.confirmation.title                     = Application submitted
 pages.application.submission.confirmation.heading                   = Application submitted
 pages.application.submission.confirmation.reference.number          = Your reference number is
-pages.application.submission.confirmation.email                     = We''ll email this to you.
+pages.application.submission.confirmation.email                     = We’ll email this to you.
 pages.application.submission.confirmation.whatNext.sub.heading      = What happens next
-pages.application.submission.confirmation.whatNext.para1            = We''ll send you an email within 7 working days with a link to check the outcome of your application. If you''re successful, you''ll get the company''s VAT number.
+pages.application.submission.confirmation.whatNext.para1            = We’ll send you an email within 7 working days with a link to check the outcome of your application. If you’re successful, you’ll get the company’s VAT number.
 pages.application.submission.confirmation.panel.para                = The business cannot charge customers for VAT until it has its VAT number.
 pages.application.submission.confirmation.button                    = Continue
 
@@ -320,7 +297,7 @@ pages.application.submission.confirmation.button                    = Continue
 pages.summary.vatDetails.sectionHeading                         = VAT details
 pages.summary.vatDetails.overThresholdThirtySelection           = VAT taxable sales over £{0} in the 30 days after company is registered
 pages.summary.vatDetails.necessity                              = Register voluntarily
-pages.summary.vatDetails.overThresholdSelection                 = Since {0} has the company''s VAT taxable turnover gone over £{1}?
+pages.summary.vatDetails.overThresholdSelection                 = Since {0} has the company’s VAT taxable turnover gone over £{1}?
 pages.summary.vatDetails.overThresholdDate                      = Month turnover went over £{0}
 pages.summary.vatDetails.expectationOverThresholdSelection      = Thought turnover would go over VAT registration in a single 30-day period
 pages.summary.vatDetails.expectationOverThresholdDate           = Date you first thought sales would go over threshold
@@ -356,7 +333,7 @@ pages.business.activity.description.title                     = What does the bu
 pages.business.activity.description.heading                   = What does the business do?
 pages.business.activity.description.label                     = Enter a description of the type of goods or services the business sells.
 validation.businessActivity.description.missing               = Tell us what the business does
-validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and - , / & ''
+validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and - , / & ’
 validation.businessActivity.description.maxlen                = Tell us what the business does using 250 characters or less
 
 ## Summary Page Company details
@@ -369,13 +346,13 @@ pages.summary.companyContactDetails.website                     = Business websi
 pages.summary.companyContactDetails.ppob                        = Main place of business
 
 ## Summary Page Business Activities
-pages.summary.businessActivities.otherBusinessActivities       = Confirm the business''s Standard Industry Classification (SIC) codes for VAT
+pages.summary.businessActivities.otherBusinessActivities       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
 pages.summary.businessActivities.sectionHeading                = Business details
 pages.summary.businessActivities.businessDescription           = Business description
 pages.summary.businessActivities.mainBusinessActivity          = Main business activity
 
 ## Summary Page Business Bank Details
-pages.summary.bankDetails.sectionHeading                     = What are the company''s bank account details?
+pages.summary.bankDetails.sectionHeading                     = What are the company’s bank account details?
 pages.summary.bankDetails.companyBankAccount                 = Bank account
 pages.summary.bankDetails.companyBankAccount.name            = Enter account name
 pages.summary.bankDetails.companyBankAccount.number          = Enter account number
@@ -417,8 +394,8 @@ pages.summary.labourCompliance.providesSkilledWorkers         = Provides skilled
 ## Error Pages
 errorPages.title                        = We are experiencing technical problems
 errorPages.restart.heading              = We are experiencing technical problems
-errorPages.restart.para1                = Something''s gone wrong with this service. It wasn''t your fault.
-errorPages.restart.para2                = We''ve saved your details.
+errorPages.restart.para1                = Something’s gone wrong with this service. It wasn’t your fault.
+errorPages.restart.para2                = We’ve saved your details.
 errorPages.restart.para3                = You can try again now or come back later by signing back into the service using the link on the
 errorPages.restart.para3.1              = register a company
 errorPages.restart.para3.2              = GOV.UK page
@@ -427,14 +404,14 @@ error.restart.tryagain                  = Try again
 ## Company Bank Account
 pages.company.bank.account.title                = Does the company have a UK bank account in its own name?
 pages.company.bank.account.heading              = Does the company have a UK bank account in its own name?
-pages.company.bank.account.para                 = We''ll use this account to send any VAT repayments.
-pages.company.bank.account.panel.title          = What if the company doesn''t have one?
-pages.company.bank.account.panel.para           = Tell HMRC if the company gets a UK bank account. If we don''t have these details, we''ll send any VAT repayments by cheque.
+pages.company.bank.account.para                 = We’ll use this account to send any VAT repayments.
+pages.company.bank.account.panel.title          = What if the company doesn’t have one?
+pages.company.bank.account.panel.para           = Tell HMRC if the company gets a UK bank account. If we don’t have these details, we’ll send any VAT repayments by cheque.
 validation.company.bank.account.missing         = Tell us if the company has a bank account in its own name
 
 ## Bank Details page
-pages.bankDetails.title                             = What are the business''s bank or building society account details?
-pages.bankDetails.heading                           = What are the business''s bank account details?
+pages.bankDetails.title                             = What are the business’s bank or building society account details?
+pages.bankDetails.heading                           = What are the business’s bank account details?
 pages.bankDetails.p1                                = HMRC VAT will only use this account to send VAT repayments. We will not take money from it.
 pages.bankDetails.info                              = If this changes you need to let us know.
 pages.bankDetails.accountName.label                 = Account name
@@ -442,7 +419,7 @@ pages.bankDetails.accountNumber.label               = Account number
 pages.bankDetails.sortCode.label                    = Sort code
 pages.bankDetails.sortCode.hint                     = For example, 07 00 00
 validation.companyBankAccount.name.missing          = Tell us the account name
-validation.companyBankAccount.name.invalid          = Enter an account name using letters numbers and  \ - '' , / & ]
+validation.companyBankAccount.name.invalid          = Enter an account name using letters numbers and  \ - ’ , / & ]
 validation.companyBankAccount.number.missing        = Tell us the account number
 validation.companyBankAccount.number.invalid        = Enter a valid account number
 validation.companyBankAccount.sortCode.missing      = Tell us the account sort code
@@ -450,24 +427,24 @@ validation.companyBankAccount.sortCode.invalid      = Enter a valid account sort
 validation.companyBankAccount.invalidCombination    = Enter a valid bank account number and sort code
 
 ## Main Business Activity
-pages.mainBusinessActivity.heading                        = Which activity is the business''s main source of income?
-pages.mainBusinessActivity.title                          = What activity is the business''s main source of income
-validation.mainBusinessActivity.missing                   = Tell us which activity is the business''s main source of income
+pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?
+pages.mainBusinessActivity.title                          = What activity is the business’s main source of income
+validation.mainBusinessActivity.missing                   = Tell us which activity is the business’s main source of income
 
 ## Confirm SIC
-pages.confirmsic.title                                    = You''re about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
-pages.confirmsic.heading                                  = You''re about to confirm the company''s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.title                                    = You’re about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.heading                                  = You’re about to confirm the company’s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.p1                                       = A SIC code describes a business activity.
 pages.confirmsic.p2                                       = Every company has one or more SIC codes from when it registered with Companies House.
 pages.confirmsic.p3                                       = You must:
 pages.confirmsic.bullet1                                  = check the SIC codes for this company are still correct.
-pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the company''s business.
-pages.confirmsic.p4                                       = We''ll guide you through this process.
+pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the company’s business.
+pages.confirmsic.p4                                       = We’ll guide you through this process.
 
 ## Compliance - Tell us more about your company page
 pages.compliance.introduction.title                          = Compliance questions
 pages.compliance.introduction.heading                        = Tell us more about your company
-pages.compliance.introduction.para1                          = So we can understand what your company does, we''re going to ask you a few questions about your business activities.
+pages.compliance.introduction.para1                          = So we can understand what your company does, we’re going to ask you a few questions about your business activities.
 
 ## Labour Compliance
 ## Does Company Provide Workers
@@ -498,14 +475,14 @@ validation.skilledWorkers.missing                   = Tell us if your company pr
 ## EU Goods
 pages.euGoods.title                         = Will the business trade VAT-taxable goods with countries outside the EU?
 pages.euGoods.heading                       = Will the company trade VAT-taxable goods with countries outside the EU?
-pages.euGoods.yes.p1                        = You''ll need an Economic Operator Registration and Identification (EORI) number. This is used by customs in EU countries to identify the business''s imports and exports.
-pages.euGoods.yes.p2                        = We''ll send you an EORI number by email within 3 working days.
+pages.euGoods.yes.p1                        = You’ll need an Economic Operator Registration and Identification (EORI) number. This is used by customs in EU countries to identify the business’s imports and exports.
+pages.euGoods.yes.p2                        = We’ll send you an EORI number by email within 3 working days.
 validation.euGoods.missing                  = Tell us if the business will trade VAT-taxable goods with countries outside the EU
 
 ## Business Contact Details Page
 pages.businessContactDetails.title                           = Company contact details
 pages.businessContactDetails.heading                         = Company contact details
-pages.businessContactDetails.para1                           = We may need to get in touch for more information about the company''s VAT affairs. Enter contact details for someone from the company.
+pages.businessContactDetails.para1                           = We may need to get in touch for more information about the company’s VAT affairs. Enter contact details for someone from the company.
 pages.businessContactDetails.para2                           = You need to provide a contact email address.
 pages.businessContactDetails.para3                           = You need to provide at least one of the following contact numbers.
 pages.businessContactDetails.emailAddress.label              = Email address
@@ -523,7 +500,7 @@ validation.invalid.businessContactDetails.tooShort           = Enter a contact n
 
 
 ## Applicant Home Address Page
-pages.applicantHomeAddress.title                           = What is the applicant''s home address?
+pages.applicantHomeAddress.title                           = What is the applicant’s home address?
 pages.applicantHomeAddress.heading                         = What is your home address?
 pages.applicantHomeAddress.different.address               = A different address
 validation.applicantHomeAddress.missing                    = Tell us your home address
@@ -538,14 +515,14 @@ pages.completionCapacity.panel.p1.1                      = It will take less tha
 pages.completionCapacity.panel.p2                        = After you get the email,
 pages.completionCapacity.panel.p2.link                   = sign back into this service from GOV.UK
 pages.completionCapacity.panel.p2.1                      = to continue your application.
-pages.completionCapacity.panel.p3                        = If you''re an agent for the company, you''ll need to log in to Government Gateway using your agent ID and
+pages.completionCapacity.panel.p3                        = If you’re an agent for the company, you’ll need to log in to Government Gateway using your agent ID and
 pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Applicant Contact Details
 pages.applicantContact.title                               = How can we contact the applicant?
 pages.applicantContact.heading                             = How can we get in touch with the business after it is registered for VAT?
-pages.applicantContact.p1                                  = We''ll only do this when we have questions about the business''s VAT.
+pages.applicantContact.p1                                  = We’ll only do this when we have questions about the business’s VAT.
 pages.applicantContact.p2                                  = This cannot be a third-party agent or external accountant.
 pages.applicantContact.daytimePhone.label                  = Contact number
 pages.applicantContact.emailAddress.label                  = Email address (optional)
@@ -569,7 +546,7 @@ validation.formerName.choice.missing                     = Tell us if you have e
 validation.formerName.missing                            = Tell us your former name
 validation.formerName.invalid                            = Enter a valid former name
 validation.formerName.maxlen                             = Enter a former name that has 70 characters or less
-validation.formerName.match.cc                           = Enter a former name that''s different from your current name
+validation.formerName.match.cc                           = Enter a former name that’s different from your current name
 
 ## Former Name Date
 pages.formerNameDate.title                               = When did the applicant change their name?
@@ -581,30 +558,30 @@ validation.formerNameDate.day.invalid                    = Day
 validation.formerNameDate.month.invalid                  = Month
 validation.formerNameDate.year.invalid                   = Year
 validation.formerNameDate.range.below                    = Enter a date which is on or after your date of birth
-validation.formerNameDate.range.above                    = Enter a date that''s in the past
+validation.formerNameDate.range.above                    = Enter a date that’s in the past
 
 ## Previous Address Question
 pages.previousAddressQuestion.title                      = Has the applicant lived at their home address for 3 years?
 pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
-validation.previousAddressQuestion.missing               = Tell us if you''ve lived at your current address for 3 years or more
+validation.previousAddressQuestion.missing               = Tell us if you’ve lived at your current address for 3 years or more
 
 ## PPOB
-pages.ppob.title                                        = What is the ''principal place of business''?
-pages.ppob.heading                                      = What is the ''principal place of business''?
+pages.ppob.title                                        = What is the ’principal place of business’?
+pages.ppob.heading                                      = What is the ’principal place of business’?
 pages.ppob.p1                                           = This is where the business does most of its work.
 pages.ppob.p2                                           = If this is in different locations, use the address where the business keeps its records. This could be a home address.
 pages.ppob.different.address                            = A different UK address
 pages.ppob.panel.heading                                = You cannot use:
 pages.ppob.panel.p1                                     = the address of a third-party accountant or tax agent
 pages.ppob.panel.p2                                     = a PO box address
-pages.ppob.panel.p3                                     = a ''care of'' address
+pages.ppob.panel.p3                                     = a ’care of’ address
 pages.ppob.nonuk.address                                = A non-UK address
 validation.ppob.missing                                 = Tell us the principal place of business
 
 ## PPOB Drop Out page
 pages.ppobdropout.title                                 = Must be a UK address
-pages.ppobdropout.heading                               = You can''t register for VAT with this service
-pages.ppobdropout.p1                                    = To use this service, the address where the company carries out most its business activities (its ''principal place of business'') must be in the UK.
+pages.ppobdropout.heading                               = You can’t register for VAT with this service
+pages.ppobdropout.p1                                    = To use this service, the address where the company carries out most its business activities (its ’principal place of business’) must be in the UK.
 pages.ppobdropout.p2                                    = Please
 pages.ppobdropout.url                                   = register with another service
 
@@ -615,25 +592,25 @@ pages.frs.join.p1                               = Companies on the Flat Rate Sch
 pages.frs.join.listHead                         = Businesses on the Flat Rate Scheme:
 pages.frs.join.list1.bullet1                    = pay a fixed rate of VAT to HMRC, based on their business type
 pages.frs.join.list1.bullet2                    = keep the difference between what they charge customers and pay to HMRC
-pages.frs.join.list1.bullet3                    = can''t reclaim VAT on their purchases (except for certain capital assets over £2,000)
+pages.frs.join.list1.bullet3                    = can’t reclaim VAT on their purchases (except for certain capital assets over £2,000)
 pages.frs.join.list1.bullet4                    = usually have simpler VAT records than businesses on the standard rate scheme
 pages.frs.join.list.bottom                      = They can also take an extra 1% off their fixed rate in the first year of VAT registration.
 pages.frs.join.info                             = Show me an example
 pages.frs.join.p2                               = A dry cleaners on the Flat rate Scheme does £20,000 worth of work in a quarter. It charges 20% VAT and its sales, including £4,000 for VAT, total £24,000.
 pages.frs.join.p3                               = This type of business pays a VAT flat rate of 12% of total sales, which is £2,880. This is less than the £4,000 it charged for VAT and it can keep the £1,120 difference.
 pages.frs.join.subheading2                      = Before you decide
-pages.frs.join.p4                               = You''ll need to have an idea how much the business will:
+pages.frs.join.p4                               = You’ll need to have an idea how much the business will:
 pages.frs.join.list2.bullet1                    = spend on goods to run the business over the next 3 months
 pages.frs.join.list2.bullet2                    = earn in sales, including VAT, over the next 3 months
-pages.frs.join.para1                            = If you can’t decide right now, answer ''no''. You can register the business for the Flat Rate Scheme at a later date.
+pages.frs.join.para1                            = If you can’t decide right now, answer ’no’. You can register the business for the Flat Rate Scheme at a later date.
 pages.frs.join.para2                            = Find out more about
 pages.frs.join.para2.1                          = VAT Flat Rate Scheme
 validation.frs.join.missing                     = Tell us if you want to register the business for the Flat Rate Scheme
 
 ## Do you spend less than £1000 Page
-pages.frs.costsInclusive.title                            = Will the business spend more than £250 over the next 3 months on ''relevant goods''?
-pages.frs.costsInclusive.heading                          = Will the business spend more than £250 over the next 3 months on ''relevant goods''?
-pages.frs.costsInclusive.p1                               = ''Relevant goods'' are moveable items or materials used exclusively to run a business. They include gas and electricity.
+pages.frs.costsInclusive.title                            = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
+pages.frs.costsInclusive.heading                          = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
+pages.frs.costsInclusive.p1                               = ’Relevant goods’ are moveable items or materials used exclusively to run a business. They include gas and electricity.
 pages.frs.costsInclusive.list.heading                     = What you cannot include
 pages.frs.costsInclusive.list.head                        = Do not include:
 pages.frs.costsInclusive.list.bullet1                     = travel and accommodation expenses
@@ -645,25 +622,25 @@ pages.frs.costsInclusive.list.bullet6                     = gifts, promotional i
 pages.frs.costsInclusive.list.bullet7                     = goods you will resell or hire out unless this is your main business activity
 pages.frs.costsInclusive.list.bullet8                     = training and memberships
 pages.frs.costsInclusive.list.bullet9                     = capital items, for example office equipment, laptops, mobile phones and tablets
-pages.frs.costsInclusive.list.bullet10                    = services - that is, anything not classified as ''goods''
-validation.frs.costsInclusive.missing                     = Tell us if the business will spend more than £250 over the next 3 months on ''relevant goods''
+pages.frs.costsInclusive.list.bullet10                    = services - that is, anything not classified as ’goods’
+validation.frs.costsInclusive.missing                     = Tell us if the business will spend more than £250 over the next 3 months on ’relevant goods’
 
 ## Estimate Total Sales Page
-pages.frs.estimateTotalSales.title            = Estimate the business''s total sales, including VAT, for the next 3 months
-pages.frs.estimateTotalSales.heading          = Estimate the business''s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.title            = Estimate the business’s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.heading          = Estimate the business’s total sales, including VAT, for the next 3 months
 pages.frs.estimateTotalSales.legend           = Enter the estimate
 pages.frs.estimateTotalSales.info             = Give figures that are as realistic as possible.
 validation.frs.estimateTotalSales.range.above = Enter an estimate which is less than £99,999,999,999
 validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 or more
-validation.frs.estimateTotalSales.missing     = Enter an estimate of the business''s total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.missing     = Enter an estimate of the business’s total sales, including VAT, for the next 3 months
 validation.frs.estimateTotalSales.invalid     = Enter a valid number
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.title                     = Confirm the business type for the Flat Rate Scheme
 pages.frs.confirmBusinessSector.heading                   = Confirm the business type for the Flat Rate Scheme
-pages.frs.confirmBusinessSector.para                      = We''ve based this on what we already know about the business:
+pages.frs.confirmBusinessSector.para                      = We’ve based this on what we already know about the business:
 pages.frs.confirmBusinessSector.table.row1.heading        = Business type
-pages.frs.confirmBusinessSector.exclamationPoint          = It''s your legal responsibility to check the business type is the right one.
+pages.frs.confirmBusinessSector.exclamationPoint          = It’s your legal responsibility to check the business type is the right one.
 pages.frs.confirmBusinessSector.changeLink                = Change the business type
 validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
 
@@ -675,14 +652,14 @@ validation.frs.chooseBusinessType.missing = Tell us what the business’s main b
 ## Do you want to register for FRS Page 16.55% rate
 pages.frs.registerFor.title                               = To join the Flat Rate Scheme the business must use the 16.5% flat rate
 pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the business must use the 16.5% flat rate
-pages.frs.registerFor.p                                   = This is because the business doesn''t spend enough (including VAT) on relevant goods.
+pages.frs.registerFor.p                                   = This is because the business doesn’t spend enough (including VAT) on relevant goods.
 pages.frs.registerFor.panel1.para                         = Businesses in their first year of VAT registration can take an extra 1% off their flat rate.
 pages.frs.registerFor.subheading1                         = Do you want the business to join the Flat Rate Scheme with this rate?
 validation.frs.registerFor.missing                        = Tell us if you want to use the 16.5% flat rate
 
 ## Do you want to register for FRS Page business sector rate
-pages.frs.registerForWithSector.title                     = The business''s VAT flat rate is {0}%
-pages.frs.registerForWithSector.heading                   = The business''s VAT flat rate is {0}%
+pages.frs.registerForWithSector.title                     = The business’s VAT flat rate is {0}%
+pages.frs.registerForWithSector.heading                   = The business’s VAT flat rate is {0}%
 pages.frs.registerForWithSector.info                      = Businesses in their first year of VAT registration can take 1% off their flat rate.
 pages.frs.registerForWithSector.subheading1               = Do you want the business to join the Flat Rate Scheme?
 validation.frs.registerForWithSector.missing              = Tell us if you want the business to join the Flat Rate Scheme
@@ -695,7 +672,7 @@ validation.frs.costsLimited.missing                     = Tell us if the busines
 ## When do you want to join the Flat Rate Scheme?
 pages.frs.startDate.title                                 = When does the business want to join the Flat Rate Scheme?
 pages.frs.startDate.heading                               = When does the business want to join the Flat Rate Scheme?
-pages.frs.startDate.radio1                                = The same date that it''s registered for VAT
+pages.frs.startDate.radio1                                = The same date that it’s registered for VAT
 pages.frs.startDate.radio2                                = On a different date
 pages.frs.startDate.noVatStartDateText                    = This must be at least 3 working days in the future.
 pages.frs.startDate.hasVatStartDateText                   = This date must be on or after the date the business is registered for VAT.
@@ -707,12 +684,12 @@ validation.frs.startDate.invalid                          = Enter a valid date
 validation.frs.startDate.choice.missing                   = Tell us when you want the business to join the Flat Rate Scheme
 validation.frs.startDate.missing                          = Enter a date
 validation.frs.startDate.range.below                      = Enter a date that is at least 3 working days in the future
-validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business''s registered for VAT
+validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business’s registered for VAT
 
 ## FRS SUMMARY SECTION
 pages.summary.frs.sectionHeading                        = Flat Rate Scheme
 pages.summary.frs.joinFrs                               = Do you want to join the Flat Rate Scheme?
-pages.summary.frs.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ''relevant goods''?
+pages.summary.frs.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ’relevant goods’?
 pages.summary.frs.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
 pages.summary.frs.costsLimited                          = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
 pages.summary.frs.businessSector                        = Business type for the Flat Rate Scheme
@@ -721,9 +698,9 @@ pages.summary.frs.startDate                             = When do you want to jo
 pages.summary.frs.startDate.dateOfRegistration          = Date of registration
 
 ## ICL CUSTOM MESSAGES
-pages.icl.heading                                       = Check and confirm the company''s Standard Industry Classification (SIC) codes for VAT
-pages.icl.lead                                          = This is the information we have on record. Any changes you make here will not affect what''s on the company''s public record.
-pages.icl.hint                                          = Make sure the company''s SIC codes for VAT reflect all the company''s business activities. It makes it quicker and easier to process VAT Returns.
+pages.icl.heading                                       = Check and confirm the company’s Standard Industry Classification (SIC) codes for VAT
+pages.icl.lead                                          = This is the information we have on record. Any changes you make here will not affect what’s on the company’s public record.
+pages.icl.hint                                          = Make sure the company’s SIC codes for VAT reflect all the company’s business activities. It makes it quicker and easier to process VAT Returns.
 
 ## HONESTY DECLARATION MESSAGES
 pages.honesty-declaration.title                         = Declaration
@@ -732,8 +709,8 @@ pages.honesty-declaration.paragraph                     = By submitting this app
 pages.honesty-declaration.button                        = Accept and continue
 
 ## CAPTURE EMAIL ADDRESS MESSAGES
-capture-email-address.title                             = What''s your email address?
-capture-email-address.heading                           = What''s your email address?
+capture-email-address.title                             = What’s your email address?
+capture-email-address.heading                           = What’s your email address?
 capture-email-address.paragraph                         = We use this to send you communications and updates about your VAT
 capture-email-address.privacyInformation                = Full details of how we use your information are in the <a href="{0}" target="_blank">HMRC Privacy Notice (opens in a new tab)</a>.
 capture-email-address.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
