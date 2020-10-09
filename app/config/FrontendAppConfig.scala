@@ -49,7 +49,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val host: String = servicesConfig.baseUrl("vat-registration-frontend.internal")
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
-  lazy val personalDetailsValidationFrontendUrl: String = servicesConfig.baseUrl("personal-details-validation-frontend")
+  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
   lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
 
   val contactFormServiceIdentifier = "VATREG"
