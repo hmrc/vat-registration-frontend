@@ -45,6 +45,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
 
+  lazy val hostUrl: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
   lazy val host: String = servicesConfig.baseUrl("vat-registration-frontend.internal")
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
@@ -114,7 +115,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
       s"$host/register-for-vat/test-only/api/incorp-id-journey/$journeyId"
     } else s"$incorpIdHost/incorporated-entity-identification/api/journey/$journeyId"
 
-  def incorpIdCallbackUrl: String = s"$host/register-for-vat/incorp-id-callback"
+  def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
 
   lazy val personalDetailsValidationUrl: String = loadConfig("microservice.services.personal-details-validation.url")
 
@@ -133,7 +134,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def getPersonalDetailsCallbackUrl(): String =
-    s"$host/register-for-vat/personal-details-validation-callback"
+    s"$hostUrl/register-for-vat/personal-details-validation-callback"
 
   def requestEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/request-passcode"
