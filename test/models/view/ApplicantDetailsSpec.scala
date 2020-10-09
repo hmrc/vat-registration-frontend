@@ -80,7 +80,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "first": "testFirstName",
            |    "last": "testLastName"
            |  },
-           |  "role": "Director",
+           |  "role": "03",
            |  "dateOfBirth": "2020-01-01",
            |  "nino": "AB123456C",
            |  "companyNumber": "testCrn",

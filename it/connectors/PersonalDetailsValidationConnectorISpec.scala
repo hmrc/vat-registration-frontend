@@ -35,6 +35,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
         val testFirstName = "testFirstName"
         val testLastName = "testLastName"
         val testNino = "AA123456A"
+        val testRole = "03"
         val testDateOfBirth = LocalDate.of(1990, 1, 1)
 
         val testJsonBody = Json.obj(
@@ -42,7 +43,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
             "firstName" -> testFirstName,
             "lastName" -> testLastName,
             "nino" -> testNino,
-            "dateOfBirth" -> testDateOfBirth
+            "dateOfBirth" -> testDateOfBirth,
+            "role" -> testRole
           )
         )
 
@@ -56,7 +58,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           testFirstName,
           testLastName,
           testNino,
-          testDateOfBirth
+          testDateOfBirth,
+          Some(testRole)
         )
 
         await(res) mustBe expectedData
@@ -70,6 +73,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
         val testFirstName = "testFirstName"
         val testLastName = "testLastName"
         val testNino = "AA123456A"
+        val testRole = "03"
         val testDateOfBirth = LocalDate.of(1990, 1, 1)
 
         val testJsonBody = Json.obj(
@@ -77,7 +81,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
             "firstName" -> testFirstName,
             "lastName" -> testLastName,
             "nino" -> testNino,
-            "dateOfBirth" -> testDateOfBirth
+            "dateOfBirth" -> testDateOfBirth,
+            "role" -> testRole
           )
         )
 
@@ -91,7 +96,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           testFirstName,
           testLastName,
           testNino,
-          testDateOfBirth
+          testDateOfBirth,
+          Some(testRole)
         )
 
         await(res) mustBe expectedData
