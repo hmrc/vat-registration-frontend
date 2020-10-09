@@ -31,6 +31,8 @@ import scala.concurrent.Future
 class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
                                       val s4LService: S4LService) extends Logging {
 
+  val director = "03"
+
   def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     s4LService.fetchAndGetNoAux[ApplicantDetails](S4LKey[ApplicantDetails]) flatMap {
       case Some(applicant) => Future.successful(applicant)
@@ -67,7 +69,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
     def updateModel(data: T, before: ApplicantDetails): ApplicantDetails = {
       data match {
         case incorporationDetails: IncorporationDetails => before.copy(incorporationDetails = Some(incorporationDetails))
-        case transactorDetails: TransactorDetails => before.copy(transactorDetails = Some(transactorDetails))
+        case transactorDetails: TransactorDetails => before.copy(transactorDetails = Some(transactorDetails.copy(role = Some(director))))
         case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
         case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
         case fName: FormerNameView =>

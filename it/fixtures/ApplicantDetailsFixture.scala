@@ -17,24 +17,19 @@ trait ApplicantDetailsFixture {
 
   val applicantDob = LocalDate.of(1998, 7, 12)
 
+  val testRole = "03"
   val applicantNino = "ZZ987654A"
-
   val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
-
   val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
-
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
-
   val applicantEmail = "test@test"
-
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020,1,1)
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
   val validFullApplicantDetails = ApplicantDetails(
     transactorDetails = Some(testTransactorDetails),

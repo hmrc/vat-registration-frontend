@@ -28,6 +28,7 @@ trait ApplicantDetailsFixtures {
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
+  val testRole = "03"
   val testApplicantDob = LocalDate.of(2020,1,1)
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
@@ -46,7 +47,7 @@ trait ApplicantDetailsFixtures {
     previousAddress = None
   )
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
   val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
 
