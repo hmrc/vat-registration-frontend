@@ -45,7 +45,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
 
   val email = "test@test.com"
   val nino = "SR123456C"
-  val role = "Director"
+  val role = "03"
   val dob = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
