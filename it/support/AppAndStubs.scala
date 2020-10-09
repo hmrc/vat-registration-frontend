@@ -104,10 +104,14 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "bank-account-reputation",
       "industry-classification-lookup-frontend",
       "industry-classification-lookup-frontend-internal",
+      "vat-registration-eligibility-frontend",
       "vat-registration-frontend.internal",
       "vat-registration",
       "email-verification",
-      "incorporated-entity-identification-frontend"
+      "incorporated-entity-identification-frontend",
+      "personal-details-validation",
+      "iv.identity-verification-proxy",
+      "iv.identity-verification-frontend"
     )) ++ additionalConfig)
     .build()
 
@@ -121,18 +125,11 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
       ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
       ("microservice.services.business-registration.uri" -> "/business-registration") +
-      ("microservice.services.iv.identity-verification-proxy.host" -> WiremockHelper.wiremockHost) +
-      ("microservice.services.iv.identity-verification-proxy.port" -> WiremockHelper.wiremockPort) +
-      ("microservice.services.iv.identity-verification-frontend.host" -> WiremockHelper.wiremockHost) +
-      ("microservice.services.iv.identity-verification-frontend.port" -> WiremockHelper.wiremockPort) +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE") +
       ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo") +
-      ("microservice.services.vat-registration-eligibility-frontend.host" -> WiremockHelper.wiremockHost) +
-      ("microservice.services.vat-registration-eligibility-frontend.port" -> WiremockHelper.wiremockPort) +
       ("microservice.services.vat-registration-frontend.www.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
       ("microservice.services.incorporated-entity-identification-frontend.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
-      ("microservice.services.personal-details-validation.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +
       ("microservice.services.email-verification.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}")
 
 }
