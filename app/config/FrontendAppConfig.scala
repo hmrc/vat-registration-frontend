@@ -117,13 +117,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
 
-  lazy val personalDetailsValidationUrl: String = loadConfig("microservice.services.personal-details-validation.url")
+  lazy val personalDetailsValidationHost: String = servicesConfig.baseUrl("personal-details-validation")
 
   def getRetrievePersonalDetailsValidationResultUrl(validationId: String): String =
     if (isEnabled(StubPersonalDetailsValidation)) {
       s"$host/register-for-vat/test-only/personal-details-validation/$validationId"
     } else {
-      s"$personalDetailsValidationUrl/personal-details-validation/$validationId"
+      s"$personalDetailsValidationHost/personal-details-validation/$validationId"
     }
 
   def getPersonalDetailsValidationJourneyUrl(): String =
