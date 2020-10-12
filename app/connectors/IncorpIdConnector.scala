@@ -45,7 +45,6 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
 
     httpClient.GET[JsValue](url)
       .map(json => {
-        println(Json.prettyPrint(json))
         IncorporationDetails.apiFormat.reads(json) match {
           case JsSuccess(value, _) => value
           case JsError(errors) => throw new Exception(s"Incorp ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
