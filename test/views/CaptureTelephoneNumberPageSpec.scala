@@ -16,26 +16,25 @@
 
 package views
 
-import forms.EmailAddressForm
+import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
-import views.html.capture_email_address
+import views.html.capture_telephone_number
 
-class CaptureEmailAddressViewSpec extends VatRegViewSpec {
+class CaptureTelephoneNumberPageSpec extends VatRegViewSpec {
 
-  val title = "What is your email address?"
-  val heading = "What is your email address?"
-  val paragraph = "We use this to send you communications and updates about your VAT"
-  val privacyInformation = "Full details of how we use your information are in the HMRC Privacy Notice (opens in a new tab)."
+  val title = "What is your telephone number?"
+  val heading = "What is your telephone number?"
+  val paragraph = "We may need to contact you about the application."
+  val hint = "Enter a UK telephone number"
   val buttonText = "Continue"
 
-  "Capture Email Address Page" should {
-    val form = EmailAddressForm.form
-    val view = app.injector.instanceOf[capture_email_address].apply(testCall, form)
-
-    val doc = Jsoup.parse(view.body)
+  "Capture Telephone Number Page" should {
+    lazy val form = TelephoneNumberForm.form
+    lazy val view = app.injector.instanceOf[capture_telephone_number].apply(testCall, form)
+    lazy val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
-      doc.title must include(title)
+      doc.title must include(title) // TODO review titles as they seem to be missing a message key 'site.govuk'
     }
 
     "have the correct heading" in {
@@ -43,11 +42,11 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
     }
 
     "have the correct paragraph" in {
-      doc.getElementById("use-of-email").text mustBe paragraph
+      doc.getElementById("telephone-number-collection-reason").text mustBe paragraph
     }
 
-    "have the correct privacy information" in {
-      doc.getElementById("privacy-information").text mustBe privacyInformation
+    "have the correct hint" in {
+      doc.select(Selectors.hint).text() mustBe hint
     }
 
     "have the correct continue button" in {

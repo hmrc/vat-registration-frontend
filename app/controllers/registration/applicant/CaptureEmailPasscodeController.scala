@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.BaseController
 import forms.EmailPasscodeForm
 import javax.inject.Inject
-import models.external.{EmailAddress, EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeNotFound}
-import play.api.i18n.{I18nSupport, Messages}
+import models.CurrentProfile
+import models.external._
+import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmailVerificationService, S4LService, SessionProfile}
+import services.{ApplicantDetailsService, EmailVerificationService, S4LService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,23 +37,16 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector,
-                                               s4LService: S4LService,
-                                               emailVerificationService: EmailVerificationService
+                                               emailVerificationService: EmailVerificationService,
+                                               applicantDetailsService: ApplicantDetailsService
                                               )(implicit val appConfig: FrontendAppConfig,
                                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        s4LService.fetchAndGet[EmailAddress].map {
-          case Some(EmailAddress(email)) =>
-            Ok(view(
-              email,
-              routes.CaptureEmailPasscodeController.submit(),
-              EmailPasscodeForm.form
-            ))
-          case None =>
-            throw new InternalServerException("Failed to retrieve email address from S4L")
+        getEmailAddress.map { email =>
+          Ok(view(email, routes.CaptureEmailPasscodeController.submit(), EmailPasscodeForm.form))
         }
   }
 
@@ -59,30 +55,40 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
       implicit profile =>
         EmailPasscodeForm.form.bindFromRequest().fold(
           formWithErrors =>
-            s4LService.fetchAndGet[EmailAddress].map {
-              case Some(EmailAddress(email)) =>
-                BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), formWithErrors))
-              case None =>
-                throw new InternalServerException("Failed to retrieve email address from S4L")
+            getEmailAddress map { email =>
+              BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), formWithErrors))
             },
           emailPasscode =>
-            s4LService.fetchAndGet[EmailAddress].flatMap {
-              case Some(EmailAddress(email)) =>
-                emailVerificationService.verifyEmailVerificationPasscode(email, emailPasscode).map {
-                  case EmailAlreadyVerified | EmailVerifiedSuccessfully =>
+            getEmailAddress flatMap { email =>
+              emailVerificationService.verifyEmailVerificationPasscode(email, emailPasscode) flatMap {
+                case EmailAlreadyVerified | EmailVerifiedSuccessfully =>
+                  for {
+                    _ <- applicantDetailsService.saveApplicantDetails(EmailAddress(email))
+                    _ <- applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true))
+                  } yield {
                     Redirect(routes.EmailAddressVerifiedController.show())
-                  case PasscodeNotFound =>
-                    val incorrectPasscodeForm = EmailPasscodeForm.form.withError(
-                      key = EmailPasscodeForm.passcodeKey,
-                      message = Messages("capture-email-passcode.error.incorrect_passcode")
-                    )
+                  }
+                case PasscodeNotFound =>
+                  val incorrectPasscodeForm = EmailPasscodeForm.form.withError(
+                    key = EmailPasscodeForm.passcodeKey,
+                    message = Messages("capture-email-passcode.error.incorrect_passcode")
+                  )
 
+                  Future.successful(
                     BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm))
-                }
-              case None =>
-                throw new InternalServerException("Failed to retrieve email address from S4L")
+                  )
+              }
             }
         )
+
   }
+
+  private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[String] =
+    applicantDetailsService.getApplicantDetails.map {
+      _.emailAddress match {
+        case Some(EmailAddress(email)) => email
+        case None => throw new InternalServerException("Failed to retrieve email address")
+      }
+    }
 
 }

@@ -20,8 +20,9 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
-import models.CurrentProfile
+import models.{CurrentProfile, TelephoneNumber}
 import models.api.ScrsAddress
+import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -121,29 +122,8 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
          |    "postcode": "TE 1ST"
          |  },
          |  "contact": {
-         |    "email": "test@t.test"
-         |  }
-         |}
-       """.stripMargin)
-
-    val jsonFullApplicantDetailsNoEmail = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "First",
-         |    "middle": "Middle",
-         |    "last": "Last"
-         |  },
-         |  "role": "Director",
-         |  "dob": "1998-07-12",
-         |  "nino": "SR123456Z",
-         |  "currentAddress": {
-         |    "line1": "TestLine1",
-         |    "line2": "TestLine2",
-         |    "postcode": "TE 1ST"
-         |  },
-         |  "contact": {
-         |    "mobile": "1234567890"
+         |    "email": "test@t.test",
+         |    "emailVerified": true
          |  }
          |}
        """.stripMargin)
@@ -155,7 +135,9 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     "return a partial ApplicantDetails view model from backend" in new Setup(None, Some(jsonPartialApplicantDetails)) {
       val expected = ApplicantDetails(
         homeAddress = None,
-        contactDetails = None,
+        emailAddress = None,
+        emailVerified = None,
+        telephoneNumber = None,
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
@@ -167,7 +149,9 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: ApplicantDetails = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(None, Some("test@t.test"), None)),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = None,
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
@@ -179,7 +163,9 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: ApplicantDetails = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(None, None, Some("1234567890"))),
+        emailAddress = None,
+        emailVerified = None,
+        telephoneNumber = None,
         formerName = Some(FormerNameView(false, None)),
         formerNameDate = None,
         previousAddress = Some(PreviousAddressView(true, None))
@@ -220,19 +206,51 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         }
       }
 
-      "updating applicant contact" that {
-        val applicantContactDetails = ContactDetailsView(Some("tt@dd.uk"))
+      "updating applicant contact email" that {
+        val applicantEmailAddress = EmailAddress("tt@dd.uk")
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(contactDetails = Some(applicantContactDetails))
+          val expected = emptyApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
 
-          service.saveApplicantDetails(applicantContactDetails) returns expected
+          service.saveApplicantDetails(applicantEmailAddress) returns expected
         }
 
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(contactDetails = None)) {
-          val expected = completeApplicantDetails.copy(contactDetails = Some(applicantContactDetails))
+        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailAddress = None)) {
+          val expected = completeApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
 
-          service.saveApplicantDetails(applicantContactDetails) returns expected
+          service.saveApplicantDetails(applicantEmailAddress) returns expected
+        }
+      }
+
+      "updating applicant contact email verified" that {
+        val applicantEmailVerified = EmailVerified(true)
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
+          val expected = emptyApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
+
+          service.saveApplicantDetails(applicantEmailVerified) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailVerified = None)) {
+          val expected = completeApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
+
+          service.saveApplicantDetails(applicantEmailVerified) returns expected
+        }
+      }
+
+      "updating applicant contact telephone number" that {
+        val applicantTelephoneNumber = TelephoneNumber("1234")
+
+        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
+          val expected = emptyApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
+
+          service.saveApplicantDetails(applicantTelephoneNumber) returns expected
+        }
+
+        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(telephoneNumber = None)) {
+          val expected = completeApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
+
+          service.saveApplicantDetails(applicantTelephoneNumber) returns expected
         }
       }
 
@@ -259,8 +277,8 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
           service.saveApplicantDetails(formerNameFalse) returns expected
         }
 
-        "makes the block complete with a former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(formerName = Some(formerNameTrue))
+        "update the former name and clean up former name date" in new SetupForS4LSave(completeApplicantDetails.copy(formerName = Some(formerNameTrue), formerNameDate = None)) {
+          val expected = completeApplicantDetails.copy(formerName = Some(formerNameTrue), formerNameDate = None)
 
           service.saveApplicantDetails(formerNameTrue) returns expected
         }

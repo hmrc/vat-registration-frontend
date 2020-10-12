@@ -99,7 +99,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         "formerNameDate.year" -> "2017"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.ContactDetailsController.show().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
       }
     }
   }

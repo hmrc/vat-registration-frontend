@@ -76,7 +76,7 @@ class FormerNameControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "false")) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.ContactDetailsController.show().url)
+        redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
       }
     }
 

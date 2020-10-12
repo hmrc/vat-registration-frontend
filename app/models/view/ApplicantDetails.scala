@@ -18,16 +18,18 @@ package models.view
 
 import java.time.LocalDate
 
-import models.{IncorporationDetails, S4LKey, TransactorDetails}
+import models.{IncorporationDetails, S4LKey, TelephoneNumber, TransactorDetails}
 import models.api.ScrsAddress
-import models.external.Name
-import play.api.libs.json.{Json, _}
+import models.external.{EmailAddress, EmailVerified, Name}
+import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 case class ApplicantDetails(incorporationDetails: Option[IncorporationDetails] = None,
                             transactorDetails: Option[TransactorDetails] = None,
                             homeAddress: Option[HomeAddressView] = None,
-                            contactDetails: Option[ContactDetailsView] = None,
+                            emailAddress: Option[EmailAddress] = None,
+                            emailVerified: Option[EmailVerified] = None,
+                            telephoneNumber: Option[TelephoneNumber] = None,
                             formerName: Option[FormerNameView] = None,
                             formerNameDate: Option[FormerNameDateView] = None,
                             previousAddress: Option[PreviousAddressView] = None)
@@ -41,23 +43,33 @@ object ApplicantDetails {
     JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
     (__ \ "currentAddress").readNullable[ScrsAddress]
       .fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
-    (__ \ "contact").readNullable[ContactDetailsView] and
+    (__ \ "contact" \ "email").readNullable[String].orElse(Reads.pure(None))
+      .fmap(_.map(email => EmailAddress(email))) and
+    (__ \ "contact" \ "emailVerified").readNullable[Boolean].orElse(Reads.pure(None))
+      .fmap(_.map(isVerified => EmailVerified(isVerified))) and
+    (__ \ "contact" \ "tel").readNullable[String].orElse(Reads.pure(None))
+      .fmap(_.map(telephone => TelephoneNumber(telephone))) and
     (__ \ "changeOfName" \ "name").readNullable[Name]
       .fmap(con => con.map(name => FormerNameView(con.isDefined, Some(name.asLabel))))
-      .orElse(Reads.pure(Some(FormerNameView(false, None)))) and
+      .orElse(Reads.pure(Some(FormerNameView(yesNo = false, None)))) and
     (__ \ "changeOfName" \ "change").readNullable[LocalDate]
       .fmap(cond => cond.map(FormerNameDateView(_)))
       .orElse(Reads.pure(None)) and
     (__ \ "previousAddress").readNullable[ScrsAddress]
       .fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
-  )(ApplicantDetails.apply(_, _, _, _, _, _, _))
+  )(ApplicantDetails.apply _)
 
   val apiWrites: Writes[ApplicantDetails] = (
     JsPath.writeNullable[IncorporationDetails] and
     JsPath.writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
     (__ \ "currentAddress").writeNullable[ScrsAddress]
       .contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
-    (__ \ "contact").writeNullable[ContactDetailsView] and
+    (__ \ "contact" \ "email").writeNullable[String]
+      .contramap[Option[EmailAddress]](_.map(_.email)) and
+    (__ \ "contact" \ "emailVerified").writeNullable[Boolean]
+      .contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
+    (__ \ "contact" \ "tel").writeNullable[String]
+      .contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
     (__ \ "changeOfName" \ "name").writeNullable[Name]
       .contramap[Option[FormerNameView]](_.flatMap(_.formerName.map(splitName))) and
     (__ \ "changeOfName" \ "change").writeNullable[LocalDate]

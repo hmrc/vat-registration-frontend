@@ -16,23 +16,29 @@
 
 package controllers.registration.applicant
 
-import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.{routes => appRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameView}
+import models.TelephoneNumber
+import models.external.{EmailAddress, EmailVerified}
+import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.ControllerSpec
+import views.html.capture_telephone_number
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ContactDetailsControllerSpec extends ControllerSpec
+class CaptureTelephoneNumberControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
   with ApplicantDetailsFixtures {
 
   trait Setup {
-    val controller: ContactDetailsController = new ContactDetailsController(
+
+    val view: capture_telephone_number = app.injector.instanceOf[capture_telephone_number]
+    val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
+      view,
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
@@ -43,12 +49,13 @@ class ContactDetailsControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(applicantRoutes.ContactDetailsController.show())
+  val fakeRequest = FakeRequest(routes.CaptureTelephoneNumberController.show())
 
 
 
   val incompleteApplicantDetails = emptyApplicantDetails.copy(
-    contactDetails = Some(ContactDetailsView(Some("t@t.tt.co"))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
     formerName = Some(FormerNameView(true, Some("Old Name")))
   )
 
@@ -78,19 +85,14 @@ class ContactDetailsControllerSpec extends ControllerSpec
     }
 
     "return SEE_OTHER with valid Contact Details entered" in new Setup {
-      val email = "some@email.com"
-      val daytimePhone = "01234567891"
-      val mobile = "07234567891"
+      val phone = "01234567891"
 
-      mockSaveApplicantDetails(ContactDetailsView(Some(daytimePhone), Some(email), Some(mobile)))(emptyApplicantDetails)
+      mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "email" -> email,
-        "daytimePhone" -> daytimePhone,
-        "mobile" -> mobile
-      )) { res =>
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) {
+        res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+        redirectLocation(res) mustBe Some(appRoutes.BusinessContactDetailsController.ppobRedirectToAlf().url)
       }
     }
   }

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.BaseController
 import forms.EmailAddressForm
 import javax.inject.Inject
-import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, RequestEmailPasscodeSuccessful}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
-import services.{EmailVerificationService, S4LService, SessionProfile}
+import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.{ApplicantDetailsService, EmailVerificationService, S4LService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
 
@@ -32,7 +33,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
                                               mcc: MessagesControllerComponents,
                                               val authConnector: AuthConnector,
                                               val keystoreConnector: KeystoreConnector,
-                                              s4LService: S4LService,
+                                              applicantDetailsService: ApplicantDetailsService,
                                               emailVerificationService: EmailVerificationService
                                              )(implicit val appConfig: FrontendAppConfig,
                                                ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
@@ -45,7 +46,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
             routes.CaptureEmailAddressController.submit(),
             EmailAddressForm.form
           ))
-        ) // TODO show method needs to be routed to in the correct place in the flow
+        )
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -53,15 +54,12 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
       implicit profile =>
         EmailAddressForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(routes.CaptureEmailAddressController.submit(), formWithErrors))
-            ),
+            Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit(), formWithErrors))),
           email =>
-            s4LService.save[EmailAddress](EmailAddress(email)).flatMap {
-              _ =>
+            applicantDetailsService.saveApplicantDetails(EmailAddress(email)).flatMap { _ =>
               emailVerificationService.requestEmailVerificationPasscode(email).map {
                 case AlreadyVerifiedEmailAddress =>
-                  Redirect(routes.EmailAddressVerifiedController.show()) // TODO may lead to another page in the future
+                  Redirect(routes.EmailAddressVerifiedController.show())
                 case RequestEmailPasscodeSuccessful =>
                   Redirect(routes.CaptureEmailPasscodeController.show())
               }

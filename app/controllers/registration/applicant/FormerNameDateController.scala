@@ -49,16 +49,17 @@ class FormerNameDateController @Inject()(mcc: MessagesControllerComponents,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        applicantDetailsService.getApplicantDetails flatMap { applicant =>
-          FormerNameDateForm.form.bindFromRequest().fold(
-            badForm => for {
-              applicant <- applicantDetailsService.getApplicantDetails
-              formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
-            } yield BadRequest(views.html.former_name_date(badForm, formerName)),
-            data => applicantDetailsService.saveApplicantDetails(data) map {
-              _ => Redirect(applicantRoutes.ContactDetailsController.show())
-            }
-          )
+        applicantDetailsService.getApplicantDetails flatMap {
+          applicantDetails =>
+            FormerNameDateForm.form.bindFromRequest().fold(
+              badForm => for {
+                applicant <- applicantDetailsService.getApplicantDetails
+                formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
+              } yield BadRequest(views.html.former_name_date(badForm, formerName)),
+              data => applicantDetailsService.saveApplicantDetails(data) map {
+                _ => Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
+              }
+            )
         }
   }
 
