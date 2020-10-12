@@ -57,8 +57,8 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
        |  },
        |  "contact": {
        |    "email": "$applicantEmail",
-       |    "tel": "1234",
-       |    "mobile": "5678"
+       |    "emailVerified": true,
+       |    "telephone": "1234"
        |  },
        |  "changeOfName": {
        |    "name": {

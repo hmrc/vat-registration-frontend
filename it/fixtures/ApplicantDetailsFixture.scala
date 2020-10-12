@@ -1,11 +1,12 @@
+
 package fixtures
 
 import java.time.LocalDate
 
-import models.TransactorDetails
 import models.api.ScrsAddress
-import models.external.{Applicant, Name}
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
+import models.{IncorporationDetails, TelephoneNumber, TransactorDetails}
 
 trait ApplicantDetailsFixture {
 
@@ -24,6 +25,7 @@ trait ApplicantDetailsFixture {
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
   val applicantEmail = "test@test"
+  val testApplicantPhone = "1234"
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
@@ -31,12 +33,22 @@ trait ApplicantDetailsFixture {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
+  val testApplicantCrn = "testCrn"
+  val testApplicantCompanyName = "testCompanyName"
+  val testApplicantCtUtr = "testCtUtr"
+  val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
+
+  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate)
+
   val validFullApplicantDetails = ApplicantDetails(
     transactorDetails = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    contactDetails = Some(ContactDetailsView(Some(applicantEmail), Some("1234"), Some("5678"))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber(testApplicantPhone)),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
+    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress))),
+    incorporationDetails = Some(testApplicantIncorpDetails)
   )
 }

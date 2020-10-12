@@ -16,16 +16,18 @@
 
 package controllers.registration.applicant
 
+import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
+import models.TelephoneNumber
 import models.api.ScrsAddress
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameView, HomeAddressView}
+import models.external.{EmailAddress, EmailVerified}
+import models.view.{ApplicantDetails, FormerNameView, HomeAddressView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import testHelpers.ControllerSpec
-import controllers.registration.applicant.{routes => applicantRoutes}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -53,7 +55,9 @@ class HomeAddressControllerSpec extends ControllerSpec
 
   val partialIncompleteApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(address.id, Some(address))),
-    contactDetails = Some(ContactDetailsView(Some("t@t.tt.co"))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
     formerName = Some(FormerNameView(true, Some("Old Name"))),
     formerNameDate = None,
     previousAddress = None

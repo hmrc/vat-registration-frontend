@@ -16,16 +16,19 @@
 
 package controllers.registration.applicant
 
+import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
+import models.TelephoneNumber
 import models.api.ScrsAddress
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameView, HomeAddressView, PreviousAddressView}
+import models.external.{EmailAddress, EmailVerified}
+import models.view.{ApplicantDetails, FormerNameView, HomeAddressView, PreviousAddressView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.ControllerSpec
-import controllers.registration.applicant.{routes => applicantRoutes}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -52,8 +55,9 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
   val incompleteApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(address.id, Some(address))),
-    contactDetails = Some(ContactDetailsView(Some("t@t.tt.co"))),
-    formerName = Some(FormerNameView(false, None)),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")), formerName = Some(FormerNameView(false, None)),
     formerNameDate = None,
     previousAddress = Some(PreviousAddressView(true, Some(address)))
   )
@@ -92,7 +96,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
         "previousAddressQuestionRadio" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
+        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show().url)
       }
     }
 
@@ -117,7 +121,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
       callAuthorised(controller.addressLookupCallback("addressId")) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
+        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show().url)
       }
     }
   }

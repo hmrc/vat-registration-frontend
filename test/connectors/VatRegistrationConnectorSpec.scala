@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
+import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, _}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
@@ -137,7 +138,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       connector.deleteVatScheme("regId") failedWith notFoundException
     }
   }
-
 
   "Calling updateBusinessContact" should {
 
@@ -334,7 +334,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling patchApplicantDetails" should {
     val partialApplicantDetails = ApplicantDetails(
       homeAddress = None,
-      contactDetails = None,
+      emailAddress = None,
+      emailVerified = None,
+      telephoneNumber = None,
       formerName = None,
       formerNameDate = None,
       previousAddress = None
@@ -351,7 +353,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val fullApplicantDetails: ApplicantDetails = partialApplicantDetails.copy(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(email = Some("test@t.test"))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
         formerName = Some(FormerNameView(false, None)),
         previousAddress = Some(PreviousAddressView(true, None))
       )
@@ -360,7 +364,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         s"""
            |{
            |  "contact": {
-           |    "email": "test@t.test"
+           |    "email": "test@t.test",
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  },
            |  "currentAddress": {
            |    "line1": "TestLine1",

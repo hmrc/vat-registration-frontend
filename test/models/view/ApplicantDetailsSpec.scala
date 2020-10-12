@@ -18,8 +18,9 @@ package models.view
 
 import java.time.LocalDate
 
+import models.TelephoneNumber
 import models.api.ScrsAddress
-import models.external.Name
+import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
@@ -94,8 +95,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "contact": {
            |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  },
            |  "changeOfName": {
            |    "name": {
@@ -119,7 +120,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
         incorporationDetails = Some(testIncorpDetails),
         transactorDetails = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
         formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
@@ -146,15 +149,17 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "contact": {
            |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  }
            |}
          """.stripMargin)
 
       val applicantDetails = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
         formerName = Some(FormerNameView(yesNo = false, None)),
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
@@ -174,7 +179,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
     "return a correct full JsValue with maximum data" in {
       val data = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
         formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
@@ -197,9 +204,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "postcode": "TE1 1ST"
            |  },
            |  "contact": {
-           |    "mobile": "5678",
-           |    "tel": "1234",
-           |    "email": "test@t.test"
+           |    "email": "test@t.test",
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  },
            |  "currentAddress": {
            |    "line1": "TestLine1",
@@ -214,7 +221,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
     "return a correct full JsValue with minimum data" in {
       val data = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        contactDetails = Some(ContactDetailsView(Some("1234"), Some("test@t.test"), Some("5678"))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
         formerName = Some(FormerNameView(yesNo = false, None)),
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
@@ -223,9 +232,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
         s"""
            |{
            |  "contact": {
-           |    "mobile": "5678",
-           |    "tel": "1234",
-           |    "email": "test@t.test"
+           |    "email": "test@t.test",
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  },
            |  "currentAddress": {
            |    "line1": "TestLine1",

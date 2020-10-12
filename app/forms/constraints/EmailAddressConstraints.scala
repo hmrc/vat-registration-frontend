@@ -38,9 +38,16 @@ object EmailAddressConstraints {
     )
   )
 
-  def emailAddressLength: Constraint[String] = Constraint("email_address.incorrect_format")(
+  def emailAddressEmpty: Constraint[String] = Constraint("email_address.nothing_entered")(
     emailAddress => validate(
-      constraint = emailAddress.isEmpty || emailAddress.trim.length > emailMaxLength,
+      constraint = emailAddress.isEmpty,
+      errMsg = "capture-email-address.error.nothing_entered"
+    )
+  )
+
+  def emailAddressLength: Constraint[String] = Constraint("email_address.incorrect_length")(
+    emailAddress => validate(
+      constraint = emailAddress.trim.length > emailMaxLength,
       errMsg = "capture-email-address.error.incorrect_length"
     )
   )

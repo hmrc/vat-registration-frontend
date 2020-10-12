@@ -22,6 +22,7 @@ import models.api._
 import models.view._
 import models.view.test.TestSetup
 import models._
+import models.external.{EmailAddress, EmailVerified}
 
 object TestS4LBuilder {
 
@@ -104,12 +105,6 @@ object TestS4LBuilder {
         data.applicantDetails.dobMonth.getOrElse("1").toInt,
         data.applicantDetails.dobDay.getOrElse("1").toInt))
 
-    val contactDetails: Option[ContactDetailsView] = data.applicantDetails.email.map(_ => ContactDetailsView(
-      email = data.applicantDetails.email,
-      mobile = data.applicantDetails.mobile,
-      tel = data.applicantDetails.phone)
-    )
-
     val formerName: Option[FormerNameView] = data.applicantDetails.formernameChoice.collect {
       case "true" => FormerNameView(true, data.applicantDetails.formername)
       case "false" => FormerNameView(false, None)
@@ -125,7 +120,9 @@ object TestS4LBuilder {
     ApplicantDetails(
       previousAddress = threeYears.map(t => PreviousAddressView(t.toBoolean, previousAddress)),
       homeAddress = homeAddress.map(a => HomeAddressView(a.id, Some(a))),
-      contactDetails = contactDetails,
+      emailAddress = Some(EmailAddress(data.applicantDetails.email.getOrElse("test@test.com"))),
+      emailVerified = Some(EmailVerified(data.applicantDetails.emailVerified.getOrElse(true))),
+      telephoneNumber = Some(TelephoneNumber(data.applicantDetails.phone.getOrElse("12345 123456"))),
       formerName = formerName,
       formerNameDate = formerNameDate
     )

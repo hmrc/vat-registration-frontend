@@ -58,7 +58,7 @@ class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
           data =>
             if (data.yesNo) {
               applicantDetailsService.saveApplicantDetails(data) map {
-                _ => Redirect(controllers.routes.CaptureEmailAddressController.show())
+                _ => Redirect(routes.CaptureEmailAddressController.show())
               }
             } else {
               addressLookupService.getJourneyUrl(
@@ -75,7 +75,7 @@ class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
-        } yield Redirect(controllers.routes.CaptureEmailAddressController.show())
+        } yield Redirect(routes.CaptureEmailAddressController.show())
   }
 
   def change: Action[AnyContent] = isAuthenticatedWithProfile {
