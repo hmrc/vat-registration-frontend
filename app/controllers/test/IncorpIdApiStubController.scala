@@ -16,18 +16,35 @@
 
 package controllers.test
 
+import java.time.LocalDate
+
+import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.IncorpIdJourneyConfig
-import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
+import models.{IncorpIdJourneyConfig, IncorporationDetails}
+import play.api.libs.json.{JsString, Json}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
+import scala.concurrent.Future
+
 @Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
+class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
+                                          appConfig: FrontendAppConfig)
   extends FrontendController(mcc) {
 
   def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
     req =>
-      Created(Json.obj("journeyStartUrl" -> req.body.continueUrl))
+      Created(Json.obj("journeyStartUrl" -> JsString(appConfig.incorpIdCallbackUrl + "?journeyId=1")))
   )
+
+  def getDetails(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(
+      Ok(Json.toJson(IncorporationDetails(
+        companyName = "Test company",
+        companyNumber = "12345678",
+        ctutr = "1234567890",
+        dateOfIncorporation = LocalDate.of(2020,1,1)
+      ))(IncorporationDetails.apiFormat))
+    )
+  }
 }
