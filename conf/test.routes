@@ -24,6 +24,7 @@ POST        /api/feature-switches                             featureswitch.api.
 
 + nocsrf
 POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney
+GET         /api/incorp-id-journey/:journeyId                 controllers.test.IncorpIdApiStubController.getDetails(journeyId)
 
 GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)
 
