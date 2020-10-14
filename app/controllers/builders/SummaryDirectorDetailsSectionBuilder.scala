@@ -52,7 +52,7 @@ case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDe
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
       (email, vatApplicantDetails.emailAddress.map(_.email).isDefined),
-      (telephone, vatApplicantDetails.telephoneNumber.map(_.telephone).isDefined),
+      (telephone, vatApplicantDetails.telephoneNumber.map(_.telephone).isDefined)
     )
   )
 }
