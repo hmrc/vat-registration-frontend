@@ -22,8 +22,8 @@ import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
-import models.external.CoHoRegisteredOfficeAddress
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
+import models.external.{CoHoRegisteredOfficeAddress, EmailAddress, EmailVerified}
+import models.view._
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
@@ -179,7 +179,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     incorporationDetails = Some(testIncorpDetails),
     transactorDetails = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))

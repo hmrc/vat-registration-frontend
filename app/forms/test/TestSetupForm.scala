@@ -66,7 +66,7 @@ object TestSetupForm {
     "dobMonth" -> optional(text),
     "dobYear" -> optional(text),
     "email" -> optional(text),
-    "mobile" -> optional(text),
+    "emailVerified" -> optional(boolean),
     "phone" -> optional(text),
     "formernameChoice" -> optional(text),
     "formername" -> optional(text),

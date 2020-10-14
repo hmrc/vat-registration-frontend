@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
 
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
-import forms.EmailPasscodeForm
+import controllers.BaseController
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
@@ -43,7 +43,7 @@ class EmailAddressVerifiedController @Inject()(view: email_verified,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Future.successful(Redirect(routes.BusinessContactDetailsController.ppobRedirectToAlf()))
+        Future.successful(Redirect(routes.CaptureTelephoneNumberController.show()))
   }
 
 }

@@ -50,7 +50,7 @@ class FormerNameController @Inject()(mcc: MessagesControllerComponents,
             Redirect(applicantRoutes.FormerNameDateController.show())
           }
           else {
-            Redirect(applicantRoutes.ContactDetailsController.show())
+            Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
           }
         }
       )

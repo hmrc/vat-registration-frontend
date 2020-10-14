@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import forms.constraints.EmailAddressConstraints
-import forms.constraints.utils.ConstraintUtil.ConstraintUtil
-import play.api.data.Form
-import play.api.data.Forms.{single, text}
+import play.api.libs.json.{Json, OFormat}
 
-object EmailAddressForm {
+case class TelephoneNumber(telephone: String)
 
-  val emailKey = "email-address"
-
-  val form: Form[String] =
-    Form(
-      single(
-        emailKey -> text.verifying(
-          EmailAddressConstraints.emailAddressEmpty andThen
-            EmailAddressConstraints.emailAddressLength andThen
-            EmailAddressConstraints.emailAddressFormat
-        )
-      )
-    )
-
+object TelephoneNumber {
+  implicit val emailVerified: S4LKey[TelephoneNumber] = S4LKey("telephoneNumber")
+  implicit val format: OFormat[TelephoneNumber] = Json.format[TelephoneNumber]
 }

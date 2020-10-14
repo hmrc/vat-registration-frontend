@@ -36,20 +36,14 @@ case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDe
 
   val email: SummaryRow = SummaryRow(
     s"$sectionId.email",
-    vatApplicantDetails.contactDetails.flatMap(_.email).getOrElse(""),
-    Some(applicantRoutes.ContactDetailsController.show())
+    vatApplicantDetails.emailAddress.map(_.email).getOrElse(""),
+    Some(applicantRoutes.CaptureEmailAddressController.show())
   )
 
-  val daytimePhone: SummaryRow = SummaryRow(
-    s"$sectionId.daytimePhone",
-    vatApplicantDetails.contactDetails.flatMap(_.tel).getOrElse(""),
-    Some(applicantRoutes.ContactDetailsController.show())
-  )
-
-  val mobile: SummaryRow = SummaryRow(
-    s"$sectionId.mobile",
-    vatApplicantDetails.contactDetails.flatMap(_.mobile).getOrElse(""),
-    Some(applicantRoutes.ContactDetailsController.show())
+  val telephone: SummaryRow = SummaryRow(
+    s"$sectionId.telephone",
+    vatApplicantDetails.telephoneNumber.map(_.telephone).getOrElse(""),
+    Some(applicantRoutes.CaptureTelephoneNumberController.show())
   )
 
   val section: SummarySection = SummarySection(
@@ -57,9 +51,8 @@ case class SummaryDirectorDetailsSectionBuilder(vatApplicantDetails: ApplicantDe
     Seq(
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
-      (email, vatApplicantDetails.contactDetails.flatMap(_.email).isDefined),
-      (daytimePhone, vatApplicantDetails.contactDetails.flatMap(_.tel).isDefined),
-      (mobile, vatApplicantDetails.contactDetails.flatMap(_.mobile).isDefined)
+      (email, vatApplicantDetails.emailAddress.map(_.email).isDefined),
+      (telephone, vatApplicantDetails.telephoneNumber.map(_.telephone).isDefined),
     )
   )
 }

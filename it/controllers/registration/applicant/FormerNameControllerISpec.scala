@@ -7,11 +7,11 @@ import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.ScrsAddress
-import models.external.{Name, Applicant}
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import play.api.libs.json.{JsBoolean, JsObject, JsString, JsValue, Json}
 import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -20,6 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.TelephoneNumber
 
 class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
 
@@ -43,7 +44,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
 
   val keyBlock = "applicant-details"
 
-  val email = "test@test.com"
+  val email = "test@t.test"
   val nino = "SR123456C"
   val role = "03"
   val dob = LocalDate.of(1998, 7, 12)
@@ -63,7 +64,9 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
+      emailAddress = Some(EmailAddress("test@t.test")),
+      emailVerified = Some(EmailVerified(true)),
+      telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
@@ -88,8 +91,8 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
            |  },
            |  "contact": {
            |    "email": "$email",
-           |    "tel": "1234",
-           |    "mobile": "5678"
+           |    "emailVerified": true,
+           |    "tel": "1234"
            |  }
            |}""".stripMargin)
 
@@ -106,7 +109,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
       val response = buildClient("/changed-name").post(Map("formerNameRadio" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.ContactDetailsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
@@ -114,48 +117,16 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
         (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
         (json \ "contact" \ "email").as[JsString].value mustBe email
         (json \ "contact" \ "tel").as[JsString].value mustBe "1234"
-        (json \ "contact" \ "mobile").as[JsString].value mustBe "5678"
+        (json \ "contact" \ "emailVerified").as[JsBoolean].value mustBe true
         (json \ "changeOfName").validateOpt[JsObject].get mustBe None
       }
     }
 
-    "patch Applicant Details in backend with former name" in new Setup {
-      val validJson = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "${applicant.name.first}",
-           |    "middle": "${applicant.name.middle}",
-           |    "last": "${applicant.name.last}"
-           |  },
-           |  "role": "${applicant.role}",
-           |  "dob": "$dob",
-           |  "nino": "$nino",
-           |  "currentAddress": {
-           |    "line1": "$addrLine1",
-           |    "line2": "$addrLine2",
-           |    "postcode": "$postcode"
-           |  },
-           |  "contact": {
-           |    "email": "$email",
-           |    "tel": "1234",
-           |    "mobile": "5678"
-           |  },
-           |  "changeOfName": {
-           |    "name": {
-           |      "first": "New",
-           |      "middle": "Name",
-           |      "last": "Cosmo"
-           |    },
-           |    "change": "2000-07-12"
-           |  }
-           |}""".stripMargin)
-
+    "Update S4L with formerName and redirec to the Former Name Date page" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(false, None))))
-        .vatScheme.patched(keyBlock, validJson)
-        .s4lContainer[ApplicantDetails].cleared
+        .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -165,15 +136,10 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
         "formerNameRadio" -> Seq("true"),
         "formerName" -> Seq("New Name Cosmo")
       ))
+
       whenReady(response) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
-        (json \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
-        (json \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
-        (json \ "changeOfName" \ "name" \ "last").as[JsString].value mustBe "Cosmo"
       }
     }
 
@@ -182,7 +148,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
 
       given()
         .user.isAuthorised
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(false, None)), formerNameDate = None))
+        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(true, None)), formerNameDate = None))
         .s4lContainer[ApplicantDetails].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
         .audit.writesAuditMerged()

@@ -19,9 +19,10 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
+import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, _}
-import models.{CurrentProfile, IncorporationDetails, S4LKey, TransactorDetails}
-import play.api.libs.json.{JsError, JsSuccess}
+import models.{CurrentProfile, IncorporationDetails, S4LKey, TelephoneNumber, TransactorDetails}
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -29,7 +30,7 @@ import scala.concurrent.Future
 
 @Singleton
 class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
-                                      val s4LService: S4LService) extends Logging {
+                                        val s4LService: S4LService) extends Logging {
 
   val director = "03"
 
@@ -47,7 +48,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   }
 
   private def updateApplicantDetails(data: ApplicantDetails)
-                                  (implicit cp: CurrentProfile, headerCarrier: HeaderCarrier): Future[ApplicantDetails] = {
+                                    (implicit cp: CurrentProfile, headerCarrier: HeaderCarrier): Future[ApplicantDetails] = {
     for {
       _ <- vatRegistrationConnector.patchApplicantDetails(data)
       _ <- s4LService.clear
@@ -55,11 +56,11 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   }
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = applicantDetails match {
-    case ApplicantDetails(None, None, None, None, None, None, None) =>
+    case ApplicantDetails(None, None, None, None, None, None, None, None, None) =>
       Incomplete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
       Complete(applicantDetails)
     case _ =>
       Incomplete(applicantDetails)
@@ -68,15 +69,24 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     def updateModel(data: T, before: ApplicantDetails): ApplicantDetails = {
       data match {
-        case incorporationDetails: IncorporationDetails => before.copy(incorporationDetails = Some(incorporationDetails))
-        case transactorDetails: TransactorDetails => before.copy(transactorDetails = Some(transactorDetails.copy(role = Some(director))))
-        case currAddr: HomeAddressView => before.copy(homeAddress = Some(currAddr))
-        case contact: ContactDetailsView => before.copy(contactDetails = Some(contact))
+        case incorporationDetails: IncorporationDetails =>
+          before.copy(incorporationDetails = Some(incorporationDetails))
+        case transactorDetails: TransactorDetails =>
+          before.copy(transactorDetails = Some(transactorDetails.copy(role = Some(director))))
+        case currAddr: HomeAddressView =>
+          before.copy(homeAddress = Some(currAddr))
+       case emailAddress: EmailAddress =>
+          before.copy(emailAddress = Some(emailAddress))
+        case emailVerified: EmailVerified =>
+          before.copy(emailVerified = Some(emailVerified))
+        case telephoneNumber: TelephoneNumber =>
+          before.copy(telephoneNumber = Some(telephoneNumber))
         case fName: FormerNameView =>
-          if (!fName.yesNo) before.copy(formerName = Some(fName), formerNameDate = None)
-          else before.copy(formerName = Some(fName))
-        case fNameDate: FormerNameDateView => before.copy(formerNameDate = Some(fNameDate))
-        case prevAddr: PreviousAddressView => before.copy(previousAddress = Some(prevAddr))
+          before.copy(formerName = Some(fName), formerNameDate = None)
+        case fNameDate: FormerNameDateView =>
+          before.copy(formerNameDate = Some(fNameDate))
+        case prevAddr: PreviousAddressView =>
+          before.copy(previousAddress = Some(prevAddr))
       }
     }
 

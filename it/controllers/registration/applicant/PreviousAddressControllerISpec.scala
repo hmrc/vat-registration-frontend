@@ -3,12 +3,14 @@ package controllers.registration.applicant
 
 import java.time.LocalDate
 
+import controllers.registration.applicant.{routes => applicantRoutes}
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.TelephoneNumber
 import models.api.ScrsAddress
-import models.external.{Applicant, Name}
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
@@ -17,11 +19,8 @@ import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import controllers.registration.applicant.{routes => applicantRoutes}
-
+import scala.concurrent.duration.{Duration, FiniteDuration, _}
 import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.concurrent.duration.{Duration, FiniteDuration}
 
 class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
 
@@ -45,7 +44,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
 
   val keyBlock = "applicant-details"
 
-  val email = "test@test.com"
+  val email = "test@t.test"
   val nino = "SR123456C"
   val role = "Director"
   val dob = LocalDate.of(1998, 7, 12)
@@ -65,7 +64,9 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
+      emailAddress = Some(EmailAddress("test@t.test")),
+      emailVerified = Some(EmailVerified(true)),
+      telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = None
@@ -89,8 +90,8 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
          |  },
          |  "contact": {
          |    "email": "$email",
-         |    "tel": "1234",
-         |    "mobile": "5678"
+         |    "emailVerified": true,
+         |    "telephone": "1234"
          |  },
          |  "changeOfName": {
          |    "name": {
@@ -116,7 +117,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       val response = buildClient(applicantRoutes.PreviousAddressController.submit().url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
@@ -137,7 +138,9 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
+      emailAddress = Some(EmailAddress("test@t.test")),
+      emailVerified = Some(EmailVerified(true)),
+      telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
       previousAddress = None
@@ -193,7 +196,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       val response = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.CaptureEmailAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1

@@ -3,24 +3,24 @@ package controllers.registration.applicant
 
 import java.time.LocalDate
 
+import controllers.registration.applicant.{routes => applicantRoutes}
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.TelephoneNumber
 import models.api.ScrsAddress
-import models.external.{Applicant, Name}
-import models.view.{ApplicantDetails, ContactDetailsView, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.view._
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
 import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
-import scala.concurrent.ExecutionContext.Implicits.global
-import controllers.registration.applicant.{routes => applicantRoutes}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, FiniteDuration, _}
 import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import scala.concurrent.duration.{Duration, FiniteDuration}
 
 class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
 
@@ -65,7 +65,9 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
+      emailAddress = Some(EmailAddress("test@t.test")),
+      emailVerified = Some(EmailVerified(true)),
+      telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
@@ -92,7 +94,9 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
       incorporationDetails = Some(testIncorpDetails),
       transactorDetails = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      contactDetails = Some(ContactDetailsView(Some("1234"), Some(email), Some("5678"))),
+      emailAddress = Some(EmailAddress("test@t.test")),
+      emailVerified = Some(EmailVerified(true)),
+      telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
       previousAddress = Some(PreviousAddressView(true, None))
@@ -122,9 +126,9 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
            |    "postcode": "$addressPostcode"
            |  },
            |  "contact": {
-           |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
+           |    "email": "$email",
+           |    "emailVerified": true,
+           |    "telephone": "1234"
            |  }
            |}""".stripMargin)
 
