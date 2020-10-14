@@ -17,7 +17,7 @@
 package services
 
 import _root_.models.api.ScrsAddress
-import _root_.models.{BusinessContact, CompanyContactDetails, CurrentProfile}
+import _root_.models.{BusinessContact, CompanyContactDetails, ContactPreference, CurrentProfile}
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,9 +29,7 @@ class BusinessContactService @Inject()(val registrationConnector: VatRegistratio
                                        val s4lService: S4LService) {
 
   def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessContact] = {
-    def getFromVatRegistration: Future[Option[BusinessContact]] = registrationConnector.getBusinessContact map {
-      _.fold[Option[BusinessContact]](None)(x => Some(BusinessContact.fromApi(x)))
-    }
+    def getFromVatRegistration: Future[Option[BusinessContact]] = registrationConnector.getBusinessContact
 
     s4lService.fetchAndGet[BusinessContact] flatMap {
       case Some(bc) => Future.successful(bc)
@@ -48,7 +46,7 @@ class BusinessContactService @Inject()(val registrationConnector: VatRegistratio
     getBusinessContact flatMap { businessContact =>
       isModelComplete(updateBusinessContactModel[T](data, businessContact)).fold(
         incomplete => s4lService.save[BusinessContact](incomplete) map (_ => data),
-        complete => registrationConnector.upsertBusinessContact(BusinessContact.toApi(complete)) flatMap { _ =>
+        complete => registrationConnector.upsertBusinessContact(complete) flatMap { _ =>
           s4lService.clear map (_ => data)
         }
       )
@@ -58,15 +56,14 @@ class BusinessContactService @Inject()(val registrationConnector: VatRegistratio
   private def updateBusinessContactModel[T](data: T, businessContact: BusinessContact): BusinessContact = {
     data match {
       case address: ScrsAddress => businessContact.copy(ppobAddress = Some(address))
-      case contactDetails: CompanyContactDetails => businessContact.copy(companyContactDetails = Some(contactDetails))
+      case details: CompanyContactDetails => businessContact.copy(companyContactDetails = Some(details))
+      case preference: ContactPreference => businessContact.copy(contactPreference = Some(preference))
     }
   }
 
-  private val isModelComplete: BusinessContact => Completion[BusinessContact] = businessContact => {
-    if (businessContact.ppobAddress.isDefined && businessContact.companyContactDetails.isDefined) {
-      Complete(businessContact)
-    } else {
-      Incomplete(businessContact)
-    }
+  private def isModelComplete: BusinessContact => Completion[BusinessContact] = {
+    case businessContact@BusinessContact(Some(_), Some(_), Some(_)) => Complete(businessContact)
+    case businessContact => Incomplete(businessContact)
   }
+
 }

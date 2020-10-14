@@ -17,33 +17,28 @@
 package models
 
 import models.api.ScrsAddress
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class BusinessContact(ppobAddress: Option[ScrsAddress] = None,
-                           companyContactDetails: Option[CompanyContactDetails] = None)
+                           companyContactDetails: Option[CompanyContactDetails] = None,
+                           contactPreference: Option[ContactPreference] = None)
 
 object BusinessContact {
   implicit val format: Format[BusinessContact] = Json.format[BusinessContact]
   implicit val businessContactS4lKey: S4LKey[BusinessContact] = S4LKey("business-contact")
 
-  def fromApi(json: JsValue): BusinessContact = {
-    val ppob           = json.\("ppob").as[ScrsAddress]
-    val contactDetails = json.as[CompanyContactDetails](CompanyContactDetails.apiReads)
-    BusinessContact(
-      ppobAddress           = Some(ppob),
-      companyContactDetails = Some(contactDetails)
-    )
-  }
+  val apiReads: Reads[BusinessContact] = (
+    (__ \ "ppob").readNullable[ScrsAddress] and
+      (__).readNullable[CompanyContactDetails](CompanyContactDetails.apiFormat).orElse(Reads.pure(None)) and
+      (__ \ "contactPreference").readNullable[ContactPreference]
+    ) (BusinessContact.apply _)
 
-  def toApi(businessContact: BusinessContact): JsValue = {
-    val ppob            = Json.obj("ppob" -> Json.toJson(businessContact.ppobAddress.get).as[JsObject])
-    val contactDetails  = Json.toJson(businessContact.companyContactDetails.get)(CompanyContactDetails.apiWrites).as[JsObject]
+  val apiWrites: Writes[BusinessContact] = (
+    (__ \ "ppob").writeNullable[ScrsAddress] and
+      (__).writeNullable[CompanyContactDetails](CompanyContactDetails.apiFormat) and
+      (__ \ "contactPreference").writeNullable[ContactPreference]
+    ) (unlift(BusinessContact.unapply))
 
-    ppob ++ contactDetails
-  }
-
-  val apiFormat: Format[BusinessContact] = new Format[BusinessContact] {
-    override def writes(o: BusinessContact) = toApi(o)
-    override def reads(json: JsValue)       = JsSuccess(fromApi(json))
-  }
+  val apiFormat = Format[BusinessContact](apiReads, apiWrites)
 }

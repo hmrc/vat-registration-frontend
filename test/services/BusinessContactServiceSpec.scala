@@ -18,7 +18,7 @@ package services
 
 import _root_.models.api.ScrsAddress
 import config.FrontendAppConfig
-import models.{BusinessContact, CompanyContactDetails}
+import models._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
@@ -42,7 +42,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
       "there is a model in S4L" in {
         val businessContact = BusinessContact(
           ppobAddress = Some(scrsAddress),
-          companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None))
+          companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+          contactPreference = Some(Letter)
         )
 
         when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
@@ -66,34 +67,15 @@ class BusinessContactServiceSpec extends VatRegSpec {
             phoneNumber = Some("1234567890"),
             mobileNumber = Some("9876545678"),
             websiteAddress = Some("/test/url")
-          ))
-        )
-
-        val businessContactJson = Json.parse(
-          s"""
-             |{
-             | "digitalContact" : {
-             |   "email" : "test@test.com",
-             |   "tel" : "1234567890",
-             |   "mobile" : "9876545678"
-             | },
-             | "website" : "/test/url",
-             | "ppob" : {
-             |   "line1" : "testLine1",
-             |   "line2" : "testLine2",
-             |   "line3" : "testLine3",
-             |   "line4" : "testLine4",
-             |   "postcode" : "TE57 7ET"
-             | }
-             |}
-          """.stripMargin
+          )),
+          contactPreference = Some(Email)
         )
 
         when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(None))
 
         when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(Some(businessContactJson)))
+          .thenReturn(Future.successful(Some(businessContact)))
 
         when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
@@ -107,7 +89,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
       "there is no data in either S4L or the backend" in {
         val businessContact = BusinessContact(
           ppobAddress = None,
-          companyContactDetails = None
+          companyContactDetails = None,
+          contactPreference = None
         )
 
         when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
@@ -126,10 +109,11 @@ class BusinessContactServiceSpec extends VatRegSpec {
   }
 
   "updateBusinessContact" should {
-    "determine that the model is incomplete and save in S4L" in {
+    "determine that the model is incomplete and save in S4L - nothing pre-populated, update ppobAddress" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = None
+        companyContactDetails = None,
+        contactPreference = None
       )
 
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
@@ -142,10 +126,11 @@ class BusinessContactServiceSpec extends VatRegSpec {
       result mustBe scrsAddress
     }
 
-    "determine that the model is complete and save in the backend" in {
+    "determine that the model is incomplete and save in S4L - nothing pre-populated, update companyContactDetails" in {
       val businessContact = BusinessContact(
-        ppobAddress = Some(scrsAddress),
-        companyContactDetails = None
+        ppobAddress = None,
+        companyContactDetails = None,
+        contactPreference = None
       )
 
       val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
@@ -153,7 +138,157 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any(), matchers.any()))
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
+      result mustBe companyContactDetails
+    }
+
+    "determine that the model is incomplete and save in S4L - nothing pre-populated, update contactPreference" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = None,
+        contactPreference = None
+      )
+
+      val contactPreference = Email
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
+      result mustBe contactPreference
+    }
+
+
+    "determine that the model is incomplete and save in S4L - ppobAddress pre-populated, update companyContactDetails" in {
+      val businessContact = BusinessContact(
+        ppobAddress = Some(scrsAddress),
+        companyContactDetails = None,
+        contactPreference = None
+      )
+
+      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
+      result mustBe companyContactDetails
+    }
+
+    "determine that the model is incomplete and save in S4L - ppobAddress pre-populated, update contactPreference" in {
+      val businessContact = BusinessContact(
+        ppobAddress = Some(scrsAddress),
+        companyContactDetails = None,
+        contactPreference = None
+      )
+
+      val contactPreference = Email
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
+      result mustBe contactPreference
+    }
+
+    "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update ppobAddress" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        contactPreference = None
+      )
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[ScrsAddress](scrsAddress))
+      result mustBe scrsAddress
+    }
+
+    "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update contactPreference" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        contactPreference = None
+      )
+
+      val contactPreference = Email
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
+      result mustBe contactPreference
+    }
+
+    "determine that the model is incomplete and save in S4L - contactPreference pre-populated, update ppobAddress" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = None,
+        contactPreference = Some(Letter)
+      )
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[ScrsAddress](scrsAddress))
+      result mustBe scrsAddress
+    }
+
+    "determine that the model is incomplete and save in S4L - contactPreference pre-populated, update companyContactDetails" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = None,
+        contactPreference = Some(Email)
+      )
+
+      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+
+      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
+      result mustBe companyContactDetails
+    }
+
+
+    "determine that the model is complete and save in the backend - update companyContactDetails" in {
+      val businessContact = BusinessContact(
+        ppobAddress = Some(scrsAddress),
+        companyContactDetails = None,
+        contactPreference = Some(Email)
+      )
+
+      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
 
       when(mockS4LService.clear(matchers.any(), matchers.any()))
@@ -162,5 +297,48 @@ class BusinessContactServiceSpec extends VatRegSpec {
       val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
       result mustBe companyContactDetails
     }
+
+    "determine that the model is complete and save in the backend - update ppobAddress" in {
+      val businessContact = BusinessContact(
+        ppobAddress = None,
+        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        contactPreference = Some(Email)
+      )
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
+
+      when(mockS4LService.clear(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      val result = await(testService.updateBusinessContact[ScrsAddress](scrsAddress))
+      result mustBe scrsAddress
+    }
+
+    "determine that the model is complete and save in the backend - update contactPreference" in {
+      val businessContact = BusinessContact(
+        ppobAddress = Some(scrsAddress),
+        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        contactPreference = None
+      )
+
+      val contactPreference = Letter
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
+
+      when(mockS4LService.clear(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
+      result mustBe contactPreference
+    }
+
   }
 }
