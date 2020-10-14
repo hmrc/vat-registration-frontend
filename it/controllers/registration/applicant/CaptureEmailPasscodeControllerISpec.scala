@@ -14,27 +14,39 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.applicant
+
+import java.time.LocalDate
 
 import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
+import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.external.EmailAddress
+import models.TelephoneNumber
+import models.api.ScrsAddress
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.AppAndStubs
 
-class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
+class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase
+  with AppAndStubs
+  with FeatureSwitching
+  with IntegrationPatience
+  with ITRegistrationFixtures {
 
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
+
+  val s4lContents = ApplicantDetails(emailAddress = Some(EmailAddress(testEmail)))
 
   "GET /email-address-verification" should {
     "show the view correctly" in new StandardTestHelpers {
       given()
         .user.isAuthorised
-        .s4lContainer[EmailAddress].contains(EmailAddress(testEmail))
+        .s4lContainer[ApplicantDetails].contains(s4lContents)
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -53,7 +65,8 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase with AppAn
 
         given()
           .user.isAuthorised
-          .s4lContainer[EmailAddress].contains(EmailAddress(testEmail))
+          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
@@ -64,7 +77,7 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase with AppAn
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(routes.EmailAddressVerifiedController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show().url)
       }
 
       "return BAD_REQUEST for an incorrect passcode" in new StandardTestHelpers {
@@ -72,7 +85,7 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase with AppAn
 
         given()
           .user.isAuthorised
-          .s4lContainer[EmailAddress].contains(EmailAddress(testEmail))
+          .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
 

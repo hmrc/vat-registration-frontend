@@ -16,22 +16,23 @@
 
 package forms
 
-import forms.constraints.EmailAddressConstraints
+import forms.constraints.TelephoneNumberConstraints
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
+import models.TelephoneNumber
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 
-object EmailAddressForm {
+object TelephoneNumberForm {
 
-  val emailKey = "email-address"
+  val telephoneNumberKey = "telephone-number"
 
-  val form: Form[String] =
+  val form =
     Form(
       single(
-        emailKey -> text.verifying(
-          EmailAddressConstraints.emailAddressEmpty andThen
-            EmailAddressConstraints.emailAddressLength andThen
-            EmailAddressConstraints.emailAddressFormat
+        telephoneNumberKey -> text.verifying(
+          TelephoneNumberConstraints.telephoneNumberEmpty andThen
+          TelephoneNumberConstraints.telephoneNumberLength andThen
+          TelephoneNumberConstraints.telephoneNumberFormat
         )
       )
     )

@@ -23,7 +23,7 @@ case class ApplicantDetailsTestSetup(
                                   dobMonth: Option[String] = None,
                                   dobYear: Option[String] = None,
                                   email: Option[String] = None,
-                                  mobile: Option[String] = None,
+                                  emailVerified: Option[Boolean] = None,
                                   phone: Option[String] = None,
                                   formernameChoice: Option[String] = None,
                                   formername: Option[String] = None,

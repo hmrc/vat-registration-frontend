@@ -72,34 +72,6 @@ object FormerNameDateForm {
   )
 }
 
-object ContactDetailsForm {
-  val EMAIL_MAX_LENGTH = 70
-
-  private val FORM_NAME = "applicantContactDetails"
-
-  private val EMAIL = "email"
-  private val DAYTIME_PHONE = "daytimePhone"
-  private val MOBILE = "mobile"
-  private val PROVIDE_ONE_CONTACT = "atLeastOneContact"
-
-  implicit val errorCode: ErrorCode = "applicantContactDetails.email"
-
-  private def validationError(field: String) = ValidationError(s"validation.applicantContact.$field.missing", field)
-
-  val form = Form(
-    mapping(
-      DAYTIME_PHONE -> optional(text.transform(removeSpaces, identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
-      EMAIL -> optional(text.verifying(StopOnFirstFail(FormValidation.IsEmail(s"$FORM_NAME.$EMAIL"), maxLenText(EMAIL_MAX_LENGTH)))),
-      MOBILE -> optional(text.transform(removeSpaces, identity[String]).verifying(isValidPhoneNumber(FORM_NAME)))
-    )(ContactDetailsView.apply)(ContactDetailsView.unapply).verifying(atLeastOneContactDetail)
-  )
-
-  def atLeastOneContactDetail: Constraint[ContactDetailsView] = Constraint {
-    case ContactDetailsView(None, None, None) => Invalid(validationError(PROVIDE_ONE_CONTACT))
-    case _ => Valid
-  }
-}
-
 object HomeAddressForm {
   val ADDRESS_ID: String = "homeAddressRadio"
 

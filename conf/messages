@@ -709,12 +709,13 @@ pages.honesty-declaration.paragraph                     = By submitting this app
 pages.honesty-declaration.button                        = Accept and continue
 
 ## CAPTURE EMAIL ADDRESS MESSAGES
-capture-email-address.title                             = What’s your email address?
-capture-email-address.heading                           = What’s your email address?
+capture-email-address.title                             = What is your email address?
+capture-email-address.heading                           = What is your email address?
 capture-email-address.paragraph                         = We use this to send you communications and updates about your VAT
 capture-email-address.privacyInformation                = Full details of how we use your information are in the <a href="{0}" target="_blank">HMRC Privacy Notice (opens in a new tab)</a>.
 capture-email-address.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
-capture-email-address.error.incorrect_length            = Email address must be 132 characters or less
+capture-email-address.error.nothing_entered             = Enter your email address so we can send you communications and updates about your VAT
+capture-email-address.error.incorrect_length            = The email address must be 132 characters or fewer
 
 ## CAPTURE EMAIL PASSCODE MESSAGES
 capture-email-passcode.title                            = Enter code to confirm your email address
@@ -728,3 +729,12 @@ capture-email-passcode.error.incorrect_length           = Enter the 6 digit conf
 
 ## EMAIL VERIFIED MESSAGES
 email-verified.title                                    = Email address confirmed
+
+## CAPTURE TELEPHONE NUMBER MESSAGES
+capture-telephone-number.title                          = What is your telephone number?
+capture-telephone-number.heading                        = What is your telephone number?
+capture-telephone-number.paragraph                      = We may need to contact you about the application.
+capture-telephone-number.hint                           = Enter a UK telephone number
+capture-telephone-number.error.incorrect_format         = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
+capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
+capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer

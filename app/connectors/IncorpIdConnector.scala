@@ -49,8 +49,7 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
           case JsSuccess(value, _) => value
           case JsError(errors) => throw new Exception(s"Incorp ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
         }
-      }
-      )
+      })
   }
 
 }

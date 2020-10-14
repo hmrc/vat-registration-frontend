@@ -132,7 +132,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
 
   //View models
-  val validApplicantContactDetailsView = ContactDetailsView(Some("test@test.com"), Some("07837483287"), Some("07827483287"))
   val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
   val validWorkers = Workers(8)
   val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)

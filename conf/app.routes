@@ -115,9 +115,9 @@ GET         /home-address                                                       
 GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
 
 
-## OFFICER CONTACT DETAILS PAGE
-GET         /contact-application                                                               controllers.registration.applicant.ContactDetailsController.show
-POST        /contact-application                                                               controllers.registration.applicant.ContactDetailsController.submit
+## TELEPHONE PAGE
+GET         /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.show
+POST        /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.submit
 
 ## FORMER NAME PAGE
 GET         /changed-name                                                                      controllers.registration.applicant.FormerNameController.show
@@ -133,6 +133,24 @@ GET         /current-address                                                    
 POST        /current-address                                                                   controllers.registration.applicant.PreviousAddressController.submit
 GET         /current-address/changePreviousAddress                                             controllers.registration.applicant.PreviousAddressController.change
 GET         /current-address/acceptFromTxm                                                     controllers.registration.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
+
+## Incorp ID Pages
+GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startIncorpIdJourney()
+GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
+
+## Personal Details Validation Pages
+GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+GET         /personal-details-validation-callback                                              controllers.registration.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
+
+## Email Verification Pages
+GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show
+POST        /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.submit
+
+GET         /email-address-verification                                                        controllers.registration.applicant.CaptureEmailPasscodeController.show
+POST        /email-address-verification                                                        controllers.registration.applicant.CaptureEmailPasscodeController.submit
+
+GET         /email-address-verified                                                            controllers.registration.applicant.EmailAddressVerifiedController.show
+POST        /email-address-verified                                                            controllers.registration.applicant.EmailAddressVerifiedController.submit
 
 ## SUMMARY
 GET         /check-confirm-answers                                                             controllers.SummaryController.show
@@ -186,23 +204,7 @@ POST        /confirm-business-type                                              
 GET         /flat-rate-date                                                                    controllers.FlatRateController.frsStartDatePage
 POST        /flat-rate-date                                                                    controllers.FlatRateController.submitFrsStartDate
 
-## Email Verification Pages
-GET         /email-address                                                                     controllers.CaptureEmailAddressController.show
-POST        /email-address                                                                     controllers.CaptureEmailAddressController.submit
-
-GET         /email-address-verification                                                        controllers.CaptureEmailPasscodeController.show
-POST        /email-address-verification                                                        controllers.CaptureEmailPasscodeController.submit
-
-GET         /email-address-verified                                                            controllers.EmailAddressVerifiedController.show
-POST        /email-address-verified                                                            controllers.EmailAddressVerifiedController.submit
-
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
 GET         /redirect-to-rejection                                                             controllers.ErrorController.redirectToCR
-
-GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startIncorpIdJourney()
-GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
-
-GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-GET         /personal-details-validation-callback                                              controllers.registration.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)

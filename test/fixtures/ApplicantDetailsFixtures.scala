@@ -18,9 +18,9 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.{IncorporationDetails, TransactorDetails}
+import models.{IncorporationDetails, TelephoneNumber, TransactorDetails}
 import models.api.ScrsAddress
-import models.external.{Applicant, Name}
+import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 
 trait ApplicantDetailsFixtures {
@@ -28,8 +28,8 @@ trait ApplicantDetailsFixtures {
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
+  val testApplicantDob = LocalDate.of(2020, 1, 1)
   val testRole = "03"
-  val testApplicantDob = LocalDate.of(2020,1,1)
   val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
   val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
@@ -41,7 +41,9 @@ trait ApplicantDetailsFixtures {
   val emptyApplicantDetails = ApplicantDetails(
     transactorDetails = None,
     homeAddress = None,
-    contactDetails = None,
+    emailAddress = None,
+    emailVerified = None,
+    telephoneNumber = None,
     formerName = None,
     formerNameDate = None,
     previousAddress = None
@@ -55,7 +57,9 @@ trait ApplicantDetailsFixtures {
     incorporationDetails = Some(testIncorpDetails),
     transactorDetails = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    contactDetails = Some(ContactDetailsView(Some("test@t.test"), Some("1234"), Some("5678"))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))
