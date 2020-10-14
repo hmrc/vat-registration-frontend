@@ -29,16 +29,16 @@ object CompanyContactDetails {
 
   val apiReads: Reads[CompanyContactDetails] = (
     (__ \ "digitalContact" \ "email").read[String] and
-    (__ \ "digitalContact" \ "tel").readNullable[String] and
-    (__ \ "digitalContact" \ "mobile").readNullable[String] and
-    (__ \ "website").readNullable[String]
-  )(CompanyContactDetails.apply _)
+      (__ \ "digitalContact" \ "tel").readNullable[String] and
+      (__ \ "digitalContact" \ "mobile").readNullable[String] and
+      (__ \ "website").readNullable[String]
+    ) (CompanyContactDetails.apply _)
 
   val apiWrites: Writes[CompanyContactDetails] = new Writes[CompanyContactDetails] {
     override def writes(companyContactDetails: CompanyContactDetails) = {
-      val email   = Json.obj("email" -> companyContactDetails.email)
-      val tel     = companyContactDetails.phoneNumber.fold(Json.obj())(x => Json.obj("tel" -> x))
-      val mobile  = companyContactDetails.mobileNumber.fold(Json.obj())(x => Json.obj("mobile" -> x))
+      val email = Json.obj("email" -> companyContactDetails.email)
+      val tel = companyContactDetails.phoneNumber.fold(Json.obj())(x => Json.obj("tel" -> x))
+      val mobile = companyContactDetails.mobileNumber.fold(Json.obj())(x => Json.obj("mobile" -> x))
 
       val digitalContactSegments = email ++ tel ++ mobile
 
@@ -49,4 +49,6 @@ object CompanyContactDetails {
       digitalContact ++ website
     }
   }
+
+  val apiFormat: Format[CompanyContactDetails] = Format[CompanyContactDetails](apiReads, apiWrites)
 }

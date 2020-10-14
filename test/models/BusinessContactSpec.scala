@@ -22,7 +22,7 @@ import testHelpers.VatRegSpec
 
 class BusinessContactSpec extends VatRegSpec {
 
-  "fromApi" should {
+  "when parsing json from the api" should {
     "parse the full json into a BusinessContactModel" in {
       val jsonToParse = Json.parse(
         """
@@ -39,7 +39,8 @@ class BusinessContactSpec extends VatRegSpec {
           |   "line3" : "testLine3",
           |   "line4" : "testLine4",
           |   "postcode" : "TE57 7ET"
-          | }
+          | },
+          | "contactPreference": "Email"
           |}
         """.stripMargin
       )
@@ -57,49 +58,28 @@ class BusinessContactSpec extends VatRegSpec {
           phoneNumber    = Some("0123456"),
           mobileNumber   = Some("987654"),
           websiteAddress = Some("/test/url")
-        ))
+        )),
+        contactPreference = Some(Email)
       )
 
-      BusinessContact.fromApi(jsonToParse) mustBe expectedModel
+      jsonToParse.as[BusinessContact](BusinessContact.apiFormat) mustBe expectedModel
     }
 
     "parse the minimal json into a BusinessContactModel" in {
       val jsonToParse = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com"
-          | },
-          | "ppob" : {
-          |   "line1" : "testLine1",
-          |   "line2" : "testLine2",
-          |   "postcode" : "TE57 7ET"
-          | }
           |}
         """.stripMargin
       )
 
-      val expectedModel = BusinessContact(
-        ppobAddress = Some(ScrsAddress(
-          line1    = "testLine1",
-          line2    = "testLine2",
-          line3    = None,
-          line4    = None,
-          postcode = Some("TE57 7ET")
-        )),
-        companyContactDetails = Some(CompanyContactDetails(
-          email          = "test@test.com",
-          phoneNumber    = None,
-          mobileNumber   = None,
-          websiteAddress = None
-        ))
-      )
+      val expectedModel = BusinessContact()
 
-      BusinessContact.fromApi(jsonToParse) mustBe expectedModel
+      jsonToParse.as[BusinessContact](BusinessContact.apiFormat) mustBe expectedModel
     }
   }
 
-  "toApi" should {
+  "when converting the model to json for the API" should {
     "transform a full BusinessContact into a full set of Json" in {
       val expectedJson = Json.parse(
         """
@@ -116,7 +96,8 @@ class BusinessContactSpec extends VatRegSpec {
           |   "line3" : "testLine3",
           |   "line4" : "testLine4",
           |   "postcode" : "TE57 7ET"
-          | }
+          | },
+          | "contactPreference": "Letter"
           |}
         """.stripMargin
       )
@@ -134,45 +115,24 @@ class BusinessContactSpec extends VatRegSpec {
           phoneNumber    = Some("0123456"),
           mobileNumber   = Some("987654"),
           websiteAddress = Some("/test/url")
-        ))
+        )),
+        contactPreference = Some(Letter)
       )
 
-      BusinessContact.toApi(modelToTransform) mustBe expectedJson
+      Json.toJson(modelToTransform)(BusinessContact.apiFormat) mustBe expectedJson
     }
 
     "transform a minimal BusinessContact into a minimal set of Json" in {
       val expectedJson = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com"
-          | },
-          | "ppob" : {
-          |   "line1" : "testLine1",
-          |   "line2" : "testLine2",
-          |   "postcode" : "TE57 7ET"
-          | }
           |}
         """.stripMargin
       )
 
-      val modelToTransform = BusinessContact(
-        ppobAddress = Some(ScrsAddress(
-          line1    = "testLine1",
-          line2    = "testLine2",
-          line3    = None,
-          line4    = None,
-          postcode = Some("TE57 7ET")
-        )),
-        companyContactDetails = Some(CompanyContactDetails(
-          email          = "test@test.com",
-          phoneNumber    = None,
-          mobileNumber   = None,
-          websiteAddress = None
-        ))
-      )
+      val modelToTransform = BusinessContact()
 
-      BusinessContact.toApi(modelToTransform) mustBe expectedJson
+      Json.toJson(modelToTransform)(BusinessContact.apiFormat) mustBe expectedJson
     }
   }
 }

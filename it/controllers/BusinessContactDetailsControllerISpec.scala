@@ -16,21 +16,16 @@
 
 package controllers
 
-import common.enums.VatRegStatus
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.BusinessContact
-import models.api.VatScheme
-import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.mongo.MongoSpecSupport
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -163,7 +158,7 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
 
       }
     }
@@ -181,7 +176,7 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
       val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
       }
     }
     //TODO - See if this test is still valid
