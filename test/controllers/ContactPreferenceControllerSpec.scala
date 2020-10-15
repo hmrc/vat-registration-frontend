@@ -22,17 +22,21 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.contact_preference
 
 import scala.concurrent.Future
 
 class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+
+  val view = app.injector.instanceOf[contact_preference]
 
   class Setup {
     val controller: ContactPreferenceController = new ContactPreferenceController(
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockBusinessContactService
+      mockBusinessContactService,
+      view
     )
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
