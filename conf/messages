@@ -742,7 +742,6 @@ email-verified.title                                    = Email address confirme
 capture-telephone-number.title                          = What is your telephone number?
 capture-telephone-number.heading                        = What is your telephone number?
 capture-telephone-number.paragraph                      = We may need to contact you about the application.
-capture-telephone-number.hint                           = Enter a UK telephone number
 capture-telephone-number.error.incorrect_format         = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
 capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
 capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer
