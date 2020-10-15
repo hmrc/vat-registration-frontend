@@ -78,7 +78,7 @@ class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
         EuGoodsForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(EuGoodsPage(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-            Redirect(controllers.routes.ReturnsController.chargeExpectancyPage())
+            Redirect(controllers.routes.ZeroRatedSuppliesController.show())
           }
         )
   }

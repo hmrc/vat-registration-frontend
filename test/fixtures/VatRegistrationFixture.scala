@@ -160,7 +160,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
   val validReturns = Returns(
-    Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
+    Some(10000.5), Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
   )
 
   val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))

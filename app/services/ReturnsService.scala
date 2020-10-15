@@ -117,13 +117,13 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
-    case Returns(Some(false), _, Some(_), Some(_)) =>
+    case Returns(Some(_), Some(false), _, Some(_), Some(_)) =>
       Complete(returns.copy(frequency = Some(Frequency.quarterly)))
 
-    case Returns(Some(true), Some(Frequency.quarterly), Some(_), Some(_)) =>
+    case Returns(Some(_), Some(true), Some(Frequency.quarterly), Some(_), Some(_)) =>
       Complete(returns)
 
-    case Returns(Some(true), Some(Frequency.monthly), _, Some(_)) =>
+    case Returns(Some(_), Some(true), Some(Frequency.monthly), _, Some(_)) =>
       Complete(returns.copy(staggerStart = None))
 
     case _ =>
@@ -141,6 +141,21 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
           s4lService.clear
         }
     ) map { _ => returns }
+  }
+
+  def saveZeroRatesSupplies(zeroRatedSupplies: BigDecimal)
+                           (implicit hc: HeaderCarrier,
+                            profile: CurrentProfile,
+                            ec: ExecutionContext): Future[Returns] = {
+    getReturns flatMap { storedData =>
+      for {
+        returns <- submitReturns(storedData.copy(
+          zeroRatedSupplies = Some(zeroRatedSupplies)
+        ))
+      } yield {
+        returns
+      }
+    }
   }
 
   def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {

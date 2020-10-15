@@ -26,10 +26,9 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import org.scalatestplus.play.{OneAppPerSuite, PlaySpec}
 import play.api.http.{HeaderNames, Status}
-import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, ResultExtractors}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -42,7 +41,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  val messagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+  val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val regId = "VAT123456"
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(

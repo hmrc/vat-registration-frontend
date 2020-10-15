@@ -355,7 +355,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitVoluntaryStartPage" should {
 
     val date = LocalDate.of(2017, 1, 1)
-    val returns = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.jan), Some(Start(Some(date))))
+    val returns = Returns(Some(10000.5), Some(true), Some(Frequency.quarterly), Some(Stagger.jan), Some(Start(Some(date))))
     val fakeRequest = FakeRequest(controllers.routes.ReturnsController.submitVoluntaryStart())
 
     "redirect to the returns frequency page if they select the date of incorp whilst in pre incorp state" in new Setup {
