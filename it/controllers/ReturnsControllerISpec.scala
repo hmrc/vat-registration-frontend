@@ -16,7 +16,7 @@ class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with I
     "Return OK when the user is authenticated" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
 
       val res = buildClient("/vat-start-date").get()
@@ -45,7 +45,7 @@ class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with I
       val today = LocalDate.now().plusDays(1)
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, Some(Start(Some(java.time.LocalDate.parse(today.toString))))))
+        .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, Some(Start(Some(java.time.LocalDate.parse(today.toString))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
 
       val res = buildClient("/vat-start-date").post(Json.obj(

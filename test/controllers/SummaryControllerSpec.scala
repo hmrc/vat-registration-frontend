@@ -50,8 +50,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   }
 
   val fakeRequest = FakeRequest(routes.SummaryController.show())
-  override val returns = Returns(Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
-  val emptyReturns = Returns(None, None, None, None)
+  override val returns = Returns(Some(10000.5), Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
+  val emptyReturns = Returns(None, None, None, None, None)
 
   "Calling summary to show the summary page" should {
     "return OK with a valid summary view pre-incorp" in new Setup {

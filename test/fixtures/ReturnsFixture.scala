@@ -27,6 +27,6 @@ trait ReturnsFixture {
   val reclaimOnReturns = true
   val returnsFrequency = Frequency.monthly
   val startDate        = date
-  val returns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
+  val returns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
 
 }

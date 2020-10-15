@@ -16,12 +16,21 @@
 
 package controllers.builders
 
-import models.Returns
-import models.{Frequency, Returns}
+import java.text.DecimalFormat
+
 import models.view.{SummaryRow, SummarySection}
+import models.{Frequency, Returns}
 
 case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns]) extends SummarySectionBuilder {
   override val sectionId: String = "annualAccountingScheme"
+
+  val zeroRatedSuppliesRow: SummaryRow = SummaryRow(
+    s"$sectionId.zeroRatedSupplies",
+    returns.flatMap(_.zeroRatedSupplies).fold("") {
+      zeroRated => s"£${new DecimalFormat("#,###.00").format(zeroRated)}"
+    },
+    Some(controllers.routes.ZeroRatedSuppliesController.show())
+  )
 
   val vatChargeExpectancyRow: SummaryRow = SummaryRow(
     s"$sectionId.reclaimMoreVat",
@@ -45,6 +54,7 @@ case class SummaryAnnualAccountingSchemeSectionBuilder(returns: Option[Returns])
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
+      (zeroRatedSuppliesRow, true),
       (vatChargeExpectancyRow, true),
       (accountingPeriodRow, true)
     )

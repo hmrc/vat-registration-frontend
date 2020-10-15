@@ -50,7 +50,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         .thenReturn(Future.successful("testAckRef"))
 
       when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(Returns(None, None, None, None)))
+        .thenReturn(Future.successful(Returns(None, None, None, None, None)))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK

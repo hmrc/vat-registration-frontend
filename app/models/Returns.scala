@@ -80,13 +80,14 @@ object Start {
   implicit val format = Json.format[Start]
 }
 
-case class Returns(reclaimVatOnMostReturns: Option[Boolean],
+case class Returns(zeroRatedSupplies: Option[BigDecimal],
+                   reclaimVatOnMostReturns: Option[Boolean],
                    frequency: Option[Frequency.Value],
                    staggerStart: Option[Stagger.Value],
                    start: Option[Start])
 
 object Returns {
-  implicit val format = Json.format[Returns]
+  implicit val format: OFormat[Returns] = Json.format[Returns]
 
-  def empty = Returns(None, None, None, None)
+  def empty = Returns(None, None, None, None, None)
 }
