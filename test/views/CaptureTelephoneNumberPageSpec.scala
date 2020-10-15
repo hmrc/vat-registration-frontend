@@ -25,7 +25,6 @@ class CaptureTelephoneNumberPageSpec extends VatRegViewSpec {
   val title = "What is your telephone number?"
   val heading = "What is your telephone number?"
   val paragraph = "We may need to contact you about the application."
-  val hint = "Enter a UK telephone number"
   val buttonText = "Continue"
 
   "Capture Telephone Number Page" should {
@@ -43,10 +42,6 @@ class CaptureTelephoneNumberPageSpec extends VatRegViewSpec {
 
     "have the correct paragraph" in {
       doc.getElementById("telephone-number-collection-reason").text mustBe paragraph
-    }
-
-    "have the correct hint" in {
-      doc.select(Selectors.hint).text() mustBe hint
     }
 
     "have the correct continue button" in {
