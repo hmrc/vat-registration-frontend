@@ -41,6 +41,10 @@ POST        /trading-name                                                       
 GET         /trade-goods-outside-eu                                                            controllers.TradingDetailsController.euGoodsPage
 POST        /trade-goods-outside-eu                                                            controllers.TradingDetailsController.submitEuGoods
 
+## ZERO RATED SUPPLIES PAGE
+GET         /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.show
+POST        /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.submit
+
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                                                 controllers.ReturnsController.chargeExpectancyPage
 POST        /claim-vat-refunds                                                                 controllers.ReturnsController.submitChargeExpectancy

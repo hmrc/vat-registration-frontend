@@ -29,7 +29,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
 
   val serviceName = "vat-registration-eligibility-frontend"
   def returnsWithStartDate(startDate : Option[LocalDate] = Some(LocalDate.now())) =
-    Some(Returns(None, None, None, Some(Start(startDate))))
+    Some(Returns(None, None, None, None, Some(Start(startDate))))
 
   "The section builder composing a vat details section" should {
     "with startDateRow render" should {
@@ -91,7 +91,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "a 'No' if there isn't a trading name" in {
         val builder = SummaryVatDetailsSectionBuilder(
           threshold = optVoluntaryRegistration,
-          returnsBlock = Some(Returns(None, None, None, None))
+          returnsBlock = Some(Returns(None, None, None, None, None))
         )
 
         builder.tradingNameRow mustBe SummaryRow("vatDetails.tradingName", "app.common.no", Some(controllers.routes.TradingDetailsController.tradingNamePage()))
@@ -100,7 +100,7 @@ class SummaryVatDetailsSectionBuilderSpec extends VatRegSpec with VatRegistratio
       "an error should be thrown if no threshold is present" in {
         def builder = SummaryVatDetailsSectionBuilder(
           threshold = None,
-          returnsBlock = Some(Returns(None, None, None, None))
+          returnsBlock = Some(Returns(None, None, None, None, None))
         )
 
         intercept[IllegalStateException](builder)

@@ -24,7 +24,6 @@ import models.view.ApplicantDetails
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import repositories.SessionRepository
@@ -102,7 +101,7 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
         .vatScheme.has("sicAndComp", SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[SicAndCompliance].cleared
-        .s4lContainer[Returns].contains(Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None))
+        .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Frequency.quarterly), Some(Stagger.jan), None))
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
