@@ -7,9 +7,8 @@ import itutil.IntegrationSpecBase
 import models.{FRSDateChoice, FlatRateScheme, Returns, Start}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import support.AppAndStubs
 
 class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
@@ -24,7 +23,7 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
     System.clearProperty("feature.system-date")
   }
 
-  val frsS4LData = FlatRateScheme(
+  val frsS4LData: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(true),
     estimateTotalSales = Some(123),
@@ -34,13 +33,17 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
     categoryOfBusiness = None,
     percent = None
   )
-  val returnsData = Json.toJson[Returns](Returns(
+
+  val returnsData: JsValue = Json.toJson[Returns](Returns(
+    zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
     frequency = None,
     staggerStart = None,
     start = None
   ))
-  val returnsDataWithStartDate = Json.toJson[Returns](Returns(
+
+  val returnsDataWithStartDate: JsValue = Json.toJson[Returns](Returns(
+    zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
     frequency = None,
     staggerStart = None,

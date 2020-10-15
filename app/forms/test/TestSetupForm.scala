@@ -16,12 +16,10 @@
 
 package forms.test
 
-import models.{BankAccount, BankAccountDetails, FlatRateScheme, Returns, Start, TurnoverEstimates}
 import models.Frequency.Frequency
 import models.Stagger.Stagger
-import models.Start
-import models.{TradingDetails, TradingNameView}
 import models.view.test._
+import models._
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
 
@@ -109,7 +107,7 @@ object TestSetupForm {
 
   val bankAccountMapping: Mapping[BankAccount] = mapping(
     "isProvided" -> boolean,
-    "details"    -> optional(mapping(
+    "details" -> optional(mapping(
       "accountName" -> text,
       "accountSortCode" -> text,
       "accountNumber" -> text
@@ -117,8 +115,9 @@ object TestSetupForm {
   )(BankAccount.apply)(BankAccount.unapply)
 
   val returnsMapping: Mapping[Returns] = mapping(
+    "zeroRatedSupplies" -> optional(bigDecimal),
     "reclaimVatOnMostReturns" -> optional(boolean),
-    "frequency"    -> optional(of[Frequency]),
+    "frequency" -> optional(of[Frequency]),
     "staggerStart" -> optional(of[Stagger]),
     "start" -> optional(mapping(
       "date" -> optional(localDate)

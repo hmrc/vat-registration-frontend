@@ -46,13 +46,13 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
   val mockCacheMap = CacheMap("", Map("" -> JsString("")))
 
   override val date = LocalDate.now
-  override val returns = Returns(Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
+  override val returns = Returns(Some(10000.5), Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
   val returnsFixed = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 25)))))
   val returnsAlt = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 12)))))
 
   def returnsWithVatDate(vd: Option[LocalDate]) = returns.copy(start = Some(Start(vd)))
 
-  val emptyReturns = Returns(None, None, None, None)
+  val emptyReturns = Returns(None, None, None, None, None)
   val incomplete = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
 
   "getReturnsViewModel" should {
@@ -119,6 +119,32 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.submitReturns(incomplete)) mustBe incomplete
+    }
+  }
+
+  "saveZeroRatesSupplies" should {
+    "save a complete model" in new Setup {
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns)))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      await(service.saveZeroRatesSupplies(zeroRatedSupplies = 10000.5)) mustBe returns
+    }
+
+    "save an incomplete model" in new Setup {
+      val expected: Returns = emptyReturns.copy(
+        zeroRatedSupplies = Some(10000.5)
+      )
+
+      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+        .thenReturn(Future.successful(Some(emptyReturns)))
+      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveZeroRatesSupplies(zeroRatedSupplies = 10000.5)) mustBe expected
     }
   }
 

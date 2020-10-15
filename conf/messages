@@ -22,7 +22,7 @@ app.common.openInNewWindow              = (opens in a new window)
 app.common.signOut                      = Sign out
 error.required                          = Select an option
 error.unknown                           = Invalid input
-validation.numeric                      = Enter a numeric value
+validation.numeric                      = Enter numbers only
 footer.cookies                          = Cookies
 footer.privacy                          = Privacy policy
 footer.termsConditions                  = Terms and conditions
@@ -237,19 +237,17 @@ pages.start.date.incorp.bullet1                              = on or after the d
 pages.start.date.incorp.bullet2                              = within the last 4 years
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
 
-## Estimate Vat Turnover Page
-pages.estimate.vat.turnover.title                           = Estimate value of sales
-pages.estimate.vat.turnover.heading                         = Estimate the company’s VAT-taxable turnover for the next 12 months
-pages.estimate.vat.turnover.info                            = Give an estimate rounded to the nearest £10,000.
-pages.estimate.vat.turnover.include.title                   = What should I include as VAT-taxable turnover?
-pages.estimate.vat.turnover.include.bullet1                 = Add together the total value of the company’s UK sales of VAT-taxable goods and services. Include any zero-rated items.
-pages.estimate.vat.turnover.include.para1                   = Find out more about
-pages.estimate.vat.turnover.include.para1.1                 = VAT rates on different goods and services
-pages.estimate.vat.turnover.include.para1.2                 = .
-validation.estimate.vat.turnover.low                        = Enter a positive estimate
-validation.estimate.vat.turnover.high                       = Enter an estimate which is less than 1,000,000,000,000,000
-validation.estimate.vat.turnover.missing                    = Enter what the company’s VAT taxable turnover will be during the next 12 months
-validation.estimate.vat.turnover.invalid                    = Enter a valid number
+## Zero Rated Supplies Page
+pages.zeroRatedSupplies.title                               = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
+pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
+pages.zeroRatedSupplies.text                                = Enter a value for all of the taxable goods which are zero-rated. For example £12,000.
+pages.zeroRatedSupplies.summary                             = What are zero-rated taxable goods?
+pages.zeroRatedSupplies.details                             = Zero-rated are goods which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return.
+pages.zeroRatedSupplies.link                                = Find out about VAT rates on different goods and services
+pages.zeroRatedSupplies.label                               = Zero rated turnover estimate
+validation.zeroRatedSupplies.missing                        = Enter a value for all of the taxable goods which are zero-rated
+validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than the total value of the taxable turnover
+validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
 ## Vat Charge Expectancy Page
 pages.vat.charge.expectancy.title                           = Do you expect the business to regularly claim VAT refunds from HMRC?
@@ -383,6 +381,7 @@ pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxab
 
 ## Summary Page Annual Accounting Scheme
 pages.summary.annualAccountingScheme.sectionHeading                     = Annual Accounting Scheme
+pages.summary.annualAccountingScheme.zeroRatedSupplies                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
 pages.summary.annualAccountingScheme.reclaimMoreVat                     = VAT claims and charges
 pages.summary.annualAccountingScheme.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
 pages.summary.annualAccountingScheme.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim

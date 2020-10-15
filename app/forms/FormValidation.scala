@@ -79,8 +79,19 @@ object FormValidation {
   def maxLenText(maxlen: Integer)(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
     if (StringUtils.length(input) > maxlen) Invalid(s"validation.$e.maxlen") else Valid
   }
+
   def mandatoryNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
     val NumericText = """[0-9]+""".r
+    (input: String) =>
+      input match {
+        case NumericText(_*) => Valid
+        case _ if StringUtils.isBlank(input) => Invalid(s"validation.$e.missing")
+        case _ => Invalid("validation.numeric")
+      }
+  }
+
+  def mandatoryFullNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
+    val NumericText = """[-.,0-9]+""".r
     (input: String) =>
       input match {
         case NumericText(_*) => Valid
@@ -98,9 +109,9 @@ object FormValidation {
     Constraint[T] { (t: T) =>
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
-        case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
-        case (-1, _) if !args.isEmpty  => Invalid(ValidationError(s"validation.$e.range.below", args.head))
-        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
+        case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above"))
+        case (-1, _) if !args.isEmpty  => Invalid(ValidationError(s"validation.$e.range.below"))
+        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below"))
       }
     }
 

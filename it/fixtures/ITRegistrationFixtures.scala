@@ -60,7 +60,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
 
 
-  val returns = Returns(None, Some(Frequency.quarterly), Some(Stagger.jan), None)
+  val returns = Returns(None, None, Some(Frequency.quarterly), Some(Stagger.jan), None)
 
   val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
 

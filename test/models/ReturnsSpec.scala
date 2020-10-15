@@ -29,14 +29,15 @@ class ReturnsSpec extends VatRegSpec {
   override val returnsFrequency = Frequency.monthly
   override val startDate        = validDate
 
-  override val validReturns = Returns(Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
+  override val validReturns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
   val validJson    = Json.parse(
     s"""{
-       |  "reclaimVatOnMostReturns" : true,
-       |  "frequency" : "monthly",
-       |  "staggerStart" : "feb",
-       |  "start" : {
-       |    "date" : "$validDate"
+       |  "zeroRatedSupplies": 10000.5,
+       |  "reclaimVatOnMostReturns": true,
+       |  "frequency": "monthly",
+       |  "staggerStart": "feb",
+       |  "start": {
+       |    "date": "$validDate"
        |  }
        |}""".stripMargin
   )
@@ -52,7 +53,7 @@ class ReturnsSpec extends VatRegSpec {
 
   "empty" should {
     "construct an empty Returns model" in {
-      Returns.empty mustBe Returns(None, None, None, None)
+      Returns.empty mustBe Returns(None, None, None, None, None)
     }
   }
 }
