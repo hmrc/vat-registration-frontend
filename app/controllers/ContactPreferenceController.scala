@@ -31,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
                                             val authConnector: AuthConnector,
                                             val keystoreConnector: KeystoreConnector,
-                                            val businessContactService: BusinessContactService)
+                                            val businessContactService: BusinessContactService,
+                                            view: contact_preference)
                                            (implicit val appConfig: FrontendAppConfig,
                                             ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
@@ -41,7 +42,7 @@ class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
         for {
           contactPreference <- businessContactService.getBusinessContact
           form = contactPreference.contactPreference.fold(ContactPreferenceForm())(x => ContactPreferenceForm().fill(x))
-        } yield Ok(contact_preference(form, routes.ContactPreferenceController.submitContactPreference()))
+        } yield Ok(view(form, routes.ContactPreferenceController.submitContactPreference()))
 
   }
 
@@ -49,7 +50,7 @@ class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       implicit profile =>
         ContactPreferenceForm().bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.contact_preference(badForm, routes.ContactPreferenceController.submitContactPreference()))),
+          badForm => Future.successful(BadRequest(view(badForm, routes.ContactPreferenceController.submitContactPreference()))),
           contactPreference =>
             businessContactService.updateBusinessContact(contactPreference).flatMap {
               _ =>

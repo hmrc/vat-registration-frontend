@@ -22,7 +22,6 @@ import views.html.contact_preference
 
 class ContactPreferencePageSpec extends VatRegViewSpec {
 
-
   val title = "How should we contact the business about VAT?"
   val heading = "How should we contact the business about VAT?"
   val paragraph = "We can send you an email when you have a new message about VAT."
@@ -30,10 +29,11 @@ class ContactPreferencePageSpec extends VatRegViewSpec {
   val email = "email"
   val letter = "letter"
   val buttonText = "Continue"
+  val viewInstance = app.injector.instanceOf[contact_preference]
 
   "Contact Preference Page" should {
     lazy val form = ContactPreferenceForm()
-    lazy val view = contact_preference(form, testCall)
+    lazy val view = viewInstance(form, testCall)
     lazy val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -45,15 +45,15 @@ class ContactPreferencePageSpec extends VatRegViewSpec {
     }
 
     "have the correct paragraph" in {
-      doc.getElementById("paragraph").text mustBe paragraph
+      doc.select(Selectors.p(1)).text mustBe paragraph
     }
 
     "have the correct paragraph2" in {
-      doc.getElementById("paragraph2").text mustBe paragraph2
+      doc.select(Selectors.p(2)).text mustBe paragraph2
     }
 
     "have the correct continue button" in {
-      doc.getElementById("continue").text mustBe buttonText
+      doc.select(Selectors.button).text mustBe buttonText
     }
 
   }
