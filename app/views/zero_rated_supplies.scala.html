@@ -58,7 +58,8 @@
             name = "zeroRatedSupplies",
             classes = Some("govuk-input--width-10"),
             isPageHeading = false,
-            label = Some(messages("pages.zeroRatedSupplies.label"))
+            label = Some(messages("pages.zeroRatedSupplies.label")),
+            labelClasses = Some("govuk-visually-hidden")
         )
         @govukButton(Button(
             attributes = Map("id" -> "continue"),
