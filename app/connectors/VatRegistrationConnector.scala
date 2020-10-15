@@ -20,7 +20,6 @@ import java.time.LocalDate
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import deprecated.DeprecatedConstants
 import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
@@ -197,16 +196,16 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact") map { resp =>
-      if (resp.status.equals(OK)) Some(resp.json) else None
-    } recover {
+  def getBusinessContact(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[Option[BusinessContact]] = {
+    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact").map { res =>
+      if (res.status.equals(OK)) Some(res.json.as[BusinessContact](BusinessContact.apiFormat)) else None
+    }.recover {
       case e: Exception => throw logResponse(e, "getBusinessContact")
     }
   }
 
-  def upsertBusinessContact(businessContactJson: JsValue)(implicit cp: CurrentProfile, hc: HeaderCarrier, rds: HttpReads[JsValue]): Future[JsValue] = {
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", businessContactJson) recover {
+  def upsertBusinessContact(businessContact: BusinessContact)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsValue] = {
+    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", Json.toJson(businessContact)(BusinessContact.apiFormat)) recover {
       case e: Exception => throw logResponse(e, "upsertBusinessContact")
     }
   }

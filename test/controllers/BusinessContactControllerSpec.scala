@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.util.NoSuchElementException
-
 import fixtures.VatRegistrationFixture
 import models.CompanyContactDetails
 import models.api.ScrsAddress
@@ -115,11 +113,12 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     }
 
     "return a 303" when {
-      "user selects other and redirect to the business activity discription" in new SubmissionSetup {
+      "user selects other and redirect to the contact preference page" in new SubmissionSetup {
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.companyContactDetails.get))
+
         submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
-          _ redirectsTo controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url
+          _ redirectsTo controllers.routes.ContactPreferenceController.showContactPreference().url
         }
       }
     }

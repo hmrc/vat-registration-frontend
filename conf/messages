@@ -328,6 +328,15 @@ pages.summary.directorDetails.email                    = Email address
 pages.summary.directorDetails.daytimePhone             = Daytime phone number
 pages.summary.directorDetails.mobile                   = Mobile number
 
+##Contact Preference Page
+pages.contactPreference.title                          = How should we contact the business about VAT?
+pages.contactPreference.heading                        = How should we contact the business about VAT?
+pages.contactPreference.text1                          = We can send you an email when you have a new message about VAT.
+pages.contactPreference.text2                          = We may still need to send you letters if this is the only service available or if the law requires us to do so.
+pages.contactPreference.letter                         = letter
+pages.contactPreference.email                          = email
+contactPreference.error.required                       = Select yes if you would like to sign up to Making Tax Digital
+
 ##Business Activity Description
 pages.business.activity.description.title                     = What does the business do?
 pages.business.activity.description.heading                   = What does the business do?
