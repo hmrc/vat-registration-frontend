@@ -87,7 +87,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
-    ppobAddress = Some(scrsAddress)
+    ppobAddress = Some(scrsAddress),
+    contactPreference = Some(Email)
   )
 
   val validBusinessContactDetailsJson = Json.parse(
@@ -104,8 +105,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       |   "tel"      : "123",
       |   "mobile"   : "987654"
       | },
-      | "website"   :"/test/url"
-      |
+      | "website"   :"/test/url",
+      | "contactPreference": "Email"
       |}
     """.stripMargin
   )

@@ -23,7 +23,7 @@ import common.enums.VatRegStatus
 import models._
 import models.api._
 import models.external.{IncorporationInfo, _}
-import models.view.{Summary, SummaryRow, SummarySection, _}
+import models.view.{Summary, SummaryRow, SummarySection}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
@@ -172,7 +172,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
-    ppobAddress = Some(scrsAddress)
+    ppobAddress = Some(scrsAddress),
+    contactPreference = Some(Email)
   )
 
   val validTurnoverEstimates: TurnoverEstimates = TurnoverEstimates(100L)

@@ -79,7 +79,7 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
             Future.successful(BadRequest(business_contact_details(CompanyContactDetailsForm.transformErrors(formError))))
           },
           contact => businessContactService.updateBusinessContact[CompanyContactDetails](contact) map {
-            _ => Redirect(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+            _ => Redirect(controllers.routes.ContactPreferenceController.showContactPreference())
           }
         )
   }

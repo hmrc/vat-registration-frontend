@@ -143,19 +143,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
     "return the correct VatResponse when the microservice completes and returns a BusinessContact model" in new Setup {
       mockHttpPATCH[BusinessContact, BusinessContact]("tst-url", validBusinessContactDetails)
-      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) returns validBusinessContactDetails
+      connector.upsertBusinessContact(validBusinessContactDetails) returns validBusinessContactDetails
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH("tst-url", forbidden)
-      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith forbidden
+      connector.upsertBusinessContact(validBusinessContactDetails) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedPATCH("tst-url", notFound)
-      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith notFound
+      connector.upsertBusinessContact(validBusinessContactDetails) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH("tst-url", internalServiceException)
-      connector.upsertBusinessContact(Json.toJson(validBusinessContactDetails)) failedWith internalServiceException
+      connector.upsertBusinessContact(validBusinessContactDetails) failedWith internalServiceException
     }
   }
 
@@ -175,13 +175,32 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         |   "line2": "test",
         |   "postcode": "XX1 1XX",
         |   "country": "United Kingdom"
-        | }
+        | },
+        | "contactPreference": "Email"
         |}
       """.stripMargin)
 
+    val expectedModel = BusinessContact(
+      ppobAddress = Some(ScrsAddress(
+        line1 = "test",
+        line2 = "test",
+        line3 = None,
+        line4 = None,
+        postcode = Some("XX1 1XX"),
+        country = Some("United Kingdom")
+      )),
+      companyContactDetails = Some(CompanyContactDetails(
+        email = "me@you.com",
+        phoneNumber = Some("123456738374"),
+        mobileNumber = Some("123456789876"),
+        websiteAddress = Some("www.wwwwwwwwwww.com")
+      )),
+      contactPreference = Some(Email)
+    )
+
     "return the correct Http response when the microservice completes and returns a BusinessContact model" in new Setup {
       mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(businessContactJson)))
-      connector.getBusinessContact returnsSome businessContactJson
+      connector.getBusinessContact returnsSome expectedModel
     }
 
     "returns None if a 204 is recieved" in new Setup {

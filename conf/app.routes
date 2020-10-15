@@ -63,6 +63,10 @@ POST        /companys-bank-account                                              
 GET         /account-details                                                                   controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
 POST        /account-details                                                                   controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
 
+## Contact Preference
+GET         /contact-preference                                                                controllers.ContactPreferenceController.showContactPreference
+POST        /contact-preference                                                                controllers.ContactPreferenceController.submitContactPreference
+
 ## BUSINESS ACTIVITY DESCRIPTION
 GET         /what-company-does                                                                 controllers.SicAndComplianceController.showBusinessActivityDescription
 POST        /what-company-does                                                                 controllers.SicAndComplianceController.submitBusinessActivityDescription
