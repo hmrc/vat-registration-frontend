@@ -22,6 +22,7 @@ import forms.ZeroRatedSuppliesForm
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReturnsService, SessionProfile, VatRegistrationService}
+import uk.gov.hmrc.http.InternalServerException
 import views.html.zero_rated_supplies
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,7 +53,7 @@ class ZeroRatedSuppliesController @Inject()(mcc: MessagesControllerComponents,
                   routes.ZeroRatedSuppliesController.submit(),
                   ZeroRatedSuppliesForm.form(estimates)
                 ))
-              case (_, None) => InternalServerError("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
+              case (_, None) => throw new InternalServerException("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
             }
           }
         }
@@ -72,7 +73,7 @@ class ZeroRatedSuppliesController @Inject()(mcc: MessagesControllerComponents,
               Redirect(routes.ReturnsController.chargeExpectancyPage())
             }
           )
-          case None => Future.successful(InternalServerError("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates"))
+          case None => throw new InternalServerException("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates")
         }
   }
 
