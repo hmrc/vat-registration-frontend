@@ -16,7 +16,7 @@
 
 package mocks
 
-import models.IncorporationDetails
+import models.external.incorporatedentityid.IncorporationDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,8 +30,11 @@ trait IncorpIdServiceMock {
 
   val mockIncorpIdService: IncorpIdService = mock[IncorpIdService]
 
-  def mockCreateJourney(continueUrl: String)(response: Future[String]): Unit =
-    when(mockIncorpIdService.createJourney(ArgumentMatchers.eq(continueUrl))(ArgumentMatchers.any[HeaderCarrier]))
+  def mockCreateJourney(continueUrl: String, serviceName: String)(response: Future[String]): Unit =
+    when(mockIncorpIdService.createJourney(
+      ArgumentMatchers.eq(continueUrl),
+      ArgumentMatchers.eq(serviceName)
+    )(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 
   def mockGetDetails(journeyId: String)(response: Future[IncorporationDetails]): Unit =

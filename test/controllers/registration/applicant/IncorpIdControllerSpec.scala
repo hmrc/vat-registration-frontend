@@ -54,7 +54,7 @@ class IncorpIdControllerSpec extends ControllerSpec
   "startIncorpIdJourney" should {
     "redirect to the journeyStartUrl" in new Setup {
       lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(appConfig.incorpIdCallbackUrl)(Future.successful(testJourneyStartUrl))
+      mockCreateJourney(appConfig.incorpIdCallbackUrl, "Register for VAT")(Future.successful(testJourneyStartUrl))
 
       lazy val res: Future[Result] = testController.startIncorpIdJourney()(fakeRequest)
 

@@ -18,10 +18,10 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.{IncorpIdJourneyConfig, IncorporationDetails}
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, IncorporationDetails}
 import play.api.http.Status.CREATED
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException}
+import play.api.libs.json.{JsError, JsSuccess, JsValue}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}

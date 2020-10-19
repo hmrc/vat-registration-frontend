@@ -19,8 +19,7 @@ package connectors
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.{IncorpIdJourneyConfig, IncorporationDetails}
-import org.scalatestplus.play.ConfiguredServer
+import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, IncorporationDetails}
 import play.api.libs.json.Json
 import support.AppAndStubs
 import play.api.test.Helpers._
@@ -64,8 +63,17 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
   "getDetails" when {
     "incorp ID returns valid incorporation details" should {
-      "return the incorporation details" in {
+      "return the incorporation details without optional data" in {
         val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+        disable(StubIncorpIdJourney)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
+
+        val res = await(connector.getDetails(testIncorpId))
+
+        res mustBe(validResponse)
+      }
+      "return the incorporation details with optional data" in {
+        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
 
