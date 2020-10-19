@@ -86,8 +86,10 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "nino": "AB123456C",
            |  "companyNumber": "testCrn",
            |  "companyName": "testCompanyName",
-           |  "ctutr": "testCtUtr",
            |  "dateOfIncorporation": "2020-02-03",
+           |  "businessVerification": "PASS",
+           |  "bpSafeId": "testBpId",
+           |  "ctutr": "testCtUtr",
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
@@ -178,6 +180,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
     "return a correct full JsValue with maximum data" in {
       val data = ApplicantDetails(
+        incorporationDetails = Some(testIncorpDetails),
+        transactorDetails = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -190,6 +194,19 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
+           |  "name": {
+           |    "first": "testFirstName",
+           |    "last": "testLastName"
+           |  },
+           |  "role": "03",
+           |  "dateOfBirth": "2020-01-01",
+           |  "nino": "AB123456C",
+           |  "companyNumber": "testCrn",
+           |  "companyName": "testCompanyName",
+           |  "dateOfIncorporation": "2020-02-03",
+           |  "businessVerification": "PASS",
+           |  "bpSafeId": "testBpId",
+           |  "ctutr": "testCtUtr",
            |  "changeOfName": {
            |    "change": "2000-07-12",
            |    "name": {

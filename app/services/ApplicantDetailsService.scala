@@ -19,10 +19,11 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
+import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, _}
-import models.{CurrentProfile, IncorporationDetails, S4LKey, TelephoneNumber, TransactorDetails}
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import models.{CurrentProfile, S4LKey, TelephoneNumber, TransactorDetails}
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 

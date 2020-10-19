@@ -161,15 +161,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
     "return a full ApplicantDetails view model from backend without an email" in new Setup(None, Some(Json.toJson(completeApplicantDetails)(ApplicantDetails.apiWrites))) {
       val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-      val expected: ApplicantDetails = ApplicantDetails(
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = None,
-        emailVerified = None,
-        telephoneNumber = None,
-        formerName = Some(FormerNameView(false, None)),
-        formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
+
       service.getApplicantDetails returns completeApplicantDetails
     }
   }
