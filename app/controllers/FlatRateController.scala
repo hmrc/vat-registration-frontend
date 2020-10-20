@@ -43,7 +43,7 @@ class FlatRateController @Inject()(mcc: MessagesControllerComponents,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService)
                                   (implicit val appConfig: FrontendAppConfig,
-                                   ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")

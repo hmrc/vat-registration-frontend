@@ -23,12 +23,12 @@ import models.CurrentProfile
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait SessionProfile {
 
+  implicit val executionContext: ExecutionContext
   val keystoreConnector: KeystoreConnector
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
@@ -45,6 +45,12 @@ trait SessionProfile {
             case _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
           }
       }
+    }
+  }
+
+  def profileMissing(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
+    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) map { currentProfile =>
+      currentProfile.isEmpty
     }
   }
 }

@@ -21,12 +21,11 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, IncorpIdService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
@@ -34,7 +33,8 @@ class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
                                    val keystoreConnector: KeystoreConnector,
                                    incorpIdService: IncorpIdService,
                                    applicantDetailsService: ApplicantDetailsService
-                                  )(implicit val appConfig: FrontendAppConfig, ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  )(implicit val appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>

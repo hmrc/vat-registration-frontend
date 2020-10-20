@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, PersonalDetailsValidationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -34,7 +33,8 @@ class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerCompo
                                                     val keystoreConnector: KeystoreConnector,
                                                     personalDetailsValidationService: PersonalDetailsValidationService,
                                                     applicantDetailsService: ApplicantDetailsService
-                                                   )(implicit val appConfig: FrontendAppConfig, ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                   )(implicit val appConfig: FrontendAppConfig,
+                                                     val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
   def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
       _ =>

@@ -23,7 +23,6 @@ import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.S4LKey
 import models.api.{SicCode, VatScheme}
-import models.external.{CoHoRegisteredOfficeAddress, Applicant}
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -52,21 +51,11 @@ trait StubUtils {
 
     def vatRegistrationFootprint = VatRegistrationFootprintStub()
 
-    def businessRegistration = BusinessRegistrationStub()
-
     def vatScheme = VatSchemeStub()
-
-    def incorpInformation = IIStub()
-
-    def corporationTaxRegistration = CorporationTaxRegistrationStub()
 
     def vatRegistration = VatRegistrationStub()
 
-    def currentProfile = CurrentProfile()
-
     def icl = ICL()
-
-    def company = IncorporationStub()
 
     def bankAccountReputation = BankAccountReputationServiceStub()
 
@@ -316,95 +305,6 @@ trait StubUtils {
     }
   }
 
-  case class IncorporationStub()(implicit builder: PreconditionBuilder) {
-    def isIncorporated: PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo("/vatreg/incorporation-information/000-431-TEST"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "statusEvent": {
-               |    "crn": "90000001",
-               |    "incorporationDate": "2016-08-05",
-               |    "status": "accepted"
-               |  },
-               |  "subscription": {
-               |    "callbackUrl": "http://localhost:9896/callbackUrl",
-               |    "regime": "vat",
-               |    "subscriber": "scrs",
-               |    "transactionId": "000-431-TEST"
-               |  }
-               |}
-             """.stripMargin
-          ))
-      )
-      builder
-    }
-
-    def hasApplicantList(applicantList: Seq[Applicant]): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(s"/incorporation-information/000-431-TEST/applicant-list"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "applicants": ${Json.toJson(applicantList).as[JsArray]}
-               |}
-             """.stripMargin
-          )))
-      builder
-    }
-
-    def hasROAddress(roAddress: CoHoRegisteredOfficeAddress): PreconditionBuilder = {
-      def getAddressObj: JsObject = {
-        Json.obj("premises" -> roAddress.premises, "address_line_1" -> roAddress.addressLine1, "locality" -> roAddress.locality) ++
-          roAddress.addressLine2.fold(Json.obj())(x => Json.obj("address_line_2" -> x)) ++
-          roAddress.postcode.fold(Json.obj())(x => Json.obj("postal_code" -> x)) ++
-          roAddress.poBox.fold(Json.obj())(x => Json.obj("po_box" -> x)) ++
-          roAddress.country.fold(Json.obj())(x => Json.obj("country" -> x)) ++
-          roAddress.region.fold(Json.obj())(x => Json.obj("region" -> x))
-      }
-
-      stubFor(
-        get(urlPathMatching(s"/incorporation-information/000-431-TEST/company-profile"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "registered_office_address": $getAddressObj
-               |}
-             """.stripMargin
-          )))
-      builder
-    }
-
-    def nameIs(name: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathMatching(s"/incorporation-information/000-431-TEST/company-profile"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "company_name": "$name"
-               |}
-             """.stripMargin
-          )))
-      builder
-    }
-  }
-
-  case class CorporationTaxRegistrationStub()(implicit builder: PreconditionBuilder) {
-    def existsWithStatus(status: String, ackRef: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(s"/incorporation-frontend-stubs/1/corporation-tax-registration"))
-          .willReturn(ok(
-            s"""{
-               | "status":"$status",
-               | "confirmationReferences": { "transaction-id": "000-431-TEST" },
-               | "acknowledgementReferences": {"status": "$ackRef"} }""".stripMargin
-          )))
-      builder
-    }
-
-  }
-
   case class VatRegistrationStub()(implicit builder: PreconditionBuilder) {
     def threshold(url: String, threshold: String): PreconditionBuilder = {
       stubFor(
@@ -463,85 +363,6 @@ trait StubUtils {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$txId/clear-scheme"))
           .willReturn(ok())
-      )
-      builder
-    }
-  }
-
-  case class IIStub()(implicit builder: PreconditionBuilder) {
-    def registeredFrontendSubscription(): PreconditionBuilder = {
-      stubFor(
-        post(urlMatching(s"/incorporation-information/subscribe/000-431-TEST/regime/vatfe/subscriber/scrs"))
-          .willReturn(aResponse.withStatus(202).withBody(
-            """{
-              |
-              |}
-            """.stripMargin
-          ))
-      )
-      builder
-    }
-
-    def returnsRejectedIncorpUpdate(): PreconditionBuilder = {
-      stubFor(
-        post(urlMatching(s"/incorporation-information/subscribe/000-431-TEST/regime/vatfe/subscriber/scrs"))
-          .willReturn(ok(
-            s"""
-               |{
-               | "_id": "000-431-TEST",
-               | "IncorpStatusEvent" : {
-               |    "transaction_status": "rejected"
-               | }
-               |}
-            """.stripMargin
-          ))
-      )
-      builder
-    }
-
-    def cancelsSubscription(): PreconditionBuilder = {
-      stubFor(
-        delete(urlEqualTo(s"/incorporation-information/subscribe/000-431-TEST/regime/vatfe/subscriber/scrs"))
-          .willReturn(ok(
-          ))
-      )
-      builder
-    }
-
-    def hasIncorpUpdate: PreconditionBuilder = {
-      stubFor(
-        get(urlEqualTo(s"/incorporation-information/000-431-TEST/incorporation-update"))
-          .willReturn(ok(
-            s"""
-               |{
-               | "incorporationDate": "2016-08-05"
-               |}
-            """.stripMargin
-          ))
-      )
-      builder
-    }
-
-    def hasIncorpUpdateWithNoDate: PreconditionBuilder = {
-      stubFor(
-        get(urlEqualTo(s"/incorporation-information/000-431-TEST/incorporation-update"))
-          .willReturn(aResponse().withStatus(204))
-      )
-      builder
-    }
-
-    def hasSicCodes: PreconditionBuilder = {
-      stubFor(
-        get(urlEqualTo(s"/incorporation-information/sic-codes/transaction/000-431-TEST"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "sic_codes" : [
-               |    "13121", "14141", "16523"
-               |  ]
-               |}
-            """.stripMargin
-          ))
       )
       builder
     }
@@ -684,11 +505,22 @@ trait StubUtils {
       builder
     }
 
+    def regStatus(status: String): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo("/vatreg/1/status"))
+          .willReturn(ok(
+            s"""{"status": "${status}"}"""
+          ))
+      )
+
+      builder
+    }
+
   }
 
   case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) {
 
-    def exists(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
+    def exists(): PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
@@ -701,47 +533,6 @@ trait StubUtils {
     def fails: PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
-          .willReturn(serverError()))
-
-      builder
-    }
-  }
-
-  case class BusinessRegistrationStub()(implicit builder: PreconditionBuilder) {
-
-    def exists(): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo("/business-registration/business-tax-registration"))
-          .willReturn(ok(
-            s"""{ "registrationID" : "1"}"""
-          )))
-
-      builder
-    }
-
-    def returnsGETTradingNamePrePopResponse(regId: String, tradingName: Option[String] = None, status: Int = 204) = {
-      val json = tradingName.map(t => s"""{"tradingName" : "$t"}""")
-      stubFor(
-        get(urlPathEqualTo(s"/business-registration/$regId/trading-name"))
-          .willReturn(ok(
-            json.getOrElse("")
-          )))
-
-      builder
-    }
-
-    def postsTradingNameToPrepop(regId: String, tradingName: Option[String] = None, stat: Int = 200) = {
-      val json = tradingName.map(t => s"""{"tradingName" : "$t"}""")
-      stubFor(
-        post(urlPathEqualTo(s"/business-registration/$regId/trading-name"))
-          .willReturn(status(stat).withBody(json.getOrElse(""))))
-
-      builder
-    }
-
-    def fails: PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo("/business-registration/business-tax-registration"))
           .willReturn(serverError()))
 
       builder

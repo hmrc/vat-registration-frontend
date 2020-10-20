@@ -174,7 +174,6 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
       .vatScheme.doesNotHave("sicAndComp")
       .audit.writesAudit()
       .audit.writesAuditMerged()
-      .incorpInformation.hasSicCodes
       .icl.setup()
 
     insertCurrentProfileSicCodeIntoDb(sessionId)

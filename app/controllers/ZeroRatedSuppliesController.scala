@@ -34,7 +34,7 @@ class ZeroRatedSuppliesController @Inject()(mcc: MessagesControllerComponents,
                                             returnsService: ReturnsService,
                                             vatRegistrationService: VatRegistrationService,
                                             zeroRatesSuppliesView: zero_rated_supplies
-                                           )(implicit executionContext: ExecutionContext,
+                                           )(implicit val executionContext: ExecutionContext,
                                              val appConfig: FrontendAppConfig) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {

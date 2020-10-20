@@ -22,7 +22,6 @@ import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.SessionProfile
 
@@ -33,7 +32,7 @@ class FeedbackController @Inject()(mcc: MessagesControllerComponents,
                                    val authConnector: AuthClientConnector,
                                    val keystoreConnector: KeystoreConnector)
                                   (implicit val appConfig: FrontendAppConfig,
-                                   ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   lazy val contactFrontendPartialBaseUrl: String = appConfig.contactFrontendPartialBaseUrl
   lazy val contactFormServiceIdentifier: String = appConfig.contactFormServiceIdentifier

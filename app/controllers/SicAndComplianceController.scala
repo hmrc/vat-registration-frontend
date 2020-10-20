@@ -41,7 +41,7 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
                                            val iclService: ICLService)
                                           (implicit val appConfig: FrontendAppConfig,
-                                           ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                           val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))

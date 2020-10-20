@@ -22,9 +22,8 @@ import controllers.BaseController
 import forms.TelephoneNumberForm
 import javax.inject.{Inject, Singleton}
 import models.TelephoneNumber
-import models.external.EmailAddress
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ApplicantDetailsService, S4LService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_telephone_number
 
@@ -37,7 +36,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                  val keystoreConnector: KeystoreConnector,
                                                  applicantDetailsService: ApplicantDetailsService
                                                 )(implicit val appConfig: FrontendAppConfig,
-                                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

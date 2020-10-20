@@ -37,7 +37,7 @@ class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val addressLookupService: AddressLookupService)
                                          (implicit val appConfig: FrontendAppConfig,
-                                          ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                          val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
