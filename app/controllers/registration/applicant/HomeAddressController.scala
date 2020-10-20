@@ -36,7 +36,7 @@ class HomeAddressController @Inject()(mcc: MessagesControllerComponents,
                                       val applicantDetailsService: ApplicantDetailsService,
                                       val addressLookupService: AddressLookupService)
                                      (implicit val appConfig: FrontendAppConfig,
-                                      ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>

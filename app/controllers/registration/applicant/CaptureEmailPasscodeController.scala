@@ -24,9 +24,8 @@ import javax.inject.Inject
 import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ApplicantDetailsService, EmailVerificationService, S4LService, SessionProfile}
+import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
@@ -40,7 +39,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                emailVerificationService: EmailVerificationService,
                                                applicantDetailsService: ApplicantDetailsService
                                               )(implicit val appConfig: FrontendAppConfig,
-                                                ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

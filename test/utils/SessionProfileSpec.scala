@@ -26,14 +26,15 @@ import play.api.test.Helpers._
 import services.SessionProfile
 import testHelpers.VatRegSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class SessionProfileSpec extends VatRegSpec {
 
   class Setup {
-    val sessionProfile = new SessionProfile {
-      val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    val sessionProfile: SessionProfile = new SessionProfile {
+      override implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 

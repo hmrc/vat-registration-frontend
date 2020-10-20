@@ -33,7 +33,7 @@ class SignInOutController @Inject()(mcc: MessagesControllerComponents,
                                     val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector)
                                    (implicit val appConfig: FrontendAppConfig,
-                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
     throw new Exception("Config: company-registration-frontend.www.url not found"))

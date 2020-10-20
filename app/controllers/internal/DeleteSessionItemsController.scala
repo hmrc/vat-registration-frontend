@@ -40,7 +40,7 @@ class DeleteSessionItemsController @Inject()(mcc: MessagesControllerComponents,
                                              val cancellationService: CancellationService,
                                              val regConnector: VatRegistrationConnector)
                                             (implicit val appConfig: FrontendAppConfig,
-                                             ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                             val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

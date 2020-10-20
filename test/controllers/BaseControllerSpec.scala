@@ -22,15 +22,17 @@ import testHelpers.ControllerSpec
 import play.api.test.FakeRequest
 import services.SessionProfile
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class BaseControllerSpec extends ControllerSpec {
 
+  implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+
   object TestController extends BaseController(messagesControllerComponents) with SessionProfile {
+    override implicit val executionContext: ExecutionContext = ec
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
 
-    override implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
+    override implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
     val authConnector = mockAuthClientConnector
 

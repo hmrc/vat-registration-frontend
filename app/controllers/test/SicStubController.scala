@@ -38,7 +38,7 @@ class SicStubController @Inject()(mcc: MessagesControllerComponents,
                                   val sicAndCompService: SicAndComplianceService,
                                   val authConnector: AuthClientConnector)
                                  (implicit val appConfig: FrontendAppConfig,
-                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

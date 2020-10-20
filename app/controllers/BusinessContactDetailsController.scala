@@ -37,7 +37,7 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
                                                  val prepopService: PrePopulationService,
                                                  val addressLookupService: AddressLookupService)
                                                 (implicit val appConfig: FrontendAppConfig,
-                                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   lazy val dropoutUrl: String = appConfig.servicesConfig.getString("microservice.services.otrs.url")
   private val ppobForm = PpobForm.form

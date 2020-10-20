@@ -34,7 +34,7 @@ class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
                                             val businessContactService: BusinessContactService,
                                             view: contact_preference)
                                            (implicit val appConfig: FrontendAppConfig,
-                                            ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                            val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def showContactPreference: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

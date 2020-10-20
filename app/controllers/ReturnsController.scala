@@ -38,7 +38,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
                                   val returnsService: ReturnsService,
                                   val timeService: TimeService)
                                  (implicit val appConfig: FrontendAppConfig,
-                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

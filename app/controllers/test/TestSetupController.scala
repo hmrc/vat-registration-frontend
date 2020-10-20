@@ -41,7 +41,7 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
                                     val keystoreConnector: KeystoreConnector,
                                     val testVatRegConnector: TestVatRegistrationConnector)
                                    (implicit val appConfig: FrontendAppConfig,
-                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val s4LBuilder: TestS4LBuilder.type = TestS4LBuilder
 
