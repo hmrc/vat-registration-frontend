@@ -21,9 +21,9 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EmailAddressForm
 import javax.inject.Inject
-import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{ApplicantDetailsService, EmailVerificationService, S4LService, SessionProfile}
+import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
 
@@ -36,7 +36,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
                                               applicantDetailsService: ApplicantDetailsService,
                                               emailVerificationService: EmailVerificationService
                                              )(implicit val appConfig: FrontendAppConfig,
-                                               ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                               val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

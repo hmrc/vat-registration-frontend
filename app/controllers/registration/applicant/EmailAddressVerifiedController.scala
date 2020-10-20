@@ -32,7 +32,7 @@ class EmailAddressVerifiedController @Inject()(view: email_verified,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector
                                               )(implicit val appConfig: FrontendAppConfig,
-                                                ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

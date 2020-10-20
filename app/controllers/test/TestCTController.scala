@@ -22,7 +22,6 @@ import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.{PrePopulationService, SessionProfile}
@@ -35,7 +34,7 @@ class TestCTController @Inject()(mcc: MessagesControllerComponents,
                                  val authConnector: AuthClientConnector,
                                  val keystoreConnector: KeystoreConnector)
                                 (implicit val appConfig: FrontendAppConfig,
-                                 ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>

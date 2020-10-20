@@ -19,7 +19,6 @@ package controllers
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc._
 import services.{CurrentProfileService, SessionProfile, VatRegistrationService}
 import views.html.pages.welcome
@@ -33,7 +32,7 @@ class WelcomeController @Inject()(mcc: MessagesControllerComponents,
                                   val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector)
                                  (implicit val appConfig: FrontendAppConfig,
-                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val eligibilityFEUrl: String = appConfig.servicesConfig.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
   val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
@@ -43,14 +42,13 @@ class WelcomeController @Inject()(mcc: MessagesControllerComponents,
   def start: Action[AnyContent] = isAuthenticated {
     implicit request =>
       for {
-        registrationId <- vatRegistrationService.createRegistrationFootprint
-        _ <- currentProfileService.buildCurrentProfile(registrationId)
-        taxableThreshold <- vatRegistrationService.getTaxableThreshold()
+        missing <- profileMissing
+        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful()
+        threshold <- vatRegistrationService.getTaxableThreshold()
       } yield {
-        Ok(welcome(taxableThreshold))
+        Ok(welcome(threshold))
       }
   }
-
 
   def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

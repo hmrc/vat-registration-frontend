@@ -36,7 +36,7 @@ class SummaryController @Inject()(mcc: MessagesControllerComponents,
                                   val s4LService: S4LService,
                                   val summaryService: SummaryService)
                                  (implicit val appConfig: FrontendAppConfig,
-                                  ec: ExecutionContext) extends BaseController(mcc) with SessionProfile with ApplicativeSyntax {
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile with ApplicativeSyntax {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

@@ -18,12 +18,10 @@ package controllers
 
 import java.time.LocalDate
 
-import com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED
+import common.enums.VatRegStatus
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.Json
 import support.AppAndStubs
 import utils.VATRegFeatureSwitches
 
@@ -37,44 +35,26 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "WelcomeController" must {
     "return an OK status" when {
-      "user is authenticated and authorised to access the app" in {
-        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
-
+      "user is authenticated and authorised to access the app without profile" in new StandardTestHelpers {
         given()
           .user.isAuthorised
-          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
-          .incorpInformation.hasIncorpUpdate
-          .incorpInformation.registeredFrontendSubscription()
-          .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("held", "04")
-          .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
-          .vatScheme.contains(vatRegIncorporated)
-          .vatScheme.has("applicant-details", Json.obj())
+          .vatRegistrationFootprint.exists()
+          .vatScheme.regStatus(VatRegStatus.draft.toString)
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
-          .vatRegistration.savesTransactionId()
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }
     }
-    "delete users registration" when {
-      "incorporation update is rejected" in {
-        featureSwitch.manager.enable(featureSwitch.useCrStubbed)
 
+    "return an OK status" when {
+      "user is authenticated and authorised to access the app with profile" in new StandardTestHelpers {
         given()
           .user.isAuthorised
-          .vatRegistrationFootprint.exists(Some(STARTED), Some("Vat Reg Footprint created"))
-          .incorpInformation.hasIncorpUpdateWithNoDate
-          .incorpInformation.returnsRejectedIncorpUpdate()
-          .businessRegistration.exists()
-          .corporationTaxRegistration.existsWithStatus("held", "04")
-          .currentProfile.setup(currentState = Some("Vat Reg Footprint created"))
-          .vatScheme.contains(vatRegIncorporated)
-          .vatScheme.has("applicant-details", Json.obj())
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
-          .vatRegistration.savesTransactionId()
-          .vatRegistration.clearsUserData()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         whenReady(controller.start(request))(res => res.header.status mustBe 200)
       }
