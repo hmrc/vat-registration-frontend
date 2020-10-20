@@ -18,7 +18,7 @@ package services
 
 import connectors.IncorpIdConnector
 import javax.inject.{Inject, Singleton}
-import models.{IncorpIdJourneyConfig, IncorporationDetails}
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, IncorporationDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -26,8 +26,8 @@ import scala.concurrent.Future
 @Singleton
 class IncorpIdService @Inject()(incorpIdConnector: IncorpIdConnector) {
 
-  def createJourney(continueUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
-    val journeyConfig = IncorpIdJourneyConfig(continueUrl)
+  def createJourney(continueUrl: String, serviceName: String)(implicit hc: HeaderCarrier): Future[String] = {
+    val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName))
 
     incorpIdConnector.createJourney(journeyConfig)
   }

@@ -22,6 +22,7 @@ import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
+import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{CoHoRegisteredOfficeAddress, EmailAddress, EmailVerified}
 import models.view._
 import play.api.libs.json.Json
@@ -173,6 +174,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
+  val testBpSafeId = "testBpSafeId"
 
   val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
 

@@ -6,7 +6,8 @@ import java.time.LocalDate
 import models.api.ScrsAddress
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
-import models.{IncorporationDetails, TelephoneNumber, TransactorDetails}
+import models.{TelephoneNumber, TransactorDetails}
+import models.external.incorporatedentityid.IncorporationDetails
 
 trait ApplicantDetailsFixture {
 
