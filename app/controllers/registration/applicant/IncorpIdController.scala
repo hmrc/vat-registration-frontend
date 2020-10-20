@@ -39,7 +39,7 @@ class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
   def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
       _ =>
-        incorpIdService.createJourney(appConfig.incorpIdCallbackUrl).map(
+        incorpIdService.createJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name")).map(
           journeyStartUrl => SeeOther(journeyStartUrl).addingToSession()
         )
   }

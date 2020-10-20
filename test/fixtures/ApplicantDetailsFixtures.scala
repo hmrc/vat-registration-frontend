@@ -18,10 +18,11 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.{IncorporationDetails, TelephoneNumber, TransactorDetails}
 import models.api.ScrsAddress
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.external.incorporatedentityid.{BvPass, IncorporationDetails, Registered}
+import models.external.{EmailAddress, EmailVerified}
 import models.view._
+import models.{TelephoneNumber, TransactorDetails}
 
 trait ApplicantDetailsFixtures {
 
@@ -49,9 +50,11 @@ trait ApplicantDetailsFixtures {
     previousAddress = None
   )
 
+  val testBpSafeId = "testBpId"
+
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
-  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
     incorporationDetails = Some(testIncorpDetails),
