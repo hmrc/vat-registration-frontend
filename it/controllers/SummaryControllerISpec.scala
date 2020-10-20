@@ -147,7 +147,6 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
           .vatScheme.contains(vatReg)
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .incorpInformation.cancelsSubscription()
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
 

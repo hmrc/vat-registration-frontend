@@ -34,7 +34,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
                                            val keystoreConnector: KeystoreConnector,
                                            val sicAndCompService: SicAndComplianceService)
                                           (implicit val appConfig: FrontendAppConfig,
-                                           ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                           val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def showProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

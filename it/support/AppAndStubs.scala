@@ -123,8 +123,6 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
     } +
       (s"auditing.consumer.baseUri.host" -> WiremockHelper.wiremockHost, s"auditing.consumer.baseUri.port" -> WiremockHelper.wiremockPort) +
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
-      ("microservice.services.business-registration-dynamic-stub.uri" -> "/iv-uri") +
-      ("microservice.services.business-registration.uri" -> "/business-registration") +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://localhost:$port") +
       ("microservice.services.vat-registration-eligibility-frontend.uri" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE") +
       ("microservice.services.vat-registration-eligibility-frontend.question" -> s"/foo") +

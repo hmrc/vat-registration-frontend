@@ -61,7 +61,6 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
       given()
         .user.isAuthorised
         .vatScheme.doesNotHave("trading-details")
-        .company.nameIs(companyName)
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -87,7 +86,6 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
-        .company.nameIs(companyName)
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))

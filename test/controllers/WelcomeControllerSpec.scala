@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
-  val testController = new WelcomeController(
+  val testController: WelcomeController = new WelcomeController(
     messagesControllerComponents,
     mockVatRegistrationService,
     mockCurrentProfileService,
@@ -40,18 +40,32 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
-  val testCurrentProfile = CurrentProfile("testRegid", VatRegStatus.draft)
+  val testCurrentProfile: CurrentProfile = CurrentProfile("testRegid", VatRegStatus.draft)
 
   "GET /before-you-register-for-vat" should {
     "return HTML" when {
-      "user is authorized to access" in {
-
+      "user is authorized to access and has no profile" in {
         mockAuthenticated()
+        mockWithCurrentProfile(None)
 
         when(mockVatRegistrationService.createRegistrationFootprint(any()))
           .thenReturn(Future.successful(testRegId))
         when(mockCurrentProfileService.buildCurrentProfile(any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
+
+        when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+
+        callAuthorisedOrg(testController.start) {
+          result =>
+            status(result) mustBe OK
+            contentType(result) mustBe Some("text/html")
+            charset(result) mustBe Some("utf-8")
+        }
+      }
+
+      "user is authorized to access and has a profile" in {
+        mockAuthenticated()
+        mockWithCurrentProfile(Some(currentProfile))
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
 

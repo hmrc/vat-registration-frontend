@@ -34,7 +34,7 @@ class FormerNameDateController @Inject()(mcc: MessagesControllerComponents,
                                          val keystoreConnector: KeystoreConnector,
                                          val applicantDetailsService: ApplicantDetailsService)
                                         (implicit val appConfig: FrontendAppConfig,
-                                         ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                         val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

@@ -33,7 +33,7 @@ class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          val authConnector: AuthClientConnector,
                                          val tradingDetailsService: TradingDetailsService)
                                         (implicit val appConfig: FrontendAppConfig,
-                                         ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                         val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val tradingNamePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

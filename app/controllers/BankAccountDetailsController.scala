@@ -33,7 +33,7 @@ class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val keystoreConnector: KeystoreConnector)
                                             (implicit val appConfig: FrontendAppConfig,
-                                             ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                             val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   private val hasCompanyBankAccountForm: Form[Boolean] = HasCompanyBankAccountForm.form
   private val enterBankAccountDetailsForm: Form[BankAccountDetails] = EnterBankAccountDetailsForm.form

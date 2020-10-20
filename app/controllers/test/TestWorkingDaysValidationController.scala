@@ -22,7 +22,6 @@ import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import play.twirl.api.Html
 import services.{DateService, SessionProfile}
@@ -37,7 +36,7 @@ class TestWorkingDaysValidationController @Inject()(mcc: MessagesControllerCompo
                                                     val authConnector: AuthClientConnector,
                                                     val keystoreConnector: KeystoreConnector)
                                                    (implicit val appConfig: FrontendAppConfig,
-                                                    ec: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
