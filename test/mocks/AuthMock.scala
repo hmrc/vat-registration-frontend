@@ -58,4 +58,10 @@ trait AuthMock {
       mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
     ) thenReturn Future.successful(Some(Individual))
   }
+
+  def mockAuthenticatedInternalId(internalId: Option[String]): OngoingStubbing[Future[Option[String]]] = {
+    when(
+      mockAuthClientConnector.authorise[Option[String]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ) thenReturn Future.successful(internalId)
+  }
 }
