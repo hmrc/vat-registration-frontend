@@ -39,7 +39,7 @@ trait ApplicantDetailsFixture {
   val testApplicantCtUtr = "testCtUtr"
   val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
 
-  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate)
+  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB")
 
   val validFullApplicantDetails = ApplicantDetails(
     transactorDetails = Some(testTransactorDetails),

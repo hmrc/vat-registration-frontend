@@ -25,6 +25,7 @@ case class IncorporationDetails(companyNumber: String,
                                 companyName: String,
                                 ctutr: String,
                                 dateOfIncorporation: LocalDate,
+                                countryOfIncorporation: String = "GB",
                                 businessVerification: Option[BusinessVerificationStatus] = None,
                                 bpSafeId: Option[String] = None)
 
@@ -34,18 +35,20 @@ object IncorporationDetails {
     (__ \ "companyProfile" \ "companyName").read[String] and
     (__ \ "ctutr").read[String] and
     (__ \ "companyProfile" \ "dateOfIncorporation").read[LocalDate] and
+    Reads.pure("GB") and
     (__ \ "businessVerification" \ "verificationStatus").readNullable[BusinessVerificationStatus].orElse(Reads.pure(None)) and
     (__ \ "registration" \ "registeredBusinessPartnerId").readNullable[String].orElse(Reads.pure(None))
   )(IncorporationDetails.apply _)
 
   val apiWrites: Writes[IncorporationDetails] = (
     (__ \ "companyProfile" \ "companyNumber").write[String] and
-      (__ \ "companyProfile" \ "companyName").write[String] and
-      (__ \ "ctutr").write[String] and
-      (__ \ "companyProfile" \ "dateOfIncorporation").write[LocalDate] and
-      (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
-      (__ \ "registration" \ "registeredBusinessPartnerId").writeNullable[String]
-    )(unlift(IncorporationDetails.unapply))
+    (__ \ "companyProfile" \ "companyName").write[String] and
+    (__ \ "ctutr").write[String] and
+    (__ \ "companyProfile" \ "dateOfIncorporation").write[LocalDate] and
+    (__ \ "companyProfile" \ "countryOfIncorporation").write[String] and
+    (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
+    (__ \ "registration" \ "registeredBusinessPartnerId").writeNullable[String]
+  )(unlift(IncorporationDetails.unapply))
 
   val apiFormat = Format[IncorporationDetails](apiReads, apiWrites)
 
