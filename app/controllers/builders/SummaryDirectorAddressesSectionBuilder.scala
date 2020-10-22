@@ -17,7 +17,7 @@
 package controllers.builders
 
 import models.view.ApplicantDetails
-import models.api.ScrsAddress
+import models.api.Address
 import models.view.{SummaryRow, SummarySection}
 import controllers.registration.applicant.{routes => applicantRoutes}
 
@@ -27,7 +27,7 @@ case class SummaryDirectorAddressesSectionBuilder(vatApplicantDetails: Applicant
 
   val homeAddress: SummaryRow = SummaryRow(
     s"$sectionId.homeAddress",
-    vatApplicantDetails.homeAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
+    vatApplicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq).getOrElse(Seq.empty),
     Some(applicantRoutes.HomeAddressController.redirectToAlf())
   )
 
@@ -38,7 +38,7 @@ case class SummaryDirectorAddressesSectionBuilder(vatApplicantDetails: Applicant
   )
   val previousAddress: SummaryRow = SummaryRow(
     s"$sectionId.previousAddress",
-    vatApplicantDetails.previousAddress.flatMap(_.address).map(ScrsAddress.normalisedSeq).getOrElse(Seq.empty),
+    vatApplicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq).getOrElse(Seq.empty),
     Some(applicantRoutes.PreviousAddressController.show())
   )
 

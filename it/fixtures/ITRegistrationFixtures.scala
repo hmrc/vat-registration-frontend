@@ -23,13 +23,12 @@ import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
 import models.external.incorporatedentityid.IncorporationDetails
-import models.external.{CoHoRegisteredOfficeAddress, EmailAddress, EmailVerified}
+import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
-  val address = ScrsAddress(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
-
+  val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
 
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
@@ -44,7 +43,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     )
   )
 
-
   val voluntaryThreshold = Threshold(
     mandatoryRegistration = false
   )
@@ -56,30 +54,17 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
-
   val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
   val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
-
-
   val returns = Returns(None, None, Some(Frequency.quarterly), Some(Stagger.jan), None)
-
-  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
+  val testCountry = Country(Some("UK"), Some("United Kingdom"))
+  val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry))
 
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
     turnOverEstimates,
     MTDfB
   )
-
-  val coHoRegisteredOfficeAddress =
-    CoHoRegisteredOfficeAddress("premises",
-      "line1",
-      Some("line2"),
-      "locality",
-      Some("UK"),
-      Some("po_box"),
-      Some("XX XX"),
-      Some("region"))
 
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
@@ -88,7 +73,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
-    ppobAddress = Some(scrsAddress),
+    ppobAddress = Some(addressWithCountry),
     contactPreference = Some(Email)
   )
 
@@ -99,7 +84,10 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       |   "line1"    : "line1",
       |   "line2"    : "line2",
       |   "postcode" : "XX XX",
-      |   "country"  : "UK"
+      |   "country"  : {
+      |     "code": "UK",
+      |     "name": "United Kingdom"
+      |   }
       | },
       | "digitalContact" : {
       |   "email"    : "test@foo.com",

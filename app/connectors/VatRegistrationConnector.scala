@@ -99,8 +99,8 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def upsertPpob(regId: String, address: ScrsAddress)(implicit hc: HeaderCarrier, rds: HttpReads[ScrsAddress]): Future[ScrsAddress] = {
-    http.PATCH[ScrsAddress, ScrsAddress](s"$vatRegUrl/vatreg/$regId/ppob", address).recover {
+  def upsertPpob(regId: String, address: Address)(implicit hc: HeaderCarrier, rds: HttpReads[Address]): Future[Address] = {
+    http.PATCH[Address, Address](s"$vatRegUrl/vatreg/$regId/ppob", address).recover {
       case e: Exception => throw logResponse(e, "upsertPpob")
     }
   }

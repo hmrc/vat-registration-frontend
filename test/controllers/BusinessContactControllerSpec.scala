@@ -18,7 +18,7 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import models.CompanyContactDetails
-import models.api.ScrsAddress
+import models.api.Address
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -45,17 +45,11 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
-
-    def mockGetPpopAddressList: OngoingStubbing[Future[Seq[ScrsAddress]]] = when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future(Seq(scrsAddress)))
   }
 
   class SubmissionSetup extends Setup {
     when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future(validBusinessContactDetails))
-
-    when(mockPrePopulationService.getPpobAddressList(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future(Seq(scrsAddress)))
   }
 
   "redirectToAlf" should {
@@ -138,11 +132,11 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
   "return from TXM" should {
     "return a 303" when {
       "a valid id is passed" in new Setup {
-        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
-        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(scrsAddress))
+        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(testAddress))
+        when(mockBusinessContactService.updateBusinessContact[Address](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(testAddress))
 
-        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
+        callAuthorised(controller.returnFromTxm(testAddress.id)) {
           _ redirectsTo routes.BusinessContactDetailsController.showCompanyContactDetails().url
         }
       }
@@ -151,15 +145,15 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       "getAddressById fails" in new Setup {
         when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(throw exception))
 
-        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
+        callAuthorised(controller.returnFromTxm(testAddress.id)) {
           _ failedWith exception
         }
       }
       "updateBusinessContact fails" in new Setup {
-        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(scrsAddress))
-        when(mockBusinessContactService.updateBusinessContact[ScrsAddress](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(throw exception))
+        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(testAddress))
+        when(mockBusinessContactService.updateBusinessContact[Address](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(throw exception))
 
-        callAuthorised(controller.returnFromTxm(scrsAddress.id)) {
+        callAuthorised(controller.returnFromTxm(testAddress.id)) {
           _ failedWith exception
         }
       }

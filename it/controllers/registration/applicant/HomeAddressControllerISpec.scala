@@ -8,7 +8,7 @@ import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.TelephoneNumber
-import models.api.ScrsAddress
+import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import org.scalatest.concurrent.ScalaFutures
@@ -57,7 +57,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
     role = role
   )
 
-  val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
 
   "GET redirectToAlf" should {
@@ -106,7 +106,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
       val addressLine2 = "Holland road"
-      val addressCountry = "United Kingdom"
+      val addressCountry = "GB"
       val addressPostcode = "BN3 1JU"
 
       val validJson = Json.parse(
@@ -151,7 +151,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe addressLine1
         (json \ "currentAddress" \ "line2").as[JsString].value mustBe addressLine2
-        (json \ "currentAddress" \ "country").as[JsString].value mustBe addressCountry
+        (json \ "currentAddress" \ "country").as[Country] mustBe Country(Some("GB"), Some("United Kingdom"))
         (json \ "currentAddress" \ "postcode").as[JsString].value mustBe addressPostcode
       }
     }

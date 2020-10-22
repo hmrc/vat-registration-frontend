@@ -21,7 +21,7 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
 import models.{CurrentProfile, TelephoneNumber}
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import org.mockito.ArgumentMatchers
@@ -146,7 +146,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     }
 
     "return a full ApplicantDetails view model from backend with an email" in new Setup(None, Some(jsonFullApplicantDetailsWithEmail)) {
-      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val expected: ApplicantDetails = ApplicantDetails(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
@@ -160,7 +160,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     }
 
     "return a full ApplicantDetails view model from backend without an email" in new Setup(None, Some(Json.toJson(completeApplicantDetails)(ApplicantDetails.apiWrites))) {
-      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
       service.getApplicantDetails returns completeApplicantDetails
     }
@@ -169,7 +169,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   "Calling updateApplicantDetails" should {
     "return a ApplicantDetails" when {
       "updating current address" that {
-        val currentAddress = ScrsAddress(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
+        val currentAddress = Address(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"))
         val applicantHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
@@ -293,7 +293,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
 
       "updating applicant previous address" that {
-        val addr = ScrsAddress(line1 = "PrevLine1", line2 = "PrevLine2", postcode = Some("PO PRE"))
+        val addr = Address(line1 = "PrevLine1", line2 = "PrevLine2", postcode = Some("PO PRE"))
         val previousAddress = PreviousAddressView(true, Some(addr))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {

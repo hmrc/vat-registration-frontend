@@ -89,7 +89,7 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
+        .address("fudgesicle", addressWithCountry.line1, addressWithCountry.line2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].cleared
@@ -111,7 +111,7 @@ class BusinessContactDetailsControllerISpec extends IntegrationSpecBase with App
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .address("fudgesicle", scrsAddress.line1, scrsAddress.line2, "UK", "XX XX").isFound
+        .address("fudgesicle", addressWithCountry.line1, addressWithCountry.line2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")

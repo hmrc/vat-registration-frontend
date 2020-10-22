@@ -6,7 +6,7 @@ import java.time.LocalDate
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import org.scalatest.concurrent.ScalaFutures
@@ -57,7 +57,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
     role = role
   )
 
-  val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
   "POST Former Name page" should {
     val s4lData = ApplicantDetails(

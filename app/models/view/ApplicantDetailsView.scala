@@ -19,7 +19,7 @@ package models.view
 import java.time.LocalDate
 
 import models.DateModel
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.libs.json.{Json, OFormat}
 
 case class FormerNameView(yesNo: Boolean, formerName: Option[String] = None)
@@ -41,13 +41,13 @@ object FormerNameDateView {
   implicit val format = Json.format[FormerNameDateView]
 }
 
-case class HomeAddressView(addressId: String, address: Option[ScrsAddress] = None)
+case class HomeAddressView(addressId: String, address: Option[Address] = None)
 
 object HomeAddressView {
   implicit val format = Json.format[HomeAddressView]
 }
 
-case class PreviousAddressView(yesNo: Boolean, address: Option[ScrsAddress] = None)
+case class PreviousAddressView(yesNo: Boolean, address: Option[Address] = None)
 
 object PreviousAddressView {
   implicit val format = Json.format[PreviousAddressView]
