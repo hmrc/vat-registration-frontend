@@ -70,73 +70,32 @@ class PrePopulationServiceSpec extends VatRegSpec with Inspectors with S4LMockSu
         .thenReturn(Future.successful(Threshold(true, Some(SystemDate.getSystemDate.toLocalDate.minusDays(20)))))
       service.getCTActiveDate returns None
     }
-
-  }
-
-  "getPpobAddressList" must {
-    "be non-empty when companyProfile, addressDB and addressS4L are present" in new Setup {
-      when(mockBusinessContactService.getBusinessContact(any(), any(), any()))
-        .thenReturn(BusinessContact().pure)
-
-      save4laterReturns(BusinessContact(ppobAddress = Some(scrsAddress)))
-
-      service.getPpobAddressList returns Seq(scrsAddress)
-    }
-    "return 1 address when II returns an address that does not have the country of UK, but s4l returns 1 with a country of UK" in new Setup {
-      val validAddrWithUKCountry = ScrsAddress("myLine1", "myLine2", None, Some("myLine4"), Some("XX XY"), Some("UK"))
-
-      when(mockBusinessContactService.getBusinessContact(any(), any(), any()))
-        .thenReturn(BusinessContact().pure)
-
-      save4laterReturns(BusinessContact(ppobAddress = Some(validAddrWithUKCountry)))
-
-      service.getPpobAddressList returns Seq(validAddrWithUKCountry)
-    }
-
-    "be non-empty if a companyProfile is not present but addressDB exists" in new Setup {
-      when(mockBusinessContactService.getBusinessContact(any(), any(), any()))
-        .thenReturn(BusinessContact(ppobAddress = Some(scrsAddress)).pure)
-
-      save4laterReturnsNothing[BusinessContact]()
-
-      service.getPpobAddressList returns Seq(scrsAddress)
-    }
-
-    "be empty if a companyProfile is not present and addressDB and addressS4L are not present" in new Setup {
-
-      when(mockBusinessContactService.getBusinessContact(any(), any(), any()))
-        .thenReturn(BusinessContact().pure)
-
-      save4laterReturnsNothing[BusinessContact]()
-
-      service.getPpobAddressList returns Seq()
-    }
   }
 
   "filterAddressListByCountry" must {
     "return an empty list when 2 addresses in that have a country not in the allowed list of countries" in new Setup {
-      val validAddress = validCurrentAddress.copy(country = Some("foo bar wizz bang"))
-      val validAddress2 = validCurrentAddress.copy(country = Some("wizz wollop kablam"))
+      val validAddress = validCurrentAddress.copy(country = Some(Country(Some("FR"), None)))
+      val validAddress2 = validCurrentAddress.copy(country = Some(Country(None, Some("France"))))
 
       service.filterAddressListByCountry(validAddress :: validAddress2 :: Nil) mustBe Seq.empty
     }
     "return a list of addresses whereby the countries are united kingdom in several flavours" in new Setup {
-      val validAddress = validCurrentAddress.copy(country = Some("u n i t e d k i n g d o m"))
-      val validAddress2 = validCurrentAddress.copy(country = Some(" united KINGDOM "))
-      val validAddress3 = validCurrentAddress.copy(country = Some("uk"))
-      val validAddress4 = validCurrentAddress.copy(country = Some("United Kingdom"))
+      val validAddress = validCurrentAddress.copy(country = Some(Country(None, Some("u n i t e d k i n g d o m"))))
+      val validAddress2 = validCurrentAddress.copy(country = Some(Country(None, Some(" united KINGDOM "))))
+      val validAddress3 = validCurrentAddress.copy(country = Some(Country(Some("uk"), None)))
+      val validAddress4 = validCurrentAddress.copy(country = Some(Country(None, Some("United Kingdom"))))
       val seqOfAddresses = validAddress :: validAddress2 :: validAddress3 :: validAddress4 :: Nil
 
       service.filterAddressListByCountry(seqOfAddresses) mustBe seqOfAddresses
     }
     "return one address whereby 2 exist but one has an invalid country" in new Setup {
-      val validAddress = validCurrentAddress.copy(country = Some("United Kingdom"))
-      val validAddress2 = validCurrentAddress.copy(country = Some("invalid country"))
+      val validAddress = validCurrentAddress.copy(country = Some(Country(None, Some("United Kingdom"))))
+      val validAddress2 = validCurrentAddress.copy(country = Some(Country(None, Some("invalid country"))))
 
       service.filterAddressListByCountry(validAddress :: validAddress2 :: Nil) mustBe Seq(validAddress)
     }
     "return 2 addresses whereby 1 of the addresses has country of None" in new Setup {
-      val validAddress = validCurrentAddress.copy(country = Some("United Kingdom"))
+      val validAddress = validCurrentAddress.copy(country = Some(Country(None, Some("United Kingdom"))))
       val validAddress2 = validCurrentAddress.copy(country = None)
       val seqOfAddresses = validAddress :: validAddress2 :: Nil
 

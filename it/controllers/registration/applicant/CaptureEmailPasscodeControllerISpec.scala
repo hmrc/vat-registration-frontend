@@ -22,7 +22,7 @@ import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.TelephoneNumber
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import org.scalatest.concurrent.IntegrationPatience

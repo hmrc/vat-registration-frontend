@@ -19,7 +19,7 @@ package controllers.builders
 import models.BusinessContact
 import fixtures.VatRegistrationFixture
 import models.{BusinessContact, CompanyContactDetails}
-import models.api.ScrsAddress
+import models.api.Address
 import models.view.SummaryRow
 import testHelpers.VatRegSpec
 
@@ -33,7 +33,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
         mobileNumber    = Some("0123456789"),
         websiteAddress  = Some("http://website.com")
       )),
-      ppobAddress = Some(scrsAddress)
+      ppobAddress = Some(testAddress)
     )
 
     val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
@@ -76,12 +76,12 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       val Some(a) = Some(111)
       val b@(x, y) = (1, "2")
 
-      import ScrsAddress.htmlShow._
+      import Address.htmlShow._
       val builder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       builder.ppobRow mustBe
         SummaryRow(
           "companyContactDetails.ppob",
-          scrsAddress,
+          testAddress,
           changeLink = Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
         )
     }

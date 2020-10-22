@@ -19,7 +19,7 @@ package connectors
 import common.enums.AddressLookupJourneyIdentifier._
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import itutil.IntegrationSpecBase
-import models.api.ScrsAddress
+import models.api.{Address, Country}
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
 import services.AddressLookupService
@@ -42,12 +42,12 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
       "address is found in ALF" in {
         given()
-          .address("addressId", "16 Coniston Court", "Holland road", "United Kingdom", "BN3 1JU").isFound
+          .address("addressId", "16 Coniston Court", "Holland road", "UK", "BN3 1JU").isFound
 
-        await(alfConnector.getAddress("addressId")) mustBe ScrsAddress(
-          line1 = "16 Coniston court",
+        await(alfConnector.getAddress("addressId")) mustBe Address(
+          line1 = "16 Coniston Court",
           line2 = "Holland road",
-          country = Some("United Kingdom"),
+          country = Some(Country(Some("UK"), Some("United Kingdom"))),
           postcode = Some("BN3 1JU"))
       }
     }
