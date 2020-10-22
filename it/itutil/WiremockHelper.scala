@@ -102,6 +102,13 @@ trait WiremockHelper extends WiremockS4LHelper {
         .willReturn(ok(s"${affinity.toJson}")))
   }
 
+  def stubAuthWithInternalId(internalId: String): StubMapping = {
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(ok(Json.obj("internalId" -> internalId).toString))
+    )
+  }
+
   def stubBankReputationCheck(valid: Boolean): StubMapping = {
     val response = Json.obj("accountNumberWithSortCodeIsValid" -> valid)
     stubFor(post(urlMatching("/modcheck"))

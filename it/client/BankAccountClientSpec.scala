@@ -206,7 +206,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       "return a 303 and redirect to the 'join frs' page" in new Setup {
       Given("The 'has bank account' value is saved in S4L from the previous page")
       stubS4LFetchBankAccount(regId, Some(bankAccountProvidedPartialJson))
-      stubAuthWithAffinity(Organisation)
+      stubAuthWithInternalId("testInternalId")
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       And("The bank details form data will be valid")
