@@ -21,8 +21,9 @@ import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
-import services.{BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, ApplicantDetailsService, ReturnsService, _}
+import services.{ApplicantDetailsService, BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, ReturnsService, _}
 import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.{CascadeUpsert, VATRegFeatureSwitches}
@@ -69,6 +70,7 @@ trait VatMocks
   lazy val mockBusinessContactService = mock[BusinessContactService]
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
+  val mockAuditConnector = mock[AuditConnector]
 
   def resetMocks() {
     reset(
