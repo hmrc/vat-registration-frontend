@@ -174,20 +174,23 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         |   "line1": "test",
         |   "line2": "test",
         |   "postcode": "XX1 1XX",
-        |   "country": "United Kingdom"
+        |   "country": {
+        |     "name": "United Kingdom",
+        |     "code": "UK"
+        |   }
         | },
         | "contactPreference": "Email"
         |}
       """.stripMargin)
 
     val expectedModel = BusinessContact(
-      ppobAddress = Some(ScrsAddress(
+      ppobAddress = Some(Address(
         line1 = "test",
         line2 = "test",
         line3 = None,
         line4 = None,
         postcode = Some("XX1 1XX"),
-        country = Some("United Kingdom")
+        country = Some(testCountry)
       )),
       companyContactDetails = Some(CompanyContactDetails(
         email = "me@you.com",
@@ -223,7 +226,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling getThreshold" should {
-
     val vatThreshold = optVoluntaryRegistration
 
     "return the correct VatResponse when the microservice completes and returns a Threshold model" in new Setup {
@@ -247,20 +249,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling upsertPpob" should {
 
     "return the correct VatResponse when the microservice completes and returns a upsertPpob model" in new Setup {
-      mockHttpPATCH[ScrsAddress, ScrsAddress]("tst-url", scrsAddress)
-      connector.upsertPpob("tstID", scrsAddress) returns scrsAddress
+      mockHttpPATCH[Address, Address]("tst-url", testAddress)
+      connector.upsertPpob("tstID", testAddress) returns testAddress
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", forbidden)
-      connector.upsertPpob("tstID", scrsAddress) failedWith forbidden
+      mockHttpFailedPATCH[Address, Address]("tst-url", forbidden)
+      connector.upsertPpob("tstID", testAddress) failedWith forbidden
     }
     "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", notFound)
-      connector.upsertPpob("tstID", scrsAddress) failedWith notFound
+      mockHttpFailedPATCH[Address, Address]("tst-url", notFound)
+      connector.upsertPpob("tstID", testAddress) failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[ScrsAddress, ScrsAddress]("tst-url", internalServiceException)
-      connector.upsertPpob("tstID", scrsAddress) failedWith internalServiceException
+      mockHttpFailedPATCH[Address, Address]("tst-url", internalServiceException)
+      connector.upsertPpob("tstID", testAddress) failedWith internalServiceException
     }
   }
 
@@ -369,7 +371,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return a JsValue with a full Applicant Details view model" in new Setup {
-      val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
       val fullApplicantDetails: ApplicantDetails = partialApplicantDetails.copy(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),

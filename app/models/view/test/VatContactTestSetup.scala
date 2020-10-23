@@ -16,6 +16,7 @@
 
 package models.view.test
 
+import models.api.Country
 import play.api.libs.json.Json
 
 case class VatContactTestSetup( email: Option[String],
@@ -27,7 +28,7 @@ case class VatContactTestSetup( email: Option[String],
                                 line3: Option[String],
                                 line4: Option[String],
                                 postcode: Option[String] = None,
-                                country: Option[String] = None
+                                country: Option[Country] = None
                               )
 
 object VatContactTestSetup {

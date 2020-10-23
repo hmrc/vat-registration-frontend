@@ -16,7 +16,7 @@
 
 package services
 
-import _root_.models.api.ScrsAddress
+import _root_.models.api.Address
 import _root_.models.{BusinessContact, CompanyContactDetails, ContactPreference, CurrentProfile}
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
@@ -55,7 +55,7 @@ class BusinessContactService @Inject()(val registrationConnector: VatRegistratio
 
   private def updateBusinessContactModel[T](data: T, businessContact: BusinessContact): BusinessContact = {
     data match {
-      case address: ScrsAddress => businessContact.copy(ppobAddress = Some(address))
+      case address: Address => businessContact.copy(ppobAddress = Some(address))
       case details: CompanyContactDetails => businessContact.copy(companyContactDetails = Some(details))
       case preference: ContactPreference => businessContact.copy(contactPreference = Some(preference))
     }

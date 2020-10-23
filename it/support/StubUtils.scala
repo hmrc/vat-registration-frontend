@@ -597,8 +597,8 @@ trait StubUtils {
                |  "id": "GB990091234520",
                |  "address": {
                |    "country": {
-               |      "code": "GB",
-               |      "name": "$country"
+               |      "code": "$country",
+               |      "name": "United Kingdom"
                |    },
                |    "lines": [
                |      "$line1",

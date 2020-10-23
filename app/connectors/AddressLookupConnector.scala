@@ -17,7 +17,7 @@
 package connectors
 
 import javax.inject.{Inject, Singleton}
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
@@ -35,10 +35,10 @@ class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesCon
 
   lazy val addressLookupFrontendUrl: String = config.baseUrl("address-lookup-frontend")
 
-  implicit val reads: ScrsAddress.adressLookupReads.type = ScrsAddress.adressLookupReads
+  implicit val reads: Address.adressLookupReads.type = Address.adressLookupReads
 
-  def getAddress(id: String)(implicit hc: HeaderCarrier): Future[ScrsAddress] = {
-    http.GET[ScrsAddress](s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id")
+  def getAddress(id: String)(implicit hc: HeaderCarrier): Future[Address] = {
+    http.GET[Address](s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id")
   }
 
   def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] = {

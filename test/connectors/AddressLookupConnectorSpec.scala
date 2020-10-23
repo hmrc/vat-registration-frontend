@@ -17,7 +17,7 @@
 package connectors
 
 import fixtures.{AddressLookupConstants, VatRegistrationFixture}
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.addresslookup._
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.HttpVerbs.GET
@@ -39,17 +39,17 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
 
     val dummyUrl = "test-url"
     val redirectUrl = "redirect-url"
-    val testAddress = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
+    val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
   }
 
   "getAddress" should {
     "return an ScrsAddress successfully" in new Setup {
-      mockHttpGET[ScrsAddress]("tst-url", testAddress)
+      mockHttpGET[Address]("tst-url", testAddress)
       connector.getAddress("id") returns testAddress
     }
 
     "return the correct response when an Internal Server Error occurs" in new Setup {
-      mockHttpFailedGET[ScrsAddress](dummyUrl, internalServiceException)
+      mockHttpFailedGET[Address](dummyUrl, internalServiceException)
       connector.getAddress("id") failedWith classOf[InternalServerException]
     }
   }

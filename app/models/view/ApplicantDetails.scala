@@ -19,7 +19,7 @@ package models.view
 import java.time.LocalDate
 
 import models.{S4LKey, TelephoneNumber, TransactorDetails}
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json._
@@ -42,7 +42,7 @@ object ApplicantDetails {
   val apiReads: Reads[ApplicantDetails] = (
     JsPath.readNullable[IncorporationDetails].orElse(Reads.pure(None)) and
     JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
-    (__ \ "currentAddress").readNullable[ScrsAddress].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
+    (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
     (__ \ "contact" \ "email").readNullable[String].orElse(Reads.pure(None)).fmap(_.map(EmailAddress(_))) and
     (__ \ "contact" \ "emailVerified").readNullable[Boolean].orElse(Reads.pure(None)).fmap(_.map(EmailVerified(_))) and
     (__ \ "contact" \ "tel").readNullable[String].orElse(Reads.pure(None)).fmap(_.map(TelephoneNumber(_))) and
@@ -52,19 +52,19 @@ object ApplicantDetails {
     (__ \ "changeOfName" \ "change").readNullable[LocalDate]
       .fmap(cond => cond.map(FormerNameDateView(_)))
       .orElse(Reads.pure(None)) and
-    (__ \ "previousAddress").readNullable[ScrsAddress].fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
+    (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
   )(ApplicantDetails.apply _)
 
   val apiWrites: Writes[ApplicantDetails] = (
     JsPath.writeNullable[IncorporationDetails] and
     JsPath.writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
-    (__ \ "currentAddress").writeNullable[ScrsAddress].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
+    (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
     (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
     (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
     (__ \ "contact" \ "tel").writeNullable[String].contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
     (__ \ "changeOfName" \ "name").writeNullable[Name].contramap[Option[FormerNameView]](_.flatMap(_.formerName.map(splitName))) and
     (__ \ "changeOfName" \ "change").writeNullable[LocalDate].contramap[Option[FormerNameDateView]](_.map(_.date)) and
-    (__ \ "previousAddress").writeNullable[ScrsAddress].contramap[Option[PreviousAddressView]](_.flatMap(_.address))
+    (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address))
   )(unlift(ApplicantDetails.unapply))
 
   val apiFormat: Format[ApplicantDetails] = Format(

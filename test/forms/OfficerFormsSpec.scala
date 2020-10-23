@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
-import models.api.ScrsAddress
+import models.api.Address
 import models.view._
 import testHelpers.VatRegSpec
 
@@ -183,7 +183,7 @@ class ApplicantFormsSpec extends VatRegSpec {
   }
 
   "ApplicantHomeAddressForm" should {
-    val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+    val address = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val testForm = HomeAddressForm.form
     val testData = HomeAddressView(address.id, Some(address))
 
@@ -215,7 +215,7 @@ class ApplicantFormsSpec extends VatRegSpec {
   }
 
   "PreviousAddressForm" should {
-    val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+    val address = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
     val testForm = PreviousAddressForm.form
     val testData = PreviousAddressView(yesNo = false, Some(address))
 

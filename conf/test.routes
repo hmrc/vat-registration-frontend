@@ -1,9 +1,6 @@
 
 GET         /s4l-teardown                                     controllers.test.TestCacheController.tearDownS4L
 
-GET         /test-setup                                       controllers.test.TestSetupController.show()
-POST        /test-setup                                       controllers.test.TestSetupController.submit()
-
 GET         /test-setup-eligibility                           controllers.test.TestSetupController.showEligibility()
 POST        /test-setup-eligibility                           controllers.test.TestSetupController.submitEligibility()
 

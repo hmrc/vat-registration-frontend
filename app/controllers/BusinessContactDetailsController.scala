@@ -22,7 +22,7 @@ import connectors.KeystoreConnector
 import forms.{CompanyContactDetailsForm, PpobForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
 import views.html.business_contact_details
@@ -57,7 +57,7 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
       implicit profile =>
         for {
           address <- addressLookupService.getAddressById(id)
-          _ <- businessContactService.updateBusinessContact[ScrsAddress](address)
+          _ <- businessContactService.updateBusinessContact[Address](address)
         } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
   }
 

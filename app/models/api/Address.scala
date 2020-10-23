@@ -18,48 +18,57 @@ package models.api
 
 import cats.Show.show
 import models.view.HomeAddressView
-import models.api.ScrsAddress.inlineShow.inline
+import models.api.Address.inlineShow.inline
 import models.view.vatContact.ppob.PpobView
 import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
 import play.api.libs.json._
 
-case class ScrsAddress(line1: String,
-                       line2: String,
-                       line3: Option[String] = None,
-                       line4: Option[String] = None,
-                       postcode: Option[String] = None,
-                       country: Option[String] = None) {
+case class Country(code: Option[String], name: Option[String])
+
+object Country {
+  implicit val format: Format[Country] = Json.format[Country]
+}
+
+case class Address(line1: String,
+                   line2: String,
+                   line3: Option[String] = None,
+                   line4: Option[String] = None,
+                   postcode: Option[String] = None,
+                   country: Option[Country] = None) {
 
   val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
   val asLabel: String = inline show this
 
-  override def equals(obj: Any): Boolean = obj match {
-    case ScrsAddress(objLine1, _, _, _, Some(objPostcode), _)
-      => line1.equalsIgnoreCase(objLine1) && postcode.getOrElse("").equalsIgnoreCase(objPostcode)
-    case ScrsAddress(objLine1, _, _, _, _, Some(objCountry))
-      => line1.equalsIgnoreCase(objLine1) && country.getOrElse("").equalsIgnoreCase(objCountry)
-
-    case _ => false
-  }
-
-  override def hashCode: Int = 1 // TODO temporary fix to ensure List.distinct works
-
   /***
     * trims spaces and converts any Some("  ") to None
     */
-  def normalise(): ScrsAddress =
-    ScrsAddress(
+  def normalise(): Address =
+    Address(
       this.line1.trim,
       this.line2.trim,
       this.line3 map (_.trim) filterNot (_.isEmpty),
       this.line4 map (_.trim) filterNot (_.isEmpty),
       this.postcode map (_.trim) filterNot (_.isEmpty),
-      this.country map (_.trim) filterNot (_.isEmpty))
+      this.country.flatMap { country =>
+        val optCode = country.code.map(_.trim).filterNot(_.isEmpty)
+        val optName = country.name.map(_.trim).filterNot(_.isEmpty)
+
+        (optCode, optName) match {
+          case (None, None) =>
+            None
+          case _ =>
+            Some(Country(
+              code = country.code.map(_.trim).filterNot(_.isEmpty),
+              name = country.name.map(_.trim).filterNot(_.isEmpty)
+            ))
+          }
+      }
+    )
 }
 
-object ScrsAddress {
+object Address {
 
   private sealed trait AddressLineOrPostcode
 
@@ -67,33 +76,33 @@ object ScrsAddress {
 
   private final case class Postcode(postcode: String) extends AddressLineOrPostcode
 
-  implicit val format: OFormat[ScrsAddress] = Json.format[ScrsAddress]
+  implicit val format: OFormat[Address] = Json.format[Address]
 
-  object adressLookupReads extends Reads[ScrsAddress] {
-    def reads(json: JsValue): JsResult[ScrsAddress] = {
+  object adressLookupReads extends Reads[Address] {
+    def reads(json: JsValue): JsResult[Address] = {
       val address = (json \ "address").as[JsObject]
       val postcode = (address \ "postcode").asOpt[String]
       val lineMap = (address \ "lines").as[List[String]].zipWithIndex.map(_.swap).toMap
-      val countryCode = (address \ "country" \ "code").asOpt[String]
-      val countryName = (address \ "country" \ "name").asOpt[String]
-      if (postcode.isEmpty && countryCode.isEmpty) {
+      val country = (address \ "country").asOpt[Country]
+
+      if (postcode.isEmpty && country.isEmpty) {
         JsError(JsonValidationError("neither postcode nor country were defined"))
       } else if (lineMap.size < 2) {
         JsError(JsonValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
       } else {
-        JsSuccess(ScrsAddress(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, countryName.fold(countryCode)(_ => countryName)))
+        JsSuccess(Address(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, country))
       }
     }
   }
 
-  def normalisedSeq(address: ScrsAddress): Seq[String] = {
+  def normalisedSeq(address: Address): Seq[String] = {
     Seq[Option[AddressLineOrPostcode]](
       Option(AddressLine(address.line1)),
       Option(AddressLine(address.line2)),
       address.line3.map(AddressLine),
       address.line4.map(AddressLine),
       address.postcode.map(Postcode),
-      address.country.map(AddressLine)
+      address.country.flatMap(_.name).map(AddressLine)
     ).collect {
       case Some(AddressLine(line))  => WordUtils.capitalizeFully(line)
       case Some(Postcode(postcode)) => postcode.toUpperCase()
@@ -101,16 +110,16 @@ object ScrsAddress {
   }
 
   object htmlShow {
-    implicit val html = (a: ScrsAddress) => normalisedSeq(a)
+    implicit val html = (a: Address) => normalisedSeq(a)
   }
 
   object inlineShow {
-    implicit val inline = show((a: ScrsAddress) => normalisedSeq(a).mkString(", "))
+    implicit val inline = show((a: Address) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformerApplicantHomeAddressView(implicit t: MT[HomeAddressView]): MT[ScrsAddress] =
+  implicit def modelTransformerApplicantHomeAddressView(implicit t: MT[HomeAddressView]): MT[Address] =
     MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 
-  implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[ScrsAddress] =
+  implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[Address] =
     MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 }
