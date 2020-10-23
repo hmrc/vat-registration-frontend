@@ -21,7 +21,7 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EmailAddressForm
 import javax.inject.Inject
-import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -56,12 +56,14 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
           formWithErrors =>
             Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit(), formWithErrors))),
           email =>
-            applicantDetailsService.saveApplicantDetails(EmailAddress(email)).flatMap { _ =>
-              emailVerificationService.requestEmailVerificationPasscode(email).map {
+            applicantDetailsService.saveApplicantDetails(EmailAddress(email)) flatMap { _ =>
+              emailVerificationService.requestEmailVerificationPasscode(email) flatMap {
                 case AlreadyVerifiedEmailAddress =>
-                  Redirect(routes.EmailAddressVerifiedController.show())
+                  applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)) map { _ =>
+                    Redirect(routes.EmailAddressVerifiedController.show())
+                  }
                 case RequestEmailPasscodeSuccessful =>
-                  Redirect(routes.CaptureEmailPasscodeController.show())
+                  Future.successful(Redirect(routes.CaptureEmailPasscodeController.show()))
               }
             }
         )

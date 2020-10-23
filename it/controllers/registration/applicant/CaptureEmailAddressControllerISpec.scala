@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
 import fixtures.ApplicantDetailsFixture
 import itutil.IntegrationSpecBase
-import models.external.EmailAddress
+import models.external.{EmailAddress, EmailVerified}
 import models.view.ApplicantDetails
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
@@ -59,7 +59,9 @@ class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
         given()
           .user.isAuthorised
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(
+            ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
+          )
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
@@ -71,6 +73,28 @@ class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show().url)
+      }
+      "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new StandardTestHelpers {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(
+            ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
+          )
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
+
+        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show().url)
       }
     }
     "ApplicantDetails is complete" should {
