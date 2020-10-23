@@ -20,7 +20,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
 import models.TelephoneNumber
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, FormerNameView, HomeAddressView, PreviousAddressView}
 import org.mockito.ArgumentMatchers.any
@@ -51,7 +51,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val address = ScrsAddress(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"))
+  val address = Address(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"))
 
   val incompleteApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(address.id, Some(address))),

@@ -17,15 +17,12 @@
 package testHelpers
 
 import common.enums.VatRegStatus
-import config.{AppConfig, FrontendAppConfig}
 import fixtures.VatRegistrationFixture
 import mocks.VatMocks
 import models.CurrentProfile
-import models.external.{CoHoRegisteredOfficeAddress, Applicant}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsValue, Json}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -49,31 +46,4 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
     resetMocks()
   }
 
-  //TODO: Complete this function to create the config
-  def generateConfig(newAnalyticsToken: String = "",
-                     newAnalyticsHost: String = "",
-                     newReportAProblemPartialUrl: String = "",
-                     newReportAProblemNonJSUrl: String = "",
-                     newTimeoutInSeconds: String = "",
-                     newContactFrontendPartialBaseUrl: String = "",
-                     newAllowedApplicantsList: Seq[Applicant] = Seq(),
-                     newAllowedCompanyName: JsValue = Json.obj()) = new AppConfig {
-    val analyticsToken: String = newAnalyticsToken
-    val analyticsHost: String = newAnalyticsHost
-    val reportAProblemPartialUrl: String = newReportAProblemPartialUrl
-    val reportAProblemNonJSUrl: String = newReportAProblemNonJSUrl
-    val timeoutInSeconds: String = newTimeoutInSeconds
-    val contactFrontendPartialBaseUrl: String = newContactFrontendPartialBaseUrl
-    val defaultCompanyName: JsValue = newAllowedCompanyName
-    val defaultCohoROA: CoHoRegisteredOfficeAddress = CoHoRegisteredOfficeAddress("premises",
-      "line1",
-      Some("line2"),
-      "locality",
-      Some("UK"),
-      Some("po_box"),
-      Some("XX XX"),
-      Some("region"))
-    val betaFeedbackUrl: String = "http://feedbackUrl"
-    val host: String = "http://localhost:9895"
-  }
 }

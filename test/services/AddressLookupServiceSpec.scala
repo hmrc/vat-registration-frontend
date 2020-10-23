@@ -16,16 +16,14 @@
 
 package services
 
-import com.typesafe.config.ConfigFactory
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import fixtures.AddressLookupConstants
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.addresslookup.AddressLookupConfigurationModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.Configuration
-import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi}
+import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
@@ -34,7 +32,7 @@ import scala.concurrent.Future
 class AddressLookupServiceSpec extends VatRegSpec {
 
   implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
-  val testAddress = ScrsAddress(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
+  override val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
 
   object Config extends AddressLookupConfiguration {
     override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call): AddressLookupConfigurationModel =

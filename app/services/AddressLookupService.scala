@@ -20,7 +20,7 @@ import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import connectors.AddressLookupConnector
 import javax.inject.{Inject, Singleton}
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,7 +32,7 @@ class AddressLookupService @Inject()(val addressLookupConnector: AddressLookupCo
                                      alfConfig: AddressLookupConfiguration)
                                     (implicit appConfig: FrontendAppConfig) {
 
-  def getAddressById(id: String)(implicit hc: HeaderCarrier): Future[ScrsAddress] = addressLookupConnector.getAddress(id)
+  def getAddressById(id: String)(implicit hc: HeaderCarrier): Future[Address] = addressLookupConnector.getAddress(id)
 
   def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call)(implicit hc: HeaderCarrier, messages: MessagesApi): Future[Call] = {
     addressLookupConnector.getOnRampUrl(alfConfig(journeyId, continueUrl))

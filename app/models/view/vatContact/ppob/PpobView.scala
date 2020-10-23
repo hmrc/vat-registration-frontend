@@ -16,10 +16,10 @@
 
 package models.view.vatContact.ppob
 
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.libs.json.Json
 
-case class PpobView(addressId: String, address: Option[ScrsAddress] = None)
+case class PpobView(addressId: String, address: Option[Address] = None)
 
 object PpobView {
   implicit val format = Json.format[PpobView]

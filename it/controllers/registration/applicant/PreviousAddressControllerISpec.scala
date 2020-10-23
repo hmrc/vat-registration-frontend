@@ -8,7 +8,7 @@ import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.TelephoneNumber
-import models.api.ScrsAddress
+import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView}
 import org.scalatest.concurrent.ScalaFutures
@@ -57,7 +57,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
     role = role
   )
 
-  val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
 
   "POST Previous Address page" should {
     val s4lData = ApplicantDetails(
@@ -150,7 +150,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
       val addressLine2 = "Holland road"
-      val addressCountry = "United Kingdom"
+      val addressCountry = "GB"
       val addressPostcode = "BN3 1JU"
 
       val validJson = Json.parse(
@@ -201,7 +201,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1
         (json \ "previousAddress" \ "line2").as[JsString].value mustBe addressLine2
-        (json \ "previousAddress" \ "country").as[JsString].value mustBe addressCountry
+        (json \ "previousAddress" \ "country").as[Country] mustBe Country(Some("GB"), Some("United Kingdom"))
         (json \ "previousAddress" \ "postcode").as[JsString].value mustBe addressPostcode
       }
     }
