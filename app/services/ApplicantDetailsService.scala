@@ -52,6 +52,14 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
     getApplicantDetails.map(_.incorporationDetails.map(_.dateOfIncorporation))
 
+  def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
+    for {
+      applicant <- getApplicantDetails
+      companyName <- Future {
+        applicant.incorporationDetails.map(_.companyName).getOrElse(throw new Exception("Missing company name"))
+      }
+    } yield companyName
+
   private def updateApplicantDetails(data: ApplicantDetails)
                                     (implicit cp: CurrentProfile, headerCarrier: HeaderCarrier): Future[ApplicantDetails] = {
     for {

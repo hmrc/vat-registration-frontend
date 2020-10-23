@@ -19,10 +19,10 @@ package controllers
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.view.ApplicantDetails
 import models.{TradingDetails, TradingNameView}
 import org.jsoup.Jsoup
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import repositories.SessionRepository
@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
-  val companyName = "FAKECOMPANY Ltd."
+  val companyName = "testCompanyName"
 
   class Setup {
 
@@ -60,9 +60,12 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
     "return 200" in new Setup {
       given()
         .user.isAuthorised
-        .vatScheme.doesNotHave("trading-details")
+        .s4lContainer[TradingDetails].isEmpty
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -88,6 +91,7 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
         .vatScheme.doesNotHave("trading-details")
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .s4lContainer[TradingDetails].cleared
 

@@ -25,9 +25,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+import play.api.libs.json.JodaReads._
+import play.api.libs.json.JodaWrites._
 
 import scala.concurrent.{ExecutionContext, Future}
-import deprecated.DeprecatedConstants.jodaLocalDateFormat
 
 @Singleton
 class WSBankHolidaysConnector @Inject()(http: HttpClient, config: ServicesConfig)
