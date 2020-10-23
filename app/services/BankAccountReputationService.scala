@@ -19,17 +19,39 @@ package services
 import connectors.BankAccountReputationConnector
 import javax.inject.{Inject, Singleton}
 import models.BankAccountDetails
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.libs.json.Json
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
 
 @Singleton
-class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector) {
+class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector,
+                                             val authConnector: AuthConnector,
+                                             auditConnector: AuditConnector) extends AuthorisedFunctions {
 
   def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    bankAccountReputationConnector.bankAccountDetailsModulusCheck(account) map {
-      response => (response \ "accountNumberWithSortCodeIsValid").as[Boolean]
+    bankAccountReputationConnector.bankAccountDetailsModulusCheck(account).flatMap {
+      bankAccountValidationResponse =>
+        authorised().retrieve(Retrievals.internalId) {
+          case Some(internalId) =>
+            val auditEvent = Json.obj(
+              "credId" -> internalId,
+              "request" -> Json.toJson(account),
+              "response" -> bankAccountValidationResponse
+            )
+
+            auditConnector.sendExplicitAudit("BarsValidateCheck", auditEvent)
+
+            Future.successful(
+              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[Boolean]
+            )
+          case None =>
+            throw new InternalServerException("Missing internal ID for BARS check auditing")
+        }
     }
   }
 }

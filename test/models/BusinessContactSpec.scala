@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
@@ -46,7 +46,7 @@ class BusinessContactSpec extends VatRegSpec {
       )
 
       val expectedModel = BusinessContact(
-        ppobAddress = Some(ScrsAddress(
+        ppobAddress = Some(Address(
           line1    = "testLine1",
           line2    = "testLine2",
           line3    = Some("testLine3"),
@@ -103,7 +103,7 @@ class BusinessContactSpec extends VatRegSpec {
       )
 
       val modelToTransform = BusinessContact(
-        ppobAddress = Some(ScrsAddress(
+        ppobAddress = Some(Address(
           line1    = "testLine1",
           line2    = "testLine2",
           line3    = Some("testLine3"),

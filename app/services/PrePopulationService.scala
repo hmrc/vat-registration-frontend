@@ -36,7 +36,7 @@ class PrePopulationService @Inject()(val save4later: S4LService,
                                      val vatRegService: VatRegistrationService) {
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  private val seqAllowedCountries = Seq("United Kingdom", "UK").map(a => a.toLowerCase.replace(" ", ""))
+  private val seqAllowedCountries = Seq("United Kingdom", "UK", "GB") map normalised
 
   def getCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[LocalDate]] =
     for {
@@ -44,13 +44,7 @@ class PrePopulationService @Inject()(val save4later: S4LService,
       optDate = ctReg.flatMap(_.accountingDetails).flatMap(_.activeDate)
     } yield optDate.map(dateString => LocalDate.parse(dateString, formatter))
 
-  def getPpobAddressList(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Seq[ScrsAddress]] = {
-    for {
-      ppobAddress <- businessContactService.getBusinessContact map (_.ppobAddress)
-      businessContact <- save4later.fetchAndGet[BusinessContact]
-      s4lAddress = businessContact.flatMap(_.ppobAddress)
-    } yield filterAddressListByCountry(List(ppobAddress, s4lAddress).flatten.distinct)
-  }
+  private def normalised(str: String) = str.toLowerCase.replace(" ", "")
 
   private[services] def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
                                                       profile: CurrentProfile,
@@ -67,10 +61,14 @@ class PrePopulationService @Inject()(val save4later: S4LService,
     }
   }
 
-  private[services] def filterAddressListByCountry(seqAddress: Seq[ScrsAddress]): Seq[ScrsAddress] = seqAddress.filter(addr =>
+  private[services] def filterAddressListByCountry(seqAddress: Seq[Address]): Seq[Address] = seqAddress.filter(addr =>
     addr.country.fold(true)(
-      count => seqAllowedCountries.contains(count.toLowerCase.replace(" ", "")
-      )
+      country => {
+        val containsCode = country.code.fold(false)(code => seqAllowedCountries contains normalised(code))
+        val containsName = country.name.fold(false)(name => seqAllowedCountries contains normalised(name))
+
+        containsCode || containsName
+      }
     )
   )
 }

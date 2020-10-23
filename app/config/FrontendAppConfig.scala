@@ -22,7 +22,6 @@ import java.util.Base64
 import controllers.callbacks.routes
 import featureswitch.core.config._
 import javax.inject.{Inject, Singleton}
-import models.external.CoHoRegisteredOfficeAddress
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json, Reads}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -36,8 +35,6 @@ trait AppConfig {
   val betaFeedbackUrl: String
   val timeoutInSeconds: String
   val contactFrontendPartialBaseUrl: String
-  val defaultCompanyName: JsValue
-  val defaultCohoROA: CoHoRegisteredOfficeAddress
 }
 
 @Singleton
@@ -90,10 +87,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   }
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
-
-  // Defaulted Values for default regId
-  lazy val defaultCompanyName: JsValue = loadJsonConfigBase64[JsValue]("default-company-name")
-  lazy val defaultCohoROA: CoHoRegisteredOfficeAddress = loadJsonConfigBase64[CoHoRegisteredOfficeAddress]("default-coho-registered-office-address")
 
   lazy val noneOnsSicCodes = new String(
     Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")

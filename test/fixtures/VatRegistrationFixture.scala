@@ -140,10 +140,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   //Api models
   val applicant = Applicant(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
-
-  val scrsAddress = ScrsAddress("line1", "line2", None, None, Some("XX XX"), Some("UK"))
-
-  val validCoHoProfile = CoHoCompanyProfile("status", "transactionId")
+  val testCountry = Country(Some("UK"), Some("United Kingdom"))
+  val testAddress = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry))
 
   val validCompanyRegistrationProfile = Some(CompanyRegistrationProfile("submitted", Some("04")))
 
@@ -172,7 +170,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       mobileNumber = Some("987654"),
       websiteAddress = Some("/test/url")
     )),
-    ppobAddress = Some(scrsAddress),
+    ppobAddress = Some(testAddress),
     contactPreference = Some(Email)
   )
 

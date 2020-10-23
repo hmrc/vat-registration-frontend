@@ -16,11 +16,11 @@
 
 package models
 
-import models.api.ScrsAddress
+import models.api.Address
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class BusinessContact(ppobAddress: Option[ScrsAddress] = None,
+case class BusinessContact(ppobAddress: Option[Address] = None,
                            companyContactDetails: Option[CompanyContactDetails] = None,
                            contactPreference: Option[ContactPreference] = None)
 
@@ -29,13 +29,13 @@ object BusinessContact {
   implicit val businessContactS4lKey: S4LKey[BusinessContact] = S4LKey("business-contact")
 
   val apiReads: Reads[BusinessContact] = (
-    (__ \ "ppob").readNullable[ScrsAddress] and
+    (__ \ "ppob").readNullable[Address] and
       (__).readNullable[CompanyContactDetails](CompanyContactDetails.apiFormat).orElse(Reads.pure(None)) and
       (__ \ "contactPreference").readNullable[ContactPreference]
     ) (BusinessContact.apply _)
 
   val apiWrites: Writes[BusinessContact] = (
-    (__ \ "ppob").writeNullable[ScrsAddress] and
+    (__ \ "ppob").writeNullable[Address] and
       (__).writeNullable[CompanyContactDetails](CompanyContactDetails.apiFormat) and
       (__ \ "contactPreference").writeNullable[ContactPreference]
     ) (unlift(BusinessContact.unapply))

@@ -17,7 +17,7 @@
 package controllers.builders
 
 import models.BusinessContact
-import models.api.ScrsAddress.htmlShow._
+import models.api.Address.htmlShow._
 import models.api._
 import models.view.{SummaryRow, SummarySection}
 
@@ -51,7 +51,7 @@ case class SummaryCompanyContactDetailsSectionBuilder(businessContact: Option[Bu
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
-    businessContact.map(bc => ScrsAddress.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
+    businessContact.map(bc => Address.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
     Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
   )
 

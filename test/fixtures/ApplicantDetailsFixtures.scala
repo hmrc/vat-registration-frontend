@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.incorporatedentityid.{BvPass, IncorporationDetails, Registered}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
@@ -31,8 +31,8 @@ trait ApplicantDetailsFixtures {
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
   val testRole = "03"
-  val validCurrentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-  val validPrevAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
+  val validCurrentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val validPrevAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
   val testCrn = "testCrn"
   val testCompanyName = "testCompanyName"

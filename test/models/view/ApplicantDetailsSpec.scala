@@ -19,14 +19,14 @@ package models.view
 import java.time.LocalDate
 
 import models.TelephoneNumber
-import models.api.ScrsAddress
+import models.api.Address
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
 class ApplicantDetailsSpec extends VatRegSpec {
-  val currentAddress = ScrsAddress(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-  val previousAddress = ScrsAddress(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val previousAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
 
   "apiReads" should {
     "return a correct partial ApplicantDetails view model with full name" in {

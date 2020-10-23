@@ -20,13 +20,11 @@ import org.scalatest.Inspectors
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
-class ScrsAddressSpec extends VatRegSpec with Inspectors {
+class AddressSpec extends VatRegSpec with Inspectors {
 
 
-  "ScrsAddress" should {
-
+  "Address" should {
     "read from valid complete Json" in {
-
       val validJson = Json.parse(
         """{
           | "address": {
@@ -38,21 +36,19 @@ class ScrsAddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] mustBe JsSuccess(
-        ScrsAddress(
+      implicit val alReads = Address.adressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(
+        Address(
           line1 = "line 1",
           line2 = "line 2",
           line3 = Some("line 3"),
           line4 = Some("line 4"),
-          country = None,
+          country = Some(Country(Some("UK"), None)),
           postcode = Some("BN3 1JU")
         ))
     }
 
-
     "read from valid minimal Json - no country information" in {
-
       val validJson = Json.parse(
         """{
           | "address": {
@@ -61,13 +57,12 @@ class ScrsAddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", postcode = Some("BN3 1JU")))
+      implicit val alReads = Address.adressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", postcode = Some("BN3 1JU")))
     }
 
 
     "read from valid minimal Json - no postcode" in {
-
       val validJson = Json.parse(
         """{
           | "address": {
@@ -78,11 +73,11 @@ class ScrsAddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("UK")))
+      implicit val alReads = Address.adressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", country = Some(testCountry.copy(name = None))))
     }
 
-    "read from valid minimal Json - no postcode - country name present" in {
+    "read from valid minimal Json - no postcode - country code present" in {
       val validJson = Json.parse(
         """{
           | "address": {
@@ -94,8 +89,8 @@ class ScrsAddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = ScrsAddress.adressLookupReads
-      validJson.validate[ScrsAddress] mustBe JsSuccess(ScrsAddress("line 1", "line 2", country = Some("United Kingdom")))
+      implicit val alReads = Address.adressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", country = Some(testCountry)))
     }
 
   }
