@@ -30,10 +30,11 @@ trait IncorpIdServiceMock {
 
   val mockIncorpIdService: IncorpIdService = mock[IncorpIdService]
 
-  def mockCreateJourney(continueUrl: String, serviceName: String)(response: Future[String]): Unit =
+  def mockCreateJourney(continueUrl: String, serviceName: String, deskProServiceId: String)(response: Future[String]): Unit =
     when(mockIncorpIdService.createJourney(
       ArgumentMatchers.eq(continueUrl),
-      ArgumentMatchers.eq(serviceName)
+      ArgumentMatchers.eq(serviceName),
+      ArgumentMatchers.eq(deskProServiceId)
     )(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 

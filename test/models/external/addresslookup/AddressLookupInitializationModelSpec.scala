@@ -70,9 +70,9 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     "version" -> 2,
     "options" -> Json.obj(
       "continueUrl" -> "http://localhost:9895http://vatRegEFEUrl/question?pageId=http://continueUrl",
-      "phaseFeedbackLink" -> "http://localhost:9250/contact/beta-feedback?service=VATREG",
+      "phaseFeedbackLink" -> "http://localhost:9250/contact/beta-feedback?service=vrs",
       "accessibilityFooterUrl" -> controllers.routes.WelcomeController.start().url,
-      "deskProServiceName" -> "VATREG",
+      "deskProServiceName" -> "vrs",
       "showPhaseBanner" -> true,
       "showBackButtons" -> true,
       "includeHMRCBranding" -> false,
