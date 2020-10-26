@@ -82,6 +82,8 @@ class TimeService @Inject()(val environment: Environment,
 
   def addMonths(months: Int): JavaLocalDate = currentLocalDate.plusMonths(months)
 
+  def minusYears(years: Int): JavaLocalDate = currentLocalDate.minusYears(years)
+
   def dynamicFutureDateExample(anchor: JavaLocalDate = SystemDate.getSystemDate.toLocalDate, displacement: Long = 10): String = {
     anchor plusDays displacement format DateTimeFormatter.ofPattern("d M yyyy")
   }
