@@ -57,8 +57,6 @@
                         startDateForm("startDateRadio"),
                         Seq(
                             Some(company_registration_date.toString -> Messages("pages.startDate.radio.whenRegistered")),
-                            ctActiveDate.map(d =>
-                                business_start_date.toString -> messages("pages.startDate.radio.whenTrading", d.format(formatter))),
                             Some(specific_date.toString -> Messages("pages.startDate.radio.specificDate"))
                         ).flatten,
                         '_labelAfter -> true,
@@ -71,7 +69,6 @@
                 <div class="panel panel-border-narrow hidden" id="specific_date_panel">
                     <p>@messages("pages.startDate.panels.specificDate.para1")</p>
                     <ul class="list list-bullet">
-                        <li>@messages("pages.startDate.panels.specificDate.bullet.2days")</li>
                         <li>@messages("pages.startDate.panels.specificDate.bullet.3months")</li>
                     </ul>
 

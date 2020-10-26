@@ -16,6 +16,7 @@
 
 package services
 
+import java.time.LocalDate
 import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
@@ -47,6 +48,9 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       }
     }
   }
+
+  def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
+    getApplicantDetails.map(_.incorporationDetails.map(_.dateOfIncorporation))
 
   private def updateApplicantDetails(data: ApplicantDetails)
                                     (implicit cp: CurrentProfile, headerCarrier: HeaderCarrier): Future[ApplicantDetails] = {

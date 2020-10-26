@@ -186,7 +186,6 @@ pages.startDate.radio.wasRegistered                   = The date the company was
 pages.startDate.radio.whenTrading                     = The date the company starts doing business: {0}
 pages.startDate.radio.specificDate                    = A different date
 pages.startDate.panels.specificDate.para1             = This must be:
-pages.startDate.panels.specificDate.bullet.2days      = more than 3 working days in the future
 pages.startDate.panels.specificDate.bullet.3months    = within the next 3 months
 pages.startDate.panels.specificDate.bullet.onafter    = on or after the date the company was registered
 pages.startDate.panels.specificDate.bullet.3monthsf   = no more than 3 months in the future

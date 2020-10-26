@@ -18,15 +18,17 @@ package controllers
 
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import forms.{AccountingPeriodForm, ChargeExpectancyForm, ReturnFrequencyForm, VoluntaryDateForm}
+import forms.{AccountingPeriodForm, ChargeExpectancyForm, MandatoryDateForm, ReturnFrequencyForm, VoluntaryDateForm}
 import javax.inject.{Inject, Singleton}
-import models.{CurrentProfile, Frequency, Returns}
+import models.{CurrentProfile, DateSelection, Frequency, MonthYearModel, Returns}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{ReturnsService, SessionProfile, TimeService}
+import services.{ApplicantDetailsService, ReturnsService, SessionProfile, TimeService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
-import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_confirmation => MandatoryStartDateConfirmationPage, start_date_view => VoluntaryStartDatePage}
+import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_view => VoluntaryStartDatePage}
+import java.time.LocalDate
+import java.util
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
@@ -36,6 +38,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
                                   val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val returnsService: ReturnsService,
+                                  val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService)
                                  (implicit val appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
@@ -134,28 +137,50 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       implicit profile =>
         implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-        val voluntaryDateForm = VoluntaryDateForm.form(timeService.getMinWorkingDayInFuture, timeService.addMonths(3))
-        returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
-          voluntaryDateForm.bindFromRequest.fold(
-            errors => {
-              val dynamicDate = timeService.dynamicFutureDateExample()
-              Future.successful(BadRequest(VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)))
-            },
-            success => returnsService.saveVoluntaryStartDate(success._1, success._2, ctActiveDate) map redirectBasedOnReclaim
-          )
+
+        calculateEarliestStartDate.flatMap { esd =>
+          val voluntaryDateForm = VoluntaryDateForm.form(esd, timeService.addMonths(3))
+          returnsService.retrieveCTActiveDate flatMap { ctActiveDate =>
+            voluntaryDateForm.bindFromRequest.fold(
+              errors => {
+                val dynamicDate = timeService.dynamicFutureDateExample()
+                Future.successful(BadRequest(VoluntaryStartDatePage(errors, ctActiveDate, dynamicDate)))
+              },
+              success => returnsService.saveVoluntaryStartDate(success._1, success._2, ctActiveDate) map redirectBasedOnReclaim
+            )
+          }
         }
   }
 
   val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Future.successful(Ok(MandatoryStartDateConfirmationPage()))
+        calculateEarliestStartDate.flatMap(incorpDate =>
+          returnsService.retrieveMandatoryDates map { dateModel =>
+            val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
+            val dynamicDate = timeService.dynamicFutureDateExample()
+            Ok(MandatoryStartDateIncorpPage(
+              dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
+              dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y),
+              dynamicDate
+            ))
+          })
   }
 
   val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        returnsService.saveVatStartDate(None) map redirectBasedOnReclaim
+        calculateEarliestStartDate.flatMap(incorpDate =>
+          returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
+            MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
+              errors => {
+                val dynamicDate = timeService.dynamicFutureDateExample()
+                Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
+              },
+              success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map redirectBasedOnReclaim
+            )
+          }
+        )
   }
 
   private def redirectBasedOnReclaim(returns: Returns): Result = {
@@ -164,5 +189,17 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
     } else {
       Redirect(routes.ReturnsController.accountPeriodsPage())
     }
+  }
+
+  private def getEarlierDate(date1: LocalDate, date2: LocalDate): LocalDate = {
+    util.Collections.min(util.Arrays.asList(date1, date2))
+  }
+
+  private def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {
+    dateOfIncorporationOption <- applicantDetailsService.getDateOfIncorporation
+  } yield {
+    val fourYearsAgo = timeService.minusYears(4)
+    val dateOfIncorporation = dateOfIncorporationOption.getOrElse(fourYearsAgo)
+    getEarlierDate(fourYearsAgo, dateOfIncorporation)
   }
 }
