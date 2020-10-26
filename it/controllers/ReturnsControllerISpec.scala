@@ -1,8 +1,10 @@
 
 package controllers
 
+import fixtures.ApplicantDetailsFixture
 import itutil.IntegrationSpecBase
 import models.api.Threshold
+import models.view.ApplicantDetails
 import models.{DateSelection, Returns, Start}
 import org.joda.time.LocalDate
 import org.scalatest.concurrent.IntegrationPatience
@@ -10,7 +12,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
 
-class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with IntegrationPatience {
+class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with IntegrationPatience with ApplicantDetailsFixture {
 
   "GET /vat-start-date" must {
     "Return OK when the user is authenticated" in {
@@ -43,13 +45,18 @@ class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with I
   "POST /vat-start-date" must {
     "Redirect to the next page when all data is valid" in {
       val today = LocalDate.now().plusDays(1)
+      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat)
+
       given()
         .user.isAuthorised
         .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, Some(Start(Some(java.time.LocalDate.parse(today.toString))))))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+        .vatScheme.has("applicant-details", applicantJson)
+        .vatScheme.patched("applicant-details", applicantJson)
 
       val res = buildClient("/vat-start-date").post(Json.obj(
-        "startDateRadio" -> DateSelection.business_start_date,
+        "startDateRadio" -> DateSelection.specific_date,
         "startDate" -> Json.obj(
           "day" -> today.getDayOfMonth.toString,
           "month" -> today.getMonthOfYear.toString,
