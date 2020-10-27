@@ -37,7 +37,10 @@ import scala.language.implicitConversions
 class TimeService @Inject()(val environment: Environment,
                             val servicesConfig: ServicesConfig) {
   lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
-  import deprecated.DeprecatedConstants.jodaLocalDateFormat
+
+  import play.api.libs.json.JodaReads._
+  import play.api.libs.json.JodaWrites._
+
   def currentDateTime: JodaLocalDateTime = SystemDate.getSystemDate
 
   def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate

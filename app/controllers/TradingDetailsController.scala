@@ -18,11 +18,10 @@ package controllers
 
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import deprecated.DeprecatedConstants
 import forms.{EuGoodsForm, TradingNameForm}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionProfile, TradingDetailsService}
+import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
 import views.html.{eu_goods => EuGoodsPage, trading_name => TradingNamePage}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,27 +30,30 @@ import scala.concurrent.{ExecutionContext, Future}
 class TradingDetailsController @Inject()(mcc: MessagesControllerComponents,
                                          val keystoreConnector: KeystoreConnector,
                                          val authConnector: AuthClientConnector,
+                                         val applicantDetailsService: ApplicantDetailsService,
                                          val tradingDetailsService: TradingDetailsService)
                                         (implicit val appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val tradingNamePage: Action[AnyContent] = isAuthenticatedWithProfile {
+  def tradingNamePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
+          companyName <- applicantDetailsService.getCompanyName
           tradingDetailsView <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
           form = TradingNameForm.fillWithPrePop(tradingDetailsView.tradingNameView)
-        } yield Ok(TradingNamePage(form, DeprecatedConstants.fakeCompanyName))
+        } yield Ok(TradingNamePage(form, companyName))
   }
 
-  val submitTradingName: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitTradingName: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TradingNameForm.form.bindFromRequest.fold(
-          errors => {
-            Future.successful(BadRequest(TradingNamePage(errors, DeprecatedConstants.fakeCompanyName)))
+          errors => for {
+            companyName <- applicantDetailsService.getCompanyName
+            tradingDetailsView <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
+          } yield BadRequest(TradingNamePage(errors, companyName)),
 
-          },
           success => {
             val (hasName, name) = success
             tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {

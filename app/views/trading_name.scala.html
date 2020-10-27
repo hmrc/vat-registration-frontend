@@ -16,12 +16,33 @@
 
 @import forms.TradingNameForm
 @import config.FrontendAppConfig
-@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.helpers.templates.{errorSummary, vatInput, verticalInputRadioGroup}
+
+@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
 @fieldSetClasses = @{
     if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
-@import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
+
+@hiddenYesContent = {
+    <div class="panel form-group @fieldSetClasses" id="trading_name_panel">
+
+        @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
+            @govHelpers.errorInline("tradingName", error.message)
+        }
+
+        @vatInput(
+            tradingNameForm("tradingName"),
+            '_divClass -> "form-group",
+            '_inputClass -> "form-control-3-4 cascading",
+            '_label -> Messages("pages.tradingName.tradingNameLabel"),
+            '_labelClass -> "form-label bold",
+            '_inputHint -> messages("pages.tradingdetails.input.hint-text")
+        )
+
+    </div>
+}
 
 @main_template(title = messages("pages.tradingName.title")) {
 
@@ -31,7 +52,9 @@
     Seq("tradingName")
     )
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.tradingName.heading", companyName)</h1>
+    <header class="page-header">
+        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.tradingName.heading", companyName)</h1>
+    </header>
 
     <details role="group" class="form-group">
         <summary role="button" aria-controls="details-content-0" aria-expanded="false">
@@ -45,35 +68,21 @@
 
     @govHelpers.form(action = controllers.routes.TradingDetailsController.submitTradingName()) {
         <div class="form-group">
-            @vatInputRadioGroup(
+            @verticalInputRadioGroup(
                 field = tradingNameForm("tradingNameRadio"),
                 Seq(
                     "true" -> Messages("app.common.yes"),
                     "false" -> Messages("app.common.no")
                 ),
-                '_groupClass -> "inline",
+                Map(
+                    "true" -> hiddenYesContent
+                ),
                 '_labelAfter -> true,
                 '_labelClass -> "block-label",
                 '_legend -> messages("pages.tradingName.heading"),
                 '_legendClass -> "visually-hidden"
             )
 
-            <div class="panel panel-border-narrow hidden @fieldSetClasses" id="trading_name_panel">
-
-                @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
-                    @govHelpers.errorInline("tradingName", error.message)
-                }
-
-                @vatInput(
-                    tradingNameForm("tradingName"),
-                    '_divClass -> "form-group",
-                    '_inputClass -> "form-control cascading",
-                    '_label -> Messages("pages.tradingName.tradingNameLabel"),
-                    '_labelClass -> "form-label",
-                    '_inputHint -> messages("pages.tradingdetails.input.hint-text")
-                )
-
-            </div>
         </div>
 
         <div class="form-group">

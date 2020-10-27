@@ -203,7 +203,7 @@ validation.startDate.missing                          = Enter a date
 
 ## Trading Name Page
 pages.tradingName.title                             = Does or will the business trade using a different name?
-pages.tradingName.heading                           = Does or will the business trade using a name that’s different from {0}?
+pages.tradingName.heading                           = Does or will the business trade using a name that is different from {0}?
 pages.tradingName.tradingNameLabel                  = Enter the trading name
 pages.tradingName.panel.para1                       = What is a trading name?
 pages.tradingName.panel.para2                       = A business can trade using a name that’s different from its registered name. This is also known as a ’business name’.
@@ -525,22 +525,6 @@ pages.completionCapacity.panel.p2.1                      = to continue your appl
 pages.completionCapacity.panel.p3                        = If you’re an agent for the company, you’ll need to log in to Government Gateway using your agent ID and
 pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
-
-## Applicant Contact Details
-pages.applicantContact.title                               = How can we contact the applicant?
-pages.applicantContact.heading                             = How can we get in touch with the business after it is registered for VAT?
-pages.applicantContact.p1                                  = We’ll only do this when we have questions about the business’s VAT.
-pages.applicantContact.p2                                  = This cannot be a third-party agent or external accountant.
-pages.applicantContact.daytimePhone.label                  = Contact number
-pages.applicantContact.emailAddress.label                  = Email address (optional)
-pages.applicantContact.mobile.label                        = Other contact number (optional)
-
-validation.applicantContact.atLeastOneContact.missing      = Enter your contact details
-validation.applicantContactDetails.email.invalid           = Enter a valid email address
-validation.applicantContactDetails.email.maxlen            = Enter an email address using 70 characters or less
-validation.invalid.applicantContactDetails.tooLong         = Enter a contact number using 20 digits or less
-validation.invalid.applicantContactDetails.tooShort        = Enter a contact number using 10 digits or more
-validation.invalid.applicantContactDetails                 = Enter a valid contact number
 
 
 ## Former Name

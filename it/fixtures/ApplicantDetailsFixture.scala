@@ -49,7 +49,7 @@ trait ApplicantDetailsFixture {
     telephoneNumber = Some(TelephoneNumber(testApplicantPhone)),
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress))),
+    previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress))),
     incorporationDetails = Some(testApplicantIncorpDetails)
   )
 }
