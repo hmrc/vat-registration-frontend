@@ -41,8 +41,9 @@ class IncorpIdControllerISpec extends IntegrationSpecBase with AppAndStubs with 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
 
-      stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl).toString)
+      stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl,  "deskProServiceId" -> testDeskProServiceId).toString)
 
       val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startIncorpIdJourney().url).get)
 

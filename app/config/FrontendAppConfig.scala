@@ -49,7 +49,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
   lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
 
-  val contactFormServiceIdentifier = "VATREG"
+  val contactFormServiceIdentifier = "vrs"
 
   lazy val contactFrontendPartialBaseUrl = servicesConfig.baseUrl("contact-frontend")
   lazy val analyticsToken = loadConfig(s"google-analytics.token")

@@ -34,10 +34,11 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "call the test only route to stub the journey" in {
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig("/test")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs")
         val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
 
-        stubPost("/register-for-vat/test-only/api/incorp-id-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl).toString)
+        stubPost("/register-for-vat/test-only/api/incorp-id-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
         val res = await(connector.createJourney(testJourneyConfig))
 
@@ -49,10 +50,11 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "call the create Incorp ID journey API" in {
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig("/test")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs")
         val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
 
-        stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl).toString)
+        stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
         val res = await(connector.createJourney(testJourneyConfig))
 
@@ -70,7 +72,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         val res = await(connector.getDetails(testIncorpId))
 
-        res mustBe(validResponse)
+        res mustBe (validResponse)
       }
       "return the incorporation details with optional data" in {
         val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some(testBpSafeId))
@@ -79,7 +81,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         val res = await(connector.getDetails(testIncorpId))
 
-        res mustBe(validResponse)
+        res mustBe (validResponse)
       }
     }
     "incorp ID returns invalid incorporation details" should {

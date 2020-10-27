@@ -18,7 +18,7 @@ package models.external.incorporatedentityid
 
 import play.api.libs.json.{Json, OFormat}
 
-case class IncorpIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None)
+case class IncorpIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String)
 
 object IncorpIdJourneyConfig {
   implicit val format: OFormat[IncorpIdJourneyConfig] = Json.format[IncorpIdJourneyConfig]
