@@ -43,6 +43,8 @@ trait TimeServiceMock {
       .thenReturn(LocalDate.parse(ld.plusDays(minAdditionalDayInFuture).toString))
     when(mockTimeService.addMonths(any()))
       .thenReturn(LocalDate.parse(ld.plusMonths(3).toString))
+    when(mockTimeService.minusYears(any()))
+      .thenReturn(LocalDate.parse(ld.minusYears(4).toString))
     when(mockTimeService.bankHolidaySet)
       .thenReturn(BankHolidaySet("england-and-wales", List(
         BankHoliday(title = "Good Friday",            date = new JodaLocalDate(2017, 4, 14)),
