@@ -21,8 +21,8 @@ import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, IncorporationDetails}
 import play.api.libs.json.Json
-import support.AppAndStubs
 import play.api.test.Helpers._
+import support.AppAndStubs
 
 class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with ITRegistrationFixtures {
 
@@ -34,7 +34,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "call the test only route to stub the journey" in {
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -50,7 +50,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "call the create Incorp ID journey API" in {
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
