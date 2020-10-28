@@ -247,6 +247,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
     val overTwelveMonthDate = LocalDate.of(2017, 6, 6)
     val pastThirtyDayDate = LocalDate.of(2017, 12, 12)
+    val nextThirtyDayDate = LocalDate.of(2017, 12, 12)
 
     "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
 
@@ -281,6 +282,19 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         .thenReturn(Future.successful(thresholdSecondDateOnly))
 
       await(service.retrieveCalculatedStartDate) mustBe pastThirtyDayDate
+    }
+
+    "return a date when just the nextThirtyDayDate is present" in new Setup {
+
+      val thresholdSecondDateOnly: Threshold = Threshold(
+        mandatoryRegistration = true,
+        thresholdNextThirtyDays = Some(nextThirtyDayDate)
+      )
+
+      when(service.vatService.getThreshold(any())(any()))
+        .thenReturn(Future.successful(thresholdSecondDateOnly))
+
+      await(service.retrieveCalculatedStartDate) mustBe nextThirtyDayDate
     }
 
     "throw a RuntimeException when no dates are present" in new Setup {
