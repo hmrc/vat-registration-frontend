@@ -21,7 +21,6 @@ import java.time.LocalDate
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
 import models._
-import models.api.Threshold
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -44,24 +43,6 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
     }
   }
 
-  def calculateMandatoryStartDate(threshold: Threshold): LocalDate = {
-    def calculatedCrossedThresholdDate(thresholdDate: Option[LocalDate]) = thresholdDate.map(_.withDayOfMonth(1).plusMonths(2))
-
-    List[Option[LocalDate]](
-      calculatedCrossedThresholdDate(threshold.thresholdInTwelveMonths),
-      threshold.thresholdPreviousThirtyDays
-    )
-      .flatten
-      .sortWith((date1, date2) => date1.isBefore(date2))
-      .headOption match {
-      case Some(earliest) => earliest
-      case _ =>
-        Logger.error("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
-        throw new RuntimeException("[ReturnsService] [calculateMandatoryStartDate] No dates could be retrieved from eligibility threshold in a mandatory flow")
-
-    }
-  }
-
   def getVatStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[LocalDate]] = {
     getReturns map {
       returns => returns.start flatMap (_.date)
@@ -81,7 +62,14 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[LocalDate] = {
-    vatService.getThreshold(profile.registrationId) map calculateMandatoryStartDate
+    vatService.getThreshold(profile.registrationId) map { threshold =>
+      List[Option[LocalDate]](
+        threshold.thresholdInTwelveMonths.map(_.withDayOfMonth(1).plusMonths(2)),
+        threshold.thresholdPreviousThirtyDays,
+        threshold.thresholdNextThirtyDays
+      ).flatten
+        .min(Ordering.by((date: LocalDate) => date.toEpochDay))
+    }
   }
 
   def retrieveCTActiveDate(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Option[LocalDate]] = {
