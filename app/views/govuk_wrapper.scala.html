@@ -44,6 +44,7 @@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/timeout-dialog.css")">
     <link rel="stylesheet" media="print" type="text/css" href="@routes.Assets.versioned("stylesheets/vat-print.css")">
+    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
 }
 
 @headerNavLinks = {
@@ -86,6 +87,9 @@
     ssoUrl = None,
     scriptElem = Some(scripts),
     gaCalls = None)
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P39VTVL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 }
 
 @footerTop = {}
