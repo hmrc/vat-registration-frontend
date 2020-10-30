@@ -43,15 +43,13 @@ object ApplicantDetails {
     JsPath.readNullable[IncorporationDetails].orElse(Reads.pure(None)) and
     JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
     (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
-    (__ \ "contact" \ "email").readNullable[String].orElse(Reads.pure(None)).fmap(_.map(EmailAddress(_))) and
-    (__ \ "contact" \ "emailVerified").readNullable[Boolean].orElse(Reads.pure(None)).fmap(_.map(EmailVerified(_))) and
-    (__ \ "contact" \ "tel").readNullable[String].orElse(Reads.pure(None)).fmap(_.map(TelephoneNumber(_))) and
+    (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
+    (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
+    (__ \ "contact" \ "tel").readNullable[String].fmap(_.map(TelephoneNumber(_))) and
     (__ \ "changeOfName" \ "name").readNullable[Name]
-      .fmap(con => con.map(name => FormerNameView(con.isDefined, Some(name.asLabel))))
-      .orElse(Reads.pure(Some(FormerNameView(yesNo = false, None)))) and
+      .fmap(con => Some(FormerNameView(con.isDefined, con.map(name => name.asLabel)))) and
     (__ \ "changeOfName" \ "change").readNullable[LocalDate]
-      .fmap(cond => cond.map(FormerNameDateView(_)))
-      .orElse(Reads.pure(None)) and
+      .fmap(cond => cond.map(FormerNameDateView(_))) and
     (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
   )(ApplicantDetails.apply _)
 

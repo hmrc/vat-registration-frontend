@@ -19,25 +19,19 @@ import sbt._
 
 object AppDependencies {
   def apply(): Seq[ModuleID] = CompileDependencies() ++ UnitTestDependencies() ++ IntegrationTestDependencies()
-
-  def overrides(): Set[ModuleID] = Set(
-    "com.typesafe.akka" %% "akka-actor" % "2.5.23",
-    "com.typesafe.akka" %% "akka-protobuf" % "2.5.23",
-    "com.typesafe.akka" %% "akka-stream" % "2.5.23",
-    "com.typesafe.akka" %% "akka-slf4j" % "2.5.23"
-  )
 }
 
 private object CompileDependencies {
   private val simpleReactivemongoVersion = "7.30.0-play-26"
-  private val bootstrapVersion = "1.14.0"
+  private val bootstrapVersion = "2.0.0"
+  private val timeVersion = "3.9.0"
   private val partialsVersion = "6.11.0-play-26"
   private val cachingClientVersion = "9.1.0-play-26"
   private val formMappingVersion = "1.3.0-play-26"
   private val catsVersion = "1.0.0"
-  private val govukTemplateVersion = "5.55.0-play-26"
-  private val playUiVersion = "8.11.0-play-26"
-  private val playJsonJodaVersion = "2.6.14"
+  private val govukTemplateVersion = "5.58.0-play-26"
+  private val playUiVersion = "8.12.0-play-26"
+  private val playJsonJodaVersion = "2.9.1"
 
   private val playGovukFrontendVersion = "0.50.0-play-26"
   private val playHmrcFrontendVersion = "0.18.0-play-26"
@@ -45,6 +39,7 @@ private object CompileDependencies {
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
+    "uk.gov.hmrc" %% "time" % timeVersion,
     "uk.gov.hmrc" %% "simple-reactivemongo" % simpleReactivemongoVersion,
     "uk.gov.hmrc" %% "bootstrap-play-26" % bootstrapVersion,
     "uk.gov.hmrc" %% "play-partials" % partialsVersion,
@@ -94,7 +89,7 @@ private object IntegrationTestDependencies extends TestDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
     "com.github.tomakehurst" % "wiremock-jre8" % wireMockVersion % scope,
     "org.jsoup" % "jsoup" % jsoupVersion % scope,
-    "uk.gov.hmrc" %% "reactivemongo-test" % "4.16.0-play-26" % scope
+    "uk.gov.hmrc" %% "reactivemongo-test" % "4.20.0-play-26" % scope
   )
 
   def apply(): Seq[ModuleID] = testDependencies

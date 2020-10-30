@@ -39,16 +39,22 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory): _*)
   .configs(IntegrationTest)
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
-  .settings(integrationTestSettings())
-  .settings(majorVersion := 0)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)  .settings(majorVersion := 0)
   .settings(
-    Keys.fork in IntegrationTest := true,
-    parallelExecution in IntegrationTest := false
+    fork                       in IntegrationTest := false,
+    testForkedParallel         in IntegrationTest := false,
+    parallelExecution          in IntegrationTest := false,
+    logBuffered                in IntegrationTest := false,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
+    fork                       in Test            := true,
+    testForkedParallel         in Test            := true,
+    parallelExecution          in Test            := true,
+    logBuffered                in Test            := false,
+    addTestReportOption(IntegrationTest, "int-test-reports")
   )
   .settings(
     scalaVersion := "2.12.12",
     libraryDependencies ++= AppDependencies(),
-    dependencyOverrides := AppDependencies.overrides(),
     resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
     PlayKeys.playDefaultPort := 9895,
     retrieveManaged := true,

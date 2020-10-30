@@ -17,13 +17,10 @@
 package support
 
 import java.net.{URLDecoder, URLEncoder}
-import java.util.UUID
 
 import itutil.IntegrationSpecBase
 import play.api.Application
-import play.api.http.SecretConfiguration
-import play.api.libs.Crypto
-import play.api.libs.crypto.{CookieSigner, DefaultCookieSigner}
+import play.api.libs.crypto.CookieSigner
 import play.api.libs.ws.WSCookie
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -33,6 +30,8 @@ import uk.gov.hmrc.http.SessionKeys
 object SessionCookieBaker extends IntegrationSpecBase {
 
   val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
+  val userIdKey: String = "userId"
+  val tokenKey: String = "token"
 
   def cookieValue(sessionData: Map[String, String]) = {
     def encode(data: Map[String, String]): PlainText = {
@@ -42,6 +41,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
       val key = "yNhI04vHs9<_HWbC`]20u`37=NGLGYY5:0Tg5?y`W<NoJnXWqmjcgZBec@rOxb^G".getBytes
 
       val cookieSignerCache: Application => CookieSigner = Application.instanceCache[CookieSigner]
+
       def cookieSigner: CookieSigner = cookieSignerCache(app)
 
       PlainText(cookieSigner.sign(encoded, key) + "-" + encoded)
@@ -62,7 +62,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
     val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
     val result = decrypted.split("&")
       .map(_.split("="))
-      .map { case Array(k, v) => (k, URLDecoder.decode(v))}
+      .map { case Array(k, v) => (k, URLDecoder.decode(v)) }
       .toMap
 
     result
@@ -71,15 +71,15 @@ object SessionCookieBaker extends IntegrationSpecBase {
   def cookieData(userId: String = "anyUserId"): Map[String, String] = {
     Map(
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId)
+      tokenKey -> "RANDOMTOKEN",
+      userIdKey -> userId)
   }
 
   def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     req.withSession(
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
-      SessionKeys.token     -> "RANDOMTOKEN",
-      SessionKeys.userId    -> userId)
+      tokenKey -> "RANDOMTOKEN",
+      userIdKey -> userId)
 
   def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0) = {
     cookieValue(cookieData())
