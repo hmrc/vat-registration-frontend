@@ -35,7 +35,7 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
 
     val url = config.requestEmailVerificationPasscodeUrl()
 
-    val jsonBody = Json.obj("email" -> email, "serviceName" -> "VAT Registration")
+    val jsonBody = Json.obj("email" -> email, "serviceName" -> "VAT Registration", "lang" -> "en")
 
     httpClient.POST(url, jsonBody).map {
       case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
