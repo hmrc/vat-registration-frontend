@@ -89,3 +89,4 @@ lazy val microservice = Project(appName, file("."))
       "com.github.ghik" % "silencer-lib" % "1.7.0" % Provided cross CrossVersion.full
     )
   )
+  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
