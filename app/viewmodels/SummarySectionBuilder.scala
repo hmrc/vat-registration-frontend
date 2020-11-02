@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.builders
+package viewmodels
 
 import java.time.format.DateTimeFormatter
 
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
-
 
 trait SummarySectionBuilder {
 
@@ -28,7 +27,6 @@ trait SummarySectionBuilder {
   val section: SummarySection
   val presentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
-  protected[controllers]
   def yesNoRow
   (rowId: String, yesNo: Option[Boolean], changeLink: Call, trueKey: String = "app.common.yes", falseKey: String = "app.common.no") =
     SummaryRow(
@@ -37,6 +35,7 @@ trait SummarySectionBuilder {
       Some(changeLink)
     )
 
-  protected[controllers] def appliedRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
+  def appliedRow(rowId: String, yesNo: Option[Boolean], changeLinkUrl: Call) =
     yesNoRow(rowId, yesNo, changeLinkUrl, "app.common.applied", "app.common.not.applied")
+
 }

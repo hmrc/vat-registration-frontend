@@ -126,9 +126,17 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(20)),
+    workers = Some(Workers(12)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)))
+
+  val s4lVatSicAndComplianceWithoutDescription = SicAndCompliance(
+    description = None,
+    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
+    companyProvideWorkers = None,
+    workers = None,
+    temporaryContracts = None,
+    skilledWorkers = None)
 
 
   //View models
@@ -174,6 +182,17 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     contactPreference = Some(Email)
   )
 
+  val defaultSicAndCompliance = SicAndCompliance(
+    description = Some(BusinessActivityDescription("TEST")),
+    mainBusinessActivity = Some(MainBusinessActivityView("TEST", Some(sicCode))),
+    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+    workers = Some(Workers(12)),
+    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
+    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
+  )
+
+  val frs = Some(FlatRateScheme(Some(true), Some(true), Some(5003L), Some(true), Some(true), None, None))
+
   val validTurnoverEstimates: TurnoverEstimates = TurnoverEstimates(100L)
 
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
@@ -195,14 +214,59 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
-  val emptyVatSchemeWithAccountingPeriodFrequency = VatScheme(
-    status = VatRegStatus.draft,
+  val validVatSchemeNoBank = VatScheme(
     id = testRegId,
+    tradingDetails = Some(generateTradingDetails()),
+    businessContact = Some(validBusinessContactDetails),
+    applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
-    applicantDetails = Some(emptyApplicantDetails),
-    bankAccount = Some(validBankAccount),
+    flatRateScheme = Some(validFlatRate),
+    bankAccount = None,
+    returns = Some(validReturns),
+    status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
+
+  val validVatSchemeNoTradingDetails = VatScheme(
+    id = testRegId,
+    tradingDetails = None,
+    businessContact = Some(validBusinessContactDetails),
+    applicantDetails = Some(completeApplicantDetails),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
+    flatRateScheme = Some(validFlatRate),
+    bankAccount = Some(validBankAccount),
+    returns = Some(validReturns),
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+  )
+
+  val validVatSchemeEmptySicAndCompliance = VatScheme(
+    id = testRegId,
+    tradingDetails = Some(generateTradingDetails()),
+    businessContact = Some(validBusinessContactDetails),
+    applicantDetails = Some(completeApplicantDetails),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutDescription),
+    flatRateScheme = Some(validFlatRate),
+    bankAccount = Some(validBankAccount),
+    returns = Some(validReturns),
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+  )
+
+  val validVatSchemeWithLabour = VatScheme(
+    id = testRegId,
+    tradingDetails = Some(generateTradingDetails()),
+    businessContact = Some(validBusinessContactDetails),
+    applicantDetails = Some(completeApplicantDetails),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithLabour),
+    flatRateScheme = Some(validFlatRate),
+    bankAccount = Some(validBankAccount),
+    returns = Some(validReturns),
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+  )
+
+  val details = generateTradingDetails(euGoodsSelection = false)
 
   val testIncorporationInfo = IncorporationInfo(
     IncorpSubscription(

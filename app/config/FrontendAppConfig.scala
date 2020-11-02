@@ -66,8 +66,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val loginCallback = servicesConfig.getString("microservice.services.auth.login-callback.url")
   lazy val loginPath = servicesConfig.getString("microservice.services.auth.login_path")
 
-  val loginUrl = s"$companyAuthHost$loginPath"
-  val continueUrl = s"$loginCallback${routes.SignInOutController.postSignIn()}"
+  lazy val loginUrl = s"$companyAuthHost$loginPath"
+  lazy val continueUrl = s"$loginCallback${routes.SignInOutController.postSignIn()}"
 
   final lazy val defaultOrigin: String = {
     lazy val appName = runModeConfiguration.getString("appName").getOrElse("undefined")

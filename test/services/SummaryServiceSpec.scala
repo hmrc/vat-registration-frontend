@@ -64,14 +64,7 @@ class SummaryServiceSpec extends VatRegSpec {
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(("test business type", BigDecimal(6.32)))
 
-      testService.registrationToSummary(validVatScheme).sections.length mustEqual 10
-    }
-    "map a valid empty VatScheme object to a Summary object" in new Setup {
-      when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
-        .thenReturn(Future.successful(completeApplicantDetails))
-
-      testService.registrationToSummary(emptyVatSchemeWithAccountingPeriodFrequency).sections.length mustEqual 10
-
+      testService.registrationToSummary(validVatScheme).sections.length mustEqual 1
     }
   }
 

@@ -272,59 +272,6 @@ pages.accounting.period.radio.february                      = February, May, Aug
 pages.accounting.period.radio.march                         = March, June, September and December
 validation.accounting.period.missing                        = Tell us when you want the business to do its VAT Returns
 
-## Summary Page
-pages.summary.title                                         = Check and confirm your answers
-pages.summary.heading                                       = Check and confirm your answers
-pages.summary.subheading                                    = Now send your application
-pages.summary.para1                                         = By submitting this application you’re confirming that the details you’re providing are correct and reflect the company’s current position.
-pages.summary.continue                                      = Confirm and send application
-pages.summary.print                                         = Print Page
-
-## Application Submission Confirmation page
-pages.application.submission.confirmation.title                     = Application submitted
-pages.application.submission.confirmation.heading                   = Application submitted
-pages.application.submission.confirmation.reference.number          = Your reference number is
-pages.application.submission.confirmation.email                     = We’ll email this to you.
-pages.application.submission.confirmation.whatNext.sub.heading      = What happens next
-pages.application.submission.confirmation.whatNext.para1            = We’ll send you an email within 7 working days with a link to check the outcome of your application. If you’re successful, you’ll get the company’s VAT number.
-pages.application.submission.confirmation.panel.para                = The business cannot charge customers for VAT until it has its VAT number.
-pages.application.submission.confirmation.button                    = Continue
-
-## Summary Page VAT details
-pages.summary.vatDetails.sectionHeading                         = VAT details
-pages.summary.vatDetails.overThresholdThirtySelection           = VAT taxable sales over £{0} in the 30 days after company is registered
-pages.summary.vatDetails.necessity                              = Register voluntarily
-pages.summary.vatDetails.overThresholdSelection                 = Since {0} has the company’s VAT taxable turnover gone over £{1}?
-pages.summary.vatDetails.overThresholdDate                      = Month turnover went over £{0}
-pages.summary.vatDetails.expectationOverThresholdSelection      = Thought turnover would go over VAT registration in a single 30-day period
-pages.summary.vatDetails.expectationOverThresholdDate           = Date you first thought sales would go over threshold
-pages.summary.vatDetails.voluntaryRegistrationReason            = Voluntary registration reason
-pages.summary.vatDetails.startDate                              = VAT start date
-pages.summary.vatDetails.mandatoryStartDate                     = The date the company is registered with Companies House
-pages.summary.vatDetails.tradingName                            = Other trading name
-
-## Summary Page Director contact details
-pages.summary.directorContactDetails.sectionHeading    = Director contact details
-pages.summary.directorContactDetails.emailAddress      = Director email address
-pages.summary.directorContactDetails.daytimePhone      = Day time phone number
-pages.summary.directorContactDetails.mobilePhone       = Mobile number
-
-## Summary Page Director details
-pages.summary.directorDetails.sectionHeading           = Director details
-pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
-pages.summary.directorDetails.formerName               = Former name
-pages.summary.directorDetails.formerNameDate           = Date former name changed
-pages.summary.directorDetails.noFormerName             = No former name
-pages.summary.directorDetails.homeAddress              = Home address
-pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
-pages.summary.directorDetails.previousAddress          = Previous address
-pages.summary.directorDetails.dob                      = Date of birth
-pages.summary.directorDetails.nino                     = National Insurance number
-pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
-pages.summary.directorDetails.email                    = Email address
-pages.summary.directorDetails.daytimePhone             = Daytime phone number
-pages.summary.directorDetails.mobile                   = Mobile number
-
 ##Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
 pages.contactPreference.heading                        = How should we contact the business about VAT?
@@ -342,60 +289,108 @@ validation.businessActivity.description.missing               = Tell us what the
 validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and - , / & ’
 validation.businessActivity.description.maxlen                = Tell us what the business does using 250 characters or less
 
+## Summary Page
+pages.summary.title                                         = Check your answers before sending your application
+pages.summary.heading                                       = Check your answers before sending your application
+pages.summary.subheading                                    = Now send your application
+pages.summary.para1                                         = By submitting this application you’re confirming that the details you’re providing are correct and reflect the company’s current position.
+pages.summary.continue                                      = Confirm and send application
+pages.summary.print                                         = Print Page
+
+## Application Submission Confirmation page
+pages.application.submission.confirmation.title                     = Application submitted
+pages.application.submission.confirmation.heading                   = Application submitted
+pages.application.submission.confirmation.reference.number          = Your reference number is
+pages.application.submission.confirmation.email                     = We’ll email this to you.
+pages.application.submission.confirmation.whatNext.sub.heading      = What happens next
+pages.application.submission.confirmation.whatNext.para1            = We’ll send you an email within 7 working days with a link to check the outcome of your application. If you’re successful, you’ll get the company’s VAT number.
+pages.application.submission.confirmation.panel.para                = The business cannot charge customers for VAT until it has its VAT number.
+pages.application.submission.confirmation.button                    = Continue
+
+## Summary Page VAT details
+pages.summary.directorDetails.overThresholdThirtySelection           = VAT taxable sales over £{0} in the 30 days after company is registered
+pages.summary.directorDetails.necessity                              = Register voluntarily
+pages.summary.directorDetails.overThresholdSelection                 = Since {0} has the company’s VAT taxable turnover gone over £{1}?
+pages.summary.directorDetails.overThresholdDate                      = Month turnover went over £{0}
+pages.summary.directorDetails.expectationOverThresholdSelection      = Thought turnover would go over VAT registration in a single 30-day period
+pages.summary.directorDetails.expectationOverThresholdDate           = Date you first thought sales would go over threshold
+pages.summary.directorDetails.voluntaryRegistrationReason            = Voluntary registration reason
+pages.summary.directorDetails.startDate                              = VAT start date
+pages.summary.directorDetails.mandatoryStartDate                     = The date the company is registered with Companies House
+
+
+## Summary Page Director details
+pages.summary.directorDetails.sectionHeading           = Applicant details
+pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
+pages.summary.directorDetails.firstName                = First Name
+pages.summary.directorDetails.lastName                 = Last Name
+pages.summary.directorDetails.formerName               = Former name
+pages.summary.directorDetails.formerNameDate           = Date former name changed
+pages.summary.directorDetails.noFormerName             = No former name
+pages.summary.directorDetails.homeAddress              = Home address
+pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
+pages.summary.directorDetails.previousAddress          = Previous address
+pages.summary.directorDetails.dob                      = Date of birth
+pages.summary.directorDetails.nino                     = National Insurance number
+pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
+pages.summary.directorDetails.email                    = Email address
+pages.summary.directorDetails.daytimePhone             = Daytime phone number
+pages.summary.directorDetails.mobile                   = Mobile number
+pages.summary.directorDetails.telephone                = Telephone number
+pages.summary.directorDetails.companyNumber             = Company registration number
+pages.summary.directorDetails.ctutr                     = Unique Taxpayer Reference number
+pages.summary.directorDetails.zeroRatedSupplies         = Zero-rated turnover for the next 12 months
+pages.summary.directorDetails.reclaimMoreVat            = Expect to claim VAT refunds regularly
+
 ## Summary Page Company details
-pages.summary.companyDetails.flatRateScheme                     = Flat rate scheme
-pages.summary.companyContactDetails.sectionHeading              = Company contact details
-pages.summary.companyContactDetails.email                       = Business email address
-pages.summary.companyContactDetails.daytimePhone                = Business daytime phone number
-pages.summary.companyContactDetails.mobile                      = Business mobile number
-pages.summary.companyContactDetails.website                     = Business website address
-pages.summary.companyContactDetails.ppob                        = Main place of business
+pages.summary.directorDetails.tradingName                 = Different Trading name
+pages.summary.directorDetails.flatRateScheme              = Flat rate scheme
+pages.summary.directorDetails.emailBusiness               = Business email address
+pages.summary.directorDetails.daytimePhoneBusiness        = Business daytime phone number
+pages.summary.directorDetails.mobileBusiness              = Business mobile number
+pages.summary.directorDetails.website                     = Business website address
+pages.summary.directorDetails.ppob                        = Business address
+pages.summary.directorDetails.contactPreference           = Contact preference
+pages.summary.directorDetails.businessDescription         = What does the business do?
+pages.summary.directorDetails.sicCodes                    = SIC codes
+pages.summary.directorDetails.mainSicCode                 = Main business activity
+pages.summary.directorDetails.zeroRated                   = Zero rated turnover for the next 12 months
+pages.summary.directorDetails.claimRefunds                = Expect to claim VAT refunds regularly?
+pages.summary.directorDetails.euGoods                     = Buy or sell goods to other EU member states?
 
 ## Summary Page Business Activities
-pages.summary.businessActivities.otherBusinessActivities       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
-pages.summary.businessActivities.sectionHeading                = Business details
-pages.summary.businessActivities.businessDescription           = Business description
-pages.summary.businessActivities.mainBusinessActivity          = Main business activity
+pages.summary.directorDetails.otherBusinessActivities       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
+pages.summary.directorDetails.mainBusinessActivity          = Main business activity
 
 ## Summary Page Business Bank Details
-pages.summary.bankDetails.sectionHeading                     = What are the company’s bank account details?
-pages.summary.bankDetails.companyBankAccount                 = Bank account
-pages.summary.bankDetails.companyBankAccount.name            = Enter account name
-pages.summary.bankDetails.companyBankAccount.number          = Enter account number
-pages.summary.bankDetails.companyBankAccount.sortCode        = Enter sort code
+pages.summary.directorDetails.companyBankAccount                 = Have a business bank account set up
+pages.summary.directorDetails.companyBankAccount.details         = Bank details
 
 ## Summary Page Taxable Sales
-pages.summary.taxableSales.sectionHeading                     = VAT taxable sales
-pages.summary.taxableSales.estimatedSalesValue                = Estimated VAT taxable sales
+pages.summary.directorDetails.estimatedSalesValue                = Estimated VAT taxable sales
 
 ## Summary Page Director Addresses
-pages.summary.directorAddresses.sectionHeading                = Director addresses
-pages.summary.directorAddresses.homeAddress                   = Home address
-pages.summary.directorAddresses.currentAddressThreeYears      = Lived at current address for more than 3 years
-pages.summary.directorAddresses.previousAddress               = Previous address
+pages.summary.directorDetails.currentAddressThreeYears      = Lived at current address for more than 3 years
 
 ## Summary Page Doing Business Abroad
-pages.summary.doingBusinessAbroad.sectionHeading              = Doing business abroad
-pages.summary.doingBusinessAbroad.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
+pages.summary.directorDetails.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
 
 ## Summary Page Annual Accounting Scheme
-pages.summary.annualAccountingScheme.sectionHeading                     = Annual Accounting Scheme
-pages.summary.annualAccountingScheme.zeroRatedSupplies                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
-pages.summary.annualAccountingScheme.reclaimMoreVat                     = VAT claims and charges
-pages.summary.annualAccountingScheme.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
-pages.summary.annualAccountingScheme.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
-pages.summary.annualAccountingScheme.accountingPeriod                   = When do you want to submit VAT Returns?
-pages.summary.annualAccountingScheme.accountingPeriod.monthly           = Once a month
-pages.summary.annualAccountingScheme.accountingPeriod.jan               = January, April, July and October
-pages.summary.annualAccountingScheme.accountingPeriod.feb               = February, May, August and November
-pages.summary.annualAccountingScheme.accountingPeriod.mar               = March, June, September and December
+pages.summary.directorDetails.zeroRatedSuppliesValue                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
+pages.summary.directorDetails.reclaimMoreVatClaim                     = VAT claims and charges
+pages.summary.directorDetails.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
+pages.summary.directorDetails.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
+pages.summary.directorDetails.accountingPeriod                   = When do you want to submit VAT Returns?
+pages.summary.directorDetails.accountingPeriod.monthly           = Once a month
+pages.summary.directorDetails.accountingPeriod.jan               = January, April, July and October
+pages.summary.directorDetails.accountingPeriod.feb               = February, May, August and November
+pages.summary.directorDetails.accountingPeriod.mar               = March, June, September and December
 
 ## Summary Page Labour Compliance
-pages.summary.labourCompliance.sectionHeading                 = Providing workers to other employers
-pages.summary.labourCompliance.providesWorkers                = Providing workers to other employers
-pages.summary.labourCompliance.numberOfWorkers                = Number of workers the company provides at any one time
-pages.summary.labourCompliance.workersOnTemporaryContracts    = Provides workers on temporary contracts
-pages.summary.labourCompliance.providesSkilledWorkers         = Provides skilled workers
+pages.summary.directorDetails.providesWorkers                = Providing workers to other employers
+pages.summary.directorDetails.numberOfWorkers                = Number of workers the company provides at any one time
+pages.summary.directorDetails.workersOnTemporaryContracts    = Provides workers on temporary contracts
+pages.summary.directorDetails.providesSkilledWorkers         = Provides skilled workers
 
 
 ## Error Pages
@@ -678,15 +673,14 @@ validation.frs.startDate.range.below                      = Enter a date that is
 validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business’s registered for VAT
 
 ## FRS SUMMARY SECTION
-pages.summary.frs.sectionHeading                        = Flat Rate Scheme
-pages.summary.frs.joinFrs                               = Do you want to join the Flat Rate Scheme?
-pages.summary.frs.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ’relevant goods’?
-pages.summary.frs.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
-pages.summary.frs.costsLimited                          = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
-pages.summary.frs.businessSector                        = Business type for the Flat Rate Scheme
-pages.summary.frs.flatRate                              = Do you want to use the {0}% flat rate?
-pages.summary.frs.startDate                             = When do you want to join the Flat Rate Scheme?
-pages.summary.frs.startDate.dateOfRegistration          = Date of registration
+pages.summary.directorDetails.joinFrs                               = Do you want to join the Flat Rate Scheme?
+pages.summary.directorDetails.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ’relevant goods’?
+pages.summary.directorDetails.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
+pages.summary.directorDetails.costsLimited                          = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.summary.directorDetails.businessSector                        = Business type for the Flat Rate Scheme
+pages.summary.directorDetails.flatRate                              = Do you want to use the {0}% flat rate?
+pages.summary.directorDetails.startDateFRS                          = When do you want to join the Flat Rate Scheme?
+pages.summary.frs.startDate.dateOfRegistration                      = Date of registration
 
 ## ICL CUSTOM MESSAGES
 pages.icl.heading                                       = Check and confirm the company’s Standard Industry Classification (SIC) codes for VAT
