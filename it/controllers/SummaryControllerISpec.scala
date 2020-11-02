@@ -94,7 +94,7 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
     "display the summary page correctly" in new Setup {
       given()
         .user.isAuthorised
-        .vatScheme.contains(vatReg)
+        .vatScheme.contains(fullVatScheme)
         .vatScheme.has("applicant-details", applicantJson)
         .s4lContainer[SicAndCompliance].isEmpty
         .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
@@ -112,10 +112,10 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
       whenReady(response) { res =>
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
-        document.title() mustBe "Check and confirm your answers"
-        document.getElementById("pageHeading").text mustBe "Check and confirm your answers"
+        document.title() mustBe "Check your answers before sending your application"
+        document.getElementById("pageHeading").text mustBe "Check your answers before sending your application"
 
-        document.getElementById("sectionA").text mustBe "section A"
+
         document.getElementById("sectionA.0Question").text mustBe "Question 1"
         document.getElementById("sectionA.0Answer").text mustBe "FOO"
         document.getElementById("sectionA.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("mandatoryRegistration")
@@ -123,7 +123,6 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
         document.getElementById("sectionA.1Answer").text mustBe "BAR"
         document.getElementById("sectionA.1ChangeLink").attr("href").contains(eligibilitySummaryUrl("voluntaryRegistration")) mustBe true
 
-        document.getElementById("sectionB").text mustBe "section B"
         document.getElementById("sectionB.0Question").text mustBe "Question 5"
         document.getElementById("sectionB.0Answer").text mustBe "bang"
         document.getElementById("sectionB.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("applicantUKNino")
@@ -131,9 +130,9 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
         document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
         document.getElementById("sectionB.1ChangeLink").attr("href") mustBe eligibilitySummaryUrl("turnoverEstimate")
 
-        document.getElementById("frs.joinFrsAnswer").text mustBe "No"
+        document.getElementById("directorDetails.joinFrsAnswer").text mustBe "No"
         document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
-        document.getElementById("annualAccountingScheme.accountingPeriodAnswer").text mustBe "January, April, July and October"
+        document.getElementById("directorDetails.accountingPeriodAnswer").text mustBe "January, April, July and October"
       }
     }
 

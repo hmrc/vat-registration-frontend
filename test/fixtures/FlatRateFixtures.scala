@@ -30,11 +30,11 @@ trait FlatRateFixtures {
   val validFlatRate = FlatRateScheme(
     Some(true),
     Some(true),
-    None,
-    None,
+    Some(5003),
+    Some(true),
     Some(true),
     frsDate,
-    Some(""),
+    Some("frsId"),
     Some(flatRatePercentage)
   )
 

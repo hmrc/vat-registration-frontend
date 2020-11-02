@@ -16,6 +16,7 @@
 
 package models
 
+import models.api.VatBankAccount
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -27,7 +28,7 @@ case class BankAccountDetails(name: String,
                               number: String)
 
 object BankAccountDetails {
-  implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails]{
+  implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {
     override def writes(o: BankAccountDetails): JsObject = {
       Json.obj("account" -> Json.obj(
         "accountName" -> o.name,
@@ -36,15 +37,23 @@ object BankAccountDetails {
       ))
     }
   }
+
+  def bankSeq(bankAccount: BankAccountDetails): Seq[String] = {
+    Seq(
+      bankAccount.name,
+      bankAccount.number,
+      bankAccount.sortCode,
+    )
+  }
 }
 
 object BankAccount {
   implicit val format: OFormat[BankAccount] = (
     (__ \ "isProvided").format[Boolean] and
-    (__ \ "details").formatNullable((
-      (__ \ "name").format[String] and
-      (__ \ "sortCode").format[String] and
-      (__ \ "number").format[String]
-    )(BankAccountDetails.apply, unlift(BankAccountDetails.unapply)))
-  )(apply, unlift(unapply))
+      (__ \ "details").formatNullable((
+        (__ \ "name").format[String] and
+          (__ \ "sortCode").format[String] and
+          (__ \ "number").format[String]
+        ) (BankAccountDetails.apply, unlift(BankAccountDetails.unapply)))
+    ) (apply, unlift(unapply))
 }

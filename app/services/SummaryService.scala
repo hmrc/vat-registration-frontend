@@ -17,7 +17,6 @@
 package services
 
 import connectors.ConfigConnector
-import controllers.builders._
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import models.api.VatScheme
@@ -43,7 +42,6 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
   private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrl + vatRegEFEQuestionUri + s"?pageId=$uri")
 
   def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
-
     vrs.getEligibilityData.map {
       _.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(eligibilityCall)).fold(
         errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
@@ -62,25 +60,12 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
 
   def registrationToSummary(vs: VatScheme)(implicit profile: CurrentProfile): Summary = {
     Summary(Seq(
-      SummaryVatDetailsSectionBuilder(
-        vs.tradingDetails,
-        vs.eligibilitySubmissionData.map(_.threshold),
-        vs.returns
-      ).section,
-      SummaryDirectorDetailsSectionBuilder(vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary"))).section,
-      SummaryDirectorAddressesSectionBuilder(vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary"))).section,
-      SummaryDoingBusinessAbroadSectionBuilder(vs.tradingDetails).section,
-      SummaryBusinessActivitiesSectionBuilder(vs.sicAndCompliance).section,
-      SummaryComplianceSectionBuilder(vs.sicAndCompliance).section,
-      SummaryCompanyContactDetailsSectionBuilder(vs.businessContact).section,
-      SummaryBusinessBankDetailsSectionBuilder(vs.bankAccount).section,
-      SummaryAnnualAccountingSchemeSectionBuilder(vs.returns).section,
-      SummaryFrsSectionBuilder(
-        vs.flatRateScheme,
+      viewmodels.SummaryCheckYourAnswersBuilder(vs,
+        vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary")),
         vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
         vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-        vs.eligibilitySubmissionData.map(_.estimates)
-      ).section
+        vs.eligibilitySubmissionData.map(_.estimates), vs.eligibilitySubmissionData.map(_.threshold),
+        vs.returns).section
     ))
   }
 }

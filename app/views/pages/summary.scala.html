@@ -28,7 +28,6 @@
   @for(section <- eligibilityDataSummary.sections) {
     @if(section.display) {
       <section>
-        <h2 class="heading-medium" id='@{section.id.replace(" ","")}'>@{section.id}</h2>
         <dl class="govuk-check-your-answers cya-questions-long">
           @for((tuple, index) <- section.rows.zipWithIndex) {
             @if(tuple._2) {
@@ -43,7 +42,6 @@
   @for(section <- summaryModel.sections) {
     @if(section.display) {
       <section>
-        <h2 class="heading-medium" id="@{section.id}">@Messages(s"pages.summary.${section.id}.sectionHeading")</h2>
         <dl class="govuk-check-your-answers cya-questions-long">
           @for((row, doDisplayRow) <- section.rows) {
             @if(doDisplayRow) {

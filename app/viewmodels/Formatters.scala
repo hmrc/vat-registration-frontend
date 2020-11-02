@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.builders
+package viewmodels
 
-import models.SicAndCompliance
-import models.view.SummarySection
+import java.text.DecimalFormat
 
-case class SummaryComplianceSectionBuilder(vatSicAndCompliance: Option[SicAndCompliance] = None) extends SummarySectionBuilder {
-  override val sectionId: String = "compliance"
+object Formatters {
 
-  val section = {
-    val default = SummarySection(id = "none", rows = Seq(), display = false)
-      vatSicAndCompliance.fold(default) { sic =>
-        sic.companyProvideWorkers.map(_ =>
-          SummaryLabourComplianceSectionBuilder(vatSicAndCompliance).section).getOrElse(default)
-      }
-  }
+  private val currencyFormat = new DecimalFormat("£#,###.00")
+
+  def currency(value: BigDecimal): String = currencyFormat.format(value)
+
 }

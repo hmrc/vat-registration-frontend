@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.builders
+package viewmodels.checkyouranswers
 
 import models.view.{SummaryRow, SummarySection}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
+import viewmodels.SummarySectionBuilder
 
 class SummarySectionBuilderSpec extends VatRegSpec {
 
