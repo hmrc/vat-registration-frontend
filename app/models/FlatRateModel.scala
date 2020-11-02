@@ -26,7 +26,7 @@ object FRSDateChoice extends Enumeration {
   val DifferentDate = Value
 
   implicit def toString(f : FRSDateChoice.Value) : String = f.toString
-  implicit val format = Format(Reads.enumNameReads(FRSDateChoice), Writes.enumNameWrites)
+  implicit val format: Format[FRSDateChoice] = Format(Reads.enumNameReads(FRSDateChoice), Writes.enumNameWrites)
 }
 
 case class FlatRateScheme(joinFrs : Option[Boolean] = None,

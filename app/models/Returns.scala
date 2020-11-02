@@ -30,7 +30,7 @@ object Frequency extends Enumeration {
   val quarterly = Value
 
   implicit def toString(f : Frequency.Value) : String = f.toString
-  implicit val format = Format(Reads.enumNameReads(Frequency), Writes.enumNameWrites)
+  implicit val format: Format[Frequency] = Format(Reads.enumNameReads(Frequency), Writes.enumNameWrites)
 
   implicit def formatter : Formatter[Frequency] = new Formatter[Frequency] {
     def bind(key: String, data: Map[String, String]) = {
@@ -51,7 +51,7 @@ object Stagger extends Enumeration {
   val mar = Value
 
   implicit def toString(f : Stagger.Value) : String = f.toString
-  implicit val format = Format(Reads.enumNameReads(Stagger), Writes.enumNameWrites)
+  implicit val format: Format[Stagger] = Format(Reads.enumNameReads(Stagger), Writes.enumNameWrites)
 
   implicit def formatter : Formatter[Stagger] = new Formatter[Stagger] {
     def bind(key: String, data: Map[String, String]) = {

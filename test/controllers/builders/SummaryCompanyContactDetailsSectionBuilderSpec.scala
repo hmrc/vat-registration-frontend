@@ -36,10 +36,8 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
       ppobAddress = Some(testAddress)
     )
 
-    val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
-
-
     "render Business Email row" in {
+      val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       sectionBuilder.businessEmailRow mustBe SummaryRow(
         id = "companyContactDetails.email",
         answerMessageKey = "some@email.com",
@@ -48,6 +46,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
     }
 
     "render Business Daytime Phone Number row" in {
+      val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       sectionBuilder.businessDaytimePhoneNumberRow mustBe SummaryRow(
         id = "companyContactDetails.daytimePhone",
         answerMessageKey = "0123456789",
@@ -56,6 +55,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
     }
 
     "render Business Mobile Phone Number row" in {
+      val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       sectionBuilder.businessMobilePhoneNumberRow mustBe SummaryRow(
         id = "companyContactDetails.mobile",
         answerMessageKey = "0123456789",
@@ -64,6 +64,7 @@ class SummaryCompanyContactDetailsSectionBuilderSpec extends VatRegSpec with Vat
     }
 
     "render Business Website row" in {
+      val sectionBuilder = SummaryCompanyContactDetailsSectionBuilder(Some(businessContact))
       sectionBuilder.businessWebsiteRow mustBe SummaryRow(
         id = "companyContactDetails.website",
         answerMessageKey = "http://website.com",

@@ -18,14 +18,11 @@ package helpers
 
 import java.net.{URLDecoder, URLEncoder}
 import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.HeaderNames
-import play.api.libs.Crypto
-import play.api.libs.crypto.{CookieSigner, DefaultCookieSigner}
+import play.api.libs.crypto.CookieSigner
 import play.api.libs.ws.WSCookie
-import play.libs.crypto.DefaultCookieSigner
 import support.{AppAndStubs, SessionCookieBaker}
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
 import uk.gov.hmrc.http.SessionKeys
@@ -36,12 +33,16 @@ trait AuthHelper {
   private[helpers] val defaultUser = "/foo/bar"
   //  private val defaultUser = "/auth/oid/1234567890"
 
+  val userIdKey: String = "userId"
+  val tokenKey: String = "token"
+  val authProviderKey: String = "ap"
+
   private def cookieData(additionalData: Map[String, String], userId: String = defaultUser): Map[String, String] = {
     Map(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.userId -> userId,
-      SessionKeys.token -> "token",
-      SessionKeys.authProvider -> "GGW",
+      tokenKey -> "token",
+      userIdKey -> userId,
+      authProviderKey -> "GGW",
       SessionKeys.lastRequestTimestamp -> new java.util.Date().getTime.toString
     ) ++ additionalData
   }
@@ -52,7 +53,7 @@ trait AuthHelper {
 
   def stubSuccessfulLogin(userId: String = defaultUser, withSignIn: Boolean = false) = {
 
-    if( withSignIn ) {
+    if (withSignIn) {
       val continueUrl = "/wibble"
       stubFor(get(urlEqualTo(s"/gg/sign-in?continue=${continueUrl}"))
         .willReturn(aResponse()
@@ -86,7 +87,8 @@ trait SessionCookieBaker {
   val signer: CookieSigner
 
   val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
-  def cookieValue(sessionData: Map[String,String]) = {
+
+  def cookieValue(sessionData: Map[String, String]) = {
     def encode(data: Map[String, String]): PlainText = {
       val encoded = data.map {
         case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
@@ -110,7 +112,7 @@ trait SessionCookieBaker {
     val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
     val result = decrypted.split("&")
       .map(_.split("="))
-      .map { case Array(k, v) => (k, URLDecoder.decode(v, StandardCharsets.UTF_8.name()))}
+      .map { case Array(k, v) => (k, URLDecoder.decode(v, StandardCharsets.UTF_8.name())) }
       .toMap
 
     result

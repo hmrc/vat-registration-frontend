@@ -25,25 +25,27 @@ import uk.gov.hmrc.http.SessionKeys
 trait SessionBuilder {
 
   val userId: String
+  val userIdKey: String = "userId"
+  val tokenKey: String = "token"
 
   def updateRequestFormWithSession(fakeRequest: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withSession(
     SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-    SessionKeys.token -> "RANDOMTOKEN",
-    SessionKeys.userId -> userId
+    tokenKey -> "RANDOMTOKEN",
+    userIdKey -> userId
   )
 
   def buildRequestWithSession(userId: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionKeys.sessionId -> s"session-${UUID.randomUUID}",
-    SessionKeys.token -> "RANDOMTOKEN",
-    SessionKeys.userId -> userId
+    tokenKey -> "RANDOMTOKEN",
+    userIdKey -> userId
   )
 
   def updateRequestWithSession[T](req: FakeRequest[T]): FakeRequest[T] = {
     val sessionId = req.headers.get(SessionKeys.sessionId).fold(s"session-${UUID.randomUUID}")(s => s)
     req.withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
-      SessionKeys.userId -> userId
+      tokenKey -> "RANDOMTOKEN",
+      userIdKey -> userId
     )
   }
 }
