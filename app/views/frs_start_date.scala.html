@@ -29,7 +29,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
 
-@main_template(title = messages("pages.frs.startDate.title")) {
+@main_template(title = title(frsStartDateForm, messages("pages.frs.startDate.heading"))) {
 
     @errorSummary(
        Messages("app.common.errorSummaryLabel"),

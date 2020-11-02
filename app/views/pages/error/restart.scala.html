@@ -18,7 +18,7 @@
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.templates.newWindowLink
-@main_template(title = messages("errorPages.title"), backEnabled = false) {
+@main_template(title = titleNoForm(messages("errorPages.restart.heading")), backEnabled = false) {
 
  <header class="page-header">
     <h1 class="form-title heading-large" id="main-heading">@messages("errorPages.restart.heading")</h1>

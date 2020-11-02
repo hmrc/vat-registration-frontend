@@ -44,7 +44,7 @@
     </div>
 }
 
-@main_template(title = messages("pages.tradingName.title")) {
+@main_template(title = title(tradingNameForm, messages("pages.tradingName.heading", companyName))) {
 
     @errorSummary(
     Messages("app.common.errorSummaryLabel"),

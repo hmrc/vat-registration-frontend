@@ -23,8 +23,8 @@ import views.html.capture_email_passcode
 class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
 
   val testEmail = "test@test.com"
-  val title = "Enter code to confirm your email address"
-  val heading = "Enter code to confirm your email address"
+  val title = "Enter the code to confirm your email address"
+  val heading = "Enter the code to confirm your email address"
   val paragraph = s"We have sent a code to: $testEmail."
   val insetText = "If you use a browser to access your email, you may need to open a new window or tab to see the code."
   val label = "Confirmation code"

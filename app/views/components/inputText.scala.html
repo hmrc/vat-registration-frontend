@@ -21,6 +21,7 @@
         id: String,
         name: String,
         label: String,
+        isLabelHidden: Boolean = false,
         isPageHeading: Boolean,
         headingMessageArgs: Seq[String] = Seq(),
         hint: Option[Html] = None,
@@ -30,6 +31,13 @@
         inputType: String = "text"
 )(implicit messages: Messages)
 
+@labelClasses = @{
+    if(isPageHeading) "govuk-label--l"
+    else if (hint.isDefined) "govuk-!-font-weight-bold"
+    else if (isLabelHidden) "govuk-visually-hidden"
+    else ""
+}
+
 @govukInput(Input(
   id,
   name,
@@ -37,7 +45,7 @@
   label = Label(
     content = Text(messages(label, headingMessageArgs:_*)),
     isPageHeading = isPageHeading,
-    classes = if(isPageHeading) "govuk-label--l" else if (hint.isDefined) "govuk-!-font-weight-bold" else "govuk-visually-hidden"
+    classes = labelClasses
   ),
   hint = hint.map(hintHtml => Hint(
       content = HtmlContent(hintHtml)

@@ -25,14 +25,14 @@
 @(annualCostsInclusiveForm:  Form[Boolean], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
-@main_template(title = messages("pages.frs.costsLimited.title")) {
+@main_template(title = title(annualCostsInclusiveForm, messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)))) {
 
   @errorSummary(
       Messages("app.common.errorSummaryLabel"),
       annualCostsInclusiveForm
   )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover))</h1>
+  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover))</h1>
 
   @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
   <div class="form-group">
@@ -44,7 +44,7 @@
         ),
         '_labelAfter -> true,
         '_labelClass -> "block-label",
-        '_legend -> messages("pages.frs.costsLimited.heading1", "%,d".format(estimateVatTurnover)),
+        '_legend -> messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
         '_legendClass -> "visually-hidden"
       )
   </div>

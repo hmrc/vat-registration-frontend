@@ -112,7 +112,7 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
       whenReady(response) { res =>
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
-        document.title() mustBe "Check your answers before sending your application"
+        document.title() mustBe "Check your answers before sending your application - Register for VAT - GOV.UK"
         document.getElementById("pageHeading").text mustBe "Check your answers before sending your application"
 
 

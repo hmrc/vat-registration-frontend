@@ -31,7 +31,7 @@
     if(formerNameForm.hasErrors && (formerNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
 
-@main_template(title = messages("pages.formerName.title")) {
+@main_template(title = title(formerNameForm, messages("pages.formerName.heading"))) {
 
     @errorSummary(
     Messages("app.common.errorSummaryLabel"),

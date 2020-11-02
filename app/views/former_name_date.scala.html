@@ -28,7 +28,7 @@
 
 @(formerNameDateForm: Form[FormerNameDateView], formerName : String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.formerNameDate.title")) {
+@main_template(title = title(formerNameDateForm, messages("pages.formerNameDate.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),
@@ -36,7 +36,7 @@
     )
 
     <header class="page-header">
-        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.formerNameDate.heading1")</h1>
+        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.formerNameDate.heading")</h1>
     </header>
 
     @govHelpers.form(action = applicantRoutes.FormerNameDateController.submit()) {

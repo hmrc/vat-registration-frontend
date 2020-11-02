@@ -28,7 +28,7 @@
     </div>
 }
 
-@main_template(title = messages("pages.euGoods.title")) {
+@main_template(title = title(euGoodsForm, messages("pages.euGoods.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),

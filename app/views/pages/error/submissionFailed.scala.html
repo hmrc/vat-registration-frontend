@@ -19,9 +19,9 @@
 
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-@main_template(title = messages("pages.retrySubmission.title"), backEnabled = false) {
+@main_template(title = titleNoForm(messages("pages.failedSubmission.heading")), backEnabled = false) {
 
-    <h1 id="submissionFailedReportAProblem" class="heading-xlarge">@Messages("pages.failedSubmission.description")</h1>
+    <h1 id="submissionFailedReportAProblem" class="heading-xlarge">@Messages("pages.failedSubmission.heading")</h1>
 
     <div class="spaced-below">
         <p>@Messages("pages.failedSubmission.p1")</p>
