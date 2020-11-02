@@ -25,7 +25,7 @@
 @import config.FrontendAppConfig
 @(companyProvideWorkersForm: Form[CompanyProvideWorkers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.labourCompliance.companyProvideWorkers.title")) {
+@main_template(title = title(companyProvideWorkersForm, messages("pages.labourCompliance.companyProvideWorkers.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),

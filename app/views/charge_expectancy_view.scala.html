@@ -24,7 +24,7 @@
 @import config.FrontendAppConfig
 @(chargeExpectancyForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.vat.charge.expectancy.title")) {
+@main_template(title = title(chargeExpectancyForm, messages("pages.vat.charge.expectancy.heading"))) {
 
   @errorSummary(
     Messages("app.common.errorSummaryLabel"),

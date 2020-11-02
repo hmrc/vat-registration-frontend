@@ -26,7 +26,7 @@
 @import config.FrontendAppConfig
 @(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.frs.registerForWithSector.title", percentFormat)) {
+@main_template(title = title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),

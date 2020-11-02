@@ -28,7 +28,7 @@
 @import config.FrontendAppConfig
 @(mandStartDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate : String, dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.start.date.incorp.title")) {
+@main_template(title = title(mandStartDateForm, messages("pages.start.date.incorp.heading", calculatedDate))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),
@@ -67,10 +67,6 @@
 
             <div class="panel panel-border-narrow hidden" id="specific_date_panel">
                 <p>@messages("pages.start.date.incorp.earlierHead")</p>
-                <ul class="list list-bullet">
-                    <li>@messages("pages.start.date.incorp.bullet1")</li>
-                    <li>@messages("pages.start.date.incorp.bullet2")</li>
-                </ul>
 
                 <span class="form-hint">@messages("pages.startDate.panels.specificDate.hint", dateExample)</span>
 

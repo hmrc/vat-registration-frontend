@@ -28,7 +28,7 @@
 
 @(formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(messages("pages.honesty-declaration.title")), backLink = true) {
+@layout(pageTitle = Some(titleNoForm(messages("pages.honesty-declaration.heading"))), backLink = true) {
 
     @h1(messages("pages.honesty-declaration.heading"))
     @p{ @messages("pages.honesty-declaration.paragraph") }

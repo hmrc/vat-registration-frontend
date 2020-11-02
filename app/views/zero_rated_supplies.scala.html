@@ -35,10 +35,10 @@
 @detailsBlock = {
     @p{ @messages("pages.zeroRatedSupplies.details") }
 
-    @link(appConfig.vatRatesUrl, "pages.zeroRatedSupplies.link")
+    @link(appConfig.vatRatesUrl, "pages.zeroRatedSupplies.link", isExternal = true)
 }
 
-@layout(pageTitle = Some(title(form, "pages.zeroRatedSupplies.title")), backLink = true) {
+@layout(pageTitle = Some(title(form, "pages.zeroRatedSupplies.heading")), backLink = true) {
 
     @errorSummary(form.errors)
 

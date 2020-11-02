@@ -25,7 +25,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
-@main_template(title = messages("pages.company.bank.account.title")) {
+@main_template(title = title(hasBankAccountForm, messages("pages.company.bank.account.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),
@@ -35,15 +35,6 @@
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>
     <p>@messages("pages.company.bank.account.para")</p>
 
-
-    <details role="group" class="form-group">
-    <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-        <span class="summary">@messages("pages.company.bank.account.panel.title")</span>
-    </summary>
-    <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-        <p>@messages("pages.company.bank.account.panel.para")</p>
-    </div>
-    </details>
 
     @form(action = controllers.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
         <div class="form-group">

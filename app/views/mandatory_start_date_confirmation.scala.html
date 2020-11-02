@@ -24,7 +24,7 @@
 @import config.FrontendAppConfig
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.start.date.confirmation.title")) {
+@main_template(title = titleNoForm(messages("pages.start.date.confirmation.heading"))) {
 
     <header class="page-header">
         <h1 class="form-title heading-large" id="pageHeading">@messages("pages.start.date.confirmation.heading")</h1>

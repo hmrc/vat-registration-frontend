@@ -23,9 +23,9 @@
 
 @(formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(messages("email-verified.title")), backLink = true) {
+@layout(Some(titleNoForm(messages("email-verified.heading"))), backLink = true) {
 
-    @h1("email-verified.title")
+    @h1("email-verified.heading")
 
     @formWithCSRF(action = formAction) {
         @govukButton(Button(

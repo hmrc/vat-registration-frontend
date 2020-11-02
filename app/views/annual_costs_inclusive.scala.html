@@ -25,7 +25,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
-@main_template(title = messages("pages.frs.costsInclusive.title")) {
+@main_template(title = title(annualCostsInclusiveForm, messages("pages.frs.costsInclusive.heading"))) {
 
   @errorSummary(
       Messages("app.common.errorSummaryLabel"),

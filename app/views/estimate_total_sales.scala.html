@@ -24,7 +24,7 @@
 @import config.FrontendAppConfig
 @(estimateTotalSalesForm: Form[Long])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.frs.estimateTotalSales.title")) {
+@main_template(title = title(estimateTotalSalesForm, messages("pages.frs.estimateTotalSales.heading"))) {
 
     @errorSummary(
         messages("app.common.errorSummaryLabel"),

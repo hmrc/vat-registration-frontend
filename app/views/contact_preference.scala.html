@@ -33,7 +33,7 @@
 
 @(form: Form[ContactPreference], postAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.contactPreference.title"))), backLink = true) {
+@layout(pageTitle = Some(title(form, messages("pages.contactPreference.heading"))), backLink = true) {
 
     @errorSummary(form.errors)
 

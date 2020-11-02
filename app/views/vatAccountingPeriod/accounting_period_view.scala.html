@@ -30,7 +30,7 @@
     if(accountingPeriodForm.hasErrors && (accountingPeriodForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
 
-@main_template(title = messages("pages.accounting.period.title")) {
+@main_template(title = title( accountingPeriodForm, messages("pages.accounting.period.heading"))) {
 
   @errorSummary(
     Messages("app.common.errorSummaryLabel"),

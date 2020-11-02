@@ -25,7 +25,7 @@
 @import config.FrontendAppConfig
 @(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = messages("pages.bankDetails.title")) {
+@main_template(title = title(bankDetailsForm, messages("pages.bankDetails.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),
@@ -70,7 +70,8 @@
                             '_labelClass -> "cascading",
                             '_maxlength -> 8,
                             '_label -> messages("pages.bankDetails.accountNumber.label"),
-                            '_autoComplete -> "off"
+                            '_autoComplete -> "off",
+                            '_inputHint -> messages("pages.bankDetails.accountNumber.hint")
                         )
 
                         @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>

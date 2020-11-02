@@ -21,7 +21,7 @@ import views.html.{email_verified, honesty_declaration}
 
 class EmailVerifiedViewSpec extends VatRegViewSpec {
 
-  val title = "Email address confirmed"
+  val title = "Email address confirmed - Register for VAT - GOV.UK"
   val heading = "Email address confirmed"
   val buttonText = "Continue"
 

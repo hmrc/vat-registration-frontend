@@ -28,7 +28,7 @@
 @(companyContactDetailsForm: Form[CompanyContactDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
-@main_template(title = messages("pages.businessContactDetails.title")) {
+@main_template(title = title(companyContactDetailsForm, messages("pages.businessContactDetails.heading"))) {
 
   @errorSummary(
       messages("app.common.errorSummaryLabel"),

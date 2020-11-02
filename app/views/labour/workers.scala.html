@@ -32,7 +32,7 @@
     if(workersForm.hasErrors && (workersForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
 
-@main_template(title = messages("pages.labourCompliance.workers.title")) {
+@main_template(title = title(workersForm, messages("pages.labourCompliance.workers.heading"))) {
 
     @errorSummary(
         Messages("app.common.errorSummaryLabel"),

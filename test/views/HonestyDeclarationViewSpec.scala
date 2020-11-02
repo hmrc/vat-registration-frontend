@@ -21,7 +21,7 @@ import views.html.honesty_declaration
 
 class HonestyDeclarationViewSpec extends VatRegViewSpec {
 
-  val title = "Declaration"
+  val title = "Declaration - Register for VAT - GOV.UK"
   val header = "Declaration"
   val text = "By submitting this application to register for VAT, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution."
   val buttonText = "Accept and continue"
