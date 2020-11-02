@@ -26,8 +26,8 @@ import scala.concurrent.Future
 @Singleton
 class IncorpIdService @Inject()(incorpIdConnector: IncorpIdConnector) {
 
-  def createJourney(continueUrl: String, serviceName: String, deskProServiceId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId)
+  def createJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
+    val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
 
     incorpIdConnector.createJourney(journeyConfig)
   }
