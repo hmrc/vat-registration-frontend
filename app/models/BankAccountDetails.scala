@@ -42,7 +42,7 @@ object BankAccountDetails {
     Seq(
       bankAccount.name,
       bankAccount.number,
-      bankAccount.sortCode,
+      bankAccount.sortCode
     )
   }
 }
