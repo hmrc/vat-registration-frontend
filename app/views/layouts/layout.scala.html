@@ -16,12 +16,12 @@
 
 @import config.FrontendAppConfig
 
-@import views.components._
-
-@this(hmrcBanner: HmrcBanner,
+@this(
+    hmrcBanner: HmrcBanner,
     govukBackLink: GovukBackLink,
     govukLayout: GovukLayout,
-    phaseBanner: components.phaseBanner
+    phaseBanner: components.phaseBanner,
+    footerLinks: HmrcFooter
 )
 
 @(pageTitle: Option[String] = None, beforeContentBlock: Option[Html] = None, backLink: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -59,6 +59,6 @@
     headBlock = Some(head),
     beforeContentBlock = Some(beforeContentBlock),
     bodyEndBlock = Some(bodyEndBlock),
-    footerItems = FooterLinks.items,
+    footerBlock = Some(footerLinks()),
     scriptsBlock = Some(scripts)
 )(contentBlock)
