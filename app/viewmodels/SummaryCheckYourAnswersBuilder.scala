@@ -223,7 +223,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   )
 
   val costsInclusiveRow: SummaryRow = yesNoRow(
-    s"$sectionId.costsInclusive",
+    "costsInclusive",
     scheme.flatRateScheme.flatMap(_.overBusinessGoods),
     controllers.routes.FlatRateController.annualCostsInclusivePage()
   )
@@ -347,7 +347,6 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (mainActivityRow, true),
       (zeroRatedRow, scheme.returns.flatMap(_.zeroRatedSupplies).isDefined),
       (expectClaimRefundsRow, scheme.returns.flatMap(_.reclaimVatOnMostReturns).isDefined),
-      (startDateRow, true),
       (startDateRow, isflatRatePercentYes && scheme.flatRateScheme.flatMap(_.frsStart).isDefined),
       (accountingPeriodRow, true),
       (buySellEuGoodsRow, scheme.tradingDetails.flatMap(_.euGoods).isDefined),
