@@ -14,36 +14,66 @@
  * limitations under the License.
  *@
 
-@import models.Stagger
-@import uk.gov.hmrc.play.views.html.helpers.form
-
 @import config.FrontendAppConfig
-@(refNo: String, staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@import views.html.components._
+@import views.html.layouts.layout
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
-@pageScripts = {
-    <script type="text/javascript" src='@routes.Assets.versioned("javascripts/VatGAEvent.js")'></script>
-}
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        formWithCSRF: FormWithCSRF,
+        govukPanel: GovukPanel,
+        orderedList: orderedList,
+        link: link,
+        govukInsetText: GovukInsetText,
+        govukButton: GovukButton,
+        form: formWithCSRF
+)
 
-@main_template(title = titleNoForm(Messages("pages.application.submission.confirmation.heading")), scriptElem = Some(pageScripts), backEnabled = false) {
+@(staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-    <div class="box-shaded-grey">
-        <h1 id="heading-application-submitted" class="heading-large">@messages("pages.application.submission.confirmation.heading")</h1>
-    </div>
-    <p>@messages("pages.application.submission.confirmation.reference.number") <strong class="bold">
-        @refNo.
-    </strong></p>
-    <p>@messages("pages.application.submission.confirmation.email")</p>
+@layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
-    <div class="form-group">
-        <h2 class="heading-medium">@messages("pages.application.submission.confirmation.whatNext.sub.heading")</h2>
-        <p>@messages("pages.application.submission.confirmation.whatNext.para1")</p>
+    @govukPanel(Panel(
+        title = Text(messages("pages.application.submission.confirmation.heading"))
+    ))
+    @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
 
-        <div class="panel panel-border-wide">
-            <p>@messages("pages.application.submission.confirmation.panel.para")</p>
-        </div>
-    </div>
-        @staggerStart.map{ startPeriod =>
-        <div class="hidden"><span id="vatAccountPeriodGAEventDoNotRemove">@startPeriod</span></div>
+    @h1(messages("pages.application.submission.confirmation.heading2"))
+
+    @orderedList(messages("pages.application.submission.confirmation.list.item1"), messages("pages.application.submission.confirmation.list.item2"))
+
+    @h1(messages("pages.application.submission.confirmation.heading3"))
+
+    @p(content = Html(messages("pages.application.submission.confirmation.par2")), id = Some("confirmation-par2"))
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>
+        @link(appConfig.govukVat, messages("pages.application.submission.confirmation.link1"), Some("vat-link"), true)
+        </li>
+        <li>
+        @link(appConfig.govukMtd, messages("pages.application.submission.confirmation.link2"), Some("mtd-link"), true)
+        </li>
+        <li>
+        @link(appConfig.govukSoftware, messages("pages.application.submission.confirmation.link3"), Some("software-link"), true)
+        </li>
+    </ul>
+
+    @govukInsetText(InsetText(
+        content = Text(messages("pages.application.submission.confirmation.par3"))
+    ))
+
+    @form(action = controllers.routes.ApplicationSubmissionController.submit) {
+        @govukButton(Button(
+            content = Text(messages("pages.application.submission.confirmation.button")),
+            name = Some("finish-button"),
+            preventDoubleClick = true
+        ))
     }
 
+    @staggerStart.map { startPeriod =>
+        <div class="hidden"><span id="vatAccountPeriodGAEventDoNotRemove">@startPeriod</span></div>
+    }
 }

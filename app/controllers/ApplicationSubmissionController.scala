@@ -27,10 +27,10 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponents,
-                                                val vatRegService: VatRegistrationService,
                                                 val returnsService: ReturnsService,
                                                 val authConnector: AuthClientConnector,
-                                                val keystoreConnector: KeystoreConnector)
+                                                val keystoreConnector: KeystoreConnector,
+                                                val applicationSubmissionConfirmationView: application_submission_confirmation)
                                                (implicit val appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
@@ -47,8 +47,11 @@ class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponent
     implicit request =>
       implicit profile =>
         for {
-          ackRef <- vatRegService.getAckRef(profile.registrationId)
           returns <- returnsService.getReturns
-        } yield Ok(application_submission_confirmation(ackRef, returns.staggerStart))
+        } yield Ok(applicationSubmissionConfirmationView(returns.staggerStart))
+  }
+
+  def submit: Action[AnyContent] = Action { _ =>
+    Redirect(appConfig.exitSurvey)
   }
 }

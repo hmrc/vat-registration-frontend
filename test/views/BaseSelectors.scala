@@ -36,5 +36,7 @@ trait BaseSelectors {
   val button = ".govuk-button"
   val detailsSummary = ".govuk-details__summary-text"
   val detailsContent = ".govuk-details__text"
+  val hidden = ".hidden"
+  val orderedList: Int => String = i => s"main ol.govuk-list.govuk-list--number li:nth-of-type($i)"
 
 }
