@@ -173,6 +173,7 @@ GET         /post-sign-in                                                       
 
 ## APPLICATION SUBMISSION CONFIRMATION
 GET         /application-submitted                                                             controllers.ApplicationSubmissionController.show
+POST        /application-submitted                                                             controllers.ApplicationSubmissionController.submit
 
 ## FRS FLOW
 ##

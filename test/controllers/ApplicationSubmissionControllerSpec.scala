@@ -23,17 +23,21 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.pages.application_submission_confirmation
 
 import scala.concurrent.Future
 
 class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
+  val applicationSubmissionConfirmationView: application_submission_confirmation =
+    fakeApplication.injector.instanceOf[application_submission_confirmation]
+
   val testController = new ApplicationSubmissionController(
     messagesControllerComponents,
-    mockVatRegistrationService,
     mockReturnsService,
     mockAuthClientConnector,
-    mockKeystoreConnector
+    mockKeystoreConnector,
+    applicationSubmissionConfirmationView
   )
 
   val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
