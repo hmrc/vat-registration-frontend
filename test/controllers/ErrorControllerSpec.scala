@@ -26,9 +26,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector
-    ) {
-      override lazy val rejectedUrl = "rejection-url"
-    }
+    )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))

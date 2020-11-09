@@ -20,10 +20,10 @@ import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
-import services.{ReturnsService, SessionProfile, VatRegistrationService}
+import services.{ReturnsService, SessionProfile}
 import views.html.pages.application_submission_confirmation
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponents,
@@ -34,15 +34,6 @@ class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponent
                                                (implicit val appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
-    throw new Exception("Config: company-registration-frontend.www.url not found"))
-
-  lazy val compRegFEURI: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.uri",
-    throw new Exception("Config: company-registration-frontend.www.uri not found"))
-
-  lazy val compRegFEDashboard: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.dashboard",
-    throw new Exception("Config: company-registration-frontend.www.dashboard not found"))
-
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
@@ -51,7 +42,8 @@ class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponent
         } yield Ok(applicationSubmissionConfirmationView(returns.staggerStart))
   }
 
-  def submit: Action[AnyContent] = Action { _ =>
-    Redirect(appConfig.exitSurvey)
+  def submit: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 }

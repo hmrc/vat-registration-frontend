@@ -21,7 +21,7 @@ import models.Returns
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.test.FakeRequest
+import play.api.mvc.Session
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.pages.application_submission_confirmation
 
@@ -39,8 +39,6 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     mockKeystoreConnector,
     applicationSubmissionConfirmationView
   )
-
-  val fakeRequest = FakeRequest(routes.ApplicationSubmissionController.show())
 
   s"GET ${routes.ApplicationSubmissionController.show()}" should {
     "display the submission confirmation page to the user" in {
@@ -62,4 +60,15 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
   }
 
+  s"POST ${routes.ApplicationSubmissionController.submit()}" should {
+    "redirect to the feedback form page" in {
+      mockAuthenticated()
+
+      callAuthorisedOrg(testController.submit) { res =>
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(appConfig.feedbackUrl)
+        session(res) mustBe Session.emptyCookie
+      }
+    }
+  }
 }

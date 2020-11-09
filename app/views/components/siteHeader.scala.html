@@ -14,23 +14,17 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
 
-@this()
+@this(hmrcHeader: HmrcHeader)
 
 @(showSignOut: Boolean = true)(implicit messages: Messages)
 
-@GovukHeader(Header(
-    homepageUrl = Some(controllers.routes.WelcomeController.show.url),
+@hmrcHeader(Header(
+    homepageUrl = controllers.routes.WelcomeController.show.url,
     serviceName = Some(messages("app.title")),
-    serviceUrl = Some(controllers.routes.WelcomeController.show.url),
-    containerClasses = Some("govuk-width-container"),
-    navigation = if (showSignOut) {
-        Some(Seq(
-            HeaderNavigation(
-                href = None,
-                text = Some(messages("app.common.signOut"))
-            )
-        ))
-    } else None
+    serviceUrl = controllers.routes.WelcomeController.show.url,
+    containerClasses = "govuk-width-container",
+    signOutHref = if (showSignOut) Some(controllers.callbacks.routes.SignInOutController.signOut().url) else None
 ))
