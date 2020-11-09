@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.callbacks.SignInOutController
+import play.api.mvc.Session
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 
@@ -26,25 +27,21 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
     messagesControllerComponents,
     mockAuthClientConnector,
     mockKeystoreConnector
-  ) {
-    override lazy val compRegFEURL = "/test/uri"
-    override lazy val compRegFEURI = "/test/uri"
-    override lazy val compRegFEPostSignIn = "/post-sign-test"
-    override lazy val compRegFEQuestionnaire = "questionnaire-test"
-  }
+  )
 
   "Post-sign-in" should {
     "redirect to CT post sign in" in {
-      callAuthorised(testController.postSignIn) {
-        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}${testController.compRegFEPostSignIn}"
+      callAuthorised(testController.postSignIn) { res =>
+        redirectLocation(res) mustBe Some(controllers.routes.WelcomeController.show().url)
       }
     }
   }
 
   "signOut" should {
     "redirect to the exit questionnaire and clear the session" in {
-      callAuthorisedOrg(testController.signOut) {
-        _ redirectsTo s"${testController.compRegFEURL}${testController.compRegFEURI}${testController.compRegFEQuestionnaire}"
+      callAuthorisedOrg(testController.signOut) { res =>
+        redirectLocation(res) mustBe Some(appConfig.feedbackUrl)
+        session(res) mustBe Session.emptyCookie
       }
     }
   }

@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 object AddressLookupConstants {
 
   val testContinueUrl = "continueUrl"
+  val testSignOutHref = "signOutHref"
   val testPhaseFeedbackLink = "phaseFeedbackLink"
   val testAcessibilityUrl = "accessibilityUrl"
   val testDeskproServiceName = "VATREG"
@@ -79,6 +80,7 @@ object AddressLookupConstants {
     version = 2,
     options = AddressLookupOptionsModel(
       continueUrl = SafeRedirectUrl(testContinueUrl),
+      signOutHref = SafeRedirectUrl(testSignOutHref),
       phaseFeedbackLink = SafeRedirectUrl(testPhaseFeedbackLink),
       accessibilityFooterUrl = testAcessibilityUrl,
       deskProServiceName = testDeskproServiceName,

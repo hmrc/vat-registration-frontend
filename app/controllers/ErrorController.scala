@@ -31,17 +31,6 @@ class ErrorController @Inject()(mcc: MessagesControllerComponents,
                                (implicit val appConfig: FrontendAppConfig,
                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
-    throw new Exception("Config: company-registration-frontend.www.url not found"))
-
-  lazy val compRegFEURI: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.uri",
-    throw new Exception("Config: company-registration-frontend.www.uri not found"))
-
-  lazy val compRegFERejected: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.rejected",
-    throw new Exception("Config: company-registration-frontend.www.rejected not found"))
-
-  lazy val rejectedUrl = s"$compRegFEURL$compRegFEURI$compRegFERejected"
-
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
@@ -53,6 +42,4 @@ class ErrorController @Inject()(mcc: MessagesControllerComponents,
       implicit profile =>
         Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
-
-  def redirectToCR(): Action[AnyContent] = Action(Redirect(rejectedUrl))
 }

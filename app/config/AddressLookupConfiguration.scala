@@ -33,6 +33,7 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
       version = 2,
       options = AddressLookupOptionsModel(
         continueUrl = SafeRedirectUrl(appConfig.hostUrl + continueRoute.url),
+        signOutHref = SafeRedirectUrl(appConfig.feedbackUrl),
         phaseFeedbackLink = SafeRedirectUrl(appConfig.betaFeedbackUrl),
         accessibilityFooterUrl = controllers.routes.WelcomeController.start().url,
         deskProServiceName = appConfig.contactFormServiceIdentifier,

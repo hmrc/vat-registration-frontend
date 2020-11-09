@@ -40,9 +40,7 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with FutureAsserti
       mockS4LConnector,
       mockCancellationService,
       mockVatRegistrationConnector
-    ) {
-      val rejectedUrl: String = "rejected-page"
-    }
+    )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))

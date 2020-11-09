@@ -20,6 +20,7 @@ import play.api.libs.json.{JsString, Json, Writes}
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 case class AddressLookupOptionsModel(continueUrl: SafeRedirectUrl,
+                                     signOutHref: SafeRedirectUrl,
                                      phaseFeedbackLink: SafeRedirectUrl,
                                      accessibilityFooterUrl: String,
                                      deskProServiceName: String,

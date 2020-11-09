@@ -51,6 +51,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   val contactFormServiceIdentifier = "vrs"
 
+  lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
+  lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
   lazy val contactFrontendPartialBaseUrl = servicesConfig.baseUrl("contact-frontend")
   lazy val analyticsToken = loadConfig(s"google-analytics.token")
   lazy val analyticsHost = loadConfig(s"google-analytics.host")
@@ -61,7 +63,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   val timeoutInSeconds = loadConfig("timeoutInSeconds")
 
   lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
-  lazy val feedbackUrl = loadConfig(s"microservice.services.vat-registration-frontend.feedbackUrl")
 
   lazy val loginCallback = servicesConfig.getString("microservice.services.auth.login-callback.url")
   lazy val loginPath = servicesConfig.getString("microservice.services.auth.login_path")
@@ -144,5 +145,4 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val govukVat: String = servicesConfig.getString("urls.govukVat")
   lazy val govukMtd: String = servicesConfig.getString("urls.govukMtd")
   lazy val govukSoftware: String = servicesConfig.getString("urls.govukSoftware")
-  lazy val exitSurvey: String = servicesConfig.getString("urls.exitSurvey")
 }

@@ -35,26 +35,14 @@ class SignInOutController @Inject()(mcc: MessagesControllerComponents,
                                    (implicit val appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val compRegFEURL: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.url",
-    throw new Exception("Config: company-registration-frontend.www.url not found"))
-
-  lazy val compRegFEURI: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.uri",
-    throw new Exception("Config: company-registration-frontend.www.uri not found"))
-
-  lazy val compRegFEQuestionnaire: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.questionnaire",
-    throw new Exception("Config: company-registration-frontend.www.questionnaire not found"))
-
-  lazy val compRegFEPostSignIn: String = appConfig.servicesConfig.getConfString("company-registration-frontend.www.post-sign-in",
-    throw new Exception("Config: company-registration-frontend.www.post-sign-in not found"))
-
   def postSignIn: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI$compRegFEPostSignIn"))
+      Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
   }
 
   def signOut: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      Future.successful(Redirect(s"$compRegFEURL$compRegFEURI$compRegFEQuestionnaire").withNewSession)
+      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 
   def renewSession: Action[AnyContent] = isAuthenticated {
