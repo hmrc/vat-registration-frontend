@@ -17,7 +17,7 @@
 @import controllers.routes
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
 @import views.html.helpers.{mainContentHeader, phaseBanner}
 @import views.html.layouts.govuk_template
 @import uk.gov.hmrc.http.SessionKeys
@@ -32,7 +32,9 @@
         mainContent: Html = HtmlFormat.empty,
         serviceInfoContent: Html = HtmlFormat.empty,
         pageScripts: Option[Html] = None,
-        backEnabled: Boolean)(implicit request: Request[_], messages: Messages)
+        backEnabled: Boolean,
+        contentBlock: Html = HtmlFormat.empty
+)(implicit request: Request[_], messages: Messages)
 
 
 @head = {
@@ -102,8 +104,16 @@
     includeHMRCBranding = false)
 }
 
-@getHelpForm = @{
-    uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)
+@getHelpForm = {
+    <div class="govuk-!-margin-bottom-6">
+        @contentBlock
+    </div>
+
+    <div class="govuk-body">
+        <a lang="en" hreflang="en" class="govuk-link " target="_blank" href="@{appConfig.reportAProblemNonJSUrl}">
+            @messages("getHelp.linkText")
+        </a>
+    </div>
 }
 
 @content = {

@@ -25,6 +25,7 @@ error.required                          = Select an option
 error.unknown                           = Invalid input
 error.browser.title.prefix              = Error:
 validation.numeric                      = Enter numbers only
+getHelp.linkText                        = Get help with this page (opens in new tab)
 footer.cookies                          = Cookies
 footer.privacy                          = Privacy policy
 footer.termsConditions                  = Terms and conditions
