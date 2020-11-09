@@ -22,6 +22,7 @@ import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
+import play.api.test.Helpers.redirectLocation
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HttpResponse
 
@@ -37,7 +38,6 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
       mockKeystoreConnector
     ) {
       override lazy val contactFrontendPartialBaseUrl = "/test/uri"
-      override lazy val contactFormServiceIdentifier  = "testId"
     }
   }
 
@@ -47,6 +47,11 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
     "return feedback page" in new Setup {
       val result = controller.feedbackShow(fakeRequest)
       result isA Status.SEE_OTHER
+
+      redirectLocation(result).map { url =>
+        url.contains("/contact/beta-feedback") mustBe true
+        url.contains(s"service=vrs") mustBe true
+      }
     }
 
     "capture the referrer in the session on initial session on the feedback load" in new Setup {
@@ -58,6 +63,7 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
   "POST /feedback" should {
     val fakeRequest = FakeRequest("GET", "/")
     val fakePostRequest = FakeRequest("POST", "/register-for-paye/feedback").withFormUrlEncodedBody("test" -> "test")
+
     "return form with thank you for valid selections" in new Setup {
       when(mockHttpClient.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
         Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
