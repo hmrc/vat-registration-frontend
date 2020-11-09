@@ -39,13 +39,13 @@ class FeedbackController @Inject()(mcc: MessagesControllerComponents,
 
   def contactFormReferrer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 
-  private def feedbackFormPartialUrl(implicit request: Request[AnyContent]) =
+  private def feedbackFormUrl(implicit request: Request[AnyContent]) =
     s"$contactFrontendPartialBaseUrl/contact/beta-feedback?backUrl=${urlEncode(contactFormReferrer)}" +
-      s"&service=$contactFormServiceIdentifier}"
+      s"&service=$contactFormServiceIdentifier"
 
   def feedbackShow: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(feedbackFormPartialUrl))
+      Future.successful(Redirect(feedbackFormUrl))
   }
 
   private def urlEncode(value: String) = URLEncoder.encode(value, "UTF-8")

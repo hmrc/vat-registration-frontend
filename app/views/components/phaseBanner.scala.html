@@ -20,7 +20,7 @@
 
 @feedbackBanner = {
     @messages("app.phaseBanner1")
-    <a class='govuk-link' href='@{appConfig.feedbackUrl}'>@messages("app.phaseBanner2")</a>
+    <a class='govuk-link' href="@controllers.feedback.routes.FeedbackController.feedbackShow" id="phase-banner-feedback-url">@messages("app.phaseBanner2")</a>
     @messages("app.phaseBanner3")
 }
 
