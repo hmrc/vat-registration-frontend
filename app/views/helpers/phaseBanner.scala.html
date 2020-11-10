@@ -19,6 +19,9 @@
 <div class="phase-banner">
     <p>
         <strong id="phase" class="phase-tag">@phaseId</strong>
-        <span>@Html(messages("app.phaseBannerFeedback", controllers.feedback.routes.FeedbackController.feedbackShow))</span>
+        @messages("app.phaseBanner1")
+        <a class='govuk-link' href="@controllers.feedback.routes.FeedbackController.feedbackShow" id="phase-banner-feedback-url" target="_blank">
+        @messages("app.phaseBanner2")</a>
+        @messages("app.phaseBanner3")
     </p>
 </div>
