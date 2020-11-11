@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.mvc.{AnyContentAsEmpty, Call}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 
@@ -35,14 +35,12 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
     mockCurrentProfileService,
     mockAuthClientConnector,
     mockKeystoreConnector
-  ) {
-    override val eligibilityFE: Call = Call("GET", "/test-url")
-  }
+  )
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
   val testCurrentProfile: CurrentProfile = CurrentProfile("testRegid", VatRegStatus.draft)
 
-  "GET /before-you-register-for-vat" should {
+  "GET /" should {
     "return HTML" when {
       "user is authorized to access and has no profile" in {
         mockAuthenticated()
@@ -55,11 +53,10 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
 
-        callAuthorisedOrg(testController.start) {
+        callAuthorisedOrg(testController.show) {
           result =>
-            status(result) mustBe OK
-            contentType(result) mustBe Some("text/html")
-            charset(result) mustBe Some("utf-8")
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(appConfig.eligibilityUrl)
         }
       }
 
@@ -69,29 +66,11 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
 
-        callAuthorisedOrg(testController.start) {
+        callAuthorisedOrg(testController.show) {
           result =>
-            status(result) mustBe OK
-            contentType(result) mustBe Some("text/html")
-            charset(result) mustBe Some("utf-8")
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(appConfig.eligibilityUrl)
         }
-      }
-    }
-  }
-
-  "GET /" should {
-    "redirect the user to start page" in {
-      testController.show(fakeRequest) redirectsTo routes.WelcomeController.start().url
-    }
-  }
-
-  "GET /redirect-to-eligibility" should {
-    "redirect to eligibility front end" in {
-      mockAuthenticated()
-      mockWithCurrentProfile(Some(currentProfile))
-
-      callAuthorised(testController.redirectToEligibility) {
-        _ redirectsTo testController.eligibilityFE.url
       }
     }
   }

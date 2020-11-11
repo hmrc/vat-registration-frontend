@@ -18,8 +18,6 @@ GET         /feedback                                                           
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
-GET         /before-you-register-for-vat                                                       controllers.WelcomeController.start
-GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
 ## HONESTY DECLARATION PAGE
 GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show

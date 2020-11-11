@@ -72,7 +72,7 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "continueUrl" -> "http://localhost:9895http://vatRegEFEUrl/question?pageId=http://continueUrl",
       "signOutHref" -> "http://localhost:9514/feedback/vat-registration",
       "phaseFeedbackLink" -> "http://localhost:9250/contact/beta-feedback?service=vrs",
-      "accessibilityFooterUrl" -> controllers.routes.WelcomeController.start().url,
+      "accessibilityFooterUrl" -> controllers.routes.WelcomeController.show().url,
       "deskProServiceName" -> "vrs",
       "showPhaseBanner" -> true,
       "showBackButtons" -> true,
