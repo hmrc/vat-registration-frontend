@@ -41,6 +41,12 @@ class FeatureSwitchProviderConfig @Inject()(config: FrontendAppConfig) {
     url = backendFeatureSwitchUrl
   )
 
+  lazy val eligibilityFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
+    id = "vat-registration-eligibility-frontend",
+    appName = "Vat Registration Eligibility",
+    url = s"${config.eligibilityHost}/check-if-you-can-register-for-vat/test-only/api/feature-switches"
+  )
+
   lazy val incorpFeatureSwitchUrl = s"${config.incorpIdHost}/incorporated-entity-identification/test-only/api/feature-switches"
   lazy val incorpFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
     id = "incorporated-entity-identification",
@@ -49,5 +55,5 @@ class FeatureSwitchProviderConfig @Inject()(config: FrontendAppConfig) {
   )
 
   lazy val featureSwitchProviders: Seq[FeatureSwitchProvider] =
-    Seq(frontendFeatureSwitchProvider, backendFeatureSwitchProvider, incorpFeatureSwitchProvider)
+    Seq(frontendFeatureSwitchProvider, eligibilityFeatureSwitchProvider, backendFeatureSwitchProvider, incorpFeatureSwitchProvider)
 }
