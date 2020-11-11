@@ -18,7 +18,6 @@ GET         /feedback                                                           
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
-GET         /redirect-to-eligibility                                                           controllers.WelcomeController.redirectToEligibility
 
 ## HONESTY DECLARATION PAGE
 GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show

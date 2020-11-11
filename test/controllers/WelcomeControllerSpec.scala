@@ -74,15 +74,4 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
       }
     }
   }
-
-  "GET /redirect-to-eligibility" should {
-    "redirect to eligibility front end" in {
-      mockAuthenticated()
-      mockWithCurrentProfile(Some(currentProfile))
-
-      callAuthorised(testController.redirectToEligibility) {
-        _ redirectsTo appConfig.eligibilityUrl
-      }
-    }
-  }
 }

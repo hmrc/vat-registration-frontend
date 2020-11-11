@@ -21,7 +21,6 @@ import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import services.{CurrentProfileService, SessionProfile, VatRegistrationService}
-import views.html.pages.welcome
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,11 +41,5 @@ class WelcomeController @Inject()(mcc: MessagesControllerComponents,
       } yield {
         Redirect(appConfig.eligibilityUrl)
       }
-  }
-
-  def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      _ =>
-        Future.successful(Redirect(appConfig.eligibilityUrl))
   }
 }

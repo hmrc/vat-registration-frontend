@@ -152,29 +152,6 @@ pages.cantconfirmidentity.body.two      = If you have the company’s name and r
 pages.cantconfirmidentity.body.link     = using another HMRC service
 pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
-## Welcome Page
-pages.welcome.heading                   = Register for VAT
-
-pages.welcome.p1                        = Before you work out if a company must register for VAT, you need to know:
-
-pages.welcome.bullet1                   = the company’s ’VAT taxable sales’ - this is everything the company sells that isn’t exempt from VAT
-pages.welcome.bullet2                   = the ’VAT registration threshold’ - this is how much VAT taxable sales the company can make before it has to register for VAT (currently £{0})
-
-pages.welcome.h2                        = Mandatory registration
-pages.welcome.p2                        = You must register a company for VAT if any of these apply:
-pages.welcome.bullet3                   = you think its VAT taxable sales will be more than the VAT registration threshold in the next 30 days
-pages.welcome.bullet4                   = you thought its VAT taxable sales would be more than the VAT registration threshold in any 30-day period
-pages.welcome.bullet5                   = its VAT taxable sales were more than the VAT registration threshold in any 12-month period
-pages.welcome.h3                        = Voluntary registration
-
-pages.welcome.p3                        = You can still register voluntarily if the company doesn’t meet these criteria if the company sells or intends to sell VAT taxable goods or services. You’ll be able to reclaim VAT on any business-related purchases.
-pages.welcome.button.start              = Start now
-pages.welcome.p4                        = You’ll need:
-pages.welcome.h4                        = Before you start
-pages.welcome.bullet6                   = to be a company director or company secretary
-pages.welcome.bullet7                   = personal information we can use to identify you (for example, details from a UK passport, a P60 or payslips)
-pages.welcome.bullet8                   = your UK National Insurance number
-
 ## Start Date Page
 pages.startDate.heading                               = What do you want the company’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
