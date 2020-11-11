@@ -35,7 +35,7 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
         continueUrl = SafeRedirectUrl(appConfig.hostUrl + continueRoute.url),
         signOutHref = SafeRedirectUrl(appConfig.feedbackUrl),
         phaseFeedbackLink = SafeRedirectUrl(appConfig.betaFeedbackUrl),
-        accessibilityFooterUrl = controllers.routes.WelcomeController.start().url,
+        accessibilityFooterUrl = controllers.routes.WelcomeController.show().url,
         deskProServiceName = appConfig.contactFormServiceIdentifier,
         showPhaseBanner = true,
         showBackButtons = true,

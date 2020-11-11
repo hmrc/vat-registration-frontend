@@ -43,7 +43,7 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
-        whenReady(controller.start(request))(res => res.header.status mustBe 200)
+        whenReady(controller.show(request))(res => res.header.status mustBe 303)
       }
     }
 
@@ -56,7 +56,7 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        whenReady(controller.start(request))(res => res.header.status mustBe 200)
+        whenReady(controller.show(request))(res => res.header.status mustBe 303)
       }
     }
   }

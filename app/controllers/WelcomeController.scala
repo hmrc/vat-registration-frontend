@@ -34,25 +34,19 @@ class WelcomeController @Inject()(mcc: MessagesControllerComponents,
                                  (implicit val appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val eligibilityFEUrl: String = appConfig.servicesConfig.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("[WelcomeController] Could not find microservice.services.vat-registration-eligibility-frontend.uri"))
-  val eligibilityFE: Call = Call(method = "GET", url = eligibilityFEUrl)
-
-  def show: Action[AnyContent] = Action(implicit request => Redirect(routes.WelcomeController.start()))
-
-  def start: Action[AnyContent] = isAuthenticated {
+  def show: Action[AnyContent] = isAuthenticated {
     implicit request =>
       for {
         missing <- profileMissing
         _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful()
-        threshold <- vatRegistrationService.getTaxableThreshold()
       } yield {
-        Ok(welcome(threshold))
+        Redirect(appConfig.eligibilityUrl)
       }
   }
 
   def redirectToEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
-        Future.successful(Redirect(eligibilityFE))
+        Future.successful(Redirect(appConfig.eligibilityUrl))
   }
 }
