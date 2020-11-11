@@ -3,9 +3,8 @@
 site.govuk                              = GOV.UK
 service.name                            = Register for VAT
 app.title                               = Register for VAT
-app.phaseBannerFeedback                 = This is a new service - your <a href="{0}">feedback</a> will help us to improve it.
 app.phaseBanner1                        = This is a new service - your
-app.phaseBanner2                        = feedback
+app.phaseBanner2                        = feedback (opens in new tab)
 app.phaseBanner3                        = will help us to improve it.
 app.common.not.applied                  = Not applied
 app.common.applied                      = Applied

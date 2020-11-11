@@ -34,14 +34,12 @@ class FeedbackController @Inject()(mcc: MessagesControllerComponents,
                                   (implicit val appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  lazy val contactFrontendPartialBaseUrl: String = appConfig.contactFrontendPartialBaseUrl
-  lazy val contactFormServiceIdentifier: String = appConfig.contactFormServiceIdentifier
+  lazy val betaFeedbackUrl: String = appConfig.betaFeedbackUrl
 
   def contactFormReferrer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 
   private def feedbackFormUrl(implicit request: Request[AnyContent]) =
-    s"$contactFrontendPartialBaseUrl/contact/beta-feedback?backUrl=${urlEncode(contactFormReferrer)}" +
-      s"&service=$contactFormServiceIdentifier"
+    s"$betaFeedbackUrl&backUrl=${urlEncode(contactFormReferrer)}"
 
   def feedbackShow: Action[AnyContent] = Action.async {
     implicit request =>

@@ -36,9 +36,7 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
       messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector
-    ) {
-      override lazy val contactFrontendPartialBaseUrl = "/test/uri"
-    }
+    )
   }
 
   "GET /feedback" should {

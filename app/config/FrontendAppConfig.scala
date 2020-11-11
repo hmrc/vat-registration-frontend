@@ -34,7 +34,7 @@ trait AppConfig {
   val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
   val timeoutInSeconds: String
-  val contactFrontendPartialBaseUrl: String
+  val contactFrontendUrl: String
 }
 
 @Singleton
@@ -53,12 +53,12 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
   lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
-  lazy val contactFrontendPartialBaseUrl = servicesConfig.baseUrl("contact-frontend")
+  lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
   lazy val analyticsToken = loadConfig(s"google-analytics.token")
   lazy val analyticsHost = loadConfig(s"google-analytics.host")
-  lazy val reportAProblemPartialUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  lazy val betaFeedbackUrl: String = s"$contactFrontendPartialBaseUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemPartialUrl = s"$contactFrontendUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  lazy val reportAProblemNonJSUrl = s"$contactFrontendUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
 
   val timeoutInSeconds = loadConfig("timeoutInSeconds")
 
