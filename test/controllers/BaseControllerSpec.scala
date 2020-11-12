@@ -60,7 +60,7 @@ class BaseControllerSpec extends ControllerSpec {
   }
 
   "isAuthenticated" should {
-    "return 200 if user is Authenticated and has org account" in {
+    "return 200 if user is Authenticated and has org affinity" in {
       mockAuthenticatedOrg()
 
       val result = TestController.callAuthenticated(FakeRequest())
@@ -68,12 +68,20 @@ class BaseControllerSpec extends ControllerSpec {
       contentAsString(result) mustBe "ALL GOOD"
     }
 
-    "return 303 to post sign in if the user does not have an org affinity" in {
-      mockAuthenticatedNonOrg()
+    "return 200 if user is Authenticated and has agent affinity" in {
+      mockAuthenticatedAgent()
+
+      val result = TestController.callAuthenticated(FakeRequest())
+      status(result) mustBe OK
+      contentAsString(result) mustBe "ALL GOOD"
+    }
+
+    "redirect to bta invalid affinity page if the user has Individual affinity" in {
+      mockAuthenticatedIndividual()
 
       val result = TestController.callAuthenticated(FakeRequest())
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
+      redirectLocation(result) mustBe Some(appConfig.invalidAffinityUrl)
     }
 
     "return 303 to GG login if user has No Active Session" in {
