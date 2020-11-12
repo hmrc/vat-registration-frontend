@@ -48,7 +48,8 @@ trait FlatRateFixtures {
     Some(true),
     frsDate,
     Some("frsId"),
-    Some(defaultFlatRate)
+    Some(defaultFlatRate),
+    Some(false)
   )
 
   val frs1KNreg = FlatRateScheme(
@@ -107,7 +108,8 @@ trait FlatRateFixtures {
     Some(false),
     None,
     Some("frsId"),
-    Some(defaultFlatRate)
+    Some(defaultFlatRate),
+    Some(false)
   )
 
   val incompleteS4l = FlatRateScheme(
