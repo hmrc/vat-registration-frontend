@@ -68,7 +68,7 @@ abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(impli
   def isAuthenticated(f: Request[AnyContent] => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
       authorised(authPredicate).retrieve(affinityGroup) {
-        case Some(AffinityGroup.Organisation) =>
+        case Some(AffinityGroup.Organisation | AffinityGroup.Agent) =>
           f(request)
         case _ => throw new UnsupportedAffinityGroup
       } handleErrorResult
