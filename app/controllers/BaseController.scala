@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,10 +35,10 @@ import scala.util.{Failure, Success, Try}
 
 abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
   extends FrontendController(mcc)
-  with I18nSupport
-  with Logging
-  with AuthorisedFunctions
-  with SessionProfile {
+    with I18nSupport
+    with Logging
+    with AuthorisedFunctions
+    with SessionProfile {
 
   implicit val appConfig: FrontendAppConfig
 
@@ -50,9 +50,6 @@ abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(impli
             "continue" -> Seq(appConfig.continueUrl),
             "origin" -> Seq(appConfig.defaultOrigin)
           )))
-        case uag: UnsupportedAffinityGroup =>
-          logger.warn(s"User tried to access with a non organisation account", uag)
-          Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
         case ae: AuthorisationException =>
           logger.info(s"User is not authorised - reason: ${ae.reason}")
           Future.successful(InternalServerError)
@@ -68,9 +65,11 @@ abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(impli
   def isAuthenticated(f: Request[AnyContent] => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
       authorised(authPredicate).retrieve(affinityGroup) {
+        case Some(AffinityGroup.Individual) =>
+          Future.successful(SeeOther(appConfig.invalidAffinityUrl))
         case Some(AffinityGroup.Organisation | AffinityGroup.Agent) =>
           f(request)
-        case _ => throw new UnsupportedAffinityGroup
+        case _ => throw new InternalServerException("User has no affinity group on their credential")
       } handleErrorResult
   }
 

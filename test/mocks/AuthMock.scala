@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
-import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, InsufficientConfidenceLevel, InvalidBearerToken}
 
 import scala.concurrent.Future
@@ -53,7 +53,13 @@ trait AuthMock {
     ) thenReturn Future.successful(Some(Organisation))
   }
 
-  def mockAuthenticatedNonOrg(): OngoingStubbing[Future[Option[AffinityGroup]]] = {
+  def mockAuthenticatedAgent(): OngoingStubbing[Future[Option[AffinityGroup]]] = {
+    when(
+      mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ) thenReturn Future.successful(Some(Agent))
+  }
+
+  def mockAuthenticatedIndividual(): OngoingStubbing[Future[Option[AffinityGroup]]] = {
     when(
       mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
     ) thenReturn Future.successful(Some(Individual))
