@@ -19,7 +19,7 @@ package connectors.test
 import connectors._
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -42,4 +42,10 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
       case e: Exception => throw logResponse(e, "updateEligibilityData")
     }
   }
+
+  def updateTrafficManagementQuota(newQuota: Int)(implicit hc: HeaderCarrier) =
+    http.PUT(s"$vatRegUrl/vatreg/test-only/api/daily-quota", Json.obj("quota" -> newQuota)) recover {
+      case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
+    }
+
 }
