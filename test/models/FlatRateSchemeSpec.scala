@@ -18,20 +18,21 @@ package models
 
 import java.time.LocalDate
 
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.{Format, JsSuccess, JsValue, Json}
 import testHelpers.VatRegSpec
 
 class FlatRateSchemeSpec extends VatRegSpec {
-  val validDate = LocalDate.now
-  override val startDate = validDate
 
-  implicit val frmt = FlatRateScheme.apiFormat
+  val validDate: LocalDate = LocalDate.now
+  override val startDate: LocalDate = validDate
 
-  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(startDate))), Some("test"), Some(15.00))
+  implicit val frmt: Format[FlatRateScheme] = FlatRateScheme.apiFormat
 
-  val validFlateRateJoinFrsFalse = FlatRateScheme(Some(false), None, None,None,None,None,None, None)
+  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(startDate))), Some("test"), Some(15.00), Some(false))
 
-  val validJson    = Json.parse(
+  val validFlateRateJoinFrsFalse = FlatRateScheme(Some(false), None, None, None, None, None, None, None, None)
+
+  val validJson: JsValue    = Json.parse(
     s"""{
        |  "joinFrs" : true,
        |  "frsDetails" : {
@@ -41,7 +42,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
        |    },
        |    "startDate"         : "$validDate",
        |    "categoryOfBusiness": "test",
-       |    "percent"           : 15.00
+       |    "percent"           : 15.00,
+       |    "limitedCostTrader" : false
        |  }
        |}""".stripMargin
   )
@@ -60,7 +62,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
              |  "frsDetails" : {
              |    "startDate": "$validDate",
              |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00
+             |    "percent" : 15.00,
+             |    "limitedCostTrader" : false
              |  }
              |}""".stripMargin)
 
@@ -78,7 +81,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
              |    },
              |    "startDate"         : "$validDate",
              |    "categoryOfBusiness": "test",
-             |    "percent"           : 15.00
+             |    "percent"           : 15.00,
+             |    "limitedCostTrader" : false
              |  }
              |}""".stripMargin
         )
@@ -111,7 +115,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
              |  "frsDetails" : {
              |    "startDate": "$validDate",
              |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00
+             |    "percent" : 15.00,
+             |    "limitedCostTrader" : false
              |  }
              |}""".stripMargin
         )
@@ -126,7 +131,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
              |  "joinFrs" : true,
              |  "frsDetails" : {
              |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00
+             |    "percent" : 15.00,
+             |    "limitedCostTrader" : false
              |  }
              |}""".stripMargin
         )
@@ -145,7 +151,8 @@ class FlatRateSchemeSpec extends VatRegSpec {
              |  "frsDetails" : {
              |    "startDate": "$validDate",
              |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00
+             |    "percent" : 15.00,
+             |    "limitedCostTrader" : false
              |  }
              |}""".stripMargin
         )

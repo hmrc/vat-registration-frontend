@@ -48,13 +48,13 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = flatRate match {
-    case FlatRateScheme(Some(true), Some(true), Some(_), Some(_), Some(true), Some(Start(_)), Some(_), Some(_))
+    case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), Some(_), Some(_), Some(_))
+    => Complete(flatRate.copy(limitedCostTrader = Some(!isOverBusinessGoodsPercent)))
+    case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), Some(_), Some(_), Some(_))
+    => Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None, limitedCostTrader = Some(true)))
+    case FlatRateScheme(Some(false), None, None, None, None, None, None, None, None)
     => Complete(flatRate)
-    case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), Some(_), Some(_))
-    => Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None))
-    case FlatRateScheme(Some(false), None, None, None, None, None, None, None)
-    => Complete(flatRate)
-    case FlatRateScheme(Some(false), Some(_), _, _, Some(_), _, Some(_), Some(_))
+    case FlatRateScheme(Some(false), Some(_), _, _, Some(_), _, Some(_), Some(_), Some(_))
     => Complete(flatRate)
     case _
     => Incomplete(flatRate)
@@ -86,14 +86,20 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     updateFlatRate { storedData =>
       storedData.copy(
         overBusinessGoods = Some(newValue),
-        useThisRate = if (storedData.overBusinessGoods.contains(newValue)) storedData.useThisRate else None)
+        useThisRate = if (storedData.overBusinessGoods.contains(newValue)) storedData.useThisRate else None,
+        categoryOfBusiness = if (newValue) storedData.categoryOfBusiness else None,
+        limitedCostTrader = Some(!newValue)
+      )
     }
 
   def saveOverBusinessGoodsPercent(newValue: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     updateFlatRate { storedData =>
       storedData.copy(
         overBusinessGoodsPercent = Some(newValue),
-        useThisRate = if (storedData.overBusinessGoodsPercent.contains(newValue)) storedData.useThisRate else None)
+        useThisRate = if (storedData.overBusinessGoodsPercent.contains(newValue)) storedData.useThisRate else None,
+        categoryOfBusiness = if (newValue) storedData.categoryOfBusiness else None,
+        limitedCostTrader = Some((storedData.overBusinessGoods contains true) && !newValue)
+      )
     }
 
   def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
@@ -108,7 +114,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def retrieveSectorPercent(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(String, String, BigDecimal)] = {
     getFlatRate flatMap {
-      case FlatRateScheme(_, _, _, _, _, _, Some(sector), _) if sector.nonEmpty =>
+      case FlatRateScheme(_, _, _, _, _, _, Some(sector), _, _) if sector.nonEmpty =>
         val (label, pct) = configConnector.getBusinessTypeDetails(sector)
         Future.successful((sector, label, pct))
       case _ =>
@@ -131,7 +137,8 @@ class FlatRateService @Inject()(val s4LService: S4LService,
         joinFrs = Some(answer),
         useThisRate = Some(answer),
         percent = Some(percent),
-        frsStart = if (answer) storedData.frsStart else None
+        frsStart = if (answer) storedData.frsStart else None,
+        limitedCostTrader = if (answer) storedData.limitedCostTrader else Some(false)
       )
     }
 
@@ -168,9 +175,9 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def getPrepopulatedStartDate(vatStartDate: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
     getFlatRate map {
-      case FlatRateScheme(_, _, _, _, _, Some(Start(frd)), _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
-      case FlatRateScheme(_, _, _, _, _, Some(Start(None)), _, _) => (Some(FRSDateChoice.VATDate), None)
-      case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
+      case FlatRateScheme(_, _, _, _, _, Some(Start(frd)), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
+      case FlatRateScheme(_, _, _, _, _, Some(Start(None)), _, _, _) => (Some(FRSDateChoice.VATDate), None)
+      case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
       case _ => (None, None)
 
     }
