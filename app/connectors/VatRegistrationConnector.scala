@@ -133,8 +133,10 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def submitRegistration(regId: String)(implicit hc: HeaderCarrier): Future[DESResponse] = {
-    http.PUT[String, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", "") map {
+  def submitRegistration(regId: String, userHeaders: Map[String, String])(implicit hc: HeaderCarrier): Future[DESResponse] = {
+    val jsonBody = Json.obj("userHeaders" -> userHeaders)
+
+    http.PUT[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", jsonBody) map {
       _.status match {
         case OK => Success
       }

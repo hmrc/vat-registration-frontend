@@ -19,20 +19,24 @@ package services
 import java.time.LocalDate
 
 import connectors._
-import fixtures.VatRegistrationFixture
 import models.TaxableThreshold
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import testHelpers.{S4LMockSugar, VatRegSpec}
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 
 class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
+
+  val testHeaderKey = "testHeaderKey"
+  val testHeaderValue = "testHeaderValue"
+  implicit val testRequest: FakeRequest[_] = FakeRequest().withHeaders(testHeaderKey -> testHeaderValue)
 
   class Setup {
     val service = new VatRegistrationService(
@@ -90,7 +94,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
 
   "Calling submitRegistration" should {
     "return a Success DES response" in new Setup {
-      when(mockVatRegistrationConnector.submitRegistration(any())(any()))
+      when(mockVatRegistrationConnector.submitRegistration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testRequest.headers.toSimpleMap))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Success))
 
       await(service.submitRegistration()) mustBe Success

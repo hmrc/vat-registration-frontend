@@ -76,7 +76,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(Success))
 
       when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
@@ -93,7 +93,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
 
       when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
@@ -111,7 +111,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.getStatus(any())(any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
-      when(mockVatRegistrationService.submitRegistration()(any(), any()))
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailed))
 
       when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))

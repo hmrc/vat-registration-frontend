@@ -25,6 +25,7 @@ import models.api._
 import models.{TurnoverEstimates, _}
 import play.api.Logger
 import play.api.libs.json.{Format, JsObject}
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
@@ -67,9 +68,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsObject] = vatRegConnector.getEligibilityData
 
-  def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[DESResponse] = {
+  def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
     for {
-      submit <- vatRegConnector.submitRegistration(profile.registrationId)
+      submit <- vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
     } yield submit
 
   } recover {
