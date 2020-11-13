@@ -24,6 +24,7 @@ import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.CurrentProfile
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.FakeRequest
 import services.VatRegistrationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.SessionId
@@ -65,7 +66,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
 
       val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
-      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId))
+      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId), FakeRequest())
 
       await(response) mustBe Success
     }

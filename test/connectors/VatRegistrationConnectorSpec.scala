@@ -270,19 +270,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return a Success" in new Setup {
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
 
-      await(connector.submitRegistration("tstID")) mustBe Success
+      await(connector.submitRegistration("tstID", Map.empty)) mustBe Success
     }
     "return a SubmissionFailed" in new Setup {
       when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Upstream4xxResponse("400", 400, 400)))
 
-      await(connector.submitRegistration("tstID")) mustBe SubmissionFailed
+      await(connector.submitRegistration("tstID", Map.empty)) mustBe SubmissionFailed
     }
     "return a SubmissionFailedRetryable" in new Setup {
       when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Upstream5xxResponse("502", 502, 502)))
 
-      await(connector.submitRegistration("tstID")) mustBe SubmissionFailedRetryable
+      await(connector.submitRegistration("tstID", Map.empty)) mustBe SubmissionFailedRetryable
     }
   }
 
