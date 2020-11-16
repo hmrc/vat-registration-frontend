@@ -18,7 +18,8 @@ class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with I
     "Return OK when the user is authenticated" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(Start(Some(testApplicantIncorpDate)))))
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
 
       val res = buildClient("/vat-start-date").get()

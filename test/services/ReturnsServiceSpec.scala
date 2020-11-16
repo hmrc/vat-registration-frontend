@@ -23,7 +23,6 @@ import _root_.models.api.Threshold
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.MustMatchers
-import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.JsString
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -402,79 +401,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
   }
 
-  "voluntaryStartPageViewModel" should {
-    "return a business start date view model" in new Setup {
-      val businessStartDate = LocalDate.of(2017, 10, 10)
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(businessStartDate)))))
-
-      when(mockPrePopulationService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(Some(businessStartDate)))
-
-      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
-        Some((DateSelection.business_start_date, Some(businessStartDate))),
-        Some(businessStartDate)
-      )
-    }
-
-    "return a future incorp date view model when the company is not incorped" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(returnsWithVatDate(None))))
-
-      when(mockPrePopulationService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
-        Some((DateSelection.company_registration_date, None)),
-        None
-      )
-    }
-
-    "return a specific date when it is selected" in new Setup {
-      val specificdate = LocalDate.of(2017, 12, 12)
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(returnsWithVatDate(Some(specificdate)))))
-
-      when(mockPrePopulationService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(
-        Some((DateSelection.specific_date, Some(specificdate))),
-        None
-      )
-    }
-
-    "return an empty view model if nothing has been previously selected" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      when(mockPrePopulationService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      await(service.voluntaryStartPageViewModel()) mustBe VoluntaryPageViewModel(None, None)
-    }
-  }
-
   "saveVoluntaryStartDate" should {
-
-    "save a company registration date when the incorp date in the future, to be incorped" in new Setup {
-      val expected = incomplete.copy(start = Some(Start(None)))
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
-        .thenReturn(Future.successful(mockCacheMap))
-
-      await(service.saveVoluntaryStartDate(
-        DateSelection.company_registration_date, None, None
-      )) mustBe expected
-    }
-
-    "save a business start date as the vat start date" in new Setup {
-      val businessStartDate = LocalDate.of(2017, 11, 11)
-      val expected = incomplete.copy(start = Some(Start(Some(businessStartDate))))
+    "save a company start date as the vat start date" in new Setup {
+      val expected = incomplete.copy(start = Some(Start(Some(testIncorpDate))))
 
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
@@ -482,7 +411,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.business_start_date, None, Some(businessStartDate)
+        DateSelection.company_registration_date, None, testIncorpDate
       )) mustBe expected
     }
 
@@ -496,20 +425,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
-        DateSelection.specific_date, Some(specificStartDate), None
-      )) mustBe expected
-    }
-
-    "save an empty start if no start date is provided" in new Setup {
-      val expected = incomplete.copy(start = Some(Start(None)))
-
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
-        .thenReturn(Future.successful(mockCacheMap))
-
-      await(service.saveVoluntaryStartDate(
-        DateSelection.specific_date, None, None
+        DateSelection.specific_date, Some(specificStartDate), testIncorpDate
       )) mustBe expected
     }
   }

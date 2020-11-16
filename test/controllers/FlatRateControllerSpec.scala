@@ -26,9 +26,10 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec}
+import testHelpers.ControllerSpec
+import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -413,14 +414,15 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return an error if Turnover Estimates is empty" in new Setup {
+      mockAuthenticated()
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
         .thenReturn(Future.successful(None))
 
-      callAuthorised(controller.joinFrsPage) { result =>
-        status(result) mustBe 500
+      intercept[InternalServerException] {
+        await(controller.joinFrsPage()(FakeRequest()))
       }
     }
   }

@@ -25,7 +25,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.{MandatoryDateModel, VoluntaryPageViewModel}
+import services.MandatoryDateModel
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
@@ -422,16 +422,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "voluntaryStartPage" should {
-    val dateSelection = (DateSelection.calculated_date, Some(LocalDate.now()))
-    val calcDate = LocalDate.now()
-    val voluntaryViewModel = VoluntaryPageViewModel(Some(dateSelection), Some(calcDate))
     "show the page" when {
       "return an OK when returns are not present" in new Setup {
-        when(mockReturnsService.getThreshold()(any(), any(), any()))
-          .thenReturn(Future.successful(voluntary))
+        when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
+          .thenReturn(Future.successful(Some(testIncorpDate)))
 
-        when(mockReturnsService.voluntaryStartPageViewModel()(any(), any(), any()))
-          .thenReturn(Future.successful(voluntaryViewModel))
+        when(mockReturnsService.getReturns(any(), any(), any()))
+          .thenReturn(Future.successful(returns))
 
         callAuthorised(testController.voluntaryStartPage) { result =>
           status(result) mustBe OK

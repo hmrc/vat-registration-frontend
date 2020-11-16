@@ -28,6 +28,7 @@ import play.api.data.Form
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 
 import scala.collection.immutable.ListMap
@@ -68,14 +69,13 @@ class FlatRateController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       implicit profile =>
         vatRegistrationService.fetchTurnoverEstimates flatMap { res =>
-          res.fold(Future.successful(InternalServerError(views.html.pages.error.restart()))) { turnoverEstimates =>
-            if (turnoverEstimates.turnoverEstimate > 150000L) {
-              Future.successful(Redirect(controllers.routes.SummaryController.show()))
-            } else {
-              flatRateService.getFlatRate map { flatRateScheme =>
-                val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
-                Ok(views.html.frs_join(form))
-              }
+          val turnoverEstimates = res.getOrElse(throw new InternalServerException("[FlatRateController][joinFrsPage] Missing turnover estimates"))
+          if (turnoverEstimates.turnoverEstimate > 150000L) {
+            Future.successful(Redirect(controllers.routes.SummaryController.show()))
+          } else {
+            flatRateService.getFlatRate map { flatRateScheme =>
+              val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
+              Ok(views.html.frs_join(form))
             }
           }
         }

@@ -79,27 +79,11 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
     }
   }
 
-  def voluntaryStartPageViewModel()(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[VoluntaryPageViewModel] = {
-    for {
-      returns <- getReturns
-      ctActive <- retrieveCTActiveDate
-    } yield {
-      VoluntaryPageViewModel((ctActive, returns.start) match {
-        case (Some(cta), Some(Start(Some(vsd)))) if cta == vsd => Some((DateSelection.business_start_date, Some(vsd)))
-        case (_, Some(Start(None))) => Some((DateSelection.company_registration_date, None))
-        case (_, Some(Start(Some(vsd)))) => Some((DateSelection.specific_date, Some(vsd)))
-        case _ => None
-      }, ctActive)
-    }
-  }
-
-  def saveVoluntaryStartDate
-  (dateChoice: DateSelection.Value, startDate: Option[LocalDate], ctActive: Option[LocalDate])
-  (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
-    saveVatStartDate((dateChoice, startDate, ctActive) match {
-      case (DateSelection.company_registration_date, _, _) => None
-      case (DateSelection.business_start_date, _, Some(cta)) => Some(cta)
-      case (DateSelection.specific_date, Some(vsd), _) => Some(vsd)
+  def saveVoluntaryStartDate(dateChoice: DateSelection.Value, startDate: Option[LocalDate], incorpDate: LocalDate)
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
+    saveVatStartDate((dateChoice, startDate) match {
+      case (DateSelection.company_registration_date, _) => Some(incorpDate)
+      case (DateSelection.specific_date, Some(startDate)) => Some(startDate)
       case _ => None
     })
   }
