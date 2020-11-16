@@ -28,7 +28,7 @@ class FrontendGlobal @Inject()(val messagesApi: MessagesApi, val appConfig: Fron
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
     implicit val ac = appConfig
-    views.html.pages.error.restart()
+    views.html.pages.error.error_template(pageTitle, heading, message)
   }
 
 }
