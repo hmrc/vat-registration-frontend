@@ -364,13 +364,7 @@ pages.summary.directorDetails.providesSkilledWorkers         = Provides skilled 
 
 
 ## Error Pages
-errorPages.restart.heading              = We are experiencing technical problems
-errorPages.restart.para1                = Something’s gone wrong with this service. It wasn’t your fault.
-errorPages.restart.para2                = We’ve saved your details.
-errorPages.restart.para3                = You can try again now or come back later by signing back into the service using the link on the
-errorPages.restart.para3.1              = register a company
-errorPages.restart.para3.2              = GOV.UK page
-error.restart.tryagain                  = Try again
+error.error_template.tryagain                  = Try again
 
 ## Company Bank Account
 pages.company.bank.account.heading              = Does the business have a bank or building society account?
