@@ -24,6 +24,7 @@ import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
+import uk.gov.hmrc.http.InternalServerException
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,10 +59,5 @@ class SignInOutController @Inject()(mcc: MessagesControllerComponents,
   def timeoutShow: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(Ok(TimeoutView()))
-  }
-
-  def errorShow: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(InternalServerError(views.html.pages.error.restart()))
   }
 }

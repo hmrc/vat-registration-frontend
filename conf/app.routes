@@ -10,9 +10,6 @@ GET         /renew-session                                                      
 GET         /error/destroy-session                                                             controllers.callbacks.SignInOutController.destroySession
 GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
 
-##GenericError
-GET /error                                                                                     controllers.callbacks.SignInOutController.errorShow
-
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow
 

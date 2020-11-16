@@ -73,10 +73,4 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
       status(res) mustBe 200
     }
   }
-  "errorShow" should {
-    "return 500" in {
-      val res = testController.errorShow()(FakeRequest())
-      status(res) mustBe 500
-    }
-  }
 }
