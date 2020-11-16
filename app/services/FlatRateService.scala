@@ -48,13 +48,11 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = flatRate match {
-    case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), Some(_), Some(_), Some(_))
+    case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), _, Some(_), Some(_))
     => Complete(flatRate.copy(limitedCostTrader = Some(!isOverBusinessGoodsPercent)))
-    case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), Some(_), Some(_), Some(_))
+    case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), _, Some(_), Some(_))
     => Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None, limitedCostTrader = Some(true)))
-    case FlatRateScheme(Some(false), None, None, None, None, None, None, None, None)
-    => Complete(flatRate)
-    case FlatRateScheme(Some(false), Some(_), _, _, Some(_), _, Some(_), Some(_), Some(_))
+    case FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)
     => Complete(flatRate)
     case _
     => Incomplete(flatRate)
@@ -80,7 +78,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     getFlatRate flatMap { storedData => submitFlatRate(newS4L(storedData)) }
 
   def saveJoiningFRS(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate(_.copy(joinFrs = Some(answer)))
+    updateFlatRate(frs => if(answer) frs.copy(joinFrs = Some(answer)) else FlatRateScheme(Some(false)))
 
   def saveOverBusinessGoods(newValue: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     updateFlatRate { storedData =>
@@ -107,7 +105,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       storedData.copy(
         joinFrs = Some(answer),
         useThisRate = Some(answer),
-        categoryOfBusiness = Some(""),
+        categoryOfBusiness = None,
         percent = Some(defaultFlatRate),
         frsStart = if (answer) storedData.frsStart else None)
     }

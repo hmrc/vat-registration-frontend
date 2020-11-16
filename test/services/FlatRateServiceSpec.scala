@@ -222,7 +222,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      await(service.saveRegister(answer = true)) mustBe data.copy(useThisRate = Some(true), categoryOfBusiness = Some(""), percent = Some(defaultFlatRate))
+      await(service.saveRegister(answer = true)) mustBe data.copy(useThisRate = Some(true), categoryOfBusiness = None, percent = Some(defaultFlatRate))
     }
 
     "save that they want to register with business goods" in new Setup() {
@@ -234,7 +234,7 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(dummyCacheMap))
 
       await(service.saveRegister(answer = true)) mustBe
-        data.copy(useThisRate = Some(true), categoryOfBusiness = Some(""), percent = Some(defaultFlatRate))
+        data.copy(useThisRate = Some(true), categoryOfBusiness = None, percent = Some(defaultFlatRate))
     }
 
     "save that they do not wish to register (clearing the start date, saving to the backend)" in new Setup() {
@@ -250,7 +250,7 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(HttpResponse(202, "")))
 
       await(service.saveRegister(answer = false)) mustBe
-        data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = Some(""), percent = Some(defaultFlatRate), frsStart = None)
+        data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = None, percent = Some(defaultFlatRate), frsStart = None)
     }
   }
 
