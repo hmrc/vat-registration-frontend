@@ -213,6 +213,6 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   } yield {
     val fourYearsAgo = timeService.minusYears(4)
     val dateOfIncorporation = dateOfIncorporationOption.getOrElse(fourYearsAgo)
-    util.Collections.min(util.Arrays.asList(fourYearsAgo, dateOfIncorporation))
+    util.Collections.max(util.Arrays.asList(fourYearsAgo, dateOfIncorporation))
   }
 }
