@@ -26,7 +26,7 @@ import javax.inject.{Inject, Singleton}
 import models._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services._
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
 import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
@@ -125,9 +125,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
     implicit profile =>
       implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
       returnsService.getReturns.flatMap { returns =>
-        applicantDetailsService.getDateOfIncorporation.map { optIncorpDate =>
-          val incorpDate = optIncorpDate
-            .getOrElse(throw new InternalServerException("[ReturnsController][voluntaryStartPage] incorp date is missing"))
+        calculateEarliestStartDate.map { incorpDate =>
           val exampleVatStartDate = timeService.dynamicFutureDateExample()
 
           val voluntaryDateForm = VoluntaryDateForm
@@ -141,9 +139,9 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
               voluntaryDateForm
           }
 
-          val incorpDateTooEarly = incorpDate.isBefore(timeService.minusYears(4))
+          val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-          Ok(VoluntaryStartDatePage(filledForm, incorpDate, incorpDateTooEarly, exampleVatStartDate))
+          Ok(VoluntaryStartDatePage(filledForm, incorpDate, incorpDateAfter, exampleVatStartDate))
         }
       }
   }
@@ -152,17 +150,14 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       implicit profile =>
         implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-        applicantDetailsService.getDateOfIncorporation.flatMap { optIncorpDate =>
-          val incorpDate = optIncorpDate
-            .getOrElse(throw new InternalServerException("[ReturnsController][voluntaryStartPage] incorp date is missing"))
-
+        calculateEarliestStartDate.flatMap { incorpDate =>
           val voluntaryDateForm = VoluntaryDateForm.form(incorpDate, timeService.addMonths(3))
           voluntaryDateForm.bindFromRequest.fold(
             errors => {
               val dynamicDate = timeService.dynamicFutureDateExample()
-              val incorpDateTooEarly = incorpDate.isBefore(timeService.minusYears(4))
+              val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-              Future.successful(BadRequest(VoluntaryStartDatePage(errors, incorpDate, incorpDateTooEarly, dynamicDate)))
+              Future.successful(BadRequest(VoluntaryStartDatePage(errors, incorpDate, incorpDateAfter, dynamicDate)))
             },
             success => returnsService.saveVoluntaryStartDate(success._1, success._2, incorpDate) map redirectBasedOnReclaim
           )

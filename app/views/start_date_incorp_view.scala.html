@@ -26,7 +26,7 @@
 @import models.DateSelection._
 
 @import config.FrontendAppConfig
-@(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], registeredDate: LocalDate, incorpDateTooEarly: Boolean, dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], registeredDate: LocalDate, incorpDateAfter: Boolean, dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = title(startDateForm, messages("pages.startDate.heading"))) {
 
@@ -57,10 +57,10 @@
                         @vatInputRadioGroup(
                             startDateForm("startDateRadio"),
                             Seq(
-                                if(incorpDateTooEarly) {
-                                    None
-                                } else {
+                                if(incorpDateAfter) {
                                     Some(company_registration_date.toString -> Messages("pages.startDate.radio.wasRegistered", registeredDate.format(formatter)))
+                                } else {
+                                    None
                                 },
                                 Some(specific_date.toString -> Messages("pages.startDate.radio.specificDate"))
                             ).flatten,
