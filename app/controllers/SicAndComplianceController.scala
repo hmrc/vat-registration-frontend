@@ -96,7 +96,7 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
                 Redirect(routes.SicAndComplianceController.showComplianceIntro())
               } else {
-                Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+                Redirect(controllers.registration.business.routes.TradingNameController.show())
               }
             })
           )
@@ -159,7 +159,7 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
               controllers.routes.SicAndComplianceController.showComplianceIntro()
             case List(onlyOneCode) =>
-              controllers.routes.TradingDetailsController.tradingNamePage()
+              controllers.registration.business.routes.TradingNameController.show()
             case _ =>
               routes.SicAndComplianceController.showMainBusinessActivity()
           })

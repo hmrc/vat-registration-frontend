@@ -19,80 +19,59 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, verticalInputRadioGroup}
 
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    errorSummary: components.errorSummary,
+    yesNoRadio: components.yesNoRadio,
+    p: components.p,
+    form: FormWithCSRF,
+    inputText: components.inputText,
+    details: components.details,
+    button: components.button
+)
+
 @(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@fieldSetClasses = @{
-    if(tradingNameForm.hasErrors && (tradingNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
-}
+@layout(pageTitle = Some(title(tradingNameForm, messages("pages.tradingName.heading", companyName))), backLink = true) {
 
-@hiddenYesContent = {
-    <div class="panel form-group @fieldSetClasses" id="trading_name_panel">
+    @errorSummary(tradingNameForm.errors)
+    @h1(messages("pages.tradingName.heading", companyName))
 
-        @tradingNameForm.errors.find(_.args.contains("tradingName")).map { error =>
-            @govHelpers.errorInline("tradingName", error.message)
-        }
-
-        @vatInput(
-            tradingNameForm("tradingName"),
-            '_divClass -> "form-group",
-            '_inputClass -> "form-control-3-4 cascading",
-            '_label -> Messages("pages.tradingName.tradingNameLabel"),
-            '_labelClass -> "form-label bold",
-            '_inputHint -> messages("pages.tradingdetails.input.hint-text")
-        )
-
-    </div>
-}
-
-@main_template(title = title(tradingNameForm, messages("pages.tradingName.heading", companyName))) {
-
-    @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    tradingNameForm,
-    Seq("tradingName")
+    @details(
+        summary = messages("pages.tradingName.panel.para1"),
+        content = detailsContent
     )
 
-    <header class="page-header">
-        <h1 class="form-title heading-large" id="pageHeading">@messages("pages.tradingName.heading", companyName)</h1>
-    </header>
+    @form(action = controllers.registration.business.routes.TradingNameController.submit()) {
+        @yesNoRadio(
+            form = tradingNameForm,
+            headingKey = messages("pages.tradingName.heading"),
+            isPageHeading = false,
+            inline = false,
+            classes = "govuk-visually-hidden",
+            hiddenYesContent = Some(hiddenYesContent)
+        )
 
-    <details role="group" class="form-group">
-        <summary role="button" aria-controls="details-content-0" aria-expanded="false">
-            <span class="summary">@messages("pages.tradingName.panel.para1")</span>
-        </summary>
-        <div class="panel panel-border-narrow" id="details-content-0" aria-hidden="true">
-            <p>@messages("pages.tradingName.panel.para2")</p>
-            <p>@messages("pages.tradingName.panel.para3")</p>
-        </div>
-    </details>
-
-    @govHelpers.form(action = controllers.routes.TradingDetailsController.submitTradingName()) {
-        <div class="form-group">
-            @verticalInputRadioGroup(
-                field = tradingNameForm("tradingNameRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                Map(
-                    "true" -> hiddenYesContent
-                ),
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.tradingName.heading"),
-                '_legendClass -> "visually-hidden"
-            )
-
-        </div>
-
-        <div class="form-group">
-            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-        </div>
+        @button(messages("app.common.continue"))
     }
 }
 
-<script type="text/javascript">
-        $(document).ready($(function () {
-            TradingNamePage.init()
-        }));
-</script>
+@detailsContent = {
+    @p { @messages("pages.tradingName.panel.para2") }
+    @p { @messages("pages.tradingName.panel.para3") }
+}
+
+@hiddenYesContent = {
+
+    @inputText(
+        tradingNameForm,
+        id = "tradingName",
+        name = "tradingName",
+        label = messages("pages.tradingName.tradingNameLabel"),
+        isLabelHidden = false,
+        isPageHeading = false,
+        hint = Some(Html(messages("pages.tradingdetails.input.hint-text")))
+    )
+
+}

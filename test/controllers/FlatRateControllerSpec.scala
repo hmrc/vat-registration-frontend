@@ -107,8 +107,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in new Setup {
-
-
       when(mockFlatRateService.saveOverBusinessGoods(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -123,7 +121,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
-
       when(mockFlatRateService.saveOverBusinessGoods(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -141,10 +138,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   val estimateVatTurnover = TurnoverEstimates(1000000L)
 
   s"GET ${controllers.routes.FlatRateController.annualCostsLimitedPage()}" should {
-
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
-
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
 
@@ -310,7 +304,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FRSDateChoice.DifferentDate,
+        "frsStartDate" -> FRSDateChoice.DifferentDate,
         "frsStartDate.day" -> "1",
         "frsStartDate.month" -> "",
         "frsStartDate.year" -> "2017"
@@ -329,7 +323,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FRSDateChoice.DifferentDate,
+        "frsStartDate" -> FRSDateChoice.DifferentDate,
         "frsStartDate.day" -> "20",
         "frsStartDate.month" -> "3",
         "frsStartDateDate.year" -> "2017"
@@ -353,124 +347,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       submitAuthorised(controller.submitFrsStartDate(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
-      }
-    }
-  }
-
-  s"GET ${routes.FlatRateController.joinFrsPage()}" should {
-
-    "render the page" when {
-
-      "visited for the first time" in new Setup {
-        when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-          .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
-
-        when(mockFlatRateService.getFlatRate(any(), any()))
-          .thenReturn(Future.successful(validFlatRate))
-
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
-
-        when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
-          .thenReturn(Future.successful(FlatRateScheme()))
-
-        callAuthorised(controller.joinFrsPage()) { result =>
-          status(result) mustBe 200
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-        }
-      }
-
-      "user has already answered this question" in new Setup {
-
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future.successful(Some(currentProfile)))
-
-        when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-          .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
-
-        when(mockFlatRateService.getFlatRate(any(), any()))
-          .thenReturn(Future.successful(validFlatRate))
-
-        callAuthorised(controller.joinFrsPage) { result =>
-          status(result) mustBe 200
-          contentType(result) mustBe Some("text/html")
-          charset(result) mustBe Some("utf-8")
-        }
-      }
-    }
-
-    "redirect user to Summary if Turnover Estimates is more than £150K" in new Setup {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
-      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(Some(TurnoverEstimates(150001L))))
-
-      callAuthorised(controller.joinFrsPage) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.SummaryController.show().url)
-      }
-    }
-
-    "return an error if Turnover Estimates is empty" in new Setup {
-      mockAuthenticated()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
-      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      intercept[InternalServerException] {
-        await(controller.joinFrsPage()(FakeRequest()))
-      }
-    }
-  }
-
-  s"POST ${routes.FlatRateController.submitJoinFRS()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitJoinFRS())
-
-    "return 400 with Empty data" in new Setup {
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
-      submitAuthorised(controller.submitJoinFRS(), fakeRequest.withFormUrlEncodedBody(("", "")))(result =>
-        status(result) mustBe 400
-      )
-    }
-
-    "return 303 with Join Flat Rate Scheme selected Yes" in new Setup {
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
-      when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "joinFrsRadio" -> "true"
-      )
-      submitAuthorised(controller.submitJoinFRS(), request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
-      }
-    }
-
-    "return 303 with Join Flat Rate Scheme selected No" in new Setup {
-
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Some(currentProfile)))
-
-      when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "joinFrsRadio" -> "false"
-      )
-
-      submitAuthorised(controller.submitJoinFRS(), request) { result =>
-        redirectLocation(result) mustBe Some(s"$contextRoot/check-confirm-answers")
       }
     }
   }
@@ -575,7 +451,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsWithSectorRadio" -> "true"
+        "registerForFrsWithSector" -> "true"
       )
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>
@@ -593,7 +469,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsWithSectorRadio" -> "false"
+        "registerForFrsWithSector" -> "false"
       )
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>

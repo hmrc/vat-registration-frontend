@@ -174,9 +174,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> false)
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
-      Then(s"The client is served a 303 and redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
+      Then(s"The client is served a 303 and redirected to ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()}")
       response.status mustBe 303
-      redirectLocation(response) mustBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
+      redirectLocation(response) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
   }
 
@@ -224,9 +224,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       )
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
-      Then(s"the client is served a 303 response and is redirected to ${controllers.routes.FlatRateController.joinFrsPage()}")
+      Then(s"the client is served a 303 response and is redirected to ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show}")
       response.status mustBe 303
-      redirectLocation(response) mustBe Some(controllers.routes.FlatRateController.joinFrsPage().url)
+      redirectLocation(response) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
   }
 }

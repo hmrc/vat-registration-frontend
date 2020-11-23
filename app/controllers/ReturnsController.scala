@@ -29,7 +29,7 @@ import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
-import views.html.{charge_expectancy_view => ChargeExpectancyPage, mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
+import views.html.{mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
@@ -44,30 +44,6 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
                                  (implicit val appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val chargeExpectancyPage: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        returnsService.getReturns map { returns =>
-          returns.reclaimVatOnMostReturns match {
-            case Some(chargeExpectancy) => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form.fill(chargeExpectancy)))
-            case None => Ok(ChargeExpectancyPage(ChargeExpectancyForm.form))
-          }
-        }
-  }
-
-  val submitChargeExpectancy: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        ChargeExpectancyForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(ChargeExpectancyPage(errors))),
-          success => {
-            returnsService.saveReclaimVATOnMostReturns(success) flatMap { _ =>
-              correctVatStartDatePage()
-            }
-          }
-        )
-  }
-
   val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
@@ -78,11 +54,6 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
           }
         }
   }
-
-  private def correctVatStartDatePage()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] =
-    returnsService.getThreshold map { voluntary =>
-      if (voluntary) Redirect(routes.ReturnsController.voluntaryStartPage()) else Redirect(routes.ReturnsController.mandatoryStartPage())
-    }
 
   val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

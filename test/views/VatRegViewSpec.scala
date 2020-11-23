@@ -17,6 +17,8 @@
 package views
 
 import config.FrontendAppConfig
+import org.jsoup.nodes.{Document, Element}
+import org.jsoup.select.{Elements, NodeFilter}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -25,6 +27,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.helpers.formWithCSRF
 import views.html.components.{button, h1, p}
 import views.html.layouts.layout
+
+import scala.collection.JavaConverters._
 
 class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport {
 
@@ -40,4 +44,61 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
   val p: p = app.injector.instanceOf[p]
   val button: button = app.injector.instanceOf[button]
   val formWithCSRF: formWithCSRF = app.injector.instanceOf[formWithCSRF]
+
+  class ViewSetup(implicit val doc: Document) {
+    case class Link(text: String, href: String)
+    case class Details(summary: String, body: String)
+
+    implicit class ElementExtractor(elements: Elements) {
+      def toList: List[Element] = elements.iterator.asScala.toList
+
+      def headOption: Option[Element] = toList.headOption
+    }
+
+    implicit class SelectorDoc(doc: Document) extends BaseSelectors {
+      def heading: Option[String] = doc.select(h1).headOption.map(_.text)
+
+      def headingLevel2(n: Int) = doc.select(h2(n)).headOption.map(_.text)
+
+      def hasBackLink: Boolean = doc.select(".govuk-back-link").headOption.isDefined
+
+      def errorSummary: Option[Element] = doc.select("govuk-error-summary.").headOption
+
+      def errorSummaryLinks: List[Link] =
+        doc.select(".govuk-error-summary__list ul a").toList
+          .map(l => Link(l.text, l.attr("href")))
+
+      def hasErrorSummary: Boolean = errorSummary.isDefined
+
+      def paras: List[String] = doc.select("main p").toList.map(_.text)
+
+      def para(n: Int): Option[String] = doc.select(p(n)).headOption.map(_.text)
+
+      def unorderedList(n: Int): List[String] = doc.select(s"main ul:nth-of-type($n) li").eachText().asScala.toList
+
+      def link(n: Int): Option[Link] = doc.select(a(n)).headOption.map(l =>Link(l.text, l.attr("href")))
+
+      def submitButton: Option[String] = doc.select(button).headOption.map(_.text)
+
+      def details: Option[Details] = {
+        doc.select(detailsSummary).headOption map { summary =>
+          Details(summary.text, doc.select(detailsContent).first.text)
+        }
+      }
+
+      private def input(inputType: String, selector: String, selectorValue: String): Option[String] = {
+        doc.select(s"input[type=$inputType][$selector=$selectorValue]").headOption.map { elem =>
+          doc.select(s"label[for=${elem.id}]").first.text
+        }
+      }
+
+      def radio(value: String): Option[String] = input("radio", "value", value)
+
+      def checkbox(value: String): Option[String] = input("checkbox", "value", value)
+
+      def textBox(id: String): Option[String] = input("text", "id", id)
+
+      def textArea(id: String): Option[String] = input("textarea", "id", id)
+    }
+  }
 }

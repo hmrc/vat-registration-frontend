@@ -282,7 +282,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe 303
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
       val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
       (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
@@ -380,7 +380,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
       res.status mustBe 303
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.tradingNamePage().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
 
     }
   }

@@ -54,7 +54,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
             if (PROVIDE_WORKERS_YES == view.yesNo) {
               routes.LabourComplianceController.showWorkers()
             } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
+              controllers.registration.business.routes.TradingNameController.show()
             }
           } map Redirect
         )
@@ -78,7 +78,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
             if (data.numberOfWorkers >= SicAndCompliance.NUMBER_OF_WORKERS_THRESHOLD) {
               routes.LabourComplianceController.showTemporaryContracts()
             } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
+              controllers.registration.business.routes.TradingNameController.show()
             }
           } map Redirect
         )
@@ -102,7 +102,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
             if (data.yesNo == TemporaryContracts.TEMP_CONTRACTS_YES) {
               routes.LabourComplianceController.showSkilledWorkers()
             } else {
-              controllers.routes.TradingDetailsController.tradingNamePage()
+              controllers.registration.business.routes.TradingNameController.show()
             }
           } map Redirect
         )
@@ -124,7 +124,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
           badForm => Future.successful(BadRequest(skilled_workers(badForm))),
           view => for {
             _ <- sicAndCompService.updateSicAndCompliance(view)
-          } yield Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+          } yield Redirect(controllers.registration.business.routes.TradingNameController.show())
         )
   }
 }

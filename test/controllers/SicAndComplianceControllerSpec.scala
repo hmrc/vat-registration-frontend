@@ -114,7 +114,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.TradingDetailsController.tradingNamePage().url
+            res redirectsTo controllers.registration.business.routes.TradingNameController.show().url
         }
       }
       "returning from ICL with compliance question SIC codes" in new Setup {

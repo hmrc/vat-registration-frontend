@@ -66,15 +66,15 @@ class ApplicationSubmissionConfirmationPageSpec extends VatRegViewSpec {
     }
 
     "have the correct Link texts" in {
-      doc.select(Selectors.link(1)).get(0).text mustBe linkText1
-      doc.select(Selectors.link(1)).get(1).text mustBe linkText2
-      doc.select(Selectors.link(1)).get(2).text mustBe linkText3
+      doc.select(Selectors.a(1)).get(0).text mustBe linkText1
+      doc.select(Selectors.a(1)).get(1).text mustBe linkText2
+      doc.select(Selectors.a(1)).get(2).text mustBe linkText3
     }
 
     "have the correct Link urls" in {
-      doc.select(Selectors.link(1)).get(0).attr("href") mustBe url1
-      doc.select(Selectors.link(1)).get(1).attr("href") mustBe url2
-      doc.select(Selectors.link(1)).get(2).attr("href") mustBe url3
+      doc.select(Selectors.a(1)).get(0).attr("href") mustBe url1
+      doc.select(Selectors.a(1)).get(1).attr("href") mustBe url2
+      doc.select(Selectors.a(1)).get(2).attr("href") mustBe url3
     }
 
     "have the correct inset text" in {

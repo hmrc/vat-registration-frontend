@@ -22,11 +22,14 @@
         hint: Option[Html] = None,
         headingMessageArgs: Seq[String] = Seq(),
         isPageHeading: Boolean = true,
-        classes: String = "govuk-fieldset__legend--xl"
+        inline: Boolean = true,
+        classes: String = "govuk-fieldset__legend--xl",
+        hiddenYesContent: Option[Html] = None,
+        hiddenNoContent: Option[Html] = None
 )(implicit messages: Messages)
 
 @GovukRadios(Radios(
-    classes = "govuk-radios--inline",
+    classes = if (inline) "govuk-radios--inline" else "",
     idPrefix = None,
     name = "value",
     fieldset = Some(Fieldset(
@@ -40,15 +43,19 @@
         content = HtmlContent(hint)
     )},
     items = Seq(
-        RadioItem(id = Some("value"),
-                  value = Some("true"),
-                  content = Text(messages("app.common.yes")),
-                  checked = form("value").value.contains("true")
+        RadioItem(
+            id = Some("value"),
+            value = Some("true"),
+            content = Text(messages("app.common.yes")),
+            checked = form("value").value.contains("true"),
+            conditionalHtml = hiddenYesContent
         ),
-        RadioItem(id = Some("value-no"),
-                  value = Some("false"),
-                  content = Text(messages("app.common.no")),
-                  checked = form("value").value.contains("false")
+        RadioItem(
+            id = Some("value-no"),
+            value = Some("false"),
+            content = Text(messages("app.common.no")),
+            checked = form("value").value.contains("false"),
+            conditionalHtml = hiddenNoContent
         )
     ),
     errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))

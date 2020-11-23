@@ -51,7 +51,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val tradingNameRow: SummaryRow = SummaryRow(
     s"$sectionId.tradingName",
     scheme.tradingDetails.flatMap(_.tradingNameView).flatMap(_.tradingName).getOrElse("app.common.no"),
-    Some(controllers.routes.TradingDetailsController.tradingNamePage())
+    Some(controllers.registration.business.routes.TradingNameController.show())
   )
 
 
@@ -130,7 +130,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val expectClaimRefundsRow: SummaryRow = yesNoRow(
     "claimRefunds",
     scheme.returns.flatMap(_.reclaimVatOnMostReturns),
-    controllers.routes.ReturnsController.chargeExpectancyPage()
+    controllers.registration.returns.routes.ClaimRefundsController.show()
   )
 
   val accountingPeriodRow: SummaryRow = SummaryRow(
@@ -213,13 +213,13 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val buySellEuGoodsRow: SummaryRow = yesNoRow(
     "euGoods",
     scheme.tradingDetails.flatMap(_.euGoods),
-    controllers.routes.TradingDetailsController.euGoodsPage()
+    controllers.registration.business.routes.EuGoodsController.show()
   )
 
   val joinFrsRow: SummaryRow = yesNoRow(
     "joinFrs",
     scheme.flatRateScheme.flatMap(_.joinFrs),
-    controllers.routes.FlatRateController.joinFrsPage()
+    controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()
   )
 
   val costsInclusiveRow: SummaryRow = yesNoRow(

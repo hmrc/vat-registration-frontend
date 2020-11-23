@@ -130,7 +130,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.tradingNameRow mustBe SummaryRow(
         "directorDetails.tradingName",
         "ACME Ltd.",
-        Some(controllers.routes.TradingDetailsController.tradingNamePage())
+        Some(controllers.registration.business.routes.TradingNameController.show())
       )
     }
     "render the Principal place of business address row" in {
@@ -208,14 +208,14 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.expectClaimRefundsRow mustBe SummaryRow(
         "directorDetails.claimRefunds",
         "app.common.no",
-        Some(controllers.routes.ReturnsController.chargeExpectancyPage())
+        Some(controllers.registration.returns.routes.ClaimRefundsController.show())
       )
     }
     "render the EU goods row" in {
       sectionBuilder.buySellEuGoodsRow mustBe SummaryRow(
         "directorDetails.euGoods",
         "app.common.yes",
-        Some(controllers.routes.TradingDetailsController.euGoodsPage())
+        Some(controllers.registration.business.routes.EuGoodsController.show())
       )
     }
   }
@@ -418,12 +418,12 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
         sectionBuilder.tradingNameRow mustBe SummaryRow(
           "directorDetails.tradingName",
           "ACME Ltd.",
-          Some(controllers.routes.TradingDetailsController.tradingNamePage())
+          Some(controllers.registration.business.routes.TradingNameController.show())
         )
       }
 
       "a 'No' if there isn't a trading name" in {
-        sectionBuilderNoTradingDetails.tradingNameRow mustBe SummaryRow("directorDetails.tradingName", "app.common.no", Some(controllers.routes.TradingDetailsController.tradingNamePage()))
+        sectionBuilderNoTradingDetails.tradingNameRow mustBe SummaryRow("directorDetails.tradingName", "app.common.no", Some(controllers.registration.business.routes.TradingNameController.show()))
       }
     }
   }

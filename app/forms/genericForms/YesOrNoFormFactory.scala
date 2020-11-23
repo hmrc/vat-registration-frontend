@@ -26,11 +26,9 @@ object YesOrNoFormFactory extends YesOrNoFormFactory
 
 class YesOrNoFormFactory {
 
-  def form(name: String)(implicit errorCode: ErrorCode): Form[YesOrNoAnswer] = {
-    val OPTION: String = s"${name}Radio"
+  def form(name: String = "value")(implicit errorCode: ErrorCode): Form[YesOrNoAnswer] =
     Form(mapping(
-      OPTION -> missingBooleanFieldMapping()
+      name -> missingBooleanFieldMapping()
     )(YesOrNoAnswer.apply)(YesOrNoAnswer.unapply))
-  }
 
 }

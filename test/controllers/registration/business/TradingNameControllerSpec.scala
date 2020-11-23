@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.business
 
 import fixtures.VatRegistrationFixture
-import models.{TradingNameView, _}
+import mocks.TimeServiceMock
+import models.{TradingDetails, TradingNameView}
+import play.api.test.FakeRequest
+import testHelpers.{ControllerSpec, FutureAssertions}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
-import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.trading_name
 
 import scala.concurrent.Future
 
-class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
+  val fakeRequest = FakeRequest(controllers.registration.business.routes.TradingNameController.show)
 
   class Setup {
-    val testController = new TradingDetailsController(
+    val view = app.injector.instanceOf[trading_name]
+    val testController = new TradingNameController(
       messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
-      mockTradingDetailsService
+      mockTradingDetailsService,
+      view
     )
 
     mockAuthenticated()
@@ -49,58 +54,44 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
     Some(true)
   )
 
-  "tradingNamePage" should {
 
+  "show" should {
     "return an Ok when there is a trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
         .thenReturn(Future.successful(companyName))
 
-      callAuthorised(testController.tradingNamePage) {
+      callAuthorised(testController.show) {
         result => {
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
-
-          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
-          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe "checked"
-          doc.getElementById("tradingName").`val` mustBe "tradingName"
         }
       }
     }
-
     "return an Ok when there is no trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
         .thenReturn(Future.successful(companyName))
 
-      callAuthorised(testController.tradingNamePage) {
+      callAuthorised(testController.show) {
         result => {
           status(result) mustBe OK
-          val doc = Jsoup.parse(contentAsString(result))
-          doc.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
-          doc.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
-          doc.getElementById("tradingName").`val` mustBe ""
         }
       }
     }
-
     "return an Ok when there is a company name present" in new Setup {
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
         .thenReturn(Future.successful(companyName))
 
-      callAuthorised(testController.tradingNamePage) {
+      callAuthorised(testController.show) {
         result => {
           status(result) mustBe OK
         }
       }
     }
 
-    "submitTradingName" should {
-
-      val fakeRequest = FakeRequest(routes.TradingDetailsController.submitTradingName())
-
+    "submit" should {
       "return 303 when they do not trade under a different name" in new Setup {
         when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(fullS4L))
@@ -108,10 +99,10 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
           .thenReturn(Future.successful(companyName))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "tradingNameRadio" -> "false"
+          "value" -> "false"
         )
 
-        submitAuthorised(testController.submitTradingName, request) { result =>
+        submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 303
           redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
         }
@@ -124,11 +115,11 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
           .thenReturn(Future.successful(companyName))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "tradingNameRadio" -> "true",
+          "value" -> "true",
           "tradingName" -> "some name"
         )
 
-        submitAuthorised(testController.submitTradingName, request) { result =>
+        submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 303
           redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
         }
@@ -139,11 +130,11 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
           .thenReturn(Future.successful(companyName))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "tradingNameRadio" -> "true",
+          "value" -> "true",
           "tradingName" -> ""
         )
 
-        submitAuthorised(testController.submitTradingName, request) { result =>
+        submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 400
         }
       }
@@ -154,7 +145,7 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-        submitAuthorised(testController.submitTradingName, request) { result =>
+        submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 400
         }
       }
@@ -164,11 +155,11 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
           .thenReturn(Future.successful(companyName))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "tradingNameRadio" -> "true",
+          "value" -> "true",
           "tradingName" -> "$0M3 T3$T"
         )
 
-        submitAuthorised(testController.submitTradingName, request) { result =>
+        submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 400
         }
       }
@@ -179,80 +170,11 @@ class TradingDetailsControllerSpec extends ControllerSpec with VatRegistrationFi
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-        submitAuthorised(testController.tradingNamePage, request) {
+        submitAuthorised(testController.submit, request) {
           _ failedWith exception
         }
       }
     }
-
-    "euGoodsPage" should {
-
-      "return an Ok when there is a trading details present" in new Setup {
-        when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-          .thenReturn(Future.successful(TradingDetails(euGoods = Some(true))))
-
-        callAuthorised(testController.euGoodsPage) {
-          result => {
-            status(result) mustBe OK
-          }
-        }
-      }
-
-      "return an Ok when there is no trading details present" in new Setup {
-        when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-          .thenReturn(Future.successful(TradingDetails()))
-
-        callAuthorised(testController.euGoodsPage) {
-          result => {
-            status(result) mustBe OK
-          }
-        }
-      }
-    }
-
-    "submitEuGoods" should {
-
-      val fakeRequest = FakeRequest(routes.TradingDetailsController.submitEuGoods())
-
-      "return 303 when they trade eu goods and redirect to the zero rated supplies page" in new Setup {
-        when(mockTradingDetailsService.saveEuGoods(any(), any())(any(), any()))
-          .thenReturn(Future.successful(fullS4L))
-
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "euGoodsRadio" -> "true"
-        )
-
-        submitAuthorised(testController.submitEuGoods, request) { result =>
-          status(result) mustBe 303
-          redirectLocation(result) mustBe Some(controllers.routes.ZeroRatedSuppliesController.show().url)
-        }
-      }
-
-      "return 303 when they don't trade eu goods and redirect to the zero rated supplies page" in new Setup {
-        when(mockTradingDetailsService.saveEuGoods(any(), any())(any(), any()))
-          .thenReturn(Future.successful(fullS4L))
-
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "euGoodsRadio" -> "false"
-        )
-
-        submitAuthorised(testController.submitEuGoods, request) { result =>
-          status(result) mustBe 303
-          redirectLocation(result) mustBe Some(controllers.routes.ZeroRatedSuppliesController.show().url)
-        }
-      }
-
-      "return 400 when no option is selected" in new Setup {
-        when(mockTradingDetailsService.saveEuGoods(any(), any())(any(), any()))
-          .thenReturn(Future.successful(fullS4L))
-
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-        submitAuthorised(testController.submitEuGoods, request) { result =>
-          status(result) mustBe 400
-        }
-      }
-
-    }
   }
+
 }

@@ -37,7 +37,7 @@
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.euGoods.heading")</h1>
 
-    @govHelpers.form(action = controllers.routes.TradingDetailsController.submitEuGoods()) {
+    @govHelpers.form(action = controllers.registration.business.routes.EuGoodsController.submit()) {
         <div class="form-group">
             @verticalInputRadioGroup(
                 field = euGoodsForm("euGoodsRadio"),

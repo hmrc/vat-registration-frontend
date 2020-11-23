@@ -71,7 +71,7 @@ class SicStubController @Inject()(mcc: MessagesControllerComponents,
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
                 Redirect(controllers.routes.SicAndComplianceController.showComplianceIntro())
               } else {
-                Redirect(controllers.routes.TradingDetailsController.tradingNamePage())
+                Redirect(controllers.registration.business.routes.TradingNameController.show())
               }
             } else {
               Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
