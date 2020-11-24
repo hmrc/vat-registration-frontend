@@ -138,41 +138,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     }
   }
 
-  s"GET ${routes.SicAndComplianceController.showBusinessActivityDescription()}" should {
-    "return OK" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
-
-      callAuthorised(controller.showBusinessActivityDescription) {
-        status(_) mustBe OK
-      }
-    }
-
-    "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetSicAndCompliance(Future.successful(SicAndCompliance()))
-
-      callAuthorised(controller.showBusinessActivityDescription) { result =>
-        status(result) mustBe OK
-      }
-    }
-  }
-
-  s"POST ${routes.SicAndComplianceController.submitBusinessActivityDescription()} with Empty data" should {
-    val fakeRequest = FakeRequest(routes.SicAndComplianceController.showBusinessActivityDescription())
-
-    "return 400" in new Setup {
-      submitAuthorised(controller.submitBusinessActivityDescription(), fakeRequest.withFormUrlEncodedBody(
-      ))(result => result isA 400)
-    }
-
-    "return 303" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
-
-      submitAuthorised(controller.submitBusinessActivityDescription(), fakeRequest.withFormUrlEncodedBody("description" -> "Testing")) {
-        _ redirectsTo s"$contextRoot/choose-standard-industry-classification-codes"
-      }
-    }
-  }
-
   s"GET ${routes.SicAndComplianceController.showComplianceIntro()}" should {
     "display the introduction page to a set of compliance questions" in new Setup {
       callAuthorised(controller.showComplianceIntro) {

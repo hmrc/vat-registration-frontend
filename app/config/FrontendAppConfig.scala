@@ -149,4 +149,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val govukVat: String = servicesConfig.getString("urls.govukVat")
   lazy val govukMtd: String = servicesConfig.getString("urls.govukMtd")
   lazy val govukSoftware: String = servicesConfig.getString("urls.govukSoftware")
+
+  lazy val businessDescriptionMaxLength = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 }

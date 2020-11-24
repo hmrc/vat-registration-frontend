@@ -150,7 +150,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.businessDescription",
     sicAndComp.description.fold("app.common.no")(desc =>
       if (desc.description.isEmpty) "app.common.no" else desc.description),
-    Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+    Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
   )
 
   val mainActivityRow: SummaryRow = SummaryRow.mandatory(
