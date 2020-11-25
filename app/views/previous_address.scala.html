@@ -30,8 +30,7 @@
 @main_template(title = title(previousAddressQuestionForm, messages("pages.previousAddressQuestion.heading"))) {
 
     @errorSummary(
-    messages("app.common.errorSummaryLabel"),
-    previousAddressQuestionForm
+        form = previousAddressQuestionForm
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>

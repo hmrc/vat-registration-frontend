@@ -29,8 +29,7 @@
 @main_template(title = title(mainBusinessActivityForm, messages("pages.mainBusinessActivity.heading"))) {
 
     @errorSummary(
-    messages("app.common.errorSummaryLabel"),
-    mainBusinessActivityForm
+        form = mainBusinessActivityForm
     )
 
     <header class="page-header">

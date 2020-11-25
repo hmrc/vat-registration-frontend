@@ -24,7 +24,7 @@
 
 @parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), messages) )}
 
-@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
+@labelAfter = @{ elements.args.getOrElse('_labelAfter, false).asInstanceOf[Boolean] }
 
 <label for="@elements.field.name" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group-error}" @if( elements.args.get('_dataCharCounter) ){ data-char-counter="@elements.args.get('_dataCharCounter)" }>
     @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
@@ -33,7 +33,6 @@
     }
     @if(!labelAfter && elements.args.contains('_label)) { @elements.label }
     @if( elements.args.get('_info) ) { <p>@elements.args.get('_info)</p> }
-</label>
 <textarea @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
     name="@elements.field.name"
     id="@elements.field.name"
@@ -46,3 +45,4 @@
 @if(labelAfter && elements.args.contains('_label)) { @elements.label }
 @if(elements.args.contains('_help)) { <small>@elements.infos</small> }
 
+</label>

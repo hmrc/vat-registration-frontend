@@ -15,48 +15,55 @@
  *@
 
 @import config.FrontendAppConfig
-@(heading: String,
-  form: Form[_],
-  errorArgs: Seq[String] = Seq.empty,
-  classes: Seq[String] = Seq.empty,
-  dataJourney: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(
+        form: Form[_],
+        errorArgs: Seq[String] = Seq.empty,
+        classes: Seq[String] = Seq.empty,
+        dataJourney: Option[String] = None,
+        errorFieldSuffix: Option[Map[String, String]] = None
+)(implicit request: Request[_], messages: Messages)
+
 
 <div class="error-summary@if(form.hasErrors) { error-summary--show} @classes.mkString(" ")"
-     id="error-summary-display"
-     role="alert"
-     aria-labelledby="error-summary-heading"
-     tabindex="-1">
-    <h2 id="error-summary-heading" class="h3-heading">@heading</h2>
+id="error-summary-display"
+role="alert"
+aria-labelledby="error-summary-heading"
+tabindex="-1">
+    <h2 id="error-summary-heading" class="h3-heading">@messages("app.common.errorSummaryLabel")</h2>
     <ul class="error-summary-list">
         @if(form.hasGlobalErrors) {
             @form.globalErrors.map { error =>
                 <li role="listitem">
                     <a href="#@error.args" id="@error.message-error-summary" data-focuses="@error.args">
-                        @messages(error.message, error.args: _*)
+                    @messages(error.message, error.args: _*)
                     </a>
                 </li>
             }
         }
-    @if(form.hasErrors) {
-        @form.errors.map { error =>
-            @if(error.key != "") {
-                <li role="listitem" @dataJourney.map(page => Html(s"""data-journey="$page:error:${error.key}""""))>
-                    <a href="#@error.key" id="@error.key-error-summary" data-focuses="@error.key" >
+        @if(form.hasErrors) {
+            @form.errors.map { error =>
+                @if(error.key != "") {
+                    @defining(errorFieldSuffix.fold("")(suffix => suffix.getOrElse(error.key, "")) match{
+                        case "" => s"${error.key}"
+                        case someSuffix => s"${error.key}.$someSuffix"
+                    }){errorId =>
+                    <li role="listitem" @dataJourney.map(page => Html(s"""data-journey="$page:error:${error.key}""""))>
+                        <a href="#@errorId" id="@error.key-error-summary" data-focuses="@errorId" >
                         @messages(error.message, error.args: _*)
-                    </a>
-                </li>
-            } else {
-                @if(error.args.nonEmpty) {
-                    @if(errorArgs.contains(error.args.head)) {
-                        <li role="listitem" @dataJourney.map(page => Html(s"""data-journey="$page:error:${error.args.head}""""))>
-                            <a href="#@error.args.head" id="@error.args.head-error-summary" data-focuses="@error.args.head">
+                        </a>
+                    </li>}
+                } else {
+                    @if(error.args.nonEmpty) {
+                        @if(errorArgs.contains(error.args.head)) {
+                            <li role="listitem" @dataJourney.map(page => Html(s"""data-journey="$page:error:${error.args.head}""""))>
+                                <a href="#@error.args.head" id="@error.args.head-error-summary" data-focuses="@error.args.head">
                                 @messages(error.message, error.args: _*)
-                            </a>
-                        </li>
+                                </a>
+                            </li>
+                        }
                     }
                 }
             }
         }
-    }
     </ul>
 </div>

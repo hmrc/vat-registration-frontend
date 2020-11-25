@@ -28,16 +28,16 @@
 @main_template(title = title(bankDetailsForm, messages("pages.bankDetails.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        bankDetailsForm
+        form = bankDetailsForm,
+        errorFieldSuffix = Some(Map("sortCode" -> "part1"))
     )
 
-<h1 class="form-title heading-large" id="pageHeading">@messages("pages.bankDetails.heading")</h1>
-<p>@Html(messages("pages.bankDetails.p1"))</p>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.bankDetails.heading")</h1>
+    <p>@Html(messages("pages.bankDetails.p1"))</p>
 
-<div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
-    <p>@Html(messages("pages.bankDetails.info"))</p>
-</div>
+    <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
+        <p>@Html(messages("pages.bankDetails.info"))</p>
+    </div>
 
     @govHelpers.form(action = controllers.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
         <div class="form-group">

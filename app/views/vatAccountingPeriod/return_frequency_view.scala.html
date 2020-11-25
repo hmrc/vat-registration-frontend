@@ -28,31 +28,30 @@
 
 @main_template(title = title(vatReturnFrequencyForm, messages("pages.vat.return.frequency.heading"))) {
 
-  @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    vatReturnFrequencyForm
-  )
-
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
-  
-  @govHelpers.form(action = controllers.routes.ReturnsController.submitReturnsFrequency()) {
-  <div class="form-group">
-    @vatInputRadioGroup(
-        field = vatReturnFrequencyForm("returnFrequencyRadio"),
-        Seq(
-          monthly.toString -> Messages("pages.vat.return.frequency.radio.monthly"),
-          quarterly.toString -> Messages("pages.vat.return.frequency.radio.quarterly")
-        ),
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_legend -> messages("pages.vat.return.frequency.heading"),
-        '_legendClass -> "visually-hidden"
+    @errorSummary(
+        vatReturnFrequencyForm
     )
-  </div>
 
-    <div class="form-group">
-      <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-    </div>
-  }
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
+
+    @govHelpers.form(action = controllers.routes.ReturnsController.submitReturnsFrequency()) {
+        <div class="form-group">
+        @vatInputRadioGroup(
+            field = vatReturnFrequencyForm("returnFrequencyRadio"),
+            Seq(
+                monthly.toString -> Messages("pages.vat.return.frequency.radio.monthly"),
+                quarterly.toString -> Messages("pages.vat.return.frequency.radio.quarterly")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_legend -> messages("pages.vat.return.frequency.heading"),
+            '_legendClass -> "visually-hidden"
+        )
+        </div>
+
+        <div class="form-group">
+            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+        </div>
+    }
 }
 

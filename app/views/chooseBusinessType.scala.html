@@ -27,8 +27,8 @@
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @main_template(title = title(chooseBusinessTypeForm, messages("pages.frs.chooseBusinessType.heading"))) {
+
     @errorSummary(
-        messages("app.common.errorSummaryLabel"),
         chooseBusinessTypeForm,
         Seq("businessType")
     )

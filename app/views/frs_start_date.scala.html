@@ -32,8 +32,8 @@
 @main_template(title = title(frsStartDateForm, messages("pages.frs.startDate.heading"))) {
 
     @errorSummary(
-       Messages("app.common.errorSummaryLabel"),
-       frsStartDateForm
+        form = frsStartDateForm,
+        errorFieldSuffix = Some(Map("frsStartDate" -> "day"))
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>

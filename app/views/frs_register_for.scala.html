@@ -28,8 +28,7 @@
 @main_template(title = title(registerForFrsForm, messages("pages.frs.registerFor.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        registerForFrsForm
+        form = registerForFrsForm
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.registerFor.heading")</h1>

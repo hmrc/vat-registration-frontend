@@ -30,41 +30,40 @@
     if(accountingPeriodForm.hasErrors && (accountingPeriodForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
 }
 
-@main_template(title = title( accountingPeriodForm, messages("pages.accounting.period.heading"))) {
+@main_template(title = title(accountingPeriodForm, messages("pages.accounting.period.heading"))) {
 
-  @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    accountingPeriodForm,
-    Seq("accountingPeriodRadio")
-  )
+    @errorSummary(
+        accountingPeriodForm,
+        Seq("accountingPeriodRadio")
+    )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.accounting.period.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.accounting.period.heading")</h1>
 
-  <p>@Html(Messages("pages.accounting.period.para1"))</p>
+    <p>@Html(Messages("pages.accounting.period.para1"))</p>
 
-  @govHelpers.form(action = controllers.routes.ReturnsController.submitAccountPeriods()) {
-    <div class="form-group @fieldSetClasses">
-      @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
-          @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))
-      }
+    @govHelpers.form(action = controllers.routes.ReturnsController.submitAccountPeriods()) {
+        <div class="form-group @fieldSetClasses">
+            @accountingPeriodForm.errors.find(_.args.contains("accountingPeriodRadio")).map { error =>
+                @govHelpers.errorInline("accountingPeriodRadio", Messages(error.message))
+            }
 
-      @vatInputRadioGroup(
-          field = accountingPeriodForm("accountingPeriodRadio"),
-          Seq(
-            jan.toString -> Messages("pages.accounting.period.radio.january"),
-            feb.toString -> Messages("pages.accounting.period.radio.february"),
-            mar.toString -> Messages("pages.accounting.period.radio.march")
-          ),
-          '_labelAfter -> true,
-          '_labelClass -> "block-label",
-          '_legend -> messages("pages.accounting.period.heading"),
-          '_legendClass -> "visually-hidden"
-      )
-    </div>
+            @vatInputRadioGroup(
+                field = accountingPeriodForm("accountingPeriodRadio"),
+                Seq(
+                    jan.toString -> Messages("pages.accounting.period.radio.january"),
+                    feb.toString -> Messages("pages.accounting.period.radio.february"),
+                    mar.toString -> Messages("pages.accounting.period.radio.march")
+                ),
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legend -> messages("pages.accounting.period.heading"),
+                '_legendClass -> "visually-hidden"
+            )
+        </div>
 
-    <div class="form-group">
-      <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-    </div>
+        <div class="form-group">
+            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+        </div>
 
-  }
+    }
 }
