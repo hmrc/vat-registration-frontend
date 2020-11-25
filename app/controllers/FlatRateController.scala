@@ -46,7 +46,7 @@ class FlatRateController @Inject()(mcc: MessagesControllerComponents,
                                   (implicit val appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrs")("frs.registerFor")
+  val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsRadio")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
   val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
   val overBusinessGoodsForm: Form[Boolean] = OverBusinessGoodsForm.form
@@ -63,38 +63,6 @@ class FlatRateController @Inject()(mcc: MessagesControllerComponents,
   }.sortBy(_._1): _*)
 
   lazy val businessTypeIds: Seq[String] = groupingBusinessTypesValues.values.toSeq.flatMap(radioValues => radioValues map Function.tupled((id, _) => id))
-
-
-  def joinFrsPage: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        vatRegistrationService.fetchTurnoverEstimates flatMap { res =>
-          val turnoverEstimates = res.getOrElse(throw new InternalServerException("[FlatRateController][joinFrsPage] Missing turnover estimates"))
-          if (turnoverEstimates.turnoverEstimate > 150000L) {
-            Future.successful(Redirect(controllers.routes.SummaryController.show()))
-          } else {
-            flatRateService.getFlatRate map { flatRateScheme =>
-              val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
-              Ok(views.html.frs_join(form))
-            }
-          }
-        }
-  }
-
-  def submitJoinFRS: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        joinFrsForm.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.frs_join(badForm))),
-          joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
-            if (joiningFRS.answer) {
-              Redirect(controllers.routes.FlatRateController.annualCostsInclusivePage())
-            } else {
-              Redirect(controllers.routes.SummaryController.show())
-            }
-          }
-        )
-  }
 
   def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

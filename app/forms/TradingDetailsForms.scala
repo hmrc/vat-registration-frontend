@@ -37,7 +37,7 @@ object TradingNameForm extends RequiredBooleanForm {
   val INPUT_TRADING_NAME: String = "tradingName"
 
   implicit val errorCode: ErrorCode = INPUT_TRADING_NAME
-  val RADIO_YES_NO: String = "tradingNameRadio"
+  val RADIO_YES_NO: String = "value"
   val TRADING_NAME_REGEX = """^[A-Za-z0-9 .,\-()/!"%&*;'<>]+$""".r
 
   val form = Form(

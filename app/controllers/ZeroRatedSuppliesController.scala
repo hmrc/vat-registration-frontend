@@ -70,7 +70,7 @@ class ZeroRatedSuppliesController @Inject()(mcc: MessagesControllerComponents,
                 errors
               ))),
             success => returnsService.saveZeroRatesSupplies(success) map { _ =>
-              Redirect(routes.ReturnsController.chargeExpectancyPage())
+              Redirect(controllers.registration.returns.routes.ClaimRefundsController.show())
             }
           )
           case None => throw new InternalServerException("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates")

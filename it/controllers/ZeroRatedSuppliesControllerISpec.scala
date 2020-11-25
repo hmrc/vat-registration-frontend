@@ -101,7 +101,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ReturnsController.chargeExpectancyPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ClaimRefundsController.show().url)
       }
     }
 

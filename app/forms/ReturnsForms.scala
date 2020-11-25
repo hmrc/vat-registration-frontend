@@ -93,7 +93,7 @@ object AccountingPeriodForm {
 
 object ChargeExpectancyForm extends RequiredBooleanForm {
   override val errorMsg      = "validation.vat.charge.expectancy.missing"
-  val EXPECT_CHARGE_MORE_VAT = "chargeExpectancyRadio"
+  val EXPECT_CHARGE_MORE_VAT = "value"
 
   val form = Form(
     single(EXPECT_CHARGE_MORE_VAT -> requiredBoolean)

@@ -59,7 +59,7 @@ class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
             if (hasBankAccount) {
               Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
             } else {
-              Redirect(controllers.routes.FlatRateController.joinFrsPage())
+              Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
             }
           }
         )
@@ -84,7 +84,7 @@ class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
           errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
           accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
             if (accountDetailsValid) {
-              Redirect(controllers.routes.FlatRateController.joinFrsPage())
+              Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
             } else {
               val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
               Ok(views.html.enter_company_bank_account_details(invalidDetails))

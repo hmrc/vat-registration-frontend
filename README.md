@@ -37,7 +37,7 @@ alias scrs='sm --start ADDRESS_LOOKUP AUTH AUTH_LOGIN_STUB AUTHENTICATOR BUS_REG
 To run the service, just `cd` to cloned directory and execute:
 
 ```
-sbt run
+./run.sh
 ```
 
 To run with the test-only endpoints, then execute the following command:

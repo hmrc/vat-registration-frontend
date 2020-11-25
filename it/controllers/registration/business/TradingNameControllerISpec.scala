@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.business
 
 import helpers.RequestsFinder
 import it.fixtures.ITRegistrationFixtures
@@ -28,17 +28,16 @@ import play.api.libs.json.{JsValue, Json}
 import repositories.SessionRepository
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
+import play.api.test.Helpers._
+import scala.concurrent.duration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class TradingNameControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
   val companyName = "testCompanyName"
 
   class Setup {
-
-    import scala.concurrent.duration._
-
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
     val repo = app.injector.instanceOf[SessionRepository]
@@ -71,14 +70,7 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
 
       val response = buildClient("/trading-name").get()
       whenReady(response) { res =>
-        res.status mustBe 200
-
-        val document = Jsoup.parse(res.body)
-        val elems = document.getElementById("pageHeading")
-        elems.text must include(companyName)
-        document.getElementById("tradingName").`val` mustBe ""
-        document.getElementById("tradingNameRadio-false").attr("checked") mustBe ""
-        document.getElementById("tradingNameRadio-true").attr("checked") mustBe ""
+        res.status mustBe OK
       }
     }
   }
@@ -97,10 +89,10 @@ class TradingDetailsControllerISpec extends IntegrationSpecBase with AppAndStubs
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/trading-name").post(Map("tradingNameRadio" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
+      val response = buildClient("/trading-name").post(Map("value" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
       whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingDetailsController.euGoodsPage().url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.EuGoodsController.show().url)
       }
     }
   }

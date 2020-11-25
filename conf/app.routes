@@ -29,20 +29,20 @@ GET         /mandatory-vat-start-date                                           
 POST        /mandatory-vat-start-date                                                          controllers.ReturnsController.submitMandatoryStart
 
 ## TRADING NAME PAGE
-GET         /trading-name                                                                      controllers.TradingDetailsController.tradingNamePage
-POST        /trading-name                                                                      controllers.TradingDetailsController.submitTradingName
+GET         /trading-name                                                                      controllers.registration.business.TradingNameController.show
+POST        /trading-name                                                                      controllers.registration.business.TradingNameController.submit
 
 ## EU GOODS PAGE
-GET         /trade-goods-outside-eu                                                            controllers.TradingDetailsController.euGoodsPage
-POST        /trade-goods-outside-eu                                                            controllers.TradingDetailsController.submitEuGoods
+GET         /trade-goods-outside-eu                                                            controllers.registration.business.EuGoodsController.show
+POST        /trade-goods-outside-eu                                                            controllers.registration.business.EuGoodsController.submit
 
 ## ZERO RATED SUPPLIES PAGE
 GET         /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.show
 POST        /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /claim-vat-refunds                                                                 controllers.ReturnsController.chargeExpectancyPage
-POST        /claim-vat-refunds                                                                 controllers.ReturnsController.submitChargeExpectancy
+GET         /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.show
+POST        /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.submit
 
 ## ACCOUNTING PERIOD PAGE
 GET         /submit-vat-returns                                                                controllers.ReturnsController.accountPeriodsPage
@@ -173,8 +173,8 @@ POST        /application-submitted                                              
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
-GET         /join-flat-rate                                                                    controllers.FlatRateController.joinFrsPage
-POST        /join-flat-rate                                                                    controllers.FlatRateController.submitJoinFRS
+GET         /join-flat-rate                                                                    controllers.registration.flatratescheme.JoinFlatRateSchemeController.show
+POST        /join-flat-rate                                                                    controllers.registration.flatratescheme.JoinFlatRateSchemeController.submit
 
 ##Do you spend less than 250 a year Page
 GET         /business-spend-relevant-goods                                                     controllers.FlatRateController.annualCostsInclusivePage

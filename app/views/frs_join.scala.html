@@ -24,68 +24,72 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
+
+@this(
+    layout: layouts.layout,
+    errorSummary: components.errorSummary,
+    h1: components.h1,
+    h2: components.h2,
+    p: components.p,
+    bullets: components.bullets,
+    link: components.link,
+    form: FormWithCSRF,
+    details: components.details,
+    yesNoRadio: components.yesNoRadio,
+    button: components.button
+)
+
 @(joinFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(joinFrsForm, messages("pages.frs.join.heading"))) {
+@layout(pageTitle = Some(title(joinFrsForm, messages("pages.frs.join.heading"))), backLink = true) {
 
-    @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        joinFrsForm
+    @errorSummary(joinFrsForm.errors)
+    @h1(messages("pages.frs.join.heading"))
+
+    @p { @messages("pages.frs.join.listHead") }
+
+    @bullets(
+        messages("pages.frs.join.list1.bullet1"),
+        messages("pages.frs.join.list1.bullet2"),
+        messages("pages.frs.join.list1.bullet3"),
+        messages("pages.frs.join.list1.bullet4")
     )
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.join.heading")</h1>
 
-    <p>@messages("pages.frs.join.listHead")</p>
+    @p { @messages("pages.frs.join.list.bottom") }
 
-    <ul class="list list-bullet">
-        <li>@messages("pages.frs.join.list1.bullet1")</li>
-        <li>@messages("pages.frs.join.list1.bullet2")</li>
-        <li>@messages("pages.frs.join.list1.bullet3")</li>
-        <li>@messages("pages.frs.join.list1.bullet4")</li>
-    </ul>
-    <p>@messages("pages.frs.join.list.bottom")</p>
+    @details(
+        summary = messages("pages.frs.join.info"),
+        content = hiddenContent
+    )
 
-    <div class="form-group">
-        <details role="group">
-              <summary role="button" aria-controls="details-content-1" aria-expanded="false"><span class="summary">
-              @Html(messages("pages.frs.join.info"))
-              </span></summary>
-              <div class="panel panel-border-narrow" id="details-content-1" aria-hidden="true">
-                  <p>@messages("pages.frs.join.p2")</p>
-                  <p>@messages("pages.frs.join.p3")</p>
-              </div>
-        </details>
-    </div>
-    <h2>@messages("pages.frs.join.subheading2")</h2>
-    <p>@messages("pages.frs.join.p4")</p>
-    <ul class="list list-bullet">
-        <li>@messages("pages.frs.join.list2.bullet1")</li>
-        <li>@messages("pages.frs.join.list2.bullet2")</li>
-    </ul>
+    @h2(messages("pages.frs.join.subheading2"))
+    @p { @messages("pages.frs.join.p4") }
 
+    @bullets(
+        messages("pages.frs.join.list2.bullet1"),
+        messages("pages.frs.join.list2.bullet2")
+    )
 
-    <p>@Html(messages("pages.frs.join.para1"))</p>
-    <p>@messages("pages.frs.join.para2")
-        @newWindowLink("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1")).</p>
+    @p { @messages("pages.frs.join.para1") }
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitJoinFRS()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = joinFrsForm("joinFrsRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.frs.join.heading"),
-                '_legendClass -> "visually-hidden"
-            )
-        </div>
-
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-        </div>
-
+    @p {
+        @messages("pages.frs.join.para2")
+        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1")).
     }
+
+    @form(action = controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit()) {
+        @yesNoRadio(
+            form = joinFrsForm,
+            headingKey = "pages.frs.join.heading",
+            isPageHeading = false,
+            classes = "govuk-visually-hidden"
+        )
+
+        @button(messages("app.common.continue"))
+    }
+}
+
+@hiddenContent = {
+    @p { @messages("pages.frs.join.p2") }
+    @p { @messages("pages.frs.join.p3") }
 }

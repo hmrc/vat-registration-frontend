@@ -80,7 +80,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
       submitAuthorised(controller.submitProvideWorkers(), fakeRequest.withFormUrlEncodedBody(
         "companyProvideWorkersRadio" -> CompanyProvideWorkers.PROVIDE_WORKERS_NO
-      ))(_ redirectsTo controllers.routes.TradingDetailsController.tradingNamePage().url)
+      ))(_ redirectsTo controllers.registration.business.routes.TradingNameController.show().url)
     }
   }
 
@@ -123,7 +123,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.routes.TradingDetailsController.tradingNamePage().url
+          result redirectsTo controllers.registration.business.routes.TradingNameController.show().url
       }
     }
 
@@ -191,7 +191,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.tradingNamePage().url
+          redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
       }
     }
   }
@@ -236,7 +236,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.tradingNamePage().url
+          redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
       }
     }
 
@@ -248,7 +248,7 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
       )) {
         response =>
           status(response) mustBe Status.SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingDetailsController.tradingNamePage().url
+          redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
       }
     }
   }
