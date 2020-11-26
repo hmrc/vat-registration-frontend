@@ -171,7 +171,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
       val otherActivities = (for {
         sicAndCompliance <- scheme.sicAndCompliance
-        activities <- sicAndCompliance.otherBusinessActivities.map(_.sicCodes.map(_.description))
+        activities <- sicAndCompliance.businessActivities.map(_.sicCodes.map(_.description))
       } yield activities).getOrElse(List.empty)
 
       (otherActivities ++ mainActivity).distinct
@@ -180,8 +180,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   )
 
   val confirmIndustryClassificationCodesRow: SummaryRow = SummaryRow(
-    s"$sectionId.otherBusinessActivities",
-    sicAndComp.otherBusinessActivities.fold(Seq("app.common.no"))(codes => codes.sicCodes.map(
+    s"$sectionId.businessActivities",
+    sicAndComp.businessActivities.fold(Seq("app.common.no"))(codes => codes.sicCodes.map(
       sicCode => sicCode.code + " - " + sicCode.description
     )),
     Some(controllers.routes.SicAndComplianceController.returnToICL())

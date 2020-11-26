@@ -329,8 +329,8 @@ pages.summary.directorDetails.claimRefunds                = Expect to claim VAT 
 pages.summary.directorDetails.euGoods                     = Buy or sell goods to other EU member states?
 
 ## Summary Page Business Activities
-pages.summary.directorDetails.otherBusinessActivities       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
-pages.summary.directorDetails.mainBusinessActivity          = Main business activity
+pages.summary.directorDetails.businessActivities          = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
+pages.summary.directorDetails.mainBusinessActivity        = Main business activity
 
 ## Summary Page Business Bank Details
 pages.summary.directorDetails.companyBankAccount                 = Have a business bank account set up

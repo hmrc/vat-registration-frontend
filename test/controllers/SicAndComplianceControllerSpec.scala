@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
-  class Setup (iclStubbed:Boolean = false){
+  class Setup(iclStubbed: Boolean = false) {
     val controller: SicAndComplianceController = new SicAndComplianceController(
       messagesControllerComponents,
       mockAuthClientConnector,
@@ -41,8 +41,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       mockVatRegFeatureSwitches,
       mockICLService
     ) {
-      override val useICLStub                                 = iclStubbed
-      override val iclFEurlwww: String                        = "www-url"
+      override val useICLStub = iclStubbed
+      override val iclFEurlwww: String = "www-url"
     }
 
     mockAuthenticated()
@@ -59,7 +59,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
   }
 
   "submitHaltPage" should {
-    "redirect to SIC stub if feature switch is true" in new Setup (true) {
+    "redirect to SIC stub if feature switch is true" in new Setup(true) {
       callAuthorised(controller.submitSicHalt) {
         res =>
           status(res) mustBe 303
@@ -76,10 +76,10 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
           res redirectsTo "www-url/url"
       }
     }
-    "return exception" in new Setup (true) {
+    "return exception" in new Setup(true) {
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
-      intercept[Exception](callAuthorised(controller.submitSicHalt)(_ =>1 mustBe 2))
+      intercept[Exception](callAuthorised(controller.submitSicHalt)(_ => 1 mustBe 2))
     }
   }
 
@@ -101,6 +101,24 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
             res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity().url
         }
       }
+
+      "returning from ICL with multiple codes including compliance" in new Setup {
+        val codes = List(sicCode, sicCode.copy(code = "81222"))
+
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any()))
+          .thenReturn(Future.successful(codes))
+        when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
+          .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CacheMap("test", Map())))
+
+        callAuthorised(controller.saveIclCodes) {
+          res =>
+            status(res) mustBe 303
+            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity().url
+        }
+      }
+
       "returning from ICL with one code" in new Setup {
         val codes = List(sicCode)
 
@@ -117,8 +135,9 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
             res redirectsTo controllers.registration.business.routes.TradingNameController.show().url
         }
       }
-      "returning from ICL with compliance question SIC codes" in new Setup {
-        val codes = List(sicCode, sicCode.copy(code = "81222"))
+
+      "returning from ICL with one compliance question SIC code" in new Setup {
+        val codes = List(sicCode.copy(code = "81222"))
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful(codes))
@@ -256,10 +275,10 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         }
       }
     }
-    "return exception" in new Setup (true) {
+    "return exception" in new Setup(true) {
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
-      intercept[Exception](callAuthorised(controller.returnToICL)(_ =>1 mustBe 2))
+      intercept[Exception](callAuthorised(controller.returnToICL)(_ => 1 mustBe 2))
     }
   }
 

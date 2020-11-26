@@ -48,7 +48,7 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
   def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicAndCompliance] = {
     getSicAndCompliance flatMap { sac =>
 
-      val sacWithCodes = sac.copy(otherBusinessActivities = Some(OtherBusinessActivities(sicCodes)))
+      val sacWithCodes = sac.copy(businessActivities = Some(BusinessActivities(sicCodes)))
 
       val newSac = if (sicCodes.size == 1) {
         sacWithCodes.copy(
@@ -93,15 +93,15 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
   // list of sics nil, 1 or many
   private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = {
     view match {
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(_)), Some(_), Some(_), Some(_), Some(_)) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(_), Some(_)) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(OtherBusinessActivities(sicCodes)), None, None, None, None) if !needComplianceQuestions(sicCodes) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(sicCodes)), None, None, None, None) if !needComplianceQuestions(sicCodes) =>
         Complete(view)
       case _ => Incomplete(view)
     }
@@ -116,12 +116,11 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
   }
 
   def needComplianceQuestions(sicCodes: List[SicCode]): Boolean = {
-    val complianceSicCodes = List(
+    val complianceSicCodes = Set(
       "01610", "41201", "42110", "42910", "42990",
       "43120", "43999", "78200", "80100", "81210",
       "81221", "81222", "81223", "81291", "81299")
-    lazy val isAllComplianceQuestions = sicCodes.map(_.code).forall(s => complianceSicCodes.contains(s))
 
-    sicCodes.nonEmpty && isAllComplianceQuestions
+    complianceSicCodes.intersect(sicCodes.map(_.code).toSet).nonEmpty
   }
 }

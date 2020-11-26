@@ -38,7 +38,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val sicAndCompliance = SicAndCompliance(
     description = Some(BusinessActivityDescription("test company desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(SicCode("AB123", "super business", "super business by super people"))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(
+    businessActivities = Some(BusinessActivities(List(
       SicCode("AB123", "super business", "super business by super people")))
     )
   )

@@ -22,11 +22,11 @@ import forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
-import models.{CurrentProfile, MainBusinessActivityView}
+import models.{CurrentProfile, MainBusinessActivityView, BusinessActivities}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services._
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.VATRegFeatureSwitches
 import views.html._
 
@@ -132,16 +132,18 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
       implicit profile =>
         for {
           iclCodes <- iclService.getICLSICCodes()
-          cacheCodes <- keystoreConnector.cache(SIC_CODES_KEY, iclCodes)
-          saveCodes <- sicAndCompService.submitSicCodes(iclCodes)
+          _ <- keystoreConnector.cache(SIC_CODES_KEY, iclCodes)
+          _ <- sicAndCompService.submitSicCodes(iclCodes)
         } yield {
           Redirect(iclCodes match {
+            case codes if codes.size > 1 =>
+              routes.SicAndComplianceController.showMainBusinessActivity()
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
               controllers.routes.SicAndComplianceController.showComplianceIntro()
             case List(onlyOneCode) =>
               controllers.registration.business.routes.TradingNameController.show()
-            case _ =>
-              routes.SicAndComplianceController.showMainBusinessActivity()
+            case List() =>
+              throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
           })
         }
   }
