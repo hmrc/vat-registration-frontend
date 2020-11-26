@@ -22,36 +22,35 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
-@(annualCostsInclusiveForm:  Form[Boolean], estimateVatTurnover : Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(annualCostsInclusiveForm: Form[Boolean], estimateVatTurnover: Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
 @main_template(title = title(annualCostsInclusiveForm, messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)))) {
 
-  @errorSummary(
-      Messages("app.common.errorSummaryLabel"),
-      annualCostsInclusiveForm
-  )
+    @errorSummary(
+        form = annualCostsInclusiveForm
+    )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover))</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover))</h1>
 
-  @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
-  <div class="form-group">
-      @vatInputRadioGroup(
-        field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
-        Seq(
-            "true" -> messages("app.common.yes"),
-            "false" -> messages("app.common.no")
-        ),
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_legend -> messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
-        '_legendClass -> "visually-hidden"
-      )
-  </div>
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
+        <div class="form-group">
+        @vatInputRadioGroup(
+            field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
+            Seq(
+                "true" -> messages("app.common.yes"),
+                "false" -> messages("app.common.no")
+            ),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_legend -> messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
+            '_legendClass -> "visually-hidden"
+        )
+        </div>
 
-  <div class="form-group">
-    <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-  </div>
+        <div class="form-group">
+            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+        </div>
 
-  }
+    }
 }

@@ -30,76 +30,75 @@
 
 @main_template(title = title(companyContactDetailsForm, messages("pages.businessContactDetails.heading"))) {
 
-  @errorSummary(
-      messages("app.common.errorSummaryLabel"),
-      companyContactDetailsForm
-  )
+    @errorSummary(
+        form = companyContactDetailsForm
+    )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.businessContactDetails.heading")</h1>
 
-  <p>@Html(messages("pages.businessContactDetails.para1"))</p>
+    <p>@Html(messages("pages.businessContactDetails.para1"))</p>
 
-  @govHelpers.form(action = controllers.routes.BusinessContactDetailsController.submitCompanyContactDetails()) {
-      <div class="form-group @if(doesFormHaveErrors(companyContactDetailsForm, "businessContactDetails")){form-group-error}">
-          @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
-            @govHelpers.errorInline("businessContactDetails", messages(error.message))
-          }
-          <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
-
-          <div id="businessContactDetails">
-              @vatInput(
-                  companyContactDetailsForm("email"),
-                  '_divClass    -> "form-group",
-                  '_inputClass  -> "form-control",
-                  '_labelClass  -> "cascading",
-                  '_maxlength   -> 70,
-                  '_label       -> messages("pages.businessContactDetails.emailAddress.label")
-              )
-          </div>
-
-          <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
-              <p>@Html(messages("pages.businessContactDetails.para3"))</p>
-          </div>
-
-          <div id="atLeastOneNumber" class="@if(doesFormHaveErrors(companyContactDetailsForm, "atLeastOneNumber")){ form-group-error}">
-
-            @getErrorsForArgument(companyContactDetailsForm, "atLeastOneNumber").map { error =>
+    @govHelpers.form(action = controllers.routes.BusinessContactDetailsController.submitCompanyContactDetails()) {
+        <div class="form-group @if(doesFormHaveErrors(companyContactDetailsForm, "businessContactDetails")) {form-group-error}">
+            @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
                 @govHelpers.errorInline("businessContactDetails", messages(error.message))
             }
+            <legend>@Html(messages("pages.businessContactDetails.para2"))</legend>
 
-              @vatInput(
-                  companyContactDetailsForm("daytimePhone"),
-                  '_type        -> "tel",
-                  '_divClass    -> "form-group",
-                  '_inputClass  -> "form-control",
-                  '_labelClass  -> "cascading",
-                  '_maxlength   -> 20,
-                  '_label       -> messages("pages.businessContactDetails.daytimePhone.label")
-              )
+            <div id="businessContactDetails">
+            @vatInput(
+                companyContactDetailsForm("email"),
+                '_divClass -> "form-group",
+                '_inputClass -> "form-control",
+                '_labelClass -> "cascading",
+                '_maxlength -> 70,
+                '_label -> messages("pages.businessContactDetails.emailAddress.label")
+            )
+            </div>
 
-              @vatInput(
-                  companyContactDetailsForm("mobile"),
-                  '_type        -> "tel",
-                  '_divClass    -> "form-group",
-                  '_inputClass  -> "form-control",
-                  '_labelClass  -> "cascading",
-                  '_maxlength   -> 20,
-                  '_label       -> messages("pages.businessContactDetails.mobile.label")
-              )
-          </div>
+            <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
+                <p>@Html(messages("pages.businessContactDetails.para3"))</p>
+            </div>
 
-          @vatInput(
-              companyContactDetailsForm("website"),
-              '_type        -> "text",
-              '_inputClass  -> "form-control",
-              '_labelClass  -> "cascading",
-              '_maxlength   -> 255,
-              '_label       -> messages("pages.businessContactDetails.website.label")
-          )
-      </div>
+            <div id="atLeastOneNumber" class="@if(doesFormHaveErrors(companyContactDetailsForm, "atLeastOneNumber")) { form-group-error}">
 
-      <div class="form-group">
-          <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-      </div>
-  }
+                @getErrorsForArgument(companyContactDetailsForm, "atLeastOneNumber").map { error =>
+                    @govHelpers.errorInline("businessContactDetails", messages(error.message))
+                }
+
+                @vatInput(
+                    companyContactDetailsForm("daytimePhone"),
+                    '_type -> "tel",
+                    '_divClass -> "form-group",
+                    '_inputClass -> "form-control",
+                    '_labelClass -> "cascading",
+                    '_maxlength -> 20,
+                    '_label -> messages("pages.businessContactDetails.daytimePhone.label")
+                )
+
+                @vatInput(
+                    companyContactDetailsForm("mobile"),
+                    '_type -> "tel",
+                    '_divClass -> "form-group",
+                    '_inputClass -> "form-control",
+                    '_labelClass -> "cascading",
+                    '_maxlength -> 20,
+                    '_label -> messages("pages.businessContactDetails.mobile.label")
+                )
+            </div>
+
+            @vatInput(
+                companyContactDetailsForm("website"),
+                '_type -> "text",
+                '_inputClass -> "form-control",
+                '_labelClass -> "cascading",
+                '_maxlength -> 255,
+                '_label -> messages("pages.businessContactDetails.website.label")
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+        </div>
+    }
 }

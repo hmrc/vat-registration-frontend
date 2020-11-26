@@ -34,9 +34,8 @@
 @main_template(title = title(formerNameForm, messages("pages.formerName.heading"))) {
 
     @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    formerNameForm,
-    Seq("formerName")
+        formerNameForm,
+        Seq("formerName")
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.formerName.heading")</h1>

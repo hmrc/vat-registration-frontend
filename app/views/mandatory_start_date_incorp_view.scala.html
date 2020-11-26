@@ -31,8 +31,8 @@
 @main_template(title = title(mandStartDateForm, messages("pages.start.date.incorp.heading", calculatedDate))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        mandStartDateForm
+        form = mandStartDateForm,
+        errorFieldSuffix = Some(Map("startDate" -> "day"))
     )
 
     <header class="page-header">

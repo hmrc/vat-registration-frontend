@@ -31,8 +31,7 @@
 @main_template(title = title(euGoodsForm, messages("pages.euGoods.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        euGoodsForm
+        form = euGoodsForm
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.euGoods.heading")</h1>

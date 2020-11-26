@@ -35,7 +35,6 @@
 @main_template(title = title(workersForm, messages("pages.labourCompliance.workers.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
         workersForm,
         Seq("numberOfWorkers")
     )

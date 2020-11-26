@@ -28,8 +28,7 @@
 @main_template(title = title(hasBankAccountForm, messages("pages.company.bank.account.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        hasBankAccountForm
+        form = hasBankAccountForm
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>

@@ -32,8 +32,7 @@
 @main_template(title = title(startDateForm, messages("pages.startDate.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        startDateForm
+        form = startDateForm
     )
 
     <h1 class="form-title heading-large" id="pageHeading">@messages("pages.startDate.heading")</h1>

@@ -31,8 +31,9 @@
 @main_template(title = title(formerNameDateForm, messages("pages.formerNameDate.heading"))) {
 
     @errorSummary(
-        Messages("app.common.errorSummaryLabel"),
-        formerNameDateForm
+        formerNameDateForm,
+        Seq("formerNameDate"),
+        errorFieldSuffix = Some(Map("formerNameDate" -> "day"))
     )
 
     <header class="page-header">

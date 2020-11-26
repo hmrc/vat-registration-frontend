@@ -21,55 +21,54 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
-@(annualCostsInclusiveForm:  Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(annualCostsInclusiveForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @main_template(title = title(annualCostsInclusiveForm, messages("pages.frs.costsInclusive.heading"))) {
 
-  @errorSummary(
-      Messages("app.common.errorSummaryLabel"),
-      annualCostsInclusiveForm
-  )
+    @errorSummary(
+        annualCostsInclusiveForm
+    )
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsInclusive.heading")</h1>
+    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsInclusive.heading")</h1>
 
-  <p>@Html(messages("pages.frs.costsInclusive.p1"))</p>
-  <h2>@messages("pages.frs.costsInclusive.list.heading")</h2>
-  <p>@messages("pages.frs.costsInclusive.list.head")</p>
+    <p>@Html(messages("pages.frs.costsInclusive.p1"))</p>
+    <h2>@messages("pages.frs.costsInclusive.list.heading")</h2>
+    <p>@messages("pages.frs.costsInclusive.list.head")</p>
 
-  <ul class="list list-bullet">
-    <li>@messages("pages.frs.costsInclusive.list.bullet1")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet2")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet3")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet4")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet5")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet6")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet7")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet8")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet9")</li>
-    <li>@messages("pages.frs.costsInclusive.list.bullet10")</li>
-  </ul>
+    <ul class="list list-bullet">
+        <li>@messages("pages.frs.costsInclusive.list.bullet1")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet2")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet3")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet4")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet5")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet6")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet7")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet8")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet9")</li>
+        <li>@messages("pages.frs.costsInclusive.list.bullet10")</li>
+    </ul>
 
-  @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualInclusiveCosts()) {
-    <div class="form-group">
+    @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualInclusiveCosts()) {
+        <div class="form-group">
         @vatInputRadioGroup(
-          field = annualCostsInclusiveForm("annualCostsInclusiveRadio"),
-          Seq(
-            "true" -> messages("app.common.yes"),
-            "false" -> messages("app.common.no")
-          ),
-          '_groupClass -> "inline",
-          '_labelAfter -> true,
-          '_labelClass -> "block-label",
-          '_legend -> messages("pages.frs.costsInclusive.heading"),
-          '_legendClass -> "visually-hidden"
+            field = annualCostsInclusiveForm("annualCostsInclusiveRadio"),
+            Seq(
+                "true" -> messages("app.common.yes"),
+                "false" -> messages("app.common.no")
+            ),
+            '_groupClass -> "inline",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_legend -> messages("pages.frs.costsInclusive.heading"),
+            '_legendClass -> "visually-hidden"
         )
-    </div>
+        </div>
 
-    <div class="form-group">
-      <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-    </div>
+        <div class="form-group">
+            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+        </div>
 
-  }
+    }
 }
