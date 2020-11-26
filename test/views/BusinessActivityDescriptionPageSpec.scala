@@ -16,40 +16,35 @@
 
 package views
 
-import config.FrontendAppConfig
 import forms.BusinessActivityDescriptionForm
-import models.BusinessActivityDescription
 import org.jsoup.Jsoup
-import org.scalatest.Matchers
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.inject.Injector
-import play.api.test.FakeRequest
-import testHelpers.VatRegSpec
-import views.html.{business_activity_description => BusinessActivityDescriptionPage}
+import views.html.business_activity_description
 
-class BusinessActivityDescriptionPageSpec extends VatRegSpec with I18nSupport {
-  implicit val request = FakeRequest()
-  val injector : Injector = app.injector
-  implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+class BusinessActivityDescriptionPageSpec extends VatRegViewSpec {
 
-  lazy val form = BusinessActivityDescriptionForm.form
+  val view = app.injector.instanceOf[business_activity_description]
+  val form = BusinessActivityDescriptionForm.form
+  implicit val doc = Jsoup.parse(view(form).body)
 
-  "Business Activity Description Page" should {
-    "display the page not pre populated" in {
-      lazy val view = BusinessActivityDescriptionPage(form)
-      lazy val document = Jsoup.parse(view.body)
+  object ExpectedContent {
+    val heading = "What does the business do?"
+    val label = heading
+    val continue = "Continue"
+  }
 
-      document.getElementById("description").text mustBe ""
+  "The Business Activity Description page" must {
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
     }
-
-    "display the page pre populated" in {
-      lazy val view = BusinessActivityDescriptionPage(form.fill(BusinessActivityDescription("TEST DESCRIPTION")))
-      lazy val document = Jsoup.parse(view.body)
-
-      document.getElementById("description").text mustBe "TEST DESCRIPTION"
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+    "have a textarea called description" in new ViewSetup {
+      doc.textArea("description") mustBe Some(ExpectedContent.label)
+    }
+    "have a primary action" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
+
 }

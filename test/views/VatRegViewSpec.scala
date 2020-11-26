@@ -98,7 +98,10 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def textBox(id: String): Option[String] = input("text", "id", id)
 
-      def textArea(id: String): Option[String] = input("textarea", "id", id)
+      def textArea(id: String): Option[String] =
+        doc.select(s"textarea[id=$id]").headOption.map { elem =>
+          doc.select(s"label[for=${elem.id}]").first.text
+        }
     }
   }
 }

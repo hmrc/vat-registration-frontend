@@ -39,8 +39,8 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                           val iclService: ICLService)
-                                          (implicit val appConfig: FrontendAppConfig,
+                                           val iclService: ICLService
+                                          )(implicit val appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
@@ -50,26 +50,6 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
 
   private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
     keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
-
-  def showBusinessActivityDescription: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.description.fold(BusinessActivityDescriptionForm.form)(BusinessActivityDescriptionForm.form.fill)
-        } yield Ok(business_activity_description(formFilled))
-  }
-
-  def submitBusinessActivityDescription: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        BusinessActivityDescriptionForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(business_activity_description(badForm))),
-          data => sicAndCompService.updateSicAndCompliance(data).map {
-            _ => Redirect(routes.SicAndComplianceController.showSicHalt())
-          }
-        )
-  }
 
   def showMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

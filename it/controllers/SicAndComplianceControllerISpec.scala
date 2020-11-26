@@ -485,41 +485,6 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "BusinessActivityDescription should return 200 on show and users answer is pre-popped on page" in new Setup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient(controllers.routes.SicAndComplianceController.showBusinessActivityDescription.url).get()
-    whenReady(response) { res =>
-      res.status mustBe 200
-      val document = Jsoup.parse(res.body)
-      document.getElementById("description").html() mustBe fullModel.description.get.description
-    }
-  }
-  "BusinessActivityDescription should return 303 on submit" in new Setup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(description = Some(BusinessActivityDescription("foo"))))
-      .s4lContainer[SicAndCompliance].cleared
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient(controllers.routes.SicAndComplianceController.submitBusinessActivityDescription().url).post(Map("description" -> Seq("foo")))
-    whenReady(response) { res =>
-      res.status mustBe 303
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.submitSicHalt().url)
-
-    }
-  }
-
   "ComplianceIntroduction should return 200 on show" in new Setup {
     given()
       .user.isAuthorised

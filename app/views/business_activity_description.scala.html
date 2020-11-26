@@ -24,41 +24,32 @@
 @import forms.BusinessActivityDescriptionForm._
 
 @import config.FrontendAppConfig
-@(businessActivityDescriptionForm:  Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@this(
+    layout: layouts.layout,
+    errorSummary: components.errorSummary,
+    form: FormWithCSRF,
+    inputTextArea: components.inputTextarea,
+    button: components.button
+)
 
-@main_template(title = title(businessActivityDescriptionForm, messages("pages.business.activity.description.heading"))) {
+@(businessActivityDescriptionForm: Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-  @errorSummary(
-    Messages("app.common.errorSummaryLabel"),
-    businessActivityDescriptionForm,
-    Seq("description")
-  )
+@layout(pageTitle = Some(title(businessActivityDescriptionForm, messages("pages.business.activity.description.heading"))), backLink = true) {
 
-  <h1 class="form-title heading-large" id="pageHeading">@messages("pages.business.activity.description.heading")</h1>
+  @errorSummary(businessActivityDescriptionForm.errors)
 
-  @govHelpers.form(action = controllers.routes.SicAndComplianceController.submitBusinessActivityDescription()) {
-      <div>
+  @form(action = controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.submit()) {
+      @inputTextArea(
+          form = businessActivityDescriptionForm,
+          id = "description",
+          name = "description",
+          label = messages("pages.business.activity.description.heading"),
+          isLabelHidden = false,
+          isPageHeading = true,
+          maxCharacters = Some(appConfig.businessDescriptionMaxLength)
+      )
 
-          <fieldset>
-            <legend class="visually-hidden">pages.business.activity.description.heading</legend>
-            <div class="char-counter" data-char-counter>
-              @vatTextArea(
-                businessActivityDescriptionForm("description"),
-                '_divClass -> "form-group",
-                '_labelClass -> "form-label",
-                '_inputClass -> "form-control fill-width",
-                '_rows -> "4",
-                '_maxlength -> DESC_MAX_LENGTH,
-                '_dataCharField -> "data_char_field",
-                '_label -> messages("pages.business.activity.description.label")
-              )
-            </div>
-          </fieldset>
-      </div>
-
-      <div class="form-group">
-          <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-      </div>
+      @button(messages("app.common.continue"))
   }
 }

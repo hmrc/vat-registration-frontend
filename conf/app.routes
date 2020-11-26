@@ -67,8 +67,8 @@ GET         /contact-preference                                                 
 POST        /contact-preference                                                                controllers.ContactPreferenceController.submitContactPreference
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /what-company-does                                                                 controllers.SicAndComplianceController.showBusinessActivityDescription
-POST        /what-company-does                                                                 controllers.SicAndComplianceController.submitBusinessActivityDescription
+GET         /what-company-does                                                                 controllers.registration.sicandcompliance.BusinessActivityDescriptionController.show
+POST        /what-company-does                                                                 controllers.registration.sicandcompliance.BusinessActivityDescriptionController.submit
 
 ## MAIN BUSINESS ACTIVITY
 GET         /main-source-business-income                                                       controllers.SicAndComplianceController.showMainBusinessActivity

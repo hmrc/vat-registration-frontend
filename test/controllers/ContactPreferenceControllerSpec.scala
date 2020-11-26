@@ -93,7 +93,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     "return a 303" when {
       "user selects email and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {
-          _ redirectsTo controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url
+          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show().url
         }
       }
     }
@@ -101,7 +101,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     "return a 303" when {
       "user selects letter and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.routes.SicAndComplianceController.showBusinessActivityDescription().url
+          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show().url
         }
       }
     }

@@ -54,7 +54,7 @@ class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
           contactPreference =>
             businessContactService.updateBusinessContact(contactPreference).flatMap {
               _ =>
-                Future.successful(Redirect(controllers.routes.SicAndComplianceController.showBusinessActivityDescription()))
+                Future.successful(Redirect(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show()))
             }
         )
   }

@@ -85,7 +85,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
           SummaryRow(
             "directorDetails.businessDescription",
             "app.common.no",
-            Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+            Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
 
@@ -94,7 +94,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
           SummaryRow(
             "directorDetails.businessDescription",
             testBusinessActivityDescription,
-            Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+            Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
 
@@ -180,7 +180,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.companyBusinessDescriptionRow mustBe SummaryRow(
         "directorDetails.businessDescription",
         testBusinessActivityDescription,
-        Some(controllers.routes.SicAndComplianceController.showBusinessActivityDescription())
+        Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
       )
     }
     "render the main sic code row" in {
