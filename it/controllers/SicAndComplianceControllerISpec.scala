@@ -71,7 +71,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     workers = Some(Workers(200)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
+    businessActivities = Some(BusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
   )
 
   val modelWithoutCompliance = SicAndCompliance(
@@ -141,7 +141,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
     val simplifiedSicJson =
-      """|{"otherBusinessActivities" : [
+      """|{"businessActivities" : [
          |           {
          |               "code" : "43220",
          |               "desc" : "Plumbing, heat and air-conditioning installation",
@@ -191,7 +191,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode)))))
+      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode)))))
       .s4lContainer.cleared
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -212,7 +212,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1, sicCode2)))))
+      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
       .audit.writesAudit()
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1, sicCode2))
@@ -231,7 +231,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(otherBusinessActivities = Some(OtherBusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
+      .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(BusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
       .audit.writesAudit()
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1))

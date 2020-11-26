@@ -36,7 +36,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |   "desc": "none labour",
        |   "indexes": "none labour"
        |},
-       |"otherBusinessActivities": [
+       |"businessActivities": [
        |{
        |   "code": "99889",
        |   "desc": "otherBusiness",
@@ -48,7 +48,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val noneLabour = SicAndCompliance(
       description = Some(BusinessActivityDescription("Test Desc")),
       mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeNoneLabour.code, mainBusinessActivity = Some(sicCodeNoneLabour))),
-      otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = ""))))
+      businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = ""))))
     )
 
   val jsonLabourWithoutWorkers = Json.parse(
@@ -60,7 +60,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    "desc": "labour",
        |    "indexes": "labour"
        |  },
-       |  "otherBusinessActivities": [
+       |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
@@ -75,7 +75,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val labourWithoutWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
+    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),
     workers = None,
     temporaryContracts = None,
@@ -91,7 +91,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    "desc": "labour",
        |    "indexes": "labour"
        |  },
-       |  "otherBusinessActivities": [
+       |  "businessActivities": [
        |    {
        |       "code": "99889",
        |       "desc": "otherBusiness",
@@ -106,7 +106,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val labourWith7Workers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
+    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(7)),
     temporaryContracts = None,
@@ -122,7 +122,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    "desc": "labour",
        |    "indexes": "labour"
        |  },
-       |  "otherBusinessActivities": [
+       |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
@@ -139,7 +139,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val labourWith8PlusWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
+    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),
@@ -155,7 +155,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    "desc": "labour",
        |    "indexes": "labour"
        |  },
-       |  "otherBusinessActivities": [
+       |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
@@ -171,7 +171,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val labourWithoutTemporaryContracts = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
+    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
@@ -187,7 +187,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    "desc": "labour",
        |    "indexes": "labour"
        |  },
-       |  "otherBusinessActivities": [
+       |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
@@ -204,7 +204,7 @@ class SicAndComplianceSpec extends VatRegSpec {
   val labourWithoutSkilledWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
+    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
     companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
     workers = Some(Workers(8)),
     temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),

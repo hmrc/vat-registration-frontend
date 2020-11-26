@@ -45,7 +45,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
 
   def prepopulateSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[List[String]] = {
     sicAndCompliance.getSicAndCompliance flatMap { sac =>
-      sac.otherBusinessActivities match {
+      sac.businessActivities match {
         case Some(res) => Future.successful(res.sicCodes map (_.code))
       }
     } recover {

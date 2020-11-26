@@ -230,7 +230,7 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
-      val expected = completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)),
+      val expected = completeViewModel.copy(mainBusinessActivity = None, businessActivities = Some(BusinessActivities(sicCodeList)),
         companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None
       )
 
@@ -258,7 +258,7 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       )
       val expected = completeViewModel.copy(
         mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
-        otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode)))
+        businessActivities = Some(BusinessActivities(List(newSicCode)))
       )
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
@@ -280,7 +280,7 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
       )
       val expected = completeViewModel.copy(
-        otherBusinessActivities = Some(OtherBusinessActivities(List(newSicCode))),
+        businessActivities = Some(BusinessActivities(List(newSicCode))),
         mainBusinessActivity = Some(MainBusinessActivityView(newSicCode)),
         companyProvideWorkers = None,
         workers = None,
@@ -315,7 +315,7 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
       when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
 
-      await(service.submitSicCodes(sicCodeList)) mustBe completeViewModel.copy(mainBusinessActivity = None, otherBusinessActivities = Some(OtherBusinessActivities(sicCodeList)))
+      await(service.submitSicCodes(sicCodeList)) mustBe completeViewModel.copy(mainBusinessActivity = None, businessActivities = Some(BusinessActivities(sicCodeList)))
     }
   }
 }

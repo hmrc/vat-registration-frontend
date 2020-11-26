@@ -18,7 +18,7 @@ package services
 
 import connectors.{ICLConnector, KeystoreConnector}
 import models.api.SicCode
-import models.{OtherBusinessActivities, SicAndCompliance}
+import models.{BusinessActivities, SicAndCompliance}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.libs.json.{JsObject, Json}
@@ -63,7 +63,7 @@ class ICLServiceSpec extends VatRegSpec {
     "return the ICL start url when VR codes are prepopped" in new Setup {
       when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
         .thenReturn(Future.successful(
-          SicAndCompliance(otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode("43220", "Plumbing", "")))))
+          SicAndCompliance(businessActivities = Some(BusinessActivities(List(SicCode("43220", "Plumbing", "")))))
         ))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
@@ -104,29 +104,29 @@ class ICLServiceSpec extends VatRegSpec {
   "getICLSICCodes" should {
     "return list of sic codes when a successful response is returned from the connector with more than 1 SIC code and keystore returns a String" in new Setup {
       val listOfSicCodes = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
-      val sicAndCompUpdated = s4lVatSicAndComplianceWithoutLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(listOfSicCodes)))
+      val sicAndCompUpdated = s4lVatSicAndComplianceWithoutLabour.copy(businessActivities = Some(BusinessActivities(listOfSicCodes)))
 
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclMultipleResults))
       when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
-      when(mockSicAndComplianceService.updateSicAndCompliance[OtherBusinessActivities]
-        (any[OtherBusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndCompUpdated))
+      when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
+        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndCompUpdated))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOfSicCodes
     }
     "return list of sic code containing 1 sic code when a successful response is returned from the connector with only 1 SIC code and keystore returns a String" in new Setup {
       val listOf1SicCode = iclMultipleResultsSicCode1 :: Nil
-      val sicAndComplianceUpdated = s4lVatSicAndComplianceWithoutLabour.copy(otherBusinessActivities = Some(OtherBusinessActivities(listOf1SicCode)))
+      val sicAndComplianceUpdated = s4lVatSicAndComplianceWithoutLabour.copy(businessActivities = Some(BusinessActivities(listOf1SicCode)))
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclSingleResult))
       when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
-      when(mockSicAndComplianceService.updateSicAndCompliance[OtherBusinessActivities]
-        (any[OtherBusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndComplianceUpdated))
+      when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
+        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndComplianceUpdated))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOf1SicCode

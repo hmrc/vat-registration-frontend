@@ -475,7 +475,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val sicAndCompliance = SicAndCompliance(
       description = Some(BusinessActivityDescription("test Bus Desc")),
       mainBusinessActivity = Some(MainBusinessActivityView(SicCode("testId", "test Desc", "test Details"))),
-      otherBusinessActivities = Some(OtherBusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
+      businessActivities = Some(BusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
       companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
       workers = Some(Workers(8)),
       temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
@@ -491,7 +491,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
          |    "temporaryContracts": true,
          |    "skilledWorkers": true
          |  },
-         |"otherBusinessActivities": [
+         |"businessActivities": [
          |  {
          |     "id": "99889",
          |     "description": "otherBusiness",

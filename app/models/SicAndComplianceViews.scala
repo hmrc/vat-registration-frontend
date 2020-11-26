@@ -31,15 +31,8 @@ object MainBusinessActivityView {
   implicit val format = Json.format[MainBusinessActivityView]
 }
 
-case class OtherBusinessActivities(sicCodes: List[SicCode])
+case class BusinessActivities(sicCodes: List[SicCode])
 
-object isOtherBusinessActivitiesPopulated {
-  def unapply(arg: Option[OtherBusinessActivities]): Option[Boolean] = {
-    arg.fold[Option[Boolean]](None)(a => Some(a.sicCodes.isEmpty))
-  }
-
-}
-
-object OtherBusinessActivities {
-  implicit val format = Json.format[OtherBusinessActivities]
+object BusinessActivities {
+  implicit val format = Json.format[BusinessActivities]
 }
