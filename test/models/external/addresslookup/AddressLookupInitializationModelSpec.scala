@@ -86,10 +86,6 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
         "showSubHeadingAndInfo" -> false,
         "showSearchAgainLink" -> false,
         "showConfirmChangeText" -> false
-      ),
-      "timeoutConfig" -> Json.obj(
-        "timeoutAmount" -> 900,
-        "timeoutUrl" -> "http://localhost:9895/register-for-vat/sign-out"
       )
     ),
     "labels" -> Json.obj(

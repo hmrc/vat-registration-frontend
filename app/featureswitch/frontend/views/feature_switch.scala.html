@@ -30,7 +30,7 @@
 
 @(featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some("Choose which features to enable.")) {
+@layout(pageTitle = Some("Choose which features to enable."),timeout = false) {
 
     @h1("Choose which features to enable.")
 
