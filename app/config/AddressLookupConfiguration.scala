@@ -49,7 +49,7 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
           showSubHeadingAndInfo = false,
           showSearchAgainLink = false,
           showConfirmChangeText = false
-        ),
+        )
       ),
       labels = AddressMessageLanguageModel(
         en = AddressMessagesModel.forJourney(journeyId.toString, english),
