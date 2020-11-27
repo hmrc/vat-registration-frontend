@@ -50,10 +50,6 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
           showSearchAgainLink = false,
           showConfirmChangeText = false
         ),
-        timeoutConfig = AddressLookupConfirmTimeoutModel(
-          timeoutAmount = appConfig.timeoutInSeconds.toInt,
-          timeoutUrl = SafeRedirectUrl(appConfig.hostUrl + controllers.callbacks.routes.SignInOutController.signOut())
-        )
       ),
       labels = AddressMessageLanguageModel(
         en = AddressMessagesModel.forJourney(journeyId.toString, english),

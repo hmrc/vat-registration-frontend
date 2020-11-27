@@ -33,7 +33,8 @@ trait AppConfig {
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
-  val timeoutInSeconds: String
+  val timeout: Int
+  val countdown: Int
   val contactFrontendUrl: String
 }
 
@@ -62,7 +63,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val reportAProblemNonJSUrl = s"$contactFrontendUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
 
-  val timeoutInSeconds = loadConfig("timeoutInSeconds")
+  val timeout: Int = servicesConfig.getInt("timeout.timeout")
+  val countdown: Int = servicesConfig.getInt("timeout.countdown")
 
   lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
 

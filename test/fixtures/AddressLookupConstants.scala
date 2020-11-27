@@ -96,10 +96,6 @@ object AddressLookupConstants {
         showSubHeadingAndInfo = false,
         showSearchAgainLink = true,
         showConfirmChangeText = false
-      ),
-      timeoutConfig = AddressLookupConfirmTimeoutModel(
-        timeoutAmount = 900,
-        timeoutUrl = SafeRedirectUrl(testTimeoutUrl)
       )
     ),
     labels = AddressMessageLanguageModel(

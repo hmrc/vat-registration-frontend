@@ -29,8 +29,8 @@ case class AddressLookupOptionsModel(continueUrl: SafeRedirectUrl,
                                      includeHMRCBranding: Boolean,
                                      ukMode: Boolean,
                                      selectPageConfig: AddressLookupSelectConfigModel,
-                                     confirmPageConfig: AddressLookupConfirmConfigModel,
-                                     timeoutConfig: AddressLookupConfirmTimeoutModel)
+                                     confirmPageConfig: AddressLookupConfirmConfigModel
+                                    )
 
 object AddressLookupOptionsModel {
   implicit val safeRedirectUrlWrites = Writes[SafeRedirectUrl](safeUrl => JsString(safeUrl.url))
