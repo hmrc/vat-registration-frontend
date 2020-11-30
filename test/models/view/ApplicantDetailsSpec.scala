@@ -25,8 +25,8 @@ import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
 class ApplicantDetailsSpec extends VatRegSpec {
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
-  val previousAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+  val previousAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
 
   "apiReads" should {
     "return a correct partial ApplicantDetails view model with full name" in {
@@ -94,7 +94,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
-           |    "postcode": "TE 1ST"
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
            |  },
            |  "contact": {
            |    "email": "test@t.test",
@@ -112,7 +113,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
-           |    "postcode": "TE1 1ST"
+           |    "postcode": "TE1 1ST",
+           |    "addressValidated": true
            |  }
            |}
          """.stripMargin)
@@ -148,7 +150,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
-           |    "postcode": "TE 1ST"
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
            |  },
            |  "contact": {
            |    "email": "test@t.test",
@@ -220,7 +223,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
-           |    "postcode": "TE1 1ST"
+           |    "postcode": "TE1 1ST",
+           |    "addressValidated": true
            |  },
            |  "contact": {
            |    "email": "test@t.test",
@@ -230,7 +234,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
-           |    "postcode": "TE 1ST"
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
            |  }
            |}""".stripMargin)
 
@@ -258,7 +263,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
-           |    "postcode": "TE 1ST"
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
            |  }
            |}""".stripMargin)
 

@@ -38,7 +38,8 @@ class BusinessContactSpec extends VatRegSpec {
           |   "line2" : "testLine2",
           |   "line3" : "testLine3",
           |   "line4" : "testLine4",
-          |   "postcode" : "TE57 7ET"
+          |   "postcode" : "TE57 7ET",
+          |   "addressValidated" : true
           | },
           | "contactPreference": "Email"
           |}
@@ -51,7 +52,8 @@ class BusinessContactSpec extends VatRegSpec {
           line2    = "testLine2",
           line3    = Some("testLine3"),
           line4    = Some("testLine4"),
-          postcode = Some("TE57 7ET")
+          postcode = Some("TE57 7ET"),
+          addressValidated = true
         )),
         companyContactDetails = Some(CompanyContactDetails(
           email          = "test@test.com",
@@ -95,7 +97,8 @@ class BusinessContactSpec extends VatRegSpec {
           |   "line2" : "testLine2",
           |   "line3" : "testLine3",
           |   "line4" : "testLine4",
-          |   "postcode" : "TE57 7ET"
+          |   "postcode" : "TE57 7ET",
+          |   "addressValidated" : true
           | },
           | "contactPreference": "Letter"
           |}
@@ -108,7 +111,8 @@ class BusinessContactSpec extends VatRegSpec {
           line2    = "testLine2",
           line3    = Some("testLine3"),
           line4    = Some("testLine4"),
-          postcode = Some("TE57 7ET")
+          postcode = Some("TE57 7ET"),
+          addressValidated = true
         )),
         companyContactDetails = Some(CompanyContactDetails(
           email          = "test@test.com",

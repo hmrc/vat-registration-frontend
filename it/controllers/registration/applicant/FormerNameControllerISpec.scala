@@ -57,7 +57,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
     role = role
   )
 
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
 
   "POST Former Name page" should {
     val s4lData = ApplicantDetails(

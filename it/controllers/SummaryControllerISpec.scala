@@ -52,7 +52,8 @@ class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with S
        |  "currentAddress": {
        |    "line1": "${validCurrentAddress.line1}",
        |    "line2": "${validCurrentAddress.line2}",
-       |    "postcode": "${validCurrentAddress.postcode}"
+       |    "postcode": "${validCurrentAddress.postcode}",
+       |    "addressValidated": true
        |  },
        |  "contact": {
        |    "email": "$applicantEmail",

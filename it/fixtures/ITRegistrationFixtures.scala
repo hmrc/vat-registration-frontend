@@ -28,7 +28,7 @@ import models.view._
 import play.api.libs.json.Json
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
-  val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"))
+  val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"), addressValidated = true)
 
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
@@ -59,7 +59,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val returns = Returns(None, None, Some(Frequency.quarterly), Some(Stagger.jan), None)
   val fullReturns = Returns(Some(1234), Some(true), Some(Frequency.quarterly), Some(Stagger.jan), None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry))
+  val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
 
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
@@ -88,7 +88,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       |   "country"  : {
       |     "code": "UK",
       |     "name": "United Kingdom"
-      |   }
+      |   },
+      |   "addressValidated" : true
       | },
       | "digitalContact" : {
       |   "email"    : "test@foo.com",

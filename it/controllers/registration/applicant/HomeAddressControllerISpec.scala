@@ -57,7 +57,7 @@ class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs wi
     role = role
   )
 
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"))
+  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
 
 
   "GET redirectToAlf" should {

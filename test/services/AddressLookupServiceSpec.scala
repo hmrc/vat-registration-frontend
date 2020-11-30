@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AddressLookupServiceSpec extends VatRegSpec {
 
   implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
-  override val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"))
+  override val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"), addressValidated = true)
 
   object Config extends AddressLookupConfiguration {
     override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call): AddressLookupConfigurationModel =
@@ -51,7 +51,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
         when(mockAddressLookupConnector.getAddress(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(testAddress))
 
-        val result = await(Service.getAddressById("testId")) mustBe testAddress
+        await(Service.getAddressById("testId")) mustBe testAddress
       }
     }
   }
@@ -62,7 +62,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
         when(mockAddressLookupConnector.getOnRampUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(Call("GET", "/test/uri/continue")))
 
-        val result = await(Service.getJourneyUrl(AddressLookupJourneyIdentifier.homeAddress, Call("", "/continue"))) mustBe Call("GET", "/test/uri/continue")
+        await(Service.getJourneyUrl(AddressLookupJourneyIdentifier.homeAddress, Call("", "/continue"))) mustBe Call("GET", "/test/uri/continue")
       }
     }
   }

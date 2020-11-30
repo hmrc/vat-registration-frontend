@@ -51,7 +51,7 @@ class HomeAddressControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val address = Address(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"))
+  val address = Address(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"), addressValidated = true)
 
   val partialIncompleteApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(address.id, Some(address))),

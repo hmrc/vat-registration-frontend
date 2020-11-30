@@ -35,7 +35,8 @@ case class Address(line1: String,
                    line3: Option[String] = None,
                    line4: Option[String] = None,
                    postcode: Option[String] = None,
-                   country: Option[Country] = None) {
+                   country: Option[Country] = None,
+                   addressValidated: Boolean) {
 
   val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
@@ -64,7 +65,8 @@ case class Address(line1: String,
               name = country.name.map(_.trim).filterNot(_.isEmpty)
             ))
           }
-      }
+      },
+      this.addressValidated
     )
 }
 
@@ -78,19 +80,20 @@ object Address {
 
   implicit val format: OFormat[Address] = Json.format[Address]
 
-  object adressLookupReads extends Reads[Address] {
+  object addressLookupReads extends Reads[Address] {
     def reads(json: JsValue): JsResult[Address] = {
       val address = (json \ "address").as[JsObject]
       val postcode = (address \ "postcode").asOpt[String]
       val lineMap = (address \ "lines").as[List[String]].zipWithIndex.map(_.swap).toMap
       val country = (address \ "country").asOpt[Country]
+      val addressValidated = (json \ "id").isDefined
 
       if (postcode.isEmpty && country.isEmpty) {
         JsError(JsonValidationError("neither postcode nor country were defined"))
       } else if (lineMap.size < 2) {
         JsError(JsonValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
       } else {
-        JsSuccess(Address(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, country))
+        JsSuccess(Address(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, country, addressValidated))
       }
     }
   }
