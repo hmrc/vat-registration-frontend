@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.business
 
 import fixtures.VatRegistrationFixture
 import models.CompanyContactDetails
-import models.api.Address
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.stubbing.OngoingStubbing
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 
@@ -52,24 +48,13 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       .thenReturn(Future(validBusinessContactDetails))
   }
 
-  "redirectToAlf" should {
-    "redirect to ALF" in new Setup {
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
-        .thenReturn(Future.successful(Call("GET", "TxM")))
-
-      callAuthorised(controller.ppobRedirectToAlf) {
-        _ isA SEE_OTHER
-      }
-    }
-  }
-
   "showing the company contact details page" should {
-    "return a 200" when {
+    "return OK" when {
       "everything is okay" in new Setup {
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails))
 
-        callAuthorised(controller.showCompanyContactDetails) {
+        callAuthorised(controller.show) {
           _ isA 200
         }
       }
@@ -78,7 +63,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.copy(companyContactDetails = None)))
 
-        callAuthorised(controller.showCompanyContactDetails) {
+        callAuthorised(controller.show) {
           _ isA 200
         }
       }
@@ -88,7 +73,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
-        callAuthorised(controller.showCompanyContactDetails) {
+        callAuthorised(controller.show) {
           _ failedWith exception
         }
       }
@@ -96,11 +81,11 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
   }
 
   "submitting the company contact details page" should {
-    val fakeRequest = FakeRequest(routes.BusinessContactDetailsController.showCompanyContactDetails())
+    val fakeRequest = FakeRequest(controllers.registration.business.routes.BusinessContactDetailsController.show())
 
     "return a 400" when {
       "form is empty" in new SubmissionSetup {
-        submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody()) {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
           _ isA 400
         }
       }
@@ -111,7 +96,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(validBusinessContactDetails.companyContactDetails.get))
 
-        submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
           _ redirectsTo controllers.routes.ContactPreferenceController.showContactPreference().url
         }
       }
@@ -122,41 +107,11 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
-        submitAuthorised(controller.submitCompanyContactDetails, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
           _ failedWith exception
         }
       }
     }
   }
 
-  "return from TXM" should {
-    "return a 303" when {
-      "a valid id is passed" in new Setup {
-        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(testAddress))
-        when(mockBusinessContactService.updateBusinessContact[Address](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(testAddress))
-
-        callAuthorised(controller.returnFromTxm(testAddress.id)) {
-          _ redirectsTo routes.BusinessContactDetailsController.showCompanyContactDetails().url
-        }
-      }
-    }
-    "throw an exception" when {
-      "getAddressById fails" in new Setup {
-        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(throw exception))
-
-        callAuthorised(controller.returnFromTxm(testAddress.id)) {
-          _ failedWith exception
-        }
-      }
-      "updateBusinessContact fails" in new Setup {
-        when(mockAddressLookupService.getAddressById(ArgumentMatchers.any())(ArgumentMatchers.any())).thenReturn(Future(testAddress))
-        when(mockBusinessContactService.updateBusinessContact[Address](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future(throw exception))
-
-        callAuthorised(controller.returnFromTxm(testAddress.id)) {
-          _ failedWith exception
-        }
-      }
-    }
-  }
 }

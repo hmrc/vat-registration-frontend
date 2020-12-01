@@ -39,7 +39,8 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory): _*)
   .configs(IntegrationTest)
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)  .settings(majorVersion := 0)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .settings(majorVersion := 0)
   .settings(
     fork                       in IntegrationTest := false,
     testForkedParallel         in IntegrationTest := false,

@@ -16,27 +16,20 @@
 
 package controllers.registration.applicant
 
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
-import fixtures.ApplicantDetailsFixture
-import itutil.IntegrationSpecBase
+import featureswitch.core.config.StubEmailVerification
+import itutil.ControllerISpec
 import models.external.{EmailAddress, EmailVerified}
 import models.view.ApplicantDetails
-import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.AppAndStubs
 
-class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
-  with AppAndStubs
-  with FeatureSwitching
-  with IntegrationPatience
-  with ApplicantDetailsFixture {
+class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
   private val testEmail = "test@test.com"
 
   "GET /email-address" should {
-    "show the view correctly" in new StandardTestHelpers {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -53,7 +46,7 @@ class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
 
   "POST /email-address" when {
     "ApplicantDetails is not complete" should {
-      "Update S4L and redirect to Capture Email Passcode page" in new StandardTestHelpers {
+      "Update S4L and redirect to Capture Email Passcode page" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -74,7 +67,7 @@ class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show().url)
       }
-      "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new StandardTestHelpers {
+      "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -98,7 +91,7 @@ class CaptureEmailAddressControllerISpec extends IntegrationSpecBase
       }
     }
     "ApplicantDetails is complete" should {
-      "Post the block to the backend and redirect to the capture email postcode page" in new StandardTestHelpers {
+      "Post the block to the backend and redirect to the capture email postcode page" in new Setup {
         disable(StubEmailVerification)
 
         given()

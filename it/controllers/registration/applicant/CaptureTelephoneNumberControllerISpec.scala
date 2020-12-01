@@ -16,28 +16,20 @@
 
 package controllers.registration.applicant
 
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
-import fixtures.ApplicantDetailsFixture
-import itutil.IntegrationSpecBase
+import featureswitch.core.config.StubEmailVerification
+import itutil.ControllerISpec
 import models.TelephoneNumber
-import models.external.EmailAddress
 import models.view.ApplicantDetails
-import org.scalatest.concurrent.IntegrationPatience
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.AppAndStubs
 
-class CaptureTelephoneNumberControllerISpec extends IntegrationSpecBase
-  with AppAndStubs
-  with FeatureSwitching
-  with IntegrationPatience
-  with ApplicantDetailsFixture {
+class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   private val testPhoneNumber = "12345 123456"
 
   "GET /telephone-number" should {
-    "show the view correctly" in new StandardTestHelpers {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -55,7 +47,7 @@ class CaptureTelephoneNumberControllerISpec extends IntegrationSpecBase
   "POST /telephone-number" when {
     val keyblock = "applicant-details"
     "the ApplicantDetails model is incomplete" should {
-      "update S4L and redirect to ALF to capture the PPOB address" in new StandardTestHelpers {
+      "update S4L and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -70,11 +62,11 @@ class CaptureTelephoneNumberControllerISpec extends IntegrationSpecBase
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
     "the ApplicantDetails model is complete" should {
-      "post to the backend and redirect to ALF to capture the PPOB address" in new StandardTestHelpers {
+      "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -90,7 +82,7 @@ class CaptureTelephoneNumberControllerISpec extends IntegrationSpecBase
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
   }

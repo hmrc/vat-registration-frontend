@@ -19,13 +19,11 @@ package controllers
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
-import org.scalatest.concurrent.ScalaFutures
-import support.AppAndStubs
+import itutil.ControllerISpec
+import play.api.test.Helpers._
 import utils.VATRegFeatureSwitches
 
-class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
+class WelcomeControllerISpec extends ControllerISpec {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
@@ -35,7 +33,7 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
   "WelcomeController" must {
     "return an OK status" when {
-      "user is authenticated and authorised to access the app without profile" in new StandardTestHelpers {
+      "user is authenticated and authorised to access the app without profile" in new Setup {
         given()
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
@@ -43,12 +41,12 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
-        whenReady(controller.show(request))(res => res.header.status mustBe 303)
+        whenReady(controller.show(request))(res => res.header.status mustBe SEE_OTHER)
       }
     }
 
     "return an OK status" when {
-      "user is authenticated and authorised to access the app with profile" in new StandardTestHelpers {
+      "user is authenticated and authorised to access the app with profile" in new Setup {
         given()
           .user.isAuthorised
           .audit.writesAuditMerged()
@@ -56,7 +54,7 @@ class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with S
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        whenReady(controller.show(request))(res => res.header.status mustBe 303)
+        whenReady(controller.show(request))(res => res.header.status mustBe SEE_OTHER)
       }
     }
   }

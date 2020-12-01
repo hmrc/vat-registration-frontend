@@ -3,15 +3,14 @@ package controllers
 
 import java.time.LocalDate
 
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.{FRSDateChoice, FlatRateScheme, Returns, Start}
 import org.jsoup.Jsoup
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
-import support.AppAndStubs
+import play.api.test.Helpers._
 
-class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
+class FlatRateControllerISpec extends ControllerISpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -65,7 +64,7 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
     "frsStartDate.year" -> Seq(OneDayBeforeVatStartDate.getYear.toString))
 
   s"frsStartDatePage - ${controllers.routes.FlatRateController.frsStartDatePage().url}" should {
-    "return 200 and text based on no vat start date provided" in new StandardTestHelpers {
+    "return OK and text based on no vat start date provided" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -78,12 +77,12 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).get()
       whenReady(response) { res =>
-        res.status mustBe 200
+        res.status mustBe OK
         val document = Jsoup.parse(res.body)
         document.html().contains("This must be at least 3 working days in the future") mustBe true
       }
     }
-    "return 200 and text based on the vat start date already provided by the user" in new StandardTestHelpers {
+    "return OK and text based on the vat start date already provided by the user" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -96,14 +95,14 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).get()
       whenReady(response) { res =>
-        res.status mustBe 200
+        res.status mustBe OK
         val document = Jsoup.parse(res.body)
         document.html().contains("This date must be on or after the date the business is registered for VAT.") mustBe true
       }
     }
   }
   s"submitFrsStartDate - ${controllers.routes.FlatRateController.frsStartDatePage().url}" should {
-    "return 303 when a valid form is posted" in new StandardTestHelpers {
+    "return SEE_OTHER when a valid form is posted" in new Setup {
       System.setProperty("feature.system-date", "2018-05-23T01:01:01")
 
       given()
@@ -118,11 +117,11 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).post(validFormForStartDatePage)
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show().url)
       }
     }
-    "return 400 when an invalid form is posted when vat Start date is provided (i.e the company is incorporated)" in new StandardTestHelpers {
+    "return BAD_REQUEST when an invalid form is posted when vat Start date is provided (i.e the company is incorporated)" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -139,7 +138,7 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
         document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
       }
     }
-    "return 500 when no returns exists" in new StandardTestHelpers {
+    "return INTERNAL_SERVER_ERROR when no returns exists" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -151,7 +150,7 @@ class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with 
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).post(validFormForStartDatePage)
       whenReady(response) { res =>
-        res.status mustBe 500
+        res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

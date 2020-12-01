@@ -137,21 +137,21 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.ppobRow mustBe SummaryRow(
         "directorDetails.ppob",
         Address.normalisedSeq(testAddress),
-        Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
+        Some(controllers.registration.business.routes.PpobAddressController.startJourney())
       )
     }
     "render the phone number row" in {
       sectionBuilder.businessDaytimePhoneNumberRow mustBe SummaryRow(
         "directorDetails.daytimePhoneBusiness",
         "123",
-        Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
       )
     }
     "render the mobile number row" in {
       sectionBuilder.businessMobilePhoneNumberRow mustBe SummaryRow(
         "directorDetails.mobileBusiness",
         "987654",
-        Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
       )
     }
 
@@ -159,14 +159,14 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.businessEmailRow mustBe SummaryRow(
         "directorDetails.emailBusiness",
         "test@foo.com",
-        Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
       )
     }
     "render the website row" in {
       sectionBuilder.businessWebsiteRow mustBe SummaryRow(
         "directorDetails.website",
         "/test/url",
-        Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+        Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
       )
     }
     "render the contact preference row" in {

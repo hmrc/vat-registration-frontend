@@ -1,23 +1,14 @@
 
 package controllers.registration.returns
 
-import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.api.Threshold
-import models.view.ApplicantDetails
 import models.{Returns, Start}
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
-import support.AppAndStubs
 import play.api.test.Helpers._
 
-class ClaimRefundsControllerISpec extends IntegrationSpecBase
-  with AppAndStubs
-  with ScalaFutures
-  with RequestsFinder
-  with ITRegistrationFixtures {
+class ClaimRefundsControllerISpec extends ControllerISpec {
 
   "GET /claim-vat-refunds" must {
     "Return OK when there is no value for 'claim refunds' in the backend" in {

@@ -16,23 +16,21 @@
 
 package controllers
 
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.Returns
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.AppAndStubs
 
 import scala.concurrent.Future
 
-class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
+class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
   val url: String = controllers.routes.ZeroRatedSuppliesController.show().url
 
   s"GET $url" must {
-    "return an OK if turnoverEstimates are found" in new StandardTestHelpers {
+    "return an OK if turnoverEstimates are found" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
@@ -49,7 +47,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
       }
     }
 
-    "return an OK if turnoverEstimates are found and there is data to prepop" in new StandardTestHelpers {
+    "return an OK if turnoverEstimates are found and there is data to prepop" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(Some(10000), None, None, None, None))
@@ -66,7 +64,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
       }
     }
 
-    "return an INTERNAL_SERVER_ERROR if turnoverEstimates aren't found" in new StandardTestHelpers {
+    "return an INTERNAL_SERVER_ERROR if turnoverEstimates aren't found" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
@@ -84,7 +82,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
   }
 
   s"POST $url" must {
-    "redirect to charge expectancy if turnoverEstimates exists and form has no errors" in new StandardTestHelpers {
+    "redirect to charge expectancy if turnoverEstimates exists and form has no errors" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
@@ -105,7 +103,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
       }
     }
 
-    "update the page with errors if turnoverEstimates exists and form has errors" in new StandardTestHelpers {
+    "update the page with errors if turnoverEstimates exists and form has errors" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
@@ -124,7 +122,7 @@ class ZeroRatedSuppliesControllerISpec extends IntegrationSpecBase with AppAndSt
       }
     }
 
-    "return an INTERNAL_SERVER_ERROR if turnoverEstimates doesn't exist" in new StandardTestHelpers {
+    "return an INTERNAL_SERVER_ERROR if turnoverEstimates doesn't exist" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.business
 
-import common.enums.AddressLookupJourneyIdentifier
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import forms.{CompanyContactDetailsForm, PpobForm}
+import controllers.BaseController
+import forms.CompanyContactDetailsForm
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
-import models.api.Address
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
 import views.html.business_contact_details
@@ -40,29 +39,9 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
                                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   lazy val dropoutUrl: String = appConfig.servicesConfig.getString("microservice.services.otrs.url")
-  private val ppobForm = PpobForm.form
   private val companyContactForm = CompanyContactDetailsForm.form
 
-  def ppobRedirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        addressLookupService.getJourneyUrl(
-          journeyId = AddressLookupJourneyIdentifier.businessActivities,
-          continueUrl = routes.BusinessContactDetailsController.returnFromTxm()
-        ) map Redirect
-  }
-
-  def returnFromTxm(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        for {
-          address <- addressLookupService.getAddressById(id)
-          _ <- businessContactService.updateBusinessContact[Address](address)
-        } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
-  }
-
-
-  def showCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -71,7 +50,7 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
         } yield Ok(business_contact_details(form))
   }
 
-  def submitCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         companyContactForm.bindFromRequest.fold(

@@ -285,32 +285,32 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val businessEmailRow: SummaryRow = SummaryRow(
     s"$sectionId.emailBusiness",
     scheme.businessContact.fold("")(_.companyContactDetails.get.email),
-    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
   )
 
   val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.daytimePhoneBusiness",
     scheme.businessContact.fold("")(_.companyContactDetails.get.phoneNumber.getOrElse("")),
-    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
   )
 
   val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
     s"$sectionId.mobileBusiness",
     scheme.businessContact.fold("")(_.companyContactDetails.get.mobileNumber.getOrElse("")),
-    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
   )
 
 
   val businessWebsiteRow: SummaryRow = SummaryRow(
     s"$sectionId.website",
     scheme.businessContact.fold("")(_.companyContactDetails.get.websiteAddress.getOrElse("")),
-    Some(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
   )
 
   val ppobRow: SummaryRow = SummaryRow(
     s"$sectionId.ppob",
     scheme.businessContact.map(bc => Address.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
-    Some(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
+    Some(controllers.registration.business.routes.PpobAddressController.startJourney())
   )
 
   val contactPreferenceRow: SummaryRow = SummaryRow.mandatory(

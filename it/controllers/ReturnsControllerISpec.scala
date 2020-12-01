@@ -2,7 +2,7 @@
 package controllers
 
 import fixtures.ApplicantDetailsFixture
-import itutil.IntegrationSpecBase
+import itutil.{ControllerISpec, IntegrationSpecBase}
 import models.api.Threshold
 import models.view.ApplicantDetails
 import models.{DateSelection, Returns, Start}
@@ -12,7 +12,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
 
-class ReturnsControllerISpec extends IntegrationSpecBase with AppAndStubs with IntegrationPatience with ApplicantDetailsFixture {
+class ReturnsControllerISpec extends ControllerISpec {
 
   "GET /vat-start-date" must {
     "Return OK when the user is authenticated" in {
