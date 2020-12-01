@@ -35,7 +35,7 @@ class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesCon
 
   lazy val addressLookupFrontendUrl: String = config.baseUrl("address-lookup-frontend")
 
-  implicit val reads: Address.adressLookupReads.type = Address.adressLookupReads
+  implicit val reads: Address.addressLookupReads.type = Address.addressLookupReads
 
   def getAddress(id: String)(implicit hc: HeaderCarrier): Future[Address] = {
     http.GET[Address](s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id")

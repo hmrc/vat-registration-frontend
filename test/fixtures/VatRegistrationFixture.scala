@@ -149,7 +149,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   //Api models
   val applicant = Applicant(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val testAddress = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry))
+  val testAddress = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
 
   val validCompanyRegistrationProfile = Some(CompanyRegistrationProfile("submitted", Some("04")))
 
