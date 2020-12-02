@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsObject, Json, Writes}
 
-case class SupplyWorkers(yesNo: Boolean)
+trait OptionalJsonFields {
 
-object SupplyWorkers {
-  implicit val format = Json.format[SupplyWorkers]
-}
+  def optional[T](keyValuePair: (String, Option[T]))(implicit writes: Writes[T]): JsObject =
+    keyValuePair match {
+      case (key, Some(value)) =>
+        Json.obj(key -> value)
+      case _ =>
+        Json.obj()
+    }
 
-case class IntermediarySupply(yesNo: Boolean)
-
-object IntermediarySupply {
-  implicit val format = Json.format[IntermediarySupply]
-}
-
-case class Workers(numberOfWorkers: Int)
-
-object Workers {
-  implicit val format: OFormat[Workers] = Json.format[Workers]
 }

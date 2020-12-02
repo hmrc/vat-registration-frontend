@@ -258,29 +258,22 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   )
 
   val providingWorkersRow: SummaryRow = yesNoRow(
-    "providesWorkers",
-    scheme.sicAndCompliance.flatMap(_.companyProvideWorkers).flatMap(v => CompanyProvideWorkers.toBool(v.yesNo)),
-    controllers.routes.LabourComplianceController.showProvideWorkers()
+    "supplyWorkers",
+    scheme.sicAndCompliance.flatMap(_.supplyWorkers).map(_.yesNo),
+    controllers.registration.sicandcompliance.routes.SupplyWorkersController.show()
   )
 
   val numberOfWorkersRow: SummaryRow = SummaryRow(
     s"$sectionId.numberOfWorkers",
     scheme.sicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
-    Some(controllers.routes.LabourComplianceController.showWorkers())
+    Some(controllers.registration.sicandcompliance.routes.WorkersController.show())
   )
 
-  val temporaryContractsRow: SummaryRow = yesNoRow(
-    "workersOnTemporaryContracts",
-    scheme.sicAndCompliance.flatMap(_.temporaryContracts).flatMap(v => TemporaryContracts.toBool(v.yesNo)),
-    controllers.routes.LabourComplianceController.showTemporaryContracts()
+  val intermediarySupplyRow: SummaryRow = yesNoRow(
+    "intermediarySupply",
+    scheme.sicAndCompliance.flatMap(_.intermediarySupply).map(_.yesNo),
+    controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show()
   )
-
-  val skilledWorkersRow: SummaryRow = yesNoRow(
-    "providesSkilledWorkers",
-    scheme.sicAndCompliance.flatMap(_.skilledWorkers).flatMap(v => SkilledWorkers.toBool(v.yesNo)),
-    controllers.routes.LabourComplianceController.showSkilledWorkers()
-  )
-
 
   val businessEmailRow: SummaryRow = SummaryRow(
     s"$sectionId.emailBusiness",
@@ -299,7 +292,6 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     scheme.businessContact.fold("")(_.companyContactDetails.get.mobileNumber.getOrElse("")),
     Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
   )
-
 
   val businessWebsiteRow: SummaryRow = SummaryRow(
     s"$sectionId.website",
@@ -356,10 +348,9 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (costsLimitedRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.overBusinessGoodsPercent).isDefined),
       (businessSectorRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.categoryOfBusiness).exists(StringUtils.isNotBlank)),
       (flatRatePercentageRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.useThisRate).isDefined),
-      (providingWorkersRow, scheme.sicAndCompliance.flatMap(_.companyProvideWorkers).isDefined),
+      (providingWorkersRow, scheme.sicAndCompliance.flatMap(_.supplyWorkers).isDefined),
       (numberOfWorkersRow, scheme.sicAndCompliance.flatMap(_.workers).isDefined),
-      (temporaryContractsRow, scheme.sicAndCompliance.flatMap(_.temporaryContracts).isDefined),
-      (skilledWorkersRow, scheme.sicAndCompliance.flatMap(_.skilledWorkers).isDefined),
+      (intermediarySupplyRow, scheme.sicAndCompliance.flatMap(_.intermediarySupply).isDefined),
       (tradingNameRow, true),
       (accountIsProvidedRow, true),
       (companyBankAccountDetails, scheme.bankAccount.flatMap(_.details).isDefined)

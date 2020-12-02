@@ -22,13 +22,11 @@ import java.time.format.{DateTimeFormatter, ResolverStyle}
 import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
-import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation.{Constraint, _}
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
 import play.api.libs.json.Reads.email
 import play.api.libs.json.{JsString, JsSuccess}
-import uk.gov.hmrc.time.workingdays.{BankHolidaySet, LocalDateWithHolidays}
 
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}

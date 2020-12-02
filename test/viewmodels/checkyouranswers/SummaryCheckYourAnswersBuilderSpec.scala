@@ -31,13 +31,10 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     Some(Returns(None, None, None, None, Some(Start(startDate))))
 
   val serviceName = "vat-registration-eligibility-frontend"
-
   val accountName = "testName"
   val accountNumber = "12345678"
   val sortCode = "12-34-56"
-
   val bankDetails = BankAccountDetails(accountName, sortCode, accountNumber)
-
   val bankAccountNotProvided = BankAccount(isProvided = false, None)
 
   val bankAccountIsProvided = BankAccount(
@@ -59,7 +56,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
   )
 
   "The section builder composing a company details section" must {
-
     val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,
       ApplicantDetails(),
       Some(5000L),
@@ -79,7 +75,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     )
 
     "with companyBusinessDescriptionRow render" must {
-
       "a 'No' value should be returned with an empty description in sic and compliance" in {
         sectionBuilder.companyBusinessDescriptionRow mustBe
           SummaryRow(
@@ -88,7 +83,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
             Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
-
       "a business activity description in sic and compliance should be shown when one is entered by the user" in {
         sectionBuilderFilledSicAndCompliance.companyBusinessDescriptionRow mustBe
           SummaryRow(
@@ -97,7 +91,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
             Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
           )
       }
-
       "a main business activity in sic and compliance should be shown when one is entered by the user" in {
         sectionBuilderFilledSicAndCompliance.mainActivityRow mustBe
           SummaryRow(
@@ -107,15 +100,14 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
           )
       }
     }
-
     "with section generate" must {
-
       "a valid summary section" in {
         sectionBuilder.section.id mustBe "directorDetails"
-        sectionBuilder.section.rows.length mustEqual 41
+        sectionBuilder.section.rows.length mustEqual 40
       }
     }
   }
+
   "The section builder composing the company contact details section" must {
     val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatScheme,
       ApplicantDetails(),
@@ -154,7 +146,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
         Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
       )
     }
-
     "render the email address row" in {
       sectionBuilder.businessEmailRow mustBe SummaryRow(
         "directorDetails.emailBusiness",
@@ -298,85 +289,55 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     )
 
     "providingWorkersRow render" must {
-
-      " 'Yes' selected providingWorkersRow " in {
+      "'Yes' selected providingWorkersRow " in {
         sectionBuilderWithLabour.providingWorkersRow mustBe
           SummaryRow(
-            "directorDetails.providesWorkers",
+            "directorDetails.supplyWorkers",
             "app.common.yes",
-            Some(controllers.routes.LabourComplianceController.showProvideWorkers())
+            Some(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show())
           )
       }
-
-
-      " 'No' selected for providingWorkersRow" in {
+      "'No' selected for providingWorkersRow" in {
         sectionBuilder.providingWorkersRow mustBe
           SummaryRow(
-            "directorDetails.providesWorkers",
+            "directorDetails.supplyWorkers",
             "app.common.no",
-            Some(controllers.routes.LabourComplianceController.showProvideWorkers())
+            Some(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show())
           )
       }
     }
 
-
     "numberOfWorkers render" must {
-
       "render a row" in {
         sectionBuilderWithLabour.numberOfWorkersRow mustBe
           SummaryRow(
             "directorDetails.numberOfWorkers",
             "12",
-            Some(controllers.routes.LabourComplianceController.showWorkers())
+            Some(controllers.registration.sicandcompliance.routes.WorkersController.show())
           )
       }
     }
 
-
-    "temporaryContractsRow render" must {
-
-      " 'No' selected temporaryContractsRow " in {
-        sectionBuilder.temporaryContractsRow mustBe
+    "intermediaryArrangementRow render" must {
+      " 'No' selected intermediaryArrangementRow " in {
+        sectionBuilder.intermediarySupplyRow mustBe
           SummaryRow(
-            "directorDetails.workersOnTemporaryContracts",
+            "directorDetails.intermediarySupply",
             "app.common.no",
-            Some(controllers.routes.LabourComplianceController.showTemporaryContracts())
+            Some(controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show())
           )
       }
-
-
-      " 'YES' selected for temporaryContractsRow" in {
-        sectionBuilderWithLabour.temporaryContractsRow mustBe
+      " 'YES' selected for intermediaryArrangementRow" in {
+        sectionBuilderWithLabour.intermediarySupplyRow mustBe
           SummaryRow(
-            "directorDetails.workersOnTemporaryContracts",
+            "directorDetails.intermediarySupply",
             "app.common.yes",
-            Some(controllers.routes.LabourComplianceController.showTemporaryContracts())
-          )
-      }
-    }
-
-    "skilledWorkersRow render" must {
-
-      " 'No' selected skilledWorkersRow " in {
-        sectionBuilder.skilledWorkersRow mustBe
-          SummaryRow(
-            "directorDetails.providesSkilledWorkers",
-            "app.common.no",
-            Some(controllers.routes.LabourComplianceController.showSkilledWorkers())
-          )
-      }
-
-
-      " 'YES' selected for skilledWorkersRow" in {
-        sectionBuilderWithLabour.skilledWorkersRow mustBe
-          SummaryRow(
-            "directorDetails.providesSkilledWorkers",
-            "app.common.yes",
-            Some(controllers.routes.LabourComplianceController.showSkilledWorkers())
+            Some(controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show())
           )
       }
     }
   }
+
   "The section builder composing a vat details section" must {
     val sectionBuilderNoStartDate = viewmodels.SummaryCheckYourAnswersBuilder(validVatScheme,
       ApplicantDetails(),
@@ -407,13 +368,11 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
 
         sectionBuilder.startDateRow mustBe expectedRow
       }
-
       "a Companies House incorporation date message, if it's a mandatory registration and they are not incorped" in {
         sectionBuilderNoStartDate.startDateRow mustBe SummaryRow("directorDetails.startDate", "pages.summary.directorDetails.mandatoryStartDate", None)
       }
     }
     "with tradingNameRow render" must {
-
       "a trading name if there's one" in {
         sectionBuilder.tradingNameRow mustBe SummaryRow(
           "directorDetails.tradingName",
@@ -421,7 +380,6 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
           Some(controllers.registration.business.routes.TradingNameController.show())
         )
       }
-
       "a 'No' if there isn't a trading name" in {
         sectionBuilderNoTradingDetails.tradingNameRow mustBe SummaryRow("directorDetails.tradingName", "app.common.no", Some(controllers.registration.business.routes.TradingNameController.show()))
       }

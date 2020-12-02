@@ -27,7 +27,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -52,10 +52,16 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
     customAwait(repo.drop)(defaultTimeout)
 
     def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
       res
+    }
+
+    def insertIntoDb[T](sessionId: String, mapping: Map[String, T])(implicit writes: Writes[T]): Boolean = {
+      customAwait(repo.count)(defaultTimeout)
+      val mappingAsJson = mapping.map { case (id, value) => id -> Json.toJson(value) }
+      customAwait(repo.upsert(CacheMap(sessionId, mappingAsJson)))(defaultTimeout)
     }
   }
 

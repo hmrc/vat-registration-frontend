@@ -16,53 +16,42 @@
 
 package forms
 
-import models.SkilledWorkers
 import forms.FormValidation._
-import models.{CompanyProvideWorkers, SkilledWorkers, TemporaryContracts, Workers}
+import models.{IntermediarySupply, SupplyWorkers, Workers}
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 
-object CompanyProvideWorkersForm {
-  val RADIO_YES_NO: String = "companyProvideWorkersRadio"
-  implicit val errorCode: ErrorCode = "companyProvideWorkers"
+object SupplyWorkersForm extends RequiredBooleanForm {
+  val RADIO_YES_NO: String = "value"
+  override val errorMsg: String = "validation.supplyWorkers.missing"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> textMapping().verifying(CompanyProvideWorkers.valid)
-    )(CompanyProvideWorkers.apply)(CompanyProvideWorkers.unapply)
+      RADIO_YES_NO -> requiredBoolean
+    )(SupplyWorkers.apply)(SupplyWorkers.unapply)
   )
 }
 
 object WorkersForm {
   val NUMBER_OF_WORKERS: String = "numberOfWorkers"
-
   implicit val errorCode: ErrorCode = "labourCompliance.numberOfWorkers"
 
   val form = Form(
     mapping(
-      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText).
-        transform(numberOfWorkersToInt, intToText).verifying(boundedInt)
+      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText)
+        .transform[Int](strVal => strVal.toInt, intVal => intVal.toString)
     )(Workers.apply)(Workers.unapply)
   )
 }
 
-object TemporaryContractsForm {
-  val RADIO_YES_NO: String = "temporaryContractsRadio"
+object IntermediarySupplyForm extends RequiredBooleanForm {
+  val RADIO_YES_NO: String = "value"
+  override val errorMsg: String = "validation.labourCompliance.intermediarySupply.missing"
 
   val form = Form(
     mapping(
-      RADIO_YES_NO -> textMapping()("labourCompliance.temporaryContracts").verifying(TemporaryContracts.valid)
-    )(TemporaryContracts.apply)(TemporaryContracts.unapply)
+      RADIO_YES_NO -> requiredBoolean
+    )(IntermediarySupply.apply)(IntermediarySupply.unapply)
   )
 }
 
-object SkilledWorkersForm {
-  val RADIO_YES_NO: String = "skilledWorkersRadio"
-  implicit val errorCode: ErrorCode = "skilledWorkers"
-
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> textMapping().verifying(SkilledWorkers.valid)
-    )(SkilledWorkers.apply)(SkilledWorkers.unapply)
-  )
-}

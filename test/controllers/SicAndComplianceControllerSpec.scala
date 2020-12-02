@@ -168,7 +168,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     "redirect the user to the SIC code selection page" in new Setup {
       callAuthorised(controller.submitComplianceIntro) {
         result =>
-          result redirectsTo routes.LabourComplianceController.showProvideWorkers().url
+          result redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersController.show().url
       }
     }
   }

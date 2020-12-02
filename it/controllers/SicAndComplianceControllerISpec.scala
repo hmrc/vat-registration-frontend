@@ -16,6 +16,7 @@
 
 package controllers
 
+import fixtures.SicAndComplianceFixture
 import helpers.RequestsFinder
 import itutil.ControllerISpec
 import models.SicAndCompliance.{sicAndCompliance => sicAndCompKey}
@@ -25,108 +26,28 @@ import models.test.SicStub
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
-import repositories.SessionRepository
-import uk.gov.hmrc.http.cache.client.CacheMap
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import play.api.test.Helpers._
 
-class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder {
-  val sicCodeId = "81300003"
-  val sicCodeDesc = "test2 desc"
-  val sicCodeDisplay = "test2 display"
-  val businessActivityDescription = "test business desc"
+class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder with SicAndComplianceFixture {
 
-  val jsonListSicCode =
-    s"""
-       |  [
-       |    {
-       |      "code": "01110004",
-       |      "desc": "gdfgdg d",
-       |      "indexes": "dfg dfg g fd"
-       |    },
-       |    {
-       |      "code": "$sicCodeId",
-       |      "desc": "$sicCodeDesc",
-       |      "indexes": "$sicCodeDisplay"
-       |    },
-       |    {
-       |      "code": "82190004",
-       |      "desc": "ry rty try rty ",
-       |      "indexes": " rtyrtyrty rt"
-       |    }
-       |  ]
-        """.stripMargin
-
-  val mainBusinessActivityView = MainBusinessActivityView(sicCodeId, Some(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)))
-
-  val fullModel = SicAndCompliance(
-    description = Some(BusinessActivityDescription(businessActivityDescription)),
-    mainBusinessActivity = Some(mainBusinessActivityView),
-    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(OK)),
-    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)),
-    businessActivities = Some(BusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
+  val sicCodeMapping: Map[String, JsValue] = Map(
+    "CurrentProfile" -> Json.toJson(currentProfile),
+    ModelKeys.SIC_CODES_KEY -> Json.parse(jsonListSicCode)
   )
 
-  val modelWithoutCompliance = SicAndCompliance(
-    description = Some(BusinessActivityDescription(businessActivityDescription)),
-    mainBusinessActivity = Some(mainBusinessActivityView)
+  val iclSicCodeMapping: Map[String, JsValue] = Map(
+    "CurrentProfile" -> Json.toJson(currentProfile),
+    "ICLFetchResultsUri" -> JsString("/fetch-results")
   )
-  
-  class SicSetup {
-    import scala.concurrent.duration._
 
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-    val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-
-    def insertCurrentProfileSicCodeIntoDb(sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val sicCodeMapping: Map[String, JsValue] = Map(
-        "CurrentProfile" -> Json.toJson(currentProfile),
-        ModelKeys.SIC_CODES_KEY -> Json.parse(jsonListSicCode)
-      )
-      val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-
-    def insertCurrentProfileFetchUri(sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val sicCodeMapping: Map[String, JsValue] = Map(
-        "CurrentProfile" -> Json.toJson(currentProfile),
-        "ICLFetchResultsUri" -> JsString("/fetch-results")
-      )
-      val res = customAwait(repo.upsert(CacheMap(sessionId, sicCodeMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-  }
-
-
-  "SicHalt on show returns OK" in new SicSetup {
+  "SicHalt on show returns OK" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertIntoDb(sessionId, sicCodeMapping)
 
     val response = buildClient("/choose-standard-industry-classification-codes").get()
     whenReady(response) { res =>
@@ -134,7 +55,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new SicSetup {
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
     val simplifiedSicJson =
       """|{"businessActivities" : [
          |           {
@@ -153,7 +74,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAuditMerged()
       .icl.setup()
 
-    insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertIntoDb(sessionId, sicCodeMapping)
 
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
@@ -162,7 +83,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new SicSetup {
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -171,7 +92,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAuditMerged()
       .icl.setup()
 
-    insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertIntoDb(sessionId, sicCodeMapping)
 
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
@@ -180,7 +101,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
+  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
     val sicCode = SicCode("23456", "This is a fake description", "")
 
     given()
@@ -192,7 +113,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode))
 
-    insertCurrentProfileFetchUri(sessionId)
+    insertIntoDb(sessionId, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -200,7 +121,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
+  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
     val sicCode1 = SicCode("23456", "This is a fake description", "")
     val sicCode2 = SicCode("12345", "This is another code", "")
 
@@ -212,7 +133,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1, sicCode2))
 
-    insertCurrentProfileFetchUri(sessionId)
+    insertIntoDb(sessionId, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -220,7 +141,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
+  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
     val sicCode1 = SicCode("01610", "This is a compliance activity", "")
 
     given()
@@ -231,7 +152,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1))
 
-    insertCurrentProfileFetchUri(sessionId)
+    insertIntoDb(sessionId, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -240,14 +161,14 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "MainBusinessActivity on show returns OK" in new SicSetup {
+  "MainBusinessActivity on show returns OK" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertIntoDb(sessionId, sicCodeMapping)
 
     val response = buildClient(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url).get()
     whenReady(response) { res =>
@@ -255,14 +176,13 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new SicSetup {
+  "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new Setup {
 
     val incompleteModelWithoutSicCode = fullModel.copy(
       mainBusinessActivity = None,
-      companyProvideWorkers = None,
+      supplyWorkers = None,
       workers = None,
-      temporaryContracts = None,
-      skilledWorkers = None
+      intermediarySupply = None,
     )
     given()
       .user.isAuthorised
@@ -272,7 +192,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
-    insertCurrentProfileSicCodeIntoDb(sessionId)
+    insertIntoDb(sessionId, sicCodeMapping)
 
     val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
     whenReady(response) { res =>
@@ -287,164 +207,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     }
   }
 
-  "CompanyProvideWorkers should return OK on Show AND users answer is pre-popped on page" in new SicSetup {
-
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-workers-to-other-employers").get()
-    whenReady(response) { res =>
-      res.status mustBe OK
-      val document = Jsoup.parse(res.body)
-      document.getElementById("companyProvideWorkersRadio-provide_workers_yes").attr("checked") mustBe "checked"
-    }
-  }
-  "CompanyProvideWorkers should return INTERNAL_SERVER_ERROR if not authorised on show" in new SicSetup {
-
-    given()
-      .user.isNotAuthorised
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    val response = buildClient("/provides-workers-to-other-employers").get()
-    whenReady(response) { res =>
-      res.status mustBe INTERNAL_SERVER_ERROR
-    }
-  }
-
-
-  "CompanyProvideWorkers return SEE_OTHER on submit to populate S4l not vat as model is incomplete" in new SicSetup {
-
-    val incompleteModel = fullModel.copy(
-      description = None
-    )
-    val toBeUpdatedModel = incompleteModel.copy(
-      companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))
-
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(incompleteModel)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-workers-to-other-employers").post(
-      Map("companyProvideWorkersRadio" -> Seq(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))
-
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showWorkers().url)
-    }
-  }
-
-  "SkilledWorkers should return OK on show and users answer is pre-popped on page" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-skilled-workers").get()
-    whenReady(response) { res =>
-      res.status mustBe OK
-      val document = Jsoup.parse(res.body)
-      document.getElementById("skilledWorkersRadio-skilled_workers_yes").attr("checked") mustBe "checked"
-
-    }
-  }
-  "SkilledWorkers should return SEE_OTHER on submit whereby model was already complete so vat backend is updated instead of s4l" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
-      .s4lContainer[SicAndCompliance].cleared
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
-
-    }
-  }
-  "SkilledWorkers should return INTERNAL_SERVER_ERROR where user is unauthorised on post" in new SicSetup {
-    given()
-      .user.isNotAuthorised
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
-    whenReady(response) { res =>
-      res.status mustBe INTERNAL_SERVER_ERROR
-
-    }
-  }
-  "SkilledWorkers should return INTERNAL_SERVER_ERROR whereby vat backend returns a INTERNAL_SERVER_ERROR" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isNotUpdatedWith[SicAndCompliance](fullModel.copy(skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))))
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
-    whenReady(response) { res =>
-      res.status mustBe INTERNAL_SERVER_ERROR
-
-    }
-  }
-
-  "TemporaryContracts should return OK on show and users answer is pre-popped on page" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-workers-on-temporary-contracts").get()
-    whenReady(response) { res =>
-      res.status mustBe OK
-      val document = Jsoup.parse(res.body)
-      document.getElementById("temporaryContractsRadio-temp_contracts_yes").attr("checked") mustBe "checked"
-
-    }
-  }
-  "TemporaryContracts should return SEE_OTHER on submit" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES))))
-      .s4lContainer[SicAndCompliance].cleared
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/provides-workers-on-temporary-contracts").post(Map("temporaryContractsRadio" -> Seq(TemporaryContracts.TEMP_CONTRACTS_YES)))
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showSkilledWorkers().url)
-
-    }
-  }
-
-  "Workers should return OK on show and users answer is pre-popped on page" in new SicSetup {
+  "Workers should return OK on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -461,44 +224,8 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     }
   }
-  "Workers should redirect to temporary contracts if the number of workers exceeds the threshold" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
-      .s4lContainer[SicAndCompliance].cleared
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("8")))
-
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showTemporaryContracts().url)
-    }
-  }
-  "Workers should redirect to trading name if the number of workers is below the threshold" in new SicSetup {
-    given()
-      .user.isAuthorised
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
-      .s4lContainer[SicAndCompliance].cleared
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
-
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("1")))
-
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show.url)
-    }
-  }
-
-  "ComplianceIntroduction should return OK on show" in new SicSetup {
+  "ComplianceIntroduction should return OK on show" in new Setup {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -508,11 +235,11 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     val response = buildClient("/tell-us-more-about-the-company").get()
     whenReady(response) { res =>
-      res.status mustBe OK
+      res.status mustBe 200
     }
   }
 
-  "ComplianceIntroduction should return SEE_OTHER for labour sic code on submit" in new SicSetup {
+  "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
     given()
       .user.isAuthorised
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
@@ -524,7 +251,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val response = buildClient("/tell-us-more-about-the-company").post(Map("" -> Seq("")))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showProvideWorkers().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show().url)
     }
   }
 

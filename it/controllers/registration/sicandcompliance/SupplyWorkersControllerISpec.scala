@@ -1,0 +1,64 @@
+
+package controllers.registration.sicandcompliance
+
+import fixtures.SicAndComplianceFixture
+import itutil.ControllerISpec
+import models._
+import play.api.http.HeaderNames
+import play.api.test.Helpers._
+
+class SupplyWorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture {
+
+  "supply workers controllers" should {
+    "return OK on Show AND users answer is pre-popped on page" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[SicAndCompliance].contains(fullModel)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/provides-workers-to-other-employers").get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+      }
+    }
+    "return INTERNAL_SERVER_ERROR if not authorised on show" in new Setup {
+      given()
+        .user.isNotAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      val response = buildClient("/provides-workers-to-other-employers").get()
+      whenReady(response) { res =>
+        res.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "redirect on submit to populate S4l not vat as model is incomplete" in new Setup {
+      val incompleteModel = fullModel.copy(
+        description = None
+      )
+      val toBeUpdatedModel = incompleteModel.copy(
+        supplyWorkers = Some(SupplyWorkers(true)))
+
+      given()
+        .user.isAuthorised
+        .s4lContainer[SicAndCompliance].contains(incompleteModel)
+        .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/provides-workers-to-other-employers").post(
+        Map("value" -> Seq("true")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.WorkersController.show().url)
+      }
+    }
+  }
+
+}

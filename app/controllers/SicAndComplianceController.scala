@@ -85,16 +85,16 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
 
   def showComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
-        Future.successful(Ok(compliance_introduction()))
+      Future.successful(Ok(compliance_introduction()))
   }
 
   def submitComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ => Future.successful(Redirect(routes.LabourComplianceController.showProvideWorkers()))
+    _ => _ => Future.successful(Redirect(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show()))
   }
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
-        Future.successful(Ok(about_to_confirm_sic()))
+      Future.successful(Ok(about_to_confirm_sic()))
   }
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {

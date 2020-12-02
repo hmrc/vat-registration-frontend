@@ -16,9 +16,6 @@
 
 package models
 
-import models.CompanyProvideWorkers._
-import models.SkilledWorkers._
-import models.TemporaryContracts._
 import models.api.SicCode
 import play.api.libs.json.{JsObject, Json}
 import testHelpers.VatRegSpec
@@ -68,7 +65,7 @@ class SicAndComplianceSpec extends VatRegSpec {
        |  }
        |  ],
        |  "labourCompliance": {
-       |    "numberOfWorkers": 0
+       |    "supplyWorkers": false
        |  }
        |}
          """.stripMargin)
@@ -76,13 +73,12 @@ class SicAndComplianceSpec extends VatRegSpec {
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
     businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)),
+    supplyWorkers = Some(SupplyWorkers(false)),
     workers = None,
-    temporaryContracts = None,
-    skilledWorkers = None
+    intermediarySupply = None
   )
 
-  val jsonLabourWith7Workers = Json.parse(
+  val jsonLabourWithWorkers = Json.parse(
     s"""
        |{
        |  "businessDescription": "Test Desc",
@@ -99,51 +95,18 @@ class SicAndComplianceSpec extends VatRegSpec {
        |    }
        |  ],
        |  "labourCompliance": {
-       |    "numberOfWorkers": 7
+       |    "supplyWorkers": true,
+       |    "numOfWorkersSupplied": 7
        |  }
        |}
          """.stripMargin)
-  val labourWith7Workers = SicAndCompliance(
+  val labourWithWorkers = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
     businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
+    supplyWorkers = Some(SupplyWorkers(true)),
     workers = Some(Workers(7)),
-    temporaryContracts = None,
-    skilledWorkers = None
-  )
-
-  val jsonLabourWith8PlusWorkers = Json.parse(
-    s"""
-       |{
-       |  "businessDescription": "Test Desc",
-       |  "mainBusinessActivity": {
-       |    "code": "123",
-       |    "desc": "labour",
-       |    "indexes": "labour"
-       |  },
-       |  "businessActivities": [
-       |  {
-       |     "code": "99889",
-       |     "desc": "otherBusiness",
-       |     "indexes": "otherBusiness1"
-       |  }
-       |  ],
-       |  "labourCompliance": {
-       |    "numberOfWorkers": 8,
-       |    "temporaryContracts": true,
-       |    "skilledWorkers": true
-       |  }
-       |}
-         """.stripMargin)
-  val labourWith8PlusWorkers = SicAndCompliance(
-    description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(8)),
-    temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SKILLED_WORKERS_YES))
+    intermediarySupply = None
   )
 
   val jsonLabourWithoutTemporaryContracts = Json.parse(
@@ -163,52 +126,20 @@ class SicAndComplianceSpec extends VatRegSpec {
        |  }
        |  ],
        |  "labourCompliance": {
-       |    "numberOfWorkers": 8,
-       |    "temporaryContracts": false
+       |    "supplyWorkers": true,
+       |    "numOfWorkersSupplied": 8,
+       |    "intermediaryArrangement": false
        |  }
        |}
          """.stripMargin)
+
   val labourWithoutTemporaryContracts = SicAndCompliance(
     description = Some(BusinessActivityDescription("Test Desc")),
     mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
     businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
+    supplyWorkers = Some(SupplyWorkers(true)),
     workers = Some(Workers(8)),
-    temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_NO)),
-    skilledWorkers = None
-  )
-
-  val jsonLabourWithoutSkilledWorkers = Json.parse(
-    s"""
-       |{
-       |  "businessDescription": "Test Desc",
-       |  "mainBusinessActivity": {
-       |    "code": "123",
-       |    "desc": "labour",
-       |    "indexes": "labour"
-       |  },
-       |  "businessActivities": [
-       |  {
-       |     "code": "99889",
-       |     "desc": "otherBusiness",
-       |     "indexes": "otherBusiness1"
-       |  }
-       |  ],
-       |  "labourCompliance": {
-       |    "numberOfWorkers": 8,
-       |    "temporaryContracts": true,
-       |    "skilledWorkers": false
-       |  }
-       |}
-         """.stripMargin)
-  val labourWithoutSkilledWorkers = SicAndCompliance(
-    description = Some(BusinessActivityDescription("Test Desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(id = sicCodeLabour.code, mainBusinessActivity = Some(sicCodeLabour))),
-    businessActivities = Some(BusinessActivities(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(8)),
-    temporaryContracts = Some(TemporaryContracts(TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SKILLED_WORKERS_NO))
+    intermediarySupply = Some(IntermediarySupply(false))
   )
 
   "fromApi" should {
@@ -220,16 +151,8 @@ class SicAndComplianceSpec extends VatRegSpec {
       SicAndCompliance.fromApi(jsonLabourWithoutWorkers) mustBe labourWithoutWorkers
     }
 
-    "return a valid view model for a labour SIC Code with workers (less than 8)" in {
-      SicAndCompliance.fromApi(jsonLabourWith7Workers) mustBe labourWith7Workers
-    }
-
-    "return a valid view model for a labour SIC Code with workers (more than 8)" in {
-      SicAndCompliance.fromApi(jsonLabourWith8PlusWorkers) mustBe labourWith8PlusWorkers
-    }
-
-    "return a valid view model for a labour SIC Code without skilled workers" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutSkilledWorkers) mustBe labourWithoutSkilledWorkers
+    "return a valid view model for a labour SIC Code with workers" in {
+      SicAndCompliance.fromApi(jsonLabourWithWorkers) mustBe labourWithWorkers
     }
 
     "return a valid view model for a labour SIC Code without temporary contracts" in {
@@ -246,12 +169,8 @@ class SicAndComplianceSpec extends VatRegSpec {
       Json.toJson(labourWithoutWorkers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWithoutWorkers
     }
 
-    "return a valid view model for a labour SIC Code with workers (less than 8)" in {
-      Json.toJson(labourWith7Workers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWith7Workers
-    }
-
-    "return a valid view model for a labour SIC Code with workers (more than 8)" in {
-      Json.toJson(labourWith8PlusWorkers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWith8PlusWorkers
+    "return a valid view model for a labour SIC Code with workers" in {
+      Json.toJson(labourWithWorkers)(SicAndCompliance.toApiWrites) mustBe jsonLabourWithWorkers
     }
 
     "return a valid view model for a labour SIC Code without temporary contracts" in {
@@ -261,10 +180,6 @@ class SicAndComplianceSpec extends VatRegSpec {
     "return an Exception" when {
       "the view model is missing the business description" in {
         an[IllegalStateException] shouldBe thrownBy(Json.toJson(noneLabour.copy(description = None))(SicAndCompliance.toApiWrites))
-      }
-
-      "the view model is missing the number of workers" in {
-        an[IllegalStateException] shouldBe thrownBy(Json.toJson(labourWith7Workers.copy(workers = None))(SicAndCompliance.toApiWrites))
       }
 
       "the view model is missing the SIC Code" in {

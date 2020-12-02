@@ -24,8 +24,8 @@ trait SicAndComplianceFixtures {
   val s4LVatSicAndCompliance = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    companyProvideWorkers = None,
+    supplyWorkers = None,
     workers = None,
-    temporaryContracts = None,
-    skilledWorkers = None)
+    intermediarySupply = None
+  )
 }
