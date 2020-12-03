@@ -16,7 +16,7 @@
 
 package controllers
 
-import itutil.IntegrationSpecBase
+import itutil.{ControllerISpec, IntegrationSpecBase}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -26,14 +26,14 @@ import support.AppAndStubs
 import scala.concurrent.Future
 import controllers.registration.applicant.{routes => applicantRoutes}
 
-class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
+class HonestyDeclarationControllerISpec extends ControllerISpec {
 
   val url: String = controllers.routes.HonestyDeclarationController.show().url
 
   val userId = "user-id-12345"
 
   s"GET $url" must {
-    "return an OK" in new StandardTestHelpers {
+    "return an OK" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -48,7 +48,7 @@ class HonestyDeclarationControllerISpec extends IntegrationSpecBase with AppAndS
   }
 
   s"POST $url" must {
-    "return a redirect to Incorp ID" in new StandardTestHelpers {
+    "return a redirect to Incorp ID" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()

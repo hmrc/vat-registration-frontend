@@ -16,26 +16,15 @@
 
 package controllers.registration.applicant
 
-import java.time.LocalDate
-
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
-import models.TelephoneNumber
-import models.api.Address
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
-import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
-import org.scalatest.concurrent.IntegrationPatience
+import featureswitch.core.config.StubEmailVerification
+import itutil.ControllerISpec
+import models.external.{EmailAddress, EmailVerified}
+import models.view.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.AppAndStubs
 
-class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase
-  with AppAndStubs
-  with FeatureSwitching
-  with IntegrationPatience
-  with ITRegistrationFixtures {
+class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
@@ -43,7 +32,7 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase
   val s4lContents = ApplicantDetails(emailAddress = Some(EmailAddress(testEmail)))
 
   "GET /email-address-verification" should {
-    "show the view correctly" in new StandardTestHelpers {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lContents)
@@ -60,7 +49,7 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase
 
   "POST /email-address-verification" when {
     "the feature switch is enabled" should {
-      "verify the entered passcode against the stub and redirect to Email Verified page" in new StandardTestHelpers {
+      "verify the entered passcode against the stub and redirect to Email Verified page" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -80,7 +69,7 @@ class CaptureEmailPasscodeControllerISpec extends IntegrationSpecBase
         res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show().url)
       }
 
-      "return BAD_REQUEST for an incorrect passcode" in new StandardTestHelpers {
+      "return BAD_REQUEST for an incorrect passcode" in new Setup {
         disable(StubEmailVerification)
 
         given()

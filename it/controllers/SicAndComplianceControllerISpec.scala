@@ -17,25 +17,22 @@
 package controllers
 
 import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.SicAndCompliance.{sicAndCompliance => sicAndCompKey}
 import models._
 import models.api.SicCode
 import models.test.SicStub
 import org.jsoup.Jsoup
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
 import repositories.SessionRepository
-import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import play.api.test.Helpers._
 
-class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder {
   val sicCodeId = "81300003"
   val sicCodeDesc = "test2 desc"
   val sicCodeDisplay = "test2 display"
@@ -68,7 +65,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     description = Some(BusinessActivityDescription(businessActivityDescription)),
     mainBusinessActivity = Some(mainBusinessActivityView),
     companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(200)),
+    workers = Some(Workers(OK)),
     temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
     skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)),
     businessActivities = Some(BusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
@@ -78,10 +75,8 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     description = Some(BusinessActivityDescription(businessActivityDescription)),
     mainBusinessActivity = Some(mainBusinessActivityView)
   )
-
-
-  class Setup {
-
+  
+  class SicSetup {
     import scala.concurrent.duration._
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
@@ -124,7 +119,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
   }
 
 
-  "SicHalt on show returns 200" in new Setup {
+  "SicHalt on show returns OK" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -135,11 +130,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/choose-standard-industry-classification-codes").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
     }
   }
 
-  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new SicSetup {
     val simplifiedSicJson =
       """|{"businessActivities" : [
          |           {
@@ -163,11 +158,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
     }
   }
 
-  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
+  "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -181,11 +176,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
     }
   }
 
-  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
+  "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
     val sicCode = SicCode("23456", "This is a fake description", "")
 
     given()
@@ -201,11 +196,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
     }
   }
 
-  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
+  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
     val sicCode1 = SicCode("23456", "This is a fake description", "")
     val sicCode2 = SicCode("12345", "This is another code", "")
 
@@ -221,11 +216,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
     }
   }
 
-  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a 303" in new Setup {
+  "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new SicSetup {
     val sicCode1 = SicCode("01610", "This is a compliance activity", "")
 
     given()
@@ -240,12 +235,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.showComplianceIntro().url)
     }
   }
 
-  "MainBusinessActivity on show returns 200" in new Setup {
+  "MainBusinessActivity on show returns OK" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -256,11 +251,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url).get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
     }
   }
 
-  "MainBusinessActivity on submit returns 303 vat Scheme is upserted because the model is NOW complete" in new Setup {
+  "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new SicSetup {
 
     val incompleteModelWithoutSicCode = fullModel.copy(
       mainBusinessActivity = None,
@@ -281,7 +276,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
     whenReady(response) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
       val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
@@ -292,7 +287,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
     }
   }
 
-  "CompanyProvideWorkers should return 200 on Show AND users answer is pre-popped on page" in new Setup {
+  "CompanyProvideWorkers should return OK on Show AND users answer is pre-popped on page" in new SicSetup {
 
     given()
       .user.isAuthorised
@@ -304,12 +299,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-workers-to-other-employers").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
       val document = Jsoup.parse(res.body)
       document.getElementById("companyProvideWorkersRadio-provide_workers_yes").attr("checked") mustBe "checked"
     }
   }
-  "CompanyProvideWorkers should return 500 if not authorised on show" in new Setup {
+  "CompanyProvideWorkers should return INTERNAL_SERVER_ERROR if not authorised on show" in new SicSetup {
 
     given()
       .user.isNotAuthorised
@@ -318,12 +313,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-workers-to-other-employers").get()
     whenReady(response) { res =>
-      res.status mustBe 500
+      res.status mustBe INTERNAL_SERVER_ERROR
     }
   }
 
 
-  "CompanyProvideWorkers return 303 on submit to populate S4l not vat as model is incomplete" in new Setup {
+  "CompanyProvideWorkers return SEE_OTHER on submit to populate S4l not vat as model is incomplete" in new SicSetup {
 
     val incompleteModel = fullModel.copy(
       description = None
@@ -344,12 +339,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
       Map("companyProvideWorkersRadio" -> Seq(CompanyProvideWorkers.PROVIDE_WORKERS_YES)))
 
     whenReady(response) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showWorkers().url)
     }
   }
 
-  "SkilledWorkers should return 200 on show and users answer is pre-popped on page" in new Setup {
+  "SkilledWorkers should return OK on show and users answer is pre-popped on page" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -360,13 +355,13 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-skilled-workers").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
       val document = Jsoup.parse(res.body)
       document.getElementById("skilledWorkersRadio-skilled_workers_yes").attr("checked") mustBe "checked"
 
     }
   }
-  "SkilledWorkers should return 303 on submit whereby model was already complete so vat backend is updated instead of s4l" in new Setup {
+  "SkilledWorkers should return SEE_OTHER on submit whereby model was already complete so vat backend is updated instead of s4l" in new SicSetup {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -379,12 +374,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
 
     }
   }
-  "SkilledWorkers should return 500 where user is unauthorised on post" in new Setup {
+  "SkilledWorkers should return INTERNAL_SERVER_ERROR where user is unauthorised on post" in new SicSetup {
     given()
       .user.isNotAuthorised
       .audit.writesAudit()
@@ -392,11 +387,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
-      res.status mustBe 500
+      res.status mustBe INTERNAL_SERVER_ERROR
 
     }
   }
-  "SkilledWorkers should return 500 whereby vat backend returns a 500" in new Setup {
+  "SkilledWorkers should return INTERNAL_SERVER_ERROR whereby vat backend returns a INTERNAL_SERVER_ERROR" in new SicSetup {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -408,12 +403,12 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-skilled-workers").post(Map("skilledWorkersRadio" -> Seq(SkilledWorkers.SKILLED_WORKERS_YES)))
     whenReady(response) { res =>
-      res.status mustBe 500
+      res.status mustBe INTERNAL_SERVER_ERROR
 
     }
   }
 
-  "TemporaryContracts should return 200 on show and users answer is pre-popped on page" in new Setup {
+  "TemporaryContracts should return OK on show and users answer is pre-popped on page" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -424,13 +419,13 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-workers-on-temporary-contracts").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
       val document = Jsoup.parse(res.body)
       document.getElementById("temporaryContractsRadio-temp_contracts_yes").attr("checked") mustBe "checked"
 
     }
   }
-  "TemporaryContracts should return 303 on submit" in new Setup {
+  "TemporaryContracts should return SEE_OTHER on submit" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -443,13 +438,13 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/provides-workers-on-temporary-contracts").post(Map("temporaryContractsRadio" -> Seq(TemporaryContracts.TEMP_CONTRACTS_YES)))
     whenReady(response) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showSkilledWorkers().url)
 
     }
   }
 
-  "Workers should return 200 on show and users answer is pre-popped on page" in new Setup {
+  "Workers should return OK on show and users answer is pre-popped on page" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -460,32 +455,50 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/how-many-workers-does-company-provide-at-one-time").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
       val document = Jsoup.parse(res.body)
       document.getElementById("numberOfWorkers").attr("value") mustBe fullModel.workers.get.numberOfWorkers.toString
 
     }
   }
-  "Workers should return 303 on submit" in new Setup {
+  "Workers should redirect to temporary contracts if the number of workers exceeds the threshold" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(200))))
+      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
       .s4lContainer[SicAndCompliance].cleared
       .audit.writesAudit()
       .audit.writesAuditMerged()
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("200")))
-    whenReady(response) { res =>
-      res.status mustBe 303
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showTemporaryContracts().url)
+    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("8")))
 
+    whenReady(response) { res =>
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showTemporaryContracts().url)
+    }
+  }
+  "Workers should redirect to trading name if the number of workers is below the threshold" in new SicSetup {
+    given()
+      .user.isAuthorised
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
+      .s4lContainer[SicAndCompliance].cleared
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+
+    insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("1")))
+
+    whenReady(response) { res =>
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show.url)
     }
   }
 
-  "ComplianceIntroduction should return 200 on show" in new Setup {
+  "ComplianceIntroduction should return OK on show" in new SicSetup {
     given()
       .user.isAuthorised
       .audit.writesAudit()
@@ -495,11 +508,11 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/tell-us-more-about-the-company").get()
     whenReady(response) { res =>
-      res.status mustBe 200
+      res.status mustBe OK
     }
   }
 
-  "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
+  "ComplianceIntroduction should return SEE_OTHER for labour sic code on submit" in new SicSetup {
     given()
       .user.isAuthorised
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
@@ -510,7 +523,7 @@ class SicAndComplianceControllerISpec extends IntegrationSpecBase with AppAndStu
 
     val response = buildClient("/tell-us-more-about-the-company").post(Map("" -> Seq("")))
     whenReady(response) { res =>
-      res.status mustBe 303
+      res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.LabourComplianceController.showProvideWorkers().url)
     }
   }

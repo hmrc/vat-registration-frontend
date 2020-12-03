@@ -3,47 +3,19 @@ package controllers.registration.applicant
 
 import java.time.LocalDate
 
-import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import controllers.registration.applicant.{routes => applicantRoutes}
+import itutil.ControllerISpec
+import models.TelephoneNumber
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsBoolean, JsObject, JsString, JsValue, Json}
-import repositories.SessionRepository
-import support.AppAndStubs
-import uk.gov.hmrc.http.cache.client.CacheMap
+import play.api.libs.json.{JsBoolean, JsObject, JsString, Json}
+import play.api.test.Helpers._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
-import controllers.registration.applicant.{routes => applicantRoutes}
-import models.TelephoneNumber
-
-class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
-
-  class Setup {
-    val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preAwait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preAwait + 1
-      res
-    }
-  }
+class FormerNameControllerISpec extends ControllerISpec {
 
   val keyBlock = "applicant-details"
-
   val email = "test@t.test"
   val nino = "SR123456C"
   val role = "03"
@@ -108,7 +80,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
 
       val response = buildClient("/changed-name").post(Map("formerNameRadio" -> Seq("false")))
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
@@ -138,7 +110,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
       ))
 
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
       }
     }
@@ -160,7 +132,7 @@ class FormerNameControllerISpec extends IntegrationSpecBase with AppAndStubs wit
         "formerName" -> Seq("New Name Cosmo")
       ))
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
       }
     }

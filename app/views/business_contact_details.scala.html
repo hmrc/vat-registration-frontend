@@ -38,7 +38,7 @@
 
     <p>@Html(messages("pages.businessContactDetails.para1"))</p>
 
-    @govHelpers.form(action = controllers.routes.BusinessContactDetailsController.submitCompanyContactDetails()) {
+    @govHelpers.form(action = controllers.registration.business.routes.BusinessContactDetailsController.submit()) {
         <div class="form-group @if(doesFormHaveErrors(companyContactDetailsForm, "businessContactDetails")) {form-group-error}">
             @companyContactDetailsForm.errors.find(_.args.contains("businessContactDetails")).map { error =>
                 @govHelpers.errorInline("businessContactDetails", messages(error.message))

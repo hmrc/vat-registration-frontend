@@ -16,47 +16,18 @@
 
 package controllers.registration.business
 
-import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.view.ApplicantDetails
 import models.{TradingDetails, TradingNameView}
-import org.jsoup.Jsoup
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsValue, Json}
-import repositories.SessionRepository
-import support.AppAndStubs
-import uk.gov.hmrc.http.cache.client.CacheMap
+import play.api.libs.json.Json
 import play.api.test.Helpers._
-import scala.concurrent.duration._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
-
-class TradingNameControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+class TradingNameControllerISpec extends ControllerISpec {
   val companyName = "testCompanyName"
 
-  class Setup {
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-    val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preawait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
-      res
-    }
-  }
-
   "show Trading Name page" should {
-    "return 200" in new Setup {
+    "return OK" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
@@ -76,7 +47,7 @@ class TradingNameControllerISpec extends IntegrationSpecBase with AppAndStubs wi
   }
 
   "submit Trading Name page" should {
-    "return 303" in new Setup {
+    "return SEE_OTHER" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)

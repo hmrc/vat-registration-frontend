@@ -54,7 +54,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
             Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit(), formWithErrors))),
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).map {
-              _ => Redirect(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
+              _ => Redirect(controllers.registration.business.routes.PpobAddressController.startJourney())
             }
         )
   }

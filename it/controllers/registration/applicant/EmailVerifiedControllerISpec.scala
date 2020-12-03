@@ -16,18 +16,16 @@
 
 package controllers.registration.applicant
 
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
-import itutil.IntegrationSpecBase
-import org.scalatest.concurrent.IntegrationPatience
+import featureswitch.core.config.StubEmailVerification
+import itutil.ControllerISpec
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.AppAndStubs
 
-class EmailVerifiedControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
+class EmailVerifiedControllerISpec extends ControllerISpec {
 
   "GET /email-address-verified" should {
-    "show the view correctly" in new StandardTestHelpers {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -42,7 +40,7 @@ class EmailVerifiedControllerISpec extends IntegrationSpecBase with AppAndStubs 
   }
 
   "POST /email-address-verification" should {
-      "return NotImplemented" in new StandardTestHelpers {
+      "return NotImplemented" in new Setup {
         disable(StubEmailVerification)
 
         given()

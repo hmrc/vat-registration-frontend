@@ -4,46 +4,18 @@ package controllers.registration.applicant
 import java.time.LocalDate
 
 import controllers.registration.applicant.{routes => applicantRoutes}
-import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
-import itutil.IntegrationSpecBase
+import itutil.ControllerISpec
 import models.TelephoneNumber
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView}
-import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
-import repositories.SessionRepository
-import support.AppAndStubs
-import uk.gov.hmrc.http.cache.client.CacheMap
+import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.test.Helpers._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, FiniteDuration, _}
-import scala.concurrent.{Await, Future}
-
-class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
-
-  class Setup {
-    val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
-
-    customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
-
-    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      val preAwait = customAwait(repo.count)(defaultTimeout)
-      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
-      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
-      customAwait(repo.count)(defaultTimeout) mustBe preAwait + 1
-      res
-    }
-  }
+class PreviousAddressControllerISpec extends ControllerISpec {
 
   val keyBlock = "applicant-details"
-
   val email = "test@t.test"
   val nino = "SR123456C"
   val role = "Director"
@@ -116,7 +88,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
 
       val response = buildClient(applicantRoutes.PreviousAddressController.submit().url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
@@ -195,7 +167,7 @@ class PreviousAddressControllerISpec extends IntegrationSpecBase with AppAndStub
 
       val response = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
-        res.status mustBe 303
+        res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")

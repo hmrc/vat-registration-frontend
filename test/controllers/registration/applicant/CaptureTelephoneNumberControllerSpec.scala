@@ -92,7 +92,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) {
         res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(appRoutes.BusinessContactDetailsController.ppobRedirectToAlf().url)
+        redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
   }
