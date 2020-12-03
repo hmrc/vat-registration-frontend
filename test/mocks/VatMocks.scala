@@ -65,6 +65,7 @@ trait VatMocks
   implicit lazy val mockApplicantDetailsServiceOld = mock[ApplicantDetailsService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockPrePopulationService: PrePopulationService = mock[PrePopulationService]
+  implicit lazy val mockTrafficManagementService = mock[TrafficManagementService]
   lazy val mockTradingDetailsService = mock[TradingDetailsService]
   lazy val mockSummaryService: SummaryService = mock[SummaryService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
@@ -100,7 +101,8 @@ trait VatMocks
       mockSummaryService,
       mockBusinessContactService,
       mockAuthClientConnector,
-      mockTimeService
+      mockTimeService,
+      mockTrafficManagementService
     )
   }
 }

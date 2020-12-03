@@ -16,31 +16,31 @@
 
 package controllers.registration.flatratescheme
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import javax.inject.Inject
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
-
-import scala.concurrent.{ExecutionContext, Future}
 import views.html.frs_join
 
-class JoinFlatRateSchemeController  @Inject()(mcc: MessagesControllerComponents,
-                                              val flatRateService: FlatRateService,
-                                              val vatRegistrationService: VatRegistrationService,
-                                              val authConnector: AuthClientConnector,
-                                              val keystoreConnector: KeystoreConnector,
-                                              view: frs_join)
-                                             (implicit val appConfig: FrontendAppConfig,
-                                              val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+import scala.concurrent.{ExecutionContext, Future}
+
+class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateService,
+                                             val vatRegistrationService: VatRegistrationService,
+                                             val authConnector: AuthClientConnector,
+                                             val keystoreConnector: KeystoreConnector,
+                                             view: frs_join)
+                                            (implicit appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext,
+                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.join")
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         vatRegistrationService.fetchTurnoverEstimates flatMap { res =>
@@ -56,7 +56,7 @@ class JoinFlatRateSchemeController  @Inject()(mcc: MessagesControllerComponents,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         joinFrsForm.bindFromRequest().fold(

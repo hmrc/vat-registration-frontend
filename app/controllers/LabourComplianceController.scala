@@ -16,27 +16,28 @@
 
 package controllers
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.{CompanyProvideWorkersForm, SkilledWorkersForm, TemporaryContractsForm, WorkersForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyProvideWorkers.PROVIDE_WORKERS_YES
 import models.{SicAndCompliance, TemporaryContracts}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SicAndComplianceService}
 import views.html.labour.{company_provide_workers, skilled_workers, temporary_contracts, workers}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
-                                           val authConnector: AuthClientConnector,
+class LabourComplianceController @Inject()(val authConnector: AuthClientConnector,
                                            val keystoreConnector: KeystoreConnector,
-                                           val sicAndCompService: SicAndComplianceService)
-                                          (implicit val appConfig: FrontendAppConfig,
-                                           val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                           val sicAndCompService: SicAndComplianceService
+                                          )(implicit appConfig: FrontendAppConfig,
+                                            val executionContext: ExecutionContext,
+                                            baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def showProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +46,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(company_provide_workers(formFilled))
   }
 
-  def submitProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitProvideWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         CompanyProvideWorkersForm.form.bindFromRequest().fold(
@@ -60,7 +61,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  def showWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -69,7 +70,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(workers(formFilled))
   }
 
-  def submitWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         WorkersForm.form.bindFromRequest().fold(
@@ -84,7 +85,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  def showTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -93,7 +94,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(temporary_contracts(formFilled))
   }
 
-  def submitTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitTemporaryContracts: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         TemporaryContractsForm.form.bindFromRequest().fold(
@@ -108,7 +109,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  def showSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -117,7 +118,7 @@ class LabourComplianceController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(skilled_workers(formFilled))
   }
 
-  def submitSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitSkilledWorkers: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         SkilledWorkersForm.form.bindFromRequest().fold(

@@ -16,27 +16,28 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, IncorpIdService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
-                                   val authConnector: AuthConnector,
+class IncorpIdController @Inject()(val authConnector: AuthConnector,
                                    val keystoreConnector: KeystoreConnector,
                                    incorpIdService: IncorpIdService,
                                    applicantDetailsService: ApplicantDetailsService
-                                  )(implicit val appConfig: FrontendAppConfig,
-                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  )(implicit appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext,
+                                    baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
+  def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit req =>
       _ =>
         incorpIdService.createJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
@@ -44,12 +45,13 @@ class IncorpIdController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        incorpDetails <- incorpIdService.getDetails(journeyId)
-        _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
-      } yield Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+  def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        for {
+          incorpDetails <- incorpIdService.getDetails(journeyId)
+          _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
+        } yield Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
   }
 
 }

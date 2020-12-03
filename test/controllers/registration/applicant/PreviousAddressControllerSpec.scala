@@ -40,7 +40,6 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: PreviousAddressController = new PreviousAddressController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,

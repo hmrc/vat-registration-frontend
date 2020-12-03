@@ -30,7 +30,6 @@ import scala.concurrent.Future
 class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val testController: WelcomeController = new WelcomeController(
-    messagesControllerComponents,
     mockVatRegistrationService,
     mockCurrentProfileService,
     mockAuthClientConnector,

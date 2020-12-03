@@ -16,26 +16,28 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, PersonalDetailsValidationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerComponents,
-                                                    val authConnector: AuthConnector,
+class PersonalDetailsValidationController @Inject()(val authConnector: AuthConnector,
                                                     val keystoreConnector: KeystoreConnector,
                                                     personalDetailsValidationService: PersonalDetailsValidationService,
                                                     applicantDetailsService: ApplicantDetailsService
-                                                   )(implicit val appConfig: FrontendAppConfig,
-                                                     val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
-  def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
+                                                   )(implicit appConfig: FrontendAppConfig,
+                                                     val executionContext: ExecutionContext,
+                                                     baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
+
+  def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
     _ => _ =>
         val continueUrl = appConfig.getPersonalDetailsCallbackUrl()
         val personalDetailsValidationJourneyUrl = appConfig.getPersonalDetailsValidationJourneyUrl()
@@ -43,7 +45,7 @@ class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerCompo
         Future.successful(SeeOther(s"$personalDetailsValidationJourneyUrl?completionUrl=$continueUrl"))
   }
 
-  def personalDetailsValidationCallback(validationId: String): Action[AnyContent] = isAuthenticatedWithProfile {
+  def personalDetailsValidationCallback(validationId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit req =>
       implicit profile =>
         for {

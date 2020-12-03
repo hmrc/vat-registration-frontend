@@ -30,7 +30,6 @@ class LabourComplianceControllerSpec extends ControllerSpec with FutureAwaits wi
 
   trait Setup {
     val controller: LabourComplianceController = new LabourComplianceController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService

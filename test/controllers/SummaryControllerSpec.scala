@@ -37,7 +37,6 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
 
   trait Setup {
     val testSummaryController = new SummaryController(
-      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockVatRegistrationService,

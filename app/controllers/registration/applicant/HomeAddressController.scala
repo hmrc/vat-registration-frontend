@@ -17,38 +17,40 @@
 package controllers.registration.applicant
 
 import common.enums.AddressLookupJourneyIdentifier.homeAddress
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
 import models.view.HomeAddressView
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class HomeAddressController @Inject()(mcc: MessagesControllerComponents,
-                                      val authConnector: AuthConnector,
+class HomeAddressController @Inject()(val authConnector: AuthConnector,
                                       val keystoreConnector: KeystoreConnector,
                                       val applicantDetailsService: ApplicantDetailsService,
                                       val addressLookupService: AddressLookupService)
-                                     (implicit val appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                     (implicit appConfig: FrontendAppConfig,
+                                      val executionContext: ExecutionContext,
+                                      baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
+  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
       addressLookupService.getJourneyUrl(homeAddress, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
   }
 
-  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      for {
-        address <- addressLookupService.getAddressById(id)
-        _ <- applicantDetailsService.saveApplicantDetails(HomeAddressView(address.id, Some(address.normalise())))
-      } yield Redirect(applicantRoutes.PreviousAddressController.show())
+  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        for {
+          address <- addressLookupService.getAddressById(id)
+          _ <- applicantDetailsService.saveApplicantDetails(HomeAddressView(address.id, Some(address.normalise())))
+        } yield Redirect(applicantRoutes.PreviousAddressController.show())
   }
 
 }

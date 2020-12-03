@@ -38,7 +38,6 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile), currDate: LocalDateTime = dateBefore2pm, minDaysInFuture: Int = 3) {
     val testController = new ReturnsController(
-      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,

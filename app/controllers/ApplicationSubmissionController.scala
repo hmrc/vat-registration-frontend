@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
@@ -26,13 +26,14 @@ import views.html.pages.application_submission_confirmation
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponents,
-                                                val returnsService: ReturnsService,
+class ApplicationSubmissionController @Inject()(val returnsService: ReturnsService,
                                                 val authConnector: AuthClientConnector,
                                                 val keystoreConnector: KeystoreConnector,
                                                 val applicationSubmissionConfirmationView: application_submission_confirmation)
-                                               (implicit val appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                               (implicit appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext,
+                                                baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>

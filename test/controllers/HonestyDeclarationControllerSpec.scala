@@ -27,7 +27,6 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 class HonestyDeclarationControllerSpec extends ControllerSpec {
 
   val TestController = new HonestyDeclarationController(
-    messagesControllerComponents,
     app.injector.instanceOf[honesty_declaration],
     mockAuthClientConnector,
     mockKeystoreConnector

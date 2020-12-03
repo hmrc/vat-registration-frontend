@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.test.TestVatRegistrationConnector
 import connectors.{KeystoreConnector, S4LConnector}
 import controllers.BaseController
@@ -24,26 +24,29 @@ import forms.test.TestSetupEligibilityForm
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{S4LService, SessionProfile}
+import services.{S4LService, SessionProfile, TrafficManagementService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestSetupController @Inject()(mcc: MessagesControllerComponents,
-                                    val s4LService: S4LService,
+class TestSetupController @Inject()(val s4LService: S4LService,
                                     val s4lConnector: S4LConnector,
                                     val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector,
                                     val testVatRegConnector: TestVatRegistrationConnector)
-                                   (implicit val appConfig: FrontendAppConfig,
-                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                   (implicit appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext,
+                                    baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def showEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => _ =>
+  def showEligibility: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+    implicit request =>
+      implicit profile =>
         Future.successful(Ok(views.html.pages.test.test_setup_eligibility(TestSetupEligibilityForm.form)))
   }
 
-  def submitEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitEligibility: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         TestSetupEligibilityForm.form.bindFromRequest().fold(

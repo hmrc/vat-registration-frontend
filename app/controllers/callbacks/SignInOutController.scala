@@ -18,22 +18,23 @@ package controllers.callbacks
 
 import java.io.File
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SignInOutController @Inject()(mcc: MessagesControllerComponents,
-                                    val authConnector: AuthClientConnector,
+class SignInOutController @Inject()(val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector)
-                                   (implicit val appConfig: FrontendAppConfig,
-                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                   (implicit appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext,
+                                    baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   def postSignIn: Action[AnyContent] = Action.async {
     _ => Future.successful(Redirect(controllers.routes.WelcomeController.show().url))

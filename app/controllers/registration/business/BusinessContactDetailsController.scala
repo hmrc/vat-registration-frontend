@@ -16,32 +16,33 @@
 
 package controllers.registration.business
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.CompanyContactDetailsForm
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
 import views.html.business_contact_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                                 val authConnector: AuthClientConnector,
+class BusinessContactDetailsController @Inject()(val authConnector: AuthClientConnector,
                                                  val keystoreConnector: KeystoreConnector,
                                                  val businessContactService: BusinessContactService,
                                                  val prepopService: PrePopulationService,
                                                  val addressLookupService: AddressLookupService)
-                                                (implicit val appConfig: FrontendAppConfig,
-                                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                                (implicit appConfig: FrontendAppConfig,
+                                                 val executionContext: ExecutionContext,
+                                                 baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   lazy val dropoutUrl: String = appConfig.servicesConfig.getString("microservice.services.otrs.url")
   private val companyContactForm = CompanyContactDetailsForm.form
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +51,7 @@ class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponen
         } yield Ok(business_contact_details(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         companyContactForm.bindFromRequest.fold(

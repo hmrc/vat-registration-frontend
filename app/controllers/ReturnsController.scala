@@ -19,12 +19,12 @@ package controllers
 import java.time.LocalDate
 import java.util
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms._
 import javax.inject.{Inject, Singleton}
 import models._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -34,16 +34,16 @@ import views.html.{mandatory_start_date_incorp_view => MandatoryStartDateIncorpP
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ReturnsController @Inject()(mcc: MessagesControllerComponents,
-                                  val keystoreConnector: KeystoreConnector,
+class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val returnsService: ReturnsService,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService)
-                                 (implicit val appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                 (implicit appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext,
+                                  baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile {
+  val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
@@ -54,7 +54,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         }
   }
 
-  val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         AccountingPeriodForm.form.bindFromRequest.fold(
@@ -65,7 +65,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile {
+  val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
@@ -76,7 +76,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         }
   }
 
-  val submitReturnsFrequency: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submitReturnsFrequency: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         ReturnFrequencyForm.form.bindFromRequest.fold(
@@ -91,7 +91,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         )
   }
 
-  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
+  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
       implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
       returnsService.getReturns.flatMap { returns =>
@@ -116,7 +116,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap { incorpDate =>
@@ -133,7 +133,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
         }
   }
 
-  val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
+  val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap(incorpDate =>
@@ -148,7 +148,7 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
           })
   }
 
-  val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap(incorpDate =>

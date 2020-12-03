@@ -29,7 +29,6 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
 
   class Setup {
     val controller: BusinessContactDetailsController = new BusinessContactDetailsController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockBusinessContactService,
