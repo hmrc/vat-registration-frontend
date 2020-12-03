@@ -22,13 +22,11 @@ import java.time.format.{DateTimeFormatter, ResolverStyle}
 import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
-import play.api.Logger
 import play.api.data.format.Formatter
 import play.api.data.validation.{Constraint, _}
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
 import play.api.libs.json.Reads.email
 import play.api.libs.json.{JsString, JsSuccess}
-import uk.gov.hmrc.time.workingdays.{BankHolidaySet, LocalDateWithHolidays}
 
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
@@ -237,11 +235,10 @@ object FormValidation {
 
   def isValidPhoneNumber(formName:String): Constraint[String] = Constraint { phone: String =>
 
-    val isValidNumber:Option[Int] = if(phone.matches("^[0-9]*")) Some(phone.length) else None
+    val isValidNumber:Option[Int] = if(phone.matches("^[A-Z0-9 )/(*#+-]+$")) Some(phone.length) else None
 
     isValidNumber match {
-      case Some(num) if(num > 20) => Invalid(s"validation.invalid.$formName.tooLong")
-      case Some(num) if(num < 10) => Invalid(s"validation.invalid.$formName.tooShort")
+      case Some(num) if(num > 24) => Invalid(s"validation.invalid.$formName.tooLong")
       case Some(_) => Valid
       case _ => Invalid(s"validation.invalid.$formName")
     }
