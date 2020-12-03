@@ -32,12 +32,24 @@ class CompanyContactDetailsFormSpec extends VatRegSpec {
     val DAYTIME_PHONE = "0123456789"
     val MOBILE = "9876543210"
     val WEBSITE = "http://www.some.website.com/"
+    val ALTERNATE_MOBILE = "+449876543210"
+    val INTERNATIONAL_NUMBER = "(123) 456-7890"
 
     "be valid" when {
 
       "email and mobile number is provided" in {
         val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(MOBILE))
         testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(EMAIL, None, Some(MOBILE), None)
+      }
+
+      "email and alternate number is provided" in {
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(ALTERNATE_MOBILE))
+        testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(EMAIL, None, Some(ALTERNATE_MOBILE), None)
+      }
+
+      "email and international number is provided" in {
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq(INTERNATIONAL_NUMBER))
+        testForm.bindFromRequest(data) shouldContainValue CompanyContactDetails(EMAIL, None, Some(INTERNATIONAL_NUMBER.replaceAll(" ", "")), None)
       }
 
       "email and phone number is provided" in {
@@ -101,26 +113,14 @@ class CompanyContactDetailsFormSpec extends VatRegSpec {
         form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails")
       }
 
-      "too short daytime phone number is provided and email" in {
-        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("1234"))
-        val form = testForm.bindFromRequest(data)
-        form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails.tooShort")
-      }
-
-      "too short mobile phone number is provided and email" in {
-        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("12345"))
-        val form = testForm.bindFromRequest(data)
-        form shouldHaveErrors Seq("mobile" -> "validation.invalid.businessContactDetails.tooShort")
-      }
-
       "too long mobile phone number is provided and email" in {
-        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("123456789012345678901"))
+        val data = Map("email" -> Seq(EMAIL), "mobile" -> Seq("1234567890123456789011234"))
         val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("mobile" -> "validation.invalid.businessContactDetails.tooLong")
       }
 
       "too long daytime phone number is provided and email" in {
-        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("123456789012345678912"))
+        val data = Map("email" -> Seq(EMAIL), "daytimePhone" -> Seq("1234567890123456789121234"))
         val form = testForm.bindFromRequest(data)
         form shouldHaveErrors Seq("daytimePhone" -> "validation.invalid.businessContactDetails.tooLong")
       }
