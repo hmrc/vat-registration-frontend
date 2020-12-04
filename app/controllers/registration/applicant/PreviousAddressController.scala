@@ -79,8 +79,7 @@ class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def change: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
   }
 

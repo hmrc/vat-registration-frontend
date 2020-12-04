@@ -37,7 +37,7 @@ class FormerNameController @Inject()(mcc: MessagesControllerComponents,
                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
+    implicit request => _ =>
       Future.successful(Ok(views.html.former_name(FormerNameForm.form)))
   }
 

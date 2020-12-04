@@ -23,7 +23,6 @@ import controllers.callbacks.routes
 import featureswitch.core.config._
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import play.api.libs.json.{JsValue, Json, Reads}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait AppConfig {
@@ -75,20 +74,12 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val continueUrl = s"$loginCallback${routes.SignInOutController.postSignIn()}"
 
   final lazy val defaultOrigin: String = {
-    lazy val appName = runModeConfiguration.getString("appName").getOrElse("undefined")
-    runModeConfiguration.getString("sosOrigin").getOrElse(appName)
+    lazy val appName = runModeConfiguration.getOptional[String]("appName").getOrElse("undefined")
+    runModeConfiguration.getOptional[String]("sosOrigin").getOrElse(appName)
   }
 
   private def loadStringConfigBase64(key: String): String = {
     new String(Base64.getDecoder.decode(servicesConfig.getString(key)), Charset.forName("UTF-8"))
-  }
-
-  private def loadJsonConfigBase64[T](key: String)(implicit reads: Reads[T]): T = {
-    val json = Json.parse(Base64.getDecoder.decode(runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))))
-    json.validate[T].fold(
-      errors => throw new Exception(s"Incorrect data for the key: $key and ##  $errors"),
-      valid => valid
-    )
   }
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")

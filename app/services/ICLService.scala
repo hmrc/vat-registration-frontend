@@ -24,16 +24,16 @@ import play.api.Logger
 import play.api.libs.json.{JsObject, Json, OWrites}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ICLService @Inject()(val iclConnector: ICLConnector,
                            config: ServicesConfig,
                            val keystore: KeystoreConnector,
                            val sicAndCompliance: SicAndComplianceService,
-                           val registrationConnector: VatRegistrationConnector) {
+                           val registrationConnector: VatRegistrationConnector
+                          )(implicit ec: ExecutionContext) {
   lazy val vatFeUrl: String = config.getConfString("vat-registration-frontend.www.url",
     throw new RuntimeException("[ICLService] Could not retrieve config for 'vat-registration-frontend'"))
   lazy val vatFeUri: String = config.getConfString("vat-registration-frontend.www.uri",

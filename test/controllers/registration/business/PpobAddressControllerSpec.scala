@@ -46,7 +46,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
   "startJourney" should {
     "redirect to ALF" in new Setup {
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
       callAuthorised(testController.startJourney) { res =>

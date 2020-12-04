@@ -16,9 +16,6 @@
 
 package models
 
-import models.test.SicStub
-import models.TradingDetails
-
 trait S4LKey[T] {
 
   val key: String

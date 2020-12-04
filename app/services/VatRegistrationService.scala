@@ -27,14 +27,15 @@ import play.api.Logger
 import play.api.libs.json.{Format, JsObject}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: VatRegistrationConnector,
-                                       val keystoreConnector: KeystoreConnector) {
+                                       val keystoreConnector: KeystoreConnector
+                                      )(implicit ec: ExecutionContext) {
 
   type RegistrationFootprint = (String, String)
 
@@ -78,7 +79,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
       SubmissionFailedRetryable
 
   }
-
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
     vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))

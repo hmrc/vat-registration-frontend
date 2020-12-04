@@ -24,9 +24,8 @@ import models.view.{Summary, SummaryFromQuestionAnswerJson}
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SummaryService @Inject()(val vrs: VatRegistrationService,
@@ -34,7 +33,7 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
                                val sicAndComplianceService: SicAndComplianceService,
                                val flatRateService: FlatRateService,
                                val configConnector: ConfigConnector,
-                               config: ServicesConfig) {
+                               config: ServicesConfig)(implicit ec: ExecutionContext) {
 
   lazy val vatRegEFEUrl: String = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
   lazy val vatRegEFEQuestionUri: String = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
@@ -58,7 +57,7 @@ class SummaryService @Inject()(val vrs: VatRegistrationService,
     } yield summary
   }
 
-  def registrationToSummary(vs: VatScheme)(implicit profile: CurrentProfile): Summary = {
+  def registrationToSummary(vs: VatScheme): Summary = {
     Summary(Seq(
       viewmodels.SummaryCheckYourAnswersBuilder(vs,
         vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary")),

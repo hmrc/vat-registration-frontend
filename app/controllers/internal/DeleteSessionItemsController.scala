@@ -27,6 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,8 +44,7 @@ class DeleteSessionItemsController @Inject()(mcc: MessagesControllerComponents,
                                              val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         cancellationService.deleteVatRegistration(regId) map {
           case RegistrationDeletion.deleted => Ok
           case RegistrationDeletion.forbidden =>
@@ -65,7 +65,7 @@ class DeleteSessionItemsController @Inject()(mcc: MessagesControllerComponents,
           for {
             deleteData <- regConnector.clearVatScheme(incorpUpdate.subscription.transactionId)
             optRegId <- currentProfileService.addRejectionFlag(incorpUpdate.subscription.transactionId)
-            clearS4L <- optRegId.map(id => s4LConnector.clear(id)).getOrElse(Future.successful(HttpResponse(200)))
+            clearS4L <- optRegId.map(id => s4LConnector.clear(id)).getOrElse(Future.successful(HttpResponse(200, "")))
           } yield Ok
         } else {
           Future.successful(Ok)

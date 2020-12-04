@@ -21,14 +21,14 @@ import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistrationService,
                                       val keystoreConnector: KeystoreConnector,
-                                      val config: FrontendAppConfig) {
+                                      val config: FrontendAppConfig
+                                     )(implicit ec: ExecutionContext) {
 
   def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
     for {
@@ -41,7 +41,7 @@ class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistratio
     } yield profile
   }
 
-  def addRejectionFlag(txId: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def addRejectionFlag(txId: String): Future[Option[String]] = {
     keystoreConnector.addRejectionFlag(txId)
   }
 }

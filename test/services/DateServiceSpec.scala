@@ -24,7 +24,7 @@ import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
 import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Inspectors, Matchers, WordSpec}
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
@@ -42,7 +42,7 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
   private class Setup {
     val mockConnector = mock[WSBankHolidaysConnector]
     val mockFallbackConnector = mock[FallbackBankHolidaysConnector]
-    val mockCache = mock[CacheApi]
+    val mockCache = mock[SyncCacheApi]
   }
 
   val fixedHolidaySet: BankHolidaySet =
@@ -65,10 +65,10 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
 
       forAll(tests) { test =>
         new Setup {
-          (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+          (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
             .expects("bankHolidaySet", 1 day, *, *).returns(fixedHolidaySet)
-          (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
-            .expects("england-and-wales", *)
+          (mockFallbackConnector.bankHolidays(_: String))
+            .expects("england-and-wales")
             .returns(Future.successful(fixedHolidaySet)).once()
 
           //must setup mocks prior to calling new constructor, as one mock is called during construction
@@ -80,7 +80,7 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
 
     "should call bank holiday connector when nothing found in cache" in new Setup {
 
-      (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+      (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
         .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
         // call-by-name parameter of type BankHolidaySet will actually become a
         // () => BankHolidaySet, i.e. Function0[BankHolidaySet] at runtime
@@ -88,8 +88,8 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
         product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
       })
 
-      (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
-        .expects("england-and-wales", *)
+      (mockFallbackConnector.bankHolidays(_: String))
+        .expects("england-and-wales")
         .returns(Future.successful(fixedHolidaySet)).noMoreThanTwice()
 
       //must setup mocks prior to calling new constructor, as one mock is called during construction
@@ -110,11 +110,11 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
           which will cause the default holiday schedule to be used temporarily
        */
       inSequence {
-        (mockFallbackConnector.bankHolidays(_: String)(_: HeaderCarrier))
-          .expects("england-and-wales", *)
+        (mockFallbackConnector.bankHolidays(_: String))
+          .expects("england-and-wales")
           .returns(Future.successful(fixedHolidaySet))
 
-        (mockCache.getOrElse[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
+        (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
           .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
           product.productElement(2).asInstanceOf[Function0[BankHolidaySet]]()
         })

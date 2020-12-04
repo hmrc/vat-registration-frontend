@@ -40,7 +40,7 @@ class TestWorkingDaysValidationController @Inject()(mcc: MessagesControllerCompo
 
   implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-  def show(): Action[AnyContent] = Action { implicit req =>
+  def show(): Action[AnyContent] = Action { _ =>
     Ok(Html((1 to 100).map(n =>
       s"$n working days from today => ${dateService.addWorkingDays(LocalDate.now(), n)}").mkString("<ul><li>", "</li><li>", "</li></ul>")
     ))

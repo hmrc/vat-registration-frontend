@@ -39,10 +39,8 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        Future.successful(
-          Ok(view(routes.CaptureTelephoneNumberController.submit(), TelephoneNumberForm.form))
+    implicit request => _ =>
+        Future.successful(Ok(view(routes.CaptureTelephoneNumberController.submit(), TelephoneNumberForm.form))
         )
   }
 

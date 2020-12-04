@@ -32,14 +32,12 @@ class ErrorController @Inject()(mcc: MessagesControllerComponents,
                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(views.html.pages.error.submissionTimeout()))
   }
 
   def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
 }

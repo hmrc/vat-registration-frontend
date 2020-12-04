@@ -16,8 +16,6 @@
 
 package models
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import play.api.libs.functional.syntax._
 import play.api.libs.json._

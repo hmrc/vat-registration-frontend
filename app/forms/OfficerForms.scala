@@ -20,11 +20,10 @@ import java.time.LocalDate
 
 import models.view._
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping, _}
+import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping}
 import models.DateModel
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, text}
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.Forms.{mapping, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 

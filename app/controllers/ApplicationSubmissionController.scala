@@ -43,7 +43,6 @@ class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponent
   }
 
   def submit: Action[AnyContent] = isAuthenticated {
-    implicit request =>
-      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
+    _ => Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 }

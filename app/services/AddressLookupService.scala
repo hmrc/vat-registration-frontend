@@ -17,11 +17,10 @@
 package services
 
 import common.enums.AddressLookupJourneyIdentifier
-import config.{AddressLookupConfiguration, FrontendAppConfig}
+import config.AddressLookupConfiguration
 import connectors.AddressLookupConnector
 import javax.inject.{Inject, Singleton}
 import models.api.Address
-import play.api.i18n.MessagesApi
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -29,12 +28,11 @@ import scala.concurrent.Future
 
 @Singleton
 class AddressLookupService @Inject()(val addressLookupConnector: AddressLookupConnector,
-                                     alfConfig: AddressLookupConfiguration)
-                                    (implicit appConfig: FrontendAppConfig) {
+                                     alfConfig: AddressLookupConfiguration) {
 
   def getAddressById(id: String)(implicit hc: HeaderCarrier): Future[Address] = addressLookupConnector.getAddress(id)
 
-  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call)(implicit hc: HeaderCarrier, messages: MessagesApi): Future[Call] = {
+  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call)(implicit hc: HeaderCarrier): Future[Call] = {
     addressLookupConnector.getOnRampUrl(alfConfig(journeyId, continueUrl))
   }
 

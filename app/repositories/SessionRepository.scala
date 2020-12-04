@@ -22,9 +22,8 @@ import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
-import play.api.{Configuration, Logger}
+import play.api.Configuration
 import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.play.json.ImplicitBSONHandlers._
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -38,7 +37,7 @@ import scala.concurrent.Future
 class SessionRepository @Inject()(config: Configuration,
                                   mongo: ReactiveMongoComponent)
   extends ReactiveRepository[DatedCacheMap, BSONObjectID](
-    config.getString("appName").get,
+    config.get[String]("appName"),
     mongo.mongoConnector.db,
     DatedCacheMap.formats
   ) {
@@ -46,33 +45,20 @@ class SessionRepository @Inject()(config: Configuration,
   val fieldName = "lastUpdated"
   val createdIndexName = "userAnswersExpiry"
   val expireAfterSeconds = "expireAfterSeconds"
-  val timeToLiveInSeconds: Int = config.getInt("mongodb.timeToLiveInSeconds").get
-
-  private def createIndex(field: String, indexName: String, ttl: Int): Future[Boolean] = {
-    collection.indexesManager.ensure(Index(Seq((field, IndexType.Ascending)), Some(indexName),
-      options = BSONDocument(expireAfterSeconds -> ttl))) map {
-      result => {
-        Logger.debug(s"set [$indexName] with value $ttl -> result : $result")
-        result
-      }
-    } recover {
-      case e => Logger.error("Failed to set TTL index", e)
-        false
-    }
-  }
+  val timeToLiveInSeconds: Int = config.get[Int]("mongodb.timeToLiveInSeconds")
 
   def upsert(cm: CacheMap): Future[Boolean] = {
     val selector = BSONDocument("id" -> cm.id)
     val cmDocument = Json.toJson(DatedCacheMap(cm))
     val modifier = BSONDocument("$set" -> cmDocument)
 
-    collection.update(selector, modifier, upsert = true).map { lastError =>
+    collection.update(ordered = false).one(selector, modifier, upsert = true).map { lastError =>
       lastError.ok
     }
   }
 
   def removeDocument(id: String): Future[Boolean] = {
-    collection.remove(BSONDocument("id" -> id)).map(lastError =>
+    collection.delete().one(BSONDocument("id" -> id)).map(lastError =>
       lastError.ok
     )
   }
@@ -84,7 +70,7 @@ class SessionRepository @Inject()(config: Configuration,
     val selector = BSONDocument("data.CurrentProfile.transactionID" -> id)
     val modifier = BSONDocument("$set" -> BSONDocument("data.CurrentProfile.incorpRejected" -> true))
 
-    collection.update(selector, modifier).map { lastError => lastError.ok }
+    collection.update(ordered = false).one(selector, modifier).map { lastError => lastError.ok }
   }
 
   def getRegistrationID(transactionID: String): Future[Option[String]] = {

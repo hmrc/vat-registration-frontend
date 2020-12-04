@@ -22,18 +22,16 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
                                         val featureManager: FeatureSwitchManager,
                                         val vatRegFeatureSwitch: VATRegFeatureSwitches,
-                                        val authConnector: AuthClientConnector)
-                                       (implicit ec: ExecutionContext) extends FrontendController(mcc) {
+                                        val authConnector: AuthClientConnector) extends FrontendController(mcc) {
 
   def switcher(name: String, state: String): Action[AnyContent] = Action.async {
-    implicit request =>
-      def feature: FeatureSwitch = state match {
+    _ => def feature: FeatureSwitch = state match {
         case "true" => featureManager.enable(BooleanFeatureSwitch(name, enabled = true))
         case x if x.matches(featureManager.datePatternRegex) => featureManager.setSystemDate(ValueSetFeatureSwitch(name, state))
         case x@"time-clear" => featureManager.clearSystemDate(ValueSetFeatureSwitch(name, x))

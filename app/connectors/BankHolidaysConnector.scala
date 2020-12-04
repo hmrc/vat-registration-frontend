@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 import play.api.libs.json.JodaReads._
-import play.api.libs.json.JodaWrites._
+import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,7 +52,7 @@ class FallbackBankHolidaysConnector @Inject()(environment: Environment) {
   protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
   protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
 
-  def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
+  def bankHolidays(division: String = "england-and-wales"): Future[BankHolidaySet] = {
     logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")
     val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
     //if below .get fails, app startup fails. This is as expected. bank-holidays.json file must be on classpath

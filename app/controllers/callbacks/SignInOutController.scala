@@ -24,7 +24,6 @@ import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
-import uk.gov.hmrc.http.InternalServerException
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,23 +36,19 @@ class SignInOutController @Inject()(mcc: MessagesControllerComponents,
                                     val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def postSignIn: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
+    _ => Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
   }
 
   def signOut: Action[AnyContent] = isAuthenticated {
-    implicit request =>
-      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
+    _ => Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 
   def renewSession: Action[AnyContent] = isAuthenticated {
-    implicit request =>
-      Future.successful(Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg"))
+    _ => Future.successful(Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg"))
   }
 
   def destroySession: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
+    _ => Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
   }
 
   def timeoutShow: Action[AnyContent] = Action.async {
