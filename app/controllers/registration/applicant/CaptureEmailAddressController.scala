@@ -39,8 +39,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(
           Ok(view(
             routes.CaptureEmailAddressController.submit(),

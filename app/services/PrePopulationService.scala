@@ -23,17 +23,17 @@ import connectors.logResponse
 import javax.inject.{Inject, Singleton}
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration}
-import models.{BusinessContact, _}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import models._
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SystemDate
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PrePopulationService @Inject()(val save4later: S4LService,
                                      val businessContactService: BusinessContactService,
-                                     val vatRegService: VatRegistrationService) {
+                                     val vatRegService: VatRegistrationService
+                                    )(implicit ec: ExecutionContext){
 
   private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   private val seqAllowedCountries = Seq("United Kingdom", "UK", "GB") map normalised
@@ -47,8 +47,7 @@ class PrePopulationService @Inject()(val save4later: S4LService,
   private def normalised(str: String) = str.toLowerCase.replace(" ", "")
 
   private[services] def getCompanyRegistrationDetails(implicit hc: HeaderCarrier,
-                                                      profile: CurrentProfile,
-                                                      rds: HttpReads[CorporationTaxRegistration]): Future[Option[CorporationTaxRegistration]] = {
+                                                      profile: CurrentProfile): Future[Option[CorporationTaxRegistration]] = {
 
     vatRegService.getThreshold(profile.registrationId) map { threshold =>
       if (!threshold.mandatoryRegistration) {

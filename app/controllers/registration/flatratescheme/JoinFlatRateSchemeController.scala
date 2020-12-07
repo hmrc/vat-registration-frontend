@@ -17,13 +17,13 @@
 package controllers.registration.flatratescheme
 
 import config.{AuthClientConnector, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{FlatRateService, SessionProfile, SicAndComplianceService, TimeService, VatRegistrationService}
+import services.{FlatRateService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.{ExecutionContext, Future}

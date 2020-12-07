@@ -39,7 +39,7 @@ class HomeAddressController @Inject()(mcc: MessagesControllerComponents,
                                       val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
+    implicit request => _ =>
       addressLookupService.getJourneyUrl(homeAddress, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
   }
 

@@ -36,14 +36,11 @@ class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
   extends BaseController(mcc) with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit())))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
+    _ => _ => Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
   }
 }

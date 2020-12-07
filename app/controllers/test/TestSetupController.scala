@@ -25,7 +25,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile}
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,11 +38,8 @@ class TestSetupController @Inject()(mcc: MessagesControllerComponents,
                                    (implicit val appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  private val empty = Future.successful(CacheMap("", Map.empty))
-
   def showEligibility: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(views.html.pages.test.test_setup_eligibility(TestSetupEligibilityForm.form)))
   }
 

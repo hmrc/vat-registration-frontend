@@ -18,24 +18,19 @@ package config
 
 import javax.inject.{Inject, Singleton}
 import org.slf4j.{Logger, LoggerFactory}
-import play.api.mvc.Call
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.ExecutionContext
-
-class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig)
-                                   (implicit ec: ExecutionContext) extends PlayAuthConnector {
+class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig) extends PlayAuthConnector {
 
   override val serviceUrl: String = config.baseUrl("auth")
 
 }
 
-class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesConfig)
-                                        (implicit ec: ExecutionContext) extends ShortLivedHttpCaching {
+class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesConfig) extends ShortLivedHttpCaching {
 
   override lazy val defaultSource = config.getString("appName")
   override lazy val baseUri       = config.baseUrl("cachable.short-lived-cache")
@@ -52,8 +47,7 @@ class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching,
 
 }
 
-class VatSessionCache @Inject()(val http: HttpClient, config: ServicesConfig)
-                               (implicit ec: ExecutionContext) extends SessionCache {
+class VatSessionCache @Inject()(val http: HttpClient, config: ServicesConfig) extends SessionCache {
 
   override lazy val defaultSource = config.getString("appName")
   override lazy val baseUri       = config.baseUrl("cachable.session-cache")

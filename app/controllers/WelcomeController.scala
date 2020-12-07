@@ -37,7 +37,7 @@ class WelcomeController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       for {
         missing <- profileMissing
-        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful()
+        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful(())
       } yield {
         Redirect(appConfig.eligibilityUrl)
       }

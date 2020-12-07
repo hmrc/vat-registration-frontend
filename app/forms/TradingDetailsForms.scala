@@ -56,7 +56,7 @@ object TradingNameForm extends RequiredBooleanForm {
   def fillWithPrePop(optTradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
       optTradingNameFormData match {
         case Some(tradingNameFormData) =>
-          form.fill(tradingNameFormData.yesNo, tradingNameFormData.tradingName)
+          form.fill((tradingNameFormData.yesNo, tradingNameFormData.tradingName))
         case None =>
           form
       }

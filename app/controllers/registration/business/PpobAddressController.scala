@@ -37,8 +37,7 @@ class PpobAddressController @Inject()(mcc: MessagesControllerComponents,
                                       val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def startJourney: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         addressLookupService.getJourneyUrl(
           journeyId = AddressLookupJourneyIdentifier.businessActivities,
           continueUrl = routes.PpobAddressController.callback()

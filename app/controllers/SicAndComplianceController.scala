@@ -18,11 +18,11 @@ package controllers
 
 import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import forms.{BusinessActivityDescriptionForm, MainBusinessActivityForm}
+import forms.MainBusinessActivityForm
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
-import models.{CurrentProfile, MainBusinessActivityView, BusinessActivities}
+import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services._
@@ -84,20 +84,16 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(compliance_introduction()))
   }
 
   def submitComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Redirect(routes.LabourComplianceController.showProvideWorkers()))
+    _ => _ => Future.successful(Redirect(routes.LabourComplianceController.showProvideWorkers()))
   }
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
+    implicit request => _ =>
         Future.successful(Ok(about_to_confirm_sic()))
   }
 

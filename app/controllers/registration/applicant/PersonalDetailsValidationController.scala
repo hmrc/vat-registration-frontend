@@ -36,8 +36,7 @@ class PersonalDetailsValidationController @Inject()(mcc: MessagesControllerCompo
                                                    )(implicit val appConfig: FrontendAppConfig,
                                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
   def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit req =>
-      _ =>
+    _ => _ =>
         val continueUrl = appConfig.getPersonalDetailsCallbackUrl()
         val personalDetailsValidationJourneyUrl = appConfig.getPersonalDetailsValidationJourneyUrl()
 

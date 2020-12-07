@@ -217,13 +217,13 @@ object FormValidation {
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(Seq()))
+  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")())
 
   def textMappingWithMessageArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(args))
   def missingBooleanFieldMappingArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat()(args))
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
-    FieldMapping[Boolean]()(booleanFormat()(Seq()))
+    FieldMapping[Boolean]()(booleanFormat()())
 
   def nonEmptyDate(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>

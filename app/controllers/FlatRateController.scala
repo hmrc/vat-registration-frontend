@@ -28,7 +28,6 @@ import play.api.data.Form
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 
 import scala.collection.immutable.ListMap

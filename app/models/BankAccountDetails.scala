@@ -16,7 +16,6 @@
 
 package models
 
-import models.api.VatBankAccount
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

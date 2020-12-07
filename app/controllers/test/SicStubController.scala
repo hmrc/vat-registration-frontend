@@ -23,7 +23,6 @@ import forms.test.SicStubForm
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.test.SicStub
-import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{S4LService, SessionProfile, SicAndComplianceService}
 import views.html.test._

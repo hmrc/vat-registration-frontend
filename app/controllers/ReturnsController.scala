@@ -32,7 +32,6 @@ import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPerio
 import views.html.{mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.postfixOps
 
 @Singleton
 class ReturnsController @Inject()(mcc: MessagesControllerComponents,
@@ -120,7 +119,6 @@ class ReturnsController @Inject()(mcc: MessagesControllerComponents,
   val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
         calculateEarliestStartDate.flatMap { incorpDate =>
           val voluntaryDateForm = VoluntaryDateForm.form(incorpDate, timeService.addMonths(3))
           voluntaryDateForm.bindFromRequest.fold(
