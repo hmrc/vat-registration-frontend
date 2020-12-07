@@ -20,6 +20,7 @@ import models.TradingNameView
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings._
 
@@ -35,7 +36,7 @@ object EuGoodsForm extends RequiredBooleanForm {
 object TradingNameForm extends RequiredBooleanForm {
   override val errorMsg = "validation.tradingNameRadio.missing"
   val INPUT_TRADING_NAME: String = "tradingName"
-
+  val invalidNameSet: Set[String] = Set("limited", "ltd", "llp", "plc")
   implicit val errorCode: ErrorCode = INPUT_TRADING_NAME
   val RADIO_YES_NO: String = "value"
   val TRADING_NAME_REGEX = """^[A-Za-z0-9 .,\-()/!"%&*;'<>]+$""".r
@@ -47,18 +48,36 @@ object TradingNameForm extends RequiredBooleanForm {
         isEqual(RADIO_YES_NO, "true"),
         text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
           nonEmptyValidText(TRADING_NAME_REGEX),
+          isValidTradingName("tradingName"),
           maxLenText(35)
         ))
       )
     )
   )
 
-  def fillWithPrePop(optTradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
-      optTradingNameFormData match {
-        case Some(tradingNameFormData) =>
-          form.fill((tradingNameFormData.yesNo, tradingNameFormData.tradingName))
-        case None =>
-          form
+  def isValidTradingName(tradingNameForm: String): Constraint[String] = Constraint { tradingName: String =>
+
+    val isValidTradingName: Boolean = tradingName.matches("""^[A-Za-z0-9 .,\-()/!"%&*;'<>]+$""")
+    val wordSet = tradingName.toLowerCase.split(" ").toSet
+
+    if (isValidTradingName) {
+      if (invalidNameSet.intersect(wordSet).nonEmpty) {
+        Invalid(s"validation.$tradingNameForm.invalid")
+      } else {
+        Valid
       }
+    } else {
+      Invalid(s"validation.$tradingNameForm.invalid")
+    }
+
+  }
+
+  def fillWithPrePop(optTradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
+    optTradingNameFormData match {
+      case Some(tradingNameFormData) =>
+        form.fill(tradingNameFormData.yesNo, tradingNameFormData.tradingName)
+      case None =>
+        form
+    }
   }
 }
