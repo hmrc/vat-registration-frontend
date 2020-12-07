@@ -51,8 +51,9 @@ class TradingNameFormSpec extends VatRegSpec {
       res mustBe testForm
     }
   }
+
   "Trading Name form" must {
-    val tradingName = "test new trading name"
+    def tradingName(word: String = "") = s"test new trading name$word"
 
     "be valid" when {
       "no is selected" in {
@@ -61,13 +62,20 @@ class TradingNameFormSpec extends VatRegSpec {
       }
 
       "no is selected and a correct trading name is provided" in {
-        val data = Map("value" -> Seq("false"), "tradingName" -> Seq(tradingName))
+        val data = Map("value" -> Seq("false"), "tradingName" -> Seq(tradingName()))
         testForm.bindFromRequest(data) shouldContainValue(false, None)
       }
 
       "yes is selected and a correct trading name is provided" in {
-        val data = Map("value" -> Seq("true"), "tradingName" -> Seq(tradingName))
-        testForm.bindFromRequest(data) shouldContainValue(true, Some(tradingName))
+        val data = Map("value" -> Seq("true"), "tradingName" -> Seq(tradingName()))
+        testForm.bindFromRequest(data) shouldContainValue(true, Some(tradingName()))
+      }
+
+      "yes is selected and a correct trading name is provided including an invalid word" in {
+        TradingNameForm.invalidNameSet.foreach{
+          invalidName =>
+            testForm.bind(Map("value" -> "true", "tradingName" -> tradingName(invalidName))) shouldContainValue(true, Some(tradingName(invalidName)))
+        }
       }
     }
 
@@ -95,6 +103,13 @@ class TradingNameFormSpec extends VatRegSpec {
       "yes selected but too long trading name is provided" in {
         val data = Map("value" -> Seq("true"), "tradingName" -> Seq(List.fill(9)("rh j").mkString))
         testForm.bindFromRequest(data) shouldHaveErrors Seq("tradingName" -> "validation.tradingName.maxlen")
+      }
+
+      "yes selected but trading name contains an invalid word" in {
+        TradingNameForm.invalidNameSet.foreach{
+          invalidName =>
+            testForm.bind(Map("value" -> "true", "tradingName" -> invalidName)) shouldHaveErrors Seq("tradingName" -> "validation.tradingName.invalid")
+        }
       }
     }
   }
