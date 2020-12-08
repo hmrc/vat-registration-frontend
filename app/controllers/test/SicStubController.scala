@@ -16,30 +16,31 @@
 
 package controllers.test
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import forms.test.SicStubForm
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
 import models.test.SicStub
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile, SicAndComplianceService}
 import views.html.test._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SicStubController @Inject()(mcc: MessagesControllerComponents,
-                                  val configConnect: ConfigConnector,
+class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val s4LService: S4LService,
                                   val sicAndCompService: SicAndComplianceService,
                                   val authConnector: AuthClientConnector)
-                                 (implicit val appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                 (implicit appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext,
+                                  baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         for {
@@ -54,7 +55,7 @@ class SicStubController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(sic_stub(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         SicStubForm.form.bindFromRequest().fold(

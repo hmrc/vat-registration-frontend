@@ -16,31 +16,31 @@
 
 package controllers
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
+import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
 import views.html.honesty_declaration
 
 import scala.concurrent.{ExecutionContext, Future}
-import controllers.registration.applicant.{routes => applicantRoutes}
 
 @Singleton
-class HonestyDeclarationController @Inject()(mcc: MessagesControllerComponents,
-                                             honestyDeclarationView: honesty_declaration,
+class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_declaration,
                                              val authConnector: AuthClientConnector,
                                              val keystoreConnector: KeystoreConnector
-                                            )(implicit val appConfig: FrontendAppConfig,
-                                              val executionContext: ExecutionContext)
-  extends BaseController(mcc) with SessionProfile {
+                                            )(implicit appConfig: FrontendAppConfig,
+                                              val executionContext: ExecutionContext,
+                                              baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit())))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     _ => _ => Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
   }
 }

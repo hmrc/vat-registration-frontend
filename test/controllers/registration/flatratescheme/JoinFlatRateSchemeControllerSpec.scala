@@ -35,7 +35,6 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
   trait Setup {
     val view = app.injector.instanceOf[frs_join]
     val controller: JoinFlatRateSchemeController = new JoinFlatRateSchemeController(
-      messagesControllerComponents,
       mockFlatRateService,
       mockVatRegistrationService,
       mockAuthClientConnector,

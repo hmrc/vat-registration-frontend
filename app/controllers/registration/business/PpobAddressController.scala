@@ -17,26 +17,26 @@
 package controllers.registration.business
 
 import common.enums.AddressLookupJourneyIdentifier
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import models.api.Address
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, BusinessContactService, SessionProfile}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class PpobAddressController @Inject()(mcc: MessagesControllerComponents,
-                                      val authConnector: AuthClientConnector,
+class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
                                       val keystoreConnector: KeystoreConnector,
                                       val businessContactService: BusinessContactService,
                                       val addressLookupService: AddressLookupService)
-                                     (implicit val appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                     (implicit appConfig: FrontendAppConfig,
+                                      val executionContext: ExecutionContext,
+                                      baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile {
+  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
         addressLookupService.getJourneyUrl(
           journeyId = AddressLookupJourneyIdentifier.businessActivities,
@@ -44,7 +44,7 @@ class PpobAddressController @Inject()(mcc: MessagesControllerComponents,
         ) map Redirect
   }
 
-  def callback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
+  def callback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {

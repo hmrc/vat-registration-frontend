@@ -34,10 +34,9 @@ class FormerNameDateControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: FormerNameDateController = new FormerNameDateController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService,
+      mockApplicantDetailsService
     )
 
     mockAuthenticated()

@@ -16,27 +16,28 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameDateForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
-import controllers.registration.applicant.{routes => applicantRoutes}
 
 @Singleton
-class FormerNameDateController @Inject()(mcc: MessagesControllerComponents,
-                                         val authConnector: AuthConnector,
+class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                                          val keystoreConnector: KeystoreConnector,
                                          val applicantDetailsService: ApplicantDetailsService)
-                                        (implicit val appConfig: FrontendAppConfig,
-                                         val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                        (implicit appConfig: FrontendAppConfig,
+                                         val executionContext: ExecutionContext,
+                                         baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -46,7 +47,7 @@ class FormerNameDateController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(views.html.former_name_date(filledForm, formerName))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         applicantDetailsService.getApplicantDetails flatMap {

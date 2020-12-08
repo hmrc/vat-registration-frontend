@@ -32,7 +32,6 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with FutureAsserti
 
   trait Setup {
     val deleteSessionController: DeleteSessionItemsController = new DeleteSessionItemsController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockKeystoreConnector,

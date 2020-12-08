@@ -18,25 +18,26 @@ package controllers.test
 
 import java.time.format.DateTimeFormatter
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import services.{PrePopulationService, SessionProfile}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TestCTController @Inject()(mcc: MessagesControllerComponents,
-                                 val prePopService: PrePopulationService,
+class TestCTController @Inject()(val prePopService: PrePopulationService,
                                  val authConnector: AuthClientConnector,
                                  val keystoreConnector: KeystoreConnector)
                                 (implicit val appConfig: FrontendAppConfig,
-                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                 val executionContext: ExecutionContext,
+                                 baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def show(): Action[AnyContent] = isAuthenticatedWithProfile {
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit req =>
       implicit profile =>
         prePopService.getCTActiveDate.map(_.fold("NONE")(x => DateTimeFormatter.ISO_LOCAL_DATE.format(x))).map(x => Ok(Html(x)))

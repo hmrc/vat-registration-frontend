@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.MainBusinessActivityForm
 import javax.inject.{Inject, Singleton}
@@ -24,7 +24,7 @@ import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import utils.VATRegFeatureSwitches
@@ -33,15 +33,15 @@ import views.html._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
-                                           val authConnector: AuthClientConnector,
+class SicAndComplianceController @Inject()(val authConnector: AuthClientConnector,
                                            val keystoreConnector: KeystoreConnector,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
                                            val vatRegFeatureSwitch: VATRegFeatureSwitches,
                                            val iclService: ICLService
-                                          )(implicit val appConfig: FrontendAppConfig,
-                                           val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                          )(implicit appConfig: FrontendAppConfig,
+                                            val executionContext: ExecutionContext,
+                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
@@ -51,7 +51,7 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
   private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
     keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
 
-  def showMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -61,7 +61,7 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
         } yield Ok(main_business_activity(formFilled, sicCodeList))
   }
 
-  def submitMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         fetchSicCodeList flatMap { sicCodeList =>
@@ -83,16 +83,16 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
         }
   }
 
-  def showComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
         Future.successful(Ok(compliance_introduction()))
   }
 
-  def submitComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
     _ => _ => Future.successful(Redirect(routes.LabourComplianceController.showProvideWorkers()))
   }
 
-  def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile {
+  def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
         Future.successful(Ok(about_to_confirm_sic()))
   }
@@ -111,19 +111,19 @@ class SicAndComplianceController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  def submitSicHalt: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submitSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         startSelectingNewSicCodes
   }
 
-  def returnToICL: Action[AnyContent] = isAuthenticatedWithProfile {
+  def returnToICL: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         startSelectingNewSicCodes
   }
 
-  def saveIclCodes: Action[AnyContent] = isAuthenticatedWithProfile {
+  def saveIclCodes: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {

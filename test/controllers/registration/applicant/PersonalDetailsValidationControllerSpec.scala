@@ -40,7 +40,6 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController: PersonalDetailsValidationController = new PersonalDetailsValidationController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockPersonalDetailsValidationService,

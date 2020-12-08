@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
@@ -25,13 +25,14 @@ import services.{CurrentProfileService, SessionProfile, VatRegistrationService}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class WelcomeController @Inject()(mcc: MessagesControllerComponents,
-                                  val vatRegistrationService: VatRegistrationService,
+class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
                                   val currentProfileService: CurrentProfileService,
                                   val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector)
-                                 (implicit val appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                 (implicit appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext,
+                                  baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticated {
     implicit request =>

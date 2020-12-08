@@ -57,7 +57,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
   trait Setup {
     val controller: FlatRateController = new FlatRateController(
-      messagesControllerComponents,
       mockFlatRateService,
       mockVatRegistrationService,
       mockAuthClientConnector,

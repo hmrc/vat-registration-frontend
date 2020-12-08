@@ -16,11 +16,11 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.email_verified
@@ -28,18 +28,19 @@ import views.html.email_verified
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailAddressVerifiedController @Inject()(view: email_verified,
-                                               mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector
-                                              )(implicit val appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                              )(implicit appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext,
+                                                baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
         Future.successful(Ok(view(routes.EmailAddressVerifiedController.submit())))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     _ => _ =>
         Future.successful(Redirect(routes.CaptureTelephoneNumberController.show()))
   }

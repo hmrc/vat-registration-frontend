@@ -33,7 +33,6 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
   class Setup {
 
     val controller: FeedbackController = new FeedbackController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector
     )

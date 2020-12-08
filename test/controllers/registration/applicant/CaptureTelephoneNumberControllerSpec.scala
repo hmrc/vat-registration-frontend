@@ -39,10 +39,9 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     val view: capture_telephone_number = app.injector.instanceOf[capture_telephone_number]
     val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
       view,
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService,
+      mockApplicantDetailsService
     )
 
     mockAuthenticated()

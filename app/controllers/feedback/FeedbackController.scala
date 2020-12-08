@@ -18,7 +18,7 @@ package controllers.feedback
 
 import java.net.URLEncoder
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
@@ -28,11 +28,12 @@ import services.SessionProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FeedbackController @Inject()(mcc: MessagesControllerComponents,
-                                   val authConnector: AuthClientConnector,
+class FeedbackController @Inject()(val authConnector: AuthClientConnector,
                                    val keystoreConnector: KeystoreConnector)
-                                  (implicit val appConfig: FrontendAppConfig,
-                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                  (implicit appConfig: FrontendAppConfig,
+                                   val executionContext: ExecutionContext,
+                                   baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   lazy val betaFeedbackUrl: String = appConfig.betaFeedbackUrl
 

@@ -16,7 +16,7 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EmailPasscodeForm
@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -33,15 +33,16 @@ import views.html.capture_email_passcode
 import scala.concurrent.{ExecutionContext, Future}
 
 class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
-                                               mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector,
                                                emailVerificationService: EmailVerificationService,
                                                applicantDetailsService: ApplicantDetailsService
-                                              )(implicit val appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                              )(implicit appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext,
+                                                baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         getEmailAddress.map { email =>
@@ -49,7 +50,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         EmailPasscodeForm.form.bindFromRequest().fold(

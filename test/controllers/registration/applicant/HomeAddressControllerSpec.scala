@@ -40,7 +40,6 @@ class HomeAddressControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: HomeAddressController = new HomeAddressController(
-      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,

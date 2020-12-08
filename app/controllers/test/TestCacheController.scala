@@ -16,24 +16,25 @@
 
 package controllers.test
 
-import config.{AuthClientConnector, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TestCacheController @Inject()(mcc: MessagesControllerComponents,
-                                    val s4LService: S4LService,
+class TestCacheController @Inject()(val s4LService: S4LService,
                                     val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector)
-                                   (implicit val appConfig: FrontendAppConfig,
-                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
+                                   (implicit appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext,
+                                    baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
-  def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile {
+  def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         s4LService.clear.map(_ => Ok("Save4Later cleared"))
