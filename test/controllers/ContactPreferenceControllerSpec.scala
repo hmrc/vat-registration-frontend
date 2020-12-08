@@ -32,6 +32,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
   class Setup {
     val controller: ContactPreferenceController = new ContactPreferenceController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockBusinessContactService,

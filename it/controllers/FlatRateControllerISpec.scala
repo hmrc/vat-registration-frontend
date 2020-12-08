@@ -3,14 +3,15 @@ package controllers
 
 import java.time.LocalDate
 
-import itutil.ControllerISpec
+import itutil.IntegrationSpecBase
 import models.{FRSDateChoice, FlatRateScheme, Returns, Start}
 import org.jsoup.Jsoup
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
-import play.api.test.Helpers._
+import support.AppAndStubs
 
-class FlatRateControllerISpec extends ControllerISpec {
+class FlatRateControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -64,7 +65,7 @@ class FlatRateControllerISpec extends ControllerISpec {
     "frsStartDate.year" -> Seq(OneDayBeforeVatStartDate.getYear.toString))
 
   s"frsStartDatePage - ${controllers.routes.FlatRateController.frsStartDatePage().url}" should {
-    "return OK and text based on no vat start date provided" in new Setup {
+    "return 200 and text based on no vat start date provided" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -77,12 +78,12 @@ class FlatRateControllerISpec extends ControllerISpec {
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).get()
       whenReady(response) { res =>
-        res.status mustBe OK
+        res.status mustBe 200
         val document = Jsoup.parse(res.body)
         document.html().contains("This must be at least 3 working days in the future") mustBe true
       }
     }
-    "return OK and text based on the vat start date already provided by the user" in new Setup {
+    "return 200 and text based on the vat start date already provided by the user" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -95,14 +96,14 @@ class FlatRateControllerISpec extends ControllerISpec {
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).get()
       whenReady(response) { res =>
-        res.status mustBe OK
+        res.status mustBe 200
         val document = Jsoup.parse(res.body)
         document.html().contains("This date must be on or after the date the business is registered for VAT.") mustBe true
       }
     }
   }
   s"submitFrsStartDate - ${controllers.routes.FlatRateController.frsStartDatePage().url}" should {
-    "return SEE_OTHER when a valid form is posted" in new Setup {
+    "return 303 when a valid form is posted" in new StandardTestHelpers {
       System.setProperty("feature.system-date", "2018-05-23T01:01:01")
 
       given()
@@ -117,11 +118,11 @@ class FlatRateControllerISpec extends ControllerISpec {
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).post(validFormForStartDatePage)
       whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
+        res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show().url)
       }
     }
-    "return BAD_REQUEST when an invalid form is posted when vat Start date is provided (i.e the company is incorporated)" in new Setup {
+    "return 400 when an invalid form is posted when vat Start date is provided (i.e the company is incorporated)" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -138,7 +139,7 @@ class FlatRateControllerISpec extends ControllerISpec {
         document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
       }
     }
-    "return INTERNAL_SERVER_ERROR when no returns exists" in new Setup {
+    "return 500 when no returns exists" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
@@ -150,7 +151,7 @@ class FlatRateControllerISpec extends ControllerISpec {
 
       val response = buildClient(controllers.routes.FlatRateController.frsStartDatePage().url).post(validFormForStartDatePage)
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe 500
       }
     }
   }

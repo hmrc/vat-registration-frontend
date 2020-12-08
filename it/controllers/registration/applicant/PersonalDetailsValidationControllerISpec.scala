@@ -17,16 +17,22 @@
 package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.StubPersonalDetailsValidation
-import itutil.ControllerISpec
+import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
+import fixtures.ApplicantDetailsFixture
+import itutil.IntegrationSpecBase
 import models.view.ApplicantDetails
+import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}
+import support.AppAndStubs
 
-class PersonalDetailsValidationControllerISpec extends ControllerISpec {
+class PersonalDetailsValidationControllerISpec extends IntegrationSpecBase
+  with AppAndStubs
+  with FeatureSwitching
+  with IntegrationPatience with ApplicantDetailsFixture {
   "GET /start-personal-details-validation-journey" should {
-    "redirect to the personal details validation service" in new Setup {
+    "redirect to the personal details validation service" in new StandardTestHelpers {
       disable(StubPersonalDetailsValidation)
 
       given()
@@ -44,7 +50,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
   }
 
   "GET /personal-details-validation-callback" should {
-    "retrieve the captured transactor details and redirect" in new Setup {
+    "retrieve the captured transactor details and redirect" in new StandardTestHelpers {
       disable(StubPersonalDetailsValidation)
 
       val testValidationId: String = "testValidationId"

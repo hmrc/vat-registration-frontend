@@ -20,8 +20,8 @@ import java.time.LocalDate
 
 import common.DateConversions._
 import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
-import javax.inject.{Inject, Singleton}
-import play.api.cache.SyncCacheApi
+import javax.inject.{Inject, Named, Singleton}
+import play.api.cache.CacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays._
 
@@ -32,15 +32,15 @@ import scala.util.Try
 
 @Singleton
 class DateService @Inject()(val bankHolidaysConnector: WSBankHolidaysConnector,
-                            val cache: SyncCacheApi,
+                            val cache: CacheApi,
                             val fallbackBHConnector: FallbackBankHolidaysConnector) {
 
   private val BANK_HOLIDAYS_CACHE_KEY = "bankHolidaySet"
 
-  private val defaultHolidaySet: BankHolidaySet = Await.result(fallbackBHConnector.bankHolidays(), 1 second)
+  private val defaultHolidaySet: BankHolidaySet = Await.result(fallbackBHConnector.bankHolidays()(HeaderCarrier()), 1 second)
 
   def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
-    implicit val hols: BankHolidaySet = cache.getOrElseUpdate[BankHolidaySet](BANK_HOLIDAYS_CACHE_KEY, 1 day) {
+    implicit val hols: BankHolidaySet = cache.getOrElse[BankHolidaySet](BANK_HOLIDAYS_CACHE_KEY, 1 day) {
       logger.info(s"Reloading cache entry for $BANK_HOLIDAYS_CACHE_KEY")
       Try {
         Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)

@@ -1,13 +1,23 @@
 
 package controllers.registration.flatratescheme
 
-import itutil.ControllerISpec
-import models.{FlatRateScheme, Returns}
+import helpers.RequestsFinder
+import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
+import models.view.ApplicantDetails
+import models.{FlatRateScheme, Returns, TurnoverEstimates}
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
+import support.AppAndStubs
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.InternalServerException
 
-class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
+class JoinFlatRateSchemeControllerISpec  extends IntegrationSpecBase
+  with AppAndStubs
+  with ScalaFutures
+  with RequestsFinder
+  with ITRegistrationFixtures {
 
   implicit val s4lFrsKey = FlatRateScheme.s4lkey
 
@@ -33,7 +43,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   val lowTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 1000L)
 
   "GET /join-flat-rate" must {
-    "return OK when the details are in s4l" in new Setup {
+    "return OK when the details are in s4l" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
@@ -49,7 +59,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.status mustBe OK
       }
     }
-    "return OK when the details are in the backend" in new Setup {
+    "return OK when the details are in the backend" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
@@ -68,7 +78,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   }
 
   "POST /join-flat-rate" must {
-    "redirect to the next FRS page if the user answers Yes" in new Setup {
+    "redirect to the next FRS page if the user answers Yes" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
@@ -85,7 +95,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain (controllers.routes.FlatRateController.annualCostsInclusivePage().url)
       }
     }
-    "redirect to the next FRS page if the user answers No" in new Setup {
+    "redirect to the next FRS page if the user answers No" in new StandardTestHelpers {
       given()
         .user.isAuthorised
         .vatScheme.doesNotHave("flat-rate-scheme")

@@ -39,9 +39,10 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     val view: capture_telephone_number = app.injector.instanceOf[capture_telephone_number]
     val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
       view,
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
     )
 
     mockAuthenticated()
@@ -91,7 +92,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) {
         res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
+        redirectLocation(res) mustBe Some(appRoutes.BusinessContactDetailsController.ppobRedirectToAlf().url)
       }
     }
   }

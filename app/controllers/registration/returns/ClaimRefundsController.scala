@@ -16,27 +16,27 @@
 
 package controllers.registration.returns
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.{BaseController, routes => baseRoutes}
+import controllers.{BaseController, routes}
 import forms.ChargeExpectancyForm
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReturnsService, SessionProfile}
 import views.html.claim_refunds_view
+import controllers.{routes => baseRoutes}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
+class ClaimRefundsController @Inject()(mcc: MessagesControllerComponents,
+                                       val keystoreConnector: KeystoreConnector,
                                        val authConnector: AuthClientConnector,
                                        val returnsService: ReturnsService,
                                        val claimRefundsView: claim_refunds_view)
-                                      (implicit appConfig: FrontendAppConfig,
-                                       val executionContext: ExecutionContext,
-                                       baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                      (implicit val appConfig: FrontendAppConfig,
+                                       val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
@@ -47,7 +47,7 @@ class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ChargeExpectancyForm.form.bindFromRequest.fold(

@@ -16,56 +16,47 @@
 
 package controllers
 
-import config.AuthClientConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
-import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
-import play.api.mvc.{Action, AnyContent}
+import testHelpers.ControllerSpec
 import play.api.test.FakeRequest
 import services.SessionProfile
-import testHelpers.ControllerSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
+class BaseControllerSpec extends ControllerSpec {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
-  object TestController extends BaseController with SessionProfile {
+  object TestController extends BaseController(messagesControllerComponents) with SessionProfile {
     override implicit val executionContext: ExecutionContext = ec
     override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
 
-    val authConnector: AuthClientConnector = mockAuthClientConnector
+    override implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-    def callAuthenticated: Action[AnyContent] = isAuthenticated {
+    val authConnector = mockAuthClientConnector
+
+    def callAuthenticated = isAuthenticated {
       implicit request =>
         Future.successful(Ok("ALL GOOD"))
     }
 
-    def callAuthenticatedButError: Action[AnyContent] = isAuthenticated {
+    def callAuthenticatedButError = isAuthenticated {
       implicit request =>
         Future.failed(new Exception("Something wrong"))
     }
 
-    def callAuthenticatedWithProfile(checkTrafficManagement: Boolean = true): Action[AnyContent] =
-      isAuthenticatedWithProfile(checkTrafficManagement) {
-        _ =>
-          profile =>
-            Future.successful(Ok(s"ALL GOOD with profile: ${profile.registrationId}"))
-      }
+    def callAuthenticatedWithProfile = isAuthenticatedWithProfile {
+      _ =>
+        profile =>
+          Future.successful(Ok(s"ALL GOOD with profile: ${profile.registrationId}"))
+    }
 
-    def callAuthenticatedWithProfileButError(checkTrafficManagement: Boolean = true): Action[AnyContent] =
-      isAuthenticatedWithProfile(checkTrafficManagement) {
-        _ =>
-          profile =>
-            Future.failed(new Exception(s"Something wrong for profile: ${profile.registrationId}"))
-      }
-  }
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    disable(TrafficManagementPredicate)
+    def callAuthenticatedWithProfileButError = isAuthenticatedWithProfile {
+      _ =>
+        profile =>
+          Future.failed(new Exception(s"Something wrong for profile: ${profile.registrationId}"))
+    }
   }
 
   "isAuthenticated" should {
@@ -116,98 +107,12 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     }
   }
 
-  "isAuthenticatedWithProfile" when {
-    "the traffic management FS is disabled" should {
-      "return 200 with a profile if user is Authenticated" in {
-        mockAuthenticated()
-        mockWithCurrentProfile(Some(currentProfile))
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe OK
-        contentAsString(result) mustBe s"ALL GOOD with profile: ${currentProfile.registrationId}"
-      }
-
-      "return 303 to GG login if user has No Active Session" in {
-        mockNoActiveSession()
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("http://localhost:9025/gg/sign-in?accountType=organisation&continue=http%3A%2F%2Flocalhost%3A9895%2Fregister-for-vat%2Fpost-sign-in&origin=vat-registration-frontend")
-      }
-
-      "return 500 if user is Not Authenticated" in {
-        mockNotAuthenticated()
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "return an Exception if something went wrong" in {
-        mockAuthenticatedOrg()
-        mockWithCurrentProfile(Some(currentProfile))
-
-        val result = TestController.callAuthenticatedWithProfileButError()(FakeRequest())
-        an[Exception] mustBe thrownBy(await(result))
-      }
-    }
-
-    "the traffic management FS is enabled" when {
-      "return 200 with a profile if user is Authenticated and TM check passes" in {
-        enable(TrafficManagementPredicate)
-        mockAuthenticated()
-        mockWithCurrentProfile(Some(currentProfile))
-        when(mockTrafficManagementService.passedTrafficManagement(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
-          .thenReturn(Future.successful(true))
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe OK
-        contentAsString(result) mustBe s"ALL GOOD with profile: ${currentProfile.registrationId}"
-      }
-
-      "return 303 to start of journey if user is Authenticated and TM check fails" in {
-        enable(TrafficManagementPredicate)
-        mockAuthenticated()
-        mockWithCurrentProfile(Some(currentProfile))
-        when(mockTrafficManagementService.passedTrafficManagement(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
-          .thenReturn(Future.successful(false))
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.WelcomeController.show().url)
-      }
-
-      "return 303 to GG login if user has No Active Session" in {
-        enable(TrafficManagementPredicate)
-        mockNoActiveSession()
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("http://localhost:9025/gg/sign-in?accountType=organisation&continue=http%3A%2F%2Flocalhost%3A9895%2Fregister-for-vat%2Fpost-sign-in&origin=vat-registration-frontend")
-      }
-
-      "return 500 if user is Not Authenticated" in {
-        enable(TrafficManagementPredicate)
-        mockNotAuthenticated()
-
-        val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
-        status(result) mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "return an Exception if something went wrong" in {
-        enable(TrafficManagementPredicate)
-        mockAuthenticatedOrg()
-        mockWithCurrentProfile(Some(currentProfile))
-
-        val result = TestController.callAuthenticatedWithProfileButError()(FakeRequest())
-        an[Exception] mustBe thrownBy(await(result))
-      }
-    }
-
-    "return 200 with a profile if user is Authenticated with no TM check" in {
+  "isAuthenticatedWithProfile" should {
+    "return 200 with a profile if user is Authenticated" in {
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      val result = TestController.callAuthenticatedWithProfile(checkTrafficManagement = false)(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe OK
       contentAsString(result) mustBe s"ALL GOOD with profile: ${currentProfile.registrationId}"
     }
@@ -215,7 +120,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     "return 303 to GG login if user has No Active Session" in {
       mockNoActiveSession()
 
-      val result = TestController.callAuthenticatedWithProfile(checkTrafficManagement = false)(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("http://localhost:9025/gg/sign-in?accountType=organisation&continue=http%3A%2F%2Flocalhost%3A9895%2Fregister-for-vat%2Fpost-sign-in&origin=vat-registration-frontend")
     }
@@ -223,7 +128,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     "return 500 if user is Not Authenticated" in {
       mockNotAuthenticated()
 
-      val result = TestController.callAuthenticatedWithProfile(checkTrafficManagement = false)(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
@@ -231,7 +136,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
       mockAuthenticatedOrg()
       mockWithCurrentProfile(Some(currentProfile))
 
-      val result = TestController.callAuthenticatedWithProfileButError(checkTrafficManagement = false)(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfileButError(FakeRequest())
       an[Exception] mustBe thrownBy(await(result))
     }
   }
@@ -241,7 +146,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe OK
       contentAsString(result) mustBe s"ALL GOOD with profile: ${currentProfile.registrationId}"
     }
@@ -249,7 +154,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     "return 303 to GG login if user has No Active Session" in {
       mockNoActiveSession()
 
-      val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("http://localhost:9025/gg/sign-in?accountType=organisation&continue=http%3A%2F%2Flocalhost%3A9895%2Fregister-for-vat%2Fpost-sign-in&origin=vat-registration-frontend")
     }
@@ -257,7 +162,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     "return 500 if user is Not Authenticated" in {
       mockNotAuthenticated()
 
-      val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfile(FakeRequest())
       status(result) mustBe INTERNAL_SERVER_ERROR
     }
 
@@ -265,7 +170,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
       mockAuthenticatedOrg()
       mockWithCurrentProfile(Some(currentProfile))
 
-      val result = TestController.callAuthenticatedWithProfileButError()(FakeRequest())
+      val result = TestController.callAuthenticatedWithProfileButError(FakeRequest())
       an[Exception] mustBe thrownBy(await(result))
     }
   }

@@ -17,35 +17,34 @@
 package controllers.internal
 
 import common.enums.RegistrationDeletion
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.{KeystoreConnector, S4LConnector, VatRegistrationConnector}
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import models.external.IncorporationInfo
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteSessionItemsController @Inject()(val authConnector: AuthClientConnector,
+class DeleteSessionItemsController @Inject()(mcc: MessagesControllerComponents,
+                                             val authConnector: AuthClientConnector,
                                              val vatRegistrationService: VatRegistrationService,
                                              val keystoreConnector: KeystoreConnector,
                                              val currentProfileService: CurrentProfileService,
                                              val s4LConnector: S4LConnector,
                                              val cancellationService: CancellationService,
                                              val regConnector: VatRegistrationConnector)
-                                            (implicit appConfig: FrontendAppConfig,
-                                             val executionContext: ExecutionContext,
-                                             baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                            (implicit val appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+  def deleteVatRegistration(regId: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
         cancellationService.deleteVatRegistration(regId) map {
           case RegistrationDeletion.deleted => Ok
           case RegistrationDeletion.forbidden =>
@@ -66,7 +65,7 @@ class DeleteSessionItemsController @Inject()(val authConnector: AuthClientConnec
           for {
             deleteData <- regConnector.clearVatScheme(incorpUpdate.subscription.transactionId)
             optRegId <- currentProfileService.addRejectionFlag(incorpUpdate.subscription.transactionId)
-            clearS4L <- optRegId.map(id => s4LConnector.clear(id)).getOrElse(Future.successful(HttpResponse(200, "")))
+            clearS4L <- optRegId.map(id => s4LConnector.clear(id)).getOrElse(Future.successful(HttpResponse(200)))
           } yield Ok
         } else {
           Future.successful(Ok)

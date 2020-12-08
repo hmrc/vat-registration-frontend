@@ -4,18 +4,46 @@ package controllers.registration.applicant
 import java.time.LocalDate
 
 import controllers.registration.applicant.{routes => applicantRoutes}
-import itutil.ControllerISpec
+import helpers.RequestsFinder
+import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
 import models.TelephoneNumber
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsString, Json}
-import play.api.test.Helpers._
+import play.api.libs.json.{JsString, JsValue, Json}
+import repositories.SessionRepository
+import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
 
-class HomeAddressControllerISpec extends ControllerISpec {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, FiniteDuration, _}
+import scala.concurrent.{Await, Future}
+
+class HomeAddressControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with RequestsFinder with ITRegistrationFixtures {
+
+  class Setup {
+    val repo = app.injector.instanceOf[SessionRepository]
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
+      val preAwait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preAwait + 1
+      res
+    }
+  }
 
   val keyBlock = "applicant-details"
+
   val email = "test@test.com"
   val nino = "SR123456C"
   val role = "Director"
@@ -55,7 +83,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
       val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf().url).get()
       whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
+        res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
       }
     }
@@ -117,7 +145,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
       val response = buildClient(applicantRoutes.HomeAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
+        res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PreviousAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")

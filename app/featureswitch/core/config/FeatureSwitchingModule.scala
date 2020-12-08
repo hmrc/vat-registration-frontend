@@ -24,7 +24,7 @@ import featureswitch.core.models.FeatureSwitch
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(StubIncorpIdJourney, StubPersonalDetailsValidation, StubEmailVerification, TrafficManagementPredicate)
+  val switches = Seq(StubIncorpIdJourney, StubPersonalDetailsValidation, StubEmailVerification)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -46,9 +46,4 @@ case object StubEmailVerification extends FeatureSwitch {
 case object StubPersonalDetailsValidation extends FeatureSwitch {
   val configName = "feature-switch.stub-personal-details-validation"
   val displayName = "Stub personal details validation flow"
-}
-
-case object TrafficManagementPredicate extends FeatureSwitch {
-  val configName = "feature-switch.traffic-management-predicate"
-  val displayName = "Enable traffic management check in auth predicate (Must match the \"Use traffic management\" feature switch)"
 }

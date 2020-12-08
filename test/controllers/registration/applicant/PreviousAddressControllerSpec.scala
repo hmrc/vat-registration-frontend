@@ -40,6 +40,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: PreviousAddressController = new PreviousAddressController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
@@ -100,7 +101,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
     }
 
     "redirect the user to TxM address capture page with No selected" in new Setup {
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
       submitAuthorised(controller.submit(),
@@ -127,7 +128,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
   "change" should {
     "save an address and redirect to next page" in new Setup {
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
       callAuthorised(controller.change()) { res =>

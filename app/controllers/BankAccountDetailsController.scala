@@ -17,7 +17,7 @@
 package controllers
 
 import _root_.connectors.KeystoreConnector
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
 import javax.inject.{Inject, Singleton}
 import models.{BankAccount, BankAccountDetails}
@@ -28,18 +28,17 @@ import services.{BankAccountDetailsService, SessionProfile}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
+class BankAccountDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                             val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val keystoreConnector: KeystoreConnector)
-                                            (implicit appConfig: FrontendAppConfig,
-                                             val executionContext: ExecutionContext,
-                                             baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                            (implicit val appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   private val hasCompanyBankAccountForm: Form[Boolean] = HasCompanyBankAccountForm.form
   private val enterBankAccountDetailsForm: Form[BankAccountDetails] = EnterBankAccountDetailsForm.form
 
-  val showHasCompanyBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val showHasCompanyBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { details =>
@@ -51,7 +50,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
         }
   }
 
-  val submitHasCompanyBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitHasCompanyBankAccount: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         hasCompanyBankAccountForm.bindFromRequest.fold(
@@ -66,7 +65,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
         )
   }
 
-  val showEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val showEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { account =>
@@ -78,7 +77,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
         }
   }
 
-  val submitEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitEnterCompanyBankAccountDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         enterBankAccountDetailsForm.bindFromRequest.fold(

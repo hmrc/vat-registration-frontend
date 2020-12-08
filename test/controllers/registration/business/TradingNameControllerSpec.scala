@@ -35,6 +35,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
   class Setup {
     val view = app.injector.instanceOf[trading_name]
     val testController = new TradingNameController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,

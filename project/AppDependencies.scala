@@ -27,13 +27,13 @@ private object CompileDependencies {
   private val timeVersion = "3.9.0"
   private val partialsVersion = "7.0.0-play-26"
   private val cachingClientVersion = "9.1.0-play-26"
-  private val formMappingVersion = "1.4.0-play-26"
+  private val formMappingVersion = "1.3.0-play-26"
   private val catsVersion = "1.0.0"
   private val govukTemplateVersion = "5.60.0-play-26"
-  private val playUiVersion = "8.18.0-play-26"
+  private val playUiVersion = "8.16.0-play-26"
   private val playJsonJodaVersion = "2.9.1"
 
-  private val playGovukFrontendVersion = "0.55.0-play-26"
+  private val playGovukFrontendVersion = "0.53.0-play-26"
   private val playHmrcFrontendVersion = "0.27.0-play-26"
   private val govukFrontendVersion = "3.7.0"
 
@@ -65,7 +65,6 @@ private trait TestDependencies {
   val mockitoVersion = "2.13.0"
   val scalaMockVersion = "3.6.0"
   val wireMockVersion = "2.26.3"
-  val reactivemongoTestVersion = "4.21.0-play-26"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]
@@ -90,7 +89,7 @@ private object IntegrationTestDependencies extends TestDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
     "com.github.tomakehurst" % "wiremock-jre8" % wireMockVersion % scope,
     "org.jsoup" % "jsoup" % jsoupVersion % scope,
-    "uk.gov.hmrc" %% "reactivemongo-test" % reactivemongoTestVersion % scope
+    "uk.gov.hmrc" %% "reactivemongo-test" % "4.20.0-play-26" % scope
   )
 
   def apply(): Seq[ModuleID] = testDependencies

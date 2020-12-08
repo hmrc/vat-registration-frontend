@@ -36,13 +36,15 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
 
-  trait Setup {
+  trait StandardTestHelpers {
+
+    import scala.concurrent.duration._
+
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
     val repo = app.injector.instanceOf[SessionRepository]

@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
@@ -25,20 +25,21 @@ import services.SessionProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ErrorController @Inject()(val authConnector: AuthClientConnector,
+class ErrorController @Inject()(mcc: MessagesControllerComponents,
+                                val authConnector: AuthClientConnector,
                                 val keystoreConnector: KeystoreConnector)
-                               (implicit appConfig: FrontendAppConfig,
-                                val executionContext: ExecutionContext,
-                                baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                               (implicit val appConfig: FrontendAppConfig,
+                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ =>
+    implicit request =>
+      implicit profile =>
         Future.successful(Ok(views.html.pages.error.submissionTimeout()))
   }
 
   def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ =>
+    implicit request =>
+      implicit profile =>
         Future.successful(Ok(views.html.pages.error.submissionFailed()))
   }
 }

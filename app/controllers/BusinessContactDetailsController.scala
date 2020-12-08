@@ -14,35 +14,55 @@
  * limitations under the License.
  */
 
-package controllers.registration.business
+package controllers
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import common.enums.AddressLookupJourneyIdentifier
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.BaseController
-import forms.CompanyContactDetailsForm
+import forms.{CompanyContactDetailsForm, PpobForm}
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
-import play.api.mvc.{Action, AnyContent}
+import models.api.Address
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
 import views.html.business_contact_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessContactDetailsController @Inject()(val authConnector: AuthClientConnector,
+class BusinessContactDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                 val authConnector: AuthClientConnector,
                                                  val keystoreConnector: KeystoreConnector,
                                                  val businessContactService: BusinessContactService,
                                                  val prepopService: PrePopulationService,
                                                  val addressLookupService: AddressLookupService)
-                                                (implicit appConfig: FrontendAppConfig,
-                                                 val executionContext: ExecutionContext,
-                                                 baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                                (implicit val appConfig: FrontendAppConfig,
+                                                 val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   lazy val dropoutUrl: String = appConfig.servicesConfig.getString("microservice.services.otrs.url")
+  private val ppobForm = PpobForm.form
   private val companyContactForm = CompanyContactDetailsForm.form
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def ppobRedirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        addressLookupService.getJourneyUrl(
+          journeyId = AddressLookupJourneyIdentifier.businessActivities,
+          continueUrl = routes.BusinessContactDetailsController.returnFromTxm()
+        ) map Redirect
+  }
+
+  def returnFromTxm(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        for {
+          address <- addressLookupService.getAddressById(id)
+          _ <- businessContactService.updateBusinessContact[Address](address)
+        } yield Redirect(controllers.routes.BusinessContactDetailsController.showCompanyContactDetails())
+  }
+
+
+  def showCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -51,7 +71,7 @@ class BusinessContactDetailsController @Inject()(val authConnector: AuthClientCo
         } yield Ok(business_contact_details(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitCompanyContactDetails: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         companyContactForm.bindFromRequest.fold(

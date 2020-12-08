@@ -30,6 +30,7 @@ class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   class Setup {
     val testController = new EuGoodsController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,

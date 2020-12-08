@@ -21,7 +21,7 @@ import connectors.KeystoreConnector
 import controllers.routes
 import models.CurrentProfile
 import play.api.mvc.Results._
-import play.api.mvc.Result
+import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ trait SessionProfile {
   val keystoreConnector: KeystoreConnector
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
-  def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+  def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show()))
@@ -48,7 +48,7 @@ trait SessionProfile {
     }
   }
 
-  def profileMissing(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def profileMissing(implicit request: Request[_], hc: HeaderCarrier): Future[Boolean] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) map { currentProfile =>
       currentProfile.isEmpty
     }

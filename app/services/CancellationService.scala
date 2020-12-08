@@ -22,16 +22,15 @@ import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class CancellationService @Inject()(val keystoreConnector: KeystoreConnector,
                                     val currentProfileService: CurrentProfileService,
                                     val save4LaterConnector: S4LConnector,
-                                    val vatRegistrationConnector: VatRegistrationConnector
-                                   )(implicit ec: ExecutionContext) {
+                                    val vatRegistrationConnector: VatRegistrationConnector) {
 
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 

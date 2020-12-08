@@ -18,10 +18,10 @@ package forms
 
 import java.time.LocalDate
 
-import models.view._
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping}
+import forms.FormValidation._
 import models.DateModel
+import models.view._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
@@ -57,16 +57,15 @@ object FormerNameDateForm {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
 
-  val minDate: LocalDate = LocalDate.of(2000, 1, 1)
   val maxDate: LocalDate = LocalDate.now().plusDays(1)
 
-  val form = Form(
+  def form(dob: LocalDate) = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,
         "month" -> text,
         "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(dob, maxDate))))
     )(FormerNameDateView.bind)(FormerNameDateView.unbind)
   )
 }

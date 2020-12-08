@@ -31,7 +31,7 @@ import play.api.libs.json.{JsString, JsSuccess}
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 
-// scalastyle:off
+
 object FormValidation {
 
   type ErrorCode = String
@@ -51,7 +51,6 @@ object FormValidation {
   }
 
   def mandatory(errKey: String): Constraint[String] = mandatoryGen[String](errKey)
-
   def mandatoryLong(errKey: String): Constraint[Long] = mandatoryGen[Long](errKey)
 
   private def mandatoryGen[T](errKey: String): Constraint[T] = Constraint { input: T =>
@@ -64,10 +63,9 @@ object FormValidation {
       case _ => Invalid(errKey)
     }
   }
-
-  def IsEmail(implicit e: ErrorCode): Constraint[String] = Constraint { input: String =>
+  def IsEmail(implicit e: ErrorCode):Constraint[String] = Constraint { input: String =>
     JsString(input).validateOpt[String](email) match {
-      case JsSuccess(Some(_), _) => Valid
+      case JsSuccess(Some(_),_) => Valid
       case _ => Invalid(s"validation.$e.invalid")
     }
   }
@@ -110,7 +108,7 @@ object FormValidation {
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
         case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above"))
-        case (-1, _) if !args.isEmpty => Invalid(ValidationError(s"validation.$e.range.below"))
+        case (-1, _) if !args.isEmpty  => Invalid(ValidationError(s"validation.$e.range.below"))
         case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below"))
       }
     }
@@ -127,7 +125,6 @@ object FormValidation {
   val numberOfWorkersToInt = textToInt(1, 99999) _
 
   def removeSpaces(text: String): String = text.replaceAll(" ", "")
-
   def removeNewlineAndTrim(s: String): String = s.replaceAll("\r\n|\r|\n|\t", " ").trim
 
   private def textToInt(min: Int, max: Int)(s: String): Int = {
@@ -157,8 +154,8 @@ object FormValidation {
   def verifyIsNumeric(errKey: String): Constraint[String] = Constraint {
     inputToCheck: String =>
       //checking for negatives
-      val input = if (inputToCheck.startsWith("-")) inputToCheck.drop(1) else inputToCheck
-      if (input.forall(_.isDigit)) Valid else Invalid(errKey)
+      val input = if(inputToCheck.startsWith("-")) inputToCheck.drop(1) else inputToCheck
+      if(input.forall(_.isDigit)) Valid else Invalid(errKey)
   }
 
   def boundedLong(tooLowMessage: String, tooHighMessage: String): Constraint[String] = Constraint {
@@ -166,7 +163,7 @@ object FormValidation {
       Try(input.toLong) match {
         case Success(_) => Valid
         case Failure(_: NumberFormatException) => {
-          if (input.startsWith("-")) Invalid(tooLowMessage) else Invalid(tooHighMessage)
+          if(input.startsWith("-")) Invalid(tooLowMessage) else Invalid(tooHighMessage)
         }
       }
   }
@@ -200,7 +197,7 @@ object FormValidation {
 
   def matches(matchers: List[String], errorMsg: String): Constraint[String] = Constraint[String] {
     input: String =>
-      if (matchers.contains(input)) Valid else Invalid(errorMsg)
+      if(matchers.contains(input)) Valid else Invalid(errorMsg)
   }
 
   /* overrides Play's implicit stringFormatter and handles missing options (e.g. no radio button selected) */
@@ -220,14 +217,13 @@ object FormValidation {
     def unbind(key: String, value: Boolean) = Map(key -> value.toString)
   }
 
-  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")())
+  def textMapping()(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(Seq()))
 
   def textMappingWithMessageArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[String] = FieldMapping[String]()(stringFormat("missing")(args))
-
   def missingBooleanFieldMappingArgs()(args: Seq[Any] = Seq())(implicit e: ErrorCode): Mapping[Boolean] = FieldMapping[Boolean]()(booleanFormat()(args))
 
   def missingBooleanFieldMapping()(implicit e: ErrorCode): Mapping[Boolean] =
-    FieldMapping[Boolean]()(booleanFormat()())
+    FieldMapping[Boolean]()(booleanFormat()(Seq()))
 
   def nonEmptyDate(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
@@ -239,10 +235,11 @@ object FormValidation {
 
   def isValidPhoneNumber(formName:String): Constraint[String] = Constraint { phone: String =>
 
-    val isValidNumber:Option[Int] = if(phone.matches("^[A-Z0-9 )/(*#+-]+$")) Some(phone.length) else None
+    val isValidNumber:Option[Int] = if(phone.matches("^[0-9]*")) Some(phone.length) else None
 
     isValidNumber match {
-      case Some(num) if(num > 24) => Invalid(s"validation.invalid.$formName.tooLong")
+      case Some(num) if(num > 20) => Invalid(s"validation.invalid.$formName.tooLong")
+      case Some(num) if(num < 10) => Invalid(s"validation.invalid.$formName.tooShort")
       case Some(_) => Valid
       case _ => Invalid(s"validation.invalid.$formName")
     }
@@ -264,18 +261,18 @@ private def tupleToDate(dateTuple: (String,String,String)) = {
   def withinRange(minDate: LocalDate, maxDate: LocalDate, beforeMinErr: String, afterMaxErr: String, args: List[String]): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = tupleToDate(input)
-      if (date.isEqual(minDate) || date.isAfter(minDate))
-        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, args: _*))
-      else Invalid(ValidationError(beforeMinErr, args: _*))
+      if(date.isEqual(minDate) || date.isAfter(minDate))
+        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, args:_*))
+      else Invalid(ValidationError(beforeMinErr, args:_*))
   }
 
   def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = tupleToDate(input)
-      if (date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
+      if(date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
 
-  def dateAtLeastMinDateOrVatStartDate(minDay: LocalDate, vatStartDate: Option[LocalDate], errKeyNoVatStart: String, errKeyVatStart: String): Constraint[(String, String, String)] = Constraint {
+  def dateAtLeastMinDateOrVatStartDate(minDay : LocalDate, vatStartDate:Option[LocalDate], errKeyNoVatStart: String, errKeyVatStart: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = tupleToDate(input)
       vatStartDate.fold {
@@ -309,6 +306,4 @@ private def tupleToDate(dateTuple: (String,String,String)) = {
     def validPartialMonthYearModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
       Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
   }
-
-
 }

@@ -35,6 +35,7 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController = new ClaimRefundsController(
+      messagesControllerComponents,
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,

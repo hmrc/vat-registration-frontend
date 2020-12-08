@@ -19,12 +19,12 @@ package controllers
 import java.time.LocalDate
 import java.util
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms._
 import javax.inject.{Inject, Singleton}
 import models._
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -32,18 +32,19 @@ import views.html.vatAccountingPeriod.{accounting_period_view => AccountingPerio
 import views.html.{mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 @Singleton
-class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
+class ReturnsController @Inject()(mcc: MessagesControllerComponents,
+                                  val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val returnsService: ReturnsService,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService)
-                                 (implicit appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext,
-                                  baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
@@ -54,7 +55,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         }
   }
 
-  val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitAccountPeriods: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         AccountingPeriodForm.form.bindFromRequest.fold(
@@ -65,7 +66,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         )
   }
 
-  val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
@@ -76,7 +77,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         }
   }
 
-  val submitReturnsFrequency: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitReturnsFrequency: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ReturnFrequencyForm.form.bindFromRequest.fold(
@@ -91,7 +92,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         )
   }
 
-  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
       returnsService.getReturns.flatMap { returns =>
@@ -116,9 +117,10 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
       }
   }
 
-  val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitVoluntaryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
+        implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
         calculateEarliestStartDate.flatMap { incorpDate =>
           val voluntaryDateForm = VoluntaryDateForm.form(incorpDate, timeService.addMonths(3))
           voluntaryDateForm.bindFromRequest.fold(
@@ -133,7 +135,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         }
   }
 
-  val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val mandatoryStartPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap(incorpDate =>
@@ -148,7 +150,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           })
   }
 
-  val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submitMandatoryStart: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap(incorpDate =>

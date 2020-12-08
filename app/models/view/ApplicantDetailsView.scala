@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import models.DateModel
 import models.api.Address
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class FormerNameView(yesNo: Boolean, formerName: Option[String] = None)
 

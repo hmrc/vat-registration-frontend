@@ -16,18 +16,20 @@
 
 package controllers.registration.applicant
 
-import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.StubIncorpIdJourney
-import itutil.ControllerISpec
+import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
+import itutil.IntegrationSpecBase
+import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CREATED, await, _}
+import support.AppAndStubs
+import controllers.registration.applicant.{routes => applicantRoutes}
 
-class IncorpIdControllerISpec extends ControllerISpec {
+class IncorpIdControllerISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with IntegrationPatience {
 
   "/start-incorp-id-journey" should {
-    "redirect to the returned journey url" in new Setup {
+    "redirect to the returned journey url" in new StandardTestHelpers {
       implicit val request = FakeRequest()
 
       disable(StubIncorpIdJourney)
@@ -47,6 +49,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+
     }
   }
 

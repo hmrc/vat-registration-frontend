@@ -16,13 +16,13 @@
 
 package controllers.registration.applicant
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TelephoneNumberForm
 import javax.inject.{Inject, Singleton}
 import models.TelephoneNumber
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_telephone_number
@@ -31,21 +31,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
+                                                 mcc: MessagesControllerComponents,
                                                  val authConnector: AuthConnector,
                                                  val keystoreConnector: KeystoreConnector,
                                                  applicantDetailsService: ApplicantDetailsService
-                                                )(implicit appConfig: FrontendAppConfig,
-                                                  val executionContext: ExecutionContext,
-                                                  baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                                )(implicit val appConfig: FrontendAppConfig,
+                                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-        Future.successful(Ok(view(routes.CaptureTelephoneNumberController.submit(), TelephoneNumberForm.form))
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        Future.successful(
+          Ok(view(routes.CaptureTelephoneNumberController.submit(), TelephoneNumberForm.form))
         )
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TelephoneNumberForm.form.bindFromRequest().fold(
@@ -53,7 +54,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
             Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit(), formWithErrors))),
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).map {
-              _ => Redirect(controllers.registration.business.routes.PpobAddressController.startJourney())
+              _ => Redirect(controllers.routes.BusinessContactDetailsController.ppobRedirectToAlf())
             }
         )
   }

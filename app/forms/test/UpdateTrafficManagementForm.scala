@@ -16,12 +16,13 @@
 
 package forms.test
 
+import config.FrontendAppConfig
 import play.api.data.Form
 import play.api.data.Forms._
 
 class UpdateTrafficManagementFormProvider  {
 
-  def apply() =
+  def apply()(implicit appConfig: FrontendAppConfig) =
     Form(single(
       "quota" -> number
     ))

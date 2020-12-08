@@ -18,7 +18,9 @@ package views.components
 
 import config.FrontendAppConfig
 import play.api.i18n.Messages
+import play.api.mvc.Request
 import uk.gov.hmrc.govukfrontend.views.viewmodels.footer.FooterItem
+import play.api.http.HeaderNames.REFERER
 
 object FooterLinks {
 
@@ -42,12 +44,12 @@ object FooterLinks {
     Some(appConfig.govukHelp)
   )
 
-  def accessibilityStatement(implicit messages: Messages) = FooterItem(
+  def accessibilityStatement(implicit messages: Messages, appConfig: FrontendAppConfig, request: Request[_]) = FooterItem(
     Some(messages("footer.accessibilityStatement")),
     None
   )
 
-  def items(implicit messages: Messages, appConfig: FrontendAppConfig) = Seq(
+  def items(implicit messages: Messages, appConfig: FrontendAppConfig, request: Request[_]) = Seq(
     cookieLink,
     accessibilityStatement,
     privacyLink,

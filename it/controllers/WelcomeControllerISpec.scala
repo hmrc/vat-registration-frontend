@@ -19,11 +19,13 @@ package controllers
 import java.time.LocalDate
 
 import common.enums.VatRegStatus
-import itutil.ControllerISpec
-import play.api.test.Helpers._
+import it.fixtures.ITRegistrationFixtures
+import itutil.IntegrationSpecBase
+import org.scalatest.concurrent.ScalaFutures
+import support.AppAndStubs
 import utils.VATRegFeatureSwitches
 
-class WelcomeControllerISpec extends ControllerISpec {
+class WelcomeControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
@@ -33,7 +35,7 @@ class WelcomeControllerISpec extends ControllerISpec {
 
   "WelcomeController" must {
     "return an OK status" when {
-      "user is authenticated and authorised to access the app without profile" in new Setup {
+      "user is authenticated and authorised to access the app without profile" in new StandardTestHelpers {
         given()
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
@@ -41,12 +43,12 @@ class WelcomeControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .vatRegistration.threshold(thresholdUrl, currentThreshold)
 
-        whenReady(controller.show(request))(res => res.header.status mustBe SEE_OTHER)
+        whenReady(controller.show(request))(res => res.header.status mustBe 303)
       }
     }
 
     "return an OK status" when {
-      "user is authenticated and authorised to access the app with profile" in new Setup {
+      "user is authenticated and authorised to access the app with profile" in new StandardTestHelpers {
         given()
           .user.isAuthorised
           .audit.writesAuditMerged()
@@ -54,7 +56,7 @@ class WelcomeControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        whenReady(controller.show(request))(res => res.header.status mustBe SEE_OTHER)
+        whenReady(controller.show(request))(res => res.header.status mustBe 303)
       }
     }
   }

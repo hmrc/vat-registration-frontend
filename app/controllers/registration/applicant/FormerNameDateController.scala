@@ -16,43 +16,44 @@
 
 package controllers.registration.applicant
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameDateForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class FormerNameDateController @Inject()(val authConnector: AuthConnector,
+class FormerNameDateController @Inject()(mcc: MessagesControllerComponents,
+                                         val authConnector: AuthConnector,
                                          val keystoreConnector: KeystoreConnector,
                                          val applicantDetailsService: ApplicantDetailsService)
-                                        (implicit appConfig: FrontendAppConfig,
-                                         val executionContext: ExecutionContext,
-                                         baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                        (implicit val appConfig: FrontendAppConfig,
+                                         val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
+          dob = applicant.transactorDetails.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
           formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
-          filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form)(FormerNameDateForm.form.fill)
+          filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
         } yield Ok(views.html.former_name_date(filledForm, formerName))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         applicantDetailsService.getApplicantDetails flatMap {
           applicantDetails =>
-            FormerNameDateForm.form.bindFromRequest().fold(
+            val dob = applicantDetails.transactorDetails.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
+            FormerNameDateForm.form(dob).bindFromRequest().fold(
               badForm => for {
                 applicant <- applicantDetailsService.getApplicantDetails
                 formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))

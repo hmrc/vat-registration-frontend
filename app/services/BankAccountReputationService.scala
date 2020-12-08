@@ -24,14 +24,14 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector,
                                              val authConnector: AuthConnector,
-                                             auditConnector: AuditConnector
-                                            )(implicit ec: ExecutionContext) extends AuthorisedFunctions {
+                                             auditConnector: AuditConnector) extends AuthorisedFunctions {
 
   def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
     bankAccountReputationConnector.bankAccountDetailsModulusCheck(account).flatMap {

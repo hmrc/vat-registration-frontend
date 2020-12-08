@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
@@ -26,14 +26,13 @@ import views.html.pages.application_submission_confirmation
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationSubmissionController @Inject()(val returnsService: ReturnsService,
+class ApplicationSubmissionController @Inject()(mcc: MessagesControllerComponents,
+                                                val returnsService: ReturnsService,
                                                 val authConnector: AuthClientConnector,
                                                 val keystoreConnector: KeystoreConnector,
                                                 val applicationSubmissionConfirmationView: application_submission_confirmation)
-                                               (implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                               (implicit val appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
@@ -44,6 +43,7 @@ class ApplicationSubmissionController @Inject()(val returnsService: ReturnsServi
   }
 
   def submit: Action[AnyContent] = isAuthenticated {
-    _ => Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
+    implicit request =>
+      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 }

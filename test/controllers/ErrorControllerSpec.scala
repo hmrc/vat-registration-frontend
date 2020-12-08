@@ -23,6 +23,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
 
   trait Setup {
     val testErrorController: ErrorController = new ErrorController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector
     )

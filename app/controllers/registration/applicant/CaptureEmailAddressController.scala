@@ -16,13 +16,13 @@
 
 package controllers.registration.applicant
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EmailAddressForm
 import javax.inject.Inject
 import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
@@ -30,16 +30,17 @@ import views.html.capture_email_address
 import scala.concurrent.{ExecutionContext, Future}
 
 class CaptureEmailAddressController @Inject()(view: capture_email_address,
+                                              mcc: MessagesControllerComponents,
                                               val authConnector: AuthConnector,
                                               val keystoreConnector: KeystoreConnector,
                                               applicantDetailsService: ApplicantDetailsService,
                                               emailVerificationService: EmailVerificationService
-                                             )(implicit appConfig: FrontendAppConfig,
-                                               val executionContext: ExecutionContext,
-                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                             )(implicit val appConfig: FrontendAppConfig,
+                                               val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
         Future.successful(
           Ok(view(
             routes.CaptureEmailAddressController.submit(),
@@ -48,7 +49,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
         )
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EmailAddressForm.form.bindFromRequest().fold(

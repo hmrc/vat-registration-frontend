@@ -17,30 +17,29 @@
 package controllers.registration.applicant
 
 import common.enums.AddressLookupJourneyIdentifier.addressThreeYearsOrLess
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
-import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
 import javax.inject.{Inject, Singleton}
 import models.view.PreviousAddressView
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
+import controllers.registration.applicant.{routes => applicantRoutes}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PreviousAddressController @Inject()(val authConnector: AuthConnector,
+class PreviousAddressController @Inject()(mcc: MessagesControllerComponents,
+                                          val authConnector: AuthConnector,
                                           val keystoreConnector: KeystoreConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val addressLookupService: AddressLookupService)
-                                         (implicit appConfig: FrontendAppConfig,
-                                          val executionContext: ExecutionContext,
-                                          baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                         (implicit val appConfig: FrontendAppConfig,
+                                          val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +49,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           Ok(views.html.previous_address(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         PreviousAddressForm.form.bindFromRequest.fold(
@@ -70,7 +69,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         )
   }
 
-  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -79,8 +78,9 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         } yield Redirect(routes.CaptureEmailAddressController.show())
   }
 
-  def change: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+  def change: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
         addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
   }
 

@@ -26,7 +26,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "vat-registration-frontend"
 
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.4.4"
 
 lazy val scoverageSettings = Seq(
   ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;controllers.test.*;models.api.*;views.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",
@@ -39,8 +39,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory): _*)
   .configs(IntegrationTest)
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-  .settings(majorVersion := 0)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)  .settings(majorVersion := 0)
   .settings(
     fork                       in IntegrationTest := false,
     testForkedParallel         in IntegrationTest := false,
@@ -48,7 +47,7 @@ lazy val microservice = Project(appName, file("."))
     logBuffered                in IntegrationTest := false,
     unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
     fork                       in Test            := true,
-    testForkedParallel         in Test            := false,
+    testForkedParallel         in Test            := true,
     parallelExecution          in Test            := true,
     logBuffered                in Test            := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
@@ -86,8 +85,8 @@ lazy val microservice = Project(appName, file("."))
     // Suppress warnings due to mongo dates using `$date` in their Json representation
     scalacOptions += "-P:silencer:globalFilters=possible missing interpolator: detected interpolated identifier `\\$date`",
     libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+      compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.0" cross CrossVersion.full),
+      "com.github.ghik" % "silencer-lib" % "1.7.0" % Provided cross CrossVersion.full
     )
   )
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427

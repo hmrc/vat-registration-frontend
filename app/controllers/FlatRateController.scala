@@ -19,7 +19,7 @@ package controllers
 import java.text.DecimalFormat
 import java.util.MissingResourceException
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
@@ -28,23 +28,23 @@ import play.api.data.Form
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services._
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 
 import scala.collection.immutable.ListMap
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FlatRateController @Inject()(val flatRateService: FlatRateService,
+class FlatRateController @Inject()(mcc: MessagesControllerComponents,
+                                   val flatRateService: FlatRateService,
                                    val vatRegistrationService: VatRegistrationService,
                                    val authConnector: AuthClientConnector,
                                    val keystoreConnector: KeystoreConnector,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService)
-                                  (implicit appConfig: FrontendAppConfig,
-                                   val executionContext: ExecutionContext,
-                                   baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                  (implicit val appConfig: FrontendAppConfig,
+                                   val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsRadio")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
@@ -64,7 +64,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
 
   lazy val businessTypeIds: Seq[String] = groupingBusinessTypesValues.values.toSeq.flatMap(radioValues => radioValues map Function.tupled((id, _) => id))
 
-  def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -73,7 +73,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitAnnualInclusiveCosts: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitAnnualInclusiveCosts: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         overBusinessGoodsForm.bindFromRequest().fold(
@@ -88,7 +88,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def annualCostsLimitedPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def annualCostsLimitedPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -99,7 +99,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitAnnualCostsLimited: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitAnnualCostsLimited: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate flatMap { flatRateScheme =>
@@ -118,7 +118,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def confirmSectorFrsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def confirmSectorFrsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.retrieveSectorPercent map { view =>
@@ -129,7 +129,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitConfirmSectorFrs: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitConfirmSectorFrs: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.saveConfirmSector map { _ =>
@@ -137,7 +137,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def frsStartDatePage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def frsStartDatePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -151,7 +151,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitFrsStartDate: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitFrsStartDate: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.fetchVatStartDate flatMap { vatStartDate =>
@@ -171,7 +171,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def registerForFrsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def registerForFrsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -183,7 +183,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitRegisterForFrs: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitRegisterForFrs: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         registerForFrsForm.bindFromRequest().fold(
@@ -198,7 +198,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def yourFlatRatePage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def yourFlatRatePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate flatMap { flatRateScheme =>
@@ -214,7 +214,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitYourFlatRate: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitYourFlatRate: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         yourFlatRateForm.bindFromRequest().fold(
@@ -233,7 +233,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -242,7 +242,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EstimateTotalSalesForm.form.bindFromRequest().fold(
@@ -253,7 +253,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def businessType(sendGA: Boolean = false): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def businessType(sendGA: Boolean = false): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -267,7 +267,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitBusinessType: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitBusinessType: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ChooseBusinessTypeForm.form(businessTypeIds).bindFromRequest().fold(

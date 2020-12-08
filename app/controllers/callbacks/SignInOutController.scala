@@ -18,38 +18,42 @@ package controllers.callbacks
 
 import java.io.File
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
+import uk.gov.hmrc.http.InternalServerException
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SignInOutController @Inject()(val authConnector: AuthClientConnector,
+class SignInOutController @Inject()(mcc: MessagesControllerComponents,
+                                    val authConnector: AuthClientConnector,
                                     val keystoreConnector: KeystoreConnector)
-                                   (implicit appConfig: FrontendAppConfig,
-                                    val executionContext: ExecutionContext,
-                                    baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                   (implicit val appConfig: FrontendAppConfig,
+                                    val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def postSignIn: Action[AnyContent] = Action.async {
-    _ => Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
+    implicit request =>
+      Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
   }
 
   def signOut: Action[AnyContent] = isAuthenticated {
-    _ => Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
+    implicit request =>
+      Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 
   def renewSession: Action[AnyContent] = isAuthenticated {
-    _ => Future.successful(Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg"))
+    implicit request =>
+      Future.successful(Ok.sendFile(new File("conf/renewSession.jpg")).as("image/jpeg"))
   }
 
   def destroySession: Action[AnyContent] = Action.async {
-    _ => Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
+    implicit request =>
+      Future.successful(Redirect(routes.SignInOutController.timeoutShow()).withNewSession)
   }
 
   def timeoutShow: Action[AnyContent] = Action.async {

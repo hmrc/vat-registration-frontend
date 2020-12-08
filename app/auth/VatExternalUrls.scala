@@ -30,7 +30,7 @@ class VatExternalUrls @Inject()(appConfig: FrontendAppConfig, runModeConfigurati
   val loginUrl                                 = s"$companyAuthHost$loginPath"
   val continueUrl                              = s"$loginCallback${routes.SignInOutController.postSignIn()}"
   final lazy val defaultOrigin: String = {
-    lazy val appName = runModeConfiguration.getOptional[String]("appName").getOrElse("undefined")
-    runModeConfiguration.getOptional[String]("sosOrigin").getOrElse(appName)
+    lazy val appName = runModeConfiguration.getString("appName").getOrElse("undefined")
+    runModeConfiguration.getString("sosOrigin").getOrElse(appName)
   }
 }

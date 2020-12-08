@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
@@ -25,20 +25,19 @@ import services.{CurrentProfileService, SessionProfile, VatRegistrationService}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
+class WelcomeController @Inject()(mcc: MessagesControllerComponents,
+                                  val vatRegistrationService: VatRegistrationService,
                                   val currentProfileService: CurrentProfileService,
                                   val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector)
-                                 (implicit appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext,
-                                  baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticated {
     implicit request =>
       for {
         missing <- profileMissing
-        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful(())
+        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful()
       } yield {
         Redirect(appConfig.eligibilityUrl)
       }

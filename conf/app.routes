@@ -100,16 +100,20 @@ GET         /provides-workers-on-temporary-contracts                            
 POST        /provides-workers-on-temporary-contracts                                           controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.submit
 
 ## PPOB ADDRESS
-GET         /principal-place-business                                                          controllers.registration.business.PpobAddressController.startJourney
-GET         /principal-place-business/acceptFromTxm                                            controllers.registration.business.PpobAddressController.callback(id: String ?= "")
+GET         /principal-place-business                                                          controllers.BusinessContactDetailsController.ppobRedirectToAlf
+GET         /principal-place-business/acceptFromTxm                                            controllers.BusinessContactDetailsController.returnFromTxm(id: String ?= "")
+
+## PPOB ADDRESS Drop out page
 
 ## BUSINESS CONTACT DETAILS PAGE
-GET         /company-contact-details                                                           controllers.registration.business.BusinessContactDetailsController.show
-POST        /company-contact-details                                                           controllers.registration.business.BusinessContactDetailsController.submit
+GET         /company-contact-details                                                           controllers.BusinessContactDetailsController.showCompanyContactDetails
+POST        /company-contact-details                                                           controllers.BusinessContactDetailsController.submitCompanyContactDetails
 
-## Applicant ADDRESS PAGE
+
+## OFFICER ADDRESS PAGE
 GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.redirectToAlf
 GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
+
 
 ## TELEPHONE PAGE
 GET         /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.show

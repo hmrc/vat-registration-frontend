@@ -40,6 +40,7 @@ class HomeAddressControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: HomeAddressController = new HomeAddressController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
@@ -65,7 +66,7 @@ class HomeAddressControllerSpec extends ControllerSpec
   "redirectToAlf" should {
     "redirect to ALF" in new Setup {
       mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
+      when(mockAddressLookupService.getJourneyUrl(any(), any())(any(), any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
       callAuthorised(controller.redirectToAlf()) { res =>

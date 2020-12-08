@@ -33,6 +33,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     fakeApplication.injector.instanceOf[application_submission_confirmation]
 
   val testController = new ApplicationSubmissionController(
+    messagesControllerComponents,
     mockReturnsService,
     mockAuthClientConnector,
     mockKeystoreConnector,

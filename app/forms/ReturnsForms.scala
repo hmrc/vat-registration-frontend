@@ -19,15 +19,19 @@ package forms
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import models.DateSelection.specific_date
+import models.DateSelection.{specific_date, _}
 import models.Stagger
 import forms.FormValidation._
 import models.{DateSelection, Frequency, Stagger}
 import play.api.data.Forms.{single, tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
+import play.api.libs.json.Format
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+import scala.language.implicitConversions
 
 trait StartDateForm {
   protected val START_DATE_SELECTION = "startDateRadio"
@@ -145,7 +149,7 @@ object ReturnFrequencyForm {
 }
 
 object VoluntaryDateForm extends StartDateForm {
-  def form(dateRangeMin: LocalDate, dateRangeMax: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
+  def form(dateRangeMin: LocalDate, dateRangeMax: LocalDate)(implicit bhs: BankHolidaySet): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE -> mandatoryIf(
@@ -165,9 +169,11 @@ object VoluntaryDateForm extends StartDateForm {
 
 object VoluntaryDateFormIncorp extends StartDateForm {
   private val dateWithinFourYears = "validation.startDate.range.below4y"
+  private val dateIsWeekend       = "validation.startDate.isWeekend"
+
   private val now3MonthsLater = LocalDate.now().plusMonths(3)
 
-  def form(incorpDate: LocalDate) = Form(
+  def form(incorpDate: LocalDate)(implicit bhs: BankHolidaySet) = Form(
     tuple(
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE           -> mandatoryIf(

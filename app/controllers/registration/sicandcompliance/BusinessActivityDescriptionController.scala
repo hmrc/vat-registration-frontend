@@ -16,27 +16,26 @@
 
 package controllers.registration.sicandcompliance
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.{BaseController, routes => baseRoutes}
 import forms.BusinessActivityDescriptionForm
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{SessionProfile, SicAndComplianceService}
 import views.html.business_activity_description
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessActivityDescriptionController @Inject()(val authConnector: AuthClientConnector,
+class BusinessActivityDescriptionController @Inject()(mcc: MessagesControllerComponents,
+                                                      val authConnector: AuthClientConnector,
                                                       val keystoreConnector: KeystoreConnector,
                                                       val sicAndCompService: SicAndComplianceService,
                                                       view: business_activity_description)
-                                                     (implicit appConfig: FrontendAppConfig,
-                                                      val executionContext: ExecutionContext,
-                                                      baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                                     (implicit val appConfig: FrontendAppConfig,
+                                                       val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +44,7 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
         } yield Ok(view(formFilled))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessActivityDescriptionForm.form.bindFromRequest().fold(

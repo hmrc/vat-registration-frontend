@@ -18,7 +18,7 @@ package testHelpers
 
 import builders.AuthBuilder
 import common.enums.VatRegStatus
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
@@ -42,7 +42,6 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  implicit val baseControllerComponents: BaseControllerComponents = new BaseControllerComponents(messagesControllerComponents, mockTrafficManagementService)
   val regId = "VAT123456"
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(

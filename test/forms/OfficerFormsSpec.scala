@@ -120,7 +120,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
 
   "FormerNameDateForm" should {
-    val testForm = FormerNameDateForm.form
+    val testForm = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
     val testData = FormerNameDateView(LocalDate.of(2000, 1, 1))
 
     "bind successfully with data" in {

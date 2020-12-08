@@ -32,6 +32,7 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with FutureAsserti
 
   trait Setup {
     val deleteSessionController: DeleteSessionItemsController = new DeleteSessionItemsController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockKeystoreConnector,
@@ -65,7 +66,7 @@ class DeleteSessionItemsControllerSpec extends ControllerSpec with FutureAsserti
     }
     "clear a registration if the incorp update is rejected" in new Setup {
       when(mockVatRegistrationConnector.clearVatScheme(any())(any(), any())) thenReturn Future.successful(HttpResponse(OK))
-      when(mockCurrentProfileService.addRejectionFlag(any())) thenReturn Future.successful(Some("regid"))
+      when(mockCurrentProfileService.addRejectionFlag(any())(any())) thenReturn Future.successful(Some("regid"))
       when(mockS4LConnector.clear(any())(any())) thenReturn Future.successful(HttpResponse(200))
 
       val resp = deleteSessionController.deleteIfRejected()(fakeRequestRejected)

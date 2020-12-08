@@ -19,6 +19,8 @@ package featureswitch.frontend.config
 import config.FrontendAppConfig
 import featureswitch.frontend.models.FeatureSwitchProvider
 import javax.inject.{Inject, Singleton}
+import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 @Singleton
 class FeatureSwitchProviderConfig @Inject()(config: FrontendAppConfig) {

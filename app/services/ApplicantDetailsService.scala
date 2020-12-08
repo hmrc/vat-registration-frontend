@@ -17,7 +17,6 @@
 package services
 
 import java.time.LocalDate
-
 import config.Logging
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
@@ -27,13 +26,13 @@ import models.view.{ApplicantDetails, _}
 import models.{CurrentProfile, S4LKey, TelephoneNumber, TransactorDetails}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
-                                        val s4LService: S4LService
-                                       )(implicit ec: ExecutionContext) extends Logging {
+                                        val s4LService: S4LService) extends Logging {
 
   val director = "03"
 

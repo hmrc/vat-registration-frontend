@@ -16,7 +16,7 @@
 
 package models.view.test
 
-import models.{BankAccount, FlatRateScheme, Returns, TradingDetails}
+import models.{BankAccount, FlatRateScheme, Returns, TradingDetails, TurnoverEstimates}
 import play.api.libs.json.{Json, OFormat}
 
 case class TestSetup(

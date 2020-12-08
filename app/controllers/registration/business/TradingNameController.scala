@@ -16,28 +16,27 @@
 
 package controllers.registration.business
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TradingNameForm
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
 import views.html.trading_name
 
 import scala.concurrent.ExecutionContext
 
-class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class TradingNameController @Inject()(mcc: MessagesControllerComponents,
+                                      val keystoreConnector: KeystoreConnector,
                                       val authConnector: AuthClientConnector,
                                       val applicantDetailsService: ApplicantDetailsService,
                                       val tradingDetailsService: TradingDetailsService,
                                       view: trading_name)
-                                     (implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                     (implicit val appConfig: FrontendAppConfig,
+                                      val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -47,7 +46,7 @@ class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
         } yield Ok(view(form, companyName))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TradingNameForm.form.bindFromRequest.fold(

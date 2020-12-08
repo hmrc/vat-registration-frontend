@@ -32,6 +32,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
 
   trait Setup {
     val controller: SicStubController = new SicStubController(
+      messagesControllerComponents,
       mockConfigConnector,
       mockKeystoreConnector,
       mockS4LService,

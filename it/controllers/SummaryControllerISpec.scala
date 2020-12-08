@@ -18,15 +18,22 @@ package controllers
 
 import java.time.LocalDate
 
-import itutil.{ControllerISpec, WiremockHelper}
+import it.fixtures.ITRegistrationFixtures
+import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.view.ApplicantDetails
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import org.jsoup.Jsoup
+import org.scalatest.concurrent.ScalaFutures
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.libs.json.{JsValue, Json}
+import repositories.SessionRepository
+import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
 
-class SummaryControllerISpec extends ControllerISpec {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+
+class SummaryControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures with ITRegistrationFixtures {
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
@@ -62,6 +69,27 @@ class SummaryControllerISpec extends ControllerISpec {
        |    "change": "2000-07-12"
        |  }
        |}""".stripMargin)
+
+  class Setup {
+
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
+    val repo = app.injector.instanceOf[SessionRepository]
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
 
   "GET Summary page" should {
     "display the summary page correctly" in new Setup {
@@ -126,7 +154,7 @@ class SummaryControllerISpec extends ControllerISpec {
 
         val response = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
-          res.status mustBe SEE_OTHER
+          res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show().url)
         }
       }

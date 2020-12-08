@@ -16,11 +16,9 @@
 
 package controllers
 
-import config.{BaseControllerComponents, FrontendAppConfig, Logging}
-import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
+import config.{FrontendAppConfig, Logging}
 import javax.inject.Inject
 import models.{CurrentProfile, IncorpUpdate}
-import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 import play.api.mvc._
@@ -28,22 +26,21 @@ import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.CompositePredicate
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-abstract class BaseController @Inject()(implicit ec: ExecutionContext,
-                                        bcc: BaseControllerComponents,
-                                        appConfig: FrontendAppConfig)
-  extends FrontendController(bcc.messagesControllerComponents)
+abstract class BaseController @Inject()(mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
+  extends FrontendController(mcc)
     with I18nSupport
     with Logging
     with AuthorisedFunctions
-    with SessionProfile
-    with FeatureSwitching {
+    with SessionProfile {
+
+  implicit val appConfig: FrontendAppConfig
 
   implicit class HandleResult(res: Future[Result])(implicit hc: HeaderCarrier) {
     def handleErrorResult: Future[Result] = {
@@ -76,22 +73,11 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
       } handleErrorResult
   }
 
-  def isAuthenticatedWithProfile(checkTrafficManagement: Boolean = true)
-                                (f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
+  def isAuthenticatedWithProfile(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
       authorised(authPredicate) {
         withCurrentProfile() { profile =>
-          if (isEnabled(TrafficManagementPredicate) && checkTrafficManagement) {
-            bcc.trafficManagementService.passedTrafficManagement(profile.registrationId).flatMap {
-              case true => f(request)(profile)
-              case false =>
-                Logger.warn("[BaseController][isAuthenticatedWithProfile] User attempted to enter flow without passing TM")
-                Future.successful(Redirect(routes.WelcomeController.show()))
-            }
-          }
-          else {
-            f(request)(profile)
-          }
+          f(request)(profile)
         }
       } handleErrorResult
   }

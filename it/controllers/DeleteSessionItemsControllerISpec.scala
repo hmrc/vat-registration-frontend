@@ -17,13 +17,40 @@ package controllers
 
 import java.time.LocalDate
 
-import itutil.ControllerISpec
+import itutil.IntegrationSpecBase
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
 import models.test.SicStub
-import play.api.libs.json.Json
-import play.api.test.Helpers._
+import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.json.{JsValue, Json}
+import repositories.SessionRepository
+import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
 
-class DeleteSessionItemsControllerISpec extends ControllerISpec {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+
+class DeleteSessionItemsControllerISpec extends IntegrationSpecBase with AppAndStubs with ScalaFutures {
+
+  class Setup {
+
+    import scala.concurrent.duration._
+
+    def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
+
+    val repo = app.injector.instanceOf[SessionRepository]
+    val defaultTimeout: FiniteDuration = 5 seconds
+
+    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.drop)(defaultTimeout)
+
+    def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
+      val preawait = customAwait(repo.count)(defaultTimeout)
+      val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
+      val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
+      customAwait(repo.count)(defaultTimeout) mustBe preawait + 1
+      res
+    }
+  }
 
   "deleteVatRegistration" should {
     "return an OK" in new Setup {
@@ -44,7 +71,7 @@ class DeleteSessionItemsControllerISpec extends ControllerISpec {
         .delete()
 
       whenReady(response) {
-        _.status mustBe OK
+        _.status mustBe 200
       }
     }
   }
@@ -76,7 +103,7 @@ class DeleteSessionItemsControllerISpec extends ControllerISpec {
         val response = buildInternalClient("/incorp-update").post(json)
 
         whenReady(response) {
-          _.status mustBe OK
+          _.status mustBe 200
         }
       }
 
@@ -106,7 +133,7 @@ class DeleteSessionItemsControllerISpec extends ControllerISpec {
         val response = buildInternalClient("/incorp-update").post(json)
 
         whenReady(response) {
-          _.status mustBe OK
+          _.status mustBe 200
         }
       }
     }

@@ -23,7 +23,6 @@ import javax.inject.{Inject, Singleton}
 import models._
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -17,6 +17,7 @@
 package utils
 
 import java.time.LocalDateTime
+import scala.language.implicitConversions
 
 object SystemDate {
   def dateTimeNow = LocalDateTime.now()

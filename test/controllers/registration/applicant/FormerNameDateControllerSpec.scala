@@ -21,7 +21,7 @@ import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
-import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView}
+import models.view.{FormerNameDateView, FormerNameView}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import testHelpers.ControllerSpec
 
@@ -34,9 +34,10 @@ class FormerNameDateControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: FormerNameDateController = new FormerNameDateController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
     )
 
     mockAuthenticated()
@@ -46,10 +47,13 @@ class FormerNameDateControllerSpec extends ControllerSpec
   val fakeRequest = FakeRequest(applicantRoutes.FormerNameDateController.show())
 
   val incompleteApplicantDetails = emptyApplicantDetails
-    .copy(formerName = Some(FormerNameView(true, Some("Old Name"))))
+    .copy(formerName = Some(FormerNameView(true, Some("Old Name"))), transactorDetails = Some(testTransactorDetails))
 
   val incompleteApplicantDetailsDate = incompleteApplicantDetails
-    .copy(formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 6, 23))))
+    .copy(formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 6, 23))),
+      transactorDetails = Some(testTransactorDetails))
+
+  val onlyTranscatorDetails = emptyApplicantDetails.copy(transactorDetails = Some(testTransactorDetails))
 
   "show" should {
     "return OK when there's data" in new Setup {
@@ -89,13 +93,13 @@ class FormerNameDateControllerSpec extends ControllerSpec
     }
 
     "Redirect to ContactDetails when Former name Date selected" in new Setup {
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2017-01-01")))(emptyApplicantDetails)
+      mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
+      mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "formerNameDate.day" -> "1",
-        "formerNameDate.month" -> "1",
-        "formerNameDate.year" -> "2017"
+        "formerNameDate.month" -> "2",
+        "formerNameDate.year" -> "2020"
       )) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)

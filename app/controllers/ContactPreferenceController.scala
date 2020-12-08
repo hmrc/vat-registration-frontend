@@ -16,11 +16,11 @@
 
 package controllers
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import forms.ContactPreferenceForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BusinessContactService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.contact_preference
@@ -28,16 +28,15 @@ import views.html.contact_preference
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
+class ContactPreferenceController @Inject()(mcc: MessagesControllerComponents,
+                                            val authConnector: AuthConnector,
                                             val keystoreConnector: KeystoreConnector,
                                             val businessContactService: BusinessContactService,
                                             view: contact_preference)
                                            (implicit val appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                            val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  def showContactPreference: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def showContactPreference: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -47,7 +46,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
 
   }
 
-  def submitContactPreference: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitContactPreference: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ContactPreferenceForm().bindFromRequest().fold(

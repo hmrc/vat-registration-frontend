@@ -16,11 +16,11 @@
 
 package controllers
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.ZeroRatedSuppliesForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ReturnsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.zero_rated_supplies
@@ -28,17 +28,16 @@ import views.html.zero_rated_supplies
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ZeroRatedSuppliesController @Inject()(val keystoreConnector: KeystoreConnector,
+class ZeroRatedSuppliesController @Inject()(mcc: MessagesControllerComponents,
+                                            val keystoreConnector: KeystoreConnector,
                                             val authConnector: AuthClientConnector,
                                             returnsService: ReturnsService,
                                             vatRegistrationService: VatRegistrationService,
                                             zeroRatesSuppliesView: zero_rated_supplies
                                            )(implicit val executionContext: ExecutionContext,
-                                             appConfig: FrontendAppConfig,
-                                             baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                             val appConfig: FrontendAppConfig) extends BaseController(mcc) with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         returnsService.getReturns flatMap { returns =>
@@ -60,7 +59,7 @@ class ZeroRatedSuppliesController @Inject()(val keystoreConnector: KeystoreConne
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatRegistrationService.fetchTurnoverEstimates flatMap {

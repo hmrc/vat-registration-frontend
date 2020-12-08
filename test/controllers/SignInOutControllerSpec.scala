@@ -24,6 +24,7 @@ import testHelpers.{ControllerSpec, FutureAssertions}
 class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
 
   val testController: SignInOutController = new SignInOutController(
+    messagesControllerComponents,
     mockAuthClientConnector,
     mockKeystoreConnector
   )

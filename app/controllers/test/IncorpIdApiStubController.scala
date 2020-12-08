@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, IncorporationDetails}
+import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, IncorpIdJourneyConfig, IncorporationDetails, Registered, RegistrationStatus}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -37,7 +37,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
       Created(Json.obj("journeyStartUrl" -> JsString(appConfig.incorpIdCallbackUrl + "?journeyId=1")))
   )
 
-  def getDetails(journeyId: String): Action[AnyContent] = Action.async { _ =>
+  def getDetails(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(
       Ok(Json.toJson(IncorporationDetails(
         companyName = "Test company",

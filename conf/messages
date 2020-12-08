@@ -436,9 +436,10 @@ validation.businessContactDetails.missing                    = Tell us how can w
 validation.businessContactDetails.email.missing              = Enter an email address
 validation.businessContactDetails.email.invalid              = Enter a valid email address, like name@example.com
 validation.businessContactDetails.email.maxlen               = Enter an email address using 70 characters or less
-validation.businessContactDetails.atLeastOneNumber.missing   = Enter a UK telephone number
-validation.invalid.businessContactDetails                    = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
-validation.invalid.businessContactDetails.tooLong            = The telephone number must be 24 characters or fewer
+validation.businessContactDetails.atLeastOneNumber.missing   = Enter at least one contact number
+validation.invalid.businessContactDetails                    = Enter a valid contact number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
+validation.invalid.businessContactDetails.tooLong            = Enter a contact number using 20 digits or less
+validation.invalid.businessContactDetails.tooShort           = Enter a contact number using 10 digits or more
 
 
 ## Applicant Home Address Page

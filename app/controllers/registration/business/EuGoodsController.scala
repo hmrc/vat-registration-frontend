@@ -16,28 +16,27 @@
 
 package controllers.registration.business
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EuGoodsForm
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
 import views.html.{eu_goods => EuGoodsPage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EuGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
+class EuGoodsController @Inject()(mcc: MessagesControllerComponents,
+                                  val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val tradingDetailsService: TradingDetailsService)
-                                 (implicit appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext,
-                                  baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                 (implicit val appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
@@ -48,7 +47,7 @@ class EuGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EuGoodsForm.form.bindFromRequest.fold(

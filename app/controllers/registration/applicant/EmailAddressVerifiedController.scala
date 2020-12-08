@@ -16,11 +16,11 @@
 
 package controllers.registration.applicant
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.BaseController
 import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.email_verified
@@ -28,20 +28,21 @@ import views.html.email_verified
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailAddressVerifiedController @Inject()(view: email_verified,
+                                               mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector
-                                              )(implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                              )(implicit val appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext) extends BaseController(mcc) with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
         Future.successful(Ok(view(routes.EmailAddressVerifiedController.submit())))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ =>
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
         Future.successful(Redirect(routes.CaptureTelephoneNumberController.show()))
   }
 

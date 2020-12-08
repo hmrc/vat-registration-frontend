@@ -33,6 +33,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
   class Setup(iclStubbed: Boolean = false) {
     val controller: SicAndComplianceController = new SicAndComplianceController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,

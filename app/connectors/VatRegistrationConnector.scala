@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// scalastyle:off
 @Singleton
 class VatRegistrationConnector @Inject()(val http: HttpClient,
                                          val config: FrontendAppConfig)
@@ -116,7 +117,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")
   }
 
-  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
+  def getStatus(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatRegStatus.Value] = {
     http.GET[JsObject](s"$vatRegUrl/vatreg/$regId/status") map { json =>
       (json \ "status").as[VatRegStatus.Value]
     } recover {
@@ -219,7 +220,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def patchReturns(regId: String, returns: Returns)
-                  (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+                  (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[HttpResponse] = {
     http.PATCH[Returns, HttpResponse](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
       case e: Exception => throw logResponse(e, "patchReturns")
     }
@@ -233,7 +234,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def patchBankAccount(regId: String, bankAccount: BankAccount)
-                      (implicit hc: HeaderCarrier): Future[HttpResponse] = {
+                      (implicit hc: HeaderCarrier, rds: HttpReads[BankAccount]): Future[HttpResponse] = {
     http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
       case e: Exception => throw logResponse(e, "patchBankAccount")
     }

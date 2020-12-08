@@ -24,6 +24,7 @@ import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.ControllerSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FormerNameControllerSpec extends ControllerSpec
   with FutureAwaits
@@ -33,9 +34,10 @@ class FormerNameControllerSpec extends ControllerSpec
 
   trait Setup {
     val controller: FormerNameController = new FormerNameController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
     )
 
     mockAuthenticated()
@@ -66,7 +68,7 @@ class FormerNameControllerSpec extends ControllerSpec
 
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")) { result =>
         status(result) mustBe BAD_REQUEST
       }
     }

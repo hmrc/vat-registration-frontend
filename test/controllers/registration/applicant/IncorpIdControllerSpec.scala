@@ -38,6 +38,7 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController: IncorpIdController = new IncorpIdController(
+      messagesControllerComponents,
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockIncorpIdService,
