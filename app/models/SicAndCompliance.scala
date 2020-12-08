@@ -16,51 +16,36 @@
 
 package models
 
-import models.CompanyProvideWorkers.{PROVIDE_WORKERS_NO, PROVIDE_WORKERS_YES}
-import models.SkilledWorkers.{SKILLED_WORKERS_NO, SKILLED_WORKERS_YES}
-import models.TemporaryContracts.{TEMP_CONTRACTS_NO, TEMP_CONTRACTS_YES}
 import models.api.SicCode
 import play.api.libs.json._
+import utils.OptionalJsonFields
 
 case class SicAndCompliance(description: Option[BusinessActivityDescription] = None,
                             mainBusinessActivity: Option[MainBusinessActivityView] = None,
                             businessActivities: Option[BusinessActivities] = None,
-                            companyProvideWorkers: Option[CompanyProvideWorkers] = None,
+                            supplyWorkers: Option[SupplyWorkers] = None,
                             workers: Option[Workers] = None,
-                            temporaryContracts: Option[TemporaryContracts] = None,
-                            skilledWorkers: Option[SkilledWorkers] = None)
+                            intermediarySupply: Option[IntermediarySupply] = None)
 
-object SicAndCompliance {
+object SicAndCompliance extends OptionalJsonFields {
   val NUMBER_OF_WORKERS_THRESHOLD: Int = 8
   implicit val format: OFormat[SicAndCompliance] = Json.format[SicAndCompliance]
   implicit val sicAndCompliance: S4LKey[SicAndCompliance] = S4LKey("SicAndCompliance")
 
   def fromApi(json: JsValue): SicAndCompliance = {
-
     val sicCode = (json \ "mainBusinessActivity").as[SicCode]
     val businessActivities = (json \ "businessActivities").as[List[SicCode]]
-    val labourComp = (json \ "labourCompliance").validateOpt[JsObject].get
-    val numOfWorkers = labourComp.map(a => (a \ "numberOfWorkers").as[Int])
-    val workers = numOfWorkers.flatMap(num => if (num == 0) None else Some(Workers(num)))
-    val temporaryContracts = workers.flatMap { _ =>
-      (json \ "labourCompliance" \ "temporaryContracts").validateOpt[Boolean].get.map { b =>
-        if (b) TemporaryContracts(TEMP_CONTRACTS_YES) else TemporaryContracts(TEMP_CONTRACTS_NO)
-      }
-    }
-    val skilledWorkers = workers.flatMap { a =>
-      (json \ "labourCompliance" \ "skilledWorkers").validateOpt[Boolean].get.map { b =>
-        if (b) SkilledWorkers(SKILLED_WORKERS_YES) else SkilledWorkers(SKILLED_WORKERS_NO)
-      }
-    }
+    val supplyWorkers = (json \ "labourCompliance" \ "supplyWorkers").validateOpt[Boolean].getOrElse(None)
+    val numOfWorkers = (json \ "labourCompliance" \ "numOfWorkersSupplied").validateOpt[Int].getOrElse(None)
+    val intermediarySupply = (json \ "labourCompliance" \ "intermediaryArrangement").validateOpt[Boolean].getOrElse(None)
 
     SicAndCompliance(
       description = Some(BusinessActivityDescription((json \ "businessDescription").as[String])),
       mainBusinessActivity = Some(MainBusinessActivityView(id = sicCode.code, mainBusinessActivity = Some(sicCode))),
       businessActivities = Some(BusinessActivities(businessActivities)),
-      companyProvideWorkers = numOfWorkers.map(n => CompanyProvideWorkers(if (n == 0) PROVIDE_WORKERS_NO else PROVIDE_WORKERS_YES)),
-      workers = workers,
-      temporaryContracts = temporaryContracts,
-      skilledWorkers = skilledWorkers
+      supplyWorkers = supplyWorkers.map(SupplyWorkers.apply),
+      workers = numOfWorkers.map(Workers.apply),
+      intermediarySupply = intermediarySupply.map(IntermediarySupply.apply)
     )
   }
 
@@ -77,20 +62,19 @@ object SicAndCompliance {
       )
       val businessActivities = Json.obj("businessActivities" ->
         sac.businessActivities.map(_.sicCodes).getOrElse(throw new IllegalStateException("Missing other business activities to convert to API model")))
-      val provideWorkers = sac.companyProvideWorkers.map(_.yesNo).map(_ == PROVIDE_WORKERS_YES)
-      val numWorkers: Int = if (provideWorkers.contains(true)) {
-        sac.workers.map(_.numberOfWorkers).getOrElse(throw new IllegalStateException("Missing number of workers to convert to API model"))
-      } else {
-        0
-      }
-      val tempContracts: Option[Boolean] = if (numWorkers >= NUMBER_OF_WORKERS_THRESHOLD) sac.temporaryContracts.map(_.yesNo == TEMP_CONTRACTS_YES) else None
-      val skill: Option[Boolean] = if (tempContracts.contains(true)) sac.skilledWorkers.map(_.yesNo == SKILLED_WORKERS_YES) else None
+      val supplyWorkers = sac.supplyWorkers.map(_.yesNo)
+      val tempContracts = sac.intermediarySupply.map(_.yesNo)
+      val numWorkers = sac.workers.map(_.numberOfWorkers)
 
-      val numberOfWorkers = Json.obj("numberOfWorkers" -> numWorkers)
-      val temporaryCont = tempContracts.map(v => Json.obj("temporaryContracts" -> v))
-      val skilledWork = skill.map(v => Json.obj("skilledWorkers" -> v))
-
-      val labour = provideWorkers.map(_ => Json.obj("labourCompliance" -> Seq(Some(numberOfWorkers), temporaryCont, skilledWork).flatten.reduceLeft(_ ++ _)))
+      val labour = supplyWorkers.map(supply =>
+        Json.obj(
+          "labourCompliance" -> Json.obj(
+            "supplyWorkers" -> supply
+          )
+            .++(optional("intermediaryArrangement" -> tempContracts))
+            .++(optional("numOfWorkersSupplied" -> numWorkers))
+        )
+      )
 
       val mainBus = Json.obj("mainBusinessActivity" ->
         sac.mainBusinessActivity
@@ -99,7 +83,7 @@ object SicAndCompliance {
           .getOrElse(throw new IllegalStateException("Missing SIC Code to convert to API model"))
       )
 
-      Seq(Some(busDesc),Some(businessActivities), labour, Some(mainBus)).flatten.reduceLeft(_ ++ _)
+      Seq(Some(busDesc), Some(businessActivities), labour, Some(mainBus)).flatten.reduceLeft(_ ++ _)
     }
   }
 

@@ -16,34 +16,36 @@
 
 package views
 
-import forms.WorkersForm
+import forms.IntermediarySupplyForm
 import org.jsoup.Jsoup
-import views.html.labour.workers
+import views.html.labour.intermediary_supply
 
-class WorkersPageSpec extends VatRegViewSpec {
+class IntermediarySupplyPageSpec extends VatRegViewSpec {
 
-  lazy val view = app.injector.instanceOf[workers]
-  implicit val doc = Jsoup.parse(view(WorkersForm.form).body)
+  val view = app.injector.instanceOf[intermediary_supply]
+  implicit val doc = Jsoup.parse(view(IntermediarySupplyForm.form).body)
 
   object ExpectedContent {
-    val title = "How many supply workers do you supply? - Register for VAT - GOV.UK"
-    val heading = "How many supply workers do you supply?"
-    val button = "Continue"
+    val title = "Are you an intermediary arranging the supply of workers? - Register for VAT - GOV.UK"
+    val heading = "Are you an intermediary arranging the supply of workers?"
+    val yes = "Yes"
+    val no = "No"
+    val continue = "Continue"
   }
 
-  "Workers Page" should {
+  "Intermediary Supply Page" should {
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
     }
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
-    "have a label that's the same as the heading" in new ViewSetup {
-      doc.textBox("numberOfWorkers") mustBe Some(ExpectedContent.heading)
+    "have yes/no radio options" in new ViewSetup {
+      doc.radio("true") mustBe Some(ExpectedContent.yes)
+      doc.radio("false") mustBe Some(ExpectedContent.no)
     }
     "have a primary action" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.button)
+      doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
-
 }

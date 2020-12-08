@@ -29,7 +29,7 @@ case class SicStub(sicCode1: Option[String],
   }
 
   def fullSicCodes: List[String] = this.productIterator.toList.collect {
-    case Some(s: String) if s.length == 5 => s
+    case Some(s: String) => s
   }
 }
 

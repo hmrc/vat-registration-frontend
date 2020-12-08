@@ -430,9 +430,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
          |{
          |  "businessDescription": "Test Description",
          |  "labourCompliance": {
-         |    "numberOfWorkers": 8,
-         |    "temporaryContracts": true,
-         |    "skilledWorkers": true
+         |    "numOfWorkersSupplied": 8,
+         |    "intermediaryArrangement": true
          |  },
          |  "mainBusinessActivity": {
          |    "id": "testId",
@@ -479,10 +478,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       description = Some(BusinessActivityDescription("test Bus Desc")),
       mainBusinessActivity = Some(MainBusinessActivityView(SicCode("testId", "test Desc", "test Details"))),
       businessActivities = Some(BusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
-      companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+      supplyWorkers = Some(SupplyWorkers(true)),
       workers = Some(Workers(8)),
-      temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
-      skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
+      intermediarySupply = Some(IntermediarySupply(true))
     )
 
     val json = Json.parse(
@@ -490,9 +488,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
          |{
          |  "businessDescription": "test Bus Desc",
          |  "labourCompliance": {
-         |    "numberOfWorkers": 8,
-         |    "temporaryContracts": true,
-         |    "skilledWorkers": true
+         |    "numOfWorkersSupplied": 8,
+         |    "intermediaryArrangement": true
          |  },
          |"businessActivities": [
          |  {

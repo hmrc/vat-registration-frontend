@@ -357,10 +357,9 @@ pages.summary.directorDetails.accountingPeriod.feb               = February, May
 pages.summary.directorDetails.accountingPeriod.mar               = March, June, September and December
 
 ## Summary Page Labour Compliance
-pages.summary.directorDetails.providesWorkers                = Providing workers to other employers
-pages.summary.directorDetails.numberOfWorkers                = Number of workers the company provides at any one time
-pages.summary.directorDetails.workersOnTemporaryContracts    = Provides workers on temporary contracts
-pages.summary.directorDetails.providesSkilledWorkers         = Provides skilled workers
+pages.summary.directorDetails.supplyWorkers                  = Supplying workers to provide a service to another business
+pages.summary.directorDetails.numberOfWorkers                = Number of workers supplied
+pages.summary.directorDetails.intermediarySupply             = Intermediary arranging the supply of workers
 
 
 ## Error Pages
@@ -407,25 +406,16 @@ pages.compliance.introduction.para1                          = So we can underst
 
 ## Labour Compliance
 ## Does Company Provide Workers
-pages.labourCompliance.companyProvideWorkers.heading       = Does the company provide workers to other employers?
-pages.labourCompliance.companyProvideWorkers.para          = For example, the company is a third-party supplier of construction workers or cleaners.
-validation.companyProvideWorkers.missing                   = Tell us if your company provides workers to other employers
+pages.labourCompliance.supplyWorkers.heading               = Do you supply workers to provide a service to another business?
+validation.supplyWorkers.missing                           = Select yes if you supply workers to provide a service to another business
 
 ## Workers
-pages.labourCompliance.workers.heading                = How many workers does the company provide at any one time?
-pages.labourCompliance.workers.numberOfWorkers        = Number of workers
-validation.labourCompliance.numberOfWorkers.missing   = Tell us how many workers the company provides at any one time
-validation.labourCompliance.numberOfWorkers.high      = Number of workers must be less than 99999
-validation.labourCompliance.numberOfWorkers.low       = Number of workers must be at least 1
+pages.labourCompliance.workers.heading                = How many supply workers do you supply?
+validation.labourCompliance.numberOfWorkers.missing   = Enter the number of workers you supply
 
-## Temporary Contracts
-pages.labourCompliance.temporaryContracts.heading                = Does the company provide workers on temporary contracts?
-validation.labourCompliance.temporaryContracts.missing           = Tell us if your company provides workers on temporary contracts
-
-## Does Company Provide Skilled Workers
-pages.labourCompliance.skilledWorkers.heading       = Does the company provide skilled workers?
-pages.labourCompliance.skilledWorkers.para          = For example, workers who have special skills, training, knowledge or ability.
-validation.skilledWorkers.missing                   = Tell us if your company provides skilled workers
+## Intermediary supply
+pages.labourCompliance.intermediarySupply.heading                = Are you an intermediary arranging the supply of workers?
+validation.labourCompliance.intermediarySupply.missing           = Select yes if you an intermediary arranging the supply of workers
 
 ## EU Goods
 pages.euGoods.heading                       = Will the company trade VAT-taxable goods with countries outside the EU?

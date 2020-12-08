@@ -14,37 +14,36 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import models.Workers
 @import play.api.data.Form
-@import play.api.i18n.Messages
 @import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import models.SupplyWorkers
+
+@import config.FrontendAppConfig
 
 @this(
     layout: layouts.layout,
     errorSummary: components.errorSummary,
+    p: components.p,
     form: FormWithCSRF,
-    inputNumber: components.inputNumber,
+    yesNoRadio: components.yesNoRadio,
     button: components.button
 )
 
-@(workersForm: Form[Workers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(companyProvideWorkersForm: Form[SupplyWorkers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(
-    pageTitle = Some(title(workersForm, messages("pages.labourCompliance.workers.heading"))),
+    pageTitle = Some(title(companyProvideWorkersForm, messages("pages.labourCompliance.supplyWorkers.heading"))),
     backLink = true
 ) {
-    @errorSummary(workersForm.errors)
+    @errorSummary(companyProvideWorkersForm.errors)
 
-    @form(action = controllers.registration.sicandcompliance.routes.WorkersController.submit()) {
-        @inputNumber(
-            form = workersForm,
-            id = "numberOfWorkers",
-            name = "numberOfWorkers",
-            label = messages("pages.labourCompliance.workers.heading"),
-            isPageHeading = true,
-            isDecimal = false,
-            classes = Some("govuk-!-width-one-quarter")
+    @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersController.submit()) {
+        @yesNoRadio(
+            form = companyProvideWorkersForm,
+            headingKey = messages("pages.labourCompliance.supplyWorkers.heading"),
+            inline = true,
+            isPageHeading = true
         )
 
         @button(messages("app.common.continue"))

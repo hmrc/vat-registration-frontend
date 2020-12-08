@@ -27,7 +27,6 @@ case class SicAndComplianceTestSetup(businessActivityDescription: Option[String]
                                      labourCompanyProvideWorkers: Option[String],
                                      labourWorkers: Option[String],
                                      labourTemporaryContracts: Option[String],
-                                     labourSkilledWorkers: Option[String],
                                      mainBusinessActivityId: Option[String] ,
                                      mainBusinessActivityDescription: Option[String] ,
                                      mainBusinessActivityDisplayDetails: Option[String]

@@ -18,8 +18,6 @@ package services
 
 import connectors.VatRegistrationConnector
 import javax.inject.{Inject, Singleton}
-import models.CompanyProvideWorkers.PROVIDE_WORKERS_NO
-import models.TemporaryContracts.TEMP_CONTRACTS_NO
 import models._
 import models.api.SicCode
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,7 +45,6 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
 
   def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicAndCompliance] = {
     getSicAndCompliance flatMap { sac =>
-
       val sacWithCodes = sac.copy(businessActivities = Some(BusinessActivities(sicCodes)))
 
       val newSac = if (sicCodes.size == 1) {
@@ -61,10 +58,11 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
       }
 
       val newView = if (!needComplianceQuestions(sicCodes)) {
-        newSac.copy(companyProvideWorkers = None, workers = None, temporaryContracts = None, skilledWorkers = None)
+        newSac.copy(supplyWorkers = None, workers = None, intermediarySupply = None)
       } else {
         newSac
       }
+
       updateSicAndCompliance(newView)
     }
   }
@@ -81,10 +79,16 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
     newData match {
       case a: BusinessActivityDescription => before.copy(description = Some(a))
       case b: MainBusinessActivityView => before.copy(mainBusinessActivity = Some(b))
-      case c: CompanyProvideWorkers => before.copy(companyProvideWorkers = Some(c))
+      case c: SupplyWorkers => {
+        if (c.yesNo) {
+          before.copy(supplyWorkers = Some(c), intermediarySupply = None)
+        }
+        else {
+          before.copy(supplyWorkers = Some(c), workers = Some(Workers(0)))
+        }
+      }
       case d: Workers => before.copy(workers = Some(d))
-      case e: TemporaryContracts => before.copy(temporaryContracts = Some(e))
-      case f: SkilledWorkers => before.copy(skilledWorkers = Some(f))
+      case e: IntermediarySupply => before.copy(intermediarySupply = Some(e))
       case g: SicAndCompliance => g
       case _ => before
     }
@@ -93,33 +97,33 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
   // list of sics nil, 1 or many
   private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = {
     view match {
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(CompanyProvideWorkers(PROVIDE_WORKERS_NO)), _, _, _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(false)), _, Some(_)) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(Workers(nb)), _, _) if nb < 8 =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(true)), Some(Workers(_)), _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(TemporaryContracts(TEMP_CONTRACTS_NO)), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(IntermediarySupply(false))) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(_), Some(_)) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(_)) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(sicCodes)), None, None, None, None) if !needComplianceQuestions(sicCodes) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(sicCodes)), None, None, None) if !needComplianceQuestions(sicCodes) =>
         Complete(view)
       case _ => Incomplete(view)
     }
   }
 
   private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
-
     for {
       _ <- registrationConnector.updateSicAndCompliance(completeModel)
       _ <- s4lService.clear
     } yield completeModel
   }
 
+
   def needComplianceQuestions(sicCodes: List[SicCode]): Boolean = {
     val complianceSicCodes = Set(
-      "01610", "41201", "42110", "42910", "42990",
-      "43120", "43999", "78200", "80100", "81210",
-      "81221", "81222", "81223", "81291", "81299")
+      "42110", "42910", "43999", "41201", "43120", "42990",
+      "01610", "78200", "80100", "81210", "81221", "81222",
+      "81223", "81291", "81299")
 
     complianceSicCodes.intersect(sicCodes.map(_.code).toSet).nonEmpty
   }

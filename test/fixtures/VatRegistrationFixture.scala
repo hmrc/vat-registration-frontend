@@ -117,41 +117,29 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    companyProvideWorkers = None,
+    supplyWorkers = None,
     workers = None,
-    temporaryContracts = None,
-    skilledWorkers = None)
+    intermediarySupply = None)
 
   val s4lVatSicAndComplianceWithLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
+    supplyWorkers = Some(SupplyWorkers(true)),
     workers = Some(Workers(12)),
-    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES)))
+    intermediarySupply = Some(IntermediarySupply(true))
+  )
 
   val s4lVatSicAndComplianceWithoutDescription = SicAndCompliance(
     description = None,
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    companyProvideWorkers = None,
+    supplyWorkers = None,
     workers = None,
-    temporaryContracts = None,
-    skilledWorkers = None)
-
-
-  //View models
-  val validCompanyProvideWorkers = CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_NO)
-  val validWorkers = Workers(8)
-  val validTemporaryContracts = TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_NO)
-  val validSkilledWorkers = SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_NO)
-  val validBusinessActivityDescription = BusinessActivityDescription(testBusinessActivityDescription)
+    intermediarySupply = None
+  )
 
   //Api models
-  val applicant = Applicant(Name(Some("Bob"), Some("Bimbly Bobblous"), "Bobbings", None), "director", None, None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
   val testAddress = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
-
-  val validCompanyRegistrationProfile = Some(CompanyRegistrationProfile("submitted", Some("04")))
 
   val validCompRegProfileJson: JsObject = Json.parse(
     """
@@ -181,17 +169,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     ppobAddress = Some(testAddress),
     contactPreference = Some(Email)
   )
-
-  val defaultSicAndCompliance = SicAndCompliance(
-    description = Some(BusinessActivityDescription("TEST")),
-    mainBusinessActivity = Some(MainBusinessActivityView("TEST", Some(sicCode))),
-    companyProvideWorkers = Some(CompanyProvideWorkers(CompanyProvideWorkers.PROVIDE_WORKERS_YES)),
-    workers = Some(Workers(12)),
-    temporaryContracts = Some(TemporaryContracts(TemporaryContracts.TEMP_CONTRACTS_YES)),
-    skilledWorkers = Some(SkilledWorkers(SkilledWorkers.SKILLED_WORKERS_YES))
-  )
-
-  val frs = Some(FlatRateScheme(Some(true), Some(true), Some(5003L), Some(true), Some(true), None, None))
 
   val validTurnoverEstimates: TurnoverEstimates = TurnoverEstimates(100L)
 
@@ -265,20 +242,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
-
-  val details = generateTradingDetails(euGoodsSelection = false)
-
-  val testIncorporationInfo = IncorporationInfo(
-    IncorpSubscription(
-      transactionId = "000-434-23",
-      regime = "vat",
-      subscriber = "scrs",
-      callbackUrl = "http://localhost:9896/TODO-CHANGE-THIS"),
-    IncorpStatusEvent(
-      status = "accepted",
-      crn = Some("90000001"),
-      incorporationDate = Some(LocalDate.of(2016, 8, 5)),
-      description = Some("Some description")))
 
   // ICL
   val iclMultipleResults = Json.parse(
@@ -376,5 +339,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       (SummaryRow("Question 7", Seq("cablam"), Some(urlCreator("completionCapacity"))), true),
       (SummaryRow("Question 8", Seq("weez"), Some(urlCreator("completionCapacityFillingInFor"))), true)
     ), true)
+
   val fullSummaryModelFromFullEligiblityJson = Summary(section1 :: section2 :: Nil)
 }

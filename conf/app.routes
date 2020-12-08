@@ -90,17 +90,14 @@ GET         /show-icl-confirmation                                              
 
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /provides-workers-to-other-employers                                               controllers.LabourComplianceController.showProvideWorkers
-POST        /provides-workers-to-other-employers                                               controllers.LabourComplianceController.submitProvideWorkers
+GET         /provides-workers-to-other-employers                                               controllers.registration.sicandcompliance.SupplyWorkersController.show
+POST        /provides-workers-to-other-employers                                               controllers.registration.sicandcompliance.SupplyWorkersController.submit
 
-GET         /how-many-workers-does-company-provide-at-one-time                                 controllers.LabourComplianceController.showWorkers
-POST        /how-many-workers-does-company-provide-at-one-time                                 controllers.LabourComplianceController.submitWorkers
+GET         /how-many-workers-does-company-provide-at-one-time                                 controllers.registration.sicandcompliance.WorkersController.show
+POST        /how-many-workers-does-company-provide-at-one-time                                 controllers.registration.sicandcompliance.WorkersController.submit
 
-GET         /provides-workers-on-temporary-contracts                                           controllers.LabourComplianceController.showTemporaryContracts
-POST        /provides-workers-on-temporary-contracts                                           controllers.LabourComplianceController.submitTemporaryContracts
-
-GET         /provides-skilled-workers                                                          controllers.LabourComplianceController.showSkilledWorkers
-POST        /provides-skilled-workers                                                          controllers.LabourComplianceController.submitSkilledWorkers
+GET         /provides-workers-on-temporary-contracts                                           controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.show
+POST        /provides-workers-on-temporary-contracts                                           controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.submit
 
 ## PPOB ADDRESS
 GET         /principal-place-business                                                          controllers.registration.business.PpobAddressController.startJourney
