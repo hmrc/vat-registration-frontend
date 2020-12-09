@@ -57,16 +57,15 @@ object FormerNameDateForm {
     override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
   }
 
-  val minDate: LocalDate = LocalDate.of(2000, 1, 1)
   val maxDate: LocalDate = LocalDate.now().plusDays(1)
 
-  val form = Form(
+  def form(dob: LocalDate) = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,
         "month" -> text,
         "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(minDate, maxDate))))
+      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(dob, maxDate))))
     )(FormerNameDateView.bind)(FormerNameDateView.unbind)
   )
 }
