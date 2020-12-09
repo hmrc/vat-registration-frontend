@@ -34,7 +34,7 @@ class FormerNameDatePageSpec extends VatRegSpec with I18nSupport {
   implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
   implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
-  lazy val form = FormerNameDateForm.form
+  lazy val form = FormerNameDateForm.form(testApplicantDob)
 
   "Former Name Date Page" should {
     "display the page without pre populated data" in {
