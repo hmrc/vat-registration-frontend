@@ -16,6 +16,7 @@
 
 package controllers
 
+import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
 import models.SicAndCompliance
@@ -29,18 +30,16 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
+class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
 
-  class Setup(iclStubbed: Boolean = false) {
+  class Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController(
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
       mockFlatRateService,
-      mockVatRegFeatureSwitches,
       mockICLService
     ) {
-      override val useICLStub = iclStubbed
       override val iclFEurlwww: String = "www-url"
     }
 
@@ -58,7 +57,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
   }
 
   "submitHaltPage" should {
-    "redirect to SIC stub if feature switch is true" in new Setup(true) {
+    "redirect to SIC stub if feature switch is true" in new Setup {
+      enable(StubIcl)
       callAuthorised(controller.submitSicHalt) {
         res =>
           status(res) mustBe 303
@@ -66,6 +66,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       }
     }
     "redirect to ICL if feature switch is false" in new Setup {
+      disable(StubIcl)
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful("/url"))
 
@@ -75,7 +76,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
           res redirectsTo "www-url/url"
       }
     }
-    "return exception" in new Setup(true) {
+    "return exception" in new Setup {
+      enable(StubIcl)
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.submitSicHalt)(_ => 1 mustBe 2))
@@ -254,7 +256,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
   "returnToICL" should {
     "take the user to ICL stub" when {
-      "hitting change (for SIC codes) on the summary" in new Setup(iclStubbed = true) {
+      "hitting change (for SIC codes) on the summary" in new Setup {
+        enable(StubIcl)
         callAuthorised(controller.returnToICL) {
           res =>
             status(res) mustBe 303
@@ -264,6 +267,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     }
     "take the user to ICL" when {
       "hitting change (for SIC codes) on the summary" in new Setup {
+        disable(StubIcl)
         when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful("/url"))
 
@@ -274,7 +278,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         }
       }
     }
-    "return exception" in new Setup(true) {
+    "return exception" in new Setup {
+      enable(StubIcl)
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.returnToICL)(_ => 1 mustBe 2))

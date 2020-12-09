@@ -14,8 +14,6 @@ GET         /working-days                                     controllers.test.T
 
 GET         /ct-registration                                  controllers.test.TestCTController.show()
 
-GET         /feature-flag/:name/:state                        controllers.test.FeatureSwitchController.switcher(name:String,state: String)
-
 GET         /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
 POST        /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
 

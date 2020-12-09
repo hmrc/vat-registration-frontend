@@ -21,13 +21,11 @@ import java.time.LocalDate
 import common.enums.VatRegStatus
 import itutil.ControllerISpec
 import play.api.test.Helpers._
-import utils.VATRegFeatureSwitches
 
 class WelcomeControllerISpec extends ControllerISpec {
 
   def controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
 
-  val featureSwitch: VATRegFeatureSwitches = app.injector.instanceOf[VATRegFeatureSwitches]
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
 

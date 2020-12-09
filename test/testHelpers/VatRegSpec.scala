@@ -32,7 +32,6 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{BooleanFeatureSwitch, FeatureSwitchManager, VATRegFeatureSwitches}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Awaitable, Future}
@@ -56,12 +55,6 @@ class VatRegSpec extends PlaySpec with GuiceOneAppPerSuite with AuthMock with Au
   // Placeholder for custom configuration
   // Use this if you want to configure the app
   // implicit override lazy val app: Application = new GuiceApplicationBuilder().configure().build()
-
-  val mockVATFeatureSwitch = mock[VATRegFeatureSwitches]
-  val mockFeatureManager = mock[FeatureSwitchManager]
-
-  val disabledFeatureSwitch = BooleanFeatureSwitch("test", false)
-  val enabledFeatureSwitch = BooleanFeatureSwitch("test", true)
 
   def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
                       (test: Future[Result] => Assertion): Unit =
