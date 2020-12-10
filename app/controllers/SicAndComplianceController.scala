@@ -18,6 +18,7 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
+import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import forms.MainBusinessActivityForm
 import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
@@ -27,7 +28,6 @@ import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import utils.VATRegFeatureSwitches
 import views.html._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,16 +37,13 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
                                            val keystoreConnector: KeystoreConnector,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
-                                           val vatRegFeatureSwitch: VATRegFeatureSwitches,
                                            val iclService: ICLService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
-
-  def useICLStub: Boolean = vatRegFeatureSwitch.useIclStub.enabled
 
   private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
     keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
@@ -98,7 +95,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
   }
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
-    if (useICLStub) {
+    if (isEnabled(StubIcl)) {
       Future.successful(Redirect(controllers.test.routes.SicStubController.show()))
     } else {
       val customICLMessages: CustomICLMessages = CustomICLMessages(

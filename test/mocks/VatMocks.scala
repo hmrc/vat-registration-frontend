@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.{CascadeUpsert, VATRegFeatureSwitches}
+import utils.CascadeUpsert
 
 trait VatMocks
   extends SaveForLaterMock
@@ -38,8 +38,6 @@ trait VatMocks
     with PersonalDetailsValidationServiceMock {
   this: MockitoSugar =>
 
-
-  implicit lazy val mockVatRegFeatureSwitches = mock[VATRegFeatureSwitches]
   implicit lazy val mockAudit = mock[Audit]
   implicit lazy val mockSessionRepository = mock[SessionRepository]
   implicit lazy val mockCascadeUpsert = mock[CascadeUpsert]
