@@ -59,7 +59,7 @@ class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
           success => {
             val (hasName, name) = success
             tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
-              _ => Redirect(controllers.registration.business.routes.EuGoodsController.show())
+              _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
             }
           }
         )

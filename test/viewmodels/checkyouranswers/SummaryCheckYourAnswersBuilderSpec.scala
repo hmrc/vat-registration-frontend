@@ -203,10 +203,10 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       )
     }
     "render the EU goods row" in {
-      sectionBuilder.buySellEuGoodsRow mustBe SummaryRow(
-        "directorDetails.euGoods",
+      sectionBuilder.applyForEoriRow mustBe SummaryRow(
+        "directorDetails.applyForEori",
         "app.common.yes",
-        Some(controllers.registration.business.routes.EuGoodsController.show())
+        Some(controllers.registration.business.routes.ApplyForEoriController.show())
       )
     }
   }

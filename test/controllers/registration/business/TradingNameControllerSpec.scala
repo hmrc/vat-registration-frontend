@@ -103,7 +103,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
         submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 303
-          redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
+          redirectLocation(result) mustBe Some("/register-for-vat/apply-for-eori")
         }
       }
 
@@ -120,7 +120,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
         submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 303
-          redirectLocation(result) mustBe Some("/register-for-vat/trade-goods-outside-eu")
+          redirectLocation(result) mustBe Some("/register-for-vat/apply-for-eori")
         }
       }
 

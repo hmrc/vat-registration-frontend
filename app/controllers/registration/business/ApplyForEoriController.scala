@@ -19,22 +19,23 @@ package controllers.registration.business
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.EuGoodsForm
+import forms.ApplyForEoriForm
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
-import views.html.{eu_goods => EuGoodsPage}
+import views.html.{apply_for_eori => ApplyForEoriView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EuGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
-                                  val authConnector: AuthClientConnector,
-                                  val applicantDetailsService: ApplicantDetailsService,
-                                  val tradingDetailsService: TradingDetailsService)
-                                 (implicit appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext,
-                                  baseControllerComponents: BaseControllerComponents)
+class ApplyForEoriController @Inject()(val keystoreConnector: KeystoreConnector,
+                                       val authConnector: AuthClientConnector,
+                                       val applicantDetailsService: ApplicantDetailsService,
+                                       val tradingDetailsService: TradingDetailsService,
+                                       applyForEoriView: ApplyForEoriView)
+                                      (implicit appConfig: FrontendAppConfig,
+                                       val executionContext: ExecutionContext,
+                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -42,8 +43,8 @@ class EuGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
       implicit profile =>
         tradingDetailsService.getTradingDetailsViewModel(profile.registrationId) map {
           _.euGoods match {
-            case Some(goods) => Ok(EuGoodsPage(EuGoodsForm.form.fill(goods)))
-            case None => Ok(EuGoodsPage(EuGoodsForm.form))
+            case Some(goods) => Ok(applyForEoriView(ApplyForEoriForm.form.fill(goods)))
+            case None => Ok(applyForEoriView(ApplyForEoriForm.form))
           }
         }
   }
@@ -51,8 +52,8 @@ class EuGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        EuGoodsForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(EuGoodsPage(errors))),
+        ApplyForEoriForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(applyForEoriView(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
             Redirect(controllers.routes.ZeroRatedSuppliesController.show())
           }

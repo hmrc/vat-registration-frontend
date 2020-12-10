@@ -326,7 +326,7 @@ pages.summary.directorDetails.sicCodes                    = SIC codes
 pages.summary.directorDetails.mainSicCode                 = Main business activity
 pages.summary.directorDetails.zeroRated                   = Zero rated turnover for the next 12 months
 pages.summary.directorDetails.claimRefunds                = Expect to claim VAT refunds regularly?
-pages.summary.directorDetails.euGoods                     = Buy or sell goods to other EU member states?
+pages.summary.directorDetails.applyForEori                = Apply for EORI?
 
 ## Summary Page Business Activities
 pages.summary.directorDetails.businessActivities          = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
@@ -341,9 +341,6 @@ pages.summary.directorDetails.estimatedSalesValue                = Estimated VAT
 
 ## Summary Page Director Addresses
 pages.summary.directorDetails.currentAddressThreeYears      = Lived at current address for more than 3 years
-
-## Summary Page Doing Business Abroad
-pages.summary.directorDetails.eori.euGoods                = Trades VAT taxable goods with countries outside the EU
 
 ## Summary Page Annual Accounting Scheme
 pages.summary.directorDetails.zeroRatedSuppliesValue                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
@@ -417,11 +414,13 @@ validation.labourCompliance.numberOfWorkers.missing   = Enter the number of work
 pages.labourCompliance.intermediarySupply.heading                = Are you an intermediary arranging the supply of workers?
 validation.labourCompliance.intermediarySupply.missing           = Select yes if you an intermediary arranging the supply of workers
 
-## EU Goods
-pages.euGoods.heading                       = Will the company trade VAT-taxable goods with countries outside the EU?
-pages.euGoods.yes.p1                        = You will need an Economic Operator Registration and Identification (EORI) number. This is used by customs in EU countries to identify the business’s imports and exports.
-pages.euGoods.yes.p2                        = We will send you an EORI number by email within 3 working days.
-validation.euGoods.missing                  = Select yes if the business will trade VAT-taxable goods with countries outside the EU
+## Apply For Eori
+pages.applyForEori.heading                  = Do you need an EORI number?
+pages.applyForEori.p1                       = You need an Economic Operators Registration and Identification (EORI) number to move goods between the UK and non-EU countries.
+pages.applyForEori.p2                       = From 1 January 2021 you need an EORI number to move goods between Great Britain (England, Scotland and Wales) and the EU. You may also need one if you move goods to or from Northern Ireland.
+pages.applyForEori.p3                       = If you do not have an EORI number, you may have increased costs and delays. For example, if HM Revenue and Customs (HMRC) cannot clear your goods you may have to pay storage fees.
+pages.applyForEori.linkText                 = Find out more about EORI
+validation.applyForEori.missing             = Select yes if you need an EORI number
 
 ## Business Contact Details Page
 pages.businessContactDetails.heading                         = Company contact details
