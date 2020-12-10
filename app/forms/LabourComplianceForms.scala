@@ -38,8 +38,10 @@ object WorkersForm {
 
   val form = Form(
     mapping(
-      NUMBER_OF_WORKERS -> text.verifying(mandatoryNumericText)
+      NUMBER_OF_WORKERS -> text
+        .verifying(mandatoryNumericText)
         .transform[Int](strVal => strVal.toInt, intVal => intVal.toString)
+        .verifying("validation.labourCompliance.numberOfWorkers.missing", _ > 0)
     )(Workers.apply)(Workers.unapply)
   )
 }

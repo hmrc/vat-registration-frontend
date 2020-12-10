@@ -132,7 +132,7 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         description = Some(BusinessActivityDescription("foobar")),
         mainBusinessActivity = Some(MainBusinessActivityView("foo", Some(sicCode)))
       )
-      val expected = incompleteViewModel.copy(supplyWorkers = Some(data), workers = Some(Workers(0)))
+      val expected = incompleteViewModel.copy(supplyWorkers = Some(data), workers = None)
 
       when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))

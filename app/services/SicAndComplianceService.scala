@@ -84,7 +84,7 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
           before.copy(supplyWorkers = Some(c), intermediarySupply = None)
         }
         else {
-          before.copy(supplyWorkers = Some(c), workers = Some(Workers(0)))
+          before.copy(supplyWorkers = Some(c), workers = None)
         }
       }
       case d: Workers => before.copy(workers = Some(d))
