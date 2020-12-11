@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package Controllers.registration.sicandcompliance
+package controllers.registration.sicandcompliance
 
-import controllers.registration.sicandcompliance.SupplyWorkersController
 import fixtures.VatRegistrationFixture
 import models.SupplyWorkers
 import play.api.test.FakeRequest

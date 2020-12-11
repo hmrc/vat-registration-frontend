@@ -24,10 +24,10 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings._
 
-object EuGoodsForm extends RequiredBooleanForm {
-  override val errorMsg = "validation.euGoods.missing"
-  val RADIO_YES_NO: String = "euGoodsRadio"
-  val form = Form(
+object ApplyForEoriForm extends RequiredBooleanForm {
+  override val errorMsg = "validation.applyForEori.missing"
+  val RADIO_YES_NO: String = "value"
+  val form: Form[Boolean] = Form(
     single(RADIO_YES_NO -> requiredBoolean)
   )
 

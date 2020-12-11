@@ -23,17 +23,19 @@ import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.apply_for_eori
 
 import scala.concurrent.Future
 
-class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class ApplyForEoriControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   class Setup {
-    val testController = new EuGoodsController(
+    val testController = new ApplyForEoriController(
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
-      mockTradingDetailsService
+      mockTradingDetailsService,
+      app.injector.instanceOf[apply_for_eori]
     )
 
     mockAuthenticated()
@@ -41,14 +43,13 @@ class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   val companyName = "Test Company Name Ltd"
-  val tradingNameViewNo = TradingNameView(yesNo = false, None)
-  val fullS4L = TradingDetails(
+  val tradingNameViewNo: TradingNameView = TradingNameView(yesNo = false, None)
+  val fullS4L: TradingDetails = TradingDetails(
     Some(tradingNameViewNo),
     Some(true)
   )
 
-  "euGoodsPage" should {
-
+  "show" should {
     "return an Ok when there is a trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(euGoods = Some(true))))
@@ -72,16 +73,15 @@ class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
   }
 
-  "submitEuGoods" should {
-
-    val fakeRequest = FakeRequest(controllers.registration.business.routes.EuGoodsController.submit())
+  "submit" should {
+    val fakeRequest = FakeRequest(controllers.registration.business.routes.ApplyForEoriController.submit())
 
     "return 303 when they trade eu goods and redirect to the zero rated supplies page" in new Setup {
       when(mockTradingDetailsService.saveEuGoods(any(), any())(any(), any()))
         .thenReturn(Future.successful(fullS4L))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "euGoodsRadio" -> "true"
+        "value" -> "true"
       )
 
       submitAuthorised(testController.submit, request) { result =>
@@ -95,7 +95,7 @@ class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(fullS4L))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "euGoodsRadio" -> "false"
+        "value" -> "false"
       )
 
       submitAuthorised(testController.submit, request) { result =>
@@ -114,6 +114,5 @@ class EuGoodsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         status(result) mustBe 400
       }
     }
-
   }
 }

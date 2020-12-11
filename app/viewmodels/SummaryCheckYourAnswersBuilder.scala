@@ -205,15 +205,17 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     vatApplicantDetails.incorporationDetails.map(_.companyNumber).getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
+
   val ctutr: SummaryRow = SummaryRow(
     s"$sectionId.ctutr",
     vatApplicantDetails.incorporationDetails.map(_.ctutr).getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
-  val buySellEuGoodsRow: SummaryRow = yesNoRow(
-    "euGoods",
+
+  val applyForEoriRow: SummaryRow = yesNoRow(
+    "applyForEori",
     scheme.tradingDetails.flatMap(_.euGoods),
-    controllers.registration.business.routes.EuGoodsController.show()
+    controllers.registration.business.routes.ApplyForEoriController.show()
   )
 
   val joinFrsRow: SummaryRow = yesNoRow(
@@ -341,7 +343,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (expectClaimRefundsRow, scheme.returns.flatMap(_.reclaimVatOnMostReturns).isDefined),
       (startDateRow, isflatRatePercentYes && scheme.flatRateScheme.flatMap(_.frsStart).isDefined),
       (accountingPeriodRow, true),
-      (buySellEuGoodsRow, scheme.tradingDetails.flatMap(_.euGoods).isDefined),
+      (applyForEoriRow, scheme.tradingDetails.flatMap(_.euGoods).isDefined),
       (joinFrsRow, scheme.flatRateScheme.flatMap(_.joinFrs).isDefined),
       (costsInclusiveRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).isDefined),
       (estimateTotalSalesRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.estimateTotalSales).isDefined),

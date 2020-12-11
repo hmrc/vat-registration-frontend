@@ -1,3 +1,18 @@
+/*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.registration.business
 
@@ -5,11 +20,14 @@ import itutil.ControllerISpec
 import models.{TradingDetails, TradingNameView}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
-class EuGoodsControllerISpec extends ControllerISpec {
+import scala.concurrent.Future
 
-  "GET /trade-goods-outside-eu" must {
+class ApplyForEoriControllerISpec extends ControllerISpec {
+
+  s"GET ${routes.ApplyForEoriController.show().url}" must {
     "return OK when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised
@@ -18,7 +36,7 @@ class EuGoodsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient("/trade-goods-outside-eu").get()
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -32,7 +50,7 @@ class EuGoodsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient("/trade-goods-outside-eu").get()
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -42,11 +60,14 @@ class EuGoodsControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
-        .vatScheme.has("trading-details", Json.toJson(TradingDetails(tradingNameView = Some(TradingNameView(false, None)), Some(true)))(TradingDetails.writes))
+        .vatScheme.has(
+        "trading-details",
+        Json.toJson(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None)), Some(true)))(TradingDetails.writes)
+      )
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient("/trade-goods-outside-eu").get()
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -54,18 +75,21 @@ class EuGoodsControllerISpec extends ControllerISpec {
     }
   }
 
-  "POST /trade-goods-outside-eu" must {
+  s"POST ${routes.ApplyForEoriController.submit().url}" must {
     "redirect to the next page" in new Setup {
       given
         .user.isAuthorised
-        .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(false, None))))
+        .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None))))
         .s4lContainer[TradingDetails].cleared
         .vatScheme.doesNotHave("trading-details")
-        .vatScheme.isUpdatedWith("tradingDetails", Json.toJson(TradingDetails(tradingNameView = Some(TradingNameView(false, None)), Some(true))))
+        .vatScheme.isUpdatedWith(
+        "tradingDetails",
+        Json.toJson(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None)), Some(true)))
+      )
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient("/trade-goods-outside-eu").post(Json.obj("euGoodsRadio" -> "true"))
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Json.obj("value" -> "true"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
