@@ -21,7 +21,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/how-many-workers-does-company-provide-at-one-time").post(Map("numberOfWorkers" -> Seq("1")))
+      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
