@@ -89,14 +89,14 @@ GET         /save-sic-codes                                                     
 GET         /show-icl-confirmation                                                             controllers.SicAndComplianceController.returnToICL
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /provides-workers-to-other-employers                                               controllers.registration.sicandcompliance.SupplyWorkersController.show
-POST        /provides-workers-to-other-employers                                               controllers.registration.sicandcompliance.SupplyWorkersController.submit
+GET         /supply-of-workers                                                                 controllers.registration.sicandcompliance.SupplyWorkersController.show
+POST        /supply-of-workers                                                                 controllers.registration.sicandcompliance.SupplyWorkersController.submit
 
-GET         /how-many-workers-does-company-provide-at-one-time                                 controllers.registration.sicandcompliance.WorkersController.show
-POST        /how-many-workers-does-company-provide-at-one-time                                 controllers.registration.sicandcompliance.WorkersController.submit
+GET         /number-of-workers-supplied                                                        controllers.registration.sicandcompliance.WorkersController.show
+POST        /number-of-workers-supplied                                                        controllers.registration.sicandcompliance.WorkersController.submit
 
-GET         /provides-workers-on-temporary-contracts                                           controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.show
-POST        /provides-workers-on-temporary-contracts                                           controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.submit
+GET         /arrange-supply-of-workers                                                         controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.show
+POST        /arrange-supply-of-workers                                                         controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.submit
 
 ## PPOB ADDRESS
 GET         /principal-place-business                                                          controllers.registration.business.PpobAddressController.startJourney

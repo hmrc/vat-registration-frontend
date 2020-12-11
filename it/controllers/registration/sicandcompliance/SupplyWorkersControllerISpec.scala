@@ -19,7 +19,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/provides-workers-to-other-employers").get()
+      val response = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
         res.status mustBe OK
       }
@@ -30,7 +30,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient("/provides-workers-to-other-employers").get()
+      val response = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
         res.status mustBe INTERNAL_SERVER_ERROR
       }
@@ -51,7 +51,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/provides-workers-to-other-employers").post(
+      val response = buildClient("/supply-of-workers").post(
         Map("value" -> Seq("true")))
 
       whenReady(response) { res =>

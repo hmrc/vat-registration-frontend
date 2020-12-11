@@ -216,7 +216,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/how-many-workers-does-company-provide-at-one-time").get()
+    val response = buildClient("/number-of-workers-supplied").get()
     whenReady(response) { res =>
       res.status mustBe OK
       val document = Jsoup.parse(res.body)

@@ -20,7 +20,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/provides-workers-on-temporary-contracts").get()
+      val response = buildClient("/arrange-supply-of-workers").get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -37,7 +37,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/provides-workers-on-temporary-contracts").post(Map("value" -> Seq("true")))
+      val response = buildClient("/arrange-supply-of-workers").post(Map("value" -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
