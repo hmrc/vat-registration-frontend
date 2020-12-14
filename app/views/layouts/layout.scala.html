@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardFooter
 
 @this(
     hmrcBanner: HmrcBanner,
@@ -23,7 +24,7 @@
     govukLayout: GovukLayout,
     siteHeader: components.siteHeader,
     phaseBanner: components.phaseBanner,
-    footerLinks: HmrcFooter,
+    footerLinks: HmrcStandardFooter,
     hmrcTimeoutDialog : HmrcTimeoutDialog
 )
 
@@ -86,6 +87,6 @@
     beforeContentBlock = Some(beforeContentBlock),
     bodyEndBlock = Some(bodyEndBlock),
     headerBlock = Some(siteHeader(signOutLink)),
-    footerBlock = Some(footerLinks()),
+    footerBlock = Some(HmrcStandardFooter()),
     scriptsBlock = Some(scripts)
 )(getHelpForm)
