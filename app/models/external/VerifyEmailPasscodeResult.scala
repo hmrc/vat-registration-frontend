@@ -23,3 +23,6 @@ case object EmailVerifiedSuccessfully extends VerifyEmailPasscodeResult
 case object EmailAlreadyVerified extends VerifyEmailPasscodeResult
 
 case object PasscodeNotFound extends VerifyEmailPasscodeResult
+
+case object PasscodeMismatch extends VerifyEmailPasscodeResult
+

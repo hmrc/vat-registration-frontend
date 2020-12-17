@@ -68,7 +68,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                   } yield {
                     Redirect(routes.EmailAddressVerifiedController.show())
                   }
-                case PasscodeNotFound =>
+                case PasscodeMismatch =>
                   val incorrectPasscodeForm = EmailPasscodeForm.form.withError(
                     key = EmailPasscodeForm.passcodeKey,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
@@ -77,6 +77,9 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                   Future.successful(
                     BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm))
                   )
+
+                case PasscodeNotFound => Future.successful(NotImplemented)
+                //todo This should redirect to an error page
               }
             }
         )
