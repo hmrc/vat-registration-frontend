@@ -243,6 +243,11 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     val js = Json.parse(s"""{"transactionID": "$transactionId"}""").as[JsObject]
     http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/transaction-id", js)
   }
+
+  def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val js = Json.obj("honestyDeclaration" -> honestyDeclaration)
+    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/honesty-declaration", js)
+  }
 }
 
 sealed trait DESResponse

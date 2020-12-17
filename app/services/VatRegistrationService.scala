@@ -26,7 +26,7 @@ import models.{TurnoverEstimates, _}
 import play.api.Logger
 import play.api.libs.json.{Format, JsObject}
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -86,4 +86,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def fetchTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
     vatRegConnector.getTurnoverEstimates
   }
+
+  def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    vatRegConnector.submitHonestyDeclaration(regId, honestyDeclaration)
+  }
+
 }

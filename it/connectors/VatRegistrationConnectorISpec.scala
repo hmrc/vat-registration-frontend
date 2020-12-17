@@ -108,5 +108,14 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
       await(res) mustBe testAckRef
     }
   }
+  "submitHonestyDeclaration" should {
+    "return an OK status code" in {
+      val testHonestyDeclaration = "testHonestyDeclaration"
+      given().vatRegistration.honestyDeclaration("99", testHonestyDeclaration)
+      val res = vatregConnector.submitHonestyDeclaration("99", true)(hc)
+      await(res).status mustBe OK
+    }
+  }
+
 }
 

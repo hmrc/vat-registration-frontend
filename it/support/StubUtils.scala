@@ -366,6 +366,13 @@ trait StubUtils {
       )
       builder
     }
+    def honestyDeclaration(regId: String, honestyDeclaration: String): PreconditionBuilder = {
+      stubFor(
+        patch(urlPathEqualTo(s"/vatreg/$regId/honesty-declaration"))
+          .willReturn(ok(honestyDeclaration))
+      )
+      builder
+    }
   }
 
   case class ICL()(implicit builder: PreconditionBuilder, requestHolder: RequestHolder) {

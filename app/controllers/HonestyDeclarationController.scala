@@ -21,26 +21,32 @@ import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, VatRegistrationService}
 import views.html.honesty_declaration
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_declaration,
                                              val authConnector: AuthClientConnector,
-                                             val keystoreConnector: KeystoreConnector
+                                             val keystoreConnector: KeystoreConnector,
+                                             val vatRegistrationService: VatRegistrationService
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+    implicit request =>
+      _ =>
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit())))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ => Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
+    implicit request =>
+      implicit profile =>
+        vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
+        Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
   }
 }

@@ -29,7 +29,8 @@ class HonestyDeclarationControllerSpec extends ControllerSpec {
   val TestController = new HonestyDeclarationController(
     app.injector.instanceOf[honesty_declaration],
     mockAuthClientConnector,
-    mockKeystoreConnector
+    mockKeystoreConnector,
+    mockVatRegistrationService
   )
 
   override def beforeEach(): Unit = {
