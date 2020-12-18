@@ -18,7 +18,7 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{EmailAddress, EmailVerified, PasscodeMismatch}
 import models.view.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -80,11 +80,29 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("passcode" -> testPasscode).toString)
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe BAD_REQUEST
+      }
+
+      "return NotImplemented when passcode is not found" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
+
+        val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe NOT_IMPLEMENTED
       }
     }
   }

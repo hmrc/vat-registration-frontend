@@ -17,7 +17,7 @@
 package controllers.test
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -41,6 +41,8 @@ class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponent
 
       passcode match {
         case "123456" => NoContent
+        case "987654" => NotFound(Json.obj("code" -> "PASSCODE_NOT_FOUND"))
+        case "666666" => NotFound(Json.obj("code" -> "PASSCODE_MISMATCH"))
         case _ => Created
       }
   }

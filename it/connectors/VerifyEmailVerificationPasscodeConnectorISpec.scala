@@ -18,9 +18,11 @@ package connectors
 
 import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
 import itutil.IntegrationSpecBase
-import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully}
+import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
+import uk.gov.hmrc.http.{InternalServerException, Upstream5xxResponse}
 
 class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
 
@@ -75,6 +77,42 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
         val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
 
         res mustBe EmailAlreadyVerified
+      }
+    }
+
+    "return passcode mismatch response" when {
+      "the feature switch is disabled and the email verification API returns PasscodeMismatch" in {
+        disable(StubEmailVerification)
+
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
+
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
+
+        res mustBe PasscodeMismatch
+      }
+    }
+
+    "return passcode not found response" when {
+      "the feature switch is disabled and the email verification API returns PasscodeNotFound" in {
+        disable(StubEmailVerification)
+
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
+
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
+
+        res mustBe PasscodeNotFound
+      }
+    }
+
+    "return unexpected response" when {
+      "the feature switch is disabled and the email verification API returns InternalServerException" in {
+        disable(StubEmailVerification)
+
+        stubPost("/email-verification/verify-passcode", INTERNAL_SERVER_ERROR, "")
+
+        intercept[InternalServerException] {
+          await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
+        }
       }
     }
   }
