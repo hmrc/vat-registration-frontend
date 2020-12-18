@@ -23,12 +23,17 @@ import testHelpers.VatRegSpec
 class SicAndComplianceFormsSpec extends VatRegSpec {
   "Business Activity Description form" must {
     val testForm = BusinessActivityDescriptionForm.form
-    val desc = "bla bla , bla  & blo-bli ble/blip"
+    val desc = "Test company description text only"
+    val specDesc = "(Test company description with special characters! 0123456789. This company makes test-yoghurts & Tests)"
 
     "be valid" when {
-      "a correct description is provided" in {
+      "a valid description is provided with just text" in {
         val data = Map("description" -> Seq(desc))
         testForm.bindFromRequest(data) shouldContainValue BusinessActivityDescription(desc)
+      }
+      "a valid description is provided that includes special characters" in {
+        val data = Map("description" -> Seq(specDesc))
+        testForm.bindFromRequest(data) shouldContainValue BusinessActivityDescription(specDesc)
       }
     }
 
@@ -37,7 +42,7 @@ class SicAndComplianceFormsSpec extends VatRegSpec {
         val data = Map("description" -> Seq(""))
         testForm.bindFromRequest(data) shouldHaveErrors Seq("description" -> "validation.businessActivity.description.missing")
       }
-      "a description with incorrect characters is provided" in {
+      "a description with invalid characters is provided" in {
         val data = Map("description" -> Seq("@gdf gd"))
         testForm.bindFromRequest(data) shouldHaveErrors Seq("description" -> "validation.businessActivity.description.invalid")
       }

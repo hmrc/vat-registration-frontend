@@ -253,7 +253,7 @@ pages.business.activity.description.title                     = What does the bu
 pages.business.activity.description.heading                   = What does the business do?
 pages.business.activity.description.label                     = Describe the type of goods or services the business sells.
 validation.businessActivity.description.missing               = Tell us what the business does
-validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and - , / & ’
+validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and standard punctuation. Do not use any special characters like & or /
 validation.businessActivity.description.maxlen                = Tell us what the business does using 250 characters or less
 
 ## Summary Page

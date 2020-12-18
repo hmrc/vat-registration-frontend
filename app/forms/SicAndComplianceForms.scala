@@ -16,7 +16,6 @@
 
 package forms
 
-import models.MainBusinessActivityView
 import forms.FormValidation.{maxLenText, regexPattern, removeNewlineAndTrim, textMapping}
 import models.{BusinessActivityDescription, MainBusinessActivityView}
 import play.api.data.Form
@@ -26,7 +25,7 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 object BusinessActivityDescriptionForm {
   val DESC_MAX_LENGTH = 250
   val INPUT_DESCRIPTION: String = "description"
-  val PartPattern = """^[A-Za-z0-9\-',/& ]+$""".r
+  val PartPattern = """^[A-Za-z0-9 \-,.&'/()!]+$""".r
 
   val form = Form(
     mapping(
