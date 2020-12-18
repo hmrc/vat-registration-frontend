@@ -87,7 +87,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
 
-      "return NotImplemented when passcode is not found" in new Setup {
+      "return BAD_REQUEST when passcode is not found" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -102,7 +102,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
-        res.status mustBe NOT_IMPLEMENTED
+        res.status mustBe BAD_REQUEST
       }
     }
   }

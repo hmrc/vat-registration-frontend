@@ -78,8 +78,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                     BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm))
                   )
 
-                case PasscodeNotFound => Future.successful(NotImplemented)
-                //todo This should redirect to an error page
+                case PasscodeNotFound => Future.successful(BadRequest(views.html.pages.error.passcodeNotFound()))
               }
             }
         )

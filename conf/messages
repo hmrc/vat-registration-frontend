@@ -144,6 +144,11 @@ pages.failedSubmission.heading          = We couldn’t process your application
 pages.failedSubmission.p1               = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.
 pages.failedSubmission.p2               = Fill out the form below so we can help you complete your application.
 
+##Passcode Not Found Page
+page.passcodeNotFound.heading           = You need to start again
+page.passcodeNotFound.p1                = The code we send you cannot be found or has expired.
+page.passcodeNotFound.p2                = You will need to  <a href="{0}">get a new code</a> to continue with the registration.
+
 ## Unable to confirm identity page
 pages.cantconfirmidentity.title         = We won’t be able to confirm your identity
 pages.cantconfirmidentity.heading       = We won’t be able to confirm your identity
