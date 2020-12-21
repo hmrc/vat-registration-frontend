@@ -28,7 +28,7 @@ class BusinessActivityDescriptionPageSpec extends VatRegViewSpec {
 
   object ExpectedContent {
     val heading = "What does the business do?"
-    val label = heading
+    val label = "Describe the type of goods or services the business sells."
     val continue = "Continue"
   }
 
