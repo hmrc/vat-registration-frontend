@@ -17,24 +17,25 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import views.html.main_template
+@import views.html.helpers.templates._
 @import models.BusinessActivityDescription
-@import views.html.components.h1
+@import forms.BusinessActivityDescriptionForm._
 
 @import config.FrontendAppConfig
 
 @this(
-    h1: h1,
     layout: layouts.layout,
     errorSummary: components.errorSummary,
     form: FormWithCSRF,
     inputTextArea: components.inputTextarea,
     button: components.button
 )
+
 @(businessActivityDescriptionForm: Form[BusinessActivityDescription])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(title(businessActivityDescriptionForm, messages("pages.business.activity.description.heading"))), backLink = true) {
-
-  @h1(messages("pages.business.activity.description.heading"))
 
   @errorSummary(businessActivityDescriptionForm.errors)
 
@@ -43,9 +44,9 @@
           form = businessActivityDescriptionForm,
           id = "description",
           name = "description",
-          label = messages("pages.business.activity.description.label"),
+          label = messages("pages.business.activity.description.heading"),
           isLabelHidden = false,
-          isPageHeading = false,
+          isPageHeading = true,
           maxCharacters = Some(appConfig.businessDescriptionMaxLength)
       )
 
