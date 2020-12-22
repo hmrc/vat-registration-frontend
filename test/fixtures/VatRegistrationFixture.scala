@@ -91,6 +91,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val testNino: String = "AA 12 34 56 C"
   val testBusinessActivityDescription = "description"
   val testRegId = "VAT123456"
+  val testHonestyDeclaration = true
   val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
   val testPresentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val validBankCheckJsonResponseString =

@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import connectors._
 import models.TaxableThreshold
+import org.mockito
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -28,6 +29,7 @@ import play.api.test.FakeRequest
 import testHelpers.{S4LMockSugar, VatRegSpec}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -122,5 +124,15 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
 
       intercept[Exception](await(service.getEligibilityData))
     }
+  }
+  "Calling submitHonestyDeclaration" should {
+    "return a HttpResponse" in new Setup {
+      val httpResponse = Json.obj("honestyDeclartion" -> true)
+      val successfulResponse = HttpResponse(200)
+      when(mockVatRegistrationConnector.submitHonestyDeclaration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testHonestyDeclaration))(any())) thenReturn Future.successful(successfulResponse)
+
+      await(service.submitHonestyDeclaration(testRegId, testHonestyDeclaration)) mustBe successfulResponse
+    }
+
   }
 }
