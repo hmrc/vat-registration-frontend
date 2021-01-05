@@ -29,6 +29,7 @@ import services.{ApplicantDetailsService, EmailVerificationService, SessionProfi
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
+import controllers.registration.applicant.errors.{routes => errorRoutes}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -79,6 +80,8 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                   )
 
                 case PasscodeNotFound => Future.successful(BadRequest(views.html.pages.error.passcodeNotFound()))
+
+                case MaxAttemptsExceeded => Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show()))
               }
             }
         )

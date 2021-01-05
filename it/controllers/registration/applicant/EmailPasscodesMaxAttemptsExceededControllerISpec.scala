@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package models.external
+package controllers.registration.applicant.errors
 
-sealed trait VerifyEmailPasscodeResult
+import itutil.ControllerISpec
+import play.api.test.Helpers._
 
-case object EmailVerifiedSuccessfully extends VerifyEmailPasscodeResult
+class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
 
-case object EmailAlreadyVerified extends VerifyEmailPasscodeResult
+  "show" must {
+    "return an OK" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
 
-case object PasscodeNotFound extends VerifyEmailPasscodeResult
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-case object PasscodeMismatch extends VerifyEmailPasscodeResult
+      val res = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show().url).get())
+      res.status mustBe OK
+    }
+  }
 
-case object MaxAttemptsExceeded extends VerifyEmailPasscodeResult
-
+}

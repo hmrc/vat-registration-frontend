@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound, VerifyEmailPasscodeResult}
+import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, MaxAttemptsExceeded, PasscodeMismatch, PasscodeNotFound, VerifyEmailPasscodeResult}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, NotFoundException}
@@ -32,6 +32,7 @@ object VerifyEmailVerificationPasscodeParser {
   val CodeKey = "code"
   val PasscodeMismatchKey = "PASSCODE_MISMATCH"
   val PasscodeNotFoundKey = "PASSCODE_NOT_FOUND"
+  val MaxAttemptsExceededKey = "MAX_EMAILS_EXCEEDED"
 
   implicit object VerifyEmailVerificationPasscodeHttpReads extends HttpReads[VerifyEmailPasscodeResult] {
     override def read(method: String, url: String, response: HttpResponse): VerifyEmailPasscodeResult = {
@@ -43,11 +44,13 @@ object VerifyEmailVerificationPasscodeParser {
         case NO_CONTENT => EmailAlreadyVerified
         case NOT_FOUND if errorCode contains PasscodeMismatchKey => PasscodeMismatch
         case NOT_FOUND if errorCode contains PasscodeNotFoundKey => PasscodeNotFound
+        case FORBIDDEN if errorCode contains MaxAttemptsExceededKey => MaxAttemptsExceeded
         case status =>
           throw new InternalServerException(s"Unexpected response returned from VerifyEmailPasscode endpoint - Status: $status, response: ${response.body}")
       }
     }
   }
+
 }
 
 @Singleton
