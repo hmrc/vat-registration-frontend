@@ -28,7 +28,7 @@ class IncorporationDetailsSpec extends VatRegSpec {
       json.as[IncorporationDetails] mustBe incorpDetails
     }
 
-    "parse successfuly with optional data" in {
+    "parse successfully with optional data" in {
       val incorpDetails = testIncorpDetails
       val json = Json.toJson(incorpDetails)
       json.as[IncorporationDetails] mustBe incorpDetails
@@ -42,7 +42,7 @@ class IncorporationDetailsSpec extends VatRegSpec {
       json.as[IncorporationDetails](IncorporationDetails.apiFormat) mustBe incorpDetails
     }
 
-    "parse successfuly with optional data" in {
+    "parse successfully with optional data" in {
       val incorpDetails = testIncorpDetails
       val json = Json.toJson(incorpDetails)(IncorporationDetails.apiFormat)
       json.as[IncorporationDetails](IncorporationDetails.apiFormat) mustBe incorpDetails

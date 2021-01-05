@@ -89,6 +89,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "dateOfIncorporation": "2020-02-03",
            |  "countryOfIncorporation": "GB",
            |  "businessVerification": "PASS",
+           |  "registration": "REGISTERED",
            |  "bpSafeId": "testBpId",
            |  "ctutr": "testCtUtr",
            |  "currentAddress": {
@@ -210,6 +211,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  "dateOfIncorporation": "2020-02-03",
            |  "countryOfIncorporation": "GB",
            |  "businessVerification": "PASS",
+           |  "registration": "REGISTERED",
            |  "bpSafeId": "testBpId",
            |  "ctutr": "testCtUtr",
            |  "changeOfName": {

@@ -54,7 +54,7 @@ trait ApplicantDetailsFixtures {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
-  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some(testBpSafeId))
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some("REGISTERED"), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
     incorporationDetails = Some(testIncorpDetails),

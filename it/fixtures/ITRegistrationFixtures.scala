@@ -16,16 +16,16 @@
 
 package it.fixtures
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
-import models.external.incorporatedentityid.IncorporationDetails
+import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import play.api.libs.json.Json
+
+import java.time.LocalDate
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"), addressValidated = true)
@@ -177,9 +177,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
-  val testBpSafeId = "testBpSafeId"
 
-  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some("REGISTERED"), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
     incorporationDetails = Some(testIncorpDetails),
