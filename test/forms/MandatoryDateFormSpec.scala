@@ -24,9 +24,9 @@ import play.api.data.Form
 import testHelpers.VatRegSpec
 
 class MandatoryDateFormSpec extends VatRegSpec {
-  val incorpDate: LocalDate = LocalDate.of(2016, 1, 1)
+  val incorpDate: LocalDate = LocalDate.now.minusYears(3)
   val oldIncorpDate: LocalDate = LocalDate.of(2010, 1, 1)
-  val calculatedDate: LocalDate = LocalDate.of(2017, 12, 12)
+  val calculatedDate: LocalDate = LocalDate.of(2018, 12, 12)
 
   val form: Form[(DateSelection.Value, Option[LocalDate])] = MandatoryDateForm.form(incorpDate, calculatedDate)
   val oldIncorpForm: Form[(DateSelection.Value, Option[LocalDate])] = MandatoryDateForm.form(oldIncorpDate, calculatedDate)
@@ -67,19 +67,19 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "startDateRadio" -> "specific_date",
         "startDate.day" -> "5",
         "startDate.month" -> "5",
-        "startDate.year" -> "2017"
+        "startDate.year" -> "2018"
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2017, 5, 5)))
+      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 5, 5)))
     }
 
     "Bind successfully if the specified date is on the incorporation date" in {
       val data = Map(
         "startDateRadio" -> "specific_date",
-        "startDate.day" -> "1",
-        "startDate.month" -> "1",
-        "startDate.year" -> "2017"
+        "startDate.day" -> s"${incorpDate.getDayOfMonth}",
+        "startDate.month" -> s"${incorpDate.getMonthValue}",
+        "startDate.year" -> s"${incorpDate.getYear}"
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2017, 1, 1)))
+      form.bind(data).get mustBe(specific_date, Some(incorpDate))
     }
 
     "Bind successfully if the specified date is on the calculated date" in {
@@ -87,9 +87,9 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "startDateRadio" -> "specific_date",
         "startDate.day" -> "12",
         "startDate.month" -> "12",
-        "startDate.year" -> "2017"
+        "startDate.year" -> "2018"
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2017, 12, 12)))
+      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 12, 12)))
     }
 
     "Fail to bind if the date specified is before the incorp date" in {
