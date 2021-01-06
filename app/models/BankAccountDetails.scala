@@ -18,9 +18,11 @@ package models
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import utils.JsonUtilities
 
 case class BankAccount(isProvided: Boolean,
-                       details: Option[BankAccountDetails])
+                       details: Option[BankAccountDetails],
+                       reason: Option[NoUKBankAccount])
 
 case class BankAccountDetails(name: String,
                               sortCode: String,
@@ -37,6 +39,8 @@ object BankAccountDetails {
     }
   }
 
+  val format: OFormat[BankAccountDetails] = Json.format[BankAccountDetails]
+
   def bankSeq(bankAccount: BankAccountDetails): Seq[String] = {
     Seq(
       bankAccount.name,
@@ -46,13 +50,28 @@ object BankAccountDetails {
   }
 }
 
-object BankAccount {
-  implicit val format: OFormat[BankAccount] = (
-    (__ \ "isProvided").format[Boolean] and
-      (__ \ "details").formatNullable((
-        (__ \ "name").format[String] and
-          (__ \ "sortCode").format[String] and
-          (__ \ "number").format[String]
-        ) (BankAccountDetails.apply, unlift(BankAccountDetails.unapply)))
-    ) (apply, unlift(unapply))
+object BankAccount extends JsonUtilities {
+   val reads: Reads[BankAccount] = (
+    (__ \ "isProvided").read[Boolean] and
+      (__ \ "details").readNullable[BankAccountDetails](BankAccountDetails.format) and
+        (__ \ "reason").readNullable[NoUKBankAccount]
+    ) (apply _)
+
+  val writes: Writes[BankAccount] = Writes[BankAccount] { bankAccount =>
+    Json.obj(
+      "isProvided" -> bankAccount.isProvided,
+      "details" -> bankAccount.details.map(details =>
+        Json.obj(
+          "name" -> details.name,
+          "sortCode" -> details.sortCode,
+          "number" -> details.number
+        )
+      ),
+      "reason" -> bankAccount.reason
+    ) filterNullFields
+
+  }
+
+  implicit val format: Format[BankAccount] = Format[BankAccount](reads, writes)
+
 }

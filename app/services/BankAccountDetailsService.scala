@@ -42,10 +42,10 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
     val bankAccount = if (hasBankAccount) {
       fetchBankAccountDetails map {
         case Some(bankAccountDetails) => bankAccountDetails.copy(isProvided = true)
-        case None => BankAccount(hasBankAccount, None)
+        case None => BankAccount(hasBankAccount, None, None)
       }
     } else {
-      Future.successful(BankAccount(isProvided = false, None))
+      Future.successful(BankAccount(isProvided = false, None, None))
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -55,7 +55,7 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
     bankAccountRepService.bankAccountDetailsModulusCheck(accountDetails).flatMap { validDetails =>
       if (validDetails) {
-        val bankAccount = BankAccount(isProvided = true, Some(accountDetails))
+        val bankAccount = BankAccount(isProvided = true, Some(accountDetails), None)
         saveBankAccountDetails(bankAccount) map (_ => true)
       } else {
         Future.successful(false)
@@ -65,13 +65,13 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): Completion[BankAccount] = {
     bankAccount match {
-      case BankAccount(true, Some(_)) => Complete(bankAccount)
-      case BankAccount(false, _) => Complete(bankAccount.copy(details = None))
+      case BankAccount(true, Some(_), None) => Complete(bankAccount)
+      case BankAccount(false, _, None) => Complete(bankAccount.copy(details = None))
       case _ => Incomplete(bankAccount)
     }
   }
 
-  private[services] def saveBankAccountDetails(bankAccount: BankAccount)
+  def saveBankAccountDetails(bankAccount: BankAccount)
                                               (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
     bankAccountBlockCompleted(bankAccount) fold(
       incomplete => s4LService.saveNoAux(incomplete, bankAccountS4LKey) map (_ => incomplete),

@@ -24,6 +24,7 @@ import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{BankAccountDetailsService, SessionProfile}
+import controllers.NoUKBankAccountController
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +45,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { details =>
           val form: Form[Boolean] = details match {
-            case Some(BankAccount(hasBankAccount, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case Some(BankAccount(hasBankAccount, _, None)) => hasCompanyBankAccountForm.fill(hasBankAccount)
             case None => hasCompanyBankAccountForm
           }
           Ok(views.html.has_company_bank_account(form))
@@ -60,7 +61,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
             if (hasBankAccount) {
               Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
             } else {
-              Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
+              Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView())
             }
           }
         )
@@ -71,7 +72,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { account =>
           val form: Form[BankAccountDetails] = account match {
-            case Some(BankAccount(_, Some(details))) => enterBankAccountDetailsForm.fill(details)
+            case Some(BankAccount(_, Some(details), None)) => enterBankAccountDetailsForm.fill(details)
             case _ => enterBankAccountDetailsForm
           }
           Ok(views.html.enter_company_bank_account_details(form))
