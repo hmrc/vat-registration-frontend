@@ -26,8 +26,9 @@ case class IncorporationDetails(companyNumber: String,
                                 ctutr: String,
                                 dateOfIncorporation: LocalDate,
                                 countryOfIncorporation: String = "GB",
-                                businessVerification: Option[BusinessVerificationStatus] = None,
+                                identifiersMatch: Boolean,
                                 registration: Option[String] = None,
+                                businessVerification: Option[BusinessVerificationStatus] = None,
                                 bpSafeId: Option[String] = None)
 
 object IncorporationDetails {
@@ -37,8 +38,9 @@ object IncorporationDetails {
       (__ \ "ctutr").read[String] and
       (__ \ "companyProfile" \ "dateOfIncorporation").read[LocalDate] and
       Reads.pure("GB") and
-      (__ \ "businessVerification" \ "verificationStatus").readNullable[BusinessVerificationStatus].orElse(Reads.pure(None)) and
+      (__ \ "identifiersMatch").read[Boolean] and
       (__ \ "registration" \ "registrationStatus").readNullable[String].orElse(Reads.pure(None)) and
+      (__ \ "businessVerification" \ "verificationStatus").readNullable[BusinessVerificationStatus].orElse(Reads.pure(None)) and
       (__ \ "registration" \ "registeredBusinessPartnerId").readNullable[String].orElse(Reads.pure(None))
     ) (IncorporationDetails.apply _)
 
@@ -48,8 +50,9 @@ object IncorporationDetails {
       (__ \ "ctutr").write[String] and
       (__ \ "companyProfile" \ "dateOfIncorporation").write[LocalDate] and
       (__ \ "companyProfile" \ "countryOfIncorporation").write[String] and
-      (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
+      (__ \ "identifiersMatch").write[Boolean] and
       (__ \ "registration" \ "registrationStatus").writeNullable[String] and
+      (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").writeNullable[String]
     ) (unlift(IncorporationDetails.unapply))
 

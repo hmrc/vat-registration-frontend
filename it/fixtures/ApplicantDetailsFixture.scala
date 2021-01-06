@@ -29,7 +29,7 @@ trait ApplicantDetailsFixture {
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
-  val testApplicantDob = LocalDate.of(2020,1,1)
+  val testApplicantDob = LocalDate.of(2020, 1, 1)
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
 
@@ -39,7 +39,7 @@ trait ApplicantDetailsFixture {
   val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
   val testBpSafeId = "testBpId"
 
-  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", Some(BvPass), Some("REGISTERED"), Some(testBpSafeId))
+  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val validFullApplicantDetails = ApplicantDetails(
     transactorDetails = Some(testTransactorDetails),

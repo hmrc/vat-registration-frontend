@@ -66,7 +66,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
   "getDetails" when {
     "incorp ID returns valid incorporation details" should {
       "return the incorporation details without optional data" in {
-        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate)
+        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false)
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
 
@@ -75,7 +75,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         res mustBe (validResponse)
       }
       "return the incorporation details with optional data" in {
-        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some(testBpSafeId))
+        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
 
@@ -86,7 +86,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     }
     "incorp ID returns invalid incorporation details" should {
       "throw and exception" in {
-        val validResponse = Json.toJson(IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate))
+        val validResponse = Json.toJson(IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
 

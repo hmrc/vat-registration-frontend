@@ -44,6 +44,8 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
         companyNumber = "12345678",
         ctutr = "1234567890",
         dateOfIncorporation = LocalDate.of(2020,1,1),
+        identifiersMatch = true,
+        registration = Some("REGISTERED"),
         businessVerification = Some(BvPass),
         bpSafeId = Some("testBpId")
       ))(IncorporationDetails.apiFormat))
