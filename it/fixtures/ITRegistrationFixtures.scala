@@ -178,7 +178,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
-  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", Some(BvPass), Some("REGISTERED"), Some(testBpSafeId))
+  val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
     incorporationDetails = Some(testIncorpDetails),
