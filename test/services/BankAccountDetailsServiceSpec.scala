@@ -40,7 +40,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
 
   "fetchBankAccountDetails" should {
 
-    val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
+    val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
     "return a BankAccount if one is found in save 4 later" in new Setup {
       when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
@@ -79,7 +79,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
   "saveBankAccountDetails" should {
 
     "return a BankAccount and save to the backend and save4later if it is full" in new Setup {
-      val fullBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
+      val fullBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
@@ -94,7 +94,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     }
 
     "return a BankAccount and save to save 4 later if it is incomplete" in new Setup {
-      val incompleteBankAccount = BankAccount(isProvided = true, None)
+      val incompleteBankAccount = BankAccount(isProvided = true, None, None)
 
       when(mockS4LService.saveNoAux(eqTo(incompleteBankAccount), eqTo(bankAccountS4LKey))(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -109,14 +109,14 @@ class BankAccountDetailsServiceSpec extends VatSpec {
   "bankAccountBlockCompleted" should {
 
     "return a complete bank account when the supplied bank account has an account and has supplied account details" in new Setup {
-      val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
+      val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
       result mustBe Complete(bankAccount)
     }
 
     "return a complete bank account when the supplied bank account case class does not have a bank account" in new Setup {
-      val bankAccount = BankAccount(isProvided = false, None)
+      val bankAccount = BankAccount(isProvided = false, None, None)
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
       result mustBe Complete(bankAccount)
@@ -124,16 +124,16 @@ class BankAccountDetailsServiceSpec extends VatSpec {
 
     "return a complete bank account with the account details removed when the supplied bank account case class " +
       "does not have a bank account but has account details" in new Setup {
-      val bankAccount = BankAccount(isProvided = false, Some(BankAccountDetails("testName", "testCode", "testAccNumber")))
+      val bankAccount = BankAccount(isProvided = false, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
 
-      val expectedBankAccount = BankAccount(isProvided = false, None)
+      val expectedBankAccount = BankAccount(isProvided = false, None, None)
       result mustBe Complete(expectedBankAccount)
     }
 
     "return an incomplete bank account when the supplied bank account has an account but no account details" in new Setup {
-      val bankAccount = BankAccount(isProvided = true, None)
+      val bankAccount = BankAccount(isProvided = true, None, None)
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
 

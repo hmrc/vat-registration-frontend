@@ -35,11 +35,12 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
   val accountNumber = "12345678"
   val sortCode = "12-34-56"
   val bankDetails = BankAccountDetails(accountName, sortCode, accountNumber)
-  val bankAccountNotProvided = BankAccount(isProvided = false, None)
+  val bankAccountNotProvided = BankAccount(isProvided = false, None, None)
 
   val bankAccountIsProvided = BankAccount(
     isProvided = true,
-    Some(bankDetails)
+    Some(bankDetails),
+    None
   )
 
   val hasCompanyBankAccountUrl = controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()

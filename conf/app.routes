@@ -58,6 +58,10 @@ POST        /how-often-submit-returns                                           
 GET         /companys-bank-account                                                             controllers.BankAccountDetailsController.showHasCompanyBankAccountView
 POST        /companys-bank-account                                                             controllers.BankAccountDetailsController.submitHasCompanyBankAccount
 
+## NO UK BANK ACCOUNT
+GET         /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.showNoUKBankAccountView
+POST        /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.submitNoUKBankAccount
+
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
 GET         /account-details                                                                   controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
 POST        /account-details                                                                   controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails

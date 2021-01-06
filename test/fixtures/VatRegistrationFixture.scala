@@ -60,7 +60,7 @@ trait BaseFixture {
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
   with ApplicantDetailsFixtures with ReturnsFixture {
 
-  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")))
+  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None)
 
   val sicCode = SicCode("88888", "description", "displayDetails")
 
@@ -158,7 +158,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     Some(10000.5), Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
   )
 
-  val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")))
+  val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
 
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
