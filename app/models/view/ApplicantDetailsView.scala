@@ -52,3 +52,5 @@ case class PreviousAddressView(yesNo: Boolean, address: Option[Address] = None)
 object PreviousAddressView {
   implicit val format = Json.format[PreviousAddressView]
 }
+
+

@@ -5,10 +5,10 @@ import java.time.LocalDate
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.TelephoneNumber
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView}
+import models.{Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
@@ -18,7 +18,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
   val keyBlock = "applicant-details"
   val email = "test@t.test"
   val nino = "SR123456C"
-  val role = "Director"
+  val role = "03"
   val dob = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
@@ -41,7 +41,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-      previousAddress = None
+      previousAddress = None,
+      roleInTheBusiness = Some(Director)
     )
 
     val validJson = Json.parse(
@@ -101,6 +102,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         (json \ "changeOfName" \ "name" \ "last").as[JsString].value mustBe "Cosmo"
         (json \ "contact" \ "email").as[JsString].value mustBe email
         (json \ "previousAddress").validateOpt[JsObject].get mustBe None
+        (json \ "roleInTheBusiness").as[JsString].value mustBe role
       }
     }
   }
@@ -115,7 +117,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
-      previousAddress = None
+      previousAddress = None,
+      roleInTheBusiness = Some(Director)
     )
 
     "patch Applicant Details with ALF address in backend" in new Setup {

@@ -18,7 +18,7 @@ package models.view
 
 import java.time.LocalDate
 
-import models.{S4LKey, TelephoneNumber, TransactorDetails}
+import models.{RoleInTheBusiness, S4LKey, TelephoneNumber, TransactorDetails}
 import models.api.Address
 import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{EmailAddress, EmailVerified, Name}
@@ -33,7 +33,8 @@ case class ApplicantDetails(incorporationDetails: Option[IncorporationDetails] =
                             telephoneNumber: Option[TelephoneNumber] = None,
                             formerName: Option[FormerNameView] = None,
                             formerNameDate: Option[FormerNameDateView] = None,
-                            previousAddress: Option[PreviousAddressView] = None)
+                            previousAddress: Option[PreviousAddressView] = None,
+                            roleInTheBusiness: Option[RoleInTheBusiness] = None)
 
 object ApplicantDetails {
   implicit val format: Format[ApplicantDetails] = Json.format[ApplicantDetails]
@@ -41,29 +42,31 @@ object ApplicantDetails {
 
   val apiReads: Reads[ApplicantDetails] = (
     JsPath.readNullable[IncorporationDetails].orElse(Reads.pure(None)) and
-    JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
-    (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
-    (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
-    (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
-    (__ \ "contact" \ "tel").readNullable[String].fmap(_.map(TelephoneNumber(_))) and
-    (__ \ "changeOfName" \ "name").readNullable[Name]
-      .fmap(con => Some(FormerNameView(con.isDefined, con.map(name => name.asLabel)))) and
-    (__ \ "changeOfName" \ "change").readNullable[LocalDate]
-      .fmap(cond => cond.map(FormerNameDateView(_))) and
-    (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address)))
-  )(ApplicantDetails.apply _)
+      JsPath.readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
+      (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
+      (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
+      (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
+      (__ \ "contact" \ "tel").readNullable[String].fmap(_.map(TelephoneNumber(_))) and
+      (__ \ "changeOfName" \ "name").readNullable[Name]
+        .fmap(con => Some(FormerNameView(con.isDefined, con.map(name => name.asLabel)))) and
+      (__ \ "changeOfName" \ "change").readNullable[LocalDate]
+        .fmap(cond => cond.map(FormerNameDateView(_))) and
+      (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address))) and
+      (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
+    ) (ApplicantDetails.apply _)
 
   val apiWrites: Writes[ApplicantDetails] = (
     JsPath.writeNullable[IncorporationDetails] and
-    JsPath.writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
-    (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
-    (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
-    (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
-    (__ \ "contact" \ "tel").writeNullable[String].contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
-    (__ \ "changeOfName" \ "name").writeNullable[Name].contramap[Option[FormerNameView]](_.flatMap(_.formerName.map(splitName))) and
-    (__ \ "changeOfName" \ "change").writeNullable[LocalDate].contramap[Option[FormerNameDateView]](_.map(_.date)) and
-    (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address))
-  )(unlift(ApplicantDetails.unapply))
+      JsPath.writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
+      (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
+      (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
+      (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
+      (__ \ "contact" \ "tel").writeNullable[String].contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
+      (__ \ "changeOfName" \ "name").writeNullable[Name].contramap[Option[FormerNameView]](_.flatMap(_.formerName.map(splitName))) and
+      (__ \ "changeOfName" \ "change").writeNullable[LocalDate].contramap[Option[FormerNameDateView]](_.map(_.date)) and
+      (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address)) and
+      (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
+    ) (unlift(ApplicantDetails.unapply))
 
   val apiFormat: Format[ApplicantDetails] = Format(
     apiReads,

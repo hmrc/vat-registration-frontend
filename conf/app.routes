@@ -118,6 +118,10 @@ GET         /home-address/acceptFromTxm                                         
 GET         /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.show
 POST        /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.submit
 
+## ROLE IN THE BUSINESS
+GET         /role-in-the-business                                                              controllers.registration.applicant.CaptureRoleInTheBusinessController.show
+POST        /role-in-the-business                                                              controllers.registration.applicant.CaptureRoleInTheBusinessController.submit
+
 ## FORMER NAME PAGE
 GET         /changed-name                                                                      controllers.registration.applicant.FormerNameController.show
 POST        /changed-name                                                                      controllers.registration.applicant.FormerNameController.submit

@@ -38,7 +38,6 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "middle": "Middle",
            |    "last": "Last"
            |  },
-           |  "role": "Director",
            |  "dob": "1998-07-12",
            |  "nino": "AA123456Z"
            |}
@@ -104,6 +103,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "emailVerified": true,
            |    "tel": "1234"
            |  },
+           |  "role": "Director",
            |  "changeOfName": {
            |    "name": {
            |      "first": "New",
@@ -204,7 +204,6 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "first": "testFirstName",
            |    "last": "testLastName"
            |  },
-           |  "role": "03",
            |  "dateOfBirth": "2020-01-01",
            |  "nino": "AB123456C",
            |  "companyNumber": "testCrn",

@@ -477,6 +477,11 @@ pages.completionCapacity.panel.p3                        = If you’re an agent 
 pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
+## Role In The Business
+pages.RoleInTheBusiness.heading                          = What is your role in the business?
+pages.RoleInTheBusiness.radio1                           = Director
+pages.RoleInTheBusiness.radio2                           = Company secretary
+pages.RoleInTheBusiness.error.message                    = Select your role within the business
 
 ## Former Name
 pages.formerName.heading                                 = Have you ever changed your name?
@@ -663,3 +668,4 @@ capture-telephone-number.label                           = UK telephone number
 capture-telephone-number.error.incorrect_format         = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
 capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
 capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer
+
