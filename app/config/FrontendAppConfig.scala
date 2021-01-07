@@ -147,4 +147,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val businessDescriptionMaxLength = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
+
 }

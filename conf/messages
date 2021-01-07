@@ -149,6 +149,12 @@ page.passcodeNotFound.heading           = You need to start again
 page.passcodeNotFound.p1                = The code we send you cannot be found or has expired.
 page.passcodeNotFound.p2                = You will need to  <a href="{0}">get a new code</a> to continue with the registration.
 
+##Max Passcode Attempts Exceeded
+page.MaxPasscodeAttemptsExceeded.heading           = You need to start again
+page.MaxPasscodeAttemptsExceeded.p1                = This is because you have entered the wrong code too many times.
+page.MaxPasscodeAttemptsExceeded.p2                = To start again you need to
+page.MaxPasscodeAttemptsExceeded.link              = sign out
+
 ## Unable to confirm identity page
 pages.cantconfirmidentity.title         = We won’t be able to confirm your identity
 pages.cantconfirmidentity.heading       = We won’t be able to confirm your identity

@@ -24,6 +24,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
+
 class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
   private val testEmail = "test@test.com"
@@ -103,6 +104,25 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe BAD_REQUEST
+      }
+      "redirect to error page for exceeding the maximum number of passcode attempts" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_EMAILS_EXCEEDED").toString)
+
+        val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.errors.routes.EmailPasscodesMaxAttemptsExceededController.show().url)
+
       }
     }
   }
