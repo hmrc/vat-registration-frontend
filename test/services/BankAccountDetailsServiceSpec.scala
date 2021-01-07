@@ -16,7 +16,7 @@
 
 package services
 
-import models.{BankAccount, BankAccountDetails, S4LKey}
+import models.{BankAccount, BankAccountDetails, BeingSetup, NoUKBankAccount, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import testHelpers.VatSpec
@@ -116,7 +116,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     }
 
     "return a complete bank account when the supplied bank account case class does not have a bank account" in new Setup {
-      val bankAccount = BankAccount(isProvided = false, None, None)
+      val bankAccount = BankAccount(isProvided = false, None, Some(BeingSetup))
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
       result mustBe Complete(bankAccount)
@@ -124,11 +124,11 @@ class BankAccountDetailsServiceSpec extends VatSpec {
 
     "return a complete bank account with the account details removed when the supplied bank account case class " +
       "does not have a bank account but has account details" in new Setup {
-      val bankAccount = BankAccount(isProvided = false, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
+      val bankAccount = BankAccount(isProvided = false, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), Some(BeingSetup))
 
       val result: Completion[BankAccount] = service.bankAccountBlockCompleted(bankAccount)
 
-      val expectedBankAccount = BankAccount(isProvided = false, None, None)
+      val expectedBankAccount = BankAccount(isProvided = false, None, Some(BeingSetup))
       result mustBe Complete(expectedBankAccount)
     }
 
