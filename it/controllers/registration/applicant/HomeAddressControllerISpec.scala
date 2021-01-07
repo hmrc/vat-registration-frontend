@@ -4,11 +4,12 @@ package controllers.registration.applicant
 import java.time.LocalDate
 
 import controllers.registration.applicant.{routes => applicantRoutes}
+import forms.RoleInTheBusinessForm.roleInTheBusiness
 import itutil.ControllerISpec
-import models.TelephoneNumber
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
+import models.{Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
@@ -71,7 +72,9 @@ class HomeAddressControllerISpec extends ControllerISpec {
       telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(false, None)),
       formerNameDate = None,
-      previousAddress = Some(PreviousAddressView(true, None))
+      previousAddress = Some(PreviousAddressView(true, None)),
+      roleInTheBusiness = Some(Director)
+
     )
 
     "patch Applicant Details with ALF address in backend" in new Setup {

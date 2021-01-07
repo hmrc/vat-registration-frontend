@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.TelephoneNumber
+import models.{Director, RoleInTheBusiness, TelephoneNumber}
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
@@ -41,7 +41,8 @@ class FormerNameControllerISpec extends ControllerISpec {
       telephoneNumber = Some(TelephoneNumber("1234")),
       formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-      previousAddress = Some(PreviousAddressView(true, None))
+      previousAddress = Some(PreviousAddressView(true, None)),
+      roleInTheBusiness = Some(Director)
     )
 
     "patch Applicant Details in backend without former name" in new Setup {

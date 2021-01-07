@@ -2,10 +2,11 @@
 package fixtures
 
 import java.time.LocalDate
+
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
-import models.{TelephoneNumber, TransactorDetails}
+import models.{Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
 import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 
 trait ApplicantDetailsFixture {
@@ -18,7 +19,7 @@ trait ApplicantDetailsFixture {
 
   val applicantDob = LocalDate.of(1998, 7, 12)
 
-  val testRole = "03"
+  val testRole:RoleInTheBusiness = Director
   val applicantNino = "ZZ987654A"
   val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
   val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
@@ -31,7 +32,7 @@ trait ApplicantDetailsFixture {
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"
@@ -50,6 +51,7 @@ trait ApplicantDetailsFixture {
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress))),
-    incorporationDetails = Some(testApplicantIncorpDetails)
+    incorporationDetails = Some(testApplicantIncorpDetails),
+    roleInTheBusiness = Some(testRole)
   )
 }

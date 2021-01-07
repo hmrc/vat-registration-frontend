@@ -64,6 +64,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
 
+
       res.status mustBe SEE_OTHER
     }
   }

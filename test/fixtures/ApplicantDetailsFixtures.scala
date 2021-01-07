@@ -19,10 +19,10 @@ package fixtures
 import java.time.LocalDate
 
 import models.api.Address
-import models.external.incorporatedentityid.{BvPass, IncorporationDetails, Registered}
+import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
-import models.{TelephoneNumber, TransactorDetails}
+import models.{Director, TelephoneNumber, TransactorDetails}
 
 trait ApplicantDetailsFixtures {
 
@@ -30,7 +30,7 @@ trait ApplicantDetailsFixtures {
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
-  val testRole = "03"
+  val testRole = Some(Director)
   val validCurrentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
   val validPrevAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
 
@@ -47,12 +47,13 @@ trait ApplicantDetailsFixtures {
     telephoneNumber = None,
     formerName = None,
     formerNameDate = None,
-    previousAddress = None
+    previousAddress = None,
+    roleInTheBusiness = None
   )
 
   val testBpSafeId = "testBpId"
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob, Some(testRole))
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
   val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
@@ -63,6 +64,7 @@ trait ApplicantDetailsFixtures {
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
+    roleInTheBusiness = testRole,
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))

@@ -51,7 +51,7 @@ class PersonalDetailsValidationController @Inject()(val authConnector: AuthConne
         for {
           details <- personalDetailsValidationService.retrieveValidationResult(validationId)
           _ <- applicantDetailsService.saveApplicantDetails(details)
-        } yield Redirect(applicantRoutes.FormerNameController.show()).removingFromSession("ValidationId")
+        } yield Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show()).removingFromSession("ValidationId")
   }
 
 }

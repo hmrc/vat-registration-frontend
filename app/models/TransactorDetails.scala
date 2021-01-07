@@ -24,8 +24,7 @@ import play.api.libs.functional.syntax._
 case class TransactorDetails(firstName: String,
                              lastName: String,
                              nino: String,
-                             dateOfBirth: LocalDate,
-                             role: Option[String] = None)
+                             dateOfBirth: LocalDate)
 
 object TransactorDetails {
   implicit val format: OFormat[TransactorDetails] = Json.format[TransactorDetails]
@@ -34,17 +33,15 @@ object TransactorDetails {
     (__ \ "name" \ "first").read[String] orElse Reads.pure("") and
     (__ \ "name" \ "last").read[String] and
     (__ \ "nino").read[String] and
-    (__ \ "dateOfBirth").read[LocalDate] and
-    (__ \ "role").readNullable[String]
-  )(TransactorDetails.apply(_, _, _, _, _))
+    (__ \ "dateOfBirth").read[LocalDate]
+  )(TransactorDetails.apply(_, _, _, _))
 
   val apiWrites: Writes[TransactorDetails] = (
     (__ \ "name" \ "first").write[String] and
     (__ \ "name"\ "last").write[String] and
     (__ \ "nino").write[String] and
-    (__ \ "dateOfBirth").write[LocalDate] and
-    (__ \ "role").writeNullable[String]
-  )(unlift(TransactorDetails.unapply))
+    (__ \ "dateOfBirth").write[LocalDate]
+    )(unlift(TransactorDetails.unapply))
 
   val apiFormat: Format[TransactorDetails] = Format(apiReads, apiWrites)
 

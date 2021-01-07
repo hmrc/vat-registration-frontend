@@ -24,7 +24,7 @@ import javax.inject.{Inject, Singleton}
 import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, _}
-import models.{CurrentProfile, S4LKey, TelephoneNumber, TransactorDetails}
+import models.{CurrentProfile, RoleInTheBusiness, S4LKey, TelephoneNumber, TransactorDetails}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -34,8 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
                                         val s4LService: S4LService
                                        )(implicit ec: ExecutionContext) extends Logging {
-
-  val director = "03"
 
   def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     s4LService.fetchAndGetNoAux[ApplicantDetails](S4LKey[ApplicantDetails]) flatMap {
@@ -70,11 +68,11 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   }
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = applicantDetails match {
-    case ApplicantDetails(None, None, None, None, None, None, None, None, None) =>
+    case ApplicantDetails(None, None, None, None, None, None,_, None, None, None) =>
       Incomplete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_)) if fName.yesNo && fNameDate.isDefined =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_),Some(_)) if fName.yesNo && fNameDate.isDefined =>
       Complete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_)) if !fName.yesNo =>
+    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_), Some(_)) if !fName.yesNo =>
       Complete(applicantDetails)
     case _ =>
       Incomplete(applicantDetails)
@@ -86,7 +84,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
         case incorporationDetails: IncorporationDetails =>
           before.copy(incorporationDetails = Some(incorporationDetails))
         case transactorDetails: TransactorDetails =>
-          before.copy(transactorDetails = Some(transactorDetails.copy(role = Some(director))))
+          before.copy(transactorDetails = Some(transactorDetails))
         case currAddr: HomeAddressView =>
           before.copy(homeAddress = Some(currAddr))
         case emailAddress: EmailAddress =>
@@ -101,6 +99,8 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
           before.copy(formerNameDate = Some(fNameDate))
         case prevAddr: PreviousAddressView =>
           before.copy(previousAddress = Some(prevAddr))
+        case roleInTheBusiness: RoleInTheBusiness =>
+          before.copy(roleInTheBusiness = Some(roleInTheBusiness))
       }
     }
 
