@@ -66,7 +66,7 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
   private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): Completion[BankAccount] = {
     bankAccount match {
       case BankAccount(true, Some(_), None) => Complete(bankAccount)
-      case BankAccount(false, _, None) => Complete(bankAccount.copy(details = None))
+      case BankAccount(false, _, Some(_)) => Complete(bankAccount.copy(details = None))
       case _ => Incomplete(bankAccount)
     }
   }

@@ -226,7 +226,7 @@ pages.zeroRatedSupplies.details                             = Zero-rated are goo
 pages.zeroRatedSupplies.link                                = Find out about VAT rates on different goods and services
 pages.zeroRatedSupplies.label                               = Zero rated turnover estimate
 validation.zeroRatedSupplies.missing                        = Enter a value for all of the taxable goods which are zero-rated
-validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than the total value of the taxable turnover
+validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
 ## Vat Charge Expectancy Page
