@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmailPasscodesMaxAttemptsExceededController @Inject()(view: maxPasscodeAttemptsExceeded,
                                                             val authConnector: AuthConnector,
-                                                            val keystoreConnector: KeystoreConnector,
+                                                            val keystoreConnector: KeystoreConnector
                                                            )(implicit appConfig: FrontendAppConfig,
                                                              val executionContext: ExecutionContext,
                                                              baseControllerComponents: BaseControllerComponents)
