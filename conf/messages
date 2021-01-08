@@ -346,6 +346,7 @@ pages.summary.directorDetails.mainBusinessActivity        = Main business activi
 ## Summary Page Business Bank Details
 pages.summary.directorDetails.companyBankAccount                 = Have a business bank account set up
 pages.summary.directorDetails.companyBankAccount.details         = Bank details
+pages.summary.directorDetails.companyBankAccount.reason          = Reason the bank account is not set up yet
 
 ## Summary Page Taxable Sales
 pages.summary.directorDetails.estimatedSalesValue                = Estimated VAT taxable sales
@@ -379,10 +380,11 @@ pages.company.bank.account.para                 = The account does not have to b
 validation.company.bank.account.missing         = Select yes if the business has a bank or building society account
 
 ## No UK Bank Account
-pages.no.uk.bank.account.heading                = Why is the bank account not set up?
-pages.no.uk.bank.bullet1                        = It is being set up but is taking a while
-pages.no.uk.bank.bullet2                        = The business has an overseas bank account
-pages.no.uk.bank.bullet3                        = The name is being changed (for example, from sole trader to limited company)
+pages.noUKBankAccount.heading                        = Why is the bank account not set up?
+pages.noUKBankAccount.bullet1                        = It is being set up but is taking a while
+pages.noUKBankAccount.bullet2                        = The business has an overseas bank account
+pages.noUKBankAccount.bullet3                        = The name is being changed (for example, from sole trader to limited company)
+pages.noUKBankAccount.error                          = Tell us why the bank account is not set up
 
 ## Bank Details page
 pages.bankDetails.heading                           = What are the business’s bank or building society account details?

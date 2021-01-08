@@ -199,6 +199,11 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Some(controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
   )
 
+  val noUKBankAccount: SummaryRow = SummaryRow(
+    s"$sectionId.companyBankAccount.reason",
+    scheme.bankAccount.flatMap(_.reason.map(_.toString)).getOrElse(""),
+    Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView())
+  )
 
   val companyNumber: SummaryRow = SummaryRow(
     s"$sectionId.companyNumber",
@@ -355,7 +360,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (intermediarySupplyRow, scheme.sicAndCompliance.flatMap(_.intermediarySupply).isDefined),
       (tradingNameRow, true),
       (accountIsProvidedRow, true),
-      (companyBankAccountDetails, scheme.bankAccount.flatMap(_.details).isDefined)
+      (companyBankAccountDetails, scheme.bankAccount.exists(_.isProvided)),
+      (noUKBankAccount, !scheme.bankAccount.exists(_.isProvided))
     )
   )
 
