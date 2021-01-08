@@ -22,26 +22,26 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val simpleReactivemongoVersion = "7.30.0-play-26"
-  private val bootstrapVersion = "2.1.0"
-  private val timeVersion = "3.9.0"
-  private val partialsVersion = "7.0.0-play-26"
-  private val cachingClientVersion = "9.1.0-play-26"
-  private val formMappingVersion = "1.4.0-play-26"
+  private val simpleReactivemongoVersion = "7.31.0-play-26"
+  private val bootstrapVersion = "3.2.0"
+  private val timeVersion = "3.19.0"
+  private val partialsVersion = "7.1.0-play-26"
+  private val cachingClientVersion = "9.2.0-play-26"
+  private val formMappingVersion = "1.5.0-play-26"
   private val catsVersion = "1.0.0"
   private val govukTemplateVersion = "5.60.0-play-26"
-  private val playUiVersion = "8.18.0-play-26"
-  private val playJsonJodaVersion = "2.9.1"
+  private val playUiVersion = "8.19.0-play-26"
+  private val playJsonJodaVersion = "2.9.2"
 
-  private val playGovukFrontendVersion = "0.55.0-play-26"
+  private val playGovukFrontendVersion = "0.56.0-play-26"
   private val playHmrcFrontendVersion = "0.27.0-play-26"
-  private val govukFrontendVersion = "3.7.0"
+  private val govukFrontendVersion = "3.10.2"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     cache,
     "uk.gov.hmrc" %% "time" % timeVersion,
     "uk.gov.hmrc" %% "simple-reactivemongo" % simpleReactivemongoVersion,
-    "uk.gov.hmrc" %% "bootstrap-play-26" % bootstrapVersion,
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-26" % bootstrapVersion,
     "uk.gov.hmrc" %% "play-partials" % partialsVersion,
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % formMappingVersion,
@@ -60,12 +60,11 @@ private object CompileDependencies {
 private trait TestDependencies {
   val scalaTestPlusPlayVersion = "3.1.3"
   val pegdownVersion = "1.6.0"
-  val scoverageVersion = "1.3.1"
   val jsoupVersion = "1.11.2"
   val mockitoVersion = "2.13.0"
   val scalaMockVersion = "3.6.0"
   val wireMockVersion = "2.26.3"
-  val reactivemongoTestVersion = "4.21.0-play-26"
+  val reactivemongoTestVersion = "4.22.0-play-26"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]
