@@ -35,27 +35,27 @@ inputRadio: inputRadio
 
 @(form: Form[NoUKBankAccount])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.no.uk.bank.account.heading")))) {
+@layout(pageTitle = Some(title(form, messages("pages.noUKBankAccount.heading")))) {
 
     @errorSummary(form.errors)
 
-    @h1("pages.no.uk.bank.account.heading")
+    @h1("pages.noUKBankAccount.heading")
 
     @formWithCSRF(action = controllers.routes.NoUKBankAccountController.submitNoUKBankAccount(), 'autoComplete -> "off") {
         @inputRadio(
             form = form,
-            legend = messages("pages.no.uk.bank.account.heading"),
+            legend = messages("pages.noUKBankAccount.heading"),
             items = Seq(
             RadioItem(
-                content = Text(messages("pages.no.uk.bank.bullet1")),
+                content = Text(messages("pages.noUKBankAccount.bullet1")),
                 value = Some("beingSetup")
             ),
             RadioItem(
-                content = Text(messages("pages.no.uk.bank.bullet2")),
+                content = Text(messages("pages.noUKBankAccount.bullet2")),
                 value = Some("overseasAccount")
             ),
             RadioItem(
-                content = Text(messages("pages.no.uk.bank.bullet3")),
+                content = Text(messages("pages.noUKBankAccount.bullet3")),
                 value = Some("nameChange")
             )
             ),

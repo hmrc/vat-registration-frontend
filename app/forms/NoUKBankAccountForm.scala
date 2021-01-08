@@ -29,7 +29,7 @@ object NoUKBankAccountForm {
   val overseasAccount: String = "overseasAccount"
   val nameChange: String = "nameChange"
 
-  val noUKBankAccountError: String = "pages.no.uk.bank.error"
+  val noUKBankAccountError: String = "pages.noUKBankAccount.error"
 
   def apply(): Form[NoUKBankAccount] = Form(
     single(
