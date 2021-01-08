@@ -35,7 +35,7 @@ inputRadio: inputRadio
 
 @(form: Form[NoUKBankAccount])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.no.uk.bank.heading")))) {
+@layout(pageTitle = Some(title(form, messages("pages.no.uk.bank.account.heading")))) {
 
     @errorSummary(form.errors)
 
