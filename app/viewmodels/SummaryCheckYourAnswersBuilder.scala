@@ -22,6 +22,8 @@ import models.api.{Address, Threshold, VatScheme}
 import models.view.{ApplicantDetails, SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 
+import scala.None.isDefined
+
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
                                           calculatedOnEstimatedSales: Option[Long],
@@ -77,6 +79,12 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.dob",
     vatApplicantDetails.transactorDetails.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
     Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+  )
+
+  val roleInTheBusiness: SummaryRow = SummaryRow(
+    s"$sectionId.roleInTheBusiness",
+    vatApplicantDetails.roleInTheBusiness.getOrElse(RoleInTheBusiness).toString,
+    Some(applicantRoutes.CaptureRoleInTheBusinessController.show())
   )
 
   val formerName: SummaryRow = SummaryRow(
@@ -327,6 +335,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (lastName, vatApplicantDetails.transactorDetails.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactorDetails.map(_.nino).isDefined),
       (dob, vatApplicantDetails.transactorDetails.map(_.dateOfBirth).isDefined),
+      (roleInTheBusiness, true),
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
       (homeAddress, vatApplicantDetails.homeAddress.exists(_.address.isDefined)),

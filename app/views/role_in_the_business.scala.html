@@ -38,21 +38,21 @@
 
 @(form: Form[RoleInTheBusiness])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.RoleInTheBusiness.heading")))){
+@layout(pageTitle = Some(title(form, messages("pages.roleInTheBusiness.heading")))){
 
     @errorSummary(form.errors)
 
     @formWithCSRF(action = applicantRoutes.CaptureRoleInTheBusinessController.submit(), 'autoComplete -> "off") {
         @inputRadio(
             form = form,
-            legend = messages("pages.RoleInTheBusiness.heading"),
+            legend = messages("pages.roleInTheBusiness.heading"),
             items = Seq(
                 RadioItem(
-                    content = Text(messages("pages.RoleInTheBusiness.radio1")),
+                    content = Text(messages("pages.roleInTheBusiness.radio1")),
                     value = Some("director")
                 ),
                 RadioItem(
-                    content = Text(messages("pages.RoleInTheBusiness.radio2")),
+                    content = Text(messages("pages.roleInTheBusiness.radio2")),
                     value = Some("companySecretary")
                 )
             ),
