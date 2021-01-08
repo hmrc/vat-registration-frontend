@@ -305,6 +305,7 @@ pages.summary.directorDetails.sectionHeading           = Applicant details
 pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
 pages.summary.directorDetails.firstName                = First Name
 pages.summary.directorDetails.lastName                 = Last Name
+pages.summary.directorDetails.roleInTheBusiness        = Role in the business
 pages.summary.directorDetails.formerName               = Former name
 pages.summary.directorDetails.formerNameDate           = Date former name changed
 pages.summary.directorDetails.noFormerName             = No former name
@@ -480,10 +481,10 @@ pages.completionCapacity.panel.p3.link                   = register for VAT with
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Role In The Business
-pages.RoleInTheBusiness.heading                          = What is your role in the business?
-pages.RoleInTheBusiness.radio1                           = Director
-pages.RoleInTheBusiness.radio2                           = Company secretary
-pages.RoleInTheBusiness.error.message                    = Select your role within the business
+pages.roleInTheBusiness.heading                          = What is your role in the business?
+pages.roleInTheBusiness.radio1                           = Director
+pages.roleInTheBusiness.radio2                           = Company secretary
+pages.roleInTheBusiness.error.message                    = Select your role within the business
 
 ## Former Name
 pages.formerName.heading                                 = Have you ever changed your name?
