@@ -50,9 +50,10 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
       implicit profile =>
         RoleInTheBusinessForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          roleInTheBusiness => applicantDetailsService.saveApplicantDetails(roleInTheBusiness)).flatMap {
-          _ =>
-            Future.successful(Redirect(routes.FormerNameController.show()))
-        }
+          roleInTheBusiness =>
+            applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>
+              Redirect(routes.FormerNameController.show())
+            }
+        )
   }
 }

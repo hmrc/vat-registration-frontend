@@ -41,12 +41,13 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient("/role-in-the-business").post(""))
+        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(routes.FormerNameController.show().url)
       }
     }
+
     "the ApplicantDetails model is complete" should {
       "post to the backend and redirect former name page" in new Setup {
         disable(StubEmailVerification)
@@ -61,7 +62,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient("/role-in-the-business").post(""))
+        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(routes.FormerNameController.show().url)
