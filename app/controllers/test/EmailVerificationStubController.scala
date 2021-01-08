@@ -31,6 +31,7 @@ class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponent
 
       email match {
         case "test@test.com" => Conflict
+        case "invalid@test.com" => Forbidden
         case _ => Created
       }
   }
@@ -43,6 +44,7 @@ class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponent
         case "123456" => NoContent
         case "987654" => NotFound(Json.obj("code" -> "PASSCODE_NOT_FOUND"))
         case "666666" => NotFound(Json.obj("code" -> "PASSCODE_MISMATCH"))
+        case "234567" => Forbidden(Json.obj("code" -> "MAX_EMAILS_EXCEEDED"))
         case _ => Created
       }
   }
