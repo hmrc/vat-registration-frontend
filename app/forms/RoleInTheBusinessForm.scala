@@ -30,7 +30,7 @@ object RoleInTheBusinessForm {
 
   val companySecretary: String = "companySecretary"
 
-  val roleInTheBusinessError: String = "pages.RoleInTheBusiness.error.message"
+  val roleInTheBusinessError: String = "pages.roleInTheBusiness.error.message"
 
   def apply(): Form[RoleInTheBusiness] = Form(
     single(
