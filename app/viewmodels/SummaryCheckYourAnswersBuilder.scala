@@ -83,7 +83,10 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
     s"$sectionId.roleInTheBusiness",
-    vatApplicantDetails.roleInTheBusiness.getOrElse(RoleInTheBusiness).toString,
+    vatApplicantDetails.roleInTheBusiness.map{
+      case Director => "pages.roleInTheBusiness.radio1"
+      case CompanySecretary => "pages.roleInTheBusiness.radio2"
+    }.getOrElse(""),
     Some(applicantRoutes.CaptureRoleInTheBusinessController.show())
   )
 
@@ -209,7 +212,11 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val noUKBankAccount: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount.reason",
-    scheme.bankAccount.flatMap(_.reason.map(_.toString)).getOrElse(""),
+    scheme.bankAccount.flatMap(_.reason.map{
+      case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
+      case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
+      case NameChange => "pages.noUKBankAccount.reason.nameChange"
+    }).getOrElse(""),
     Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView())
   )
 
