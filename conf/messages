@@ -382,10 +382,13 @@ validation.company.bank.account.missing         = Select yes if the business has
 
 ## No UK Bank Account
 pages.noUKBankAccount.heading                        = Why is the bank account not set up?
-pages.noUKBankAccount.bullet1                        = It is being set up but is taking a while
-pages.noUKBankAccount.bullet2                        = The business has an overseas bank account
-pages.noUKBankAccount.bullet3                        = The name is being changed (for example, from sole trader to limited company)
+pages.noUKBankAccount.beingSetup                     = It is being set up but is taking a while
+pages.noUKBankAccount.overseasAccount                = The business has an overseas bank account
+pages.noUKBankAccount.nameChange                     = The name is being changed (for example, from sole trader to limited company)
 pages.noUKBankAccount.error                          = Tell us why the bank account is not set up
+pages.noUKBankAccount.reason.beingSetup              = Being set up
+pages.noUKBankAccount.reason.overseasAccount         = Overseas account
+pages.noUKBankAccount.reason.nameChange              = The name is being changed
 
 ## Bank Details page
 pages.bankDetails.heading                           = What are the business’s bank or building society account details?
