@@ -158,7 +158,12 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                 val dynamicDate = timeService.dynamicFutureDateExample()
                 Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
               },
-              success => returnsService.saveVatStartDate(if (success._1 == DateSelection.calculated_date) Some(calcDate) else success._2) map redirectBasedOnReclaim
+              {
+                case (DateSelection.specific_date, Some(startDate)) =>
+                  returnsService.saveVatStartDate(Some(startDate)).map(redirectBasedOnReclaim)
+                case _ =>
+                  returnsService.saveVatStartDate(None).map(redirectBasedOnReclaim)
+              }
             )
           }
         )
