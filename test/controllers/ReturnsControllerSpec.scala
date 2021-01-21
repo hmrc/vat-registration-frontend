@@ -21,6 +21,7 @@ import java.time.{LocalDate, LocalDateTime}
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -253,7 +254,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         "startDateRadio" -> DateSelection.calculated_date
       )
 
-      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
+      when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(None))(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
@@ -268,7 +269,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       }
     }
 
-    "redirect to the accounts period page if chosen date is before the calculated date and after the eaeliest of incorpDate and 4 years ago" in new Setup {
+    "redirect to the accounts period page if chosen date is before the calculated date and after the earliest of incorpDate and 4 years ago" in new Setup {
       val specificDate: LocalDate = LocalDate.now.minusYears(1)
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "startDateRadio" -> DateSelection.specific_date,
@@ -277,7 +278,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         "startDate.day" -> specificDate.getDayOfMonth.toString
       )
 
-      when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
+      when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(Some(specificDate)))(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       when(mockReturnsService.retrieveCalculatedStartDate(any(), any(), any()))
