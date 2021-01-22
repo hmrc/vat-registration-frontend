@@ -28,6 +28,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.MandatoryDateModel
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.mandatory_start_date_incorp_view
 
 import scala.concurrent.Future
 
@@ -38,12 +39,14 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   val dateAfter2pmBH = LocalDateTime.parse("2018-03-28T14:00:00")
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile), currDate: LocalDateTime = dateBefore2pm, minDaysInFuture: Int = 3) {
+    val view: mandatory_start_date_incorp_view = app.injector.instanceOf[mandatory_start_date_incorp_view]
     val testController = new ReturnsController(
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,
       mockApplicantDetailsServiceOld,
-      mockTimeService
+      mockTimeService,
+      view
     )
 
     mockAuthenticated()
@@ -251,7 +254,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "redirect to the accounts period page if the calculated date is selected" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "startDateRadio" -> DateSelection.calculated_date
+        "value" -> DateSelection.calculated_date
       )
 
       when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(None))(any(), any(), any()))
@@ -272,10 +275,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the accounts period page if chosen date is before the calculated date and after the earliest of incorpDate and 4 years ago" in new Setup {
       val specificDate: LocalDate = LocalDate.now.minusYears(1)
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "startDateRadio" -> DateSelection.specific_date,
-        "startDate.month" -> specificDate.getMonthValue.toString,
-        "startDate.year" -> specificDate.getYear.toString,
-        "startDate.day" -> specificDate.getDayOfMonth.toString
+        "value" -> DateSelection.specific_date,
+        "date.month" -> specificDate.getMonthValue.toString,
+        "date.year" -> specificDate.getYear.toString,
+        "date.day" -> specificDate.getDayOfMonth.toString
       )
 
       when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(Some(specificDate)))(any(), any(), any()))
@@ -298,10 +301,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       "user submit a past start date earlier than 4 years ago" in new Setup {
         val specificDate: LocalDate = LocalDate.now.minusYears(5)
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "startDateRadio" -> DateSelection.specific_date,
-          "startDate.month" -> specificDate.getMonthValue.toString,
-          "startDate.year" -> specificDate.getYear.toString,
-          "startDate.day" -> specificDate.getDayOfMonth.toString
+          "value" -> DateSelection.specific_date,
+          "date.month" -> specificDate.getMonthValue.toString,
+          "date.year" -> specificDate.getYear.toString,
+          "date.day" -> specificDate.getDayOfMonth.toString
         )
 
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -321,10 +324,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       "user submit a past start date earlier than 4 incorp date" in new Setup {
         val specificDate: LocalDate = LocalDate.now.minusYears(6)
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "startDateRadio" -> DateSelection.specific_date,
-          "startDate.month" -> specificDate.getMonthValue.toString,
-          "startDate.year" -> specificDate.getYear.toString,
-          "startDate.day" -> specificDate.getDayOfMonth.toString
+          "value" -> DateSelection.specific_date,
+          "date.month" -> specificDate.getMonthValue.toString,
+          "date.year" -> specificDate.getYear.toString,
+          "date.day" -> specificDate.getDayOfMonth.toString
         )
 
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))
@@ -343,10 +346,10 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       "user submit a date older than the incorp date but within 4 years" in new Setup {
         val specificDate: LocalDate = LocalDate.now.minusYears(3)
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-          "startDateRadio" -> DateSelection.specific_date,
-          "startDate.month" -> specificDate.getMonthValue.toString,
-          "startDate.year" -> specificDate.getYear.toString,
-          "startDate.day" -> specificDate.getDayOfMonth.toString
+          "value" -> DateSelection.specific_date,
+          "date.month" -> specificDate.getMonthValue.toString,
+          "date.year" -> specificDate.getYear.toString,
+          "date.day" -> specificDate.getDayOfMonth.toString
         )
 
         when(mockReturnsService.saveVatStartDate(any())(any(), any(), any()))

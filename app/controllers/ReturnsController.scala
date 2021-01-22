@@ -38,7 +38,8 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val returnsService: ReturnsService,
                                   val applicantDetailsService: ApplicantDetailsService,
-                                  val timeService: TimeService)
+                                  val timeService: TimeService,
+                                  MandatoryStartDateIncorpPage: MandatoryStartDateIncorpPage)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -139,11 +140,9 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         calculateEarliestStartDate.flatMap(incorpDate =>
           returnsService.retrieveMandatoryDates map { dateModel =>
             val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
-            val dynamicDate = timeService.dynamicFutureDateExample()
             Ok(MandatoryStartDateIncorpPage(
               dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
-              dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y),
-              dynamicDate
+              dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
             ))
           })
   }
@@ -155,8 +154,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
             MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
               errors => {
-                val dynamicDate = timeService.dynamicFutureDateExample()
-                Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y), dynamicDate)))
+                Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
               },
               {
                 case (DateSelection.specific_date, Some(startDate)) =>

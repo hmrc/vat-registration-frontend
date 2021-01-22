@@ -211,12 +211,13 @@ pages.start.date.confirmation.para2                          = The company’s V
 
 
 ## Mandatory Start Date Incorp page
-pages.start.date.incorp.title                                = What do you want your VAT start date to be?
-pages.start.date.incorp.heading                              = You must register for VAT by {0}
-pages.start.date.incorp.para1                                = I want my VAT registration date to be:
-pages.start.date.incorp.earlierDate                          = An earlier date
-pages.start.date.incorp.earlierHead                          = This must be on or after the date of incorporation or within the last 4 years.
+pages.start.date.incorp.title                                = When would you like your VAT registration date to start?
+pages.start.date.incorp.heading                              = When would you like your VAT registration date to start?
+pages.start.date.incorp.para1                                = You must start your VAT registration date from ({0})
+pages.start.date.incorp.differentDate                        = A different date
+pages.start.date.incorp.earlierHead.hint                     = This must be on or after the date of incorporation or within the last 4 years.
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
+validation.startDateManIncorp.error                          = Tell us when you would like your registration date to start
 
 ## Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
