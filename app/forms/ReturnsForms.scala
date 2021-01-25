@@ -20,9 +20,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import models.DateSelection.specific_date
-import models.Stagger
+import models.{DateSelection, Frequency, MonthYearModel, Stagger}
 import forms.FormValidation._
-import models.{DateSelection, Frequency, Stagger}
 import play.api.data.Forms.{single, tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
@@ -98,19 +97,24 @@ object ChargeExpectancyForm extends RequiredBooleanForm {
 
 object MandatoryDateForm extends StartDateForm {
   private val dateWithinFourYears = "validation.startDateManIncorp.range.below4y"
+  val radioAnswer = "value"
+  val startDate = "date"
 
   def form(incorpDate: LocalDate, calculatedDate: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
-      START_DATE_SELECTION -> Forms.of[DateSelection.Value],
-      START_DATE           -> mandatoryIf(
-        isEqual(START_DATE_SELECTION, specific_date),
-        tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+      radioAnswer -> Forms.of[DateSelection.Value],
+      startDate           -> mandatoryIf(isEqual(radioAnswer, specific_date),
+        tuple(
+          "day" -> text,
+          "month" -> text,
+          "year" -> text
+        ).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(incorpDate, calculatedDate, dateRange, dateRange, List(incorpDate.format(dateFormat), calculatedDate.format(dateFormat))),
           withinFourYearsPast(dateWithinFourYears)
-        )).transform[LocalDate](
-          date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
+        )).transform[LocalDate] (
+          { case (day, month, year) => LocalDate.of(year.toInt, month.toInt, day.toInt) },
           date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
         )
       )

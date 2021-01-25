@@ -18,7 +18,8 @@ package forms
 
 import java.time.LocalDate
 
-import models.DateSelection
+import forms.MandatoryDateForm.radioAnswer
+import models.{DateSelection, MonthYearModel}
 import models.DateSelection._
 import play.api.data.Form
 import testHelpers.VatRegSpec
@@ -34,7 +35,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
   "Binding MandatoryDateForm" should {
     "Bind successfully for a calculated date selection" in {
       val data = Map(
-        "startDateRadio" -> "calculated_date"
+        "value" -> DateSelection.calculated_date.toString
       )
 
       form.bind(data).get mustBe (calculated_date, None)
@@ -42,118 +43,118 @@ class MandatoryDateFormSpec extends VatRegSpec {
 
     "Fail to bind successfully for no selection" in {
       val data = Map(
-        "startDateRadio" -> "",
-        "startDate" -> ""
+        "value" -> "",
+        "date" -> ""
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDateRadio"
+      bound.errors.head.key mustBe "value"
       bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
 
     "Fail to bind successfully for an invalid selection" in {
       val data = Map(
-        "startDateRadio" -> "invalidSelection",
-        "startDate" -> ""
+        "value" -> "invalidSelection",
+        "date" -> ""
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDateRadio"
+      bound.errors.head.key mustBe "value"
       bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
 
     "Bind successfully for a valid specific date selection" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "5",
-        "startDate.month" -> "5",
-        "startDate.year" -> "2018"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "5",
+        "date.month" -> "5",
+        "date.year" -> "2018"
       )
       form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 5, 5)))
     }
 
     "Bind successfully if the specified date is on the incorporation date" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> s"${incorpDate.getDayOfMonth}",
-        "startDate.month" -> s"${incorpDate.getMonthValue}",
-        "startDate.year" -> s"${incorpDate.getYear}"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> s"${incorpDate.getDayOfMonth}",
+        "date.month" -> s"${incorpDate.getMonthValue}",
+        "date.year" -> s"${incorpDate.getYear}"
       )
       form.bind(data).get mustBe(specific_date, Some(incorpDate))
     }
 
     "Bind successfully if the specified date is on the calculated date" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "12",
-        "startDate.month" -> "12",
-        "startDate.year" -> "2018"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "12",
+        "date.month" -> "12",
+        "date.year" -> "2018"
       )
       form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 12, 12)))
     }
 
     "Fail to bind if the date specified is before the incorp date" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "5",
-        "startDate.month" -> "5",
-        "startDate.year" -> "2011"
+        "value" ->DateSelection.specific_date.toString,
+        "date.day" -> "5",
+        "date.month" -> "5",
+        "date.year" -> "2011"
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDate"
+      bound.errors.head.key mustBe "date"
       bound.errors.head.message mustBe "validation.startDate.range"
     }
 
     "Fail to bind if the date specified is after the calculated date" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "30",
-        "startDate.month" -> "12",
-        "startDate.year" -> "2017"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "30",
+        "date.month" -> "12",
+        "date.year" -> "2017"
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDate"
+      bound.errors.head.key mustBe "date"
       bound.errors.head.message mustBe "validation.startDate.range"
     }
 
     "Fail to bind if the date specified is not within 4 years" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "30",
-        "startDate.month" -> "12",
-        "startDate.year" -> "2012"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "30",
+        "date.month" -> "12",
+        "date.year" -> "2012"
       )
       val bound = oldIncorpForm.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDate"
+      bound.errors.head.key mustBe "date"
       bound.errors.head.message mustBe "validation.startDateManIncorp.range.below4y"
     }
 
     "Fail to bind successfully if the date is empty" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "",
-        "startDate.month" -> "",
-        "startDate.year" -> ""
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "",
+        "date.month" -> "",
+        "date.year" -> ""
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDate"
+      bound.errors.head.key mustBe "date"
       bound.errors.head.message mustBe "validation.startDate.missing"
     }
 
     "Fail to bind successfully if the date is invalid" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
-        "startDate.day" -> "50",
-        "startDate.month" -> "76",
-        "startDate.year" -> "1"
+        "value" -> DateSelection.specific_date.toString,
+        "date.day" -> "50",
+        "date.month" -> "76",
+        "date.year" -> "1"
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDate"
+      bound.errors.head.key mustBe "date"
       bound.errors.head.message mustBe "validation.startDate.invalid"
     }
   }
