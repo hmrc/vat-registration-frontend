@@ -18,6 +18,7 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
+import controllers.Assets.Redirect
 import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -85,12 +86,12 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
       contentAsString(result) mustBe "ALL GOOD"
     }
 
-    "redirect to bta invalid affinity page if the user has Individual affinity" in {
+    "redirect to individual affinity kickout page if the user has a Individual affinity" in {
       mockAuthenticatedIndividual()
 
       val result = TestController.callAuthenticated(FakeRequest())
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(appConfig.invalidAffinityUrl)
+      redirectLocation(result) mustBe Some("/register-for-vat/error/individual-affinity")
     }
 
     "return 303 to GG login if user has No Active Session" in {

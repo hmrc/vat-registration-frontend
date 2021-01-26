@@ -213,3 +213,7 @@ GET         /something-went-wrong                                               
 
 ##email max attempts error page
 GET         /error/passcode-too-many-attempts                                                   controllers.registration.applicant.errors.EmailPasscodesMaxAttemptsExceededController.show
+
+##individual affinity kick out
+GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
+GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
