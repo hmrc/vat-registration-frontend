@@ -138,8 +138,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val vatRatesUrl = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
 
-  lazy val invalidAffinityUrl = "https://www.tax.service.gov.uk/business-account/add-tax/vat/registered/no"
-
   lazy val govukVat: String = servicesConfig.getString("urls.govukVat")
   lazy val govukMtd: String = servicesConfig.getString("urls.govukMtd")
   lazy val govukSoftware: String = servicesConfig.getString("urls.govukSoftware")
@@ -148,4 +146,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
 
+  def individualKickoutUrl(continueUrl:String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
 }
