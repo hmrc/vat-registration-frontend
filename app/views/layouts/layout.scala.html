@@ -34,7 +34,6 @@
     <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
     <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
         <!--<![endif]-->
-    <script type="text/javascript" src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
 @if(timeout) {
     @hmrcTimeoutDialog(TimeoutDialog(
         language = Some("en"),
@@ -63,12 +62,6 @@
     <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
 }
 
-@bodyEndBlock = {
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P39VTVL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-}
-
 @getHelpForm = {
     <div class="govuk-!-margin-bottom-6">
         @contentBlock
@@ -85,7 +78,7 @@
     pageTitle = pageTitle,
     headBlock = Some(head),
     beforeContentBlock = Some(beforeContentBlock),
-    bodyEndBlock = Some(bodyEndBlock),
+    bodyEndBlock = None,
     headerBlock = Some(siteHeader(signOutLink)),
     footerBlock = Some(HmrcStandardFooter()),
     scriptsBlock = Some(scripts)
