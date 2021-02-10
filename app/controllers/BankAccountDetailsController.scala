@@ -19,13 +19,12 @@ package controllers
 import _root_.connectors.KeystoreConnector
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
-import javax.inject.{Inject, Singleton}
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile}
-import controllers.NoUKBankAccountController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -45,7 +44,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { details =>
           val form: Form[Boolean] = details match {
-            case Some(BankAccount(hasBankAccount, _, None)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case Some(BankAccount(hasBankAccount, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
             case None => hasCompanyBankAccountForm
           }
           Ok(views.html.has_company_bank_account(form))
