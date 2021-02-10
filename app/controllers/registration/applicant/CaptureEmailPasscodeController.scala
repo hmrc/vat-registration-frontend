@@ -75,13 +75,11 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
 
-                  Future.successful(
-                    BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm))
-                  )
-
-                case PasscodeNotFound => Future.successful(BadRequest(views.html.pages.error.passcodeNotFound()))
-
-                case MaxAttemptsExceeded => Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show()))
+                  Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm)))
+                case PasscodeNotFound =>
+                  Future.successful(BadRequest(views.html.pages.error.passcodeNotFound()))
+                case MaxAttemptsExceeded =>
+                  Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show()))
               }
             }
         )
