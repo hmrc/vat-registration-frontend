@@ -40,7 +40,7 @@ class SignInOutController @Inject()(val authConnector: AuthClientConnector,
     _ => Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
   }
 
-  def signOut: Action[AnyContent] = isAuthenticated {
+  def signOut: Action[AnyContent] = Action.async {
     _ => Future.successful(Redirect(appConfig.feedbackUrl).withNewSession)
   }
 
