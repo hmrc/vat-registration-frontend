@@ -31,3 +31,6 @@ POST        /api/request-passcode                             controllers.test.E
 
 + nocsrf
 POST        /api/verify-passcode                              controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
+
+
+GET         /submission-payload                               controllers.test.RetrieveVatSubmissionController.retrieveSubmissionJson
