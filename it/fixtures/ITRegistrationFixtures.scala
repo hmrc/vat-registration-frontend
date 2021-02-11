@@ -28,6 +28,7 @@ import play.api.libs.json.Json
 import java.time.LocalDate
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
+  val testRegId = "1"
   val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"), addressValidated = true)
 
   val tradingDetails = TradingDetails(

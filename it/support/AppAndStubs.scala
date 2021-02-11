@@ -117,6 +117,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "iv.identity-verification-proxy",
       "iv.identity-verification-frontend"
     )) ++ additionalConfig)
+    .configure("application.router" -> "testOnlyDoNotUseInAppConf.Routes")
     .build()
 
   private def replaceWithWiremock(services: Seq[String]) =

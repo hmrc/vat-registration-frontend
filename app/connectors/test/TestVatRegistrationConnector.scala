@@ -17,6 +17,8 @@
 package connectors.test
 
 import connectors._
+import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import play.api.libs.json.{JsValue, Json}
@@ -48,5 +50,9 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
     http.PUT(s"$vatRegUrl/vatreg/test-only/api/daily-quota", Json.obj("quota" -> newQuota)) recover {
       case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
     }
+
+  def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
+  }
 
 }
