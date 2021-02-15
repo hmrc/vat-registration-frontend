@@ -52,6 +52,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
 
+  def storeNrsPayloadUrl(regId: String): String = s"$backendHost/vatreg/$regId/nrs-payload"
+
   val contactFormServiceIdentifier = "vrs"
 
   lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
