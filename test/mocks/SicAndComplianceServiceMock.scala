@@ -16,10 +16,10 @@
 
 package mocks
 
-import org.mockito.{ArgumentMatchers => Matchers}
 import models.{CurrentProfile, SicAndCompliance}
-import org.mockito.stubbing.OngoingStubbing
 import org.mockito.Mockito._
+import org.mockito.stubbing.OngoingStubbing
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import services.SicAndComplianceService
 import uk.gov.hmrc.http.HeaderCarrier

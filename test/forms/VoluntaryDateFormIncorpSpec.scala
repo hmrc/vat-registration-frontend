@@ -16,14 +16,14 @@
 
 package forms
 
-import java.time.LocalDate
-
 import models.DateSelection
 import models.DateSelection._
 import org.joda.time.{LocalDate => JodaLocalDate}
 import play.api.data.Form
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+
+import java.time.LocalDate
 
 class VoluntaryDateFormIncorpSpec extends VatRegSpec {
   val incorpDate: LocalDate = LocalDate.of(2018, 1, 1)

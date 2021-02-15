@@ -16,9 +16,6 @@
 
 package helpers
 
-import java.net.{URLDecoder, URLEncoder}
-import java.nio.charset.StandardCharsets
-
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.HeaderNames
 import play.api.libs.crypto.CookieSigner
@@ -26,6 +23,9 @@ import play.api.libs.ws.WSCookie
 import support.{AppAndStubs, SessionCookieBaker}
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
 import uk.gov.hmrc.http.SessionKeys
+
+import java.net.{URLDecoder, URLEncoder}
+import java.nio.charset.StandardCharsets
 
 trait AuthHelper {
   this: AppAndStubs =>

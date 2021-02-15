@@ -17,7 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
-import views.html.pages.error.{individualAffinityKickOut}
+import views.html.pages.error.individualAffinityKickOut
 
 class IndividualAffinityKickOutViewSpec extends VatRegViewSpec {
 

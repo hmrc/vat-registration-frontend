@@ -18,7 +18,6 @@ package connectors
 
 import fixtures.{AddressLookupConstants, VatRegistrationFixture}
 import models.api.Address
-import models.external.addresslookup._
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.HttpVerbs.GET
 import play.api.http.Status.{OK, PERMANENT_REDIRECT}

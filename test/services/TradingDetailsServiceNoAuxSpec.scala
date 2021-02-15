@@ -16,7 +16,6 @@
 
 package services
 
-import fixtures.VatRegistrationFixture
 import models.{TradingNameView, _}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

@@ -16,19 +16,17 @@
 
 package services
 
-import java.time.LocalDate
-import java.time.LocalDate.{of => d}
-import java.util.concurrent.TimeoutException
-
 import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
 import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Inspectors, Matchers, WordSpec}
 import play.api.cache.SyncCacheApi
-import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
+import java.time.LocalDate
+import java.time.LocalDate.{of => d}
+import java.util.concurrent.TimeoutException
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps

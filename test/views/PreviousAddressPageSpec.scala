@@ -17,7 +17,6 @@
 package views
 
 import config.FrontendAppConfig
-import views.html.{previous_address => PreviousAddressPage}
 import forms.PreviousAddressForm
 import models.view.PreviousAddressView
 import org.jsoup.Jsoup
@@ -25,6 +24,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
+import views.html.{previous_address => PreviousAddressPage}
 
 class PreviousAddressPageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()

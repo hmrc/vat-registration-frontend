@@ -16,13 +16,13 @@
 
 package mocks
 
-import java.time.{LocalDate, LocalDateTime}
-
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import services.TimeService
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+
+import java.time.{LocalDate, LocalDateTime}
 
 trait TimeServiceMock {
   import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}

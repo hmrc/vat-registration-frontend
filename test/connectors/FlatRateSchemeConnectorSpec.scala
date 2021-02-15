@@ -16,8 +16,6 @@
 
 package connectors
 
-import java.time.LocalDate
-
 import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models.{FlatRateScheme, Start}
@@ -25,6 +23,7 @@ import play.api.libs.json.{JsObject, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HttpResponse
 
+import java.time.LocalDate
 import scala.language.postfixOps
 
 class FlatRateSchemeConnectorSpec extends VatRegSpec with VatRegistrationFixture {

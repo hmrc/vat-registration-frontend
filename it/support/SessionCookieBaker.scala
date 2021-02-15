@@ -16,8 +16,6 @@
 
 package support
 
-import java.net.{URLDecoder, URLEncoder}
-
 import itutil.IntegrationSpecBase
 import play.api.Application
 import play.api.libs.crypto.CookieSigner
@@ -26,6 +24,8 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
 import uk.gov.hmrc.http.SessionKeys
+
+import java.net.{URLDecoder, URLEncoder}
 
 object SessionCookieBaker extends IntegrationSpecBase {
 

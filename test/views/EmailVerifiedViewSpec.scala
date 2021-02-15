@@ -17,7 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
-import views.html.{email_verified, honesty_declaration}
+import views.html.email_verified
 
 class EmailVerifiedViewSpec extends VatRegViewSpec {
 

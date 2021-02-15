@@ -351,6 +351,14 @@ trait StubUtils {
       builder
     }
 
+    def storesNrsPayload(regId: String): PreconditionBuilder = {
+      stubFor(
+        patch(urlPathEqualTo(s"/vatreg/$regId/nrs-payload"))
+          .willReturn(ok())
+      )
+      builder
+    }
+
     def savesTransactionId(regId: String = "1"): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/transaction-id"))

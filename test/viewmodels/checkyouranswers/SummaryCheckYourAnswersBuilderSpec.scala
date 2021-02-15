@@ -16,14 +16,14 @@
 
 package viewmodels.checkyouranswers
 
-import java.time.LocalDate
-
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import models.view.{ApplicantDetails, SummaryRow}
 import testHelpers.VatRegSpec
 import viewmodels.SummaryCheckYourAnswersBuilder
+
+import java.time.LocalDate
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistrationFixture {
 

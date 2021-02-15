@@ -22,8 +22,8 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 

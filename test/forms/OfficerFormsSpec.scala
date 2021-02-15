@@ -16,13 +16,13 @@
 
 package forms
 
-import java.time.LocalDate
-
 import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
 import models.api.Address
 import models.view._
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class ApplicantFormsSpec extends VatRegSpec {
 

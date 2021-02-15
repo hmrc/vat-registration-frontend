@@ -1,8 +1,6 @@
 
 package controllers.registration.applicant
 
-import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api.{Address, Country}
@@ -12,6 +10,8 @@ import models.{Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
+
+import java.time.LocalDate
 
 class PreviousAddressControllerISpec extends ControllerISpec {
 

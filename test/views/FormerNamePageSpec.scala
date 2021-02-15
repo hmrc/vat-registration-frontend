@@ -17,7 +17,6 @@
 package views
 
 import config.FrontendAppConfig
-import views.html.{former_name => FormerNamePage}
 import forms.FormerNameForm
 import models.view.FormerNameView
 import org.jsoup.Jsoup
@@ -25,6 +24,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
+import views.html.{former_name => FormerNamePage}
 
 class FormerNamePageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()

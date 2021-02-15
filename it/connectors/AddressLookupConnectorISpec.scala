@@ -22,10 +22,10 @@ import itutil.IntegrationSpecBase
 import models.api.{Address, Country}
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
+import play.api.test.Helpers._
 import services.AddressLookupService
 import support.AppAndStubs
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
-import play.api.test.Helpers._
 
 class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 

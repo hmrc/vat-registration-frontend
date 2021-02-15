@@ -14,37 +14,31 @@
  * limitations under the License.
  */
 
-package mocks.mockservices
+package mocks
 
-import models.CurrentProfile
-import models.view.ApplicantDetails
+import connectors.NonRepudiationConnector
+import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import services.ApplicantDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockApplicantDetailsService extends MockitoSugar {
+trait MockNonRepuidiationConnector extends MockitoSugar {
   self: Suite =>
 
-  val mockApplicantDetailsService = mock[ApplicantDetailsService]
+  val mockNonRepuidiationConnector = mock[NonRepudiationConnector]
 
-  def mockGetApplicantDetails(profile: CurrentProfile)(response: ApplicantDetails): OngoingStubbing[Future[ApplicantDetails]] =
-    when(mockApplicantDetailsService.getApplicantDetails(
-      ArgumentMatchers.eq(profile),
-      ArgumentMatchers.any[HeaderCarrier])
-    ) thenReturn Future.successful(response)
-
-  def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails)=
-    when(mockApplicantDetailsService.saveApplicantDetails(
-      ArgumentMatchers.eq(data)
+  def mockStoreEncodedUserAnswers(regId: String, encodedHtml: String)
+                                 (response: Future[StoreNrsPayloadSuccess.type]): OngoingStubbing[Future[StoreNrsPayloadSuccess.type]] =
+    when(mockNonRepuidiationConnector.storeEncodedUserAnswers(
+      ArgumentMatchers.eq(regId),
+      ArgumentMatchers.eq(encodedHtml)
     )(
-      ArgumentMatchers.any[CurrentProfile],
       ArgumentMatchers.any[HeaderCarrier]
-    )) thenReturn Future.successful(response)
+    )).thenReturn(response)
 
 }

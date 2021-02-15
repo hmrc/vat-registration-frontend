@@ -18,7 +18,6 @@ package models.external.addresslookup
 
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
-import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec

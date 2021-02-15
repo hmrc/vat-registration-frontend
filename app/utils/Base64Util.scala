@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package fixtures
+package utils
 
-import models.{Frequency, Returns, Start}
+import java.util.Base64
+import javax.inject.Singleton
 
-import java.time.LocalDate
+@Singleton
+class Base64Util {
 
-trait ReturnsFixture {
+  def encodeString(inStr: String): String =
+    Base64.getEncoder.encodeToString(inStr.getBytes)
 
-  val date = LocalDate.now()
-
-  val reclaimOnReturns = true
-  val returnsFrequency = Frequency.monthly
-  val startDate        = date
-  val returns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
+  def decodeString(insStr: String): String =
+    new String(Base64.getDecoder.decode(insStr))
 
 }

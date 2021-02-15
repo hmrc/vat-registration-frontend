@@ -16,13 +16,10 @@
 
 package controllers.feedback
 
-import mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status
-import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
-import play.api.test.Helpers.redirectLocation
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HttpResponse
 

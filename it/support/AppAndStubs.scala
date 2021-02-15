@@ -16,8 +16,6 @@
 
 package support
 
-import java.util.Base64
-
 import common.enums.VatRegStatus
 import itutil.WiremockHelper
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
@@ -35,6 +33,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
+import java.util.Base64
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}

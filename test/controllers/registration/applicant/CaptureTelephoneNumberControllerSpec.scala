@@ -16,7 +16,6 @@
 
 package controllers.registration.applicant
 
-import controllers.{routes => appRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
 import models.TelephoneNumber

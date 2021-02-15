@@ -16,15 +16,14 @@
 
 package services
 
-import java.time.LocalDate
-
-import models.{FRSDateChoice, FlatRateScheme, MainBusinessActivityView, Returns, SicAndCompliance, Start, TurnoverEstimates}
 import models.api.SicCode
+import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import testHelpers.VatSpec
 import uk.gov.hmrc.http.HttpResponse
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class FlatRateServiceSpec extends VatSpec {

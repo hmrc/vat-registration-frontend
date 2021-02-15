@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.{LocalDate, LocalDateTime}
-
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
@@ -30,6 +28,7 @@ import services.MandatoryDateModel
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.mandatory_start_date_incorp_view
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {

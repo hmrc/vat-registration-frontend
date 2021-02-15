@@ -18,7 +18,7 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.external.{EmailAddress, EmailVerified, PasscodeMismatch}
+import models.external.{EmailAddress, EmailVerified}
 import models.view.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse

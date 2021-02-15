@@ -16,23 +16,20 @@
 
 package controllers
 
-import java.time.LocalDate
-import java.util.MissingResourceException
-
 import fixtures.VatRegistrationFixture
 import models.{FlatRateScheme, MainBusinessActivityView, TurnoverEstimates, _}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
-import uk.gov.hmrc.http.InternalServerException
 
-import scala.concurrent.Future
+import java.time.LocalDate
+import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture {
   val jsonBusinessTypes = Json.parse(

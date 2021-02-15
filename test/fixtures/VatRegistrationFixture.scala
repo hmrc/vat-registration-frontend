@@ -16,19 +16,18 @@
 
 package fixtures
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.external.{IncorporationInfo, _}
 import models.view.{Summary, SummaryRow, SummarySection}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 trait BaseFixture {
   //Test variables

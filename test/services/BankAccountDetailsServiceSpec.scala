@@ -16,7 +16,7 @@
 
 package services
 
-import models.{BankAccount, BankAccountDetails, BeingSetup, NoUKBankAccount, S4LKey}
+import models.{BankAccount, BankAccountDetails, BeingSetup, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import testHelpers.VatSpec

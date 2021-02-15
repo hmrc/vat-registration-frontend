@@ -16,13 +16,12 @@
 
 package forms
 
-import java.time.LocalDate
-
-import forms.MandatoryDateForm.radioAnswer
-import models.{DateSelection, MonthYearModel}
+import models.DateSelection
 import models.DateSelection._
 import play.api.data.Form
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class MandatoryDateFormSpec extends VatRegSpec {
   val incorpDate: LocalDate = LocalDate.now.minusYears(3)

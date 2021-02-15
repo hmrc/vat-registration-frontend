@@ -18,7 +18,6 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import controllers.Assets.Redirect
 import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when

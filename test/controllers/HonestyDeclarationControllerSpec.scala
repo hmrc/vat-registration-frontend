@@ -16,13 +16,13 @@
 
 package controllers
 
+import controllers.registration.applicant.{routes => applicantRoutes}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
 import views.html.honesty_declaration
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import controllers.registration.applicant.{routes => applicantRoutes}
 
 class HonestyDeclarationControllerSpec extends ControllerSpec {
 

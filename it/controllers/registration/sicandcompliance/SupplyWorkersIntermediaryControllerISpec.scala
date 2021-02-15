@@ -3,8 +3,7 @@ package controllers.registration.sicandcompliance
 
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
-import models.{SicAndCompliance, IntermediarySupply}
-import org.jsoup.Jsoup
+import models.{IntermediarySupply, SicAndCompliance}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 

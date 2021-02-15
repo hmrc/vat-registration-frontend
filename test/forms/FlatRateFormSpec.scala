@@ -16,11 +16,11 @@
 
 package forms
 
-import java.time.LocalDate
-
 import helpers.FormInspectors._
 import models.FRSDateChoice
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class FlatRateFormSpec extends VatRegSpec {
   val minDate: LocalDate       = LocalDate.of(2018, 5, 29)

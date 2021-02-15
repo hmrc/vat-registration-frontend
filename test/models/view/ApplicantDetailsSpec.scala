@@ -16,13 +16,13 @@
 
 package models.view
 
-import java.time.LocalDate
-
 import models.TelephoneNumber
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class ApplicantDetailsSpec extends VatRegSpec {
   val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)

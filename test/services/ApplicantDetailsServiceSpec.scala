@@ -16,14 +16,12 @@
 
 package services
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
-import models.{CurrentProfile, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
+import models.{CurrentProfile, TelephoneNumber}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,6 +30,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures {

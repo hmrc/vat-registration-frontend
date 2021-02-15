@@ -16,11 +16,11 @@
 
 package connectors
 
-import java.time.LocalDate
-
 import config.FrontendAppConfig
 import models.api.trafficmanagement.{Draft, RegistrationInformation, VatReg}
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class TrafficManagementConnectorSpec extends VatRegSpec {
 

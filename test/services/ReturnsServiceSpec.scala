@@ -16,8 +16,6 @@
 
 package services
 
-import java.time.LocalDate
-
 import _root_.models._
 import _root_.models.api.Threshold
 import org.mockito.ArgumentMatchers.any
@@ -28,6 +26,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 

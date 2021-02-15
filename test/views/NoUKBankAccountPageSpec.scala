@@ -16,10 +16,10 @@
 
 package views
 
-import views.html.no_uk_bank_account
 import forms.NoUKBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import views.html.no_uk_bank_account
 
 class NoUKBankAccountPageSpec extends VatRegViewSpec {
 

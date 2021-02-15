@@ -77,6 +77,7 @@ class SummaryControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Frequency.quarterly), Some(Stagger.jan), None))
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatRegistration.storesNrsPayload(testRegId)
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

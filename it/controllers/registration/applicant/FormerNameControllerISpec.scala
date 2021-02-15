@@ -1,17 +1,17 @@
 
 package controllers.registration.applicant
 
-import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{Director, RoleInTheBusiness, TelephoneNumber}
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
+import models.{Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsBoolean, JsObject, JsString, Json}
 import play.api.test.Helpers._
+
+import java.time.LocalDate
 
 class FormerNameControllerISpec extends ControllerISpec {
 

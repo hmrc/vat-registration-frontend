@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package fixtures
+package utils
 
-import models.{Frequency, Returns, Start}
+import org.mockito.Mockito._
+import org.mockito.stubbing.OngoingStubbing
+import org.scalatest.Suite
+import org.scalatestplus.mockito.MockitoSugar
 
-import java.time.LocalDate
+trait MockBase64Util extends MockitoSugar {
+  self: Suite =>
 
-trait ReturnsFixture {
+  val mockBase64Util = mock[Base64Util]
 
-  val date = LocalDate.now()
+  def mockEncodeBase64(inStr: String)(response: String): OngoingStubbing[String] =
+    when(mockBase64Util.encodeString(inStr)) thenReturn response
 
-  val reclaimOnReturns = true
-  val returnsFrequency = Frequency.monthly
-  val startDate        = date
-  val returns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
+  def mockDecodeBase64(inStr: String)(response: String): OngoingStubbing[String] =
+    when(mockBase64Util.decodeString(inStr)) thenReturn response
 
 }

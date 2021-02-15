@@ -16,8 +16,6 @@
 
 package controllers.registration.returns
 
-import java.time.{LocalDate, LocalDateTime}
-
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
@@ -25,7 +23,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import services.MandatoryDateModel
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.claim_refunds_view
 

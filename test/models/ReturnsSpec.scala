@@ -16,10 +16,10 @@
 
 package models
 
-import java.time.LocalDate
-
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class ReturnsSpec extends VatRegSpec {
 

@@ -16,14 +16,13 @@
 
 package services
 
-import java.time.LocalDate
-
 import connectors.TrafficManagementConnector
 import models.api.trafficmanagement.{Draft, RegistrationInformation, VatReg}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class TrafficManagementServiceSpec extends VatRegSpec {

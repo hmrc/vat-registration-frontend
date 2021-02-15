@@ -19,12 +19,11 @@ package controllers.registration.business
 import fixtures.VatRegistrationFixture
 import mocks.TimeServiceMock
 import models.{TradingDetails, TradingNameView}
-import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions}
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
+import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.trading_name
 
 import scala.concurrent.Future

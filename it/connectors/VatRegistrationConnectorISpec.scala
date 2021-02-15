@@ -16,16 +16,15 @@
 
 package connectors
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.api.VatScheme
 import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
-import play.api.libs.json.JsString
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
+
+import java.time.LocalDate
 
 class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 

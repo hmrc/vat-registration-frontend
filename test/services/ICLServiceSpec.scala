@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.{ICLConnector, KeystoreConnector}
 import models.api.SicCode
 import models.{BusinessActivities, SicAndCompliance}
 import org.mockito.ArgumentMatchers._

@@ -16,8 +16,8 @@
 
 package fixtures
 
-import models.{TradingDetails, TradingNameView}
 import models.api._
+import models.{TradingDetails, TradingNameView}
 
 trait TradingDetailsFixtures extends BaseFixture {
 

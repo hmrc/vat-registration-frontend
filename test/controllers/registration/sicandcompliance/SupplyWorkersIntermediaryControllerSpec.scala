@@ -18,7 +18,6 @@ package controllers.registration.sicandcompliance
 
 import fixtures.VatRegistrationFixture
 import mocks.SicAndComplianceServiceMock
-import models.IntermediarySupply
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.labour.intermediary_supply

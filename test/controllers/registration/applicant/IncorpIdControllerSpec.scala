@@ -26,7 +26,6 @@ import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
-import controllers.registration.applicant.{routes => applicantRoutes}
 
 class IncorpIdControllerSpec extends ControllerSpec
   with VatRegistrationFixture

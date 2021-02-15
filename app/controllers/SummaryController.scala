@@ -33,7 +33,8 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val authConnector: AuthClientConnector,
                                   val vrs: VatRegistrationService,
                                   val s4LService: S4LService,
-                                  val summaryService: SummaryService)
+                                  val summaryService: SummaryService,
+                                  val nonRepudiationService: NonRepudiationService)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -46,7 +47,9 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
           eligibilitySummary <- summaryService.getEligibilityDataSummary
           summary <- summaryService.getRegistrationSummary
           _ <- s4LService.clear
-        } yield Ok(views.html.pages.summary(eligibilitySummary, summary))
+          html = views.html.pages.summary(eligibilitySummary, summary)
+          _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
+        } yield Ok(html)
   }
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
@@ -72,7 +75,6 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
       case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable()))
     }
   }
-
 
   private[controllers] def invalidSubmissionGuard()(f: => Future[Result])(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
     vrs.getStatus(profile.registrationId) flatMap {

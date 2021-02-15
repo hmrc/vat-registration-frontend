@@ -18,7 +18,6 @@ package models.view
 
 import fixtures.VatRegistrationFixture
 import play.api.libs.json.Json
-import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
 class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationFixture {

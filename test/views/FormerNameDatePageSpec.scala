@@ -16,8 +16,6 @@
 
 package views
 
-import java.time.LocalDate
-
 import config.FrontendAppConfig
 import forms.FormerNameDateForm
 import models.view.FormerNameDateView
@@ -27,6 +25,8 @@ import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import views.html.{former_name_date => FormerNameDatePage}
+
+import java.time.LocalDate
 
 class FormerNameDatePageSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()

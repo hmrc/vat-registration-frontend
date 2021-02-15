@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import mocks.mockservices.MockApplicantDetailsService
-import models.view.{ApplicantDetails, FormerNameView}
+import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.ControllerSpec
 

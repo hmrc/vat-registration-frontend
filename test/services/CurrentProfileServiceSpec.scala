@@ -16,8 +16,6 @@
 
 package services
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models.CurrentProfile
@@ -27,6 +25,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class CurrentProfileServiceSpec extends VatRegSpec {

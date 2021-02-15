@@ -16,7 +16,6 @@
 
 package models.api
 
-import org.scalatest._
 import testHelpers.VatRegSpec
 
 class AddressTest extends VatRegSpec {

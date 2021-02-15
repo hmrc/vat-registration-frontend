@@ -16,9 +16,9 @@
 
 package fixtures
 
-import java.time.LocalDate
-
 import models.{FlatRateScheme, Start}
+
+import java.time.LocalDate
 
 trait FlatRateFixtures {
 

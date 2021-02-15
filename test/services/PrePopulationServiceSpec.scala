@@ -16,13 +16,7 @@
 
 package services
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ofPattern
-
 import cats.data.OptionT
-import fixtures.VatRegistrationFixture
-import models.BusinessContact
 import models.api._
 import models.external.{AccountingDetails, CorporationTaxRegistration}
 import org.mockito.ArgumentMatchers._
@@ -31,6 +25,9 @@ import org.scalatest.Inspectors
 import testHelpers.{S4LMockSugar, VatRegSpec}
 import utils.SystemDate
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ofPattern
 import scala.concurrent.Future
 import scala.language.implicitConversions
 

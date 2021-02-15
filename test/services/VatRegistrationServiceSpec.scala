@@ -16,11 +16,8 @@
 
 package services
 
-import java.time.LocalDate
-
 import connectors._
 import models.TaxableThreshold
-import org.mockito
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -28,9 +25,9 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import testHelpers.{S4LMockSugar, VatRegSpec}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 import scala.language.postfixOps
 

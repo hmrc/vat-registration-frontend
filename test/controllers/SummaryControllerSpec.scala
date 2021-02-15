@@ -16,11 +16,11 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
+import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import connectors._
 import fixtures.VatRegistrationFixture
+import mocks.MockNonRepudiationService
 import models.view.Summary
 import models.{CurrentProfile, Frequency, Returns, Start}
 import org.mockito.ArgumentMatchers.any
@@ -31,9 +31,10 @@ import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
+class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService {
 
   trait Setup {
     val testSummaryController = new SummaryController(
@@ -41,7 +42,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockS4LService,
-      mockSummaryService
+      mockSummaryService,
+      mockNonRepuidiationService
     )
 
     mockAuthenticated()
@@ -57,6 +59,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
       when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
       when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+      mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
 
       callAuthorised(testSummaryController.show)(status(_) mustBe OK)
     }
@@ -65,6 +68,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
       when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
       when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+      mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
 
       callAuthorised(testSummaryController.show)(status(_) mustBe OK)
     }

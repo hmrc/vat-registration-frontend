@@ -1,13 +1,13 @@
 
 package fixtures
 
-import java.time.LocalDate
-
 import models.api.Address
+import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
-import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
+
+import java.time.LocalDate
 
 trait ApplicantDetailsFixture {
 
