@@ -17,7 +17,6 @@
 package controllers
 
 import java.time.LocalDate
-
 import itutil.{ControllerISpec, WiremockHelper}
 import models.view.ApplicantDetails
 import models.{Frequency, Returns, SicAndCompliance, Stagger}
@@ -75,6 +74,7 @@ class SummaryControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[SicAndCompliance].cleared
         .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Frequency.quarterly), Some(Stagger.jan), None))
+        .vatRegistration.storesNrsPayload(testRegId)
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
@@ -108,7 +108,6 @@ class SummaryControllerISpec extends ControllerISpec {
         document.getElementById("directorDetails.accountingPeriodAnswer").text mustBe "January, April, July and October"
       }
     }
-
   }
 
   "POST Summary Page" should {

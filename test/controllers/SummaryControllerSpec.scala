@@ -16,11 +16,12 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
+import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import connectors._
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
+import mocks.MockNonRepudiationService
 import models.view.Summary
 import models.{CurrentProfile, Frequency, Returns, Start}
 import org.mockito.ArgumentMatchers.any
@@ -31,9 +32,10 @@ import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
+class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureSwitching {
 
   trait Setup {
     val testSummaryController = new SummaryController(
@@ -41,7 +43,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockS4LService,
-      mockSummaryService
+      mockSummaryService,
+      mockNonRepuidiationService
     )
 
     mockAuthenticated()
@@ -52,21 +55,25 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   override val returns = Returns(Some(10000.5), Some(true), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2018, 1, 1)))))
   val emptyReturns = Returns(None, None, None, None, None)
 
-  "Calling summary to show the summary page" should {
-    "return OK with a valid summary view pre-incorp" in new Setup {
-      when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
-      when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
-      when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+  "Calling summary to show the summary page" when {
+    "the StoreAnswersForNrs feature switch is enabled" should {
+      "return OK with a valid summary view pre-incorp" in new Setup {
+        when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
+        when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
+        when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+        mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
 
-      callAuthorised(testSummaryController.show)(status(_) mustBe OK)
-    }
+        callAuthorised(testSummaryController.show)(status(_) mustBe OK)
+      }
 
-    "return OK with a valid summary view post-incorp" in new Setup {
-      when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
-      when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
-      when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+      "return OK with a valid summary view post-incorp" in new Setup {
+        when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
+        when(mockSummaryService.getRegistrationSummary(any(), any())) thenReturn Future.successful(Summary(Seq.empty))
+        when(mockSummaryService.getEligibilityDataSummary(any(), any())) thenReturn Future.successful(fullSummaryModelFromFullEligiblityJson)
+        mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
 
-      callAuthorised(testSummaryController.show)(status(_) mustBe OK)
+        callAuthorised(testSummaryController.show)(status(_) mustBe OK)
+      }
     }
   }
 
