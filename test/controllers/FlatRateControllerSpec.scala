@@ -16,25 +16,26 @@
 
 package controllers
 
-import java.time.LocalDate
-import java.util.MissingResourceException
-
 import fixtures.VatRegistrationFixture
 import models.{FlatRateScheme, MainBusinessActivityView, TurnoverEstimates, _}
 import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.{Action, AnyContent, AnyContentAsFormUrlEncoded}
+import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
-import uk.gov.hmrc.http.InternalServerException
+import views.html.frs_your_flat_rate
 
-import scala.concurrent.Future
+import java.time.LocalDate
+import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture {
+
+  val view = app.injector.instanceOf[frs_your_flat_rate]
+
   val jsonBusinessTypes = Json.parse(
     s"""
        |[
@@ -63,7 +64,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       mockKeystoreConnector,
       mockConfigConnector,
       mockTimeService,
-      mockSicAndComplianceService
+      mockSicAndComplianceService,
+      view
     )
 
     mockAuthenticated()
@@ -441,7 +443,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
 
-    "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
+    "return 303 with Register For Flat Rate Scheme when Yes is selected" in new Setup {
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -450,7 +452,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsWithSector" -> "true"
+        "value" -> "true"
       )
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>
@@ -459,7 +461,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
 
-    "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
+    "return 303 with Register For Flat Rate Scheme when No is selected" in new Setup {
 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
@@ -468,7 +470,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsWithSector" -> "false"
+        "value" -> "false"
       )
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>
