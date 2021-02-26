@@ -16,20 +16,20 @@
 
 package controllers
 
-import java.text.DecimalFormat
-import java.util.MissingResourceException
-
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-import javax.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.libs.json.JsObject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
+import views.html._
 
+import java.text.DecimalFormat
+import java.util.MissingResourceException
+import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,7 +40,8 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
                                    val keystoreConnector: KeystoreConnector,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
-                                   val sicAndComplianceService: SicAndComplianceService)
+                                   val sicAndComplianceService: SicAndComplianceService,
+                                   frs_your_flat_rate: frs_your_flat_rate)
                                   (implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents)
@@ -48,7 +49,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
 
   val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsRadio")("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
-  val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsWithSector")("frs.registerForWithSector")
+  val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerForWithSector")
   val overBusinessGoodsForm: Form[Boolean] = OverBusinessGoodsForm.form
 
   def overBusinessGoodsPercentForm(formPct: Long = 0): Form[Boolean] = new OverBusinessGoodsPercentForm {
@@ -209,7 +210,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           flatRateService.retrieveSectorPercent map { sectorInfo =>
             val decimalFormat = new DecimalFormat("#0.##")
             val (_, sector, pct) = sectorInfo
-            Ok(views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), form))
+            Ok(frs_your_flat_rate(sector, decimalFormat.format(pct), form))
           }
         }
   }
@@ -221,7 +222,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           badForm => flatRateService.retrieveSectorPercent map { view =>
             val decimalFormat = new DecimalFormat("#0.##")
             val (_, sector, pct) = view
-            BadRequest(views.html.frs_your_flat_rate(sector, decimalFormat.format(pct), badForm))
+            BadRequest(frs_your_flat_rate(sector, decimalFormat.format(pct), badForm))
           },
           view => for {
             _ <- flatRateService.saveUseFlatRate(view.answer)

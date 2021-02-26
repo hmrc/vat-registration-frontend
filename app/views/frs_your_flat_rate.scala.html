@@ -18,44 +18,42 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import views.html.helpers.templates.newWindowLink
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        errorSummary: errorSummary,
+        h1: h1,
+        h2: h2,
+        p: p,
+        button: components.button,
+        formWithCSRF: FormWithCSRF,
+        yesNoRadio: yesNoRadio
+)
+
 @(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))) {
+@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))), backLink = true) {
 
-    @errorSummary(
-        form = registerForFrsForm
-    )
+    @errorSummary(registerForFrsForm.errors)
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.registerForWithSector.heading", percentFormat)</h1>
-    <p>@messages("pages.frs.registerForWithSector.info")</p>
+    @h1(messages("pages.frs.registerForWithSector.heading", percentFormat))
 
-    <h2>@messages("pages.frs.registerForWithSector.subheading1")</h2>
+    @p {
+        @messages("pages.frs.registerForWithSector.info")
+    }
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitYourFlatRate()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = registerForFrsForm("registerForFrsWithSectorRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.frs.registerForWithSector.subheading1"),
-                '_legendClass -> "visually-hidden"
-            )
-        </div>
+    @h2(messages("pages.frs.registerForWithSector.subheading1"))
 
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-        </div>
-
+    @formWithCSRF(action = controllers.routes.FlatRateController.submitYourFlatRate()) {
+        @yesNoRadio(
+            form = registerForFrsForm,
+            headingKey = messages("pages.frs.registerForWithSector.heading"),
+            isPageHeading = false,
+            classes = "govuk-visually-hidden"
+        )
+        @button(messages("app.common.continue"))
     }
 }
