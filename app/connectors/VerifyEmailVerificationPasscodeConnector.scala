@@ -32,7 +32,7 @@ object VerifyEmailVerificationPasscodeParser {
   val CodeKey = "code"
   val PasscodeMismatchKey = "PASSCODE_MISMATCH"
   val PasscodeNotFoundKey = "PASSCODE_NOT_FOUND"
-  val MaxAttemptsExceededKey = "MAX_EMAILS_EXCEEDED"
+  val MaxAttemptsExceededKey = "MAX_PASSCODE_ATTEMPTS_EXCEEDED"
 
   implicit object VerifyEmailVerificationPasscodeHttpReads extends HttpReads[VerifyEmailPasscodeResult] {
     override def read(method: String, url: String, response: HttpResponse): VerifyEmailPasscodeResult = {

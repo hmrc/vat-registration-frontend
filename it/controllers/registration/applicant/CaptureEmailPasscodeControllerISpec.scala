@@ -116,7 +116,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_EMAILS_EXCEEDED").toString)
+        stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_PASSCODE_ATTEMPTS_EXCEEDED").toString)
 
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
