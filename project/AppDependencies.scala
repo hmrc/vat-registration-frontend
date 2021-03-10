@@ -34,7 +34,7 @@ private object CompileDependencies {
   private val playJsonJodaVersion = "2.9.2"
 
   private val playGovukFrontendVersion = "0.56.0-play-26"
-  private val playHmrcFrontendVersion = "0.27.0-play-26"
+  private val playHmrcFrontendVersion = "0.50.0-play-26"
   private val govukFrontendVersion = "3.10.2"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
