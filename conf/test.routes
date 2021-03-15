@@ -26,6 +26,8 @@ GET         /api/incorp-id-journey/:journeyId                 controllers.test.I
 
 GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)
 
+GET         /sole-trader-identification/:journeyId            controllers.test.SoleTraderIdentificationStubController.retrieveValidationResult(journeyId)
+
 + nocsrf
 POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
 
