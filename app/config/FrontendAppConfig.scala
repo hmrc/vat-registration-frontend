@@ -137,7 +137,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def getSoleTraderIdentificationJourneyUrl: String =
     if (isEnabled(StubSoleTraderIdentification)) {
-      ???
+      s"$host/register-for-vat/test-only/sole-trader-identification"
     } else {
       ???
     }
