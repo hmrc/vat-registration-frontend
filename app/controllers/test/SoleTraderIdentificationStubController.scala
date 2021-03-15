@@ -16,7 +16,9 @@
 
 package controllers.test
 
-import play.api.libs.json.Json
+import config.FrontendAppConfig
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -24,7 +26,12 @@ import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents,
+                                                       appConfig: FrontendAppConfig) extends FrontendController(mcc) {
+
+  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) { _ =>
+    Created(Json.obj("journeyStartUrl" -> JsString(appConfig.getSoleTraderIdentificationCallbackUrl + "?journeyId=1")))
+  }
 
   def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
     Ok(
