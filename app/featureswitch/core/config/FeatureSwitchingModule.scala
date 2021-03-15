@@ -31,7 +31,9 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     TrafficManagementPredicate,
     StubIcl,
     UseSoleTraderIdentification,
-    StubSoleTraderIdentification
+    StubSoleTraderIdentification,
+    UseUpscan,
+    StubUpscan
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -74,4 +76,14 @@ case object UseSoleTraderIdentification extends FeatureSwitch {
 case object StubSoleTraderIdentification extends FeatureSwitch {
   val configName = "feature-switch.stub-sole-trader-identification"
   val displayName = "Stub sole trader identification journey"
+}
+
+case object UseUpscan extends FeatureSwitch {
+  val configName = "feature-switch.use-upscan"
+  val displayName = "Use Upscan flow"
+}
+
+case object StubUpscan extends FeatureSwitch {
+  val configName = "feature-switch.stub-upscan"
+  val displayName = "Stub Upscan flow"
 }
