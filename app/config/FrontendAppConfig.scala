@@ -128,6 +128,22 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   def getPersonalDetailsCallbackUrl(): String =
     s"$hostUrl/register-for-vat/personal-details-validation-callback"
 
+  def getRetrieveSoleTraderIdentificationResultUrl(journeyId: String): String =
+    if (isEnabled(StubSoleTraderIdentification)) {
+      s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
+    } else {
+      ???
+    }
+
+  def getSoleTraderIdentificationJourneyUrl: String =
+    if (isEnabled(StubSoleTraderIdentification)) {
+      ???
+    } else {
+      ???
+    }
+
+  def getSoleTraderIdentificationCallbackUrl: String = ???
+
   def requestEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/request-passcode"
     else s"$emailVerificationBaseUrl/email-verification/request-passcode"
