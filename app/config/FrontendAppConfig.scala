@@ -16,14 +16,14 @@
 
 package config
 
-import java.nio.charset.Charset
-import java.util.Base64
-
 import controllers.callbacks.routes
 import featureswitch.core.config._
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import java.nio.charset.Charset
+import java.util.Base64
+import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
   val host: String
@@ -47,9 +47,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val eligibilityHost: String = servicesConfig.baseUrl("vat-registration-eligibility-frontend")
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
-  lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
-  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
-  lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
   lazy val soleTraderIdentificationHost: String = servicesConfig.baseUrl("sole-trader-identification")
 
@@ -88,15 +85,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
-  lazy val noneOnsSicCodes = new String(
-    Base64.getDecoder.decode(servicesConfig.getString("noneOnsSicCodes")), Charset.forName("UTF-8")
-  ).split(",").toSet
+  // Incorporated Entity Identification Section
 
-  //Footer Links
-  lazy val cookies: String = host + servicesConfig.getString("urls.footer.cookies")
-  lazy val privacy: String = host + servicesConfig.getString("urls.footer.privacy")
-  lazy val termsConditions: String = host + servicesConfig.getString("urls.footer.termsConditions")
-  lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+  lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
 
   def getCreateIncorpIdJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
@@ -110,7 +101,10 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
 
+  // Personal Details Validation Section
+
   lazy val personalDetailsValidationHost: String = servicesConfig.baseUrl("personal-details-validation")
+  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
 
   def getRetrievePersonalDetailsValidationResultUrl(validationId: String): String =
     if (isEnabled(StubPersonalDetailsValidation)) {
@@ -129,6 +123,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   def getPersonalDetailsCallbackUrl(): String =
     s"$hostUrl/register-for-vat/personal-details-validation-callback"
 
+  // Sole Trader Identification Section
+
   def getRetrieveSoleTraderIdentificationResultUrl(journeyId: String): String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
@@ -145,6 +141,10 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def getSoleTraderIdentificationCallbackUrl: String = ???
 
+  // Email Verification Section
+
+  lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
+
   def requestEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/request-passcode"
     else s"$emailVerificationBaseUrl/email-verification/request-passcode"
@@ -152,6 +152,20 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   def verifyEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/verify-passcode"
     else s"$emailVerificationBaseUrl/email-verification/verify-passcode"
+
+  // Upscan Section
+
+  lazy val upscanInitiateHost: String = servicesConfig.baseUrl("upscan-initiate")
+
+  def setupUpscanJourneyUrl: String =
+    if (isEnabled(StubUpscan)) ???
+    else s"$upscanInitiateHost/upscan/v2/initiate"
+
+  def storeUpscanReferenceUrl(regId: String): String = s"$backendHost/vatreg/$regId/upscan-reference"
+
+  def storeUpscanCallbackUrl: String = s"$backendHost/vatreg/upscan-callback"
+
+  def fetchUpscanFileDetails(reference: String): String = s"$backendHost/vatreg/$reference/upscan-file-details"
 
   lazy val privacyNoticeUrl = "https://www.gov.uk/government/publications/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you"
 
@@ -165,5 +179,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
 
-  def individualKickoutUrl(continueUrl:String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
+  def individualKickoutUrl(continueUrl: String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
 }
