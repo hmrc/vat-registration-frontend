@@ -51,6 +51,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
   lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
+  lazy val soleTraderIdentificationHost: String = servicesConfig.baseUrl("sole-trader-identification")
 
   def storeNrsPayloadUrl(regId: String): String = s"$backendHost/vatreg/$regId/nrs-payload"
 
@@ -132,14 +133,14 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
     } else {
-      ???
+      s"$soleTraderIdentificationHost/sole-trader-identification/journey/$journeyId"
     }
 
   def getSoleTraderIdentificationJourneyUrl: String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification"
     } else {
-      ???
+      s"$soleTraderIdentificationHost/sole-trader-identification/journey"
     }
 
   def getSoleTraderIdentificationCallbackUrl: String = ???
