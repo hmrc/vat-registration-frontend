@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package mocks
+package services.mocks
 
-import org.mockito.{ArgumentMatchers => Matchers}
 import models.{CurrentProfile, SicAndCompliance}
+import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import services.SicAndComplianceService
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mockito.{ArgumentMatchers => Matchers}
 
 import scala.concurrent.Future
 
@@ -31,12 +31,12 @@ trait SicAndComplianceServiceMock {
 
   lazy val mockSicAndComplianceService = mock[SicAndComplianceService]
 
-  def mockGetSicAndCompliance(res: Future[SicAndCompliance]) : OngoingStubbing[Future[SicAndCompliance]] = {
-    when(mockSicAndComplianceService.getSicAndCompliance(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockGetSicAndCompliance(res: Future[SicAndCompliance]): OngoingStubbing[Future[SicAndCompliance]] = {
+    when(mockSicAndComplianceService.getSicAndCompliance(Matchers.any[HeaderCarrier], Matchers.any[CurrentProfile])).thenReturn(res)
   }
 
-  def mockUpdateSicAndCompliance(res:Future[SicAndCompliance]) : OngoingStubbing[Future[SicAndCompliance]] = {
-    when(mockSicAndComplianceService.updateSicAndCompliance(Matchers.any)(Matchers.any[HeaderCarrier],Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockUpdateSicAndCompliance(res: Future[SicAndCompliance]): OngoingStubbing[Future[SicAndCompliance]] = {
+    when(mockSicAndComplianceService.updateSicAndCompliance(Matchers.any)(Matchers.any[HeaderCarrier], Matchers.any[CurrentProfile])).thenReturn(res)
   }
 
 }

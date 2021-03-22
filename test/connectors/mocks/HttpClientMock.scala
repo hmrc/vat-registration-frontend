@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package mocks
+package connectors.mocks
 
-import org.mockito.Mockito._
+import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import org.mockito.{ArgumentMatchers => Matchers}
 
 import scala.concurrent.Future
 
@@ -82,9 +82,9 @@ trait HttpClientMock {
       .thenReturn(Future.failed(exception))
   }
 
-   def mockHttpFailedPOSTEmpty[O](url: String, exception: Exception): OngoingStubbing[Future[O]] = {
-     when(mockHttpClient.POSTEmpty[O](Matchers.anyString(), Matchers.any())
-       (Matchers.any[HttpReads[O]], Matchers.any[HeaderCarrier], Matchers.any()))
+  def mockHttpFailedPOSTEmpty[O](url: String, exception: Exception): OngoingStubbing[Future[O]] = {
+    when(mockHttpClient.POSTEmpty[O](Matchers.anyString(), Matchers.any())
+      (Matchers.any[HttpReads[O]], Matchers.any[HeaderCarrier], Matchers.any()))
       .thenReturn(Future.failed(exception))
   }
 
@@ -101,7 +101,7 @@ trait HttpClientMock {
 
   def mockHttpFailedPUT[I, O](url: String, exception: Exception): OngoingStubbing[Future[O]] = {
     when(mockHttpClient.PUT[I, O](
-        Matchers.anyString(), Matchers.any[I], Matchers.any())(Matchers.any[Writes[I]], Matchers.any[HttpReads[O]], Matchers.any[HeaderCarrier], Matchers.any()
-      )).thenReturn(Future.failed(exception))
+      Matchers.anyString(), Matchers.any[I], Matchers.any())(Matchers.any[Writes[I]], Matchers.any[HttpReads[O]], Matchers.any[HeaderCarrier], Matchers.any()
+    )).thenReturn(Future.failed(exception))
   }
 }

@@ -17,7 +17,7 @@
 package services
 
 import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
-import mocks.MockNonRepudiationConnector
+import connectors.mocks.MockNonRepudiationConnector
 import play.twirl.api.Html
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException

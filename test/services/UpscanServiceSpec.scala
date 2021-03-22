@@ -16,7 +16,7 @@
 
 package services
 
-import mocks.MockUpscanConnector
+import connectors.mocks.MockUpscanConnector
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import testHelpers.VatRegSpec

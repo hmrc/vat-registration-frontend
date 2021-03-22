@@ -18,7 +18,6 @@ package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import mocks.mockservices.MockApplicantDetailsService
 import models.TelephoneNumber
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
@@ -27,6 +26,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global

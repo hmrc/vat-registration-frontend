@@ -48,7 +48,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityHost: String = servicesConfig.baseUrl("vat-registration-eligibility-frontend")
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
-  lazy val soleTraderIdentificationHost: String = servicesConfig.baseUrl("sole-trader-identification")
+  lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
 
   def storeNrsPayloadUrl(regId: String): String = s"$backendHost/vatreg/$regId/nrs-payload"
 
@@ -129,17 +129,17 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
     } else {
-      s"$soleTraderIdentificationHost/sole-trader-identification/journey/$journeyId"
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/journey/$journeyId"
     }
 
-  def getSoleTraderIdentificationJourneyUrl: String =
+  def soleTraderIdentificationJourneyUrl: String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification"
     } else {
-      s"$soleTraderIdentificationHost/sole-trader-identification/journey"
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/journey"
     }
 
-  def getSoleTraderIdentificationCallbackUrl: String = ???
+  def getSoleTraderIdentificationCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
 
   // Email Verification Section
 

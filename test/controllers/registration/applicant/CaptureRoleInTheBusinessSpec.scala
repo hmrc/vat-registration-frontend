@@ -18,9 +18,9 @@ package controllers.registration.applicant
 
 import akka.actor.TypedActor.dispatcher
 import fixtures.ApplicantDetailsFixtures
-import mocks.mockservices.MockApplicantDetailsService
 import models.Director
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
 import views.html.role_in_the_business
 

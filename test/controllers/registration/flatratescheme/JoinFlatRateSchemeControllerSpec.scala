@@ -17,13 +17,13 @@
 package controllers.registration.flatratescheme
 
 import fixtures.VatRegistrationFixture
-import mocks.TimeServiceMock
 import models.{CurrentProfile, FlatRateScheme, TurnoverEstimates}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.frs_join

@@ -20,6 +20,8 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.UseSoleTraderIdentification
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, IncorpIdService, SessionProfile}
@@ -41,7 +43,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
     implicit req =>
       _ =>
         incorpIdService.createJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
-          journeyStartUrl => SeeOther(journeyStartUrl).addingToSession()
+          journeyStartUrl => SeeOther(journeyStartUrl)
         )
   }
 
@@ -51,7 +53,14 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
         for {
           incorpDetails <- incorpIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
-        } yield Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+        } yield {
+          if (isEnabled(UseSoleTraderIdentification)) {
+            Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+          }
+          else {
+            Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+          }
+        }
   }
 
 }

@@ -17,8 +17,8 @@
 package controllers.registration.sicandcompliance
 
 import fixtures.VatRegistrationFixture
-import mocks.SicAndComplianceServiceMock
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.mocks.SicAndComplianceServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.labour.workers
 

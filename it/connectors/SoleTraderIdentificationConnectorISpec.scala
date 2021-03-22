@@ -4,41 +4,50 @@ package connectors
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, Upstream4xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, Upstream4xxResponse, UpstreamErrorResponse}
 
-class SoleTraderIdentificationISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
+class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
   val testJourneyId = "1"
+  val testJourneyUrl = "/test-journey-url"
   val createJourneyUrl = "/sole-trader-identification/journey"
   val retrieveDetailsUrl = s"/sole-trader-identification/journey/$testJourneyId"
   val connector = app.injector.instanceOf[SoleTraderIdentificationConnector]
 
-  "createJourney" when {
+  val testJourneyConfig = SoleTraderIdJourneyConfig(
+    continueUrl = "/test-url",
+    optServiceName = Some("MTD"),
+    deskProServiceId = "MTDSUR",
+    signOutUrl = "/test-sign-out"
+  )
+
+  "startJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in {
-        stubPost(createJourneyUrl, CREATED, Json.stringify(Json.obj("journeyId" -> testJourneyId)))
+        stubPost(createJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney)
+        val res = await(connector.startJourney(testJourneyConfig))
 
-        res mustBe testJourneyId
+        res mustBe testJourneyUrl
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in {
         stubPost(createJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
-          await(connector.createJourney)
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }
     "the API returns UNAUTHORISED" must {
-      "throw an InternalServerException" in new Setup {
+      "throw an UnauthorizedException" in new Setup {
         stubPost(createJourneyUrl, UNAUTHORIZED, "")
 
-        intercept[InternalServerException] {
-          await(connector.createJourney)
+        intercept[UnauthorizedException] {
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }
@@ -47,7 +56,7 @@ class SoleTraderIdentificationISpec extends IntegrationSpecBase with AppAndStubs
         stubPost(createJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
-          await(connector.createJourney)
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package mocks
+package testHelpers
 
-import connectors.{BankAccountReputationConnector, _}
+import connectors.mocks.{AuthMock, HttpClientMock, KeystoreMock, SaveForLaterMock}
+import connectors._
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
-import services.{ApplicantDetailsService, BankAccountReputationService, BusinessContactService, FlatRateService, ICLService, ReturnsService, _}
+import services.mocks.{IncorpIdServiceMock, PersonalDetailsValidationServiceMock, SicAndComplianceServiceMock}
+import services._
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit

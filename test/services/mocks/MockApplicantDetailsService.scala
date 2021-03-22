@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package mocks.mockservices
+package services.mocks
 
 import models.CurrentProfile
-import models.view.{ApplicantDetails, FormerNameView}
+import models.view.ApplicantDetails
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
@@ -39,7 +39,7 @@ trait MockApplicantDetailsService extends MockitoSugar {
       ArgumentMatchers.any[HeaderCarrier])
     ) thenReturn Future.successful(response)
 
-  def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails)=
+  def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails) =
     when(mockApplicantDetailsService.saveApplicantDetails(
       ArgumentMatchers.eq(data)
     )(

@@ -17,13 +17,12 @@
 package connectors
 
 import config.FrontendAppConfig
-import play.api.{ConfigLoader, Configuration}
-import play.api.libs.json.{JsObject, JsValue, Json}
-import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
+import models.external.soletraderid.SoleTraderIdJourneyConfig
+import play.api.Configuration
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
-
-import scala.concurrent.Future
+import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UnauthorizedException}
 
 
 class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
@@ -33,33 +32,41 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
     val config = new FrontendAppConfig(mockServicesConfig, runModeConfiguration = Configuration())
     val connector = new SoleTraderIdentificationConnector(mockHttpClient, config)(ex)
     val testJourneyId = "1"
+    val testJourneyUrl = "/test-journey-url"
     val createJourneyUrl = "/sole-trader-identification/journey"
     val retrieveDetailsUrl = s"/sole-trader-identification/journey/$testJourneyId"
+
+    val testJourneyConfig = SoleTraderIdJourneyConfig(
+      continueUrl = "/test-url",
+      optServiceName = Some("MTD"),
+      deskProServiceId = "MTDSUR",
+      signOutUrl = "/test-sign-out"
+    )
   }
 
-  "createJourney" when {
+  "startJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Some(Json.obj("journeyId" -> testJourneyId))))
+        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Some(Json.obj("journeyStartUrl" -> testJourneyUrl))))
 
-        val res = await(connector.createJourney)
+        val res = await(connector.startJourney(testJourneyConfig))
 
-        res mustBe testJourneyId
+        res mustBe testJourneyUrl
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in new Setup {
         mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Some(Json.obj())))
 
         intercept[InternalServerException] {
-          await(connector.createJourney)
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }
     "the API returns UNAUTHORISED" must {
-      "throw an InternalServerException" in new Setup {
+      "throw an UnauthorizedException" in new Setup {
         mockHttpPOST(createJourneyUrl, HttpResponse(UNAUTHORIZED, None))
 
-        intercept[InternalServerException] {
-          await(connector.createJourney)
+        intercept[UnauthorizedException] {
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }
@@ -68,7 +75,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, None))
 
         intercept[InternalServerException] {
-          await(connector.createJourney)
+          await(connector.startJourney(testJourneyConfig))
         }
       }
     }

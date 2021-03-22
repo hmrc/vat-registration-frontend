@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mocks
+package connectors.mocks
 
 import connectors.UpscanConnector
 import models.external.upscan.{UpscanDetails, UpscanResponse}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mocks
+package connectors.mocks
 
 import connectors._
 import org.mockito.ArgumentMatchers
@@ -25,7 +25,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait KeystoreMock {
@@ -33,14 +32,13 @@ trait KeystoreMock {
 
   lazy val mockKeystoreConnector = mock[KeystoreConnector]
 
-  import cats.instances.future._
   import cats.syntax.applicative._
 
   def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
-    when(mockKeystoreConnector.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(model.pure)
+    when(mockKeystoreConnector.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
 
   def mockKeystoreCache[T](key: String, cacheMap: CacheMap): OngoingStubbing[Future[CacheMap]] =
-    when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any[Format[T]]())).thenReturn(cacheMap.pure)
+    when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any[Format[T]]())).thenReturn(Future.successful(cacheMap.pure))
 
   def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
     when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
@@ -48,6 +46,6 @@ trait KeystoreMock {
   def mockKeystoreClear(): OngoingStubbing[Future[Boolean]] = when(mockKeystoreConnector.remove(any())) thenReturn Future.successful(true)
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =
-    when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any())).thenReturn(Some(regID).pure)
+    when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any())).thenReturn(Future.successful(Some(regID).pure))
 
 }

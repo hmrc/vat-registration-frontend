@@ -18,7 +18,6 @@ package testHelpers
 
 import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
-import mocks.VatMocks
 import models.CurrentProfile
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
