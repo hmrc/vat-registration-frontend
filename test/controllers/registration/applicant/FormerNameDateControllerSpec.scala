@@ -17,12 +17,11 @@
 package controllers.registration.applicant
 
 import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import mocks.mockservices.MockApplicantDetailsService
 import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global

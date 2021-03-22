@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mocks
+package connectors.mocks
 
 import config.AuthClientConnector
 import org.mockito.ArgumentMatchers

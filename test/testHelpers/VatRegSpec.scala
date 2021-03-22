@@ -20,8 +20,8 @@ import builders.AuthBuilder
 import cats.instances.FutureInstances
 import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
+import connectors.mocks.AuthMock
 import fixtures.{LoginFixture, VatRegistrationFixture}
-import mocks.{AuthMock, VatMocks}
 import models.CurrentProfile
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}

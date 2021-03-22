@@ -18,6 +18,7 @@ package controllers.test
 
 import config.FrontendAppConfig
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -29,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents,
                                                        appConfig: FrontendAppConfig) extends FrontendController(mcc) {
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) { _ =>
+  def createJourney: Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { _ =>
     Created(Json.obj("journeyStartUrl" -> JsString(appConfig.getSoleTraderIdentificationCallbackUrl + "?journeyId=1")))
   }
 

@@ -17,6 +17,7 @@
 package viewmodels
 
 import controllers.registration.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.{Address, Threshold, VatScheme}
 import models.view.{ApplicantDetails, SummaryRow, SummarySection}
@@ -30,7 +31,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           businessType: Option[String],
                                           turnoverEstimates: Option[TurnoverEstimates],
                                           threshold: Option[Threshold],
-                                          returnsBlock: Option[Returns]) extends SummarySectionBuilder {
+                                          returnsBlock: Option[Returns]) extends SummarySectionBuilder with FeatureSwitching {
 
   override val sectionId: String = "directorDetails"
 
@@ -40,6 +41,13 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
+
+  private val changeTransactorDetailsUrl = if (isEnabled(UseSoleTraderIdentification)) {
+    applicantRoutes.SoleTraderIdentificationController.startJourney()
+  }
+  else {
+    applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+  }
 
   def startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
@@ -60,25 +68,25 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val firstName: SummaryRow = SummaryRow(
     s"$sectionId.firstName",
     vatApplicantDetails.transactorDetails.map(_.firstName).getOrElse(""),
-    Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+    Some(changeTransactorDetailsUrl)
   )
 
   val lastName: SummaryRow = SummaryRow(
     s"$sectionId.lastName",
     vatApplicantDetails.transactorDetails.map(_.lastName).getOrElse(""),
-    Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+    Some(changeTransactorDetailsUrl)
   )
 
   val nino: SummaryRow = SummaryRow(
     s"$sectionId.nino",
     vatApplicantDetails.transactorDetails.map(_.nino).getOrElse(""),
-    Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+    Some(changeTransactorDetailsUrl)
   )
 
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
     vatApplicantDetails.transactorDetails.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
-    Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+    Some(changeTransactorDetailsUrl)
   )
 
   val roleInTheBusiness: SummaryRow = SummaryRow(

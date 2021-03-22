@@ -116,7 +116,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       "personal-details-validation",
       "iv.identity-verification-proxy",
       "iv.identity-verification-frontend",
-      "sole-trader-identification",
+      "sole-trader-identification-frontend",
       "upscan-initiate"
     )) ++ additionalConfig)
     .configure("application.router" -> "testOnlyDoNotUseInAppConf.Routes")

@@ -16,17 +16,14 @@
 
 package connectors
 
-import java.util.MissingResourceException
-
-import mocks.VatMocks
 import models.api.SicCode
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import play.api.Environment
 import play.api.libs.json.{JsObject, Json}
-import testHelpers.VatRegSpec
+import testHelpers.{VatMocks, VatRegSpec}
+
+import java.util.MissingResourceException
 
 class ConfigConnectorSpec extends VatRegSpec with VatMocks {
   val mockEnvironment: Environment = mock[Environment]

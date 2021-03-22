@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package mocks
+package services.mocks
 
 import models.external.incorporatedentityid.IncorporationDetails
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import services.IncorpIdService
 import uk.gov.hmrc.http.HeaderCarrier

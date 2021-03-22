@@ -18,10 +18,12 @@ package connectors
 
 import config.FrontendAppConfig
 import models.TransactorDetails
+import models.external.soletraderid.SoleTraderIdJourneyConfig
+import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, UnauthorizedException}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import javax.inject.{Inject, Singleton}
@@ -31,23 +33,24 @@ import scala.concurrent.{ExecutionContext, Future}
 class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, appConfig: FrontendAppConfig)
                                                  (implicit executionContext: ExecutionContext) {
 
-  private val journeyIdKey = "journeyId"
+  private val journeyUrlKey = "journeyStartUrl"
   private val personalDetailsKey = "personalDetails"
 
-  def createJourney(implicit hc: HeaderCarrier): Future[String] = {
-    httpClient.POST(appConfig.getSoleTraderIdentificationJourneyUrl, Json.obj()) map { response =>
+  def startJourney(config: SoleTraderIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] =
+    httpClient.POST(appConfig.soleTraderIdentificationJourneyUrl, Json.toJson(config)) map { response =>
+      Logger.info("url " + response.body)
       response.status match {
-        case CREATED => (response.json \  journeyIdKey).validate[String] match {
+        case CREATED => (response.json \  journeyUrlKey).validate[String] match {
           case JsSuccess(journeyId, _) => journeyId
-          case _ => throw new InternalServerException(s"[SoleTraderIdentificationConnector] STI Response JSON did not include $journeyIdKey key")
+          case _ =>
+            throw new InternalServerException(s"[SoleTraderIdentificationConnector] STI Response JSON did not include $journeyUrlKey key")
         }
         case UNAUTHORIZED =>
-          throw new InternalServerException(s"[SoleTraderIdentificationConnector] Failed to create new journey as user was unauthorised")
+          throw new UnauthorizedException(s"[SoleTraderIdentificationConnector] Failed to create new journey as user was unauthorised")
         case status =>
           throw new InternalServerException(s"[SoleTraderIdentificationConnector] Sole trader identification returned an unexpected status: $status")
       }
     }
-  }
 
 
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =

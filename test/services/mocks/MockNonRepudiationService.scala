@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package mocks
+package services.mocks
 
-import connectors.NonRepudiationConnector
 import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
+import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.twirl.api.Html
+import services.NonRepudiationService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockNonRepudiationConnector extends MockitoSugar {
+trait MockNonRepudiationService extends MockitoSugar {
   self: Suite =>
 
-  val mockNonRepuidiationConnector = mock[NonRepudiationConnector]
+  val mockNonRepuidiationService = mock[NonRepudiationService]
 
-  def mockStoreEncodedUserAnswers(regId: String, encodedHtml: String)
+  def mockStoreEncodedUserAnswers(regId: String)
                                  (response: Future[StoreNrsPayloadSuccess.type]): OngoingStubbing[Future[StoreNrsPayloadSuccess.type]] =
-    when(mockNonRepuidiationConnector.storeEncodedUserAnswers(
+    when(mockNonRepuidiationService.storeEncodedUserAnswers(
       ArgumentMatchers.eq(regId),
-      ArgumentMatchers.eq(encodedHtml)
+      ArgumentMatchers.any[Html]
     )(
       ArgumentMatchers.any[HeaderCarrier]
     )).thenReturn(response)

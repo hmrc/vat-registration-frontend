@@ -19,7 +19,7 @@ package testHelpers
 import builders.AuthBuilder
 import common.enums.VatRegStatus
 import config.{BaseControllerComponents, FrontendAppConfig}
-import mocks.{AuthMock, VatMocks}
+import connectors.mocks.AuthMock
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

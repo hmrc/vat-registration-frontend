@@ -21,7 +21,6 @@ import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import connectors._
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
-import mocks.MockNonRepudiationService
 import models.view.Summary
 import models.{CurrentProfile, Frequency, Returns, Start}
 import org.mockito.ArgumentMatchers.any
@@ -29,6 +28,7 @@ import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.FakeRequest
+import services.mocks.MockNonRepudiationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
 

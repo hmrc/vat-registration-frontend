@@ -17,16 +17,14 @@
 package controllers.registration.applicant
 
 import java.time.LocalDate
-
 import _root_.models._
 import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import fixtures.VatRegistrationFixture
-import mocks.TimeServiceMock
-import mocks.mockservices.MockApplicantDetailsService
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
+import services.mocks.{MockApplicantDetailsService, TimeServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
@@ -83,7 +81,7 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec
 
   "personalDetailsValidationCallback" when {
     "the transactor details successfully returned" should {
-      "return OK with the retrieved transactor details" in new Setup { //TODO update to store the retrieved data and redirect to the correct page
+      "redirect to the capture role page" in new Setup { //TODO update to store the retrieved data and redirect to the correct page
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
         val testValidationId = "testValidationId"
 

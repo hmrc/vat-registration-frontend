@@ -16,8 +16,9 @@
 
 package viewmodels.checkyouranswers
 
-import java.time.LocalDate
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 
+import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
@@ -25,7 +26,7 @@ import models.view.{ApplicantDetails, SummaryRow}
 import testHelpers.VatRegSpec
 import viewmodels.SummaryCheckYourAnswersBuilder
 
-class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
   def returnsWithStartDate(startDate: Option[LocalDate] = Some(LocalDate.now())) =
     Some(Returns(None, None, None, None, Some(Start(startDate))))
@@ -55,6 +56,85 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21))
     )
   )
+
+  "The applicant/transactor personal details rows" when {
+    "the UseSoleTraderIdentification feature switch is enabled" must {
+      "show the correct rows with the STI change link" in {
+        enable(UseSoleTraderIdentification)
+
+        val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,
+          ApplicantDetails(transactorDetails = Some(testTransactorDetails)),
+          Some(5000L),
+          Some("Foo Bar Wizz Bang"),
+          Some(TurnoverEstimates(100L)),
+          threshold = optVoluntaryRegistration,
+          returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21)))
+        )
+
+        sectionBuilder.firstName mustBe SummaryRow(
+          id = "directorDetails.firstName",
+          answerMessageKey = testTransactorDetails.firstName,
+          changeLink = Some(controllers.registration.applicant.routes.SoleTraderIdentificationController.startJourney())
+        )
+
+        sectionBuilder.lastName mustBe SummaryRow(
+          id = "directorDetails.lastName",
+          answerMessageKey = testTransactorDetails.lastName,
+          changeLink = Some(controllers.registration.applicant.routes.SoleTraderIdentificationController.startJourney())
+        )
+
+        sectionBuilder.nino mustBe SummaryRow(
+          id = "directorDetails.nino",
+          answerMessageKey = testTransactorDetails.nino,
+          changeLink = Some(controllers.registration.applicant.routes.SoleTraderIdentificationController.startJourney())
+        )
+
+        sectionBuilder.dob mustBe SummaryRow(
+          id = "directorDetails.dob",
+          answerMessageKey = "1 January 2020",
+          changeLink = Some(controllers.registration.applicant.routes.SoleTraderIdentificationController.startJourney())
+        )
+      }
+    }
+    "the UseSoleTraderIdentification feature switch is disabled" must {
+      "show the correct rows with the PDV change link" in {
+        disable(UseSoleTraderIdentification)
+
+        val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,
+          ApplicantDetails(transactorDetails = Some(testTransactorDetails)),
+          Some(5000L),
+          Some("Foo Bar Wizz Bang"),
+          Some(TurnoverEstimates(100L)),
+          threshold = optVoluntaryRegistration,
+          returnsBlock = returnsWithStartDate(Some(LocalDate.of(2017, 3, 21)))
+        )
+
+        sectionBuilder.firstName mustBe SummaryRow(
+          id = "directorDetails.firstName",
+          answerMessageKey = testTransactorDetails.firstName,
+          changeLink = Some(controllers.registration.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+        )
+
+        sectionBuilder.lastName mustBe SummaryRow(
+          id = "directorDetails.lastName",
+          answerMessageKey = testTransactorDetails.lastName,
+          changeLink = Some(controllers.registration.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+        )
+
+        sectionBuilder.nino mustBe SummaryRow(
+          id = "directorDetails.nino",
+          answerMessageKey = testTransactorDetails.nino,
+          changeLink = Some(controllers.registration.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+        )
+
+        sectionBuilder.dob mustBe SummaryRow(
+          id = "directorDetails.dob",
+          answerMessageKey = "1 January 2020",
+          changeLink = Some(controllers.registration.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+        )
+      }
+    }
+  }
 
   "The section builder composing a company details section" must {
     val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,

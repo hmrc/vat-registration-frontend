@@ -18,11 +18,11 @@ package controllers.registration.applicant
 
 import controllers.{routes => appRoutes}
 import fixtures.ApplicantDetailsFixtures
-import mocks.mockservices.MockApplicantDetailsService
 import models.TelephoneNumber
 import models.external.{EmailAddress, EmailVerified}
 import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
 import views.html.capture_telephone_number
 

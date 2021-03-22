@@ -16,7 +16,7 @@
 
 package controllers.feedback
 
-import mocks.AuthMock
+import connectors.mocks.AuthMock
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status

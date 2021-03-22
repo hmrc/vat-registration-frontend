@@ -17,8 +17,11 @@
 package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.StubIncorpIdJourney
+import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
+import models.S4LKey
+import models.external.incorporatedentityid.IncorporationDetails
+import models.view.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
@@ -26,7 +29,9 @@ import play.api.test.Helpers.{CREATED, await, _}
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
-  "/start-incorp-id-journey" should {
+  val incorpDetailsJson = Json.toJson(testIncorpDetails)(IncorporationDetails.apiFormat)
+
+  "GET /start-incorp-id-journey" should {
     "redirect to the returned journey url" in new Setup {
       implicit val request = FakeRequest()
 
@@ -47,6 +52,51 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+  }
+
+  "GET /incorp-id-callback" when {
+    "when the UseSoleTraderIdentification feature switch is enabled" should {
+      "redirect to STI" in {
+        enable(UseSoleTraderIdentification)
+        disable(StubIncorpIdJourney)
+
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+
+        val res = buildClient("/incorp-id-callback?journeyId=1").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        }
+      }
+    }
+    "when the UseSoleTraderIdentification feature switch is disabled" should {
+      "redirect to PDV" in {
+        disable(UseSoleTraderIdentification)
+        disable(StubIncorpIdJourney)
+
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+
+        val res = buildClient("/incorp-id-callback?journeyId=1").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
+        }
+      }
     }
   }
 

@@ -19,20 +19,21 @@ package controllers.registration.applicant
 import _root_.models._
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.VatRegistrationFixture
-import mocks.TimeServiceMock
-import mocks.mockservices.MockApplicantDetailsService
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 import controllers.registration.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import services.mocks.{MockApplicantDetailsService, TimeServiceMock}
 
 class IncorpIdControllerSpec extends ControllerSpec
   with VatRegistrationFixture
   with TimeServiceMock
   with FutureAssertions
-  with MockApplicantDetailsService {
+  with MockApplicantDetailsService
+  with FeatureSwitching {
 
   val testJourneyId = "testJourneyId"
 
@@ -63,15 +64,31 @@ class IncorpIdControllerSpec extends ControllerSpec
   }
 
   "incorpIdCallback" should {
-    "store the incorporation details and redirect to the next page when the response is valid" in new Setup {
-      val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
-      mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
-      mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
+    "the UseSoleTraderIdentification feature switch is enabled" should {
+      "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
+        enable(UseSoleTraderIdentification)
+        val onwardUrl = applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
+        mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
 
-      val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
+        val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(onwardUrl)
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(onwardUrl)
+      }
+    }
+    "the UseSoleTraderIdentification feature switch is disabled" should {
+      "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
+        disable(UseSoleTraderIdentification)
+        val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+        mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
+        mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
+
+        val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
+
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(onwardUrl)
+      }
     }
   }
 
