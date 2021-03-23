@@ -165,7 +165,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def storeUpscanCallbackUrl: String = s"$backendHost/vatreg/upscan-callback"
 
-  def fetchUpscanFileDetails(reference: String): String = s"$backendHost/vatreg/$reference/upscan-file-details"
+  def fetchUpscanFileDetails(regId: String, reference: String): String = s"$backendHost/vatreg/$regId/upscan-file-details/$reference"
 
   lazy val privacyNoticeUrl = "https://www.gov.uk/government/publications/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you"
 

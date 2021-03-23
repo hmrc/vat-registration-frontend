@@ -17,7 +17,7 @@
 package services
 
 import connectors.mocks.MockUpscanConnector
-import models.external.upscan.{UpscanDetails, UpscanResponse}
+import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
@@ -31,7 +31,7 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   val testReference = "testReference"
   val testHref = "testHref"
   val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map())
-  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = "IN_PROGRESS")
+  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
 
   "initiateUpscan" must {
     "return an UpscanResponse" in {
@@ -59,17 +59,17 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
 
   "fetchUpscanFilerDetails" must {
     "return an UpscanDetails" in {
-      mockFetchUpscanFileDetails(testReference)(Future.successful(testUpscanDetails))
+      mockFetchUpscanFileDetails(testRegId, testReference)(Future.successful(testUpscanDetails))
 
-      val response = await(TestService.fetchUpscanFileDetails(testReference))
+      val response = await(TestService.fetchUpscanFileDetails(testRegId, testReference))
 
       response mustBe testUpscanDetails
     }
 
     "throw an exception if fetch fails" in {
-      mockFetchUpscanFileDetails(testReference)(Future.failed(new InternalServerException("")))
+      mockFetchUpscanFileDetails(testRegId, testReference)(Future.failed(new InternalServerException("")))
 
-      intercept[InternalServerException](await(TestService.fetchUpscanFileDetails(testReference)))
+      intercept[InternalServerException](await(TestService.fetchUpscanFileDetails(testRegId, testReference)))
     }
   }
 

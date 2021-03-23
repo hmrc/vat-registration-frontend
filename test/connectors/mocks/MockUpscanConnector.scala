@@ -43,8 +43,9 @@ trait MockUpscanConnector extends MockitoSugar {
       ArgumentMatchers.any[HeaderCarrier]
     )).thenReturn(res)
 
-  def mockFetchUpscanFileDetails(reference: String)(res: Future[UpscanDetails]): OngoingStubbing[Future[UpscanDetails]] =
+  def mockFetchUpscanFileDetails(regId: String, reference: String)(res: Future[UpscanDetails]): OngoingStubbing[Future[UpscanDetails]] =
     when(mockUpscanConnector.fetchUpscanFileDetails(
+      ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(reference)
     )(
       ArgumentMatchers.any[HeaderCarrier]

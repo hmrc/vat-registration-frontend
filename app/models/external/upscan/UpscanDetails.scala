@@ -16,13 +16,13 @@
 
 package models.external.upscan
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, JsPath, JsString, Json, OFormat, Reads, Writes}
 
 import java.time.LocalDateTime
 
 case class UpscanDetails(reference: String,
                          downloadUrl: Option[String] = None,
-                         fileStatus: String,
+                         fileStatus: FileStatus,
                          uploadDetails: Option[UploadDetails] = None,
                          failureDetails: Option[FailureDetails] = None)
 
@@ -45,4 +45,43 @@ case class FailureDetails(failureReason: String,
 
 object FailureDetails {
   implicit val format: OFormat[FailureDetails] = Json.format[FailureDetails]
+}
+
+sealed trait FileStatus {
+  val value: String
+}
+
+case object InProgress extends FileStatus {
+  val value = "IN_PROGRESS"
+}
+
+case object Failed extends FileStatus {
+  val value = "FAILED"
+}
+
+case object Ready extends FileStatus {
+  val value = "READY"
+}
+
+object FileStatus {
+
+  def unapply(status: FileStatus): String = status.value
+
+  val reads: Reads[FileStatus] = for {
+    value <- JsPath.read[String].map {
+      case InProgress.value => InProgress
+      case Failed.value => Failed
+      case Ready.value => Ready
+    }
+  } yield value
+
+  val writes: Writes[FileStatus] = Writes {
+    status: FileStatus => JsString(status.value)
+  }
+
+  implicit val format: Format[FileStatus] = Format(
+    reads,
+    writes
+  )
+
 }

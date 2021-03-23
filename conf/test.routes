@@ -38,3 +38,6 @@ POST        /api/verify-passcode                              controllers.test.E
 
 
 GET         /submission-payload                               controllers.test.RetrieveVatSubmissionController.retrieveSubmissionJson
+
+GET         /file-upload                                      controllers.test.FileUploadController.show
+GET         /callback-status                                  controllers.test.FileUploadController.callbackCheck(reference: String)
