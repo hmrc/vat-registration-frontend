@@ -35,6 +35,10 @@
 
 @layout(pageTitle = Some(titleNoForm("Test upload page"))) {
     @formWithCSRF(action = Call("POST", upscanResponse.href), 'enctype -> "multipart/form-data") {
+        @for(field <- upscanResponse.fields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+        }
+
         @govukFileUpload(FileUpload(
             name = "file-upload-1",
             id = "file-upload-1",
@@ -42,10 +46,6 @@
                 content = Text("Upload a file")
             )
         ))
-
-        @for(field <- upscanResponse.fields) {
-            <input type="hidden" name="@field._1" value="@field._2"/>
-        }
 
         @govukButton(Button(
             attributes = Map("id" -> "file-upload-button"),
