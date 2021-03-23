@@ -45,8 +45,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       )
     )
   )
-  val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref,
-    Map("testField1" -> "test1", "testField2" -> "test2", "success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck(testReference).url))
+  val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map("testField1" -> "test1", "testField2" -> "test2"))
 
   val upscanReferenceUrl = s"/vatreg/$testRegId/upscan-reference"
 
@@ -63,10 +62,10 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
+        "success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck().url,
         "minimumFileSize" -> 0,
         "maximumFileSize" -> 10485760,
-        "expectedContentType" -> "multipart/form-data"
-      )
+        "expectedContentType" -> "text/plain")
 
       val response = await(connector.upscanInitiate())
 
