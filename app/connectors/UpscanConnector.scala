@@ -32,18 +32,14 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
+      "success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck().url,
       "minimumFileSize" -> 0,
       "maximumFileSize" -> 10485760,
-      "expectedContentType" -> "multipart/form-data"
+      "expectedContentType" -> "text/plain"
     )
 
     httpClient.POST[JsValue, HttpResponse](url, body).map {
-      case response@HttpResponse(OK, _, _) =>
-        val receivedResponse = response.json.as[UpscanResponse]
-
-        receivedResponse.copy(fields = receivedResponse.fields +
-          ("success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck(receivedResponse.reference).url)
-        )
+      case response@HttpResponse(OK, _, _) => response.json.as[UpscanResponse]
 
       case response => throw new InternalServerException(s"[UpscanConnector] Upscan initiate received an unexpected response Status: ${response.status}")
     }

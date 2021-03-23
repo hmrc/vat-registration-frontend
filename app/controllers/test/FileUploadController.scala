@@ -19,7 +19,7 @@ package controllers.test
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Session}
 import services.{SessionProfile, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.fileUpload.{callback_check, file_upload}
@@ -40,12 +40,12 @@ class FileUploadController @Inject()(fileUploadView: file_upload,
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => profile =>
     upscanService.initiateUpscan(profile.registrationId).map{ upscanResponse =>
-      Ok(fileUploadView(upscanResponse))
+      Ok(fileUploadView(upscanResponse)).addingToSession("reference" -> upscanResponse.reference)
     }
   }
 
-  def callbackCheck(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => profile =>
-    upscanService.fetchUpscanFileDetails(profile.registrationId, reference).map{ upscanDetails =>
+  def callbackCheck(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => profile =>
+    upscanService.fetchUpscanFileDetails(profile.registrationId, request.session.get("reference").get).map{ upscanDetails =>
       Ok(callbackCheck(upscanDetails))
     }
   }
