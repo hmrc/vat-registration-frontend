@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.external.upscan.{UpscanDetails, UpscanResponse}
+import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -45,17 +45,17 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       )
     )
   )
-  val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map("testField1" -> "test1", "testField2" -> "test2"))
+  val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref,
+    Map("testField1" -> "test1", "testField2" -> "test2", "success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck(testReference).url))
 
   val upscanReferenceUrl = s"/vatreg/$testRegId/upscan-reference"
 
-
-  val upscanDetailsUrl = s"/vatreg/$testReference/upscan-file-details"
+  val upscanDetailsUrl = s"/vatreg/$testRegId/upscan-file-details/$testReference"
   val testUpscanDetailsJson: JsObject = Json.obj(
     "reference" -> testReference,
     "fileStatus" -> "IN_PROGRESS"
   )
-  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = "IN_PROGRESS")
+  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
 
 
   "upscanInitiate" must {
@@ -63,8 +63,6 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-        "successRedirect" -> "TBD", //TODO add success and error redirects
-        "errorRedirect" -> "TBD",
         "minimumFileSize" -> 0,
         "maximumFileSize" -> 10485760,
         "expectedContentType" -> "multipart/form-data"
@@ -104,7 +102,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an UpscanDetails" in {
       stubGet(upscanDetailsUrl, OK, testUpscanDetailsJson.toString())
 
-      val response = await(connector.fetchUpscanFileDetails(testReference))
+      val response = await(connector.fetchUpscanFileDetails(testRegId, testReference))
 
       verify(getRequestedFor(urlEqualTo(upscanDetailsUrl)))
       response mustBe testUpscanDetails
@@ -113,7 +111,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if fetch fails" in {
       stubGet(upscanDetailsUrl, NOT_FOUND, testUpscanDetailsJson.toString())
 
-      intercept[NotFoundException](await(connector.fetchUpscanFileDetails(testReference)))
+      intercept[NotFoundException](await(connector.fetchUpscanFileDetails(testRegId, testReference)))
     }
   }
 }

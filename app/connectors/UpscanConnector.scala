@@ -32,15 +32,19 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-      "successRedirect" -> "TBD", //TODO add success and error redirects
-      "errorRedirect" -> "TBD",
       "minimumFileSize" -> 0,
       "maximumFileSize" -> 10485760,
       "expectedContentType" -> "multipart/form-data"
     )
 
     httpClient.POST[JsValue, HttpResponse](url, body).map {
-      case response@HttpResponse(OK, _, _) => response.json.as[UpscanResponse]
+      case response@HttpResponse(OK, _, _) =>
+        val receivedResponse = response.json.as[UpscanResponse]
+
+        receivedResponse.copy(fields = receivedResponse.fields +
+          ("success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck(receivedResponse.reference).url)
+        )
+
       case response => throw new InternalServerException(s"[UpscanConnector] Upscan initiate received an unexpected response Status: ${response.status}")
     }
   }
@@ -53,8 +57,8 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
     }
   }
 
-  def fetchUpscanFileDetails(reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
-    lazy val url = appConfig.fetchUpscanFileDetails(reference)
+  def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
+    lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
     httpClient.GET[UpscanDetails](url) recover {
       case e => throw logResponse(e, "fetchUpscanFileDetails")
