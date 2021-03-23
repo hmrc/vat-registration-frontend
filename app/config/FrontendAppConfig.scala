@@ -158,7 +158,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val upscanInitiateHost: String = servicesConfig.baseUrl("upscan-initiate")
 
   def setupUpscanJourneyUrl: String =
-    if (isEnabled(StubUpscan)) ???
+    if (isEnabled(StubUpscan)) s"$host/register-for-vat/test-only/upscan/initiate"
     else s"$upscanInitiateHost/upscan/v2/initiate"
 
   def storeUpscanReferenceUrl(regId: String): String = s"$backendHost/vatreg/$regId/upscan-reference"

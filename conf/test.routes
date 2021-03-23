@@ -41,3 +41,9 @@ GET         /submission-payload                               controllers.test.R
 
 GET         /file-upload                                      controllers.test.FileUploadController.show
 GET         /callback-status                                  controllers.test.FileUploadController.callbackCheck
+
++ nocsrf
+POST         /upscan/initiate                                 controllers.test.UpscanStubController.upscanInitiate
+
++ nocsrf
+POST         /upscan/upload-response                          controllers.test.UpscanStubController.uploadResponse
