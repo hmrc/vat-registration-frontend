@@ -62,10 +62,10 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-        "success_action_redirect" -> controllers.test.routes.FileUploadController.callbackCheck().url,
+        "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck().url,
         "minimumFileSize" -> 0,
         "maximumFileSize" -> 10485760,
-        "expectedContentType" -> "text/plain")
+        "expectedContentType" -> "image/jpeg")
 
       val response = await(connector.upscanInitiate())
 
