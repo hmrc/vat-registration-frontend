@@ -63,6 +63,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val reportAProblemNonJSUrl = s"$contactFrontendUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
 
+  lazy val accessibilityStatementPath = loadConfig("accessibility-statement.host")
+  lazy val accessibilityStatementUrl = s"$accessibilityStatementPath/accessibility-statement/vat-registration"
+
   val timeout: Int = servicesConfig.getInt("timeout.timeout")
   val countdown: Int = servicesConfig.getInt("timeout.countdown")
 
