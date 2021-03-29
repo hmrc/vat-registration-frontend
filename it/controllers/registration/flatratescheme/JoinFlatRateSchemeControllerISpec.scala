@@ -9,7 +9,7 @@ import play.api.test.Helpers._
 
 class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
-  implicit val s4lFrsKey = FlatRateScheme.s4lkey
+  implicit val s4lFrsKey = FlatRateScheme.s4lKey
 
   val frsS4LData: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),

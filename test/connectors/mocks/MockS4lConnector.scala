@@ -28,7 +28,7 @@ import org.mockito.{ArgumentMatchers => Matchers}
 
 import scala.concurrent.Future
 
-trait SaveForLaterMock {
+trait MockS4lConnector {
   this: MockitoSugar =>
 
   lazy val mockS4LConnector = mock[S4LConnector]
@@ -56,8 +56,17 @@ trait SaveForLaterMock {
 
 
   def mockS4LSave[T](formId: String, cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(""))), mockS4LConnector: S4LConnector = mockS4LConnector): OngoingStubbing[Future[CacheMap]] = {
-
     when(mockS4LConnector.save[T](Matchers.anyString(), Matchers.contains(formId), Matchers.any[T]())(Matchers.any[HeaderCarrier](), Matchers.any[Format[T]]()))
       .thenReturn(Future.successful(cacheMap))
+  }
+  def mockS4LSave[T](regId: String, key: String, data: T)(response: Future[CacheMap]): OngoingStubbing[Future[CacheMap]] = {
+    when(mockS4LConnector.save[T](
+      Matchers.eq(regId),
+      Matchers.contains(key),
+      Matchers.eq[T](data)
+    )(
+      Matchers.any[HeaderCarrier](),
+      Matchers.any[Format[T]]())
+    ).thenReturn(response)
   }
 }

@@ -21,11 +21,11 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameForm
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

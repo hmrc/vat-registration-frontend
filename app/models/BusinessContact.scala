@@ -26,7 +26,7 @@ case class BusinessContact(ppobAddress: Option[Address] = None,
 
 object BusinessContact {
   implicit val format: Format[BusinessContact] = Json.format[BusinessContact]
-  implicit val businessContactS4lKey: S4LKey[BusinessContact] = S4LKey("business-contact")
+  implicit val s4lKey: S4LKey[BusinessContact] = S4LKey("business-contact")
 
   val apiReads: Reads[BusinessContact] = (
     (__ \ "ppob").readNullable[Address] and

@@ -30,7 +30,4 @@ object S4LKey {
     override val key = k
   }
 
-  implicit val returns: S4LKey[Returns]               = S4LKey("returns")
-  implicit val bankAccountKey: S4LKey[BankAccount]    = S4LKey[BankAccount]("bankAccount")
-  val flatRateScheme: S4LKey[FlatRateScheme]          = S4LKey[FlatRateScheme]("flatRateScheme")
 }

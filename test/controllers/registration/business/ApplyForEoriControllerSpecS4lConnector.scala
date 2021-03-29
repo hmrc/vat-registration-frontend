@@ -27,7 +27,7 @@ import views.html.apply_for_eori
 
 import scala.concurrent.Future
 
-class ApplyForEoriControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   class Setup {
     val testController = new ApplyForEoriController(

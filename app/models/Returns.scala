@@ -87,6 +87,7 @@ case class Returns(zeroRatedSupplies: Option[BigDecimal],
                    start: Option[Start])
 
 object Returns {
+  implicit val s4lKey: S4LKey[Returns] = S4LKey("returns")
   implicit val format: OFormat[Returns] = Json.format[Returns]
 
   def empty = Returns(None, None, None, None, None)

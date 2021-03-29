@@ -31,14 +31,14 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
                                        (implicit ec: ExecutionContext) {
 
   def getSicAndCompliance(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
-    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.sicAndCompliance).flatMap {
+    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.s4lKey).flatMap {
       _.fold(getFromApi)(a => Future.successful(a))
     }
   }
 
   def updateSicAndCompliance[T](newData: T)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
     getSicAndCompliance.flatMap(sac => isModelComplete(updateModel(sac, newData)).fold(
-      incomplete => s4lService.saveNoAux[SicAndCompliance](incomplete, SicAndCompliance.sicAndCompliance).map(_ => incomplete),
+      incomplete => s4lService.saveNoAux[SicAndCompliance](incomplete, SicAndCompliance.s4lKey).map(_ => incomplete),
       complete => updateVatRegAndClearS4l(complete)
     ))
   }
@@ -71,7 +71,7 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
     for {
       optView <- registrationConnector.getSicAndCompliance
       view = optView.fold(SicAndCompliance())(SicAndCompliance.fromApi)
-      _ <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.sicAndCompliance)
+      _ <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.s4lKey)
     } yield view
   }
 
