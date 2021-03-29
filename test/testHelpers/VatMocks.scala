@@ -16,7 +16,7 @@
 
 package testHelpers
 
-import connectors.mocks.{AuthMock, HttpClientMock, KeystoreMock, SaveForLaterMock}
+import connectors.mocks.{AuthMock, HttpClientMock, KeystoreMock, MockS4lConnector}
 import connectors._
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import utils.CascadeUpsert
 
 trait VatMocks
-  extends SaveForLaterMock
+  extends MockS4lConnector
     with AuthMock
     with KeystoreMock
     with HttpClientMock

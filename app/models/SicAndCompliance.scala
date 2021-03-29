@@ -30,7 +30,7 @@ case class SicAndCompliance(description: Option[BusinessActivityDescription] = N
 object SicAndCompliance extends OptionalJsonFields {
   val NUMBER_OF_WORKERS_THRESHOLD: Int = 8
   implicit val format: OFormat[SicAndCompliance] = Json.format[SicAndCompliance]
-  implicit val sicAndCompliance: S4LKey[SicAndCompliance] = S4LKey("SicAndCompliance")
+  implicit val s4lKey: S4LKey[SicAndCompliance] = S4LKey("SicAndCompliance")
 
   def fromApi(json: JsValue): SicAndCompliance = {
     val sicCode = (json \ "mainBusinessActivity").as[SicCode]

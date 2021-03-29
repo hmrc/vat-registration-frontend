@@ -48,7 +48,7 @@ class FlatRateControllerISpec extends ControllerISpec {
     staggerStart = None,
     start = Some(Start(Some(LocalDate.of(2017,1,2))))
   ))
-  implicit val s4lFrsKey = FlatRateScheme.s4lkey
+  implicit val s4lFrsKey = FlatRateScheme.s4lKey
 
   val threeWorkingDaysInFuture = LocalDate.of(2018, 5, 29)
   val OneDayBeforeVatStartDate = LocalDate.of(2017,1,1)

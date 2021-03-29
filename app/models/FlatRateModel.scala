@@ -40,7 +40,7 @@ case class FlatRateScheme(joinFrs : Option[Boolean] = None,
                           limitedCostTrader: Option[Boolean] = None)
 
 object FlatRateScheme {
-  val s4lkey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
+  val s4lKey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
 
   val reads: Reads[FlatRateScheme] = new Reads[FlatRateScheme] {
     override def reads(json: JsValue): JsResult[FlatRateScheme] = {

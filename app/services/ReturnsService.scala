@@ -51,7 +51,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
-    s4lService.fetchAndGetNoAux[Returns](S4LKey.returns) flatMap {
+    s4lService.fetchAndGetNoAux[Returns](Returns.s4lKey) flatMap {
       case Some(returns) => Future.successful(returns)
       case _ => vatRegConnector.getReturns(profile.registrationId)
     } recover {
@@ -107,7 +107,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
     handleView(returns) fold(
       incomplete =>
-        s4lService.saveNoAux(returns, S4LKey.returns),
+        s4lService.saveNoAux(returns, Returns.s4lKey),
 
       complete =>
         vatRegConnector.patchReturns(profile.registrationId, returns) map { _ =>

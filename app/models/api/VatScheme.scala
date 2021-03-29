@@ -34,6 +34,20 @@ case class VatScheme(id: String,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None)
 
 object VatScheme {
+  val s4lFormat: Format[VatScheme] = (
+    (__ \ "registrationId").format[String] and
+    (__ \ ApplicantDetails.s4lKey.key).formatNullable[ApplicantDetails] and
+    (__ \ TradingDetails.s4lKey.key).formatNullable[TradingDetails] and
+    (__ \ SicAndCompliance.s4lKey.key).formatNullable[SicAndCompliance]
+      .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
+    (__ \ BusinessContact.s4lKey.key).formatNullable[BusinessContact] and
+    (__ \ Returns.s4lKey.key).formatNullable[Returns] and
+    (__ \ BankAccount.s4lKey.key).formatNullable[BankAccount] and
+    (__ \ FlatRateScheme.s4lKey.key).formatNullable[FlatRateScheme] and
+    (__ \ "status").format[VatRegStatus.Value] and
+    (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData]
+  )(VatScheme.apply, unlift(VatScheme.unapply))
+
   implicit val format: OFormat[VatScheme] = (
       (__ \ "registrationId").format[String] and
       (__ \ "applicantDetails").formatNullable[ApplicantDetails](ApplicantDetails.apiFormat) and

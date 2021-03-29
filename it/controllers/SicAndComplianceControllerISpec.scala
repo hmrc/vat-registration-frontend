@@ -19,7 +19,7 @@ package controllers
 import fixtures.SicAndComplianceFixture
 import helpers.RequestsFinder
 import itutil.ControllerISpec
-import models.SicAndCompliance.{sicAndCompliance => sicAndCompKey}
+import models.SicAndCompliance.{s4lKey => sicAndCompKey}
 import models._
 import models.api.SicCode
 import models.test.SicStub

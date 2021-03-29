@@ -29,7 +29,7 @@ case class TradingDetails(tradingNameView: Option[TradingNameView] = None,
                           euGoods: Option[Boolean] = None)
 
 object TradingDetails {
-  implicit val s4lkey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
+  implicit val s4lKey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
 
   val reads: Reads[TradingDetails] = new Reads[TradingDetails] {
     override def reads(json: JsValue): JsResult[TradingDetails] = {

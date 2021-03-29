@@ -51,6 +51,8 @@ object BankAccountDetails {
 }
 
 object BankAccount extends JsonUtilities {
+  implicit val s4lKey: S4LKey[BankAccount]    = S4LKey[BankAccount]("bankAccount")
+
    val reads: Reads[BankAccount] = (
     (__ \ "isProvided").read[Boolean] and
       (__ \ "details").readNullable[BankAccountDetails](BankAccountDetails.format) and

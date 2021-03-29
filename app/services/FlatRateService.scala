@@ -40,7 +40,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
   def applyPercentRoundUp(l: Long): Long = Math.ceil(l * 0.005).toLong
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    s4LService.fetchAndGetNoAux(FlatRateScheme.s4lkey) flatMap {
+    s4LService.fetchAndGetNoAux(FlatRateScheme.s4lKey) flatMap {
       case Some(s4l) => Future.successful(s4l)
       case None => vatRegConnector.getFlatRate(profile.registrationId) map {
         case Some(frs) => frs
@@ -62,7 +62,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
   def submitFlatRate(data: FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
     handleView(data).fold(
       incomplete => {
-        s4LService.saveNoAux(incomplete, FlatRateScheme.s4lkey) map { _ => incomplete }
+        s4LService.saveNoAux(incomplete, FlatRateScheme.s4lKey) map { _ => incomplete }
       },
       complete => {
         for {
@@ -151,7 +151,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def clearFrs(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
-    s4LService.saveNoAux(FlatRateScheme(), FlatRateScheme.s4lkey) flatMap (_ =>
+    s4LService.saveNoAux(FlatRateScheme(), FlatRateScheme.s4lKey) flatMap (_ =>
       vatRegConnector.clearFlatRate(cp.registrationId).map(_ => true))
   }
 
