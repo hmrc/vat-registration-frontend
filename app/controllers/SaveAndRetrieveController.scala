@@ -33,9 +33,13 @@ class SaveAndRetrieveController @Inject()(val authConnector: AuthConnector,
                                           bcc: BaseControllerComponents,
                                           appConfig: FrontendAppConfig) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def save(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
     // TODO: Update to return OK with the new save and come back later page once implemented
-    saveAndRetrieveService.savePartialVatScheme.map(_ => NotImplemented)
+    saveAndRetrieveService.savePartialVatScheme(regId).map(_ => NotImplemented)
+  }
+
+  def retrieve(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => _ =>
+    saveAndRetrieveService.retrievePartialVatScheme(regId).map(_ => NoContent)
   }
 
 }

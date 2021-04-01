@@ -17,11 +17,9 @@
 package services
 
 import connectors.S4LConnector
-import models.CurrentProfile
-import models.api.VatScheme
-import play.api.libs.json.Format
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,14 +30,22 @@ class SaveAndRetrieveService @Inject()(vatRegistrationService: VatRegistrationSe
 
   val s4lKey = "partialVatScheme"
 
-  def savePartialVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[CacheMap] = {
+  def savePartialVatScheme(regId: String)(implicit hc: HeaderCarrier): Future[CacheMap] = {
     for {
-      vatScheme <- vatRegistrationService.getVatScheme
-      cacheMap <- {
-        implicit val format: Format[VatScheme] = VatScheme.s4lFormat
-        s4LConnector.save[VatScheme](profile.registrationId, s4lKey, vatScheme)
-      }
+      vatSchemeJson <- vatRegistrationService.getVatSchemeJson(regId)
+      cacheMap <- s4LConnector.save(regId, s4lKey, vatSchemeJson)
     } yield cacheMap
+  }
+
+  def retrievePartialVatScheme(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    for {
+      optPartialVatScheme <- s4LConnector.fetchAndGet[JsValue](regId, s4lKey)
+      partialVatScheme = optPartialVatScheme.getOrElse(
+        throw new InternalServerException("[SaveAndRetrieveService] Could not retrieve vat scheme from S4L")
+      )
+      storedVatSchemeJson <- vatRegistrationService.storePartialVatScheme(regId, partialVatScheme)
+    } yield storedVatSchemeJson
+
   }
 
 }

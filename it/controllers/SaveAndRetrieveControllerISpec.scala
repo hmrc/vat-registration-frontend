@@ -8,11 +8,11 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-class SaveAndRetrieveControllerISpec extends ControllerISpec  {
+class SaveAndRetrieveControllerISpec extends ControllerISpec {
 
   val vatSchemeApiUrl = s"/vatreg/${currentProfile.registrationId}/get-scheme"
   val s4lApiUrl = s"/save4later/vat-registration-frontend/${currentProfile.registrationId}/data/partialVatScheme"
-  val url = "/come-back-later"
+  val url = s"/schemes/${currentProfile.registrationId}/save-for-later"
 
   val fullVatSchemeJson = Json.toJson(fullVatScheme)
 
@@ -32,7 +32,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec  {
           stubGet(vatSchemeApiUrl, OK, Json.stringify(fullVatSchemeJson))
           stubPut(s4lApiUrl, CREATED, Json.stringify(Json.toJson(CacheMap(currentProfile.registrationId, s4lCacheMap))))
 
-          val res = await(buildClient(url).get)
+          val res = await(buildClient(url).post(""))
 
           res.status mustBe NOT_IMPLEMENTED
         }
@@ -48,7 +48,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec  {
           stubGet(vatSchemeApiUrl, OK, Json.stringify(fullVatSchemeJson))
           stubPut(s4lApiUrl, CREATED, Json.stringify(Json.toJson(CacheMap(currentProfile.registrationId, s4lCacheMap))))
 
-          val res = await(buildClient(url).get)
+          val res = await(buildClient(url).post(""))
 
           res.status mustBe NOT_IMPLEMENTED
         }
@@ -64,7 +64,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec  {
           stubGet(vatSchemeApiUrl, OK, Json.stringify(fullVatSchemeJson))
           stubPut(s4lApiUrl, INTERNAL_SERVER_ERROR, Json.stringify(Json.toJson(CacheMap(currentProfile.registrationId, s4lCacheMap))))
 
-          val res = await(buildClient(url).get)
+          val res = await(buildClient(url).post(""))
 
           res.status mustBe INTERNAL_SERVER_ERROR
         }
@@ -80,7 +80,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec  {
 
         stubGet(vatSchemeApiUrl, INTERNAL_SERVER_ERROR, "")
 
-        val res = await(buildClient(url).get)
+        val res = await(buildClient(url).post(""))
 
         res.status mustBe INTERNAL_SERVER_ERROR
       }

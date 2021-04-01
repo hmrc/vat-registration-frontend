@@ -16,19 +16,18 @@
 
 package services
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import connectors._
-import javax.inject.{Inject, Singleton}
 import models.api._
 import models.{TurnoverEstimates, _}
 import play.api.Logger
-import play.api.libs.json.{Format, JsObject}
+import play.api.libs.json.{Format, JsObject, JsValue}
 import play.api.mvc.Request
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -44,6 +43,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
+
+  def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =
+    vatRegConnector.getRegistrationJson(regId)
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = vatRegConnector.getAckRef(regId)
 
@@ -70,14 +72,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsObject] = vatRegConnector.getEligibilityData
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
-    for {
-      submit <- vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
-    } yield submit
-
+    vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
   } recover {
-    case e =>
-      SubmissionFailedRetryable
-
+    case _ => SubmissionFailedRetryable
   }
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
@@ -90,5 +87,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     vatRegConnector.submitHonestyDeclaration(regId, honestyDeclaration)
   }
+
+  def storePartialVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] =
+    vatRegConnector.upsertVatScheme(regId, partialVatScheme)
 
 }
