@@ -93,6 +93,25 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling getRegistrationJson" should {
+    "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
+      mockHttpGET[JsValue]("tst-url", Json.toJson(validVatScheme))
+      connector.getRegistrationJson("tstID") returns Json.toJson(validVatScheme)
+    }
+    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[JsValue]("tst-url", forbidden)
+      connector.getRegistrationJson("tstID") failedWith forbidden
+    }
+    "return the correct VatResponse when a Not Found response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[JsValue]("tst-url", notFound)
+      connector.getRegistrationJson("not_found_tstID") failedWith notFound
+    }
+    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
+      mockHttpFailedGET[JsValue]("test-url", internalServiceException)
+      connector.getRegistrationJson("tstID") failedWith internalServiceException
+    }
+  }
+
   "Calling getAckRef" should {
     "return a Acknowldegement Reference when it can be retrieved from the microservice" in new Setup {
       mockHttpGET[HttpResponse]("tst-url", HttpResponse(OK, "Fake Ref No"))

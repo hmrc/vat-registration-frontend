@@ -10,7 +10,8 @@ GET         /renew-session                                                      
 GET         /error/destroy-session                                                             controllers.callbacks.SignInOutController.destroySession
 GET         /session-timed-out                                                                 controllers.callbacks.SignInOutController.timeoutShow()
 
-GET         /come-back-later                                                                   controllers.SaveAndRetrieveController.show
+POST        /schemes/:regId/save-for-later                                                     controllers.SaveAndRetrieveController.save(regId)
+GET         /schemes/:regId/retrieve                                                           controllers.SaveAndRetrieveController.retrieve(regId)
 
 ## FEEDBACK
 GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow

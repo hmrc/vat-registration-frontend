@@ -16,14 +16,13 @@
 
 package services.mocks
 
-import common.enums.VatRegStatus
-import models.CurrentProfile
-import models.api.VatScheme
-import org.scalatest.Suite
-import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
+import org.scalatest.Suite
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.JsValue
 import services.VatRegistrationService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -34,10 +33,15 @@ trait MockVatRegistrationService extends MockitoSugar {
 
   val vatRegistrationServiceMock = mock[VatRegistrationService]
 
-  def mockGetVatScheme(regId: String)(response: Future[VatScheme]): OngoingStubbing[Future[VatScheme]] =
-    when(vatRegistrationServiceMock.getVatScheme(
-      ArgumentMatchers.eq(CurrentProfile(regId, VatRegStatus.draft)),
-      ArgumentMatchers.any[HeaderCarrier]
-    )) thenReturn(response)
-  
+  def mockGetVatScheme(regId: String)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
+    when(vatRegistrationServiceMock.getVatSchemeJson(
+      ArgumentMatchers.eq(regId)
+    )(any[HeaderCarrier])) thenReturn response
+
+  def mockSaveVatScheme(regId: String, partialVatScheme: JsValue)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
+    when(vatRegistrationServiceMock.storePartialVatScheme(
+      ArgumentMatchers.eq(regId),
+      ArgumentMatchers.eq(partialVatScheme)
+    )(any[HeaderCarrier])) thenReturn response
+
 }

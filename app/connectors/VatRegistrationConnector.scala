@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// scalastyle:off
 @Singleton
 class VatRegistrationConnector @Inject()(val http: HttpClient,
                                          val config: FrontendAppConfig)
@@ -48,6 +49,12 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
     http.GET[VatScheme](s"$vatRegUrl/vatreg/$regId/get-scheme").recover {
       case e => throw logResponse(e, "getRegistration")
+    }
+  }
+
+  def getRegistrationJson(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[JsValue] = {
+    http.GET[JsValue](s"$vatRegUrl/vatreg/$regId/get-scheme").recover {
+      case e => throw logResponse(e, "getRegistrationJson")
     }
   }
 
@@ -247,6 +254,12 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val js = Json.obj("honestyDeclaration" -> honestyDeclaration)
     http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/honesty-declaration", js)
+  }
+
+  def upsertVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    http.POST(s"$vatRegUrl/vatreg/$regId/insert-s4l-scheme", partialVatScheme).map{
+      response => response.json
+    }
   }
 }
 
