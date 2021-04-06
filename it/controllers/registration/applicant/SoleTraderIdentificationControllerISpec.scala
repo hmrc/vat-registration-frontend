@@ -16,8 +16,8 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
 
-  val journeyUrl = "/sole-trader-identification/journey"
-  val retrieveDetailsUrl = s"/sole-trader-identification/journey/$testJourneyId"
+  val journeyUrl = "/sole-trader-identification/api/journey"
+  val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
 
   "GET /start-sti-journey" when {
     "STI returns a journey ID" must {

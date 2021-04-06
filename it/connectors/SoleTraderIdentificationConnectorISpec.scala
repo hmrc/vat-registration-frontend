@@ -14,8 +14,8 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
-  val createJourneyUrl = "/sole-trader-identification/journey"
-  val retrieveDetailsUrl = s"/sole-trader-identification/journey/$testJourneyId"
+  val createJourneyUrl = "/sole-trader-identification/api/journey"
+  val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
   val connector = app.injector.instanceOf[SoleTraderIdentificationConnector]
 
   val testJourneyConfig = SoleTraderIdJourneyConfig(
