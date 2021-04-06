@@ -132,14 +132,14 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
     } else {
-      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/journey/$journeyId"
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/journey/$journeyId"
     }
 
   def soleTraderIdentificationJourneyUrl: String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification"
     } else {
-      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/journey"
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/journey"
     }
 
   def getSoleTraderIdentificationCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
