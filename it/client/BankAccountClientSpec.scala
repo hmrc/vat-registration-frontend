@@ -210,7 +210,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       And("The bank details form data will be valid")
-      stubBankReputationCheck(valid = true)
+      stubBankReputationCheck(valid = "yes")
 
       And("The form data along with the 'has bank account' value from the previous page will be saved to S4L and VAT backend")
       stubS4LSaveBankAccount(regId)

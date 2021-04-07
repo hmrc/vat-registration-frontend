@@ -88,6 +88,14 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
+  // Bank Account Reputation Section
+
+  lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")
+
+  def validateBankDetailsUrl: String =
+    if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
+    else s"$bankAccountReputationHost/v2/validateBankDetails"
+
   // Incorporated Entity Identification Section
 
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")

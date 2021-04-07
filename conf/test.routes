@@ -47,3 +47,6 @@ POST         /upscan/initiate                                 controllers.test.U
 
 + nocsrf
 POST         /upscan/upload-response                          controllers.test.UpscanStubController.uploadResponse
+
++ nocsrf
+POST         /bars/validate-bank-details                      controllers.test.BankAccountReputationStubController.validateBankDetails

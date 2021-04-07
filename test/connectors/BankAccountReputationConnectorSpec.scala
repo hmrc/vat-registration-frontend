@@ -16,6 +16,7 @@
 
 package connectors
 
+import config.FrontendAppConfig
 import models.BankAccountDetails
 import org.mockito.Mockito._
 import org.mockito._
@@ -29,23 +30,20 @@ import scala.concurrent.Future
 class BankAccountReputationConnectorSpec extends VatRegSpec {
 
   class Setup {
-
+    val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val connector: BankAccountReputationConnector = new BankAccountReputationConnector(
       mockHttpClient,
-      mockServicesConfig
-    ) {
-      override val bankAccountReputationUrl: String = "test-url"
-    }
+      appConfig
+    )
   }
 
   "bankAccountModulusCheck" should {
-
     val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
 
     "return a valid JSON value" in new Setup {
-      mockHttpPOST[BankAccountDetails, JsValue](connector.bankAccountReputationUrl, validBankCheckJsonResponse)
+      mockHttpPOST[BankAccountDetails, JsValue]("/v2/validateBankDetails", validBankCheckJsonResponse)
 
-      connector.bankAccountDetailsModulusCheck(bankDetails) returns validBankCheckJsonResponse
+      connector.validateBankDetails(bankDetails) returns validBankCheckJsonResponse
     }
 
     "throw an exception" in new Setup {
@@ -53,7 +51,7 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, 500, 500)))
 
-      connector.bankAccountDetailsModulusCheck(bankDetails) failedWith classOf[Upstream5xxResponse]
+      connector.validateBankDetails(bankDetails) failedWith classOf[Upstream5xxResponse]
     }
   }
 }

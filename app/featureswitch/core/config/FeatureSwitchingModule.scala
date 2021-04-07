@@ -33,7 +33,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     UseSoleTraderIdentification,
     StubSoleTraderIdentification,
     UseUpscan,
-    StubUpscan
+    StubUpscan,
+    StubBars
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -86,4 +87,9 @@ case object UseUpscan extends FeatureSwitch {
 case object StubUpscan extends FeatureSwitch {
   val configName = "feature-switch.stub-upscan"
   val displayName = "Stub Upscan flow"
+}
+
+case object StubBars extends FeatureSwitch {
+  val configName = "feature-switch.stub-bars"
+  val displayName = "Stub Bank Account Reputation"
 }

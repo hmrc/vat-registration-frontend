@@ -17,25 +17,24 @@
 package connectors
 
 
-import javax.inject.{Inject, Singleton}
+import config.FrontendAppConfig
 import models.BankAccountDetails
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountReputationConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+class BankAccountReputationConnector @Inject()(val http: HttpClient,
+                                               appConfig: FrontendAppConfig)
                                               (implicit ec: ExecutionContext) {
 
-  val bankAccountReputationUrl: String = config.baseUrl("bank-account-reputation")
 
-  def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST[BankAccountDetails, JsValue](s"$bankAccountReputationUrl/modcheck", account) recover {
-      case ex => throw logResponse(ex, "bankAccountModulusCheck")
+  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
+    http.POST[BankAccountDetails, JsValue](appConfig.validateBankDetailsUrl, account) recover {
+      case ex => throw logResponse(ex, "validate")
     }
   }
 }

@@ -16,19 +16,21 @@
 
 package services
 
+import featureswitch.core.config.{FeatureSwitching, StubBars}
 import models.BankAccountDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json._
 import testHelpers.{S4LMockSugar, VatRegSpec}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
+class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with FeatureSwitching {
 
   class Setup {
+    disable(StubBars)
     val service: BankAccountReputationService = new BankAccountReputationService(
       mockBankAccountReputationConnector,
       mockAuthClientConnector,
@@ -36,14 +38,13 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
     )
   }
 
-  "Calling bankDetailsModulusCheck" should {
-
+  "Calling validateBankDetails" should {
     val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
 
     "return true when the json returns a true" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.bankAccountDetailsModulusCheck(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
         .thenReturn(Future.successful(validBankCheckJsonResponse))
       mockAuthenticatedInternalId(Some(testUserId))
 
@@ -53,7 +54,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
         "response" -> validBankCheckJsonResponse
       )
 
-      service.bankAccountDetailsModulusCheck(bankDetails) returns true
+      service.validateBankDetails(bankDetails) returns true
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
@@ -62,20 +63,50 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar {
     "return false when the json returns a false" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.bankAccountDetailsModulusCheck(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
         .thenReturn(Future.successful(invalidBankCheckJsonResponse))
       mockAuthenticatedInternalId(Some(testUserId))
 
       val testAuditRequest: JsObject = Json.obj(
         "credId" -> testUserId,
         "request" -> Json.toJson(bankDetails),
-        "response" -> validBankCheckJsonResponse
+        "response" -> invalidBankCheckJsonResponse
       )
 
-      service.bankAccountDetailsModulusCheck(bankDetails) returns false
+      service.validateBankDetails(bankDetails) returns false
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
+    }
+
+    "return false when the json returns indeterminate" in new Setup {
+      val testUserId = "testUserId"
+
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+        .thenReturn(Future.successful(indeterminateBankCheckJsonResponse))
+      mockAuthenticatedInternalId(Some(testUserId))
+
+      val testAuditRequest: JsObject = Json.obj(
+        "credId" -> testUserId,
+        "request" -> Json.toJson(bankDetails),
+        "response" -> indeterminateBankCheckJsonResponse
+      )
+
+      service.validateBankDetails(bankDetails) returns false
+
+      verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
+      )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
+    }
+    "throw an exception if the response is invalid" in new Setup {
+      val testUserId = "testUserId"
+
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+        .thenReturn(Future.successful(Json.obj("accountNumberWithSortCodeIsValid"-> "false")))
+      mockAuthenticatedInternalId(Some(testUserId))
+
+      intercept[InternalServerException] {
+        await(service.validateBankDetails(bankDetails))
+      }
     }
   }
 }

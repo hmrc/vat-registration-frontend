@@ -17,14 +17,14 @@
 package services
 
 import connectors.BankAccountReputationConnector
-import javax.inject.{Inject, Singleton}
 import models.BankAccountDetails
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -33,8 +33,8 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
                                              auditConnector: AuditConnector
                                             )(implicit ec: ExecutionContext) extends AuthorisedFunctions {
 
-  def bankAccountDetailsModulusCheck(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    bankAccountReputationConnector.bankAccountDetailsModulusCheck(account).flatMap {
+  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    bankAccountReputationConnector.validateBankDetails(account).flatMap {
       bankAccountValidationResponse =>
         authorised().retrieve(Retrievals.internalId) {
           case Some(internalId) =>
@@ -47,7 +47,15 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
             auditConnector.sendExplicitAudit("BarsValidateCheck", auditEvent)
 
             Future.successful(
-              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[Boolean]
+              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[Boolean](
+                Reads { json =>
+                  json.validate[String] map {
+                    case "yes" => true
+                    case "no" | "indeterminate" => false
+                    case _ => throw new InternalServerException(s"Could not determine bank account validation status")
+                  }
+                }
+              )
             )
           case None =>
             throw new InternalServerException("Missing internal ID for BARS check auditing")
@@ -55,3 +63,6 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
     }
   }
 }
+
+
+
