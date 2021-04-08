@@ -109,9 +109,9 @@ trait WiremockHelper extends WiremockS4LHelper {
     )
   }
 
-  def stubBankReputationCheck(valid: Boolean): StubMapping = {
+  def stubBankReputationCheck(valid: String): StubMapping = {
     val response = Json.obj("accountNumberWithSortCodeIsValid" -> valid)
-    stubFor(post(urlMatching("/modcheck"))
+    stubFor(post(urlMatching("/v2/validateBankDetails"))
       .willReturn(
         aResponse().
           withStatus(200)

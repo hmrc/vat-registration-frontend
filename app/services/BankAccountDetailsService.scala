@@ -17,10 +17,10 @@
 package services
 
 import connectors.VatRegistrationConnector
-import javax.inject.{Inject, Singleton}
-import models.{BankAccount, BankAccountDetails, CurrentProfile, S4LKey}
+import models.{BankAccount, BankAccountDetails, CurrentProfile}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -51,7 +51,7 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
-    bankAccountRepService.bankAccountDetailsModulusCheck(accountDetails).flatMap { validDetails =>
+    bankAccountRepService.validateBankDetails(accountDetails).flatMap { validDetails =>
       if (validDetails) {
         val bankAccount = BankAccount(isProvided = true, Some(accountDetails), None)
         saveBankAccountDetails(bankAccount) map (_ => true)
