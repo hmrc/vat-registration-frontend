@@ -19,6 +19,9 @@ GET         /feedback                                                           
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
 
+## PROGRESS SAVED PAGE
+GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
+
 ## HONESTY DECLARATION PAGE
 GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show
 POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit

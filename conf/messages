@@ -284,6 +284,13 @@ pages.application.submission.confirmation.link3                     = Software f
 pages.application.submission.confirmation.par3                      = The company cannot charge customers for VAT until it has its VAT number.
 pages.application.submission.confirmation.button                    = Finish
 
+## Progress Saved Page
+pages.application.progress.saved.heading                            = Your application has been saved for 7 days
+pages.application.progress.saved.para1                              = You will not be able to submit the application until you have completed the application.
+pages.application.progress.saved.para2                              = You can leave this page, or
+pages.application.progress.saved.link                               = return to your application
+pages.application.progress.saved.inset                              = Saved applications will only be available for 7 days
+
 ## Summary Page VAT details
 pages.summary.directorDetails.overThresholdThirtySelection           = VAT taxable sales over £{0} in the 30 days after company is registered
 pages.summary.directorDetails.necessity                              = Register voluntarily
