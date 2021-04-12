@@ -21,7 +21,7 @@ alias precommit="sbt clean coverage test it:test scalastyle coverageReport"
 User service manager to run all services required by VAT Registration Frontend:
 
 ```
-sm --start VAT_REG_DEP -f
+sm --start VAT_REG_ALL -r
 ```
 Before you interact with the application's frontend _for the first time_ you will need to prime business registration backend with some dummy registration data. You can do so by visiting this URL: http://localhost:9895/register-for-vat/test-only/current-profile-setup
 
@@ -29,7 +29,7 @@ Note there is also VAT_REG_ALL profile that will run all dependencies plus the v
 
 Alternatively, create an alias for starting the services required for the VAT Registration Frontend
 
-sm --start VAT_REG_ALL -f
+sm --start VAT_REG_ALL -r
 
 ```bash
 alias scrs='sm --start ADDRESS_LOOKUP AUTH AUTH_LOGIN_STUB AUTHENTICATOR BUS_REG CA_FRONTEND COMP_REG GG GG_AUTHENTICATION GG_STUBS USER_DETAILS KEYSTORE SAVE4LATER DATASTREAM ASSETS_FRONTEND INCORP_INFO INCORP_FE_STUBS -f'
@@ -55,6 +55,10 @@ location /register-for-vat {
 Link to app running locally: 
 
 http://localhost/register-for-vat/
+
+Link to app running without nginx config:
+
+http://localhost:9895/register-for-vat/
 
 # Further Documentation
 
