@@ -28,13 +28,14 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubIncorpIdJourney,
     StubPersonalDetailsValidation,
     StubEmailVerification,
-    TrafficManagementPredicate,
     StubIcl,
-    UseSoleTraderIdentification,
     StubSoleTraderIdentification,
-    UseUpscan,
     StubUpscan,
-    StubBars
+    StubBars,
+    TrafficManagementPredicate,
+    UseSoleTraderIdentification,
+    UseUpscan,
+    SaveAndContinueLater
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -59,29 +60,14 @@ case object StubPersonalDetailsValidation extends FeatureSwitch {
   val displayName = "Stub personal details validation flow"
 }
 
-case object TrafficManagementPredicate extends FeatureSwitch {
-  val configName = "feature-switch.traffic-management-predicate"
-  val displayName = "Enable traffic management check in auth predicate (Must match the \"Use traffic management\" feature switch)"
-}
-
 case object StubIcl extends FeatureSwitch {
   val configName = "feature-switch.stub-icl"
   val displayName = "Stub ICL flow"
 }
 
-case object UseSoleTraderIdentification extends FeatureSwitch {
-  val configName = "feature-switch.use-sole-trader-identification"
-  val displayName = "Use sole trader identification journey"
-}
-
 case object StubSoleTraderIdentification extends FeatureSwitch {
   val configName = "feature-switch.stub-sole-trader-identification"
   val displayName = "Stub sole trader identification journey"
-}
-
-case object UseUpscan extends FeatureSwitch {
-  val configName = "feature-switch.use-upscan"
-  val displayName = "Use Upscan flow"
 }
 
 case object StubUpscan extends FeatureSwitch {
@@ -92,4 +78,24 @@ case object StubUpscan extends FeatureSwitch {
 case object StubBars extends FeatureSwitch {
   val configName = "feature-switch.stub-bars"
   val displayName = "Stub Bank Account Reputation"
+}
+
+case object TrafficManagementPredicate extends FeatureSwitch {
+  val configName = "feature-switch.traffic-management-predicate"
+  val displayName = "Enable traffic management check in auth predicate (Must match the \"Use traffic management\" feature switch)"
+}
+
+case object UseSoleTraderIdentification extends FeatureSwitch {
+  val configName = "feature-switch.use-sole-trader-identification"
+  val displayName = "Use sole trader identification journey"
+}
+
+case object UseUpscan extends FeatureSwitch {
+  val configName = "feature-switch.use-upscan"
+  val displayName = "Use Upscan flow"
+}
+
+case object SaveAndContinueLater extends FeatureSwitch {
+  val configName = "feature-switch.save-and-continue-later"
+  val displayName = "Enable Save and Continue Later"
 }
