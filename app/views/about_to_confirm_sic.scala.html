@@ -21,6 +21,7 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = titleNoForm(messages("pages.confirmsic.heading"))) {
@@ -42,6 +43,8 @@
     @govHelpers.form(action = controllers.routes.SicAndComplianceController.submitSicHalt()) {
     <div class="form-group">
         <button class="btn button" type="submit" id="continue">@messages("app.common.continue")</button>
+
+        @saveProgressButton()
     </div>
     }
 }

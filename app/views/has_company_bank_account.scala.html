@@ -20,6 +20,7 @@
 @import views.html.main_template
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers.form
@@ -53,6 +54,8 @@
 
         <div class="form-group">
             <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }

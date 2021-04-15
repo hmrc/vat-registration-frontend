@@ -23,7 +23,7 @@
 
 @this(
     layout: layout,
-    govukButton: GovukButton,
+    button: button,
     formWithCSRF: FormWithCSRF,
     h1: h1,
     p: p,
@@ -60,10 +60,7 @@
             inline = true
         )
 
-        @govukButton(Button(
-            attributes = Map("id" -> "continue"),
-            content = Text(messages("app.common.continue"))
-        ))
+        @button("app.common.continue")
     }
 
 }

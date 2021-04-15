@@ -21,6 +21,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(sectorPct: (String, BigDecimal))(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = titleNoForm(messages("pages.frs.confirmBusinessSector.heading"))) {
@@ -47,6 +48,8 @@
   @govHelpers.form(action = controllers.routes.FlatRateController.submitConfirmSectorFrs()) {
       <div class="form-group">
           <button class="button-confirm-and-continue" role="button" id="confirm-and-continue">@messages("app.common.confirmAndContinue")</button>
+
+          @saveProgressButton()
       </div>
   }
 }

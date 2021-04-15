@@ -26,6 +26,7 @@
 @import models.DateSelection._
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], registeredDate: LocalDate, incorpDateAfter: Boolean, dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = title(startDateForm, messages("pages.startDate.heading"))) {
@@ -134,6 +135,8 @@
 
             <div class="form-group">
                 <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+
+                @saveProgressButton()
             </div>
         }
 

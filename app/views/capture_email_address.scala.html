@@ -16,11 +16,11 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import views.html.components.{errorSummary, h1, inputText}
+@import views.html.components._
 @import views.html.layouts.layout
 
 @this(layout: layout,
-        govukButton: GovukButton,
+        button: button,
         formWithCSRF: FormWithCSRF,
         h1: h1,
         inputText: inputText,
@@ -55,11 +55,7 @@
             <p id="privacy-information">@Html(messages("capture-email-address.privacyInformation", appConfig.privacyNoticeUrl))</p>
         </div>
 
-        @govukButton(Button(
-            attributes = Map("id" -> "continue"),
-            classes = "govuk-!-margin-right-1",
-            content = Text(messages("app.common.continue"))
-        ))
+        @button("app.common.continue")
 
     }
 

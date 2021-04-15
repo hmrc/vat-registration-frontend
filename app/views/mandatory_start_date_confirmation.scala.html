@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = titleNoForm(messages("pages.start.date.confirmation.heading"))) {
@@ -38,6 +39,8 @@
     @form(action = controllers.routes.ReturnsController.submitMandatoryStart()) {
         <div class="form-group">
             <button class="button" type="submit" role="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }

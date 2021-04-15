@@ -257,7 +257,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def upsertVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST(s"$vatRegUrl/vatreg/$regId/insert-s4l-scheme", partialVatScheme).map{
+    http.POST(s"$vatRegUrl/vatreg/insert-s4l-scheme", partialVatScheme).map{
       response => response.json
     }
   }

@@ -26,6 +26,7 @@
 @import config.FrontendAppConfig
 @import controllers.registration.applicant.{routes => applicantRoutes}
 
+@import views.html.helpers.saveProgressButton
 @(formerNameDateForm: Form[FormerNameDateView], formerName : String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = title(formerNameDateForm, messages("pages.formerNameDate.heading"))) {
@@ -97,6 +98,8 @@
         </div>
         <div class="form-group">
             <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
 
     }

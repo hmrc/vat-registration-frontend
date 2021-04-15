@@ -25,6 +25,7 @@
 @import models.FRSDateChoice
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String, vatStartDate: Option[LocalDate])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 @import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
@@ -115,6 +116,8 @@
 
         <div class="form-group">
             <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }

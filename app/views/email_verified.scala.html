@@ -16,10 +16,10 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import views.html.components.h1
+@import views.html.components._
 @import views.html.layouts.layout
 
-@this(layout: layout, govukButton: GovukButton, h1: h1, formWithCSRF: FormWithCSRF)
+@this(layout: layout, button: button, h1: h1, formWithCSRF: FormWithCSRF)
 
 @(formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
@@ -28,11 +28,7 @@
     @h1("email-verified.heading")
 
     @formWithCSRF(action = formAction) {
-        @govukButton(Button(
-            attributes = Map("id" -> "continue"),
-            classes = "govuk-!-margin-right-1",
-            content = Text(messages("app.common.continue"))
-        ))
+        @button("app.common.continue")
     }
 
 }
