@@ -24,6 +24,7 @@
 @import models.Stagger
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(accountingPeriodForm: Form[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @fieldSetClasses = @{
@@ -63,6 +64,8 @@
 
         <div class="form-group">
             <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
 
     }

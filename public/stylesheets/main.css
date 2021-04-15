@@ -73,3 +73,8 @@ td {
 .char-counter-text {
     text-align: left;
 }
+
+.govuk-button--secondary{background-color:#f3f2f1 !important;-webkit-box-shadow:0 2px 0 #929191 !important;box-shadow:0 2px 0 #929191  !important}
+.govuk-button--secondary,.govuk-button--secondary:active,.govuk-button--secondary:hover,.govuk-button--secondary:link,.govuk-button--secondary:visited{color:#0b0c0c !important}
+.govuk-button--secondary:hover{background-color:#dbdad9 !important}
+.govuk-button--secondary:hover[disabled]{background-color:#f3f2f1 !important}

@@ -25,6 +25,7 @@
 @import viewmodels.VatRegViewErrorHelpers._
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(companyContactDetailsForm: Form[CompanyContactDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
@@ -99,6 +100,8 @@
 
         <div class="form-group">
             <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }

@@ -17,19 +17,14 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-
 @import config.FrontendAppConfig
-
 @import views.html.layouts.layout
-@import views.html.components.h1
-@import views.html.components.inputRadio
-@import views.html.components.errorSummary
+@import views.html.components._
 @import controllers.registration.applicant.{routes => applicantRoutes}
-
 
 @this(
         layout: layout,
-        govukButton: GovukButton,
+        button: button,
         formWithCSRF: FormWithCSRF,
         h1: h1,
         inputRadio: inputRadio,
@@ -58,9 +53,6 @@
             ),
             legendAsHeading = true)
 
-        @govukButton(Button(
-            attributes = Map("id" -> "continue"),
-            content = Text(messages("app.common.continue"))
-        ))
+        @button("app.common.continue")
     }
 }

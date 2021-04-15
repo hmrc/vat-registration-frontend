@@ -16,12 +16,13 @@
 
 package views
 
-import views.html.no_uk_bank_account
+import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import forms.NoUKBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import views.html.no_uk_bank_account
 
-class NoUKBankAccountPageSpec extends VatRegViewSpec {
+class NoUKBankAccountPageSpec extends VatRegViewSpec with FeatureSwitching {
 
   val view: no_uk_bank_account = app.injector.instanceOf[no_uk_bank_account]
   implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
@@ -35,9 +36,17 @@ class NoUKBankAccountPageSpec extends VatRegViewSpec {
     val button3: String = "The name is being changed (for example, from sole trader to limited company)"
     val error: String = "Tell us why the bank account is not set up"
     val continue: String = "Continue"
+    val continueLater: String = "Save and come back later"
   }
 
   "No UK Bank Account Page" should {
+
+    enable(SaveAndContinueLater)
+
+    val view: no_uk_bank_account = app.injector.instanceOf[no_uk_bank_account]
+    implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
+
+    disable(SaveAndContinueLater)
 
     "have the correct title" in new ViewSetup() {
       doc.title mustBe ExpectedContent.title
@@ -60,7 +69,11 @@ class NoUKBankAccountPageSpec extends VatRegViewSpec {
     }
 
     "have the correct continue button" in new ViewSetup() {
-      doc.select(Selectors.button).text mustBe ExpectedContent.continue
+      doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
+    }
+
+    "have a save and continue button when the FS is enabled" in {
+      doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
     }
   }
 

@@ -16,10 +16,11 @@
 
 package views
 
+import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import org.jsoup.Jsoup
 import views.html.honesty_declaration
 
-class HonestyDeclarationViewSpec extends VatRegViewSpec {
+class HonestyDeclarationViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val title = "Declaration - Register for VAT - GOV.UK"
   val header = "Declaration"
@@ -27,6 +28,9 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec {
   val buttonText = "Accept and continue"
 
   "Honesty Declaration Page" must {
+
+    enable(SaveAndContinueLater)
+
     val view = new honesty_declaration(
       layout,
       h1,
@@ -36,6 +40,8 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec {
     ).apply(testCall)
 
     val doc = Jsoup.parse(view.body)
+
+    disable(SaveAndContinueLater)
 
     "have the right title" in {
       doc.title() mustBe title
@@ -51,6 +57,10 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec {
 
     "have the right button" in {
       doc.select(Selectors.button).text() mustBe buttonText
+    }
+
+    "not have a save and continue button when the FS is enabled" in {
+      doc.select(Selectors.saveProgressButton) mustBe empty
     }
   }
 }

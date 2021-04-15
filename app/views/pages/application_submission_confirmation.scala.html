@@ -28,7 +28,7 @@
         orderedList: orderedList,
         link: link,
         govukInsetText: GovukInsetText,
-        govukButton: GovukButton,
+        button: button,
         form: formWithCSRF
 )
 
@@ -66,11 +66,7 @@
     ))
 
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
-        @govukButton(Button(
-            content = Text(messages("pages.application.submission.confirmation.button")),
-            name = Some("finish-button"),
-            preventDoubleClick = true
-        ))
+        @button("pages.application.submission.confirmation.button", showSaveProgressButton = false)
     }
 
     @staggerStart.map { startPeriod =>

@@ -22,6 +22,7 @@
 @import views.html.helpers.templates._
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(annualCostsInclusiveForm: Form[Boolean], estimateVatTurnover: Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
@@ -50,6 +51,8 @@
 
         <div class="form-group">
             <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
 
     }

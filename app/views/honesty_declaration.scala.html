@@ -34,6 +34,6 @@
     @p{ @messages("pages.honesty-declaration.paragraph") }
 
     @formWithCSRF(action = formAction) {
-        @button(messages("pages.honesty-declaration.button"))
+        @button(messages("pages.honesty-declaration.button"), showSaveProgressButton = false)
     }
 }

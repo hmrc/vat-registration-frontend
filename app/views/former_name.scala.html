@@ -25,6 +25,7 @@
 @import config.FrontendAppConfig
 @import controllers.registration.applicant.{routes => applicantRoutes}
 
+@import views.html.helpers.saveProgressButton
 @(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @fieldSetClasses = @{
@@ -76,6 +77,8 @@
 
         <div class="form-group">
             <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }

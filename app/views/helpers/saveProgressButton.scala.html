@@ -16,21 +16,13 @@
 
 @import config.FrontendAppConfig
 @import featureswitch.core.config.SaveAndContinueLater
-@import views.html.components.saveProgressButton
 
-@this(
-        saveProgressButton: saveProgressButton,
-        govukButton: GovukButton
-)
+@()(implicit messages: Messages, appConfig: FrontendAppConfig)
 
-@(msg: String, showSaveProgressButton: Boolean = true)(implicit messages: Messages, appConfig: FrontendAppConfig)
-
-@govukButton(Button(
-    content = Text(messages(msg)),
-    preventDoubleClick = true,
-    classes = "govuk-!-margin-right-3"
-))
-
-@if(showSaveProgressButton && appConfig.isEnabled(SaveAndContinueLater)) {
-    @saveProgressButton()
+@if(appConfig.isEnabled(SaveAndContinueLater)) {
+    <a href="@controllers.routes.SaveAndRetrieveController.save().url"
+    class="govuk-button--secondary button"
+    id="save-and-continue">
+         @messages("app.common.saveAndComeBackLater")
+    </a>
 }

@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
 @import config.FrontendAppConfig
+@import views.html.helpers.saveProgressButton
 @(estimateTotalSalesForm: Form[Long])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @main_template(title = title(estimateTotalSalesForm, messages("pages.frs.estimateTotalSales.heading"))) {
@@ -56,6 +57,8 @@
 
         <div class="form-group">
             <button class="button" id="continue">@messages("app.common.continue")</button>
+
+            @saveProgressButton()
         </div>
     }
 }
