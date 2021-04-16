@@ -17,10 +17,10 @@
 package services
 
 import connectors.TrafficManagementConnector
-import javax.inject.{Inject, Singleton}
-import models.api.trafficmanagement.{Draft, RegistrationInformation, VatReg}
+import models.api.trafficmanagement.{Draft, OTRS, RegistrationInformation, VatReg}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -29,12 +29,29 @@ class TrafficManagementService @Inject()(trafficManagementConnector: TrafficMana
 
   def passedTrafficManagement(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     trafficManagementConnector.getRegistrationInformation.map {
-      case Some(RegistrationInformation(_, registrationId, Draft, Some(date), VatReg)) if regId == registrationId =>
+      case Some(RegistrationInformation(_, registrationId, Draft, Some(_), VatReg)) if regId == registrationId =>
         true
-      case Some(RegistrationInformation(_, registrationId, Draft, Some(date), VatReg)) =>
+      case Some(RegistrationInformation(_, _, Draft, Some(_), VatReg)) =>
         throw new InternalServerException("[TrafficManagementService][passedTrafficManagement] passed traffic management but there is a registrationId mismatch")
       case _ =>
         false
     }
 
+  def checkTrafficManagement(implicit hc: HeaderCarrier): Future[TrafficManagementResponse] =
+    trafficManagementConnector.getRegistrationInformation.map {
+      case Some(RegistrationInformation(_, registrationId, Draft, Some(_), VatReg)) =>
+        PassedVatReg(registrationId)
+      case Some(RegistrationInformation(_, registrationId, Draft, Some(_), OTRS)) =>
+        PassedOTRS
+      case _ =>
+        Failed
+    }
 }
+
+sealed trait TrafficManagementResponse
+
+case class PassedVatReg(regId: String) extends TrafficManagementResponse
+
+case object PassedOTRS extends TrafficManagementResponse
+
+case object Failed extends TrafficManagementResponse

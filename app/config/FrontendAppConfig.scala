@@ -49,6 +49,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
   lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
+  lazy val otrsRoute: String = "https://www.tax.service.gov.uk/business-registration/select-taxes"
+
+  lazy val eligibilityRouteUrl: String = s"$eligibilityHost/check-if-you-can-register-for-vat/gone-over-threshold"
 
   def storeNrsPayloadUrl(regId: String): String = s"$backendHost/vatreg/$regId/nrs-payload"
 

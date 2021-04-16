@@ -17,23 +17,31 @@
 package controllers
 
 import common.enums.VatRegStatus
+import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
+import models.api.VatScheme
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import services.{Failed, PassedOTRS, PassedVatReg}
 import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
+class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
 
   val testController: WelcomeController = new WelcomeController(
     mockVatRegistrationService,
     mockCurrentProfileService,
     mockAuthClientConnector,
-    mockKeystoreConnector
+    mockKeystoreConnector,
+    mockTrafficManagementService,
+    mockSaveAndRetrieveService
   )
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.WelcomeController.show())
@@ -46,7 +54,7 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
         mockWithCurrentProfile(None)
 
         when(mockVatRegistrationService.createRegistrationFootprint(any()))
-          .thenReturn(Future.successful(testRegId))
+          .thenReturn(Future.successful(VatScheme(id = testRegId, status = VatRegStatus.draft)))
         when(mockCurrentProfileService.buildCurrentProfile(any())(any()))
           .thenReturn(Future.successful(testCurrentProfile))
 
@@ -64,6 +72,63 @@ class WelcomeControllerSpec extends ControllerSpec with FutureAssertions with Va
         mockWithCurrentProfile(Some(currentProfile))
 
         when(mockVatRegistrationService.getTaxableThreshold(any())(any())) thenReturn Future.successful(formattedThreshold)
+
+        callAuthorisedOrg(testController.show) {
+          result =>
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(appConfig.eligibilityUrl)
+        }
+      }
+
+      "user is authorized to access and has a profile and has Passed Eligibility" in {
+        val vatSchemeJson = Json.toJson(validVatScheme)
+        enable(SaveAndContinueLater)
+        mockAuthenticated()
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockTrafficManagementService.checkTrafficManagement(ArgumentMatchers.any())).thenReturn(Future.successful(PassedVatReg(testRegId)))
+
+        when(mockCurrentProfileService.buildCurrentProfile(any())(any())).thenReturn(Future.successful(testCurrentProfile))
+
+        when(mockSaveAndRetrieveService.retrievePartialVatScheme(ArgumentMatchers.any[String])(any[HeaderCarrier])).thenReturn(Future.successful(vatSchemeJson))
+
+        callAuthorisedOrg(testController.show) {
+          result =>
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(appConfig.eligibilityRouteUrl)
+        }
+      }
+
+      "user is authorized to access and has a profile and has passed into OTRS" in {
+        enable(SaveAndContinueLater)
+        mockAuthenticated()
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockCurrentProfileService.buildCurrentProfile(any())(any()))
+          .thenReturn(Future.successful(testCurrentProfile))
+
+
+        when(mockTrafficManagementService.checkTrafficManagement(ArgumentMatchers.any())) thenReturn Future.successful(PassedOTRS)
+
+
+        callAuthorisedOrg(testController.show) {
+          result =>
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result) mustBe Some(appConfig.otrsRoute)
+        }
+      }
+
+      "user is authorized to access and has a profile and has returned Failed" in {
+        enable(SaveAndContinueLater)
+        mockAuthenticated()
+        mockWithCurrentProfile(Some(currentProfile))
+
+        when(mockCurrentProfileService.buildCurrentProfile(any())(any()))
+          .thenReturn(Future.successful(testCurrentProfile))
+
+
+        when(mockTrafficManagementService.checkTrafficManagement(ArgumentMatchers.any())) thenReturn Future.successful(Failed)
+
 
         callAuthorisedOrg(testController.show) {
           result =>

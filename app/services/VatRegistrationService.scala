@@ -58,13 +58,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
     vatRegConnector.deleteVatScheme(profile.registrationId)
 
-  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[String] = {
+  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[VatScheme] = {
     Logger.info("[createRegistrationFootprint] Creating registration footprint")
-    for {
-      vatScheme <- vatRegConnector.createNewRegistration
-    } yield {
-      vatScheme.id
-    }
+    vatRegConnector.createNewRegistration
   }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)

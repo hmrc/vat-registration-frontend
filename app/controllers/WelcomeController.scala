@@ -18,17 +18,21 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import javax.inject.{Inject, Singleton}
+import featureswitch.core.config.SaveAndContinueLater
 import play.api.mvc._
-import services.{CurrentProfileService, SessionProfile, VatRegistrationService}
+import services._
+import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
                                   val currentProfileService: CurrentProfileService,
                                   val authConnector: AuthClientConnector,
-                                  val keystoreConnector: KeystoreConnector)
+                                  val keystoreConnector: KeystoreConnector,
+                                  val trafficManagementService: TrafficManagementService,
+                                  val saveAndRetrieveService: SaveAndRetrieveService)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -36,11 +40,26 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def show: Action[AnyContent] = isAuthenticated {
     implicit request =>
-      for {
-        missing <- profileMissing
-        _ <- if (missing) vatRegistrationService.createRegistrationFootprint.flatMap(currentProfileService.buildCurrentProfile(_)) else Future.successful(())
-      } yield {
-        Redirect(appConfig.eligibilityUrl)
+      if (isEnabled(SaveAndContinueLater)) {
+        trafficManagementService.checkTrafficManagement.flatMap {
+          case PassedVatReg(regId) => currentProfileService.buildCurrentProfile(regId).flatMap(_ =>
+            saveAndRetrieveService.retrievePartialVatScheme(regId).map(_ =>
+              Redirect(appConfig.eligibilityRouteUrl)
+            )
+          )
+          case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
+          case Failed => startNewJourney
+        }
       }
+      else {
+        startNewJourney
+      }
+  }
+
+  private def startNewJourney(implicit hc: HeaderCarrier): Future[Result] = getProfile.flatMap {
+    case Some(_) => Future.successful(Redirect(appConfig.eligibilityUrl))
+    case None => vatRegistrationService.createRegistrationFootprint
+      .flatMap(scheme => currentProfileService.buildCurrentProfile(scheme.id))
+      .map(_ => Redirect(appConfig.eligibilityUrl))
   }
 }

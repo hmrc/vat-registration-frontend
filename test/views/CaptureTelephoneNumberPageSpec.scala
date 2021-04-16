@@ -16,16 +16,19 @@
 
 package views
 
+import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
 import views.html.capture_telephone_number
 
-class CaptureTelephoneNumberPageSpec extends VatRegViewSpec {
+class CaptureTelephoneNumberPageSpec extends VatRegViewSpec with FeatureSwitching {
 
   val title = "What is your telephone number?"
   val heading = "What is your telephone number?"
   val paragraph = "We may need to contact you about the application."
   val buttonText = "Continue"
+
+  disable(SaveAndContinueLater)
 
   "Capture Telephone Number Page" should {
     lazy val form = TelephoneNumberForm.form
@@ -45,7 +48,7 @@ class CaptureTelephoneNumberPageSpec extends VatRegViewSpec {
     }
 
     "have the correct continue button" in {
-      doc.select(Selectors.button).text mustBe buttonText
+      doc.select(Selectors.button).text() mustBe buttonText
     }
 
   }
