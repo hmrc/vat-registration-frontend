@@ -16,9 +16,10 @@
 
 package models.api.trafficmanagement
 
-import java.time.LocalDate
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Format, __}
 
-import play.api.libs.json.{Format, Json}
+import java.time.LocalDate
 
 case class RegistrationInformation(internalId: String,
                                    registrationId: String,
@@ -27,6 +28,12 @@ case class RegistrationInformation(internalId: String,
                                    channel: RegistrationChannel)
 
 object RegistrationInformation {
-  implicit val format: Format[RegistrationInformation] = Json.format[RegistrationInformation]
+  implicit val format: Format[RegistrationInformation] =
+    ((__ \ "internalId").format[String] and
+      (__ \ "registrationId").format[String] and
+      (__ \ "status").format[RegistrationStatus] and
+      (__ \ "regStartDate").formatNullable[LocalDate] and
+      (__ \ "channel").format[RegistrationChannel]
+      ) (RegistrationInformation.apply, unlift(RegistrationInformation.unapply))
 }
 

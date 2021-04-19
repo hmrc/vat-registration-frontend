@@ -16,14 +16,13 @@
 
 package services
 
-import java.time.LocalDate
-
 import connectors.TrafficManagementConnector
-import models.api.trafficmanagement.{Draft, RegistrationInformation, VatReg}
+import models.api.trafficmanagement.{Draft, OTRS, RegistrationInformation, VatReg}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class TrafficManagementServiceSpec extends VatRegSpec {
@@ -60,6 +59,37 @@ class TrafficManagementServiceSpec extends VatRegSpec {
       val res = TestTrafficManagementService.passedTrafficManagement(testRegId)
 
       await(res) mustBe false
+    }
+  }
+
+  "passedTrafficManagement" should {
+    "return PassedVatReg if TM was passed with PassedVatReg" in {
+      val registrationInformation = RegistrationInformation("testIntId", testRegId, Draft, Some(LocalDate.now()), VatReg)
+      when(mockTrafficManagementConnector.getRegistrationInformation)
+        .thenReturn(Future.successful(Some(registrationInformation)))
+
+      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+
+      await(res) mustBe PassedVatReg(testRegId)
+    }
+
+    "return PassedOTRS if checkTM was passed with PassedOTRS" in {
+      val registrationInformation = RegistrationInformation("testIntId", testRegId, Draft, Some(LocalDate.now()), OTRS)
+      when(mockTrafficManagementConnector.getRegistrationInformation)
+        .thenReturn(Future.successful(Some(registrationInformation)))
+
+      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+
+      await(res) mustBe PassedOTRS
+    }
+
+    "return Failed if checkTM was not passed" in {
+      when(mockTrafficManagementConnector.getRegistrationInformation)
+        .thenReturn(Future.successful(None))
+
+      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+
+      await(res) mustBe Failed
     }
   }
 }

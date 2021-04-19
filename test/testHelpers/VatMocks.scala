@@ -72,6 +72,7 @@ trait VatMocks
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
+  implicit lazy val mockSaveAndRetrieveService = mock[SaveAndRetrieveService]
 
   def resetMocks() {
     reset(

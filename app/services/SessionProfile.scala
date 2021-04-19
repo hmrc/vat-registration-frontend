@@ -53,4 +53,8 @@ trait SessionProfile {
       currentProfile.isEmpty
     }
   }
+
+  def getProfile(implicit hc: HeaderCarrier): Future[Option[CurrentProfile]] = {
+    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY)
+  }
 }
