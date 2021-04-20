@@ -22,11 +22,14 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.S4LKey
+import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api.{SicCode, VatScheme}
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
+
+import java.time.LocalDate
 
 trait StubUtils {
 
@@ -68,6 +71,8 @@ trait StubUtils {
     def vrefe = VREFE()
 
     def s4l = S4L()
+
+    def trafficManagement = TrafficManagementStub()
   }
 
   def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
@@ -374,6 +379,7 @@ trait StubUtils {
       )
       builder
     }
+
     def honestyDeclaration(regId: String, honestyDeclaration: String): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/honesty-declaration"))
@@ -697,6 +703,20 @@ trait StubUtils {
       stubFor(post(urlMatching("/modcheck"))
         .willReturn(
           serverError()
+        ))
+      builder
+    }
+  }
+
+  case class TrafficManagementStub()(implicit builder: PreconditionBuilder) {
+    def passes(channel: RegistrationChannel = VatReg): PreconditionBuilder = {
+      stubFor(get(urlMatching("/vatreg/traffic-management/reg-info"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(Json.toJson(
+              RegistrationInformation("1", "1", Draft, Some(LocalDate.now()), channel)
+            ).toString())
         ))
       builder
     }

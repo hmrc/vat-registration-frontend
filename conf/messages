@@ -683,3 +683,8 @@ capture-telephone-number.error.incorrect_format         = Enter a telephone numb
 capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
 capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer
 
+## CONTINUE APPLICATION MESSAGES
+start-new-application.heading                            = Are you starting a new application?
+start-new-application.radio-yes                          = Yes
+start-new-application.radio-no                           = No - I already started one
+start-new-application.error.required                     = Tell us if you are starting a new application or have already started one
