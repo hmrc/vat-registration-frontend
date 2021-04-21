@@ -20,8 +20,8 @@ import common.enums.VatRegStatus
 import connectors.KeystoreConnector
 import controllers.routes
 import models.CurrentProfile
-import play.api.mvc.Results._
 import play.api.mvc.Result
+import play.api.mvc.Results._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,12 +45,6 @@ trait SessionProfile {
             case _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
           }
       }
-    }
-  }
-
-  def profileMissing(implicit hc: HeaderCarrier): Future[Boolean] = {
-    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) map { currentProfile =>
-      currentProfile.isEmpty
     }
   }
 

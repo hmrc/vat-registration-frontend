@@ -17,6 +17,8 @@ GET         /feedback                                                           
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
+GET         /journey-new                                                                       controllers.WelcomeController.startNewJourney
+GET         /journey-continue                                                                  controllers.WelcomeController.continueJourney
 
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
@@ -226,3 +228,7 @@ GET         /error/passcode-too-many-attempts                                   
 ##individual affinity kick out
 GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
 GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
+
+## Continue Application Page
+GET         /new-application                                                              controllers.StartNewApplicationController.show
+POST        /new-application                                                              controllers.StartNewApplicationController.submit
