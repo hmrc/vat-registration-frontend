@@ -16,20 +16,19 @@
 
 package connectors
 
+import config.FrontendAppConfig
 import org.joda.time.LocalDate
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import scala.concurrent.Future
 
-class WSBankHolidaysConnectorSpec extends VatRegSpec {
+class BankHolidaysConnectorSpec extends VatRegSpec {
 
-  lazy val testConnector = new WSBankHolidaysConnector(mockHttpClient, mockServicesConfig)
+  val appConfig = app.injector.instanceOf[FrontendAppConfig]
+  lazy val testConnector = new BankHolidaysConnector(mockHttpClient, appConfig)
 
   "bankHolidays" must {
-
     "return set of bank holidays for a specified division" in {
       val testHolidaySet = Map(
         "division1" -> BankHolidaySet("division1", List(
@@ -39,8 +38,7 @@ class WSBankHolidaysConnectorSpec extends VatRegSpec {
           BankHoliday("another", new LocalDate(2017, 3, 23))))
       )
 
-      when(mockHttpClient.GET[Map[String, BankHolidaySet]](any())(any(), any(), any()))
-        .thenReturn(Future.successful(testHolidaySet))
+      mockHttpGET(appConfig.bankHolidaysUrl, Future.successful(testHolidaySet))
 
       testConnector.bankHolidays("division1") returns BankHolidaySet("division1", List(
         BankHoliday("one", new LocalDate(2017, 3, 22))))

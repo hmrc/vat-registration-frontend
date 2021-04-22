@@ -117,9 +117,9 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
     "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(202)))
+        .thenReturn(Future.successful(HttpResponse(202, "")))
 
       await(service.submitTradingDetails(regId, fullS4L)) mustBe fullS4L
     }
@@ -142,9 +142,9 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
       when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4L)))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveEuGoods(regId, euGoods = true)) mustBe incompleteS4L.copy(euGoods = Some(true))
     }

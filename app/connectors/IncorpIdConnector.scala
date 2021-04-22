@@ -17,13 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
+
 import javax.inject.{Inject, Singleton}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, IncorporationDetails}
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsError, JsSuccess, JsValue}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.http.HttpReads.Implicits.{readRaw, readFromJson}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readRaw}
 
 import scala.concurrent.{ExecutionContext, Future}
 

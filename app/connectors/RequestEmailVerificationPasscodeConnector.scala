@@ -17,13 +17,12 @@
 package connectors
 
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
-import models.external.{AlreadyVerifiedEmailAddress, PasscodeMismatch, PasscodeNotFound, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
-import play.api.http.Status.{CONFLICT, CREATED, NOT_FOUND}
+import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
+import play.api.http.Status.{CONFLICT, CREATED}
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, Upstream4xxResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, Upstream4xxResponse}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

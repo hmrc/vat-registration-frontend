@@ -20,7 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDate.{of => d}
 import java.util.concurrent.TimeoutException
 
-import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
+import connectors.{FallbackBankHolidaysConnector, BankHolidaysConnector}
 import org.joda.time.{LocalDate => JodaDate}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Inspectors, Matchers, WordSpec}
@@ -40,7 +40,7 @@ class DateServiceSpec extends WordSpec with MockFactory with Inspectors with Mat
   private case class Test(date: LocalDate, daysToAdd: Int, expected: LocalDate)
 
   private class Setup {
-    val mockConnector = mock[WSBankHolidaysConnector]
+    val mockConnector = mock[BankHolidaysConnector]
     val mockFallbackConnector = mock[FallbackBankHolidaysConnector]
     val mockCache = mock[SyncCacheApi]
   }

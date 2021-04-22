@@ -128,7 +128,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
   "Calling submitHonestyDeclaration" should {
     "return a HttpResponse" in new Setup {
       val httpResponse = Json.obj("honestyDeclartion" -> true)
-      val successfulResponse = HttpResponse(200)
+      val successfulResponse = HttpResponse(200, "{}")
       when(mockVatRegistrationConnector.submitHonestyDeclaration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testHonestyDeclaration))(any())) thenReturn Future.successful(successfulResponse)
 
       await(service.submitHonestyDeclaration(testRegId, testHonestyDeclaration)) mustBe successfulResponse

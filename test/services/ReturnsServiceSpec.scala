@@ -107,9 +107,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
   "submitReturns" should {
     "save a complete model to S4L" in new Setup {
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.submitReturns(returns)) mustBe returns
     }
@@ -126,9 +126,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveZeroRatesSupplies(zeroRatedSupplies = 10000.5)) mustBe returns
     }
@@ -152,9 +152,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveReclaimVATOnMostReturns(reclaimView = true)) mustBe returns
     }
@@ -178,9 +178,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveFrequency(Frequency.quarterly)) mustBe returns
     }
@@ -201,9 +201,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveStaggerStart(Stagger.feb)) mustBe returns
     }
@@ -224,9 +224,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveVatStartDate(Some(date))) mustBe returns
     }

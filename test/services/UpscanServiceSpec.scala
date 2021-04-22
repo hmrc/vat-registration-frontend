@@ -36,7 +36,7 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   "initiateUpscan" must {
     "return an UpscanResponse" in {
       mockUpscanInitiate(Future.successful(testUpscanResponse))
-      mockStoreUpscanReference(testRegId, testReference)(Future.successful(HttpResponse(OK)))
+      mockStoreUpscanReference(testRegId, testReference)(Future.successful(HttpResponse(OK, "{}")))
 
       val response = await(TestService.initiateUpscan(testRegId))
 
