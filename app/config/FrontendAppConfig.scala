@@ -91,6 +91,10 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
+  // Bank holidays
+
+  lazy val bankHolidaysUrl = servicesConfig.getString("microservice.services.bank-holidays.url")
+
   // Bank Account Reputation Section
 
   lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")

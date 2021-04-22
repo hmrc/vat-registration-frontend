@@ -17,14 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
-import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, MaxAttemptsExceeded, PasscodeMismatch, PasscodeNotFound, VerifyEmailPasscodeResult}
+import connectors.VerifyEmailVerificationPasscodeParser._
+import models.external._
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, NotFoundException}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import connectors.VerifyEmailVerificationPasscodeParser._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 object VerifyEmailVerificationPasscodeParser {

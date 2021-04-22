@@ -16,8 +16,6 @@
 
 package service
 
-import java.util.UUID
-
 import common.enums.VatRegStatus
 import connectors._
 import itutil.{IntegrationSpecBase, WiremockHelper}
@@ -25,10 +23,11 @@ import models.CurrentProfile
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import services.VatRegistrationService
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.SessionId
 import play.api.test.Helpers._
+import services.VatRegistrationService
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+
+import java.util.UUID
 
 class VatRegistrationServiceISpec extends IntegrationSpecBase {
   val mockHost = WiremockHelper.wiremockHost

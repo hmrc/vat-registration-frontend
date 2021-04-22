@@ -101,7 +101,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       .thenReturn(Future.successful(Json.toJson(applicantDetails)))
 
     when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(200)))
+      .thenReturn(Future.successful(HttpResponse(200, "{}")))
   }
 
   "Calling getApplicantDetails" should {

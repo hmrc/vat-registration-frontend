@@ -20,6 +20,7 @@ import sbt._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, integrationTestSettings, scalaSettings}
 import uk.gov.hmrc.{SbtArtifactory, SbtAutoBuildPlugin}
+import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
@@ -41,6 +42,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(majorVersion := 0)
+  .settings(
+    bobbyRulesURL := Some(new URL("https://webstore.tax.service.gov.uk/bobby-config/deprecated-dependencies.json"))
+  )
   .settings(
     fork                       in IntegrationTest := false,
     testForkedParallel         in IntegrationTest := false,

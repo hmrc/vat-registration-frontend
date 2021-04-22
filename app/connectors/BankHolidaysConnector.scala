@@ -16,28 +16,28 @@
 
 package connectors
 
-import java.io.InputStream
-
-import javax.inject.{Inject, Singleton}
-import play.api.Environment
+import config.FrontendAppConfig
+import play.api.libs.json.JodaReads.jodaLocalDateReads
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
-import play.api.libs.json.JodaReads._
+import play.api.Environment
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
+import java.io.InputStream
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class WSBankHolidaysConnector @Inject()(http: HttpClient, config: ServicesConfig)
-                                       (implicit ec: ExecutionContext) {
 
+@Singleton
+class BankHolidaysConnector @Inject()(http: HttpClient, config: FrontendAppConfig)
+                                     (implicit ec: ExecutionContext) {
+
+  implicit val jodaReads = jodaLocalDateReads("yyyy-MM-dd")
   protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
   protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
 
-  lazy val url: String = config.getConfString("bank-holidays.url", "")
+  lazy val url: String = config.bankHolidaysUrl
 
   def bankHolidays(division: String = "england-and-wales")(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
     http.GET[Map[String, BankHolidaySet]](url) map {
@@ -49,6 +49,7 @@ class WSBankHolidaysConnector @Inject()(http: HttpClient, config: ServicesConfig
 @Singleton
 class FallbackBankHolidaysConnector @Inject()(environment: Environment) {
 
+  implicit val jodaReads = jodaLocalDateReads("yyyy-MM-dd")
   protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
   protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
 

@@ -17,10 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
+
 import javax.inject.{Inject, Singleton}
 import models.api.trafficmanagement.RegistrationInformation
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import scala.concurrent.{ExecutionContext, Future}
 

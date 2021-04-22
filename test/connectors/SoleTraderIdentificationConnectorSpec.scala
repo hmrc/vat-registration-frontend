@@ -47,14 +47,14 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
   "startJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Some(Json.obj("journeyStartUrl" -> testJourneyUrl))))
+        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString))
 
         val res = await(connector.startJourney(testJourneyConfig))
 
         res mustBe testJourneyUrl
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Some(Json.obj())))
+        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj().toString))
 
         intercept[InternalServerException] {
           await(connector.startJourney(testJourneyConfig))
@@ -63,7 +63,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
     }
     "the API returns UNAUTHORISED" must {
       "throw an UnauthorizedException" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(UNAUTHORIZED, None))
+        mockHttpPOST(createJourneyUrl, HttpResponse(UNAUTHORIZED, ""))
 
         intercept[UnauthorizedException] {
           await(connector.startJourney(testJourneyConfig))
@@ -72,7 +72,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
     }
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, None))
+        mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, ""))
 
         intercept[InternalServerException] {
           await(connector.startJourney(testJourneyConfig))
@@ -83,7 +83,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
   "retrieveSoleTraderDetails" must {
     "return transactor details when STI returns OK" in new Setup {
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> Json.toJson(testTransactorDetails)))))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Json.obj("personalDetails" -> Json.toJson(testTransactorDetails)).toString))
       val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
       res mustBe testTransactorDetails
     }
@@ -98,12 +98,11 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       }
     }
     "throw an InternalServerException for any other status" in new Setup {
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(IM_A_TEAPOT, None))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(IM_A_TEAPOT, ""))
 
       intercept[InternalServerException] {
         await(connector.retrieveSoleTraderDetails(testJourneyId))
       }
     }
   }
-
 }

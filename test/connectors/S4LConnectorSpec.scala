@@ -64,10 +64,10 @@ class S4LConnectorSpec extends VatRegSpec {
   "clearing an entry using save4later" should {
     "clear the entry given the user id" in {
       when(mockShortLivedCache.remove(ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(HttpResponse(OK)))
+        .thenReturn(Future.successful(HttpResponse(OK, "{}")))
 
       val result = S4LConnectorTest.clear("test")
-      await(result).status mustBe HttpResponse(OK).status
+      await(result).status mustBe HttpResponse(OK, "{}").status
     }
   }
 

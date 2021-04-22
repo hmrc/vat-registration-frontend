@@ -26,7 +26,7 @@ class ICLConnectorSpec extends VatRegSpec {
 
   class Setup {
     val jsResponse = Json.obj("link" -> "exampleaddress.co.uk")
-    val successfulResponse = HttpResponse(200, Some(jsResponse))
+    val successfulResponse = HttpResponse(200, jsResponse.toString)
 
     val testConnector: ICLConnector = new ICLConnector(
       mockHttpClient,
@@ -51,7 +51,7 @@ class ICLConnectorSpec extends VatRegSpec {
   }
   "ICLGetResult" should {
     "return a JSObject" in new Setup {
-      mockHttpGET[HttpResponse]("", Future.successful(HttpResponse(200, Some(iclMultipleResults))))
+      mockHttpGET[HttpResponse]("", Future.successful(HttpResponse(200, iclMultipleResults.toString)))
       val res = await(testConnector.iclGetResult(""))
       res mustBe iclMultipleResults
     }

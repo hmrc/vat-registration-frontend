@@ -45,7 +45,7 @@ trait MockS4lConnector {
 
   def mockS4LClear(mockS4LConnector: S4LConnector = mockS4LConnector): OngoingStubbing[Future[HttpResponse]] = {
     when(mockS4LConnector.clear(Matchers.anyString())(Matchers.any[HeaderCarrier]()))
-      .thenReturn(Future.successful(HttpResponse(200)))
+      .thenReturn(Future.successful(HttpResponse(200, "{}")))
   }
 
   def mockS4LSaveForm[T: S4LKey](cacheMap: CacheMap, mockS4LConnector: S4LConnector = mockS4LConnector): OngoingStubbing[Future[CacheMap]] = {

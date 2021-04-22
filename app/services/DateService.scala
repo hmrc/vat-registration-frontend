@@ -19,7 +19,7 @@ package services
 import java.time.LocalDate
 
 import common.DateConversions._
-import connectors.{FallbackBankHolidaysConnector, WSBankHolidaysConnector}
+import connectors.{FallbackBankHolidaysConnector, BankHolidaysConnector}
 import javax.inject.{Inject, Singleton}
 import play.api.cache.SyncCacheApi
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,7 +31,7 @@ import scala.language.postfixOps
 import scala.util.Try
 
 @Singleton
-class DateService @Inject()(val bankHolidaysConnector: WSBankHolidaysConnector,
+class DateService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
                             val cache: SyncCacheApi,
                             val fallbackBHConnector: FallbackBankHolidaysConnector) {
 

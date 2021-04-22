@@ -47,7 +47,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
 
   "Calling upsertTradingDetails" should {
     "return the correct VatResponse when the microservice completes and returns a VatTradingDetails model" in new Setup {
-      val resp = HttpResponse(200)
+      val resp = HttpResponse(200, "{}")
 
       mockHttpPATCH[TradingDetails, HttpResponse]("tst-url", resp)
       connector.upsertTradingDetails("tstID", fullS4L) returns resp
@@ -71,7 +71,8 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
       val jsobj = Json.obj(
         "eoriRequested" -> JsBoolean(false)
       )
-      val resp = HttpResponse(200, Some(jsobj))
+
+      val resp = HttpResponse(200, jsobj.toString)
 
       mockHttpGET[HttpResponse]("tst-url", resp)
       connector.getTradingDetails("tstID") returns Some(fullS4L)
@@ -81,7 +82,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
       connector.getTradingDetails("tstID") failedWith forbidden
     }
     "return a Not Found S4LTradingDetails when the microservice returns a NoContent response (No VatRegistration in database)" in new Setup {
-      val resp = HttpResponse(204)
+      val resp = HttpResponse(204, "")
 
       mockHttpGET[HttpResponse]("tst-url", resp)
       connector.getTradingDetails("tstID") returns None

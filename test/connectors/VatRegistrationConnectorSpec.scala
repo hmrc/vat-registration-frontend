@@ -149,7 +149,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val notFoundException = new Exception(NOT_FOUND.toString)
 
     "return a successful outcome given an existing registration" in new Setup {
-      mockHttpDELETE[HttpResponse]("tst-url", HttpResponse(OK))
+      mockHttpDELETE[HttpResponse]("tst-url", HttpResponse(OK, ""))
       connector.deleteVatScheme("regId")
     }
     "return the notFound exception when trying to DELETE non-existent registration" in new Setup {
@@ -223,12 +223,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     )
 
     "return the correct Http response when the microservice completes and returns a BusinessContact model" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(businessContactJson)))
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, businessContactJson.toString))
       connector.getBusinessContact returnsSome expectedModel
     }
 
     "returns None if a 204 is recieved" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", HttpResponse(204, Some(Json.obj())))
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(204, Json.obj().toString()))
       connector.getBusinessContact returnsNone
     }
 
@@ -250,7 +250,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val vatThreshold = optVoluntaryRegistration
 
     "return the correct VatResponse when the microservice completes and returns a Threshold model" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(Json.toJson(vatThreshold))))
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Json.toJson(vatThreshold).toString))
       connector.getThreshold("tstID") returns vatThreshold
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
@@ -313,14 +313,14 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     val turnoverEstimates = TurnoverEstimates(1000L)
 
     "return turnover estimates if they are returned from the backend" in new Setup {
-      mockHttpGET[HttpResponse](testUrl, HttpResponse(200, Some(jsonBody)))
+      mockHttpGET[HttpResponse](testUrl, HttpResponse(200, jsonBody.toString))
 
       val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
       result mustBe Some(turnoverEstimates)
     }
 
     "return None if turnover estimates can't be found in the backend for the supplied regId" in new Setup {
-      mockHttpGET[HttpResponse](testUrl, HttpResponse(204))
+      mockHttpGET[HttpResponse](testUrl, HttpResponse(204, ""))
 
       val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
       result mustBe None
@@ -339,8 +339,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
          |  "dob": "1998-07-12",
          |  "nino": "AA112233Z"
          |}""".stripMargin)
-    val httpRespOK = HttpResponse(OK, Some(validJson))
-    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, None)
+    val httpRespOK = HttpResponse(OK, validJson.toString)
+    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, "")
 
     "return a JsValue" in new Setup {
       mockHttpGET[HttpResponse]("tst-url", httpRespOK)
@@ -458,8 +458,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
          |    "displayDetails": "test Details"
          |  }
          |}""".stripMargin)
-    val httpRespOK = HttpResponse(OK, Some(validJson))
-    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, None)
+    val httpRespOK = HttpResponse(OK, validJson.toString())
+    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, "")
 
     "return a JsValue" in new Setup {
       mockHttpGET[HttpResponse]("tst-url", httpRespOK)
@@ -629,7 +629,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling saveTransactionID" should {
     "succeed" when {
       "saving a transactionID" in new Setup {
-        mockHttpPATCH[String, HttpResponse]("tst-url", HttpResponse(200))
+        mockHttpPATCH[String, HttpResponse]("tst-url", HttpResponse(200, ""))
         val resp: HttpResponse = await(connector.saveTransactionId("tstID", "transID"))
 
         resp.status mustBe 200
@@ -646,7 +646,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "getEligibilityData" should {
     "return 200 and a JsObject" in new Setup {
       val json = Json.obj("foo" -> "bar")
-      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Some(json)))
+      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, json.toString()))
       connector.getEligibilityData returns json
     }
 

@@ -16,19 +16,15 @@
 
 package repositories
 
-import java.util.UUID
-
 import common.enums.VatRegStatus
 import connectors.KeystoreConnector
-import itutil.{IntegrationSpecBase, WiremockHelper}
+import itutil.IntegrationSpecBase
 import models.CurrentProfile._
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, Json, OWrites}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.mongo.MongoSpecSupport
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+
+import java.util.UUID
 import play.api.test.Helpers._
 import support.AppAndStubs
 
