@@ -108,7 +108,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode)))))
-      .s4lContainer.cleared
+      .s4lContainer.clearedByKey
       .audit.writesAudit()
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode))
@@ -182,13 +182,13 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       mainBusinessActivity = None,
       supplyWorkers = None,
       workers = None,
-      intermediarySupply = None,
+      intermediarySupply = None
     )
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
-      .s4lContainer.cleared
+      .s4lContainer[SicAndCompliance].clearedByKey
       .audit.writesAudit()
       .audit.writesAuditMerged()
 

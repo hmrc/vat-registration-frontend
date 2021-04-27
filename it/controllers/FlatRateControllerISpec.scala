@@ -110,7 +110,7 @@ class FlatRateControllerISpec extends ControllerISpec {
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns",returnsData)
-        .s4lContainer.isUpdatedWith[FlatRateScheme](frsS4LData.copy(frsStart = Some(Start(Some(threeWorkingDaysInFuture)))))
+        .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(threeWorkingDaysInFuture)))))
         .audit.writesAudit()
         .audit.writesAuditMerged()
       insertCurrentProfileIntoDb(currentProfile, sessionId)

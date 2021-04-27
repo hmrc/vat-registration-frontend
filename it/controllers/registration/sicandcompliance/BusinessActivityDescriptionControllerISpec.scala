@@ -33,7 +33,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(sicAndCompliance)
         .vatScheme.isUpdatedWith[SicAndCompliance](sicAndCompliance.copy(description = Some(BusinessActivityDescription("foo"))))
-        .s4lContainer[SicAndCompliance].cleared
+        .s4lContainer[SicAndCompliance].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

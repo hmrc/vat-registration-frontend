@@ -75,7 +75,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
-          .s4lContainer[ApplicantDetails].cleared
+          .s4lContainer[ApplicantDetails].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -328,27 +328,13 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "Calling getApplicantDetails(testRegId)" should {
-    val validJson = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "First",
-         |    "last": "Last"
-         |  },
-         |  "role": "Director",
-         |  "dob": "1998-07-12",
-         |  "nino": "AA112233Z"
-         |}""".stripMargin)
-    val httpRespOK = HttpResponse(OK, validJson.toString)
-    val httpRespNOCONTENT = HttpResponse(NO_CONTENT, "")
-
-    "return a JsValue" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", httpRespOK)
-      connector.getApplicantDetails(testRegId) returns Some(validJson)
+    "return ApplicantDetails" in new Setup {
+      mockHttpGET[Option[ApplicantDetails]]("tst-url", Some(completeApplicantDetails))
+      connector.getApplicantDetails(testRegId) returns Some(completeApplicantDetails)
     }
 
-    "return None if there is no data for the registration" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", httpRespNOCONTENT)
+    "return empty ApplicantDetails" in new Setup {
+      mockHttpGET[Option[ApplicantDetails]]("tst-url", None)
       connector.getApplicantDetails(testRegId) returns None
     }
 

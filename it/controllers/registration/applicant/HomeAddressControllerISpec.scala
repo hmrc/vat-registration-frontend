@@ -112,7 +112,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .vatScheme.patched(keyBlock, validJson)
-        .s4lContainer[ApplicantDetails].cleared
+        .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

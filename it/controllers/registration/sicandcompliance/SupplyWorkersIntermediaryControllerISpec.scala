@@ -31,7 +31,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))
-        .s4lContainer[SicAndCompliance].cleared
+        .s4lContainer[SicAndCompliance].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

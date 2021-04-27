@@ -16,22 +16,20 @@
 
 package services
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
-import models.{CurrentProfile, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
+import models.{CurrentProfile, TelephoneNumber}
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures {
@@ -44,32 +42,19 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     formerNameDate = None
   )
 
-  val jsonPartialApplicantDetails = Json.parse(
-    s"""
-       |{
-       |  "name": {
-       |    "first": "First",
-       |    "middle": "Middle",
-       |    "last": "Last"
-       |  },
-       |  "role": "Director",
-       |  "dob": "1998-07-12",
-       |  "nino": "SR123456Z"
-       |}
-       """.stripMargin)
-
-  class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[JsValue] = None) {
+  class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[ApplicantDetails] = None) {
     val service = new ApplicantDetailsService(
       mockVatRegistrationConnector,
       mockS4LService
     )
 
-    when(mockS4LService.fetchAndGetNoAux[ApplicantDetails](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.fetchAndGet[ApplicantDetails](any(), any(), any(), any()))
       .thenReturn(Future.successful(s4lData))
 
-    when(mockVatRegistrationConnector.getApplicantDetails(any())(any())).thenReturn(Future.successful(backendData))
+    when(mockVatRegistrationConnector.getApplicantDetails(any())(any()))
+      .thenReturn(Future.successful(backendData))
 
-    when(mockS4LService.saveNoAux(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.save(any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
@@ -83,7 +68,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
     }
 
-    when(mockS4LService.saveNoAux(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockS4LService.save(any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
@@ -100,69 +85,16 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     when(mockVatRegistrationConnector.patchApplicantDetails(any())(any(), any()))
       .thenReturn(Future.successful(Json.toJson(applicantDetails)))
 
-    when(mockS4LService.clear(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(200, "{}")))
+    when(mockS4LService.clearKey(any(), any(), any()))
+      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   "Calling getApplicantDetails" should {
-    val jsonFullApplicantDetailsWithEmail = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "First",
-         |    "middle": "Middle",
-         |    "last": "Last"
-         |  },
-         |  "role": "Director",
-         |  "dob": "1998-07-12",
-         |  "nino": "SR123456Z",
-         |  "currentAddress": {
-         |    "line1": "TestLine1",
-         |    "line2": "TestLine2",
-         |    "postcode": "TE 1ST",
-         |    "addressValidated": true
-         |  },
-         |  "contact": {
-         |    "email": "test@t.test",
-         |    "emailVerified": true
-         |  }
-         |}
-       """.stripMargin)
-
-    "return a default ApplicantDetails view model if nothing is in S4L & backend" in new Setup {
-      service.getApplicantDetails returns emptyApplicantDetails
+    "return a full ApplicantDetails view model from backend" in new Setup(None, Some(completeApplicantDetails)) {
+      service.getApplicantDetails returns completeApplicantDetails
     }
 
-    "return a partial ApplicantDetails view model from backend" in new Setup(None, Some(jsonPartialApplicantDetails)) {
-      val expected = ApplicantDetails(
-        homeAddress = None,
-        emailAddress = None,
-        emailVerified = None,
-        telephoneNumber = None,
-        formerName = Some(FormerNameView(false, None)),
-        formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
-      service.getApplicantDetails returns expected
-    }
-
-    "return a full ApplicantDetails view model from backend with an email" in new Setup(None, Some(jsonFullApplicantDetailsWithEmail)) {
-      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
-      val expected: ApplicantDetails = ApplicantDetails(
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = None,
-        formerName = Some(FormerNameView(false, None)),
-        formerNameDate = None,
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
-      service.getApplicantDetails returns expected
-    }
-
-    "return a full ApplicantDetails view model from backend without an email" in new Setup(None, Some(Json.toJson(completeApplicantDetails)(ApplicantDetails.apiWrites))) {
-      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
-
+    "return a full ApplicantDetails view model from f4l" in new Setup(Some(completeApplicantDetails), None) {
       service.getApplicantDetails returns completeApplicantDetails
     }
   }

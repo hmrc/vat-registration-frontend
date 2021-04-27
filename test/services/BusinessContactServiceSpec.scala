@@ -19,6 +19,7 @@ package services
 import _root_.models.api.Address
 import config.FrontendAppConfig
 import models._
+import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
@@ -36,6 +37,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
   )
 
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+
+  val dummyCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson("")))
 
   "getBusinessContact" should {
     "return a populated BusinessContact model" when {
@@ -79,7 +82,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful(Some(businessContact)))
 
         when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+          .thenReturn(Future.successful(dummyCacheMap))
 
         val result = await(testService.getBusinessContact)
         result mustBe businessContact
@@ -101,7 +104,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
           .thenReturn(Future.successful(None))
 
         when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+          .thenReturn(Future.successful(dummyCacheMap))
 
         val result = await(testService.getBusinessContact)
         result mustBe businessContact
@@ -120,8 +123,11 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
+      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[Address](testAddress))
       result mustBe testAddress
@@ -139,8 +145,11 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
+      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
       result mustBe companyContactDetails
@@ -158,8 +167,11 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
+      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
       result mustBe contactPreference
@@ -179,7 +191,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
       result mustBe companyContactDetails
@@ -198,7 +210,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
       result mustBe contactPreference
@@ -215,7 +227,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[Address](testAddress))
       result mustBe testAddress
@@ -234,7 +246,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
       result mustBe contactPreference
@@ -251,7 +263,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[Address](testAddress))
       result mustBe testAddress
@@ -270,7 +282,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some(businessContact)))
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map("" -> Json.toJson("")))))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
       result mustBe companyContactDetails
@@ -292,8 +304,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
 
-      when(mockS4LService.clear(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
       result mustBe companyContactDetails
@@ -312,8 +324,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
 
-      when(mockS4LService.clear(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[Address](testAddress))
       result mustBe testAddress
@@ -334,8 +346,8 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
 
-      when(mockS4LService.clear(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[ContactPreference](contactPreference))
       result mustBe contactPreference

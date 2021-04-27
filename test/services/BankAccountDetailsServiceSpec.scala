@@ -43,7 +43,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
     "return a BankAccount if one is found in save 4 later" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
+      when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
         .thenReturn(Future.successful(Some(bankAccount)))
 
       val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
@@ -52,7 +52,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     }
 
     "return a BankAccount if one isn't found in save 4 later but one is found in the backend" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
+      when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
@@ -64,7 +64,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     }
 
     "return None if a BankAccount isn't found in save 4 later or the backend" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux(eqTo(bankAccountS4LKey))(any(), any(), any()))
+      when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
@@ -84,7 +84,10 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      when(mockS4LService.saveNoAux(eqTo(fullBankAccount), eqTo(bankAccountS4LKey))(any(), any(), any()))
+      when(mockS4LService.save(eqTo(fullBankAccount))(any(), any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
@@ -96,13 +99,13 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     "return a BankAccount and save to save 4 later if it is incomplete" in new Setup {
       val incompleteBankAccount = BankAccount(isProvided = true, None, None)
 
-      when(mockS4LService.saveNoAux(eqTo(incompleteBankAccount), eqTo(bankAccountS4LKey))(any(), any(), any()))
+      when(mockS4LService.save(eqTo(incompleteBankAccount))(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       val result: BankAccount = await(service.saveBankAccountDetails(incompleteBankAccount))
       result mustBe incompleteBankAccount
 
-      verify(mockS4LService, times(1)).saveNoAux(any(), any())(any(), any(), any())
+      verify(mockS4LService, times(1)).save(any())(any(), any(), any(), any())
     }
   }
 

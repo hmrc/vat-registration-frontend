@@ -51,11 +51,9 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def continueJourney: Action[AnyContent] = isAuthenticated { implicit request =>
     trafficManagementService.checkTrafficManagement.flatMap {
-      case PassedVatReg(regId) => currentProfileService.buildCurrentProfile(regId).flatMap(_ =>
-        saveAndRetrieveService.retrievePartialVatScheme(regId).map(_ =>
-          Redirect(appConfig.eligibilityRouteUrl)
-        )
-      )
+      case PassedVatReg(regId) => saveAndRetrieveService.retrievePartialVatScheme(regId)
+        .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
+        .map(_ => Redirect(appConfig.eligibilityRouteUrl))
       case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
       case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney()))
     }

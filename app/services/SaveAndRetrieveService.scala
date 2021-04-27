@@ -16,31 +16,49 @@
 
 package services
 
+import common.enums.VatRegStatus
+import config.AuthClientConnector
 import connectors.S4LConnector
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.HeaderCarrier
+import services.SaveAndRetrieveService.vatSchemeKey
+import uk.gov.hmrc.auth.core.AuthorisedFunctions
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SaveAndRetrieveService @Inject()(vatRegistrationService: VatRegistrationService,
-                                       val s4LConnector: S4LConnector)
-                                      (implicit executionContext: ExecutionContext) {
-
-  val s4lKey = "partialVatScheme"
+                                       val s4LConnector: S4LConnector,
+                                       val authConnector: AuthClientConnector)
+                                      (implicit executionContext: ExecutionContext) extends AuthorisedFunctions {
 
   def savePartialVatScheme(regId: String)(implicit hc: HeaderCarrier): Future[CacheMap] = {
     for {
       vatSchemeJson <- vatRegistrationService.getVatSchemeJson(regId)
-      cacheMap <- s4LConnector.save(regId, s4lKey, vatSchemeJson)
+      cacheMap <- s4LConnector.save(regId, vatSchemeKey, vatSchemeJson)
     } yield cacheMap
   }
 
   def retrievePartialVatScheme(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    s4LConnector.fetchAndGet[JsValue](regId, s4lKey).flatMap {
+    s4LConnector.fetchAndGet[JsValue](regId, vatSchemeKey).flatMap {
       case Some(scheme) => vatRegistrationService.storePartialVatScheme(regId, scheme)
-      case None => vatRegistrationService.createRegistrationFootprint.map(scheme => Json.toJson(scheme))
+      case None => authorised().retrieve(Retrievals.internalId) {
+        case Some(internalId) =>
+          val emptyPartialVatScheme = Json.obj(
+            "registrationId" -> Json.toJson[String](regId),
+            "status" -> Json.toJson(VatRegStatus.draft),
+            "internalId" -> Json.toJson[String](internalId)
+          )
+
+          vatRegistrationService.storePartialVatScheme(regId, emptyPartialVatScheme)
+        case None => throw new InternalServerException("[SaveAndRetrieveService] missing internalId for vatScheme creation")
+      }
     }
   }
+}
+
+object SaveAndRetrieveService {
+  val vatSchemeKey = "partialVatScheme"
 }

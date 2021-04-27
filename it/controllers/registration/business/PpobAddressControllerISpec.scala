@@ -47,7 +47,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .address("fudgesicle", addressWithCountry.line1, addressWithCountry.line2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
-        .s4lContainer[BusinessContact].cleared
+        .s4lContainer[BusinessContact].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

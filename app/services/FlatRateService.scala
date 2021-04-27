@@ -16,17 +16,16 @@
 
 package services
 
-import java.time.LocalDate
-
 import com.google.inject.Inject
 import connectors.{ConfigConnector, VatRegistrationConnector}
-import javax.inject.Singleton
 import models.api.SicCode
 import models.{FRSDateChoice, Start, _}
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 
+import java.time.LocalDate
+import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -40,12 +39,13 @@ class FlatRateService @Inject()(val s4LService: S4LService,
   def applyPercentRoundUp(l: Long): Long = Math.ceil(l * 0.005).toLong
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    s4LService.fetchAndGetNoAux(FlatRateScheme.s4lKey) flatMap {
-      case Some(s4l) => Future.successful(s4l)
-      case None => vatRegConnector.getFlatRate(profile.registrationId) map {
-        case Some(frs) => frs
-        case None => FlatRateScheme()
-      }
+    s4LService.fetchAndGet[FlatRateScheme] flatMap {
+      case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) =>
+        vatRegConnector.getFlatRate(profile.registrationId) map {
+          case Some(flatRateScheme) => flatRateScheme
+          case None => FlatRateScheme()
+        }
+      case Some(flatRateScheme) => Future.successful(flatRateScheme)
     }
 
   def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = flatRate match {
@@ -61,17 +61,11 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def submitFlatRate(data: FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
     handleView(data).fold(
-      incomplete => {
-        s4LService.saveNoAux(incomplete, FlatRateScheme.s4lKey) map { _ => incomplete }
-      },
-      complete => {
-        for {
-          _ <- vatRegConnector.upsertFlatRate(profile.registrationId, complete)
-          _ <- s4LService.clear
-        } yield {
-          complete
-        }
-      }
+      incomplete => s4LService.save[FlatRateScheme](incomplete).map(_ => incomplete),
+      complete => for {
+        _ <- vatRegConnector.upsertFlatRate(profile.registrationId, complete)
+        _ <- s4LService.clearKey[FlatRateScheme]
+      } yield complete
     )
   }
 
@@ -79,7 +73,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     getFlatRate flatMap { storedData => submitFlatRate(newS4L(storedData)) }
 
   def saveJoiningFRS(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate(frs => if(answer) frs.copy(joinFrs = Some(answer)) else FlatRateScheme(Some(false)))
+    updateFlatRate(frs => if (answer) frs.copy(joinFrs = Some(answer)) else FlatRateScheme(Some(false)))
 
   def saveOverBusinessGoods(newValue: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     updateFlatRate { storedData =>
@@ -151,7 +145,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def clearFrs(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
-    s4LService.saveNoAux(FlatRateScheme(), FlatRateScheme.s4lKey) flatMap (_ =>
+    s4LService.save(FlatRateScheme()) flatMap (_ =>
       vatRegConnector.clearFlatRate(cp.registrationId).map(_ => true))
   }
 

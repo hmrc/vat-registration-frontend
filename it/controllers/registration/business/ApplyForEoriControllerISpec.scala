@@ -80,7 +80,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None))))
-        .s4lContainer[TradingDetails].cleared
+        .s4lContainer[TradingDetails].clearedByKey
         .vatScheme.doesNotHave("trading-details")
         .vatScheme.isUpdatedWith(
         "tradingDetails",

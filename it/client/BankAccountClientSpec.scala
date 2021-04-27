@@ -48,8 +48,8 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
 
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = app.injector.instanceOf[SessionRepository]
-    val defaultTimeout: FiniteDuration = 5 seconds
+    val repo: SessionRepository = app.injector.instanceOf[SessionRepository]
+    val defaultTimeout: FiniteDuration = 5.seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
     customAwait(repo.drop)(defaultTimeout)
@@ -150,7 +150,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> true)
-      val response = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
+      val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
 
       response.status mustBe 303
@@ -224,9 +224,9 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       )
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
-      Then(s"the client is served a 303 response and is redirected to ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show}")
+      Then(s"the client is served a 303 response and is redirected to ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()}")
       response.status mustBe 303
-      redirectLocation(response) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      redirectLocation(response) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show().url)
     }
   }
 }

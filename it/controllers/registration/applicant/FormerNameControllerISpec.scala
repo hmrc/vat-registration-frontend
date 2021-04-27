@@ -73,7 +73,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .vatScheme.patched(keyBlock, validJson)
-        .s4lContainer[ApplicantDetails].cleared
+        .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

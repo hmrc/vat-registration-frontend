@@ -16,15 +16,14 @@
 
 package services
 
-import java.time.LocalDate
-
 import connectors.VatRegistrationConnector
-import javax.inject.{Inject, Singleton}
 import models._
 import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -51,9 +50,9 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
-    s4lService.fetchAndGetNoAux[Returns](Returns.s4lKey) flatMap {
+    s4lService.fetchAndGet[Returns] flatMap {
+      case None | Some(Returns(None, None, None, None, None)) => vatRegConnector.getReturns(profile.registrationId)
       case Some(returns) => Future.successful(returns)
-      case _ => vatRegConnector.getReturns(profile.registrationId)
     } recover {
       case e =>
         Logger.warn("[ReturnsService] [getReturnsViewModel] " +
@@ -105,14 +104,11 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def submitReturns(returns: Returns)
                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ec: ExecutionContext): Future[Returns] = {
-    handleView(returns) fold(
-      incomplete =>
-        s4lService.saveNoAux(returns, Returns.s4lKey),
-
-      complete =>
-        vatRegConnector.patchReturns(profile.registrationId, returns) map { _ =>
-          s4lService.clear
-        }
+    handleView(returns).fold(
+      incomplete => s4lService.save[Returns](incomplete),
+      complete => vatRegConnector.patchReturns(profile.registrationId, complete).map { _ =>
+        s4lService.clearKey[Returns]
+      }
     ) map { _ => returns }
   }
 

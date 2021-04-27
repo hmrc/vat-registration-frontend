@@ -29,26 +29,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class S4LService @Inject()(val s4LConnector: S4LConnector)
                           (implicit executionContext: ExecutionContext) {
 
-  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
+  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
-  }
-
-  def saveNoAux[T](data: T, s4LKey: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    s4LConnector.save(profile.registrationId, s4LKey.key, data)
-  }
 
   def fetchAndGet[T: S4LKey](implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key)
-
-  def fetchAndGetNoAux[T](key: S4LKey[T])(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    s4LConnector.fetchAndGet[T](profile.registrationId, key.key)
+    s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key).recover {
+      case _: JsResultException => None
+    }
 
   def clear(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
     s4LConnector.clear(profile.registrationId)
 
-  def save[T](key: String, data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
-    s4LConnector.save[T](profile.registrationId, key, data)
+  def clearKey[T: S4LKey](implicit profile: CurrentProfile, hc: HeaderCarrier): Future[CacheMap] =
+    s4LConnector.save(profile.registrationId, S4LKey[T].key, Json.obj())
 
-  def fetchAndGet[T](key: String)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
-    s4LConnector.fetchAndGet[T](profile.registrationId, key)
 }

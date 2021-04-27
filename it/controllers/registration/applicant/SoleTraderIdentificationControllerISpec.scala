@@ -58,7 +58,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-        .s4lContainer[ApplicantDetails].cleared
+        .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)
 
       stubGet(retrieveDetailsUrl, OK, transactorDetailsJson.toString)
