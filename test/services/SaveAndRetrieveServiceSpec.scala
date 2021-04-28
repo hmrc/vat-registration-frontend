@@ -32,7 +32,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
   val validVatSchemeJson = Json.toJson(validVatScheme)
   val testCacheMap = CacheMap(s4lKey, data = Map())
 
-  object Service extends SaveAndRetrieveService(vatRegistrationServiceMock, mockS4LConnector)
+  object Service extends SaveAndRetrieveService(vatRegistrationServiceMock, mockS4LConnector, mockAuthClientConnector)
 
   "savePartialVatScheme" must {
     "store an empty VatScheme from VAT reg in S4L" in {

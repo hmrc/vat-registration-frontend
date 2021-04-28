@@ -20,13 +20,12 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import forms.test.SicStubForm
-import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
-import models.test.SicStub
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile, SicAndComplianceService}
 import views.html.test._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -43,16 +42,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
-        for {
-          sicCodes <- s4LService.fetchAndGet[SicStub]
-          sicStub = SicStub(
-            sicCodes.map(_.sicCode1.getOrElse("")),
-            sicCodes.map(_.sicCode2.getOrElse("")),
-            sicCodes.map(_.sicCode3.getOrElse("")),
-            sicCodes.map(_.sicCode4.getOrElse(""))
-          )
-          form = SicStubForm.form.fill(sicStub)
-        } yield Ok(sic_stub(form))
+        Future.successful(Ok(sic_stub(SicStubForm.form)))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
@@ -61,8 +51,9 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
         SicStubForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(sic_stub(badForm))),
           data => for {
-            _ <- s4LService.save[SicStub](data)
-            sicCodesList = data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
+            sicCodesList <- Future {
+              data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
+            }
             _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
             _ <- sicAndCompService.submitSicCodes(sicCodesList)
           } yield {

@@ -255,8 +255,7 @@ trait StubUtils {
       builder
     }
 
-    def isUpdatedWith[T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
-
+    def isUpdatedWith(t: C)(implicit key: S4LKey[C], fmt: Format[C]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()))
       builder
     }
@@ -268,6 +267,11 @@ trait StubUtils {
 
     def cleared: PreconditionBuilder = {
       stubFor(S4LStub.stubS4LClear())
+      builder
+    }
+
+    def clearedByKey(implicit key: S4LKey[C]): PreconditionBuilder = {
+      stubFor(S4LStub.stubS4LPut(key.key, Json.obj().toString()))
       builder
     }
   }
@@ -384,6 +388,14 @@ trait StubUtils {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/honesty-declaration"))
           .willReturn(ok(honestyDeclaration))
+      )
+      builder
+    }
+
+    def insertScheme(body: String): PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo("/vatreg/insert-s4l-scheme"))
+          .willReturn(ok().withBody(body))
       )
       builder
     }
@@ -567,7 +579,10 @@ trait StubUtils {
 
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))
-          .willReturn(ok(s"""${Organisation.toJson}""")))
+          .willReturn(ok(Json.obj(
+            "internalId" -> "1",
+            "affinityGroup" -> Organisation.toString
+          ).toString)))
 
       builder
     }
@@ -717,6 +732,15 @@ trait StubUtils {
             .withBody(Json.toJson(
               RegistrationInformation("1", "1", Draft, Some(LocalDate.now()), channel)
             ).toString())
+        ))
+      builder
+    }
+
+    def fails: PreconditionBuilder = {
+      stubFor(get(urlMatching("/vatreg/traffic-management/reg-info"))
+        .willReturn(
+          aResponse()
+            .withStatus(204)
         ))
       builder
     }

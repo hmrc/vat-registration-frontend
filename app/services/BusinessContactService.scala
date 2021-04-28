@@ -19,9 +19,9 @@ package services
 import _root_.models.api.Address
 import _root_.models.{BusinessContact, CompanyContactDetails, ContactPreference, CurrentProfile}
 import connectors.VatRegistrationConnector
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -29,25 +29,21 @@ class BusinessContactService @Inject()(val registrationConnector: VatRegistratio
                                        val s4lService: S4LService) {
 
   def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessContact] = {
-    def getFromVatRegistration: Future[Option[BusinessContact]] = registrationConnector.getBusinessContact
-
-    s4lService.fetchAndGet[BusinessContact] flatMap {
-      case Some(bc) => Future.successful(bc)
-      case _ => getFromVatRegistration flatMap { optBC =>
-        val businessContact = optBC.getOrElse(BusinessContact())
-        s4lService.save[BusinessContact](businessContact) map {
-          _ => businessContact
-        }
+    s4lService.fetchAndGet[BusinessContact].flatMap {
+      case None | Some(BusinessContact(None, None, None)) => registrationConnector.getBusinessContact.map {
+        case Some(businessContact) => businessContact
+        case None => BusinessContact()
       }
+      case Some(businessContact) => Future.successful(businessContact)
     }
   }
 
   def updateBusinessContact[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[T] = {
-    getBusinessContact flatMap { businessContact =>
+    getBusinessContact.flatMap { businessContact =>
       isModelComplete(updateBusinessContactModel[T](data, businessContact)).fold(
-        incomplete => s4lService.save[BusinessContact](incomplete) map (_ => data),
+        incomplete => s4lService.save[BusinessContact](incomplete).map(_ => data),
         complete => registrationConnector.upsertBusinessContact(complete) flatMap { _ =>
-          s4lService.clear map (_ => data)
+          s4lService.clearKey[BusinessContact].map(_ => data)
         }
       )
     }

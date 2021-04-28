@@ -56,7 +56,7 @@ class TradingNameControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
-        .s4lContainer[TradingDetails].cleared
+        .s4lContainer[TradingDetails].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

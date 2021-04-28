@@ -22,8 +22,10 @@ import featureswitch.core.config.SaveAndContinueLater
 import itutil.ControllerISpec
 import models.api.trafficmanagement.{OTRS, VatReg}
 import play.api.http.HeaderNames
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import services.SaveAndRetrieveService.vatSchemeKey
 
 import java.time.LocalDate
 
@@ -41,16 +43,19 @@ class WelcomeControllerISpec extends ControllerISpec {
 
   val startNewApplicationPageUrl: String = routes.StartNewApplicationController.show().url
 
+  val vatSchemeJson: String = Json.toJson(fullVatScheme).toString()
+
   s"GET $startUrl" when {
     "SaveAndContinueLater FS is disabled" must {
-      disable(SaveAndContinueLater)
-
       s"return a redirect to $newJourneyUrl" when {
         "user is authenticated and authorised to access the app without profile" in new Setup {
+          disable(SaveAndContinueLater)
+
           given()
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .audit.writesAudit()
             .audit.writesAuditMerged()
 
           val res: WSResponse = await(buildClient(startUrl).get())
@@ -60,8 +65,11 @@ class WelcomeControllerISpec extends ControllerISpec {
         }
 
         "user is authenticated and authorised to access the app with profile" in new Setup {
+          disable(SaveAndContinueLater)
+
           given()
             .user.isAuthorised
+            .audit.writesAudit()
             .audit.writesAuditMerged()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -75,13 +83,15 @@ class WelcomeControllerISpec extends ControllerISpec {
     }
 
     "SaveAndContinueLater FS is enabled" must {
-      enable(SaveAndContinueLater)
-
       s"return a redirect to $newJourneyUrl" when {
         "the traffic management check fails" in new Setup {
+          enable(SaveAndContinueLater)
+
           given()
             .user.isAuthorised
+            .audit.writesAudit()
             .audit.writesAuditMerged()
+            .trafficManagement.fails
 
           val res: WSResponse = await(buildClient(startUrl).get())
 
@@ -92,10 +102,13 @@ class WelcomeControllerISpec extends ControllerISpec {
 
       s"return a redirect to $startNewApplicationPageUrl" when {
         "the traffic management check passes" in new Setup {
+          enable(SaveAndContinueLater)
+
           given()
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .audit.writesAudit()
             .audit.writesAuditMerged()
             .trafficManagement.passes()
 
@@ -115,6 +128,7 @@ class WelcomeControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
           .vatScheme.regStatus(VatRegStatus.draft.toString)
+          .audit.writesAudit()
           .audit.writesAuditMerged()
 
         val res: WSResponse = await(buildClient(newJourneyUrl).get())
@@ -126,6 +140,7 @@ class WelcomeControllerISpec extends ControllerISpec {
       "user is authenticated and authorised to access the app with profile" in new Setup {
         given()
           .user.isAuthorised
+          .audit.writesAudit()
           .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -140,13 +155,31 @@ class WelcomeControllerISpec extends ControllerISpec {
 
   s"GET $continueJourneyUrl" must {
     "return a redirect to eligiblity" when {
-      "user has a vatreg application in progress" in new Setup {
+      "user has a vatreg application in progress with a partial vat scheme" in new Setup {
         given()
           .user.isAuthorised
-          .vatRegistrationFootprint.exists()
           .vatScheme.regStatus(VatRegStatus.draft.toString)
+          .audit.writesAudit()
           .audit.writesAuditMerged()
           .trafficManagement.passes(VatReg)
+          .s4l.contains(vatSchemeKey, vatSchemeJson)
+          .vatRegistration.insertScheme(vatSchemeJson)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityRouteUrl)
+      }
+
+      "user has a vatreg application in progress without a partial vat scheme" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.regStatus(VatRegStatus.draft.toString)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .trafficManagement.passes(VatReg)
+          .s4l.isEmpty()
+          .vatRegistration.insertScheme(vatSchemeJson)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl).get())
 
@@ -159,6 +192,7 @@ class WelcomeControllerISpec extends ControllerISpec {
       "user has an otrs application in progress" in new Setup {
         given()
           .user.isAuthorised
+          .audit.writesAudit()
           .audit.writesAuditMerged()
           .trafficManagement.passes(OTRS)
 
@@ -173,7 +207,9 @@ class WelcomeControllerISpec extends ControllerISpec {
       "user doesn't pass traffic management" in new Setup {
         given()
           .user.isAuthorised
+          .audit.writesAudit()
           .audit.writesAuditMerged()
+          .trafficManagement.fails
 
         val res: WSResponse = await(buildClient(continueJourneyUrl).get())
 

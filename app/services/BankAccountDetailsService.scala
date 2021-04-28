@@ -27,9 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationConnector,
                                           val s4LService: S4LService,
                                           val bankAccountRepService: BankAccountReputationService) {
-  
+
   def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Option[BankAccount]] = {
-    s4LService.fetchAndGetNoAux(BankAccount.s4lKey) flatMap {
+    s4LService.fetchAndGet[BankAccount].flatMap {
       case Some(bankAccount) => Future.successful(Some(bankAccount))
       case None => vatRegConnector.getBankAccount(profile.registrationId)
     }
@@ -70,12 +70,12 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
   }
 
   def saveBankAccountDetails(bankAccount: BankAccount)
-                                              (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
     bankAccountBlockCompleted(bankAccount) fold(
-      incomplete => s4LService.saveNoAux(incomplete, BankAccount.s4lKey) map (_ => incomplete),
+      incomplete => s4LService.save[BankAccount](incomplete).map(_ => incomplete),
       complete => for {
         _ <- vatRegConnector.patchBankAccount(profile.registrationId, complete)
-        _ <- s4LService.saveNoAux(complete, BankAccount.s4lKey)
+        _ <- s4LService.clearKey[BankAccount]
       } yield complete
     )
   }

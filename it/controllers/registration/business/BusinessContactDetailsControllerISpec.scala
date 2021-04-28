@@ -66,7 +66,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(companyContactDetails = None))
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
-        .s4lContainer[BusinessContact].cleared
+        .s4lContainer[BusinessContact].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

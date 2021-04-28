@@ -16,7 +16,6 @@
 
 package services
 
-import fixtures.VatRegistrationFixture
 import models.{TradingNameView, _}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -63,10 +62,10 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
   "getTradingDetailsViewModel" should {
     "return the S4L model if it is there" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
-        .thenReturn(Future.successful(Some(emptyS4L)))
+      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
+        .thenReturn(Future.successful(Some(incompleteS4L)))
 
-      await(service.getTradingDetailsViewModel(regId)) mustBe emptyS4L
+      await(service.getTradingDetailsViewModel(regId)) mustBe incompleteS4L
     }
 
     "return the converted backend model if the S4L is not there" in new Setup() {
@@ -75,7 +74,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
         Some(false)
       )
 
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockVatRegistrationConnector.getTradingDetails(any())(any()))
         .thenReturn(Future.successful(Some(tradingNameNoEu)))
@@ -84,7 +83,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
     }
 
     "return an empty backend model if the S4L is not there and neither is the backend" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockVatRegistrationConnector.getTradingDetails(any())(any()))
         .thenReturn(Future.successful(None))
@@ -109,7 +108,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
   "submitTradingDetails" should {
     "if the S4L model is incomplete, save to S4L" in new Setup() {
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       await(service.submitTradingDetails(regId, incompleteS4L)) mustBe incompleteS4L
@@ -118,8 +117,8 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
     "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
-      when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(202, "")))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
 
       await(service.submitTradingDetails(regId, fullS4L)) mustBe fullS4L
     }
@@ -128,9 +127,9 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
   "saveTradingName" should {
     "amend the trading name on a S4L model should not save to pre pop" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       await(service.saveTradingName(regId, tradingNameViewNo.yesNo, tradingNameViewNo.tradingName)) mustBe TradingDetails(Some(tradingNameViewNo))
@@ -139,10 +138,10 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
 
   "saveEuGoods" should {
     "save a complete model to the backend and clear S4L" in new Setup() {
-      when(mockS4LService.fetchAndGetNoAux[TradingDetails](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.clear(any(), any()))
-        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
 

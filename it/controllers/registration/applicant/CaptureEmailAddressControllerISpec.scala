@@ -98,7 +98,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))
           .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
-          .s4lContainer[ApplicantDetails].cleared
+          .s4lContainer[ApplicantDetails].clearedByKey
           .audit.writesAudit()
           .audit.writesAuditMerged()
 

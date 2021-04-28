@@ -21,7 +21,7 @@ import connectors._
 import models.api._
 import models.{TurnoverEstimates, _}
 import play.api.Logger
-import play.api.libs.json.{Format, JsObject, JsValue}
+import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -35,11 +35,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val vatRegConnector: VatRegistrationConnector,
                                        val keystoreConnector: KeystoreConnector
                                       )(implicit ec: ExecutionContext) {
-
-  type RegistrationFootprint = (String, String)
-
-  private[services] def s4l[T: Format : S4LKey](implicit hc: HeaderCarrier, profile: CurrentProfile) =
-    s4LService.fetchAndGet[T]
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)

@@ -42,13 +42,13 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
   "getSicAndCompliance" should {
     "return a Sic And Compliance view model" when {
       "there is data in S4L" in new Setup {
-        when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+        when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
           .thenReturn(Future.successful(Some(s4lVatSicAndComplianceWithLabour)))
 
         await(service.getSicAndCompliance) mustBe s4lVatSicAndComplianceWithLabour
       }
       "there is no data in S4L but present in backend" in new Setup {
-        when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+        when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
           .thenReturn(Future.successful(Some(s4lVatSicAndComplianceWithLabour)))
 
         await(service.getSicAndCompliance) mustBe s4lVatSicAndComplianceWithLabour
@@ -57,9 +57,9 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
     "return an empty Sic And Compiance view model" when {
       "there is no data in S4L or vat reg" in new Setup {
         when(mockVatRegistrationConnector.getSicAndCompliance(any(), any())).thenReturn(Future.successful(None))
-        when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+        when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
           .thenReturn(Future.successful(None))
-        when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
+        when(mockS4LService.save[SicAndCompliance](any())(any(), any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
         await(service.getSicAndCompliance) mustBe SicAndCompliance()
       }
@@ -68,9 +68,11 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
 
   "updateSicAndCompliance" should {
     "update S4l and not vat reg because the model is incomplete and return the sicAndCompliance" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(SicAndCompliance())))
-      when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
+      when(mockVatRegistrationConnector.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.save[SicAndCompliance](any())(any(), any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(Workers(200))) mustBe SicAndCompliance(workers = Some(Workers(200)))
     }
@@ -80,9 +82,9 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         mainBusinessActivity = None
       )
       val data = MainBusinessActivityView("foo", None)
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteSicAndCompliance)))
-      when(mockS4LService.saveNoAux[SicAndCompliance](any(), any())(any(), any(), any())).thenReturn(Future.successful(validCacheMap))
+      when(mockS4LService.save[SicAndCompliance](any())(any(), any(), any(), any())).thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(data)) mustBe incompleteSicAndCompliance.copy(mainBusinessActivity = Some(data))
     }
@@ -94,14 +96,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       )
       val expected = incompleteViewModel.copy(mainBusinessActivity = Some(data))
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(data)) mustBe expected
     }
@@ -115,14 +118,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       )
       val expected = incompleteViewModel.copy(intermediarySupply = Some(data))
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(data)) mustBe expected
     }
@@ -134,14 +138,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       )
       val expected = incompleteViewModel.copy(supplyWorkers = Some(data), workers = None)
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(data)) mustBe expected
     }
@@ -155,14 +160,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
       )
       val expected = incompleteViewModel.copy(workers = Some(data))
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.updateSicAndCompliance(data)) mustBe expected
     }
@@ -183,14 +189,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         supplyWorkers = None, workers = None, intermediarySupply = None
       )
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.submitSicCodes(sicCodeList)) mustBe expected
     }
@@ -208,10 +215,11 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         businessActivities = Some(BusinessActivities(List(newSicCode)))
       )
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.submitSicCodes(List(newSicCode))) mustBe expected
     }
@@ -231,10 +239,11 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         workers = None,
         intermediarySupply = None
       )
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.submitSicCodes(List(newSicCode))) mustBe expected
     }
@@ -248,14 +257,15 @@ class SicAndComplianceServiceSpec extends VatRegSpec {
         intermediarySupply = Some(IntermediarySupply(true))
       )
 
-      when(mockS4LService.fetchAndGetNoAux[SicAndCompliance](any())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[SicAndCompliance](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(completeViewModel)))
 
-      when(mockS4LService.saveNoAux(any(), any())(any(), any(), any()))
+      when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(validCacheMap))
 
       when(mockVatRegistrationConnector.updateSicAndCompliance(any())(any(), any())).thenReturn(Future.successful(Json.obj()))
-      when(mockS4LService.clear(any(), any())).thenReturn(Future.successful(validHttpResponse))
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(validCacheMap))
 
       await(service.submitSicCodes(sicCodeList)) mustBe completeViewModel.copy(mainBusinessActivity = None, businessActivities = Some(BusinessActivities(sicCodeList)))
     }

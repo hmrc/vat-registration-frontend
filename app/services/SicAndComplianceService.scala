@@ -17,11 +17,11 @@
 package services
 
 import connectors.VatRegistrationConnector
-import javax.inject.{Inject, Singleton}
 import models._
 import models.api.SicCode
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -31,15 +31,23 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
                                        (implicit ec: ExecutionContext) {
 
   def getSicAndCompliance(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
-    s4lService.fetchAndGetNoAux[SicAndCompliance](SicAndCompliance.s4lKey).flatMap {
-      _.fold(getFromApi)(a => Future.successful(a))
+    s4lService.fetchAndGet[SicAndCompliance].flatMap {
+      case None | Some(SicAndCompliance(None, None, None, None, None, None)) =>
+        registrationConnector.getSicAndCompliance.map {
+          case Some(sicAndCompliance) => SicAndCompliance.fromApi(sicAndCompliance)
+          case None => SicAndCompliance()
+        }
+      case Some(sicAndCompliance) => Future.successful(sicAndCompliance)
     }
   }
 
   def updateSicAndCompliance[T](newData: T)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
     getSicAndCompliance.flatMap(sac => isModelComplete(updateModel(sac, newData)).fold(
-      incomplete => s4lService.saveNoAux[SicAndCompliance](incomplete, SicAndCompliance.s4lKey).map(_ => incomplete),
-      complete => updateVatRegAndClearS4l(complete)
+      incomplete => s4lService.save[SicAndCompliance](incomplete).map(_ => incomplete),
+      complete => for {
+        _ <- registrationConnector.updateSicAndCompliance(complete)
+        _ <- s4lService.clearKey[SicAndCompliance]
+      } yield complete
     ))
   }
 
@@ -65,14 +73,6 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
 
       updateSicAndCompliance(newView)
     }
-  }
-
-  private def getFromApi(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicAndCompliance] = {
-    for {
-      optView <- registrationConnector.getSicAndCompliance
-      view = optView.fold(SicAndCompliance())(SicAndCompliance.fromApi)
-      _ <- s4lService.saveNoAux[SicAndCompliance](view, SicAndCompliance.s4lKey)
-    } yield view
   }
 
   private def updateModel[T](before: SicAndCompliance, newData: T): SicAndCompliance = {
@@ -110,14 +110,6 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
       case _ => Incomplete(view)
     }
   }
-
-  private def updateVatRegAndClearS4l(completeModel: SicAndCompliance)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
-    for {
-      _ <- registrationConnector.updateSicAndCompliance(completeModel)
-      _ <- s4lService.clear
-    } yield completeModel
-  }
-
 
   def needComplianceQuestions(sicCodes: List[SicCode]): Boolean = {
     val complianceSicCodes = Set(

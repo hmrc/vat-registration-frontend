@@ -16,8 +16,6 @@
 
 package services
 
-import java.time.LocalDate
-
 import _root_.models._
 import _root_.models.api.Threshold
 import org.mockito.ArgumentMatchers.any
@@ -28,6 +26,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 
@@ -56,14 +55,14 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
 
       await(service.getReturns) mustBe returns
     }
 
     "return a model from MongoDB" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockVatRegistrationConnector.getReturns(any())(any(), any()))
         .thenReturn(Future.successful(returns))
@@ -72,7 +71,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "construct a blank model when nothing was found in Save4Later or Mongo" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockVatRegistrationConnector.getReturns(any())(any(), any()))
         .thenReturn(Future.failed(new NotFoundException("404")))
@@ -80,7 +79,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.getReturns) mustBe emptyReturns
     }
     "construct a blank model when an exception occurred fetching from Save4Later or Mongo" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.failed(new RuntimeException("BOOM")))
 
       await(service.getReturns) mustBe emptyReturns
@@ -114,7 +113,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.submitReturns(returns)) mustBe returns
     }
     "save an incomplete model to S4L" in new Setup {
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.submitReturns(incomplete)) mustBe incomplete
@@ -123,7 +122,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "saveZeroRatesSupplies" should {
     "save a complete model" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
@@ -138,9 +137,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         zeroRatedSupplies = Some(10000.5)
       )
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(emptyReturns)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveZeroRatesSupplies(zeroRatedSupplies = 10000.5)) mustBe expected
@@ -149,7 +148,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "saveReclaimVATOnMostReturns" should {
     "save a complete model" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
@@ -164,9 +163,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         frequency = Some(Frequency.quarterly)
       )
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveReclaimVATOnMostReturns(reclaimView = false)) mustBe expected
@@ -175,7 +174,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "saveFrequency" should {
     "save a complete model" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
@@ -187,9 +186,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "save an incomplete model" in new Setup {
       val expected = emptyReturns.copy(frequency = Some(Frequency.monthly))
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(emptyReturns)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveFrequency(Frequency.monthly)) mustBe expected
@@ -198,7 +197,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "saveStaggerStart" should {
     "save a complete model" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
@@ -210,9 +209,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "save an incomplete model" in new Setup {
       val expected = incomplete.copy(staggerStart = Some(Stagger.jan))
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveStaggerStart(Stagger.jan)) mustBe expected
@@ -221,7 +220,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "saveVatStartDate" should {
     "save a complete model" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returns)))
       when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
@@ -233,9 +232,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "save an incomplete model" in new Setup {
       val expected = incomplete.copy(start = Some(Start(Some(date))))
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVatStartDate(Some(date))) mustBe expected
@@ -344,7 +343,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsFixed)))
 
       when(service.vatService.getThreshold(any())(any()))
@@ -356,7 +355,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "return a full MandatoryDateModel with a selection of specific_date if the vatStartDate does not equal the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 12)
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsAlt)))
 
       when(service.vatService.getThreshold(any())(any()))
@@ -366,7 +365,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "return a MandatoryDateModel with just a calculated date if the vatStartDate is not present" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       when(service.vatService.getThreshold(any())(any()))
@@ -387,14 +386,14 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "getVatStartDate" should {
     "return the vat start if it exists" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsFixed)))
 
       await(service.getVatStartDate) mustBe Some(LocalDate.of(2017, 12, 25))
     }
 
     "return nothing if it doesn't exist" in new Setup {
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.getVatStartDate) mustBe None
@@ -405,9 +404,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     "save a company start date as the vat start date" in new Setup {
       val expected = incomplete.copy(start = Some(Start(Some(testIncorpDate))))
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(
@@ -419,9 +418,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       val specificStartDate = LocalDate.of(2017, 12, 12)
       val expected = incomplete.copy(start = Some(Start(Some(specificStartDate))))
 
-      when(mockS4LService.fetchAndGetNoAux[Returns](any[S4LKey[Returns]]())(any(), any(), any()))
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
-      when(mockS4LService.saveNoAux(any, any)(any, any, any))
+      when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.saveVoluntaryStartDate(

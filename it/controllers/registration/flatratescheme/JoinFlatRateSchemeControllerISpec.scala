@@ -89,7 +89,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .s4lContainer[FlatRateScheme].cleared
+        .s4lContainer[FlatRateScheme].clearedByKey
         .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(false))))
         .vatScheme.has("returns", returnsData)
 

@@ -17,10 +17,10 @@
 package services
 
 import connectors.VatRegistrationConnector
-import javax.inject.{Inject, Singleton}
-import models.{CurrentProfile, S4LKey, TradingDetails, TradingNameView}
+import models.{CurrentProfile, TradingDetails, TradingNameView}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -29,15 +29,13 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
                                       val registrationConnector: VatRegistrationConnector,
                                       val prePopService: PrePopulationService) {
 
-  private val tradingDetailsS4LKey: S4LKey[TradingDetails] = S4LKey[TradingDetails]("tradingDetails")
-
   def getTradingDetailsViewModel(regId: String)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[TradingDetails] =
-    s4lService.fetchAndGetNoAux(tradingDetailsS4LKey) flatMap {
-      case Some(s4l) => Future.successful(s4l)
-      case None => registrationConnector.getTradingDetails(regId) map {
-        case Some(td) => td
+    s4lService.fetchAndGet[TradingDetails] flatMap {
+      case None | Some(TradingDetails(None, None)) => registrationConnector.getTradingDetails(regId) map {
+        case Some(tradingDetails) => tradingDetails
         case None => TradingDetails()
       }
+      case Some(tradingDetails) => Future.successful(tradingDetails)
     }
 
   def getS4LCompletion(data: TradingDetails): Completion[TradingDetails] = data match {
@@ -47,15 +45,11 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
 
   def submitTradingDetails(regId: String, data: TradingDetails)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
     getS4LCompletion(data).fold(
-      incomplete => s4lService.saveNoAux(incomplete, tradingDetailsS4LKey) map {
-        _ => incomplete
-      },
-      { complete =>
-        for {
-          _ <- registrationConnector.upsertTradingDetails(regId, complete)
-          _ <- s4lService.clear
-        } yield complete
-      }
+      incomplete => s4lService.save(incomplete).map(_ => incomplete),
+      complete => for {
+        _ <- registrationConnector.upsertTradingDetails(regId, complete)
+        _ <- s4lService.clearKey[TradingDetails]
+      } yield complete
     )
   }
 

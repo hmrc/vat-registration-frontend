@@ -17,15 +17,15 @@
 package connectors
 
 import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
+
 import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
 import models.view.ApplicantDetails
 import play.api.http.Status._
-import play.api.libs.json.{Format, JsObject, JsValue, Json}
+import play.api.libs.json.{Format, JsObject, JsValue, Json, Reads}
 import uk.gov.hmrc.http._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -79,10 +79,9 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getApplicantDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/applicant-details") map { response =>
-      if (response.status == NO_CONTENT) None else Some(response.json)
-    } recover {
+  def getApplicantDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[ApplicantDetails]] = {
+    implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.apiReads
+    http.GET[Option[ApplicantDetails]](s"$vatRegUrl/vatreg/$regId/applicant-details").recover {
       case e => throw logResponse(e, "getApplicantDetails")
     }
   }
