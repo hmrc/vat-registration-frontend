@@ -48,8 +48,15 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
       case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
     }
 
+  def clearTrafficManagement(implicit hc: HeaderCarrier) =
+    http.DELETE(s"$vatRegUrl/vatreg/test-only/api/traffic-management") recover {
+      case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
+    }
+
   def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
   }
+
+
 
 }
