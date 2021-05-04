@@ -35,7 +35,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     TrafficManagementPredicate,
     UseSoleTraderIdentification,
     UseUpscan,
-    SaveAndContinueLater
+    SaveAndContinueLater,
+    AnnualAccountingScheme
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -98,4 +99,9 @@ case object UseUpscan extends FeatureSwitch {
 case object SaveAndContinueLater extends FeatureSwitch {
   val configName = "feature-switch.save-and-continue-later"
   val displayName = "Enable Save and Continue Later"
+}
+
+case object AnnualAccountingScheme extends FeatureSwitch {
+  val configName: String = "feature-switch.annual-accounting-scheme"
+  val displayName: String = "Enable Annual Accounting Scheme journey (use with the AAS FS on eligbility)"
 }
