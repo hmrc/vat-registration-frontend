@@ -52,4 +52,8 @@ class UpdateTrafficManagementController @Inject()(mcc: MessagesControllerCompone
     )
   }
 
+  def clear: Action[AnyContent] = Action.async { implicit request =>
+    testVatRegConnector.clearTrafficManagement.map(_ => Ok("Traffic management cleared"))
+  }
+
 }
