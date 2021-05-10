@@ -55,11 +55,9 @@ POST        /claim-vat-refunds                                                  
 GET         /submit-vat-returns                                                                controllers.ReturnsController.accountPeriodsPage
 POST        /submit-vat-returns                                                                controllers.ReturnsController.submitAccountPeriods
 
-## VAT RETURN FREQUENCY - OLD
+## VAT RETURN FREQUENCY
 GET         /how-often-submit-returns                                                          controllers.ReturnsController.returnsFrequencyPage
 POST        /how-often-submit-returns                                                          controllers.ReturnsController.submitReturnsFrequency
-
-## VAT RETURN FREQUENCY
 
 ## COMPANY BANK ACCOUNT
 GET         /companys-bank-account                                                             controllers.BankAccountDetailsController.showHasCompanyBankAccountView
@@ -230,5 +228,9 @@ GET         /error/individual-affinity                                          
 GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
 
 ## Continue Application Page
-GET         /new-application                                                              controllers.StartNewApplicationController.show
-POST        /new-application                                                              controllers.StartNewApplicationController.submit
+GET         /new-application                                                                   controllers.StartNewApplicationController.show
+POST        /new-application                                                                   controllers.StartNewApplicationController.submit
+
+## LastMonthOfAccountingYearController
+GET         /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.show
+POST        /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.submit

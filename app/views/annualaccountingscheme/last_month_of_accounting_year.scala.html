@@ -1,0 +1,116 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+@import models.api.AnnualStagger
+@import forms.AnnualStaggerForm._
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary
+)
+
+@(form: Form[AnnualStagger])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(form, messages("last-month-of-accounting-year.heading"))), backLink = true) {
+
+    @errorSummary(form.errors)
+
+    @h1(messages("last-month-of-accounting-year.heading"))
+
+    @p{ @messages("last-month-of-accounting-year.para") }
+
+    @formWithCSRF(action = controllers.registration.annualaccountingscheme.routes.LastMonthOfAccountingYearController.submit()) {
+        @inputRadio(
+            form = form,
+            legend = messages("last-month-of-accounting-year.heading"),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.jan")),
+                    value = Some(februaryKey),
+                    checked = form("value").value.contains(februaryKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.feb")),
+                    value = Some(marchKey),
+                    checked = form("value").value.contains(marchKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.mar")),
+                    value = Some(aprilKey),
+                    checked = form("value").value.contains(aprilKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.apr")),
+                    value = Some(mayKey),
+                    checked = form("value").value.contains(mayKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.may")),
+                    value = Some(juneKey),
+                    checked = form("value").value.contains(juneKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.jun")),
+                    value = Some(julyKey),
+                    checked = form("value").value.contains(julyKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.jul")),
+                    value = Some(augustKey),
+                    checked = form("value").value.contains(augustKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.aug")),
+                    value = Some(septemberKey),
+                    checked = form("value").value.contains(septemberKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.sep")),
+                    value = Some(octoberKey),
+                    checked = form("value").value.contains(octoberKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.oct")),
+                    value = Some(novemberKey),
+                    checked = form("value").value.contains(novemberKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.nov")),
+                    value = Some(decemberKey),
+                    checked = form("value").value.contains(decemberKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.dec")),
+                    value = Some(januaryKey),
+                    checked = form("value").value.contains(januaryKey)
+                )
+            ),
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            inline = false
+        )
+
+        @button("app.common.continue")
+    }
+}
