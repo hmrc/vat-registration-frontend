@@ -39,5 +39,6 @@ trait BaseSelectors {
   val detailsContent = ".govuk-details__text"
   val hidden = ".hidden"
   val orderedList: Int => String = i => s"main ol.govuk-list.govuk-list--number li:nth-of-type($i)"
+  def radio(n: Int) = s"div.govuk-radios__item:nth-of-type($n) label"
 
 }

@@ -16,18 +16,17 @@
 
 package forms
 
-import java.time.LocalDate
-
-import forms.MandatoryDateForm.radioAnswer
-import models.{DateSelection, MonthYearModel}
+import models.DateSelection
 import models.DateSelection._
 import play.api.data.Form
 import testHelpers.VatRegSpec
 
+import java.time.LocalDate
+
 class MandatoryDateFormSpec extends VatRegSpec {
   val incorpDate: LocalDate = LocalDate.now.minusYears(3)
   val oldIncorpDate: LocalDate = LocalDate.of(2010, 1, 1)
-  val calculatedDate: LocalDate = LocalDate.of(2018, 12, 12)
+  val calculatedDate: LocalDate = LocalDate.now().minusYears(2).withMonth(12).withDayOfMonth(12)
 
   val form: Form[(DateSelection.Value, Option[LocalDate])] = MandatoryDateForm.form(incorpDate, calculatedDate)
   val oldIncorpForm: Form[(DateSelection.Value, Option[LocalDate])] = MandatoryDateForm.form(oldIncorpDate, calculatedDate)
@@ -38,7 +37,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "value" -> DateSelection.calculated_date.toString
       )
 
-      form.bind(data).get mustBe (calculated_date, None)
+      form.bind(data).get mustBe(calculated_date, None)
     }
 
     "Fail to bind successfully for no selection" in {
@@ -64,13 +63,16 @@ class MandatoryDateFormSpec extends VatRegSpec {
     }
 
     "Bind successfully for a valid specific date selection" in {
+      val testYear = LocalDate.now().minusYears(2).getYear
+
       val data = Map(
         "value" -> DateSelection.specific_date.toString,
         "date.day" -> "5",
         "date.month" -> "5",
-        "date.year" -> "2018"
+        "date.year" -> testYear.toString
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 5, 5)))
+
+      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(testYear, 5, 5)))
     }
 
     "Bind successfully if the specified date is on the incorporation date" in {
@@ -95,7 +97,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
 
     "Fail to bind if the date specified is before the incorp date" in {
       val data = Map(
-        "value" ->DateSelection.specific_date.toString,
+        "value" -> DateSelection.specific_date.toString,
         "date.day" -> "5",
         "date.month" -> "5",
         "date.year" -> "2011"

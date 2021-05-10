@@ -688,3 +688,20 @@ start-new-application.heading                            = Are you starting a ne
 start-new-application.radio-yes                          = Yes
 start-new-application.radio-no                           = No - I already started one
 start-new-application.error.required                     = Tell us if you are starting a new application or have already started one
+
+## LAST MONTH OF ACCOUNTING YEAR
+last-month-of-accounting-year.heading                    = What will be the last month of your accounting year?
+last-month-of-accounting-year.para                       = As part of the Annual Accounting Scheme your VAT Return will be due two months after the last month of your accounting year.
+last-month-of-accounting-year.jan                        = January
+last-month-of-accounting-year.feb                        = February
+last-month-of-accounting-year.mar                        = March
+last-month-of-accounting-year.apr                        = April
+last-month-of-accounting-year.may                        = May
+last-month-of-accounting-year.jun                        = June
+last-month-of-accounting-year.jul                        = July
+last-month-of-accounting-year.aug                        = August
+last-month-of-accounting-year.sep                        = September
+last-month-of-accounting-year.oct                        = October
+last-month-of-accounting-year.nov                        = November
+last-month-of-accounting-year.dec                        = December
+last-month-of-accounting-year.error.required             = Tell us when you want your accounting year to end
