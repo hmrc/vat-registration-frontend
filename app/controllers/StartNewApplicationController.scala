@@ -36,12 +36,13 @@ class StartNewApplicationController @Inject()(view: start_new_application,
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticated { implicit request =>
-    Future.successful(
-      Ok(view(StartNewApplicationForm.form)))
+  def show: Action[AnyContent] = isAuthenticated {
+    implicit request =>
+    Future.successful(Ok(view(StartNewApplicationForm.form)))
   }
 
-  def submit: Action[AnyContent] = isAuthenticated { implicit request =>
+  def submit: Action[AnyContent] = isAuthenticated {
+    implicit request =>
     StartNewApplicationForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
       startNew =>

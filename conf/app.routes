@@ -223,12 +223,16 @@ GET         /submission-failure                                                 
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
 
 ##email max attempts error page
-GET         /error/passcode-too-many-attempts                                                   controllers.registration.applicant.errors.EmailPasscodesMaxAttemptsExceededController.show
+GET         /error/passcode-too-many-attempts                                                  controllers.registration.applicant.errors.EmailPasscodesMaxAttemptsExceededController.show
 
 ##individual affinity kick out
 GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
 GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
 
 ## Continue Application Page
-GET         /new-application                                                              controllers.StartNewApplicationController.show
-POST        /new-application                                                              controllers.StartNewApplicationController.submit
+GET         /new-application                                                                   controllers.StartNewApplicationController.show
+POST        /new-application                                                                   controllers.StartNewApplicationController.submit
+
+## Do you want to apply for the Annual Accounting Scheme
+GET         /annual-accounting-scheme                                                          controllers.registration.annualAccountingScheme.AnnualAccountingSchemeController.show
+POST        /annual-accounting-scheme                                                          controllers.registration.annualAccountingScheme.AnnualAccountingSchemeController.submit

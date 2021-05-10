@@ -30,7 +30,6 @@ object ApplyForEoriForm extends RequiredBooleanForm {
   val form: Form[Boolean] = Form(
     single(RADIO_YES_NO -> requiredBoolean)
   )
-
 }
 
 object TradingNameForm extends RequiredBooleanForm {
