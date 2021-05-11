@@ -31,7 +31,7 @@ class FrsYourFlatRatePageSpec extends VatRegViewSpec {
     val h2 = "Do you want the business to join the Flat Rate Scheme?"
     val para1 = s"Businesses in their first year of VAT registration can take 1% off their flat rate."
     val label = "Select yes if you expect the business to regularly claim VAT refunds from HMRC"
-    val continue = "Continue"
+    val continue = "Save and continue"
     val yes = "Yes"
     val no = "No"
 

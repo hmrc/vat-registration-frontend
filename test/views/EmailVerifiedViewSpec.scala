@@ -23,7 +23,7 @@ class EmailVerifiedViewSpec extends VatRegViewSpec {
 
   val title = "Email address confirmed - Register for VAT - GOV.UK"
   val heading = "Email address confirmed"
-  val buttonText = "Continue"
+  val buttonText = "Save and continue"
 
   "Email Verified Page" should {
     val view = app.injector.instanceOf[email_verified].apply(testCall)

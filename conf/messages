@@ -10,7 +10,7 @@ app.common.not.applied                  = Not applied
 app.common.applied                      = Applied
 app.common.yes                          = Yes
 app.common.no                           = No
-app.common.continue                     = Continue
+app.common.continue                     = Save and continue
 app.common.saveAndComeBackLater         = Save and come back later
 app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = There is a problem
@@ -28,6 +28,9 @@ getHelp.linkText                        = Is this page not working properly? (op
 date.day                                = Day
 date.month                              = Month
 date.year                               = Year
+
+#Sections
+section.vatRegistration                 = VAT registration
 
 #Feedback
 page.feedback.title                     = Feedback
@@ -705,3 +708,12 @@ last-month-of-accounting-year.oct                        = October
 last-month-of-accounting-year.nov                        = November
 last-month-of-accounting-year.dec                        = December
 last-month-of-accounting-year.error.required             = Tell us when you want your accounting year to end
+
+# AAS how would you like to pay
+aas.paymentMethod.heading                                = How do you want to pay VAT?
+aas.paymentMethod.insetText                              = If you would prefer to pay by Direct Debit you can set this up after you have received your VAT Registration Number.
+aas.paymentMethod.bacs                                   = BACS or internet banking
+aas.paymentMethod.giro                                   = Bank Giro Transfer
+aas.paymentMethod.chaps                                  = Clearing House Automated Payment System (CHAPS)
+aas.paymentMethod.standingOrder                          = Standing order
+aas.paymentMethod.error.required                         = Tell us how you want to pay VAT bills

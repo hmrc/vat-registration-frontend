@@ -26,7 +26,7 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
   val heading = "What is your email address?"
   val paragraph = "We use this to send you communications and updates about your VAT"
   val privacyInformation = "Full details of how we use your information are in the HMRC Privacy Notice (opens in new tab)."
-  val buttonText = "Continue"
+  val buttonText = "Save and continue"
 
   "Capture Email Address Page" should {
     val form = EmailAddressForm.form

@@ -234,3 +234,7 @@ POST        /new-application                                                    
 ## LastMonthOfAccountingYearController
 GET         /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.show
 POST        /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.submit
+
+## AASPaymentMethodController
+GET         /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.show
+POST        /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.submit

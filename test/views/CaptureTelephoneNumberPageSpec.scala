@@ -26,7 +26,7 @@ class CaptureTelephoneNumberPageSpec extends VatRegViewSpec with FeatureSwitchin
   val title = "What is your telephone number?"
   val heading = "What is your telephone number?"
   val paragraph = "We may need to contact you about the application."
-  val buttonText = "Continue"
+  val buttonText = "Save and continue"
 
   disable(SaveAndContinueLater)
 

@@ -37,7 +37,7 @@ class TradingNameViewSpec extends VatRegViewSpec {
     val label = "Enter the trading name"
     val yes = "Yes"
     val no = "No"
-    val continue = "Continue"
+    val continue = "Save and continue"
   }
 
   "The Trading name view" must {

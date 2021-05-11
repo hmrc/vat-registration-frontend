@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@this()
+@this(hmrcPageHeading: HmrcPageHeading)
 
 @(      form: Form[_],
         legend: String,
@@ -22,18 +22,35 @@
         legendAsHeading: Boolean = true,
         hint: Option[Html] = None,
         classes: String = "govuk-fieldset__legend--xl",
-        inline: Boolean = false
+        inline: Boolean = false,
+        subHeading: Option[String] = None
 )(implicit messages: Messages)
+
+    @legendBlock = @{
+        if (subHeading.isDefined) {
+            Legend(
+                content = HtmlContent(
+                    hmrcPageHeading(PageHeading(
+                        text = legend,
+                        section = subHeading
+                    ))),
+                classes = classes,
+                isPageHeading = legendAsHeading
+            )
+        } else {
+            Legend(
+                content = Text(messages(legend)),
+                isPageHeading = legendAsHeading,
+                classes = classes
+            )
+        }
+    }
 
 @GovukRadios(Radios(
     classes = s"${if(inline){"govuk-radios--inline"}}",
     name = "value",
     fieldset = Some(Fieldset(
-        legend = Some(Legend(
-            content = Text(messages(legend)),
-            isPageHeading = legendAsHeading,
-            classes = classes
-        ))
+        legend = Some(legendBlock)
     )),
     hint = hint.map { hint => Hint(
         content = HtmlContent(hint)

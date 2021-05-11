@@ -62,10 +62,10 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def hasBackLink: Boolean = doc.select(".govuk-back-link").headOption.isDefined
 
-      def errorSummary: Option[Element] = doc.select("govuk-error-summary.").headOption
+      def errorSummary: Option[Element] = doc.select(".govuk-error-summary").headOption
 
       def errorSummaryLinks: List[Link] =
-        doc.select(".govuk-error-summary__list ul a").toList
+        doc.select(".govuk-error-summary__list a").toList
           .map(l => Link(l.text, l.attr("href")))
 
       def hasErrorSummary: Boolean = errorSummary.isDefined

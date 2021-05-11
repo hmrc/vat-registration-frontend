@@ -29,7 +29,7 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
   val insetText = "If you use a browser to access your email, you may need to open a new window or tab to see the code."
   val label = "Confirmation code"
   val hint = "For example, DNCLRK"
-  val buttonText = "Continue"
+  val buttonText = "Save and continue"
 
   "Capture Email Passcode Page" should {
 
