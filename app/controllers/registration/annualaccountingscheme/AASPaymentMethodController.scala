@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AASPaymentMethodController @Inject()(val authConnector: AuthClientConnector,
                                            val keystoreConnector: KeystoreConnector,
-                                           view: aas_payment_method,
+                                           view: aas_payment_method
                                           )(implicit appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext,
                                            baseControllerComponents: BaseControllerComponents)
