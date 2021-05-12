@@ -30,7 +30,7 @@ class IntermediarySupplyPageSpec extends VatRegViewSpec {
     val heading = "Are you an intermediary arranging the supply of workers?"
     val yes = "Yes"
     val no = "No"
-    val continue = "Continue"
+    val continue = "Save and continue"
   }
 
   "Intermediary Supply Page" should {

@@ -36,7 +36,7 @@ class ClaimRefundsViewSpec extends VatRegViewSpec {
     val detailsContent = "If a business sells mainly zero-rated items (the VAT on them is 0%), it may pay more VAT to " +
       "run its business than it can charge. For example, most books are zero-rated, so a bookshop may find itself in this situation."
     val label = "Select yes if you expect the business to regularly claim VAT refunds from HMRC"
-    val continue = "Continue"
+    val continue = "Save and continue"
     val yes = "Yes"
     val no = "No"
   }

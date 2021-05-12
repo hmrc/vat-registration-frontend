@@ -60,7 +60,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     val label = "Tell us if you want to register the business for the Flat Rate Scheme"
     val yes = "Yes"
     val no = "No"
-    val continue = "Continue"
+    val continue = "Save and continue"
   }
 
   implicit val doc = Jsoup.parse(view(form).body)

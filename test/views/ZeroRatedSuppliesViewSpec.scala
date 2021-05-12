@@ -30,7 +30,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
   val details = "Zero-rated are goods which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return."
   val link = "Find out about VAT rates on different goods and services"
   val label = "Zero rated turnover estimate"
-  val buttonText = "Continue"
+  val buttonText = "Save and continue"
 
   "Zero Rated Supplies Page" must {
     val form = ZeroRatedSuppliesForm.form(TurnoverEstimates(10000))

@@ -35,7 +35,7 @@ class NoUKBankAccountPageSpec extends VatRegViewSpec with FeatureSwitching {
     val button2: String = "The business has an overseas bank account"
     val button3: String = "The name is being changed (for example, from sole trader to limited company)"
     val error: String = "Tell us why the bank account is not set up"
-    val continue: String = "Continue"
+    val continue: String = "Save and continue"
     val continueLater: String = "Save and come back later"
   }
 

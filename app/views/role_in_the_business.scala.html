@@ -37,10 +37,13 @@
 
     @errorSummary(form.errors)
 
+    @h1(messages("pages.roleInTheBusiness.heading"))
+
     @formWithCSRF(action = applicantRoutes.CaptureRoleInTheBusinessController.submit(), 'autoComplete -> "off") {
         @inputRadio(
             form = form,
             legend = messages("pages.roleInTheBusiness.heading"),
+            classes = "govuk-visually-hidden",
             items = Seq(
                 RadioItem(
                     content = Text(messages("pages.roleInTheBusiness.radio1")),

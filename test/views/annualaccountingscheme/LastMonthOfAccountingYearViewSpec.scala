@@ -38,7 +38,7 @@ class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
   lazy val radio10 = "October"
   lazy val radio11 = "November"
   lazy val radio12 = "December"
-  lazy val buttonText = "Continue"
+  lazy val buttonText = "Save and continue"
 
   "Honesty Declaration Page" must {
 

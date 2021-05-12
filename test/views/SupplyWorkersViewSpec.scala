@@ -30,7 +30,7 @@ class SupplyWorkersViewSpec extends VatRegViewSpec {
     val heading = "Do you supply workers to provide a service to another business?"
     val yes = "Yes"
     val no = "No"
-    val continue = "Continue"
+    val continue = "Save and continue"
   }
 
   "the Supply Workers page" must {

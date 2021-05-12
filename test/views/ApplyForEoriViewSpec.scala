@@ -35,7 +35,7 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
     val heading = "Do you need an EORI number?"
     val yes = "Yes"
     val no = "No"
-    val continue = "Continue"
+    val continue = "Save and continue"
   }
 
   "the Apply For Eori page" must {

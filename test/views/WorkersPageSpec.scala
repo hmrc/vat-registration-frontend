@@ -28,7 +28,7 @@ class WorkersPageSpec extends VatRegViewSpec {
   object ExpectedContent {
     val title = "How many supply workers do you supply? - Register for VAT - GOV.UK"
     val heading = "How many supply workers do you supply?"
-    val button = "Continue"
+    val button = "Save and continue"
   }
 
   "Workers Page" should {
