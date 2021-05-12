@@ -40,7 +40,7 @@ class ApplicationSubmissionController @Inject()(val returnsService: ReturnsServi
       implicit profile =>
         for {
           returns <- returnsService.getReturns
-        } yield Ok(applicationSubmissionConfirmationView(returns.staggerStart))
+        } yield Ok(applicationSubmissionConfirmationView())
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

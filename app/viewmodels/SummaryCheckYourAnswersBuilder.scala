@@ -19,6 +19,7 @@ package viewmodels
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
+import models.api.returns.{Monthly, Quarterly, Returns}
 import models.api.{Address, Threshold, VatScheme}
 import models.view.{ApplicantDetails, SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
@@ -51,11 +52,11 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   def startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
-    returnsBlock.flatMap(_.start).flatMap(_.date) match {
+    returnsBlock.flatMap(_.startDate) match {
       case Some(date) => date.format(presentationFormatter)
       case _ => s"pages.summary.$sectionId.mandatoryStartDate"
     },
-    if (voluntaryRegistration) Some(controllers.routes.ReturnsController.voluntaryStartPage()) else None
+    if (voluntaryRegistration) Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage()) else None
   )
 
   val tradingNameRow: SummaryRow = SummaryRow(
@@ -143,7 +144,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val zeroRatedRow: SummaryRow = SummaryRow.mandatory(
     s"$sectionId.zeroRated",
     scheme.returns.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
-    Some(controllers.routes.ZeroRatedSuppliesController.show())
+    Some(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
   )
 
   val expectClaimRefundsRow: SummaryRow = yesNoRow(
@@ -154,13 +155,13 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val accountingPeriodRow: SummaryRow = SummaryRow(
     s"$sectionId.accountingPeriod",
-    (scheme.returns.flatMap(_.frequency), scheme.returns.flatMap(_.staggerStart)) match {
-      case (Some(Frequency.monthly), _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
-      case (Some(Frequency.quarterly), Some(period)) =>
-        s"pages.summary.$sectionId.accountingPeriod.${period.substring(0, 3)}"
+    (scheme.returns.flatMap(_.returnsFrequency), scheme.returns.flatMap(_.staggerStart)) match {
+      case (Some(Monthly), _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
+      case (Some(Quarterly), Some(period)) =>
+        s"pages.summary.$sectionId.accountingPeriod.${period.toString.substring(0, 3).toLowerCase()}"
       case _ => ""
     },
-    Some(controllers.routes.ReturnsController.accountPeriodsPage())
+    Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage())
   )
 
   val sicAndComp = scheme.sicAndCompliance.fold(SicAndCompliance())(a => a)

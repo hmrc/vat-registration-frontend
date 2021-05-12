@@ -16,26 +16,27 @@
 
 package forms
 
-import models.Frequency._
+import models.api.returns._
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 class ReturnFrequencyFormSpec extends VatRegSpec {
 
-  val form = ReturnFrequencyForm.form
+  val form: Form[ReturnsFrequency] = ReturnFrequencyForm.form
 
   "Binding ReturnFrequencyForm" should {
     "Bind successfully for a monthly selection" in {
       val data = Map(
         "returnFrequencyRadio" -> "monthly"
       )
-      form.bind(data).get mustBe monthly
+      form.bind(data).get mustBe Monthly
     }
 
     "Bind successfully for a quarterly selection" in {
       val data = Map(
         "returnFrequencyRadio" -> "quarterly"
       )
-      form.bind(data).get mustBe quarterly
+      form.bind(data).get mustBe Quarterly
     }
 
     "Fail to bind successfully for an invalid selection" in {
@@ -43,8 +44,8 @@ class ReturnFrequencyFormSpec extends VatRegSpec {
         "returnFrequencyRadio" -> "invalidSelection"
       )
       val bound = form.bind(data)
-      bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "returnFrequencyRadio"
+      bound.errors.size mustBe 1
+      bound.errors.head.key mustBe "returnFrequencyRadio"
       bound.errors.head.message mustBe "validation.vat.return.frequency.missing"
     }
 
@@ -53,8 +54,8 @@ class ReturnFrequencyFormSpec extends VatRegSpec {
         "returnFrequencyRadio" -> ""
       )
       val bound = form.bind(data)
-      bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "returnFrequencyRadio"
+      bound.errors.size mustBe 1
+      bound.errors.head.key mustBe "returnFrequencyRadio"
       bound.errors.head.message mustBe "validation.vat.return.frequency.missing"
     }
   }

@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
+import models.api.returns.Returns
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{ApplicantDetails, _}
 import org.mockito.ArgumentMatchers.{any, anyString}

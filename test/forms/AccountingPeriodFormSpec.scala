@@ -16,33 +16,34 @@
 
 package forms
 
-import models.Stagger._
+import models.api.returns._
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 class AccountingPeriodFormSpec extends VatRegSpec {
 
-  val form = AccountingPeriodForm.form
+  val form: Form[QuarterlyStagger] = AccountingPeriodForm.form
 
   "Binding AccountingPeriodForm" should {
     "Bind successfully for a jan, apr, jul, oct selection" in {
       val data = Map(
         "accountingPeriodRadio" -> "jan"
       )
-      form.bind(data).get mustBe jan
+      form.bind(data).get mustBe JanuaryStagger
     }
 
     "Bind successfully for a feb, may, aug, nov selection" in {
       val data = Map(
         "accountingPeriodRadio" -> "feb"
       )
-      form.bind(data).get mustBe feb
+      form.bind(data).get mustBe FebruaryStagger
     }
 
     "Bind successfully for a mar, jun, sep, dec selection" in {
       val data = Map(
         "accountingPeriodRadio" -> "mar"
       )
-      form.bind(data).get mustBe mar
+      form.bind(data).get mustBe MarchStagger
     }
 
     "Fail to bind successfully for an invalid selection" in {
@@ -50,8 +51,8 @@ class AccountingPeriodFormSpec extends VatRegSpec {
         "accountingPeriodRadio" -> "invalidSelection"
       )
       val bound = form.bind(data)
-      bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "accountingPeriodRadio"
+      bound.errors.size mustBe 1
+      bound.errors.head.key mustBe "accountingPeriodRadio"
       bound.errors.head.message mustBe "validation.accounting.period.missing"
     }
 
@@ -60,8 +61,8 @@ class AccountingPeriodFormSpec extends VatRegSpec {
         "accountingPeriodRadio" -> ""
       )
       val bound = form.bind(data)
-      bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "accountingPeriodRadio"
+      bound.errors.size mustBe 1
+      bound.errors.head.key mustBe "accountingPeriodRadio"
       bound.errors.head.message mustBe "validation.accounting.period.missing"
     }
   }

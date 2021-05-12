@@ -177,7 +177,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[Option[LocalDate]] = {
     vatRegConnector.getReturns(currentProfile.registrationId) map { returns =>
-      returns.start.flatMap(_.date)
+      returns.startDate
     } recover {
       case e =>
         Logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the Returns block with exception: ${e.getMessage}")

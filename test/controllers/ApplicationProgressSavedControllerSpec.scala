@@ -17,15 +17,8 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.Returns
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import play.api.mvc.Session
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.{application_progress_saved, application_submission_confirmation}
-
-import scala.concurrent.Future
+import views.html.pages.application_progress_saved
 
 class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 

@@ -16,44 +16,55 @@
 
 package models
 
-import java.time.LocalDate
-
-import play.api.libs.json.{JsSuccess, Json}
+import models.api.returns._
+import play.api.libs.json.{JsObject, JsSuccess, Json}
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class ReturnsSpec extends VatRegSpec {
 
-  val validDate = LocalDate.now
+  override val testDate: LocalDate = LocalDate.now()
+  val testZeroRatedSupplies: BigDecimal = 10000.5
 
-  override val reclaimOnReturns = true
-  override val returnsFrequency = Frequency.monthly
-  override val startDate        = validDate
+  val testMonthlyReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(true), Some(Monthly), Some(MonthlyStagger), Some(testDate))
+  val testAnnualReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(false), Some(Annual), Some(JanDecStagger), Some(testDate), Some(AASDetails(Some(BankGIRO), Some(MonthlyPayment))))
 
-  override val validReturns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), Some(Stagger.feb), Some(Start(Some(startDate))))
-  val validJson    = Json.parse(
-    s"""{
-       |  "zeroRatedSupplies": 10000.5,
-       |  "reclaimVatOnMostReturns": true,
-       |  "frequency": "monthly",
-       |  "staggerStart": "feb",
-       |  "start": {
-       |    "date": "$validDate"
-       |  }
-       |}""".stripMargin
+  val validJsonMonthly: JsObject = Json.obj(
+    "zeroRatedSupplies" -> testZeroRatedSupplies,
+    "reclaimVatOnMostReturns" -> true,
+    "returnsFrequency" -> Json.toJson[ReturnsFrequency](Monthly),
+    "staggerStart" -> Json.toJson[Stagger](MonthlyStagger),
+    "startDate" -> testDate
+  )
+
+  val validJsonAnnual: JsObject = Json.obj(
+    "zeroRatedSupplies" -> testZeroRatedSupplies,
+    "reclaimVatOnMostReturns" -> false,
+    "returnsFrequency" -> Json.toJson[ReturnsFrequency](Annual),
+    "staggerStart" -> Json.toJson[Stagger](JanDecStagger),
+    "startDate" -> testDate,
+    "annualAccountingDetails" -> Json.obj(
+      "paymentMethod" -> Json.toJson[PaymentMethod](BankGIRO),
+      "paymentFrequency" -> Json.toJson[PaymentFrequency](MonthlyPayment)
+    )
   )
 
   "Returns" should {
-    "construct valid Json from the model" in {
-      Json.toJson[Returns](validReturns) mustBe validJson
+    "construct valid Json from the monthly model" in {
+      Json.toJson[Returns](testMonthlyReturns) mustBe validJsonMonthly
     }
-    "construct a valid model from the Json" in {
-      Json.fromJson[Returns](validJson) mustBe JsSuccess(validReturns)
-    }
-  }
 
-  "empty" should {
-    "construct an empty Returns model" in {
-      Returns.empty mustBe Returns(None, None, None, None, None)
+    "construct a valid model from the monthly Json" in {
+      Json.fromJson[Returns](validJsonMonthly) mustBe JsSuccess(testMonthlyReturns)
+    }
+
+    "construct valid Json from the annual model" in {
+      Json.toJson[Returns](testAnnualReturns) mustBe validJsonAnnual
+    }
+
+    "construct a valid model from the annual Json" in {
+      Json.fromJson[Returns](validJsonAnnual) mustBe JsSuccess(testAnnualReturns)
     }
   }
 }

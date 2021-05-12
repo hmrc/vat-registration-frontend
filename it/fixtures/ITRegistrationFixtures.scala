@@ -20,6 +20,7 @@ import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
+import models.api.returns.{JanuaryStagger, Quarterly, Returns}
 import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
@@ -57,8 +58,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
   val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
   val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
-  val returns = Returns(None, None, Some(Frequency.quarterly), Some(Stagger.jan), None)
-  val fullReturns = Returns(Some(1234), Some(true), Some(Frequency.quarterly), Some(Stagger.jan), None)
+  val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
+  val fullReturns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
   val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
 

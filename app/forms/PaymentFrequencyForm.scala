@@ -16,7 +16,7 @@
 
 package forms
 
-import models._
+import models.api.returns._
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
@@ -37,8 +37,8 @@ object PaymentFrequencyForm {
   def formatter: Formatter[PaymentFrequency] = new Formatter[PaymentFrequency] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], PaymentFrequency] = {
       data.get(key) match {
-        case Some(`quarterly`) => Right(Quarterly)
-        case Some(`monthly`) => Right(Monthly)
+        case Some(`quarterly`) => Right(QuarterlyPayment)
+        case Some(`monthly`) => Right(MonthlyPayment)
         case _ => Left(Seq(FormError(key, paymentFrequencyNotProvidedKey)))
       }
     }
@@ -47,8 +47,8 @@ object PaymentFrequencyForm {
       Map(
         key -> {
           value match {
-            case Quarterly => quarterly
-            case Monthly => monthly
+            case QuarterlyPayment => quarterly
+            case MonthlyPayment => monthly
           }
         }
       )

@@ -18,6 +18,7 @@ package services
 
 import _root_.models._
 import _root_.models.api.Threshold
+import models.api.returns._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.MustMatchers
@@ -28,7 +29,6 @@ import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
 
 import java.time.LocalDate
 import scala.concurrent.Future
-
 
 class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
@@ -41,17 +41,17 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     )
   }
 
-  val mockCacheMap = CacheMap("", Map("" -> JsString("")))
+  val mockCacheMap: CacheMap = CacheMap("", Map("" -> JsString("")))
 
-  override val date = LocalDate.now
-  override val returns = Returns(Some(10000.5), Some(true), Some(Frequency.quarterly), Some(Stagger.feb), Some(Start(Some(date))))
-  val returnsFixed = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 25)))))
-  val returnsAlt = returns.copy(start = Some(Start(Some(LocalDate.of(2017, 12, 12)))))
+  override val date: LocalDate = LocalDate.now
+  override val returns: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date))
+  val returnsFixed: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 25)))
+  val returnsAlt: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 12)))
 
-  def returnsWithVatDate(vd: Option[LocalDate]) = returns.copy(start = Some(Start(vd)))
+  def returnsWithVatDate(vd: Option[LocalDate]): Returns = returns.copy(startDate = vd)
 
-  val emptyReturns = Returns(None, None, None, None, None)
-  val incomplete = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
+  val emptyReturns: Returns = Returns(None, None, None, None, None, None)
+  val incomplete: Returns = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
@@ -87,18 +87,18 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
   }
 
   "handleView" should {
-    "should return a Complete frequency is decided for the user" in new Setup {
-      val defaultedReturns = returns.copy(reclaimVatOnMostReturns = Some(false))
+    "return a Complete frequency is decided for the user" in new Setup {
+      val defaultedReturns: Returns = returns.copy(reclaimVatOnMostReturns = Some(false))
       service.handleView(defaultedReturns) mustBe Complete(defaultedReturns)
     }
-    "should return a Complete model when maximum data is provided" in new Setup {
+    "return a Complete model when maximum data is provided" in new Setup {
       service.handleView(returns) mustBe Complete(returns)
     }
-    "should return a Complete model when minimum data is provided" in new Setup {
-      val minReturns = returns.copy(frequency = Some(Frequency.monthly), staggerStart = None)
-      service.handleView(minReturns) mustBe Complete(minReturns)
+    "return a Complete model when minimum data is provided" in new Setup {
+      val minReturns: Returns = returns.copy(returnsFrequency = Some(Monthly), staggerStart = None)
+      service.handleView(minReturns) mustBe Complete(minReturns.copy(staggerStart = Some(MonthlyStagger)))
     }
-    "should return an Incomplete model when less than minimum data is provided" in new Setup {
+    "return an Incomplete model when less than minimum data is provided" in new Setup {
       service.handleView(emptyReturns) mustBe Incomplete(emptyReturns)
     }
   }
@@ -158,9 +158,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.saveReclaimVATOnMostReturns(reclaimView = true)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(
+      val expected: Returns = incomplete.copy(
         reclaimVatOnMostReturns = Some(false),
-        frequency = Some(Frequency.quarterly)
+        returnsFrequency = Some(Quarterly)
       )
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
@@ -181,17 +181,17 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
-      await(service.saveFrequency(Frequency.quarterly)) mustBe returns
+      await(service.saveFrequency(Quarterly)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = emptyReturns.copy(frequency = Some(Frequency.monthly))
+      val expected: Returns = emptyReturns.copy(returnsFrequency = Some(Monthly))
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(emptyReturns)))
       when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
-      await(service.saveFrequency(Frequency.monthly)) mustBe expected
+      await(service.saveFrequency(Monthly)) mustBe expected
     }
   }
 
@@ -204,17 +204,17 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.clear(any(), any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
-      await(service.saveStaggerStart(Stagger.feb)) mustBe returns
+      await(service.saveStaggerStart(FebruaryStagger)) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(staggerStart = Some(Stagger.jan))
+      val expected: Returns = incomplete.copy(staggerStart = Some(JanuaryStagger))
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
       when(mockS4LService.save(any)(any, any, any, any))
         .thenReturn(Future.successful(mockCacheMap))
 
-      await(service.saveStaggerStart(Stagger.jan)) mustBe expected
+      await(service.saveStaggerStart(JanuaryStagger)) mustBe expected
     }
   }
 
@@ -230,7 +230,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.saveVatStartDate(Some(date))) mustBe returns
     }
     "save an incomplete model" in new Setup {
-      val expected = incomplete.copy(start = Some(Start(Some(date))))
+      val expected: Returns = incomplete.copy(startDate = Some(date))
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
@@ -248,13 +248,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     val nextThirtyDayDate = LocalDate.of(2017, 12, 12)
 
     "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
-
-      val thresholdDates = Threshold(
-        true,
+      val thresholdDates: Threshold = Threshold(
+        mandatoryRegistration = true,
         Some(pastThirtyDayDate),
         Some(overTwelveMonthDate)
       )
-
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdDates))
@@ -263,8 +261,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "return a date when just the overTwelveMonthDate is present" in new Setup {
-
-      val thresholdFirstDateOnly = Threshold(true, None, Some(overTwelveMonthDate))
+      val thresholdFirstDateOnly: Threshold = Threshold(mandatoryRegistration = true, None, Some(overTwelveMonthDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdFirstDateOnly))
@@ -273,8 +270,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "return a date when just the pastThirtyDayDate is present" in new Setup {
-
-      val thresholdSecondDateOnly = generateThreshold(thresholdPreviousThirtyDays = Some(pastThirtyDayDate))
+      val thresholdSecondDateOnly: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(pastThirtyDayDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdSecondDateOnly))
@@ -283,7 +279,6 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "return a date when just the nextThirtyDayDate is present" in new Setup {
-
       val thresholdSecondDateOnly: Threshold = Threshold(
         mandatoryRegistration = true,
         thresholdNextThirtyDays = Some(nextThirtyDayDate)
@@ -296,8 +291,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "throw a RuntimeException when no dates are present" in new Setup {
-
-      val thresholdNoDates = generateThreshold()
+      val thresholdNoDates: Threshold = generateThreshold()
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdNoDates))
@@ -315,23 +309,22 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   "getThreshold" should {
     "return true when in a voluntary flow" in new Setup {
-
-      val voluntary = generateThreshold()
+      val voluntary: Threshold = generateThreshold()
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(voluntary))
 
-      await(service.getThreshold) mustBe true
+      await(service.isVoluntary) mustBe true
 
     }
 
     "return false when in a mandatory flow" in new Setup {
-      val mandatory = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
+      val mandatory: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(mandatory))
 
-      await(service.getThreshold) mustBe false
+      await(service.isVoluntary) mustBe false
     }
   }
 
@@ -375,34 +368,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
   }
 
-  "retrieveCTActiveDate" should {
-    "return the CT Active Date" in new Setup {
-      when(mockPrePopulationService.getCTActiveDate(any(), any()))
-        .thenReturn(Future.successful(Some(date)))
-
-      await(service.retrieveCTActiveDate) mustBe Some(date)
-    }
-  }
-
-  "getVatStartDate" should {
-    "return the vat start if it exists" in new Setup {
-      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(returnsFixed)))
-
-      await(service.getVatStartDate) mustBe Some(LocalDate.of(2017, 12, 25))
-    }
-
-    "return nothing if it doesn't exist" in new Setup {
-      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
-        .thenReturn(Future.successful(None))
-
-      await(service.getVatStartDate) mustBe None
-    }
-  }
-
   "saveVoluntaryStartDate" should {
     "save a company start date as the vat start date" in new Setup {
-      val expected = incomplete.copy(start = Some(Start(Some(testIncorpDate))))
+      val expected: Returns = incomplete.copy(startDate = Some(testIncorpDate))
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))
@@ -415,8 +383,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
 
     "save a specific start date" in new Setup {
-      val specificStartDate = LocalDate.of(2017, 12, 12)
-      val expected = incomplete.copy(start = Some(Start(Some(specificStartDate))))
+      val specificStartDate: LocalDate = LocalDate.of(2017, 12, 12)
+      val expected: Returns = incomplete.copy(startDate = Some(specificStartDate))
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(incomplete)))

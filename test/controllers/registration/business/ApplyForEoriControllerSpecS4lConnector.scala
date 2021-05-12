@@ -86,7 +86,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.ZeroRatedSuppliesController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesController.show().url)
       }
     }
 
@@ -100,7 +100,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.ZeroRatedSuppliesController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesController.show().url)
       }
     }
 

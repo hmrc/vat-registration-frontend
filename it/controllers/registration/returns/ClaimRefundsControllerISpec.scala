@@ -3,7 +3,7 @@ package controllers.registration.returns
 
 import itutil.ControllerISpec
 import models.api.Threshold
-import models.{Returns, Start}
+import models.api.returns.Returns
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -14,7 +14,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'claim refunds' in the backend" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(Start(Some(testApplicantIncorpDate)))))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -25,7 +25,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is a value for 'claim refunds' in the backend" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, Some(true), None, None, Some(Start(Some(testApplicantIncorpDate)))))
+        .s4lContainer[Returns].contains(Returns(None, Some(true), None, None, Some(testApplicantIncorpDate)))
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -39,7 +39,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to the voluntary start date page when the user is voluntary" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(Start(Some(testApplicantIncorpDate)))))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
 
@@ -47,13 +47,13 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ReturnsController.voluntaryStartPage.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage().url)
       }
     }
     "redirect to the mandatory start date page when the user is mandatory" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(Start(Some(testApplicantIncorpDate)))))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
 
@@ -61,7 +61,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ReturnsController.mandatoryStartPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage().url)
       }
     }
   }

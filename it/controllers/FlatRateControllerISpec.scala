@@ -2,9 +2,9 @@
 package controllers
 
 import java.time.LocalDate
-
 import itutil.ControllerISpec
-import models.{FRSDateChoice, FlatRateScheme, Returns, Start}
+import models.api.returns.Returns
+import models.{FRSDateChoice, FlatRateScheme, Start}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
@@ -36,18 +36,19 @@ class FlatRateControllerISpec extends ControllerISpec {
   val returnsData: JsValue = Json.toJson[Returns](Returns(
     zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
-    frequency = None,
+    returnsFrequency = None,
     staggerStart = None,
-    start = None
+    startDate = None
   ))
 
   val returnsDataWithStartDate: JsValue = Json.toJson[Returns](Returns(
     zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
-    frequency = None,
+    returnsFrequency = None,
     staggerStart = None,
-    start = Some(Start(Some(LocalDate.of(2017,1,2))))
+    startDate = Some(LocalDate.of(2017,1,2))
   ))
+
   implicit val s4lFrsKey = FlatRateScheme.s4lKey
 
   val threeWorkingDaysInFuture = LocalDate.of(2018, 5, 29)

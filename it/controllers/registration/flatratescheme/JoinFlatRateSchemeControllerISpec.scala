@@ -2,7 +2,8 @@
 package controllers.registration.flatratescheme
 
 import itutil.ControllerISpec
-import models.{FlatRateScheme, Returns}
+import models.FlatRateScheme
+import models.api.returns.Returns
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -25,9 +26,9 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   val returnsData: JsValue = Json.toJson[Returns](Returns(
     zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
-    frequency = None,
+    returnsFrequency = None,
     staggerStart = None,
-    start = None
+    startDate = None
   ))
 
   val lowTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 1000L)
@@ -82,7 +83,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain (controllers.routes.FlatRateController.annualCostsInclusivePage().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
       }
     }
     "redirect to the next FRS page if the user answers No" in new Setup {
@@ -99,7 +100,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain (controllers.routes.SummaryController.show().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.SummaryController.show().url)
       }
     }
   }
