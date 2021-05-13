@@ -16,6 +16,7 @@
 
 @import play.api.data.Form
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import forms.PaymentFrequencyForm._
 @import views.html.components._
 @import views.html.layouts.layout
 @import config.FrontendAppConfig
@@ -31,7 +32,7 @@
         errorSummary: errorSummary
 )
 
-@(form: Form[PaymentFrequency])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(form: Form[PaymentFrequency])( implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(title(form, messages("aas.paymentFrequency.heading"))), backLink = true) {
 
@@ -48,11 +49,13 @@
             items = Seq(
                 RadioItem(
                     content = Text(messages("aas.paymentFrequency.quarterly")),
-                    value = Some("quarterly")
+                    value = Some("quarterly"),
+                    checked = form("value").value.contains(quarterly)
                 ),
                 RadioItem(
                     content = Text(messages("aas.paymentFrequency.monthly")),
-                    value = Some("monthly")
+                    value = Some("monthly"),
+                    checked = form("value").value.contains(monthly)
                 )
             ),
             legendAsHeading = false,
