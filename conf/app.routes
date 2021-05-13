@@ -238,3 +238,7 @@ POST        /last-month-of-accounting-year                                      
 ## AASPaymentMethodController
 GET         /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.show
 POST        /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.submit
+
+## PaynentFrequencyController
+GET         /how-often-you-pay                                                                 controllers.registration.annualaccountingscheme.PaymentFrequencyController.show
+POST        /how-often-you-pay                                                                 controllers.registration.annualaccountingscheme.PaymentFrequencyController.submit
