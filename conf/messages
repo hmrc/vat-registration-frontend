@@ -681,7 +681,7 @@ email-verified.heading                                    = Email address confir
 ## CAPTURE TELEPHONE NUMBER MESSAGES
 capture-telephone-number.heading                        = What is your telephone number?
 capture-telephone-number.paragraph                      = We may need to contact you about the application.
-capture-telephone-number.label                           = UK telephone number
+capture-telephone-number.label                          = UK telephone number
 capture-telephone-number.error.incorrect_format         = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
 capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
 capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer
@@ -709,7 +709,14 @@ last-month-of-accounting-year.nov                        = November
 last-month-of-accounting-year.dec                        = December
 last-month-of-accounting-year.error.required             = Tell us when you want your accounting year to end
 
-# AAS how would you like to pay
+## AAS HOW OFTEN MAKE PAYMENTS
+aas.paymentFrequency.heading                             = How often do you want to make payments?
+ass.paymentFrequency.para                                = As part of the Annual Accounting Scheme each payment is either 10% of your estimated VAT bill for monthly payers or 25% for quarterly payers. The amount you will pay is based on previous VAT returns or if you have not yet submitted a Return it will be estimated.
+aas.paymentFrequency.quarterly                           = Quarterly
+aas.paymentFrequency.monthly                             = Monthly
+aas.paymentFrequency.notProvided                         = Tell us how often you want to make payments
+
+# AAS HOW WOULD YOU LIKE TO PAY
 aas.paymentMethod.heading                                = How do you want to pay VAT?
 aas.paymentMethod.insetText                              = If you would prefer to pay by Direct Debit you can set this up after you have received your VAT Registration Number.
 aas.paymentMethod.bacs                                   = BACS or internet banking
