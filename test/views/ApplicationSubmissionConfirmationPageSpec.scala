@@ -16,7 +16,6 @@
 
 package views
 
-import models.Stagger
 import org.jsoup.Jsoup
 import views.html.pages.application_submission_confirmation
 
@@ -38,11 +37,10 @@ class ApplicationSubmissionConfirmationPageSpec extends VatRegViewSpec {
   val url3 = "https://www.gov.uk/guidance/find-software-thats-compatible-with-making-tax-digital-for-vat"
   val insetText = "The company cannot charge customers for VAT until it has its VAT number."
   val buttonText = "Finish"
-  val hiddenText = "feb"
   val viewInstance: application_submission_confirmation = app.injector.instanceOf[application_submission_confirmation]
 
   "Application submission confirmation page" should {
-    lazy val view = viewInstance(Some(Stagger.feb))
+    lazy val view = viewInstance()
     lazy val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -83,10 +81,6 @@ class ApplicationSubmissionConfirmationPageSpec extends VatRegViewSpec {
 
     "have the correct continue button" in {
       doc.select(Selectors.button).text mustBe buttonText
-    }
-
-    "have the correct hidden text" in {
-      doc.select(Selectors.hidden).text mustBe hiddenText
     }
 
   }

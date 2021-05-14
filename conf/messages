@@ -361,7 +361,7 @@ pages.summary.directorDetails.estimatedSalesValue                = Estimated VAT
 ## Summary Page Director Addresses
 pages.summary.directorDetails.currentAddressThreeYears      = Lived at current address for more than 3 years
 
-## Summary Page Annual Accounting Scheme
+## Summary Page Returns
 pages.summary.directorDetails.zeroRatedSuppliesValue                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
 pages.summary.directorDetails.reclaimMoreVatClaim                     = VAT claims and charges
 pages.summary.directorDetails.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge

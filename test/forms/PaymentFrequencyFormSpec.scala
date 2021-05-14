@@ -16,7 +16,7 @@
 
 package forms
 
-import models.{PaymentFrequency, Monthly, Quarterly}
+import models.api.returns._
 import play.api.data.{Form, FormError}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
@@ -29,8 +29,8 @@ class PaymentFrequencyFormSpec extends VatRegSpec {
     "binding a value" should {
       "return the correct payment frequency for all valid values" in {
         val validValues = Map(
-          "quarterly" -> Quarterly,
-          "monthly" -> Monthly
+          "quarterly" -> QuarterlyPayment,
+          "monthly" -> MonthlyPayment
         )
 
         validValues.map {
@@ -56,8 +56,8 @@ class PaymentFrequencyFormSpec extends VatRegSpec {
     "populating with a valid payment frequency" should {
       "return the correct thing for every valid value" in {
         val validValues = Seq(
-          Quarterly,
-          Monthly
+          QuarterlyPayment,
+          MonthlyPayment
         )
 
         validValues map { value =>

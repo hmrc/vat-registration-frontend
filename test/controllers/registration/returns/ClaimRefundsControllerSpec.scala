@@ -16,17 +16,16 @@
 
 package controllers.registration.returns
 
-import java.time.{LocalDate, LocalDateTime}
 import _root_.models._
 import fixtures.VatRegistrationFixture
+import models.api.returns.Returns
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
-import services.MandatoryDateModel
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.claim_refunds_view
+import views.html.returns.claim_refunds_view
 
 import scala.concurrent.Future
 
@@ -44,13 +43,13 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
     mockWithCurrentProfile(cp)
   }
 
-  val emptyReturns: Returns = Returns.empty
+  val emptyReturns: Returns = Returns()
   val voluntary = true
-  val fakeRequest = FakeRequest(controllers.registration.returns.routes.ClaimRefundsController.show())
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.registration.returns.routes.ClaimRefundsController.show())
 
   "show" should {
     "return OK when returns are found" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
+      when(mockReturnsService.getReturns(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
 
       callAuthorised(testController.show) { result =>
@@ -59,7 +58,7 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
     }
 
     "return OK when returns are not found" in new Setup {
-      when(mockReturnsService.getReturns(any(), any(), any()))
+      when(mockReturnsService.getReturns(any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       callAuthorised(testController.show) { result =>
@@ -70,10 +69,10 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
 
   "submit" should {
     "return SEE_OTHER when they expect to reclaim more vat than they charge and redirect to VAT Start Page - mandatory flow" in new Setup {
-      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
+      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
 
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
+      when(mockReturnsService.isVoluntary(any(), any()))
         .thenReturn(Future.successful(!voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -87,10 +86,10 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
     }
 
     "return SEE_OTHER when they don't expect to reclaim more vat than they charge and redirect to VAT Start Page - voluntarily flow" in new Setup {
-      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any(), any()))
+      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(false))))
 
-      when(mockReturnsService.getThreshold()(any(), any(), any()))
+      when(mockReturnsService.isVoluntary(any(), any()))
         .thenReturn(Future.successful(voluntary))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(

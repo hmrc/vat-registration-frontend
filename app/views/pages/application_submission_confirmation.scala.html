@@ -32,7 +32,7 @@
         form: formWithCSRF
 )
 
-@(staggerStart: Option[Stagger.Value])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
@@ -67,9 +67,5 @@
 
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
         @button("pages.application.submission.confirmation.button", showSaveProgressButton = false)
-    }
-
-    @staggerStart.map { startPeriod =>
-        <div class="hidden"><span id="vatAccountPeriodGAEventDoNotRemove">@startPeriod</span></div>
     }
 }

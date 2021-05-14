@@ -19,6 +19,7 @@ package models.api
 import common.enums.VatRegStatus
 import models.view.ApplicantDetails
 import models._
+import models.api.returns.Returns
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

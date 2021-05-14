@@ -28,12 +28,12 @@ GET         /honesty-declaration                                                
 POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit
 
 ## VOLUNTARY START DATE PAGE
-GET         /vat-start-date                                                                    controllers.ReturnsController.voluntaryStartPage
-POST        /vat-start-date                                                                    controllers.ReturnsController.submitVoluntaryStart
+GET         /vat-start-date                                                                    controllers.registration.returns.ReturnsController.voluntaryStartPage
+POST        /vat-start-date                                                                    controllers.registration.returns.ReturnsController.submitVoluntaryStart
 
 ## MANDATORY START DATE PAGE
-GET         /mandatory-vat-start-date                                                          controllers.ReturnsController.mandatoryStartPage
-POST        /mandatory-vat-start-date                                                          controllers.ReturnsController.submitMandatoryStart
+GET         /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.mandatoryStartPage
+POST        /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.submitMandatoryStart
 
 ## TRADING NAME PAGE
 GET         /trading-name                                                                      controllers.registration.business.TradingNameController.show
@@ -44,20 +44,20 @@ GET         /apply-for-eori                                                     
 POST        /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.submit
 
 ## ZERO RATED SUPPLIES PAGE
-GET         /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.show
-POST        /zero-rated-turnover                                                               controllers.ZeroRatedSuppliesController.submit
+GET         /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.show
+POST        /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.show
 POST        /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /submit-vat-returns                                                                controllers.ReturnsController.accountPeriodsPage
-POST        /submit-vat-returns                                                                controllers.ReturnsController.submitAccountPeriods
+GET         /submit-vat-returns                                                                controllers.registration.returns.ReturnsController.accountPeriodsPage
+POST        /submit-vat-returns                                                                controllers.registration.returns.ReturnsController.submitAccountPeriods
 
 ## VAT RETURN FREQUENCY
-GET         /how-often-submit-returns                                                          controllers.ReturnsController.returnsFrequencyPage
-POST        /how-often-submit-returns                                                          controllers.ReturnsController.submitReturnsFrequency
+GET         /how-often-submit-returns                                                          controllers.registration.returns.ReturnsController.returnsFrequencyPage
+POST        /how-often-submit-returns                                                          controllers.registration.returns.ReturnsController.submitReturnsFrequency
 
 ## COMPANY BANK ACCOUNT
 GET         /companys-bank-account                                                             controllers.BankAccountDetailsController.showHasCompanyBankAccountView
@@ -232,13 +232,13 @@ GET         /new-application                                                    
 POST        /new-application                                                                   controllers.StartNewApplicationController.submit
 
 ## LastMonthOfAccountingYearController
-GET         /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.show
-POST        /last-month-of-accounting-year                                                     controllers.registration.annualaccountingscheme.LastMonthOfAccountingYearController.submit
+GET         /last-month-of-accounting-year                                                     controllers.registration.returns.LastMonthOfAccountingYearController.show
+POST        /last-month-of-accounting-year                                                     controllers.registration.returns.LastMonthOfAccountingYearController.submit
 
 ## AASPaymentMethodController
-GET         /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.show
-POST        /how-do-you-want-to-pay                                                            controllers.registration.annualaccountingscheme.AASPaymentMethodController.submit
+GET         /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.show
+POST        /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.submit
 
 ## PaynentFrequencyController
-GET         /how-often-you-pay                                                                 controllers.registration.annualaccountingscheme.PaymentFrequencyController.show
-POST        /how-often-you-pay                                                                 controllers.registration.annualaccountingscheme.PaymentFrequencyController.submit
+GET         /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.show
+POST        /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.submit

@@ -18,13 +18,14 @@ package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.{BaseController, routes => baseRoutes}
+import controllers.BaseController
+import controllers.registration.returns.{routes => baseRoutes}
 import forms.ChargeExpectancyForm
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile}
-import views.html.claim_refunds_view
+import views.html.returns.claim_refunds_view
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
@@ -55,7 +56,7 @@ class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
           success => {
             for {
               _ <- returnsService.saveReclaimVATOnMostReturns(success)
-              isVoluntary <- returnsService.getThreshold
+              isVoluntary <- returnsService.isVoluntary
             } yield {
               if (isVoluntary) {
                 Redirect(baseRoutes.ReturnsController.voluntaryStartPage())

@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.Returns
+import models.api.returns.Returns
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -50,8 +50,8 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("testAckRef"))
 
-      when(mockReturnsService.getReturns(any(), any(), any()))
-        .thenReturn(Future.successful(Returns(None, None, None, None, None)))
+      when(mockReturnsService.getReturns(any(), any()))
+        .thenReturn(Future.successful(Returns()))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK

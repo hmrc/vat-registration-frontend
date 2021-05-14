@@ -19,6 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
+import models.api.returns.{Monthly, Returns}
 import models.view.{Summary, SummaryRow, SummarySection}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
@@ -164,7 +165,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
   val validReturns = Returns(
-    Some(10000.5), Some(false), Some(Frequency.monthly), None, Some(Start(Some(LocalDate.of(2017, 10, 10))))
+    Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
   )
 
   val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)

@@ -16,14 +16,16 @@
 
 package controllers
 
-import java.time.LocalDate
 import itutil.{ControllerISpec, WiremockHelper}
+import models.SicAndCompliance
+import models.api.returns.{JanuaryStagger, Quarterly, Returns}
 import models.view.ApplicantDetails
-import models.{Frequency, Returns, SicAndCompliance, Stagger}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+
+import java.time.LocalDate
 
 class SummaryControllerISpec extends ControllerISpec {
 
@@ -73,7 +75,7 @@ class SummaryControllerISpec extends ControllerISpec {
         .vatScheme.has("sicAndComp", SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[SicAndCompliance].cleared
-        .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Frequency.quarterly), Some(Stagger.jan), None))
+        .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Quarterly), Some(JanuaryStagger), None))
         .vatRegistration.storesNrsPayload(testRegId)
         .audit.writesAudit()
         .audit.writesAuditMerged()

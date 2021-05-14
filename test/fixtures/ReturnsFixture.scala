@@ -16,17 +16,17 @@
 
 package fixtures
 
-import java.time.LocalDate
+import models.api.returns.{Monthly, Returns}
 
-import models.{Frequency, Returns, Start}
+import java.time.LocalDate
 
 trait ReturnsFixture {
 
   val date = LocalDate.now()
 
   val reclaimOnReturns = true
-  val returnsFrequency = Frequency.monthly
-  val startDate        = date
-  val returns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(Start(Some(startDate))))
+  val returnsFrequency = Monthly
+  val startDate = date
+  val returns = Returns(Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(startDate))
 
 }

@@ -16,18 +16,18 @@
 
 package connectors
 
-import java.time.LocalDate
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-
-import javax.inject.{Inject, Singleton}
 import models._
 import models.api._
+import models.api.returns.Returns
 import models.view.ApplicantDetails
 import play.api.http.Status._
-import play.api.libs.json.{Format, JsObject, JsValue, Json, Reads}
+import play.api.libs.json._
 import uk.gov.hmrc.http._
 
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 // scalastyle:off
@@ -255,7 +255,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def upsertVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST(s"$vatRegUrl/vatreg/insert-s4l-scheme", partialVatScheme).map{
+    http.POST(s"$vatRegUrl/vatreg/insert-s4l-scheme", partialVatScheme).map {
       response => response.json
     }
   }

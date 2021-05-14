@@ -22,14 +22,15 @@ import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
+import models.api.returns.Returns
 import models.view.{ApplicantDetails, SummaryRow}
 import testHelpers.VatRegSpec
 import viewmodels.SummaryCheckYourAnswersBuilder
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
-  def returnsWithStartDate(startDate: Option[LocalDate] = Some(LocalDate.now())) =
-    Some(Returns(None, None, None, None, Some(Start(startDate))))
+  def returnsWithStartDate(startDate: Option[LocalDate] = Some(LocalDate.now())): Option[Returns] =
+    Some(Returns(None, None, None, None, startDate))
 
   val serviceName = "vat-registration-eligibility-frontend"
   val accountName = "testName"
@@ -273,7 +274,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       sectionBuilder.zeroRatedRow mustBe SummaryRow(
         "directorDetails.zeroRated",
         "£10,000.50",
-        Some(controllers.routes.ZeroRatedSuppliesController.show())
+        Some(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
       )
     }
     "render the expect claim refunds row" in {
@@ -444,7 +445,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
         val expectedRow = SummaryRow(
           "directorDetails.startDate",
           "21 March 2017",
-          Some(controllers.routes.ReturnsController.voluntaryStartPage())
+          Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage())
         )
 
         sectionBuilder.startDateRow mustBe expectedRow

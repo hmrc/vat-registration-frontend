@@ -16,10 +16,9 @@
 
 package views
 
-import models.Stagger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.pages.{application_progress_saved, application_submission_confirmation}
+import views.html.pages.application_progress_saved
 
 class ApplicationProgressSavedViewSpec extends VatRegViewSpec {
 
