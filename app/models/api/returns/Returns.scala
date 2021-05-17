@@ -34,8 +34,8 @@ object Returns extends JsonUtilities {
   implicit val format: Format[Returns] = Json.format[Returns]
 }
 
-case class AASDetails(paymentMethod: Option[PaymentMethod] = None,
-                      paymentFrequency: Option[PaymentFrequency] = None)
+case class AASDetails(paymentFrequency: Option[PaymentFrequency] = None,
+                      paymentMethod: Option[PaymentMethod] = None)
 
 object AASDetails {
   implicit val format: Format[AASDetails] = Json.format[AASDetails]

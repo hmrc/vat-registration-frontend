@@ -47,6 +47,8 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
   override val returns: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date))
   val returnsFixed: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 25)))
   val returnsAlt: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 12)))
+  val testAASDetails: AASDetails = AASDetails(Some(MonthlyPayment), Some(BankGIRO))
+  val testAASReturns: Returns = Returns(Some(10000.5), Some(true), Some(Annual), Some(JanDecStagger), Some(date), Some(testAASDetails))
 
   def returnsWithVatDate(vd: Option[LocalDate]): Returns = returns.copy(startDate = vd)
 
@@ -157,10 +159,10 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
       await(service.saveReclaimVATOnMostReturns(reclaimView = true)) mustBe returns
     }
+
     "save an incomplete model" in new Setup {
       val expected: Returns = incomplete.copy(
-        reclaimVatOnMostReturns = Some(false),
-        returnsFrequency = Some(Quarterly)
+        reclaimVatOnMostReturns = Some(false)
       )
 
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
@@ -183,6 +185,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
       await(service.saveFrequency(Quarterly)) mustBe returns
     }
+
     "save an incomplete model" in new Setup {
       val expected: Returns = emptyReturns.copy(returnsFrequency = Some(Monthly))
 
@@ -394,6 +397,57 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.saveVoluntaryStartDate(
         DateSelection.specific_date, Some(specificStartDate), testIncorpDate
       )) mustBe expected
+    }
+  }
+
+  "savePaymentFrequency" should {
+    "save a complete model" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(testAASReturns)))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+
+      await(service.savePaymentFrequency(MonthlyPayment)) mustBe testAASReturns
+    }
+
+    "save an incomplete model" in new Setup {
+      val expected: Returns = incomplete.copy(
+        annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))
+      )
+
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete)))
+      when(mockS4LService.save(any)(any, any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.savePaymentFrequency(MonthlyPayment)) mustBe expected
+    }
+  }
+
+  "savePaymentMethod" should {
+    "save a complete model" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(testAASReturns)))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+
+      await(service.savePaymentMethod(BankGIRO)) mustBe testAASReturns
+    }
+
+    "save an incomplete model" in new Setup {
+      val expected: Returns = incomplete.copy(
+        annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO)))
+      )
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(incomplete.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))))
+      when(mockS4LService.save(any)(any, any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.savePaymentMethod(BankGIRO)) mustBe expected
     }
   }
 }

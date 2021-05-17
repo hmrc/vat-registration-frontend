@@ -42,18 +42,18 @@ object AnnualStaggerForm {
   def formatter: Formatter[AnnualStagger] = new Formatter[AnnualStagger] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], AnnualStagger] = {
       data.get(key) match {
-        case Some(`januaryKey`) => Right(JanDecStagger)
-        case Some(`februaryKey`) => Right(FebJanStagger)
-        case Some(`marchKey`) => Right(MarFebStagger)
-        case Some(`aprilKey`) => Right(AprMarStagger)
-        case Some(`mayKey`) => Right(MayAprStagger)
-        case Some(`juneKey`) => Right(JunMayStagger)
-        case Some(`julyKey`) => Right(JulJunStagger)
-        case Some(`augustKey`) => Right(AugJulStagger)
-        case Some(`septemberKey`) => Right(SepAugStagger)
-        case Some(`octoberKey`) => Right(OctSepStagger)
-        case Some(`novemberKey`) => Right(NovOctStagger)
-        case Some(`decemberKey`) => Right(DecNovStagger)
+        case Some(`januaryKey`) => Right(FebJanStagger)
+        case Some(`februaryKey`) => Right(MarFebStagger)
+        case Some(`marchKey`) => Right(AprMarStagger)
+        case Some(`aprilKey`) => Right(MayAprStagger)
+        case Some(`mayKey`) => Right(JunMayStagger)
+        case Some(`juneKey`) => Right(JulJunStagger)
+        case Some(`julyKey`) => Right(AugJulStagger)
+        case Some(`augustKey`) => Right(SepAugStagger)
+        case Some(`septemberKey`) => Right(OctSepStagger)
+        case Some(`octoberKey`) => Right(NovOctStagger)
+        case Some(`novemberKey`) => Right(DecNovStagger)
+        case Some(`decemberKey`) => Right(JanDecStagger)
         case _ => Left(Seq(FormError(key, annualStaggerError)))
       }
     }

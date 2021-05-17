@@ -47,63 +47,63 @@
             items = Seq(
                 RadioItem(
                     content = Text(messages("last-month-of-accounting-year.jan")),
+                    value = Some(januaryKey),
+                    checked = form("value").value.contains(januaryKey)
+                ),
+                RadioItem(
+                    content = Text(messages("last-month-of-accounting-year.feb")),
                     value = Some(februaryKey),
                     checked = form("value").value.contains(februaryKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.feb")),
+                    content = Text(messages("last-month-of-accounting-year.mar")),
                     value = Some(marchKey),
                     checked = form("value").value.contains(marchKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.mar")),
+                    content = Text(messages("last-month-of-accounting-year.apr")),
                     value = Some(aprilKey),
                     checked = form("value").value.contains(aprilKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.apr")),
+                    content = Text(messages("last-month-of-accounting-year.may")),
                     value = Some(mayKey),
                     checked = form("value").value.contains(mayKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.may")),
+                    content = Text(messages("last-month-of-accounting-year.jun")),
                     value = Some(juneKey),
                     checked = form("value").value.contains(juneKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.jun")),
+                    content = Text(messages("last-month-of-accounting-year.jul")),
                     value = Some(julyKey),
                     checked = form("value").value.contains(julyKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.jul")),
+                    content = Text(messages("last-month-of-accounting-year.aug")),
                     value = Some(augustKey),
                     checked = form("value").value.contains(augustKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.aug")),
+                    content = Text(messages("last-month-of-accounting-year.sep")),
                     value = Some(septemberKey),
                     checked = form("value").value.contains(septemberKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.sep")),
+                    content = Text(messages("last-month-of-accounting-year.oct")),
                     value = Some(octoberKey),
                     checked = form("value").value.contains(octoberKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.oct")),
+                    content = Text(messages("last-month-of-accounting-year.nov")),
                     value = Some(novemberKey),
                     checked = form("value").value.contains(novemberKey)
                 ),
                 RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.nov")),
+                    content = Text(messages("last-month-of-accounting-year.dec")),
                     value = Some(decemberKey),
                     checked = form("value").value.contains(decemberKey)
-                ),
-                RadioItem(
-                    content = Text(messages("last-month-of-accounting-year.dec")),
-                    value = Some(januaryKey),
-                    checked = form("value").value.contains(januaryKey)
                 )
             ),
             legendAsHeading = false,

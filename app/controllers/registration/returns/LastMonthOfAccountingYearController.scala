@@ -20,9 +20,9 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.AnnualStaggerForm
-import models.api.returns.FebJanStagger
+import models.api.returns.AnnualStagger
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{ReturnsService, SessionProfile}
 import views.html.returns.last_month_of_accounting_year
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounting_year,
                                                     val authConnector: AuthClientConnector,
-                                                    val keystoreConnector: KeystoreConnector
+                                                    val keystoreConnector: KeystoreConnector,
+                                                    returnsService: ReturnsService
                                                    )(implicit appConfig: FrontendAppConfig,
                                                      val executionContext: ExecutionContext,
                                                      baseControllerComponents: BaseControllerComponents)
@@ -39,8 +40,13 @@ class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounti
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        Future.successful(Ok(view(AnnualStaggerForm.form.fill(FebJanStagger)))) //TODO Fill form when data storage is done
+      implicit profile =>
+        returnsService.getReturns.map { returns =>
+          returns.staggerStart match {
+            case Some(stagger: AnnualStagger) => Ok(view(AnnualStaggerForm.form.fill(stagger)))
+            case _ => Ok(view(AnnualStaggerForm.form))
+          }
+        }
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -48,7 +54,9 @@ class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounti
       implicit profile =>
         AnnualStaggerForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          annualStagger => Future.successful(Redirect(routes.LastMonthOfAccountingYearController.submit())) //TODO Store data and do correct redirect
+          annualStagger => returnsService.saveStaggerStart(annualStagger).map { _ =>
+            Redirect(routes.PaymentFrequencyController.show())
+          }
         )
   }
 }

@@ -20,8 +20,8 @@ import connectors.VatRegistrationConnector
 import models._
 import models.api.returns._
 import play.api.Logger
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -69,12 +69,10 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
-    case Returns(Some(zeroRated), Some(false), _, Some(stagger: QuarterlyStagger), _, None) =>
-      Complete(returns.copy(returnsFrequency = Some(Quarterly)))
-    case Returns(Some(zeroRated), Some(true), Some(Quarterly), Some(stagger: QuarterlyStagger), _, None) =>
-      Complete(returns)
-    case Returns(Some(zeroRated), Some(true), Some(Monthly), _, _, None) =>
-      Complete(returns.copy(staggerStart = Some(MonthlyStagger)))
+    case Returns(Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _) =>
+      Complete(returns.copy(returnsFrequency = Some(Quarterly), annualAccountingDetails = None))
+    case Returns(Some(zeroRated), Some(true), Some(Monthly), _, _, _) =>
+      Complete(returns.copy(staggerStart = Some(MonthlyStagger), annualAccountingDetails = None))
     case Returns(Some(zeroRated), Some(_), Some(Annual), Some(stagger: AnnualStagger), _, Some(AASDetails(Some(paymentMethod), Some(paymentFrequency)))) =>
       Complete(returns)
     case _ =>
@@ -99,15 +97,16 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
       submitReturns(returns.copy(
-        reclaimVatOnMostReturns = Some(reclaimView),
-        returnsFrequency = if (!reclaimView) Some(Quarterly) else returns.returnsFrequency
+        reclaimVatOnMostReturns = Some(reclaimView)
       ))
     }
   }
 
   def saveFrequency(frequencyView: ReturnsFrequency)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
-      submitReturns(returns.copy(returnsFrequency = Some(frequencyView)))
+      submitReturns(returns.copy(
+        returnsFrequency = Some(frequencyView)
+      ))
     }
   }
 
@@ -132,6 +131,27 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
     }
 
     saveVatStartDate(voluntaryDate)
+  }
+
+  def savePaymentFrequency(paymentFrequencyChoice: PaymentFrequency)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
+    getReturns.flatMap { returns =>
+      val updatedAnnualAccountingDetails = returns.annualAccountingDetails.fold(
+        AASDetails(paymentFrequency = Some(paymentFrequencyChoice))
+      )(
+        _.copy(paymentFrequency = Some(paymentFrequencyChoice))
+      )
+      submitReturns(returns.copy(annualAccountingDetails = Some(updatedAnnualAccountingDetails)))
+    }
+  }
+
+  def savePaymentMethod(paymentMethodChoice: PaymentMethod)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
+    getReturns.flatMap { returns =>
+      val oldAnnualAccountingDetails = returns.annualAccountingDetails.getOrElse(
+        throw new InternalServerException("[ReturnsService][savePaymentMethod] Missing annual accounting details")
+      )
+
+      submitReturns(returns.copy(annualAccountingDetails = Some(oldAnnualAccountingDetails.copy(paymentMethod = Some(paymentMethodChoice)))))
+    }
   }
 
   def isVoluntary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] = {

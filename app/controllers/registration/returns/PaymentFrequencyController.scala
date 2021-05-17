@@ -20,9 +20,9 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.PaymentFrequencyForm
-import models.api.returns.MonthlyPayment
+import models.api.returns.AASDetails
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{ReturnsService, SessionProfile}
 import views.html.returns.payment_frequency
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class PaymentFrequencyController @Inject()(view: payment_frequency,
                                            val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector
+                                           val keystoreConnector: KeystoreConnector,
+                                           returnsService: ReturnsService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)
@@ -39,8 +40,13 @@ class PaymentFrequencyController @Inject()(view: payment_frequency,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        Future.successful(Ok(view(PaymentFrequencyForm.apply().fill(MonthlyPayment)))) //TODO Update once rerouting is completed
+      implicit profile =>
+        returnsService.getReturns.map { returns =>
+          returns.annualAccountingDetails match {
+            case Some(AASDetails(Some(paymentFrequency), _)) => Ok(view(PaymentFrequencyForm.apply().fill(paymentFrequency)))
+            case _ => Ok(view(PaymentFrequencyForm.apply()))
+          }
+        }
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -48,7 +54,9 @@ class PaymentFrequencyController @Inject()(view: payment_frequency,
       implicit profile =>
         PaymentFrequencyForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          paymentFrequency => Future.successful(Redirect(controllers.registration.returns.routes.PaymentFrequencyController.show())) //TODO Update to store data and redirect to correct page
+          paymentFrequency => returnsService.savePaymentFrequency(paymentFrequency).map { _ =>
+            Redirect(routes.PaymentMethodController.show())
+          }
         )
   }
 }
