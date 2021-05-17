@@ -16,49 +16,106 @@
 
 package controllers.registration.returns
 
-import controllers.registration.returns.{routes => annualAccountingRoutes}
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
+import models.api.returns._
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
 class PaymentMethodControllerISpec extends ControllerISpec {
 
-  val url: String = annualAccountingRoutes.PaymentMethodController.show().url
+  val url: String = routes.PaymentMethodController.show().url
+  val testFullReturns: Returns = Returns(Some(1000), Some(true), Some(Annual), Some(FebJanStagger), Some(testIncorpDate), Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
 
   s"GET $url" must {
-    "return an OK" in new Setup { //TODO add tests for payment method options
+    "return an OK with no prepop data" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[Returns].contains(Returns(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
       whenReady(response) { res =>
-        res.status mustBe 200
+        res.status mustBe OK
+      }
+    }
+
+    "return an OK when there is data to prepop" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[Returns].contains(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
       }
     }
   }
 
   s"POST $url" must {
-    "return a redirect to next page" in new Setup { //TODO Update tests and redirect to correct page
+    "return a redirect to next page and update S4L" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[Returns].contains(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
+        .s4lContainer[Returns].isUpdatedWith(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> bacs))
 
       whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(annualAccountingRoutes.PaymentMethodController.submit().url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+      }
+    }
+
+    "return a redirect to next page and update backend with full model" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[Returns].contains(testFullReturns)
+        .s4lContainer[Returns].clearedByKey
+        .vatRegistration.storesReturns(testRegId, testFullReturns)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> bacs))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+      }
+    }
+
+    "return a bad request and update page with errors on an invalid submission" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[Returns].contains(Returns(returnsFrequency = Some(Annual)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> ""))
+
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
       }
     }
   }
-
 }

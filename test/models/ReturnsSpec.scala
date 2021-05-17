@@ -28,7 +28,7 @@ class ReturnsSpec extends VatRegSpec {
   val testZeroRatedSupplies: BigDecimal = 10000.5
 
   val testMonthlyReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(true), Some(Monthly), Some(MonthlyStagger), Some(testDate))
-  val testAnnualReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(false), Some(Annual), Some(JanDecStagger), Some(testDate), Some(AASDetails(Some(BankGIRO), Some(MonthlyPayment))))
+  val testAnnualReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(false), Some(Annual), Some(JanDecStagger), Some(testDate), Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
 
   val validJsonMonthly: JsObject = Json.obj(
     "zeroRatedSupplies" -> testZeroRatedSupplies,

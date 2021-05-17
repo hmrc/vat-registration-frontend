@@ -20,9 +20,9 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.PaymentMethodForm
-import models.api.returns.BACS
+import models.api.returns.AASDetails
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{ReturnsService, SessionProfile}
 import views.html.returns.aas_payment_method
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
                                         val keystoreConnector: KeystoreConnector,
-                                        view: aas_payment_method
+                                        view: aas_payment_method,
+                                        returnsService: ReturnsService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
@@ -39,8 +40,13 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        Future.successful(Ok(view(PaymentMethodForm.apply().fill(BACS)))) //TODO Update once rerouting is completed
+      implicit profile =>
+        returnsService.getReturns.map { returns =>
+          returns.annualAccountingDetails match {
+            case Some(AASDetails(_, Some(paymentMethod))) => Ok(view(PaymentMethodForm.apply().fill(paymentMethod)))
+            case _ => Ok(view(PaymentMethodForm.apply()))
+          }
+        }
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -48,7 +54,9 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         PaymentMethodForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          paymentMethod => Future.successful(Redirect(controllers.registration.returns.routes.PaymentMethodController.show())) //TODO Update to store data and redirect to correct page
+          paymentMethod => returnsService.savePaymentMethod(paymentMethod).map { _ =>
+            Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+          }
         )
   }
 }

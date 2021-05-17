@@ -22,6 +22,7 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.S4LKey
+import models.api.returns.Returns
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api.{SicCode, VatScheme}
 import play.api.libs.json._
@@ -396,6 +397,14 @@ trait StubUtils {
       stubFor(
         post(urlPathEqualTo("/vatreg/insert-s4l-scheme"))
           .willReturn(ok().withBody(body))
+      )
+      builder
+    }
+
+    def storesReturns(regId: String, returns: Returns): PreconditionBuilder = {
+      stubFor(
+        patch(urlPathEqualTo(s"/vatreg/$regId/returns"))
+          .willReturn(ok().withBody(Json.toJson(returns).toString()))
       )
       builder
     }
