@@ -40,6 +40,15 @@ class FlatRateServiceSpec extends VatSpec {
 
   val financialsWithEstimateVatTurnoverIs100000: TurnoverEstimates = TurnoverEstimates(turnoverEstimate = 100000L)
 
+  "applyPercentRoundUp" should {
+    "get 2% of the total sales estimate and round up to the nearest pound" in new Setup() {
+      val testEstimate = 951
+      val testResult = 20
+
+      service.applyPercentRoundUp(testEstimate) mustBe testResult
+    }
+  }
+
   "getFlatRate" should {
     val frSch = FlatRateScheme(
       Some(false)

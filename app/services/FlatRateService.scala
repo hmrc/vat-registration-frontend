@@ -35,8 +35,9 @@ class FlatRateService @Inject()(val s4LService: S4LService,
                                 val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
 
   private val defaultFlatRate: BigDecimal = 16.5
+  private val relevantGoodsPercent: Double = 0.02
 
-  def applyPercentRoundUp(l: Long): Long = Math.ceil(l * 0.005).toLong
+  def applyPercentRoundUp(l: Long): Long = Math.ceil(l * relevantGoodsPercent).toLong
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     s4LService.fetchAndGet[FlatRateScheme] flatMap {
