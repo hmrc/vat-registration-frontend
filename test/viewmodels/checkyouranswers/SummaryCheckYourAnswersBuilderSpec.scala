@@ -17,15 +17,15 @@
 package viewmodels.checkyouranswers
 
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
-
-import java.time.LocalDate
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
-import models.api.returns.Returns
+import models.api.returns._
 import models.view.{ApplicantDetails, SummaryRow}
 import testHelpers.VatRegSpec
 import viewmodels.SummaryCheckYourAnswersBuilder
+
+import java.time.LocalDate
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
@@ -185,7 +185,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     "with section generate" must {
       "a valid summary section" in {
         sectionBuilder.section.id mustBe "directorDetails"
-        sectionBuilder.section.rows.length mustEqual 42
+        sectionBuilder.section.rows.length mustEqual 45
       }
     }
   }
@@ -465,6 +465,53 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
       "a 'No' if there isn't a trading name" in {
         sectionBuilderNoTradingDetails.tradingNameRow mustBe SummaryRow("directorDetails.tradingName", "app.common.no", Some(controllers.registration.business.routes.TradingNameController.show()))
       }
+    }
+  }
+
+  "The annual accounting rows" must {
+    val sectionWithAnnualAccounting = viewmodels.SummaryCheckYourAnswersBuilder(
+      validVatScheme.copy(returns = Some(Returns(
+        zeroRatedSupplies = Some(1000),
+        reclaimVatOnMostReturns = Some(true),
+        returnsFrequency = Some(Annual),
+        staggerStart = Some(FebJanStagger),
+        annualAccountingDetails = Some(AASDetails(
+          Some(MonthlyPayment),
+          Some(BankGIRO)
+        ))
+      ))),
+      ApplicantDetails(),
+      Some(5000L),
+      Some("Foo Bar Wizz Bang"),
+      Some(TurnoverEstimates(100L)),
+      threshold = optMandatoryRegistrationBothDates,
+      returnsBlock = returnsWithStartDate(None)
+    )
+
+    "be rendered when the returns frequency is Annual" in {
+      sectionWithAnnualAccounting.accountingPeriodRow mustBe SummaryRow(
+        "directorDetails.accountingPeriod",
+        "pages.summary.directorDetails.accountingPeriod.annual",
+        Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage())
+      )
+
+      sectionWithAnnualAccounting.lastMonthOfAccountingYearRow mustBe SummaryRow(
+        "directorDetails.lastMonthOfAccountingYear",
+        "pages.summary.directorDetails.lastMonthOfAccountingYear.FebJanStagger",
+        Some(controllers.registration.returns.routes.LastMonthOfAccountingYearController.show())
+      )
+
+      sectionWithAnnualAccounting.paymentFrequencyRow mustBe SummaryRow(
+        "directorDetails.paymentFrequency",
+        "pages.summary.directorDetails.paymentFrequency.MonthlyPayment",
+        Some(controllers.registration.returns.routes.PaymentFrequencyController.show())
+      )
+
+      sectionWithAnnualAccounting.paymentMethodRow mustBe SummaryRow(
+        "directorDetails.paymentMethod",
+        "pages.summary.directorDetails.paymentMethod.BankGIRO",
+        Some(controllers.registration.returns.routes.PaymentMethodController.show())
+      )
     }
   }
 

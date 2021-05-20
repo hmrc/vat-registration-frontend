@@ -363,14 +363,41 @@ pages.summary.directorDetails.currentAddressThreeYears      = Lived at current a
 
 ## Summary Page Returns
 pages.summary.directorDetails.zeroRatedSuppliesValue                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
+
 pages.summary.directorDetails.reclaimMoreVatClaim                     = VAT claims and charges
-pages.summary.directorDetails.reclaimMoreVat.yes                 = Yes, I expect to reclaim more VAT than I charge
-pages.summary.directorDetails.reclaimMoreVat.no                  = No, I expect to charge more VAT than I reclaim
-pages.summary.directorDetails.accountingPeriod                   = When do you want to submit VAT Returns?
-pages.summary.directorDetails.accountingPeriod.monthly           = Once a month
-pages.summary.directorDetails.accountingPeriod.jan               = January, April, July and October
-pages.summary.directorDetails.accountingPeriod.feb               = February, May, August and November
-pages.summary.directorDetails.accountingPeriod.mar               = March, June, September and December
+pages.summary.directorDetails.reclaimMoreVat.yes                      = Yes, I expect to reclaim more VAT than I charge
+pages.summary.directorDetails.reclaimMoreVat.no                       = No, I expect to charge more VAT than I reclaim
+
+pages.summary.directorDetails.accountingPeriod                        = When do you want to submit VAT Returns?
+pages.summary.directorDetails.accountingPeriod.monthly                = Once a month
+pages.summary.directorDetails.accountingPeriod.jan                    = January, April, July and October
+pages.summary.directorDetails.accountingPeriod.feb                    = February, May, August and November
+pages.summary.directorDetails.accountingPeriod.mar                    = March, June, September and December
+pages.summary.directorDetails.accountingPeriod.annual                 = I would like to join the Annual Accounting Scheme
+
+pages.summary.directorDetails.lastMonthOfAccountingYear               = Last month of your accounting year
+pages.summary.directorDetails.lastMonthOfAccountingYear.FebJanStagger = January
+pages.summary.directorDetails.lastMonthOfAccountingYear.MarFebStagger = February
+pages.summary.directorDetails.lastMonthOfAccountingYear.AprMarStagger = March
+pages.summary.directorDetails.lastMonthOfAccountingYear.MayAprStagger = April
+pages.summary.directorDetails.lastMonthOfAccountingYear.JunMayStagger = May
+pages.summary.directorDetails.lastMonthOfAccountingYear.JulJunStagger = June
+pages.summary.directorDetails.lastMonthOfAccountingYear.AugJulStagger = July
+pages.summary.directorDetails.lastMonthOfAccountingYear.SepAugStagger = August
+pages.summary.directorDetails.lastMonthOfAccountingYear.OctSepStagger = September
+pages.summary.directorDetails.lastMonthOfAccountingYear.NovOctStagger = October
+pages.summary.directorDetails.lastMonthOfAccountingYear.DecNovStagger = November
+pages.summary.directorDetails.lastMonthOfAccountingYear.JanDecStagger = December
+
+pages.summary.directorDetails.paymentFrequency                        = How often do you want to make payments?
+pages.summary.directorDetails.paymentFrequency.MonthlyPayment         = Monthly
+pages.summary.directorDetails.paymentFrequency.QuarterlyPayment       = Quarterly
+
+pages.summary.directorDetails.paymentMethod                           = How do you want to pay VAT?
+pages.summary.directorDetails.paymentMethod.BACS                      = BACS or internet banking
+pages.summary.directorDetails.paymentMethod.BankGIRO                  = Bank Giro Transfer
+pages.summary.directorDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
+pages.summary.directorDetails.paymentMethod.StandingOrder             = Standing order
 
 ## Summary Page Labour Compliance
 pages.summary.directorDetails.supplyWorkers                  = Supplying workers to provide a service to another business
