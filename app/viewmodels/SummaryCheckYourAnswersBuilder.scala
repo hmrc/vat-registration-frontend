@@ -19,12 +19,11 @@ package viewmodels
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
-import models.api.returns.{Monthly, Quarterly, Returns}
+import models.api.returns._
 import models.api.{Address, Threshold, VatScheme}
 import models.view.{ApplicantDetails, SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
-
-import scala.None.isDefined
+import play.api.mvc.Call
 
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
@@ -39,11 +38,12 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val joinFrsContainsTrue: Boolean = scheme.flatRateScheme.flatMap(_.joinFrs).contains(true)
   val isflatRatePercentYes: Boolean = scheme.flatRateScheme.flatMap(_.useThisRate).contains(true)
   val isBusinessGoodsYes: Boolean = joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).contains(true)
+  val isAAS: Boolean = scheme.returns.flatMap(_.returnsFrequency).contains(Annual)
 
-  private val thresholdBlock = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
-  private val voluntaryRegistration = !thresholdBlock.mandatoryRegistration
+  val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
+  val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
 
-  private val changeTransactorDetailsUrl = if (isEnabled(UseSoleTraderIdentification)) {
+  val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
     applicantRoutes.SoleTraderIdentificationController.startJourney()
   }
   else {
@@ -92,7 +92,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
     s"$sectionId.roleInTheBusiness",
-    vatApplicantDetails.roleInTheBusiness.map{
+    vatApplicantDetails.roleInTheBusiness.map {
       case Director => "pages.roleInTheBusiness.radio1"
       case CompanySecretary => "pages.roleInTheBusiness.radio2"
     }.getOrElse(""),
@@ -159,12 +159,41 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       case (Some(Monthly), _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
       case (Some(Quarterly), Some(period)) =>
         s"pages.summary.$sectionId.accountingPeriod.${period.toString.substring(0, 3).toLowerCase()}"
+      case (Some(Annual), _) =>
+        s"pages.summary.$sectionId.accountingPeriod.annual"
       case _ => ""
     },
     Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage())
   )
 
-  val sicAndComp = scheme.sicAndCompliance.fold(SicAndCompliance())(a => a)
+  val lastMonthOfAccountingYearRow: SummaryRow = SummaryRow(
+    s"$sectionId.lastMonthOfAccountingYear",
+    scheme.returns.flatMap(_.staggerStart) match {
+      case Some(period: AnnualStagger) => s"pages.summary.$sectionId.lastMonthOfAccountingYear.${period.toString}"
+      case _ => ""
+    },
+    Some(controllers.registration.returns.routes.LastMonthOfAccountingYearController.show())
+  )
+
+  val paymentFrequencyRow: SummaryRow = SummaryRow(
+    s"$sectionId.paymentFrequency",
+    scheme.returns.flatMap(_.annualAccountingDetails.map(_.paymentFrequency)) match {
+      case Some(Some(paymentFrequency)) => s"pages.summary.$sectionId.paymentFrequency.${paymentFrequency.toString}"
+      case _ => ""
+    },
+    Some(controllers.registration.returns.routes.PaymentFrequencyController.show())
+  )
+
+  val paymentMethodRow: SummaryRow = SummaryRow(
+    s"$sectionId.paymentMethod",
+    scheme.returns.flatMap(_.annualAccountingDetails.map(_.paymentMethod)) match {
+      case Some(Some(paymentMethod)) => s"pages.summary.$sectionId.paymentMethod.${paymentMethod.toString}"
+      case _ => ""
+    },
+    Some(controllers.registration.returns.routes.PaymentMethodController.show())
+  )
+
+  val sicAndComp: SicAndCompliance = scheme.sicAndCompliance.fold(SicAndCompliance())(a => a)
 
   val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
     s"$sectionId.businessDescription",
@@ -175,10 +204,10 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val mainActivityRow: SummaryRow = SummaryRow.mandatory(
     s"$sectionId.mainSicCode",
-    (for {
+    for {
       sicAndCompliance <- scheme.sicAndCompliance
       activity <- sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description))
-    } yield activity),
+    } yield activity,
     Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
   )
 
@@ -221,7 +250,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val noUKBankAccount: SummaryRow = SummaryRow(
     s"$sectionId.companyBankAccount.reason",
-    scheme.bankAccount.flatMap(_.reason.map{
+    scheme.bankAccount.flatMap(_.reason.map {
       case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
       case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
       case NameChange => "pages.noUKBankAccount.reason.nameChange"
@@ -373,6 +402,9 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (expectClaimRefundsRow, scheme.returns.flatMap(_.reclaimVatOnMostReturns).isDefined),
       (startDateRow, isflatRatePercentYes && scheme.flatRateScheme.flatMap(_.frsStart).isDefined),
       (accountingPeriodRow, true),
+      (lastMonthOfAccountingYearRow, isAAS),
+      (paymentFrequencyRow, isAAS),
+      (paymentMethodRow, isAAS),
       (applyForEoriRow, scheme.tradingDetails.flatMap(_.euGoods).isDefined),
       (joinFrsRow, scheme.flatRateScheme.flatMap(_.joinFrs).isDefined),
       (costsInclusiveRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).isDefined),
