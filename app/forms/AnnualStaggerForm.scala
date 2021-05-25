@@ -60,18 +60,18 @@ object AnnualStaggerForm {
 
     override def unbind(key: String, value: AnnualStagger): Map[String, String] = {
       val stringValue = value match {
-        case JanDecStagger => januaryKey
-        case FebJanStagger => februaryKey
-        case MarFebStagger => marchKey
-        case AprMarStagger => aprilKey
-        case MayAprStagger => mayKey
-        case JunMayStagger => juneKey
-        case JulJunStagger => julyKey
-        case AugJulStagger => augustKey
-        case SepAugStagger => septemberKey
-        case OctSepStagger => octoberKey
-        case NovOctStagger => novemberKey
-        case DecNovStagger => decemberKey
+        case FebJanStagger => januaryKey
+        case MarFebStagger => februaryKey
+        case AprMarStagger => marchKey
+        case MayAprStagger => aprilKey
+        case JunMayStagger => mayKey
+        case JulJunStagger => juneKey
+        case AugJulStagger => julyKey
+        case SepAugStagger => augustKey
+        case OctSepStagger => septemberKey
+        case NovOctStagger => octoberKey
+        case DecNovStagger => novemberKey
+        case JanDecStagger => decemberKey
       }
       Map(key -> stringValue)
     }
