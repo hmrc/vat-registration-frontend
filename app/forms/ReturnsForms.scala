@@ -132,16 +132,18 @@ object MandatoryDateForm extends StartDateForm {
 object ReturnFrequencyForm {
 
   private val returnFrequencyEmptyKey = "validation.vat.return.frequency.missing"
-  private val RETURN_FREQUENCY = "returnFrequencyRadio"
+  private val RETURN_FREQUENCY = "value"
 
   val monthlyKey = "monthly"
   val quarterlyKey = "quarterly"
+  val annualKey = "annual"
 
   implicit def formatter: Formatter[ReturnsFrequency] = new Formatter[ReturnsFrequency] {
     def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ReturnsFrequency] = {
       data.get(key) match {
         case Some(`monthlyKey`) => Right(Monthly)
         case Some(`quarterlyKey`) => Right(Quarterly)
+        case Some(`annualKey`) => Right(Annual)
         case _ => Left(Seq(FormError(key, returnFrequencyEmptyKey, Nil)))
       }
     }
@@ -151,6 +153,7 @@ object ReturnFrequencyForm {
         value match {
           case Monthly => monthlyKey
           case Quarterly => quarterlyKey
+          case Annual => annualKey
         }
       })
   }

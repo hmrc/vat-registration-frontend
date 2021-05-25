@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import services.MandatoryDateModel
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.returns.mandatory_start_date_incorp_view
+import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view}
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
@@ -42,13 +42,15 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile), currDate: LocalDateTime = dateBefore2pm, minDaysInFuture: Int = 3) {
     val view: mandatory_start_date_incorp_view = app.injector.instanceOf[mandatory_start_date_incorp_view]
+    val returnFrequencyView: return_frequency_view = app.injector.instanceOf[return_frequency_view]
     val testController = new ReturnsController(
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,
       mockApplicantDetailsServiceOld,
       mockTimeService,
-      view
+      view,
+      returnFrequencyView
     )
 
     mockAuthenticated()
@@ -163,6 +165,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "return OK when returns are present" in new Setup {
       when(mockReturnsService.getReturns(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
 
       callAuthorised(testController.returnsFrequencyPage) { result =>
         status(result) mustBe OK
@@ -172,9 +176,33 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "return OK when returns are not present" in new Setup {
       when(mockReturnsService.getReturns(any(), any()))
         .thenReturn(Future.successful(emptyReturns))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
 
       callAuthorised(testController.returnsFrequencyPage) { result =>
         status(result) mustBe OK
+      }
+    }
+
+    "return OK when returns are present with AAS" in new Setup {
+      when(mockReturnsService.getReturns(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Annual))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
+
+      callAuthorised(testController.returnsFrequencyPage) { result =>
+        status(result) mustBe OK
+      }
+    }
+
+    "return Other when returns are present without AAS" in new Setup {
+      when(mockReturnsService.getReturns(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Quarterly))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(false))
+
+      callAuthorised(testController.returnsFrequencyPage) { result =>
+        status(result) mustBe SEE_OTHER
       }
     }
   }
@@ -185,9 +213,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the bank account page when they select the monthly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "returnFrequencyRadio" -> ReturnFrequencyForm.monthlyKey
+        "value" -> ReturnFrequencyForm.monthlyKey
       )
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
@@ -199,9 +229,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the account periods page when they select the quarterly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Quarterly))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "returnFrequencyRadio" -> ReturnFrequencyForm.quarterlyKey
+        "value" -> ReturnFrequencyForm.quarterlyKey
       )
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
@@ -210,9 +242,30 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       }
     }
 
-    "return BAD_REQUEST when no option is selected" in new Setup {
+    "redirect to the last month of accounting year page when they select the annual option" in new Setup {
+      when(mockReturnsService.saveFrequency(any())(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Annual))))
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
+
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "returnFrequencyRadio" -> ""
+        "value" -> ReturnFrequencyForm.annualKey
+      )
+
+      submitAuthorised(testController.submitReturnsFrequency, request) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/register-for-vat/last-month-of-accounting-year")
+      }
+    }
+
+    "return BAD_REQUEST when no option is selected" in new Setup {
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
+      when(mockReturnsService.getReturns(any(), any()))
+        .thenReturn(Future.successful(emptyReturns))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "value" -> ""
       )
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
@@ -221,8 +274,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     }
 
     "return BAD_REQUEST when an invalid option is submitted" in new Setup {
+      when(mockReturnsService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(false))
+      when(mockReturnsService.getReturns(any(), any()))
+        .thenReturn(Future.successful(emptyReturns))
+
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "requestFrequencyRadio" -> "INVALID_SELECTION"
+        "value" -> "INVALID_SELECTION"
       )
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
@@ -270,7 +328,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
       }
     }
 
@@ -294,7 +352,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
       }
     }
 

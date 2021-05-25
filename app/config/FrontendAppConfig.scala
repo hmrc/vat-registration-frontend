@@ -188,6 +188,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val privacyNoticeUrl = "https://www.gov.uk/government/publications/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you/data-protection-act-dpa-information-hm-revenue-and-customs-hold-about-you"
 
   lazy val vatRatesUrl = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
+  lazy val vatAasUrl = "https://www.gov.uk/vat-annual-accounting-scheme"
 
   lazy val govukVat: String = servicesConfig.getString("urls.govukVat")
   lazy val govukMtd: String = servicesConfig.getString("urls.govukMtd")

@@ -17,6 +17,7 @@
 package services
 
 import connectors.VatRegistrationConnector
+import featureswitch.core.config.{AnnualAccountingScheme, FeatureSwitching}
 import models._
 import models.api.returns._
 import play.api.Logger
@@ -32,7 +33,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
                                val vatService: VatRegistrationService,
                                val s4lService: S4LService,
                                val prePopService: PrePopulationService
-                              )(implicit executionContext: ExecutionContext) {
+                              )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
 
   def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[MandatoryDateModel] = {
     for {
@@ -156,6 +157,13 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def isVoluntary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] = {
     vatService.getThreshold(profile.registrationId).map(!_.mandatoryRegistration)
+  }
+
+  def isEligibleForAAS(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Boolean] = {
+    vatService.fetchTurnoverEstimates.map {
+      case Some(TurnoverEstimates(estimates)) if estimates <= 1350000 & isEnabled(AnnualAccountingScheme) => true
+      case _ => false
+    }
   }
 
 }

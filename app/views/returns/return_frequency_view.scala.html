@@ -15,46 +15,101 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.returns.{Monthly, Quarterly, ReturnsFrequency}
+@import models.api.returns.ReturnsFrequency
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.saveProgressButton
-@import views.html.helpers.templates._
-@import views.html.main_template
 @import forms.ReturnFrequencyForm._
+@import views.html.components._
+@import views.html.layouts.layout
 
-@(vatReturnFrequencyForm: Form[ReturnsFrequency])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@this(
+        layout: layout,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        h1: h1,
+        p: p,
+        details: details,
+        bullets: bullets,
+        link: link,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary
+)
 
-@main_template(title = title(vatReturnFrequencyForm, messages("pages.vat.return.frequency.heading"))) {
+@(form: Form[ReturnsFrequency], showAAS: Boolean, showMonthly: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-    @errorSummary(
-        vatReturnFrequencyForm
-    )
+@layout(pageTitle = Some(title(form, messages("pages.vat.return.frequency.heading"))), backLink = true) {
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.vat.return.frequency.heading")</h1>
+    @errorSummary(form.errors)
 
-    @govHelpers.form(action = controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency()) {
-        <div class="form-group">
-        @vatInputRadioGroup(
-            field = vatReturnFrequencyForm("returnFrequencyRadio"),
-            Seq(
-                monthlyKey -> Messages("pages.vat.return.frequency.radio.monthly"),
-                quarterlyKey -> Messages("pages.vat.return.frequency.radio.quarterly")
-            ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label",
-            '_legend -> messages("pages.vat.return.frequency.heading"),
-            '_legendClass -> "visually-hidden"
+    @h1(messages("pages.vat.return.frequency.heading"))
+
+    @p {
+        @messages("pages.vat.return.frequency.para")
+    }
+
+    @if(showAAS) {
+        @details(
+            summary = messages("pages.vat.return.frequency.details.summary"),
+            content = detailsBlock
         )
-        </div>
+    }
 
-        <div class="form-group">
-            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
+    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency()) {
+        @inputRadio(
+            form = form,
+            legend = messages("pages.vat.return.frequency.heading"),
+            items = radioItems,
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            inline = false
+        )
 
-            @saveProgressButton()
-        </div>
+        @button("app.common.continue", showSaveProgressButton = true)
     }
 }
 
+@optMonthly = @{
+    if(showMonthly) Seq(RadioItem(
+        content = Text(Messages("pages.vat.return.frequency.radio.monthly")),
+        value = Some(monthlyKey),
+        checked = form("value").value.contains(monthlyKey)
+    )) else Seq()
+}
+
+@optAnnual = @{
+    if(showAAS) Seq(
+        RadioItem(
+            divider = Some("or")
+        ),
+        RadioItem(
+            content = Text(Messages("pages.vat.return.frequency.radio.annually")),
+            value = Some(annualKey),
+            checked = form("value").value.contains(annualKey)
+        )
+    ) else Seq()
+}
+
+@radioItems = @{
+    optMonthly ++ Seq(RadioItem(
+        content = Text(Messages("pages.vat.return.frequency.radio.quarterly")),
+        value = Some(quarterlyKey),
+        checked = form("value").value.contains(quarterlyKey)
+    )) ++ optAnnual
+}
+
+@detailsBlock = {
+@p {
+    @messages("pages.vat.return.frequency.details.para1")
+    @bullets(
+        messages("pages.vat.return.frequency.details.para1.bullet1"),
+        messages("pages.vat.return.frequency.details.para1.bullet2")
+    )
+    @messages("pages.vat.return.frequency.details.para2")
+    @bullets(
+        messages("pages.vat.return.frequency.details.para2.bullet1"),
+        messages("pages.vat.return.frequency.details.para2.bullet2")
+    )
+}
+@link(appConfig.vatAasUrl, "pages.vat.return.frequency.aas.link", isExternal = true)
+}

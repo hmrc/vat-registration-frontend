@@ -21,13 +21,12 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import forms._
 import models._
-import models.api.returns.{Monthly, QuarterlyStagger, Returns}
-import play.api.mvc.{Action, AnyContent, Result}
+import models.api.returns.{Annual, Monthly, QuarterlyStagger}
+import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
-import views.html.returns.{accounting_period_view => AccountingPeriodPage, return_frequency_view => ReturnFrequencyPage}
-import views.html.returns.{mandatory_start_date_incorp_view => MandatoryStartDateIncorpPage, start_date_incorp_view => VoluntaryStartDatePage}
+import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, accounting_period_view => AccountingPeriodPage, start_date_incorp_view => VoluntaryStartDatePage}
 
 import java.time.LocalDate
 import java.util
@@ -40,10 +39,11 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val returnsService: ReturnsService,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService,
-                                  MandatoryStartDateIncorpPage: MandatoryStartDateIncorpPage)
-                                 (implicit appConfig: FrontendAppConfig,
-                                  val executionContext: ExecutionContext,
-                                  baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                  mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
+                                  returnFrequencyPage: return_frequency_view
+                                 )(implicit appConfig: FrontendAppConfig,
+                                   val executionContext: ExecutionContext,
+                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val accountPeriodsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -70,10 +70,18 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
   val returnsFrequencyPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns map { returns =>
-          returns.returnsFrequency match {
-            case Some(frequency) => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form.fill(frequency)))
-            case None => Ok(ReturnFrequencyPage(ReturnFrequencyForm.form))
+        for {
+          returns <- returnsService.getReturns
+          showAAS <- returnsService.isEligibleForAAS
+          showMonthly = returns.reclaimVatOnMostReturns.contains(true)
+        } yield {
+          if (showAAS || showMonthly) {
+            returns.returnsFrequency match {
+              case Some(frequency) => Ok(returnFrequencyPage(ReturnFrequencyForm.form.fill(frequency), showAAS, showMonthly))
+              case None => Ok(returnFrequencyPage(ReturnFrequencyForm.form, showAAS, showMonthly))
+            }
+          } else {
+            Redirect(routes.ReturnsController.accountPeriodsPage())
           }
         }
   }
@@ -82,12 +90,18 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
     implicit request =>
       implicit profile =>
         ReturnFrequencyForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(ReturnFrequencyPage(errors))),
+          errors => for {
+            returns <- returnsService.getReturns
+            showAAS <- returnsService.isEligibleForAAS
+            showMonthly = returns.reclaimVatOnMostReturns.contains(true)
+          } yield {
+            BadRequest(returnFrequencyPage(errors, showAAS, showMonthly))
+          },
           success => returnsService.saveFrequency(success) map { _ =>
-            if (success == Monthly) {
-              Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
-            } else {
-              Redirect(routes.ReturnsController.accountPeriodsPage())
+            success match {
+              case Monthly => Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+              case Annual => Redirect(routes.LastMonthOfAccountingYearController.show())
+              case _ => Redirect(routes.ReturnsController.accountPeriodsPage())
             }
           }
         )
@@ -130,7 +144,9 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
 
               Future.successful(BadRequest(VoluntaryStartDatePage(errors, incorpDate, incorpDateAfter, dynamicDate)))
             },
-            success => returnsService.saveVoluntaryStartDate(success._1, success._2, incorpDate) map redirectBasedOnReclaim
+            success => returnsService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
+              Redirect(routes.ReturnsController.returnsFrequencyPage())
+            )
           )
         }
   }
@@ -141,7 +157,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         calculateEarliestStartDate.flatMap(incorpDate =>
           returnsService.retrieveMandatoryDates map { dateModel =>
             val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
-            Ok(MandatoryStartDateIncorpPage(
+            Ok(mandatoryStartDateIncorpPage(
               dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
               dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
             ))
@@ -155,25 +171,21 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
             MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
               errors => {
-                Future.successful(BadRequest(MandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
+                Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
               },
               {
                 case (DateSelection.specific_date, Some(startDate)) =>
-                  returnsService.saveVatStartDate(Some(startDate)).map(redirectBasedOnReclaim)
+                  returnsService.saveVatStartDate(Some(startDate)).map(_ =>
+                    Redirect(routes.ReturnsController.returnsFrequencyPage())
+                  )
                 case _ =>
-                  returnsService.saveVatStartDate(None).map(redirectBasedOnReclaim)
+                  returnsService.saveVatStartDate(None).map(_ =>
+                    Redirect(routes.ReturnsController.returnsFrequencyPage())
+                  )
               }
             )
           }
         )
-  }
-
-  private def redirectBasedOnReclaim(returns: Returns): Result = {
-    if (returns.reclaimVatOnMostReturns.contains(true)) {
-      Redirect(routes.ReturnsController.returnsFrequencyPage())
-    } else {
-      Redirect(routes.ReturnsController.accountPeriodsPage())
-    }
   }
 
   private def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {

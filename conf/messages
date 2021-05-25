@@ -237,8 +237,19 @@ validation.vat.charge.expectancy.missing                    = Select yes if you 
 
 ## Vat Return Frequency
 pages.vat.return.frequency.heading                         = How often do you want the business to submit VAT Returns?
+pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
+pages.vat.return.frequency.para                            = Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year.
 pages.vat.return.frequency.radio.monthly                   = Monthly
 pages.vat.return.frequency.radio.quarterly                 = Quarterly
+pages.vat.return.frequency.radio.annually                  = I would like to join the Annual Accounting Scheme
+pages.vat.return.frequency.details.summary                 = About the Annual Accounting Scheme
+pages.vat.return.frequency.details.para1                   = Companies on the scheme:
+pages.vat.return.frequency.details.para1.bullet1           = submit one VAT Return a year, rather than quarterly or monthly returns
+pages.vat.return.frequency.details.para1.bullet2           = make monthly or quarterly payments, based on an HMRC estimate of their end-of-year VAT bill
+pages.vat.return.frequency.details.para2                   = It may not suit companies that:
+pages.vat.return.frequency.details.para2.bullet1           = want to keep up to date with the exact amount of VAT they owe or need to reclaim
+pages.vat.return.frequency.details.para2.bullet2           = regularly reclaim more VAT than they charge, because they will only get one VAT refund a year
+pages.vat.return.frequency.aas.link                        = Find out more about the Annual Accounting Scheme (opens in a new window).
 validation.vat.return.frequency.missing                    = Tell us how often you want the business to submit VAT Returns
 
 ## Accounting Period Page

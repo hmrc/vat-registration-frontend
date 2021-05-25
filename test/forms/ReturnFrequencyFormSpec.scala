@@ -27,35 +27,35 @@ class ReturnFrequencyFormSpec extends VatRegSpec {
   "Binding ReturnFrequencyForm" should {
     "Bind successfully for a monthly selection" in {
       val data = Map(
-        "returnFrequencyRadio" -> "monthly"
+        "value" -> "monthly"
       )
       form.bind(data).get mustBe Monthly
     }
 
     "Bind successfully for a quarterly selection" in {
       val data = Map(
-        "returnFrequencyRadio" -> "quarterly"
+        "value" -> "quarterly"
       )
       form.bind(data).get mustBe Quarterly
     }
 
     "Fail to bind successfully for an invalid selection" in {
       val data = Map(
-        "returnFrequencyRadio" -> "invalidSelection"
+        "value" -> "invalidSelection"
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "returnFrequencyRadio"
+      bound.errors.head.key mustBe "value"
       bound.errors.head.message mustBe "validation.vat.return.frequency.missing"
     }
 
     "Fail to bind successfully if empty" in {
       val data = Map(
-        "returnFrequencyRadio" -> ""
+        "value" -> ""
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "returnFrequencyRadio"
+      bound.errors.head.key mustBe "value"
       bound.errors.head.message mustBe "validation.vat.return.frequency.missing"
     }
   }
