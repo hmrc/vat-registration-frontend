@@ -4,7 +4,7 @@ package controllers.registration.applicant
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.view.ApplicantDetails
+import models.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 

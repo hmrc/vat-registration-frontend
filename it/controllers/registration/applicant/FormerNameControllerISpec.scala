@@ -2,10 +2,9 @@
 package controllers.registration.applicant
 
 import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{Director, RoleInTheBusiness, TelephoneNumber}
+import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber}
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
@@ -33,8 +32,8 @@ class FormerNameControllerISpec extends ControllerISpec {
 
   "POST Former Name page" should {
     val s4lData = ApplicantDetails(
-      incorporationDetails = Some(testIncorpDetails),
-      transactorDetails = Some(testTransactorDetails),
+      entity = Some(testIncorpDetails),
+      transactor = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),

@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.StubPersonalDetailsValidation
 import itutil.ControllerISpec
-import models.view.ApplicantDetails
+import models.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}

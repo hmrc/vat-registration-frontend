@@ -5,8 +5,7 @@ import fixtures.ApplicantDetailsFixture
 import itutil.{ControllerISpec, IntegrationSpecBase}
 import models.api.Threshold
 import models.api.returns.Returns
-import models.view.ApplicantDetails
-import models.{DateSelection, Start}
+import models.{ApplicantDetails, DateSelection, Start}
 import org.joda.time.LocalDate
 import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json

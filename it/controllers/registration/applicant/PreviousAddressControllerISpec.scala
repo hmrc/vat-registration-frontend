@@ -2,13 +2,12 @@
 package controllers.registration.applicant
 
 import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
-import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView, HomeAddressView}
-import models.{Director, TelephoneNumber}
+import models.view.{FormerNameDateView, FormerNameView, HomeAddressView}
+import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
@@ -33,8 +32,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
   "POST Previous Address page" should {
     val s4lData = ApplicantDetails(
-      incorporationDetails = Some(testIncorpDetails),
-      transactorDetails = Some(testTransactorDetails),
+      entity = Some(testIncorpDetails),
+      transactor = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
@@ -109,8 +108,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
   "GET Txm ALF callback for Previous Address" should {
     val s4lData = ApplicantDetails(
-      incorporationDetails = Some(testIncorpDetails),
-      transactorDetails = Some(testTransactorDetails),
+      entity = Some(testIncorpDetails),
+      transactor = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),

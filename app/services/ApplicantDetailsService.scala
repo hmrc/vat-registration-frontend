@@ -20,8 +20,8 @@ import config.Logging
 import connectors.VatRegistrationConnector
 import models.external.incorporatedentityid.IncorporationDetails
 import models.external.{EmailAddress, EmailVerified}
-import models.view.{ApplicantDetails, _}
-import models.{CurrentProfile, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
+import models.view._
+import models.{ApplicantDetails, CurrentProfile, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -45,13 +45,13 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   }
 
   def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
-    getApplicantDetails.map(_.incorporationDetails.map(_.dateOfIncorporation))
+    getApplicantDetails.map(_.entity.map(_.dateOfIncorporation))
 
   def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
     for {
       applicant <- getApplicantDetails
       companyName <- Future {
-        applicant.incorporationDetails.map(_.companyName).getOrElse(throw new Exception("Missing company name"))
+        applicant.entity.map(_.companyName).getOrElse(throw new Exception("Missing company name"))
       }
     } yield companyName
 
@@ -81,9 +81,9 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
   private def updateModel[T](data: T, before: ApplicantDetails): ApplicantDetails = {
     data match {
       case incorporationDetails: IncorporationDetails =>
-        before.copy(incorporationDetails = Some(incorporationDetails))
+        before.copy(entity = Some(incorporationDetails))
       case transactorDetails: TransactorDetails =>
-        before.copy(transactorDetails = Some(transactorDetails))
+        before.copy(transactor = Some(transactorDetails))
       case currAddr: HomeAddressView =>
         before.copy(homeAddress = Some(currAddr))
       case emailAddress: EmailAddress =>

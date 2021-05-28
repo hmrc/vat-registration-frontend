@@ -17,9 +17,8 @@
 package controllers
 
 import itutil.{ControllerISpec, WiremockHelper}
-import models.SicAndCompliance
+import models.{ApplicantDetails, SicAndCompliance}
 import models.api.returns.{JanuaryStagger, Quarterly, Returns}
-import models.view.ApplicantDetails
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -35,14 +34,16 @@ class SummaryControllerISpec extends ControllerISpec {
   val applicantJson = Json.parse(
     s"""
        |{
-       |  "name": {
-       |    "first": "${validApplicant.name.first}",
-       |    "middle": "${validApplicant.name.middle}",
-       |    "last": "${validApplicant.name.last}"
+       |  "transactor": {
+       |    "name": {
+       |      "first": "${validApplicant.name.first}",
+       |      "middle": "${validApplicant.name.middle}",
+       |      "last": "${validApplicant.name.last}"
+       |    },
+       |    "dob": "$applicantDob",
+       |    "nino": "$applicantNino"
        |  },
        |  "role": "${validApplicant.role}",
-       |  "dob": "$applicantDob",
-       |  "nino": "$applicantNino",
        |  "currentAddress": {
        |    "line1": "${validCurrentAddress.line1}",
        |    "line2": "${validCurrentAddress.line2}",

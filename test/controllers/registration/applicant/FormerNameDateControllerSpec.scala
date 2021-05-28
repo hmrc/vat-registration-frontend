@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import models.view.{ApplicantDetails, FormerNameDateView, FormerNameView}
+import models.view.{FormerNameDateView, FormerNameView}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
@@ -45,13 +45,13 @@ class FormerNameDateControllerSpec extends ControllerSpec
   val fakeRequest = FakeRequest(applicantRoutes.FormerNameDateController.show())
 
   val incompleteApplicantDetails = emptyApplicantDetails
-    .copy(formerName = Some(FormerNameView(true, Some("Old Name"))),transactorDetails = Some(testTransactorDetails))
+    .copy(formerName = Some(FormerNameView(true, Some("Old Name"))),transactor = Some(testTransactorDetails))
 
   val incompleteApplicantDetailsDate = incompleteApplicantDetails
     .copy(formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 6, 23))),
-      transactorDetails = Some(testTransactorDetails))
+      transactor = Some(testTransactorDetails))
 
-  val onlyTranscatorDetails = emptyApplicantDetails.copy(transactorDetails = Some(testTransactorDetails))
+  val onlyTranscatorDetails = emptyApplicantDetails.copy(transactor = Some(testTransactorDetails))
 
   "show" should {
     "return OK when there's data" in new Setup {

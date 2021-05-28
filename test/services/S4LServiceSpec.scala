@@ -16,9 +16,8 @@
 
 package services
 
-import models.view.ApplicantDetails
 import fixtures.VatRegistrationFixture
-import models._
+import models.{ApplicantDetails, _}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 

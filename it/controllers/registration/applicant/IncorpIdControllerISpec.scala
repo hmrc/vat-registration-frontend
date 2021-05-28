@@ -19,9 +19,8 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
-import models.S4LKey
+import models.{ApplicantDetails, S4LKey}
 import models.external.incorporatedentityid.IncorporationDetails
-import models.view.ApplicantDetails
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
@@ -65,7 +64,8 @@ class IncorpIdControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .vatScheme.has(ApplicantDetails.s4lKey.key, Json.toJson(ApplicantDetails()))
+          .vatScheme.patched(ApplicantDetails.s4lKey.key, Json.obj())
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 

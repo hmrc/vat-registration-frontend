@@ -21,7 +21,7 @@ import fixtures.ApplicantDetailsFixtures
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
-import models.{CurrentProfile, TelephoneNumber}
+import models.{ApplicantDetails, CurrentProfile, TelephoneNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
@@ -120,11 +120,11 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
       "updating incorporation details" should {
         "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(incorporationDetails = Some(testIncorpDetails))
+          val expected = emptyApplicantDetails.copy(entity = Some(testIncorpDetails))
 
           service.saveApplicantDetails(testIncorpDetails) returns expected
         }
-        "store successfully in the backned if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(incorporationDetails = None)) {
+        "store successfully in the backned if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
           val expected = completeApplicantDetails
 
           service.saveApplicantDetails(testIncorpDetails) returns expected

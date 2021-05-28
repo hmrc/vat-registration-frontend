@@ -16,8 +16,7 @@
 
 package services.mocks
 
-import models.CurrentProfile
-import models.view.ApplicantDetails
+import models.{ApplicantDetails, CurrentProfile}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing

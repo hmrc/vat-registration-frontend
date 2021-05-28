@@ -17,12 +17,11 @@
 package fixtures
 
 import java.time.LocalDate
-
 import models.api.Address
 import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
-import models.{Director, TelephoneNumber, TransactorDetails}
+import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
 
 trait ApplicantDetailsFixtures {
 
@@ -40,7 +39,7 @@ trait ApplicantDetailsFixtures {
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
   val emptyApplicantDetails = ApplicantDetails(
-    transactorDetails = None,
+    transactor = None,
     homeAddress = None,
     emailAddress = None,
     emailVerified = None,
@@ -48,7 +47,8 @@ trait ApplicantDetailsFixtures {
     formerName = None,
     formerNameDate = None,
     previousAddress = None,
-    roleInTheBusiness = None
+    roleInTheBusiness = None,
+    entity = None
   )
 
   val testBpSafeId = "testBpId"
@@ -58,8 +58,8 @@ trait ApplicantDetailsFixtures {
   val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
-    incorporationDetails = Some(testIncorpDetails),
-    transactorDetails = Some(testTransactorDetails),
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
