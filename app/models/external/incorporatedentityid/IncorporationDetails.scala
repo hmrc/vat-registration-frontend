@@ -16,8 +16,9 @@
 
 package models.external.incorporatedentityid
 
-import java.time.LocalDate
+import models.external.Name
 
+import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

@@ -17,8 +17,7 @@
 package controllers.registration.business
 
 import itutil.ControllerISpec
-import models.view.ApplicantDetails
-import models.{TradingDetails, TradingNameView}
+import models.{ApplicantDetails, TradingDetails, TradingNameView}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._

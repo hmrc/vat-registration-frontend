@@ -18,10 +18,9 @@ package connectors
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import models._
+import models.{ApplicantDetails, _}
 import models.api._
 import models.api.returns.Returns
-import models.view.ApplicantDetails
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._

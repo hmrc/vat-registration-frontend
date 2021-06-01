@@ -2,14 +2,13 @@
 package controllers.registration.applicant
 
 import java.time.LocalDate
-
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.RoleInTheBusinessForm.roleInTheBusiness
 import itutil.ControllerISpec
 import models.api.{Address, Country}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
-import models.{Director, TelephoneNumber}
+import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
@@ -35,8 +34,8 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
   "GET redirectToAlf" should {
     val s4lData = ApplicantDetails(
-      incorporationDetails = Some(testIncorpDetails),
-      transactorDetails = Some(testTransactorDetails),
+      entity = Some(testIncorpDetails),
+      transactor = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
@@ -64,8 +63,8 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
   "GET Txm ALF callback for Home Address" should {
     val s4lData = ApplicantDetails(
-      incorporationDetails = Some(testIncorpDetails),
-      transactorDetails = Some(testTransactorDetails),
+      entity = Some(testIncorpDetails),
+      transactor = Some(testTransactorDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),

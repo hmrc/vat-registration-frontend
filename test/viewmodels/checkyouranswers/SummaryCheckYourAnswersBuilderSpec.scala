@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import models.api.returns._
-import models.view.{ApplicantDetails, SummaryRow}
+import models.view.SummaryRow
 import testHelpers.VatRegSpec
 import viewmodels.SummaryCheckYourAnswersBuilder
 
@@ -64,7 +64,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
         enable(UseSoleTraderIdentification)
 
         val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,
-          ApplicantDetails(transactorDetails = Some(testTransactorDetails)),
+          ApplicantDetails(transactor = Some(testTransactorDetails)),
           Some(5000L),
           Some("Foo Bar Wizz Bang"),
           Some(TurnoverEstimates(100L)),
@@ -102,7 +102,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
         disable(UseSoleTraderIdentification)
 
         val sectionBuilder = viewmodels.SummaryCheckYourAnswersBuilder(validVatSchemeEmptySicAndCompliance,
-          ApplicantDetails(transactorDetails = Some(testTransactorDetails)),
+          ApplicantDetails(transactor = Some(testTransactorDetails)),
           Some(5000L),
           Some("Foo Bar Wizz Bang"),
           Some(TurnoverEstimates(100L)),

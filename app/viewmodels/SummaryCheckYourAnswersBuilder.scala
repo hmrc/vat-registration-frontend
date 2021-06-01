@@ -21,7 +21,7 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
 import models.api.{Address, Threshold, VatScheme}
-import models.view.{ApplicantDetails, SummaryRow, SummarySection}
+import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
 
@@ -68,25 +68,25 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val firstName: SummaryRow = SummaryRow(
     s"$sectionId.firstName",
-    vatApplicantDetails.transactorDetails.map(_.firstName).getOrElse(""),
+    vatApplicantDetails.transactor.map(_.firstName).getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
 
   val lastName: SummaryRow = SummaryRow(
     s"$sectionId.lastName",
-    vatApplicantDetails.transactorDetails.map(_.lastName).getOrElse(""),
+    vatApplicantDetails.transactor.map(_.lastName).getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
 
   val nino: SummaryRow = SummaryRow(
     s"$sectionId.nino",
-    vatApplicantDetails.transactorDetails.map(_.nino).getOrElse(""),
+    vatApplicantDetails.transactor.map(_.nino).getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
 
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
-    vatApplicantDetails.transactorDetails.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
+    vatApplicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
 
@@ -260,13 +260,13 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val companyNumber: SummaryRow = SummaryRow(
     s"$sectionId.companyNumber",
-    vatApplicantDetails.incorporationDetails.map(_.companyNumber).getOrElse(""),
+    vatApplicantDetails.entity.map(_.companyNumber).getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
 
   val ctutr: SummaryRow = SummaryRow(
     s"$sectionId.ctutr",
-    vatApplicantDetails.incorporationDetails.map(_.ctutr).getOrElse(""),
+    vatApplicantDetails.entity.map(_.ctutr).getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
 
@@ -374,12 +374,12 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyNumber, vatApplicantDetails.transactorDetails.map(_.firstName).isDefined),
-      (ctutr, vatApplicantDetails.transactorDetails.map(_.lastName).isDefined),
-      (firstName, vatApplicantDetails.transactorDetails.map(_.firstName).isDefined),
-      (lastName, vatApplicantDetails.transactorDetails.map(_.lastName).isDefined),
-      (nino, vatApplicantDetails.transactorDetails.map(_.nino).isDefined),
-      (dob, vatApplicantDetails.transactorDetails.map(_.dateOfBirth).isDefined),
+      (companyNumber, vatApplicantDetails.transactor.map(_.firstName).isDefined),
+      (ctutr, vatApplicantDetails.transactor.map(_.lastName).isDefined),
+      (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
+      (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
+      (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),
+      (dob, vatApplicantDetails.transactor.map(_.dateOfBirth).isDefined),
       (roleInTheBusiness, true),
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),

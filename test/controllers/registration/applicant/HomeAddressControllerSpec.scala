@@ -18,10 +18,10 @@ package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import models.TelephoneNumber
+import models.{ApplicantDetails, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
-import models.view.{ApplicantDetails, FormerNameView, HomeAddressView}
+import models.view.{FormerNameView, HomeAddressView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call

@@ -183,8 +183,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testIncorpDetails = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
-    incorporationDetails = Some(testIncorpDetails),
-    transactorDetails = Some(testTransactorDetails),
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),

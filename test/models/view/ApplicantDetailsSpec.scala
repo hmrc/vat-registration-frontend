@@ -17,8 +17,7 @@
 package models.view
 
 import java.time.LocalDate
-
-import models.TelephoneNumber
+import models.{ApplicantDetails, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
@@ -76,22 +75,25 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val json = Json.parse(
         s"""
            |{
-           |  "name": {
-           |    "first": "testFirstName",
-           |    "last": "testLastName"
+           |  "transactor": {
+           |    "name": {
+           |      "first": "testFirstName",
+           |      "last": "testLastName"
+           |    },
+           |    "dateOfBirth": "2020-01-01",
+           |    "nino": "AB123456C"
            |  },
-           |  "role": "03",
-           |  "dateOfBirth": "2020-01-01",
-           |  "nino": "AB123456C",
-           |  "companyNumber": "testCrn",
-           |  "companyName": "testCompanyName",
-           |  "dateOfIncorporation": "2020-02-03",
-           |  "countryOfIncorporation": "GB",
-           |  "identifiersMatch": true,
-           |  "businessVerification": "PASS",
-           |  "registration": "REGISTERED",
-           |  "bpSafeId": "testBpId",
-           |  "ctutr": "testCtUtr",
+           |  "entity": {
+           |    "companyNumber": "testCrn",
+           |    "companyName": "testCompanyName",
+           |    "dateOfIncorporation": "2020-02-03",
+           |    "countryOfIncorporation": "GB",
+           |    "identifiersMatch": true,
+           |    "businessVerification": "PASS",
+           |    "registration": "REGISTERED",
+           |    "bpSafeId": "testBpId",
+           |    "ctutr": "testCtUtr"
+           |  },
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
@@ -124,8 +126,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val formerName = Name(first = Some("New"), middle = Some("Name"), last = "Cosmo")
 
       val applicantDetails = ApplicantDetails(
-        incorporationDetails = Some(testIncorpDetails),
-        transactorDetails = Some(testTransactorDetails),
+        entity = Some(testIncorpDetails),
+        transactor = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -142,13 +144,15 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val json = Json.parse(
         s"""
            |{
-           |  "name": {
-           |    "first": "First",
-           |    "last": "Last"
+           |  "transactor": {
+           |    "name": {
+           |      "first": "First",
+           |      "last": "Last"
+           |    },
+           |    "dob": "1998-07-12",
+           |    "nino": "AA123456Z"
            |  },
            |  "role": "Director",
-           |  "dob": "1998-07-12",
-           |  "nino": "AA123456Z",
            |  "currentAddress": {
            |    "line1": "TestLine1",
            |    "line2": "TestLine2",
@@ -186,8 +190,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
     "return a correct full JsValue with maximum data" in {
       val data = ApplicantDetails(
-        incorporationDetails = Some(testIncorpDetails),
-        transactorDetails = Some(testTransactorDetails),
+        entity = Some(testIncorpDetails),
+        transactor = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -200,21 +204,25 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "name": {
-           |    "first": "testFirstName",
-           |    "last": "testLastName"
+           |  "transactor": {
+           |    "name": {
+           |      "first": "testFirstName",
+           |      "last": "testLastName"
+           |    },
+           |    "dateOfBirth": "2020-01-01",
+           |    "nino": "AB123456C"
            |  },
-           |  "dateOfBirth": "2020-01-01",
-           |  "nino": "AB123456C",
-           |  "companyNumber": "testCrn",
-           |  "companyName": "testCompanyName",
-           |  "dateOfIncorporation": "2020-02-03",
-           |  "countryOfIncorporation": "GB",
-           |  "identifiersMatch": true,
-           |  "businessVerification": "PASS",
-           |  "registration": "REGISTERED",
-           |  "bpSafeId": "testBpId",
-           |  "ctutr": "testCtUtr",
+           |  "entity": {
+           |    "companyNumber": "testCrn",
+           |    "companyName": "testCompanyName",
+           |    "dateOfIncorporation": "2020-02-03",
+           |    "countryOfIncorporation": "GB",
+           |    "identifiersMatch": true,
+           |    "businessVerification": "PASS",
+           |    "registration": "REGISTERED",
+           |    "bpSafeId": "testBpId",
+           |    "ctutr": "testCtUtr"
+           |  },
            |  "changeOfName": {
            |    "change": "2000-07-12",
            |    "name": {

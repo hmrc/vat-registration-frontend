@@ -38,7 +38,7 @@ object TransactorDetails {
 
   val apiWrites: Writes[TransactorDetails] = (
     (__ \ "name" \ "first").write[String] and
-    (__ \ "name"\ "last").write[String] and
+    (__ \ "name" \ "last").write[String] and
     (__ \ "nino").write[String] and
     (__ \ "dateOfBirth").write[LocalDate]
     )(unlift(TransactorDetails.unapply))

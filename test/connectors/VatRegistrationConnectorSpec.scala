@@ -22,7 +22,7 @@ import models._
 import models.api._
 import models.api.returns.Returns
 import models.external.{EmailAddress, EmailVerified}
-import models.view.{ApplicantDetails, _}
+import models.view.{_}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import play.api.http.Status.{NOT_FOUND, NO_CONTENT, OK}
