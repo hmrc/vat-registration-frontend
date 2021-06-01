@@ -16,21 +16,27 @@
 
 package services
 
+import common.enums.VatRegStatus
 import connectors.mocks.MockS4lConnector
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.http.{BadRequestException, InternalServerException}
 
 import scala.concurrent.Future
 
 class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with MockVatRegistrationService {
 
   val s4lKey = "partialVatScheme"
-  val emptyVatSchemeJson = Json.toJson(emptyVatScheme)
-  val validVatSchemeJson = Json.toJson(validVatScheme)
-  val testCacheMap = CacheMap(s4lKey, data = Map())
+  val testInternalId = "testInternalId"
+  val emptyVatSchemeJson: JsValue = Json.obj(
+    "registrationId" -> Json.toJson[String](testRegId),
+    "status" -> Json.toJson(VatRegStatus.draft),
+    "internalId" -> Json.toJson[String](testInternalId)
+  )
+  val validVatSchemeJson: JsValue = Json.toJson(validVatScheme)
+  val testCacheMap: CacheMap = CacheMap(s4lKey, data = Map())
 
   object Service extends SaveAndRetrieveService(vatRegistrationServiceMock, mockS4LConnector, mockAuthClientConnector)
 
@@ -69,9 +75,10 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
   }
 
   "retrievePartialVatScheme" must {
-    "retrieve an empty VatScheme from S4L" in {
+    "retrieve no VatScheme from S4L" in {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
-      mockS4LFetchAndGet(s4lKey, Some(emptyVatSchemeJson))
+      mockS4LFetchAndGet(s4lKey, None)
+      mockAuthenticatedInternalId(Some(testInternalId))
 
       mockSaveVatScheme(testRegId, emptyVatSchemeJson)(Future.successful(emptyVatSchemeJson))
 
@@ -79,6 +86,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
 
       res mustBe emptyVatSchemeJson
     }
+
     "retrieve a full VatScheme from S4L" in {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, Some(validVatSchemeJson))
@@ -89,6 +97,20 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
 
       res mustBe validVatSchemeJson
     }
+
+    "store an empty vat scheme if the backend returns a bad request for the full vat scheme store" in {
+      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockS4LFetchAndGet(s4lKey, Some(validVatSchemeJson))
+      mockAuthenticatedInternalId(Some(testInternalId))
+
+      mockSaveVatScheme(testRegId, validVatSchemeJson)(Future.failed(new BadRequestException("")))
+      mockSaveVatScheme(testRegId, emptyVatSchemeJson)(Future.successful(emptyVatSchemeJson))
+
+      val res = await(Service.retrievePartialVatScheme(testRegId))
+
+      res mustBe emptyVatSchemeJson
+    }
+
     "throw an internal server exception if we fail to retrieve the Vat Scheme from s4l" in {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, Some(emptyVatSchemeJson))
