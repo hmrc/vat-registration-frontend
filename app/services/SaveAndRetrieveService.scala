@@ -19,12 +19,13 @@ package services
 import common.enums.VatRegStatus
 import config.AuthClientConnector
 import connectors.S4LConnector
+import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import services.SaveAndRetrieveService.vatSchemeKey
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,19 +43,25 @@ class SaveAndRetrieveService @Inject()(vatRegistrationService: VatRegistrationSe
   }
 
   def retrievePartialVatScheme(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    s4LConnector.fetchAndGet[JsValue](regId, vatSchemeKey).flatMap {
-      case Some(scheme) => vatRegistrationService.storePartialVatScheme(regId, scheme)
-      case None => authorised().retrieve(Retrievals.internalId) {
-        case Some(internalId) =>
-          val emptyPartialVatScheme = Json.obj(
-            "registrationId" -> Json.toJson[String](regId),
-            "status" -> Json.toJson(VatRegStatus.draft),
-            "internalId" -> Json.toJson[String](internalId)
-          )
+    def storeEmptyVatScheme = authorised().retrieve(Retrievals.internalId) {
+      case Some(internalId) =>
+        val emptyPartialVatScheme = Json.obj(
+          "registrationId" -> Json.toJson[String](regId),
+          "status" -> Json.toJson(VatRegStatus.draft),
+          "internalId" -> Json.toJson[String](internalId)
+        )
 
-          vatRegistrationService.storePartialVatScheme(regId, emptyPartialVatScheme)
-        case None => throw new InternalServerException("[SaveAndRetrieveService] missing internalId for vatScheme creation")
+        vatRegistrationService.storePartialVatScheme(regId, emptyPartialVatScheme)
+      case None => throw new InternalServerException("[SaveAndRetrieveService] missing internalId for vatScheme creation")
+    }
+
+    s4LConnector.fetchAndGet[JsValue](regId, vatSchemeKey).flatMap {
+      case Some(scheme) => vatRegistrationService.storePartialVatScheme(regId, scheme).recoverWith {
+        case ex: BadRequestException =>
+          Logger.warn("[SaveAndRetrieveService][retrievePartialVatScheme] VAT scheme from S4L did not pass backend validation, storing an empty scheme")
+          storeEmptyVatScheme
       }
+      case None => storeEmptyVatScheme
     }
   }
 }
