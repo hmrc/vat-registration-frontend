@@ -756,8 +756,8 @@ aas.paymentFrequency.notProvided                         = Tell us how often you
 
 # AAS HOW WOULD YOU LIKE TO PAY
 aas.paymentMethod.heading                                = How do you want to pay VAT?
-aas.paymentMethod.insetText                              = If you would prefer to pay by Direct Debit you can set this up after you have received your VAT Registration Number.
-aas.paymentMethod.bacs                                   = BACS or internet banking
+aas.paymentMethod.text                                   = HMRC will contact you if you change your payment method or bank details during your accounting year. This is to protect your VAT account from fraud.
+aas.paymentMethod.bacs                                   = BACS (internet banking) or Direct Debit
 aas.paymentMethod.giro                                   = Bank Giro Transfer
 aas.paymentMethod.chaps                                  = Clearing House Automated Payment System (CHAPS)
 aas.paymentMethod.standingOrder                          = Standing order

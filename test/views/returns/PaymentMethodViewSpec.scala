@@ -30,8 +30,8 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
   object ExpectedMessages {
     val title = "How do you want to pay VAT?"
     val heading = "How do you want to pay VAT?"
-    val insetText = "If you would prefer to pay by Direct Debit you can set this up after you have received your VAT Registration Number."
-    val bacs = "BACS or internet banking"
+    val paragraph = "HMRC will contact you if you change your payment method or bank details during your accounting year. This is to protect your VAT account from fraud."
+    val bacs = "BACS (internet banking) or Direct Debit"
     val giro = "Bank Giro Transfer"
     val chaps = "Clearing House Automated Payment System (CHAPS)"
     val standingOrder = "Standing order"
@@ -51,8 +51,8 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     "have the right heading" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
-    "have the correct inset text" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      doc.select(Selectors.indent).text mustBe ExpectedMessages.insetText
+    "have the correct paragraph" in new ViewSetup()(asDocument(PaymentMethodForm())) {
+      doc.select(Selectors.p(1)).text() mustBe ExpectedMessages.paragraph
     }
     "have the correct content for each option" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       val validOptions = Map(
