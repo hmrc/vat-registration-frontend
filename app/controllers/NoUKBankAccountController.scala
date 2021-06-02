@@ -19,28 +19,31 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.NoUKBankAccountForm
-import javax.inject.{Inject, Singleton}
 import models.BankAccount
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile}
 import views.html.no_uk_bank_account
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_account,
-                                           val authConnector: AuthClientConnector,
+                                          val authConnector: AuthClientConnector,
                                           val bankAccountDetailsService: BankAccountDetailsService,
                                           val keystoreConnector: KeystoreConnector)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
                                           baseControllerComponents: BaseControllerComponents)
-                                          extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile {
 
   val showNoUKBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-      Future.successful(Ok(noUKBankAccountView(NoUKBankAccountForm.form)))
+      implicit profile =>
+        for {
+          optBankAccountDetails <- bankAccountDetailsService.fetchBankAccountDetails
+          form = optBankAccountDetails.flatMap(_.reason).fold(NoUKBankAccountForm.form)(NoUKBankAccountForm.form.fill)
+        } yield Ok(noUKBankAccountView(form))
   }
 
   val submitNoUKBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {

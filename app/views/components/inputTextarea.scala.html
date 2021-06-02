@@ -30,7 +30,6 @@
     hint: Option[Html] = None,
     classes: Option[String] = None,
     stripWhitespace: Boolean = false,
-    autocomplete: Option[String] = None,
     maxCharacters: Option[Int] = None
 )(implicit messages: Messages)
 
@@ -54,6 +53,7 @@
         hint = hint.map(hintHtml => Hint(
             content = HtmlContent(hintHtml)
         )),
+        value = form(name).value,
         errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
     ))
 } else {
@@ -70,7 +70,7 @@
             content = HtmlContent(hintHtml)
         )),
         value = form(name).value,
-        autocomplete = autocomplete.map(value => value),
+        autocomplete = form(name).value,
         errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
     ))
 }

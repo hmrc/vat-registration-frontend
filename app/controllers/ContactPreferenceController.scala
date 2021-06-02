@@ -42,7 +42,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           contactPreference <- businessContactService.getBusinessContact
-          form = contactPreference.contactPreference.fold(ContactPreferenceForm())(x => ContactPreferenceForm().fill(x))
+          form = contactPreference.contactPreference.fold(ContactPreferenceForm())(ContactPreferenceForm().fill)
         } yield Ok(view(form, routes.ContactPreferenceController.submitContactPreference()))
 
   }
