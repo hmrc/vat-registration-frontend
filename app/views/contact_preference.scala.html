@@ -48,11 +48,13 @@
             items = Seq(
                 RadioItem(
                     content = Text(messages("pages.contactPreference.email")),
-                    value = Some("email")
+                    value = Some("email"),
+                    checked = form("value").value.contains("email")
                 ),
                 RadioItem(
                     content = Text(messages("pages.contactPreference.letter")),
-                    value = Some("letter")
+                    value = Some("letter"),
+                    checked = form("value").value.contains("letter")
                 )
             ),
             legendAsHeading = false,

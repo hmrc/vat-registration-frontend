@@ -47,15 +47,18 @@
             items = Seq(
             RadioItem(
                 content = Text(messages("pages.noUKBankAccount.beingSetup")),
-                value = Some("beingSetup")
+                value = Some("beingSetup"),
+                checked = form("value").value.contains("beingSetup")
             ),
             RadioItem(
                 content = Text(messages("pages.noUKBankAccount.overseasAccount")),
-                value = Some("overseasAccount")
+                value = Some("overseasAccount"),
+                checked = form("value").value.contains("overseasAccount")
             ),
             RadioItem(
                 content = Text(messages("pages.noUKBankAccount.nameChange")),
-                value = Some("nameChange")
+                value = Some("nameChange"),
+                checked = form("value").value.contains("nameChange")
             )
             ),
             legendAsHeading = false,
