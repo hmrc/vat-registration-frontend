@@ -409,6 +409,8 @@ pages.summary.directorDetails.paymentMethod.BACS                      = BACS or 
 pages.summary.directorDetails.paymentMethod.BankGIRO                  = Bank Giro Transfer
 pages.summary.directorDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
 pages.summary.directorDetails.paymentMethod.StandingOrder             = Standing order
+pages.summary.directorDetails.paymentMethod.BACS.hiddenContent        = To pay by Direct Debit, complete your VAT registration to get your VAT Registration Number. You can then
+pages.summary.directorDetails.paymentMethod.BACS.linkText             = print off and fill in a Direct debit mandate
 
 ## Summary Page Labour Compliance
 pages.summary.directorDetails.supplyWorkers                  = Supplying workers to provide a service to another business

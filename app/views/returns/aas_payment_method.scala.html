@@ -26,7 +26,8 @@
         inputRadio: components.inputRadio,
         button: components.button,
         govukInsetText: GovukInsetText,
-        formWithCSRF: FormWithCSRF
+        formWithCSRF: FormWithCSRF,
+        link: components.link
 )
 
 @(form: Form[PaymentMethod])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -48,7 +49,8 @@
                 RadioItem(
                     content = Text(messages("aas.paymentMethod.bacs")),
                     value = Some(PaymentMethodForm.bacs),
-                    checked = form("value").value.contains(PaymentMethodForm.bacs)
+                    checked = form("value").value.contains(PaymentMethodForm.bacs),
+                    conditionalHtml = Some(hiddenContent)
                 ),
                 RadioItem(
                     content = Text(messages("aas.paymentMethod.giro")),
@@ -70,6 +72,15 @@
         )
 
         @button(messages("app.common.continue"), showSaveProgressButton = true)
+    }
+
+}
+
+    @hiddenContent = {
+
+    @p {
+        @messages("pages.summary.directorDetails.paymentMethod.BACS.hiddenContent")
+        @link(appConfig.aasPaymentMethodInfoUrl, "pages.summary.directorDetails.paymentMethod.BACS.linkText", isExternal = true)
     }
 
 }

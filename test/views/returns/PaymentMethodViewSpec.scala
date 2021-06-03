@@ -38,6 +38,8 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     val saveAndContinue = "Save and Continue"
     val saveAndComeBackLater = "Save and come back later"
     val error = "Tell us how you want to pay VAT bills"
+    val linkText = "print off and fill in a Direct debit mandate (opens in new tab)"
+    val hiddenText = s"To pay by Direct Debit, complete your VAT registration to get your VAT Registration Number. You can then $linkText"
   }
 
   val view = app.injector.instanceOf[aas_payment_method]
@@ -52,8 +54,13 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
     "have the correct paragraph" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      doc.select(Selectors.p(1)).text() mustBe ExpectedMessages.paragraph
+      doc.select(Selectors.p(1)).get(0).text() mustBe ExpectedMessages.paragraph
     }
+
+    "have the correct hiddenBACS content" in new ViewSetup()(asDocument(PaymentMethodForm())) {
+      doc.select(Selectors.p(1)).get(1).text() mustBe ExpectedMessages.hiddenText
+    }
+
     "have the correct content for each option" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       val validOptions = Map(
         "bacs" -> ExpectedMessages.bacs,
