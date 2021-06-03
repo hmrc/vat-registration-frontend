@@ -37,9 +37,7 @@
 
     @h1(messages("aas.paymentMethod.heading"))
 
-    @govukInsetText(InsetText(
-        content = Text(messages("aas.paymentMethod.insetText"))
-    ))
+    @p{ @messages("aas.paymentMethod.text") }
 
     @formWithCSRF(action = controllers.registration.returns.routes.PaymentMethodController.submit()) {
         @inputRadio(
