@@ -47,11 +47,13 @@
             items = Seq(
                 RadioItem(
                     content = Text(messages("pages.roleInTheBusiness.radio1")),
-                    value = Some("director")
+                    value = Some("director"),
+                    checked = form("value").value.contains("director")
                 ),
                 RadioItem(
                     content = Text(messages("pages.roleInTheBusiness.radio2")),
-                    value = Some("companySecretary")
+                    value = Some("companySecretary"),
+                    checked = form("value").value.contains("companySecretary")
                 )
             ),
             legendAsHeading = true)

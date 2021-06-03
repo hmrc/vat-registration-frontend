@@ -38,8 +38,13 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-      Future.successful(Ok(views.html.former_name(FormerNameForm.form)))
+    implicit request =>
+      implicit profile =>
+        for {
+          applicant <- applicantDetailsService.getApplicantDetails
+          filledForm = applicant.formerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
+        } yield
+          Ok(views.html.former_name(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {

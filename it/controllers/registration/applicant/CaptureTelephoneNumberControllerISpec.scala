@@ -18,16 +18,31 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TelephoneNumber}
+import models.external.{EmailAddress, EmailVerified}
+import models.{ApplicantDetails, Director, TelephoneNumber}
+import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   private val testPhoneNumber = "12345 123456"
 
-  "GET /telephone-number" should {
+  val url: String = controllers.registration.applicant.routes.CaptureTelephoneNumberController.show().url
+
+  val s4lData = ApplicantDetails(
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber(testPhoneNumber)),
+    roleInTheBusiness = Some(Director)
+  )
+
+  s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
@@ -36,14 +51,32 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/telephone-number").get)
+      val res: WSResponse = await(buildClient(url).get)
 
       res.status mustBe OK
 
     }
+
+    "returns an OK with prepopulated data" in new Setup {
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+
+        Jsoup.parse(res.body).getElementById("telephone-number").attr("value") mustBe testPhoneNumber
+      }
+    }
   }
 
-  "POST /telephone-number" when {
+  s"POST $url" when {
     val keyblock = "applicant-details"
     "the ApplicantDetails model is incomplete" should {
       "update S4L and redirect to ALF to capture the PPOB address" in new Setup {

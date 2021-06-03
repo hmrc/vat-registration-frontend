@@ -1,16 +1,20 @@
 
 package controllers.registration.applicant
 
-import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber}
 import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
+import models.{ApplicantDetails, Director, TelephoneNumber}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsBoolean, JsObject, JsString, Json}
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import java.time.LocalDate
+import scala.concurrent.Future
 
 class FormerNameControllerISpec extends ControllerISpec {
 
@@ -30,19 +34,54 @@ class FormerNameControllerISpec extends ControllerISpec {
 
   val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
 
+  val s4lData = ApplicantDetails(
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
+    homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
+    formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+    previousAddress = Some(PreviousAddressView(true, None)),
+    roleInTheBusiness = Some(Director)
+  )
+
+  val url: String = controllers.registration.applicant.routes.FormerNameController.show().url
+
+  s"GET $url" must {
+    "returns an OK" in new Setup {
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+      }
+    }
+
+    "returns an OK with prepopulated data" in new Setup {
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .s4lContainer[ApplicantDetails].contains(s4lData)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).getElementById("formerName").attr("value") mustBe "New Name Cosmo"
+      }
+    }
+  }
+
   "POST Former Name page" should {
-    val s4lData = ApplicantDetails(
-      entity = Some(testIncorpDetails),
-      transactor = Some(testTransactorDetails),
-      homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      emailAddress = Some(EmailAddress("test@t.test")),
-      emailVerified = Some(EmailVerified(true)),
-      telephoneNumber = Some(TelephoneNumber("1234")),
-      formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
-      formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-      previousAddress = Some(PreviousAddressView(true, None)),
-      roleInTheBusiness = Some(Director)
-    )
 
     "patch Applicant Details in backend without former name" in new Setup {
       val validJson = Json.parse(
