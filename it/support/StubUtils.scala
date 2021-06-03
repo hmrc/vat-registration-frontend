@@ -753,6 +753,24 @@ trait StubUtils {
         ))
       builder
     }
+
+    def isCleared: PreconditionBuilder = {
+      stubFor(delete(urlMatching("/vatreg/traffic-management/reg-info/clear"))
+        .willReturn(
+          aResponse()
+            .withStatus(204)
+        ))
+      builder
+    }
+
+    def failsToClear: PreconditionBuilder = {
+      stubFor(delete(urlMatching("/vatreg/traffic-management/reg-info/clear"))
+        .willReturn(
+          aResponse()
+            .withStatus(400)
+        ))
+      builder
+    }
   }
 
 }

@@ -17,13 +17,15 @@
 package services
 
 import connectors.TrafficManagementConnector
-import models.api.trafficmanagement.{Draft, OTRS, RegistrationInformation, VatReg}
+import models.api.trafficmanagement.{ClearTrafficManagementError, Draft, OTRS, RegistrationInformation, TrafficManagementCleared, VatReg}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
 import scala.concurrent.Future
+import play.api.test.Helpers._
 
 class TrafficManagementServiceSpec extends VatRegSpec {
 
@@ -90,6 +92,25 @@ class TrafficManagementServiceSpec extends VatRegSpec {
       val res = TestTrafficManagementService.checkTrafficManagement(hc)
 
       await(res) mustBe Failed
+    }
+  }
+
+  "clearTrafficManagement" should {
+    "return TrafficManagementCleared if the connector returns TrafficManagementCleared" in {
+      when(mockTrafficManagementConnector.clearTrafficManagement(ArgumentMatchers.any[HeaderCarrier]))
+        .thenReturn(Future.successful(TrafficManagementCleared))
+
+      val res = await(TestTrafficManagementService.clearTrafficManagement)
+
+      res mustBe TrafficManagementCleared
+    }
+    "return TrafficManagementCleared if the connector returns ClearTrafficManagementError" in {
+      when(mockTrafficManagementConnector.clearTrafficManagement(ArgumentMatchers.any[HeaderCarrier]))
+        .thenReturn(Future.successful(ClearTrafficManagementError(IM_A_TEAPOT)))
+
+      val res = await(TestTrafficManagementService.clearTrafficManagement)
+
+      res mustBe ClearTrafficManagementError(IM_A_TEAPOT)
     }
   }
 }

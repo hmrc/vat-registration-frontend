@@ -17,7 +17,7 @@
 package services
 
 import connectors.TrafficManagementConnector
-import models.api.trafficmanagement.{Draft, OTRS, RegistrationInformation, VatReg}
+import models.api.trafficmanagement.{ClearTrafficManagementResponse, Draft, OTRS, RegistrationInformation, VatReg}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
@@ -46,6 +46,9 @@ class TrafficManagementService @Inject()(trafficManagementConnector: TrafficMana
       case _ =>
         Failed
     }
+
+  def clearTrafficManagement(implicit hc: HeaderCarrier): Future[ClearTrafficManagementResponse] =
+    trafficManagementConnector.clearTrafficManagement
 }
 
 sealed trait TrafficManagementResponse
@@ -55,3 +58,5 @@ case class PassedVatReg(regId: String) extends TrafficManagementResponse
 case object PassedOTRS extends TrafficManagementResponse
 
 case object Failed extends TrafficManagementResponse
+
+case object Cleared

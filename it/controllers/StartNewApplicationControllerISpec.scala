@@ -51,14 +51,24 @@ class StartNewApplicationControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.continueJourney().url)
     }
 
-    "redirect to continue journey url if the answer is Yes" in new Setup {
+    "redirect to start new journey url if the answer is Yes" in new Setup {
       given
         .user.isAuthorised
+        .trafficManagement.isCleared
 
       val res = await(buildClient(submitUrl).post(Json.obj("value" -> true)))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.startNewJourney().url)
+    }
+    "Throw an exception if the answer is Yes but the clear TM API call fails" in new Setup {
+      given
+        .user.isAuthorised
+        .trafficManagement.failsToClear
+
+      val res = await(buildClient(submitUrl).post(Json.obj("value" -> true)))
+
+      res.status mustBe INTERNAL_SERVER_ERROR
     }
   }
 
