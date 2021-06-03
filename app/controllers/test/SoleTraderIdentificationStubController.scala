@@ -17,7 +17,6 @@
 package controllers.test
 
 import config.FrontendAppConfig
-import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,8 +37,10 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
     Ok(
       Json.obj(
         "personalDetails" -> Json.obj(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName",
+          "fullName" -> Json.obj(
+            "firstName" -> "testFirstName",
+            "lastName" -> "testLastName"
+          ),
           "nino" -> "AA123456A",
           "dateOfBirth" -> LocalDate.of(1990, 1, 1)
         )

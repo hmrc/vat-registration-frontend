@@ -31,13 +31,15 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
   def startJourney(continueUrl: String,
                    serviceName: String,
                    deskproId: String,
-                   signOutUrl: String)
+                   signOutUrl: String,
+                   enableSautrCheck: Boolean)
                   (implicit hc: HeaderCarrier): Future[String] =
     soleTraderIdentificationConnector.startJourney(config = SoleTraderIdJourneyConfig(
       continueUrl = continueUrl,
       optServiceName = Some(serviceName),
       deskProServiceId = deskproId,
-      signOutUrl = signOutUrl
+      signOutUrl = signOutUrl,
+      enableSautrCheck = enableSautrCheck
     ))
 
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =

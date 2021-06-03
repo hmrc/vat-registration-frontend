@@ -21,7 +21,8 @@ import play.api.libs.json.{Format, Json}
 
 case class EligibilitySubmissionData(threshold: Threshold,
                                      estimates: TurnoverEstimates,
-                                     customerStatus: CustomerStatus)
+                                     customerStatus: CustomerStatus,
+                                     partyType: PartyType)
 
 object EligibilitySubmissionData {
 

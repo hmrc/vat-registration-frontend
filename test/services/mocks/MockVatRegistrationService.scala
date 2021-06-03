@@ -16,6 +16,8 @@
 
 package services.mocks
 
+import models.CurrentProfile
+import models.api.VatScheme
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -33,7 +35,13 @@ trait MockVatRegistrationService extends MockitoSugar {
 
   val vatRegistrationServiceMock = mock[VatRegistrationService]
 
-  def mockGetVatScheme(regId: String)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
+  def mockGetVatScheme(response: Future[VatScheme]): OngoingStubbing[Future[VatScheme]] =
+    when(vatRegistrationServiceMock.getVatScheme(
+      any[CurrentProfile],
+      any[HeaderCarrier]
+    )) thenReturn response
+
+  def mockGetVatSchemeJson(regId: String)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
     when(vatRegistrationServiceMock.getVatSchemeJson(
       ArgumentMatchers.eq(regId)
     )(any[HeaderCarrier])) thenReturn response
