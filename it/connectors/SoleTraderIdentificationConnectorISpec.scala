@@ -22,7 +22,8 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     continueUrl = "/test-url",
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
-    signOutUrl = "/test-sign-out"
+    signOutUrl = "/test-sign-out",
+    enableSautrCheck = false
   )
 
   "startJourney" when {
@@ -64,7 +65,16 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
   "retrieveSoleTraderDetails" must {
     "return transactor details when STI returns OK" in new Setup {
-      stubGet(retrieveDetailsUrl, OK, Json.stringify(Json.obj("personalDetails" -> Json.toJson(testTransactorDetails))))
+      val testSTIResponse: JsObject = Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> testFirstName,
+          "lastName" -> testLastName
+        ),
+        "nino" -> testApplicantNino,
+        "dateOfBirth" -> testApplicantDob
+      )
+
+      stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
       val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
       res mustBe testTransactorDetails
     }

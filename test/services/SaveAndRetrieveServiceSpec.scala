@@ -42,7 +42,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
 
   "savePartialVatScheme" must {
     "store an empty VatScheme from VAT reg in S4L" in {
-      mockGetVatScheme(testRegId)(Future.successful(emptyVatSchemeJson))
+      mockGetVatSchemeJson(testRegId)(Future.successful(emptyVatSchemeJson))
       mockS4LSave(testRegId, s4lKey, emptyVatSchemeJson)(Future.successful(testCacheMap))
 
       val res = await(Service.savePartialVatScheme(testRegId))
@@ -50,7 +50,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
       res mustBe testCacheMap
     }
     "store a full VatScheme from VAT reg in S4L" in {
-      mockGetVatScheme(testRegId)(Future.successful(validVatSchemeJson))
+      mockGetVatSchemeJson(testRegId)(Future.successful(validVatSchemeJson))
       mockS4LSave(testRegId, s4lKey, validVatSchemeJson)(Future.successful(testCacheMap))
 
       val res = await(Service.savePartialVatScheme(testRegId))
@@ -58,14 +58,14 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
       res mustBe testCacheMap
     }
     "throw an internal server exception if we fail to get the Vat Scheme from the backend" in {
-      mockGetVatScheme(testRegId)(Future.failed(new InternalServerException("")))
+      mockGetVatSchemeJson(testRegId)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
         await(Service.savePartialVatScheme(testRegId))
       }
     }
     "throw an internal server exception if we fail to save the Vat Scheme in S4L" in {
-      mockGetVatScheme(testRegId)(Future.successful(validVatSchemeJson))
+      mockGetVatSchemeJson(testRegId)(Future.successful(validVatSchemeJson))
       mockS4LSave(testRegId, s4lKey, validVatSchemeJson)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {

@@ -40,7 +40,8 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       continueUrl = "/test-url",
       optServiceName = Some("MTD"),
       deskProServiceId = "MTDSUR",
-      signOutUrl = "/test-sign-out"
+      signOutUrl = "/test-sign-out",
+      enableSautrCheck = false
     )
   }
 
@@ -83,7 +84,16 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
   "retrieveSoleTraderDetails" must {
     "return transactor details when STI returns OK" in new Setup {
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Json.obj("personalDetails" -> Json.toJson(testTransactorDetails)).toString))
+      val testSTIResponse: JsObject = Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> testFirstName,
+          "lastName" -> testLastName
+        ),
+        "nino" -> testApplicantNino,
+        "dateOfBirth" -> testApplicantDob
+      )
+
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
       val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
       res mustBe testTransactorDetails
     }

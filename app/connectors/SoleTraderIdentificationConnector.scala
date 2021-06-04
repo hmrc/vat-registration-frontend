@@ -56,7 +56,7 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     httpClient.GET(appConfig.getRetrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          (response.json \ personalDetailsKey).validate[TransactorDetails] match {
+          response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads) match {
             case JsSuccess(transactorDetails, _) =>
               transactorDetails
             case JsError(errors) =>

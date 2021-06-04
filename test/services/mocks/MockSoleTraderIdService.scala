@@ -35,14 +35,16 @@ trait MockSoleTraderIdService extends MockitoSugar {
   def mockStartJourney(continueUrl: String,
                        serviceName: String,
                        deskproId: String,
-                       signOutUrl: String)
+                       signOutUrl: String,
+                       enableSautrCheck: Boolean = false)
                       (response: Future[String]): OngoingStubbing[Future[String]] =
     when(
       mockSoleTraderIdService.startJourney(
         continueUrl = matches(continueUrl),
         serviceName = matches(serviceName),
         deskproId = matches(deskproId),
-        signOutUrl = matches(signOutUrl)
+        signOutUrl = matches(signOutUrl),
+        enableSautrCheck = matches(enableSautrCheck)
       )(any[HeaderCarrier])
     ) thenReturn response
 

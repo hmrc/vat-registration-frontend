@@ -20,8 +20,9 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.api.Individual
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService}
+import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -31,27 +32,34 @@ import scala.concurrent.ExecutionContext
 class SoleTraderIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
                                                    val authConnector: AuthConnector,
                                                    val applicantDetailsService: ApplicantDetailsService,
-                                                   soleTraderIdentificationService: SoleTraderIdentificationService)
+                                                   soleTraderIdentificationService: SoleTraderIdentificationService,
+                                                   vatRegistrationService: VatRegistrationService)
                                                   (implicit val appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
-    isAuthenticatedWithProfile() { implicit request => _ =>
-      soleTraderIdentificationService.startJourney(
-        continueUrl = appConfig.getSoleTraderIdentificationCallbackUrl,
-        serviceName = request2Messages(request)("service.name"),
-        deskproId = appConfig.contactFormServiceIdentifier,
-        signOutUrl = appConfig.feedbackUrl
-      ) map (url => Redirect(url))
+    isAuthenticatedWithProfile() {
+      implicit request =>
+        implicit profile =>
+          vatRegistrationService.getVatScheme.flatMap { vatScheme =>
+            soleTraderIdentificationService.startJourney(
+              continueUrl = appConfig.getSoleTraderIdentificationCallbackUrl,
+              serviceName = request2Messages(request)("service.name"),
+              deskproId = appConfig.contactFormServiceIdentifier,
+              signOutUrl = appConfig.feedbackUrl,
+              enableSautrCheck = vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+            ) map (url => Redirect(url))
+          }
     }
 
   def callback(journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() { implicit request => implicit profile =>
-      for {
-        transactorDetails <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-        _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
-      } yield Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+    isAuthenticatedWithProfile() { implicit request =>
+      implicit profile =>
+        for {
+          transactorDetails <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+          _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
+        } yield Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
     }
 
 }

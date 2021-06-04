@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.TransactorDetails
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import services.mocks.{MockApplicantDetailsService, MockSoleTraderIdService}
+import services.mocks.{MockApplicantDetailsService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -31,6 +31,7 @@ import scala.concurrent.Future
 class SoleTraderIdentificationControllerSpec extends ControllerSpec
   with MockApplicantDetailsService
   with MockSoleTraderIdService
+  with MockVatRegistrationService
   with VatRegistrationFixture {
 
   class Setup {
@@ -41,7 +42,8 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsService,
-      mockSoleTraderIdService
+      mockSoleTraderIdService,
+      vatRegistrationServiceMock
     )
 
     mockAuthenticated()
@@ -50,6 +52,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
   "startJourney" must {
     "redirect to the STI journey url" in new Setup {
+      mockGetVatScheme(Future.successful(validVatScheme))
       mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyUrl))
 
       val res = Controller.startJourney()(FakeRequest())
@@ -58,6 +61,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       redirectLocation(res) mustBe Some(testJourneyUrl)
     }
     "throw an exception if the call to STI fails" in new Setup {
+      mockGetVatScheme(Future.successful(validVatScheme))
       mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {

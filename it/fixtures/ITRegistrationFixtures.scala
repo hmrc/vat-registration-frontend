@@ -66,7 +66,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
     turnOverEstimates,
-    MTDfB
+    MTDfB,
+    UkCompany
   )
 
   val validBusinessContactDetails = BusinessContact(
