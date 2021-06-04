@@ -69,6 +69,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val accessibilityStatementPath = loadConfig("accessibility-statement.host")
   lazy val accessibilityStatementUrl = s"$accessibilityStatementPath/accessibility-statement/vat-registration"
 
+  lazy val aasPaymentMethodInfoUrl = "https://www.gov.uk/government/publications/vat-annual-accounting-scheme-direct-debit-form-vat-623"
+
   val timeout: Int = servicesConfig.getInt("timeout.timeout")
   val countdown: Int = servicesConfig.getInt("timeout.countdown")
 
