@@ -39,13 +39,13 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-        Future.successful(
-          Ok(view(
-            routes.CaptureEmailAddressController.submit(),
-            EmailAddressForm.form
-          ))
-        )
+    implicit request =>
+      implicit profile =>
+        for {
+          applicant <- applicantDetailsService.getApplicantDetails
+          filledForm = applicant.emailAddress.fold(EmailAddressForm.form)(ea => EmailAddressForm.form.fill(ea.email))
+        } yield
+          Ok(view(routes.CaptureEmailAddressController.submit(), filledForm))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {

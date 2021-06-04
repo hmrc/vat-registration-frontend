@@ -40,9 +40,12 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        Future.successful(
-          Ok(view(RoleInTheBusinessForm.form)))
+      implicit profile =>
+        for {
+          applicant <- applicantDetailsService.getApplicantDetails
+          filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm.form)(RoleInTheBusinessForm.form.fill)
+        } yield
+          Ok(view(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {

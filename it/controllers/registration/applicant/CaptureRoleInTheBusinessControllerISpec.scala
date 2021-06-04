@@ -3,30 +3,48 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.ApplicantDetails
+import models.external.{EmailAddress, EmailVerified}
+import models.{ApplicantDetails, Director}
+import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
-  "GET /role-in-the-business" should {
-    "show the view correctly" in new Setup {
+  val url: String = controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url
+
+  val s4lData = ApplicantDetails(
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    roleInTheBusiness = Some(Director)
+  )
+
+  s"GET $url" should {
+    "show the view with prepopulated data" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/role-in-the-business").get)
+      val response: Future[WSResponse] = buildClient(url).get()
 
-      res.status mustBe OK
+      whenReady(response) { res =>
+        res.status mustBe OK
 
+        Jsoup.parse(res.body).getElementById("value").attr("value") mustBe "director"
+      }
     }
   }
 
-  "POST /role-in-the-business" when {
+  s"POST $url" when {
     val keyblock = "applicant-details"
     "the ApplicantDetails model is incomplete" should {
       "update S4L and redirect to former name page" in new Setup {

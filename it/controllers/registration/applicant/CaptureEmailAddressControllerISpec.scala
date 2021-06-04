@@ -20,15 +20,26 @@ import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.external.{EmailAddress, EmailVerified}
+import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
+  val url: String = controllers.registration.applicant.routes.CaptureEmailAddressController.show().url
   private val testEmail = "test@test.com"
 
-  "GET /email-address" should {
+  val s4lData = ApplicantDetails(
+    entity = Some(testIncorpDetails),
+    transactor = Some(testTransactorDetails),
+    emailAddress = Some(EmailAddress(testEmail)),
+    emailVerified = Some(EmailVerified(true))
+  )
+
+  s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
@@ -37,14 +48,30 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/email-address").get)
+      val res: WSResponse = await(buildClient(url).get)
 
       res.status mustBe OK
 
     }
+
+    "returns an OK with prepopulated data" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).getElementById("email-address").attr("value") mustBe testEmail
+      }
+    }
   }
 
-  "POST /email-address" when {
+  s"POST $url" when {
     "ApplicantDetails is not complete" should {
       "Update S4L and redirect to Capture Email Passcode page" in new Setup {
         disable(StubEmailVerification)
