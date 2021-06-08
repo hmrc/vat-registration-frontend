@@ -36,14 +36,12 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
   def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
     Ok(
       Json.obj(
-        "personalDetails" -> Json.obj(
-          "fullName" -> Json.obj(
-            "firstName" -> "testFirstName",
-            "lastName" -> "testLastName"
-          ),
-          "nino" -> "AA123456A",
-          "dateOfBirth" -> LocalDate.of(1990, 1, 1)
-        )
+        "fullName" -> Json.obj(
+          "firstName" -> "testFirstName",
+          "lastName" -> "testLastName"
+        ),
+        "nino" -> "AA123456A",
+        "dateOfBirth" -> LocalDate.of(1990, 1, 1)
       )
     )
   }
