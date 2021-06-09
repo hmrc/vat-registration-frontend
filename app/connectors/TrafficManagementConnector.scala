@@ -19,10 +19,12 @@ package connectors
 import config.FrontendAppConfig
 
 import javax.inject.{Inject, Singleton}
-import models.api.trafficmanagement.RegistrationInformation
+import models.api.trafficmanagement.{ClearTrafficManagementError, ClearTrafficManagementResponse, RegistrationInformation, TrafficManagementCleared}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.http.Status._
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 
 @Singleton
 class TrafficManagementConnector @Inject()(val httpClient: HttpClient,
@@ -31,5 +33,13 @@ class TrafficManagementConnector @Inject()(val httpClient: HttpClient,
 
   def getRegistrationInformation(implicit hc: HeaderCarrier): Future[Option[RegistrationInformation]] =
     httpClient.GET[Option[RegistrationInformation]](appConfig.getRegistrationInformationUrl)
+
+  def clearTrafficManagement(implicit hc: HeaderCarrier): Future[ClearTrafficManagementResponse] =
+    httpClient.DELETE(appConfig.clearTrafficManagementUrl) map {
+      _.status match {
+        case NO_CONTENT => TrafficManagementCleared
+        case status => ClearTrafficManagementError(status)
+      }
+    }
 
 }

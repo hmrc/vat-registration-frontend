@@ -19,9 +19,11 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.StartNewApplicationForm
+import models.api.trafficmanagement.{ClearTrafficManagementError, TrafficManagementCleared}
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, TrafficManagementService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 import views.html.pages.start_new_application
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class StartNewApplicationController @Inject()(view: start_new_application,
                                               val authConnector: AuthConnector,
-                                              val keystoreConnector: KeystoreConnector)
+                                              val keystoreConnector: KeystoreConnector,
+                                              trafficManagementService: TrafficManagementService)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents)
@@ -45,8 +48,17 @@ class StartNewApplicationController @Inject()(view: start_new_application,
     StartNewApplicationForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
       startNew =>
-        if (startNew) Future.successful(Redirect(routes.WelcomeController.startNewJourney()))
-        else Future.successful(Redirect(routes.WelcomeController.continueJourney()))
+        if (startNew) {
+          trafficManagementService.clearTrafficManagement map {
+            case TrafficManagementCleared =>
+              Redirect(routes.WelcomeController.startNewJourney())
+            case ClearTrafficManagementError(status) =>
+              throw new InternalServerException(s"[StartNewApplicationCtrl] Clear Traffic management API returned status: $status")
+          }
+        }
+        else {
+          Future.successful(Redirect(routes.WelcomeController.continueJourney()))
+        }
     )
   }
 }
