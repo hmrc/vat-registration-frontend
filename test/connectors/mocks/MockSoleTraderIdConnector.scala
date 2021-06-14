@@ -18,6 +18,7 @@ package connectors.mocks
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
+import models.external.incorporatedentityid.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
@@ -38,7 +39,7 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
       config = matches(config)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[TransactorDetails]): OngoingStubbing[Future[TransactorDetails]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, Option[SoleTrader])]): OngoingStubbing[Future[(TransactorDetails, Option[SoleTrader])]] =
     when(mockSoleTraderIdConnector.retrieveSoleTraderDetails(
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response

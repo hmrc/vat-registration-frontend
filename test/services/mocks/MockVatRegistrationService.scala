@@ -26,14 +26,14 @@ import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.JsValue
 import services.VatRegistrationService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
 trait MockVatRegistrationService extends MockitoSugar {
   self: Suite =>
 
-  val vatRegistrationServiceMock = mock[VatRegistrationService]
+  val vatRegistrationServiceMock: VatRegistrationService = mock[VatRegistrationService]
 
   def mockGetVatScheme(response: Future[VatScheme]): OngoingStubbing[Future[VatScheme]] =
     when(vatRegistrationServiceMock.getVatScheme(
@@ -50,6 +50,12 @@ trait MockVatRegistrationService extends MockitoSugar {
     when(vatRegistrationServiceMock.storePartialVatScheme(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(partialVatScheme)
+    )(any[HeaderCarrier])) thenReturn response
+
+  def mockSubmitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(response: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
+    when(vatRegistrationServiceMock.submitHonestyDeclaration(
+      ArgumentMatchers.eq(regId),
+      ArgumentMatchers.eq(honestyDeclaration)
     )(any[HeaderCarrier])) thenReturn response
 
 }

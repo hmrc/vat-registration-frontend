@@ -21,9 +21,12 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
 import models.api.{Address, Threshold, VatScheme}
+import models.external.incorporatedentityid.{LimitedCompany, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
+
+import scala.reflect.runtime.universe.typeOf
 
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
@@ -42,6 +45,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
+  val isSoleTrader: Boolean = scheme.applicantDetails.exists(_.entity.contains(typeOf[SoleTrader]))
 
   val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
     applicantRoutes.SoleTraderIdentificationController.startJourney()
@@ -87,6 +91,14 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val dob: SummaryRow = SummaryRow(
     s"$sectionId.dob",
     vatApplicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
+    Some(changeTransactorDetailsUrl)
+  )
+
+  val sautr: SummaryRow = SummaryRow(
+    s"$sectionId.sautr",
+    vatApplicantDetails.entity.collect {
+      case soleTrader: SoleTrader => soleTrader.sautr
+    }.getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
 
@@ -260,13 +272,17 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val companyNumber: SummaryRow = SummaryRow(
     s"$sectionId.companyNumber",
-    vatApplicantDetails.entity.map(_.companyNumber).getOrElse(""),
+    vatApplicantDetails.entity.collect {
+      case soleTrader: LimitedCompany => soleTrader.companyName
+    }.getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
 
   val ctutr: SummaryRow = SummaryRow(
     s"$sectionId.ctutr",
-    vatApplicantDetails.entity.map(_.ctutr).getOrElse(""),
+    vatApplicantDetails.entity.collect {
+      case soleTrader: LimitedCompany => soleTrader.ctutr
+    }.getOrElse(""),
     Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
   )
 
@@ -374,8 +390,9 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyNumber, vatApplicantDetails.transactor.map(_.firstName).isDefined),
-      (ctutr, vatApplicantDetails.transactor.map(_.lastName).isDefined),
+      (companyNumber, !isSoleTrader),
+      (ctutr, !isSoleTrader),
+      (sautr, isSoleTrader),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),

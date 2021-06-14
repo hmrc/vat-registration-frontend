@@ -95,7 +95,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
       mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
       val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-      res mustBe testTransactorDetails
+      res mustBe (testTransactorDetails, None)
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {

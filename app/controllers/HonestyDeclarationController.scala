@@ -19,12 +19,13 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
-import javax.inject.{Inject, Singleton}
+import featureswitch.core.config.UseSoleTraderIdentification
+import models.api.Individual
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, VatRegistrationService}
 import views.html.honesty_declaration
-import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -46,7 +47,15 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
-        Future.successful(Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney()))
+        for {
+          _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
+          vatScheme <- vatRegistrationService.getVatScheme
+        } yield {
+          if (vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual)) && isEnabled(UseSoleTraderIdentification)) {
+            Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+          } else {
+            Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+          }
+        }
   }
 }

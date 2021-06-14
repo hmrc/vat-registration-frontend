@@ -1,14 +1,15 @@
 
 package connectors
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.TransactorDetails
+import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, SoleTrader}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException, Upstream4xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{InternalServerException, UnauthorizedException}
 
 class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -16,14 +17,26 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
   val testJourneyUrl = "/test-journey-url"
   val createJourneyUrl = "/sole-trader-identification/api/journey"
   val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
-  val connector = app.injector.instanceOf[SoleTraderIdentificationConnector]
+  val connector: SoleTraderIdentificationConnector = app.injector.instanceOf[SoleTraderIdentificationConnector]
 
-  val testJourneyConfig = SoleTraderIdJourneyConfig(
+  val testJourneyConfig: SoleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
     continueUrl = "/test-url",
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
     enableSautrCheck = false
+  )
+
+  val testSautr = "1234567890"
+  val testRegistration = "REGISTERED"
+  val testSafeId = "X00000123456789"
+
+  val testSoleTrader: SoleTrader = SoleTrader(
+    sautr = testSautr,
+    registration = Some(testRegistration),
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
   )
 
   "startJourney" when {
@@ -75,11 +88,37 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-      res mustBe testTransactorDetails
+      val res: (TransactorDetails, Option[SoleTrader]) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+
+      res mustBe(testTransactorDetails, None)
     }
+
+    "return transactor details when STI returns OK for a sole trader" in new Setup {
+      val testSTIResponse: JsObject = Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> testFirstName,
+          "lastName" -> testLastName
+        ),
+        "nino" -> testApplicantNino,
+        "dateOfBirth" -> testApplicantDob,
+        "sautr" -> testSautr,
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> testRegistration,
+          "registeredBusinessPartnerId" -> testSafeId
+        )
+      )
+
+      stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
+      val res: (TransactorDetails, Option[SoleTrader]) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+
+      res mustBe(testTransactorDetails, Some(testSoleTrader))
+    }
+
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
-      val invalidTransactorJson = {
+      val invalidTransactorJson: JsObject = {
         Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
       }
       stubGet(retrieveDetailsUrl, OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
@@ -88,6 +127,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         await(connector.retrieveSoleTraderDetails(testJourneyId))
       }
     }
+
     "throw an InternalServerException for any other status" in new Setup {
       stubGet(retrieveDetailsUrl, IM_A_TEAPOT, "")
 

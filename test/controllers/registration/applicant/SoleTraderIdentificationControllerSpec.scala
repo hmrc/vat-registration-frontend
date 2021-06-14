@@ -72,7 +72,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
   "retrieveSoleTraderDetails" must {
     "redirect to the capture role page" in new Setup {
-      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(testTransactorDetails))
+      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
 
       val res = Controller.callback(testJourneyId)(FakeRequest())

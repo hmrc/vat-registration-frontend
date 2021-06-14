@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import javax.inject.{Inject, Singleton}
-import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, IncorporationDetails}
+import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, LimitedCompany}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -39,7 +39,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
 
   def getDetails(journeyId: String): Action[AnyContent] = Action.async { _ =>
     Future.successful(
-      Ok(Json.toJson(IncorporationDetails(
+      Ok(Json.toJson(LimitedCompany(
         companyName = "Test company",
         companyNumber = "12345678",
         ctutr = "1234567890",
@@ -48,7 +48,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
         registration = Some("REGISTERED"),
         businessVerification = Some(BvPass),
         bpSafeId = Some("testBpId")
-      ))(IncorporationDetails.apiFormat))
+      ))(LimitedCompany.apiFormat))
     )
   }
 }

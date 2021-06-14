@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import models.external.incorporatedentityid.IncorporationDetails
+import models.external.incorporatedentityid.LimitedCompany
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -39,7 +39,7 @@ trait IncorpIdServiceMock {
     )(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 
-  def mockGetDetails(journeyId: String)(response: Future[IncorporationDetails]): Unit =
+  def mockGetDetails(journeyId: String)(response: Future[LimitedCompany]): Unit =
     when(mockIncorpIdService.getDetails(ArgumentMatchers.eq(journeyId))(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 

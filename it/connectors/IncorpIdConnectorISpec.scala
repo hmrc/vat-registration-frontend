@@ -19,7 +19,7 @@ package connectors
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, IncorporationDetails}
+import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, LimitedCompany}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -66,18 +66,18 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
   "getDetails" when {
     "incorp ID returns valid incorporation details" should {
       "return the incorporation details without optional data" in {
-        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false)
+        val validResponse = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false)
         disable(StubIncorpIdJourney)
-        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(LimitedCompany.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
 
         res mustBe (validResponse)
       }
       "return the incorporation details with optional data" in {
-        val validResponse = IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+        val validResponse = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
-        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporationDetails.apiFormat).toString)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(LimitedCompany.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
 
@@ -86,7 +86,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     }
     "incorp ID returns invalid incorporation details" should {
       "throw and exception" in {
-        val validResponse = Json.toJson(IncorporationDetails(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false))
+        val validResponse = Json.toJson(LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
 

@@ -6,7 +6,7 @@ import models.api.Address
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
-import models.external.incorporatedentityid.{BvPass, IncorporationDetails}
+import models.external.incorporatedentityid.{BvPass, LimitedCompany}
 
 trait ApplicantDetailsFixture {
 
@@ -39,7 +39,7 @@ trait ApplicantDetailsFixture {
   val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
   val testBpSafeId = "testBpId"
 
-  val testApplicantIncorpDetails = IncorporationDetails(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testApplicantIncorpDetails = LimitedCompany(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val validFullApplicantDetails = ApplicantDetails(
     transactor = Some(testTransactorDetails),

@@ -20,7 +20,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
 import models.{ApplicantDetails, S4LKey}
-import models.external.incorporatedentityid.IncorporationDetails
+import models.external.incorporatedentityid.LimitedCompany
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
@@ -28,7 +28,7 @@ import play.api.test.Helpers.{CREATED, await, _}
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
-  val incorpDetailsJson = Json.toJson(testIncorpDetails)(IncorporationDetails.apiFormat)
+  val incorpDetailsJson = Json.toJson(testIncorpDetails)(LimitedCompany.apiFormat)
 
   "GET /start-incorp-id-journey" should {
     "redirect to the returned journey url" in new Setup {

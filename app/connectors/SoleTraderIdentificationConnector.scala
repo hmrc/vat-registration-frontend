@@ -18,6 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.TransactorDetails
+import models.external.incorporatedentityid.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.Logger
 import play.api.http.Status._
@@ -52,14 +53,15 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     }
 
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, Option[SoleTrader])] =
     httpClient.GET(appConfig.getRetrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads) match {
-            case JsSuccess(transactorDetails, _) =>
-              transactorDetails
-            case JsError(errors) =>
+          (response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads),
+          response.json.validateOpt[SoleTrader](SoleTrader.apiFormat).orElse(JsSuccess(None))) match {
+            case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
+              (transactorDetails, optSoleTrader)
+            case (JsError(errors), _) =>
               throw new InternalServerException(s"Sole trader ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
           }
         case status =>
