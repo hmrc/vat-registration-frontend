@@ -20,13 +20,11 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
-import models.api.{Address, Threshold, VatScheme}
+import models.api.{Address, Individual, Threshold, VatScheme}
 import models.external.incorporatedentityid.{LimitedCompany, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
-
-import scala.reflect.runtime.universe.typeOf
 
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
@@ -45,7 +43,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
-  val isSoleTrader: Boolean = scheme.applicantDetails.exists(_.entity.contains(typeOf[SoleTrader]))
+  val isSoleTrader: Boolean = scheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
 
   val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
     applicantRoutes.SoleTraderIdentificationController.startJourney()
