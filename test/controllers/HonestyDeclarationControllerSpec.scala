@@ -16,21 +16,25 @@
 
 package controllers
 
+import controllers.registration.applicant.{routes => applicantRoutes}
+import fixtures.VatRegistrationFixture
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import services.mocks.MockVatRegistrationService
 import testHelpers.ControllerSpec
+import uk.gov.hmrc.http.HttpResponse
 import views.html.honesty_declaration
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import controllers.registration.applicant.{routes => applicantRoutes}
+import scala.concurrent.Future
 
-class HonestyDeclarationControllerSpec extends ControllerSpec {
+class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegistrationService with VatRegistrationFixture {
 
   val TestController = new HonestyDeclarationController(
     app.injector.instanceOf[honesty_declaration],
     mockAuthClientConnector,
     mockKeystoreConnector,
-    mockVatRegistrationService
+    vatRegistrationServiceMock
   )
 
   override def beforeEach(): Unit = {
@@ -54,6 +58,9 @@ class HonestyDeclarationControllerSpec extends ControllerSpec {
 
   "submit" must {
     "return a SEE_OTHER with a redirect to Applicant Former Name Page" in {
+      mockGetVatScheme(Future.successful(emptyVatScheme))
+      mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
+
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER

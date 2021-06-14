@@ -16,17 +16,19 @@
 
 package controllers
 
-import itutil.{ControllerISpec, IntegrationSpecBase}
-import org.scalatest.concurrent.ScalaFutures
+import common.enums.VatRegStatus
+import controllers.registration.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import it.fixtures.ITRegistrationFixtures
+import itutil.ControllerISpec
+import models.api.{Individual, VatScheme}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import support.AppAndStubs
 
 import scala.concurrent.Future
-import controllers.registration.applicant.{routes => applicantRoutes}
 
-class HonestyDeclarationControllerISpec extends ControllerISpec {
+class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 
   val url: String = controllers.routes.HonestyDeclarationController.show().url
 
@@ -52,6 +54,9 @@ class HonestyDeclarationControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft))
+        .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,6 +65,30 @@ class HonestyDeclarationControllerISpec extends ControllerISpec {
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startIncorpIdJourney().url)
       }
+    }
+
+    "return a redirect to STI if user is a sole trader" in new Setup {
+      enable(UseSoleTraderIdentification)
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(
+        VatScheme(
+          id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+        ))
+        .vatRegistration.honestyDeclaration(testRegId, "true")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Json.obj())
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+      }
+      disable(UseSoleTraderIdentification)
     }
   }
 }

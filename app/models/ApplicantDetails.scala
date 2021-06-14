@@ -17,7 +17,7 @@
 package models
 
 import models.api.Address
-import models.external.incorporatedentityid.IncorporationDetails
+import models.external.incorporatedentityid.BusinessEntity
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import play.api.libs.functional.syntax._
@@ -25,7 +25,7 @@ import play.api.libs.json._
 
 import java.time.LocalDate
 
-case class ApplicantDetails(entity: Option[IncorporationDetails] = None,
+case class ApplicantDetails(entity: Option[BusinessEntity] = None,
                             transactor: Option[TransactorDetails] = None,
                             homeAddress: Option[HomeAddressView] = None,
                             emailAddress: Option[EmailAddress] = None,
@@ -41,7 +41,7 @@ object ApplicantDetails {
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
 
   val apiReads: Reads[ApplicantDetails] = (
-    (__ \ "entity").readNullable[IncorporationDetails].orElse(Reads.pure(None)) and
+    (__ \ "entity").readNullable[BusinessEntity].orElse(Reads.pure(None)) and
       (__ \ "transactor").readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
       (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
       (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
@@ -56,7 +56,7 @@ object ApplicantDetails {
     ) (ApplicantDetails.apply _)
 
   val apiWrites: Writes[ApplicantDetails] = (
-    (__ \ "entity").writeNullable[IncorporationDetails] and
+    (__ \ "entity").writeNullable[BusinessEntity] and
       (__ \ "transactor").writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
       (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
       (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and

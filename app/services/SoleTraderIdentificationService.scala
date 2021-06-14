@@ -18,6 +18,7 @@ package services
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
+import models.external.incorporatedentityid.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -42,6 +43,6 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
       enableSautrCheck = enableSautrCheck
     ))
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, Option[SoleTrader])] =
     soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId)
 }

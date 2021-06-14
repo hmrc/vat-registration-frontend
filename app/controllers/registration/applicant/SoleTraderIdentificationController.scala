@@ -20,13 +20,14 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.ApplicantDetails
 import models.api.Individual
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SoleTraderIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
@@ -57,8 +58,9 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
     isAuthenticatedWithProfile() { implicit request =>
       implicit profile =>
         for {
-          transactorDetails <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+          (transactorDetails, optSoleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
+          _ <- optSoleTrader.fold(Future.successful(ApplicantDetails()))(applicantDetailsService.saveApplicantDetails(_))
         } yield Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
     }
 
