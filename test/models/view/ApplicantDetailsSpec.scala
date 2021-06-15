@@ -126,7 +126,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val formerName = Name(first = Some("New"), middle = Some("Name"), last = "Cosmo")
 
       val applicantDetails = ApplicantDetails(
-        entity = Some(testIncorpDetails),
+        entity = Some(testLimitedCompany),
         transactor = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
@@ -190,7 +190,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
     "return a correct full JsValue with maximum data" in {
       val data = ApplicantDetails(
-        entity = Some(testIncorpDetails),
+        entity = Some(testLimitedCompany),
         transactor = Some(testTransactorDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),

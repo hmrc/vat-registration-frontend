@@ -133,10 +133,10 @@ class FormerNameControllerISpec extends ControllerISpec {
       }
     }
 
-    "Update S4L with formerName and redirec to the Former Name Date page" in new Setup {
+    "Update S4L with formerName and redirect to the Former Name Date page" in new Setup {
       given()
         .user.isAuthorised
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(false, None))))
+        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(yesNo = false, None)), formerNameDate = None))
         .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
         .audit.writesAudit()
         .audit.writesAuditMerged()

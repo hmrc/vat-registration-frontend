@@ -19,7 +19,7 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import models._
-import models.external.incorporatedentityid.{BusinessEntity, LimitedCompany}
+import models.external.incorporatedentityid.{BusinessEntity, LimitedCompany, SoleTrader}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -59,15 +59,17 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       }
     } yield companyName
 
-  private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = applicantDetails match {
-    case ApplicantDetails(None, None, None, None, None, None, _, None, None, None) =>
-      Incomplete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), Some(_)) if fName.yesNo && fNameDate.isDefined =>
-      Complete(applicantDetails)
-    case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), _, Some(_), Some(_)) if !fName.yesNo =>
-      Complete(applicantDetails)
-    case _ =>
-      Incomplete(applicantDetails)
+  private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = {
+    applicantDetails match {
+      case ApplicantDetails(None, None, None, None, None, None, _, None, None, None) =>
+        Incomplete(applicantDetails)
+      case ApplicantDetails(Some(SoleTrader(_, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
+        Complete(applicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor)))
+      case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), Some(_)) if fName.yesNo == fNameDate.isDefined =>
+        Complete(applicantDetails)
+      case _ =>
+        Incomplete(applicantDetails)
+    }
   }
 
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
@@ -97,7 +99,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       case telephoneNumber: TelephoneNumber =>
         before.copy(telephoneNumber = Some(telephoneNumber))
       case fName: FormerNameView =>
-        before.copy(formerName = Some(fName), formerNameDate = None)
+        before.copy(formerName = Some(fName), formerNameDate = if (fName.yesNo) before.formerNameDate else None)
       case fNameDate: FormerNameDateView =>
         before.copy(formerNameDate = Some(fNameDate))
       case prevAddr: PreviousAddressView =>

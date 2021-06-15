@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.incorporatedentityid.{BvPass, LimitedCompany}
+import models.external.incorporatedentityid.{BvPass, LimitedCompany, SoleTrader}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
@@ -55,10 +55,10 @@ trait ApplicantDetailsFixtures {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
-  val testIncorpDetails = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testLimitedCompany = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
-    entity = Some(testIncorpDetails),
+    entity = Some(testLimitedCompany),
     transactor = Some(testTransactorDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
@@ -68,5 +68,30 @@ trait ApplicantDetailsFixtures {
     formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))
+  )
+
+  val testSautr = "1234567890"
+  val testRegistration = "REGISTERED"
+  val testSafeId = "X00000123456789"
+
+  val testSoleTrader: SoleTrader = SoleTrader(
+    sautr = testSautr,
+    registration = Some(testRegistration),
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val soleTraderApplicantDetails: ApplicantDetails = ApplicantDetails(
+    entity = Some(testSoleTrader),
+    transactor = Some(testTransactorDetails),
+    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
+    roleInTheBusiness = None,
+    formerName = Some(FormerNameView(yesNo = false, None)),
+    formerNameDate = None,
+    previousAddress = Some(PreviousAddressView(yesNo = false, Some(validPrevAddress)))
   )
 }

@@ -23,13 +23,13 @@ class LimitedCompanySpec extends VatRegSpec {
 
   "LimitedCompany" should {
     "parse successfully without optional data" in {
-      val incorpDetails = testIncorpDetails.copy(businessVerification = None, bpSafeId = None)
+      val incorpDetails = testLimitedCompany.copy(businessVerification = None, bpSafeId = None)
       val json = Json.toJson(incorpDetails)
       json.as[LimitedCompany] mustBe incorpDetails
     }
 
     "parse successfully with optional data" in {
-      val incorpDetails = testIncorpDetails
+      val incorpDetails = testLimitedCompany
       val json = Json.toJson(incorpDetails)
       json.as[LimitedCompany] mustBe incorpDetails
     }
@@ -37,13 +37,13 @@ class LimitedCompanySpec extends VatRegSpec {
 
   "LimitedCompany apiFormat" should {
     "parse successfully without optional data" in {
-      val incorpDetails = testIncorpDetails.copy(businessVerification = None, bpSafeId = None)
+      val incorpDetails = testLimitedCompany.copy(businessVerification = None, bpSafeId = None)
       val json = Json.toJson(incorpDetails)(LimitedCompany.apiFormat)
       json.as[LimitedCompany](LimitedCompany.apiFormat) mustBe incorpDetails
     }
 
     "parse successfully with optional data" in {
-      val incorpDetails = testIncorpDetails
+      val incorpDetails = testLimitedCompany
       val json = Json.toJson(incorpDetails)(LimitedCompany.apiFormat)
       json.as[LimitedCompany](LimitedCompany.apiFormat) mustBe incorpDetails
     }
