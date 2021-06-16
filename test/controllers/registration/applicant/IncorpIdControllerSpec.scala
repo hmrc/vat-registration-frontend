@@ -68,8 +68,8 @@ class IncorpIdControllerSpec extends ControllerSpec
       "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
         enable(UseSoleTraderIdentification)
         val onwardUrl = applicantRoutes.SoleTraderIdentificationController.startJourney().url
-        mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
-        mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
+        mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
+        mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
 
         val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
@@ -81,8 +81,8 @@ class IncorpIdControllerSpec extends ControllerSpec
       "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
         disable(UseSoleTraderIdentification)
         val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
-        mockGetDetails(testJourneyId)(Future.successful(testIncorpDetails))
-        mockSaveApplicantDetails(testIncorpDetails)(completeApplicantDetails)
+        mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
+        mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
 
         val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 

@@ -20,25 +20,42 @@ import play.api.libs.json._
 
 sealed trait RoleInTheBusiness
 
+case object OwnerProprietor extends RoleInTheBusiness
+case object Partner extends RoleInTheBusiness
 case object Director extends RoleInTheBusiness
-
 case object CompanySecretary extends RoleInTheBusiness
+case object Trustee extends RoleInTheBusiness
+case object BoardMember extends RoleInTheBusiness
+case object AccountantAgent extends RoleInTheBusiness
+case object Representative extends RoleInTheBusiness
+case object AuthorisedEmployee extends RoleInTheBusiness
+case object Other extends RoleInTheBusiness
+case object HmrcOfficer extends RoleInTheBusiness
 
 object RoleInTheBusiness {
-  val director = "03"
-  val companySecretary = "04"
 
-  implicit val reads: Reads[RoleInTheBusiness] = Reads[RoleInTheBusiness] {
-    case JsString(`director`) => JsSuccess(Director)
-    case JsString(`companySecretary`) => JsSuccess(CompanySecretary)
-    case _ => JsError("Could not parse role in the business")
-  }
+  val stati: Map[RoleInTheBusiness, String] = Map[RoleInTheBusiness, String] (
+    OwnerProprietor -> "01",
+    Partner -> "02",
+    Director -> "03",
+    CompanySecretary -> "04",
+    Trustee -> "05",
+    BoardMember -> "06",
+    AccountantAgent -> "07",
+    Representative -> "08",
+    AuthorisedEmployee -> "09",
+    Other -> "10",
+    HmrcOfficer -> "11"
+  )
 
-  implicit val writes: Writes[RoleInTheBusiness] = Writes[RoleInTheBusiness] {
-    case Director => JsString(director)
-    case CompanySecretary => JsString(companySecretary)
-  }
+  val inverseStati: Map[String, RoleInTheBusiness] = stati.map(_.swap)
 
-  implicit val format: Format[RoleInTheBusiness] = Format(reads, writes)
+  def fromString(value: String): RoleInTheBusiness = inverseStati(value)
+  def toJsString(value: RoleInTheBusiness): JsString = JsString(stati(value))
+
+  implicit val format: Format[RoleInTheBusiness] = Format[RoleInTheBusiness](
+    Reads[RoleInTheBusiness] { json => json.validate[String] map fromString },
+    Writes[RoleInTheBusiness] (toJsString)
+  )
 
 }

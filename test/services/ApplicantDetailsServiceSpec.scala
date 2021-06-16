@@ -21,7 +21,7 @@ import fixtures.ApplicantDetailsFixtures
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
-import models.{ApplicantDetails, CurrentProfile, TelephoneNumber}
+import models.{ApplicantDetails, CurrentProfile, OwnerProprietor, TelephoneNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
@@ -118,16 +118,30 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         }
       }
 
-      "updating incorporation details" should {
+      "updating business entity details for limited company" should {
         "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(entity = Some(testIncorpDetails))
+          val expected = emptyApplicantDetails.copy(entity = Some(testLimitedCompany))
 
-          service.saveApplicantDetails(testIncorpDetails) returns expected
+          service.saveApplicantDetails(testLimitedCompany) returns expected
         }
         "store successfully in the backned if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
           val expected = completeApplicantDetails
 
-          service.saveApplicantDetails(testIncorpDetails) returns expected
+          service.saveApplicantDetails(testLimitedCompany) returns expected
+        }
+      }
+
+      "updating business entity details for sole trader" should {
+        "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(entity = Some(testSoleTrader))
+
+          service.saveApplicantDetails(testSoleTrader) returns expected
+        }
+
+        "update role to OwnerProprietor and store successfully in the backend if applicant details is complete" in new SetupForBackendSave(soleTraderApplicantDetails.copy(entity = None)) {
+          val expected: ApplicantDetails = soleTraderApplicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor))
+
+          service.saveApplicantDetails(testSoleTrader) returns expected
         }
       }
 
