@@ -25,6 +25,7 @@ import models.external.incorporatedentityid.{LimitedCompany, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
+import services.FlatRateService
 
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
@@ -44,6 +45,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
   val isSoleTrader: Boolean = scheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+  val isLimitedCostTrader: Boolean = scheme.flatRateScheme.exists(_.limitedCostTrader.contains(true))
 
   val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
     applicantRoutes.SoleTraderIdentificationController.startJourney()
@@ -315,15 +317,16 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Seq(calculatedOnEstimatedSales.map("%,d".format(_)).getOrElse("0"))
   )
 
-  val flatRatePercentageRow: SummaryRow = SummaryRow(
-    s"$sectionId.flatRate",
-    if (scheme.flatRateScheme.flatMap(_.useThisRate).contains(true)) "app.common.yes" else "app.common.no",
-    scheme.flatRateScheme.flatMap(_.categoryOfBusiness).collect {
-      case s if s.nonEmpty => controllers.routes.FlatRateController.yourFlatRatePage()
-      case _ => controllers.routes.FlatRateController.registerForFrsPage()
-    },
-    Seq(scheme.flatRateScheme.flatMap(_.percent).getOrElse(0.0).toString)
-  )
+  val flatRatePercentageRow: SummaryRow = {
+    SummaryRow(
+      s"$sectionId.flatRate",
+      if (scheme.flatRateScheme.flatMap(_.useThisRate).contains(true)) "app.common.yes" else "app.common.no",
+      Some(if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage()
+      else controllers.routes.FlatRateController.yourFlatRatePage()),
+      Seq(if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString else scheme.flatRateScheme.flatMap(_.percent).getOrElse(0.0).toString)
+    )
+  }
+
 
   val businessSectorRow: SummaryRow = SummaryRow(
     s"$sectionId.businessSector",
@@ -425,7 +428,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (costsInclusiveRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).isDefined),
       (estimateTotalSalesRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.estimateTotalSales).isDefined),
       (costsLimitedRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.overBusinessGoodsPercent).isDefined),
-      (businessSectorRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.categoryOfBusiness).exists(StringUtils.isNotBlank)),
+      (businessSectorRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.categoryOfBusiness).exists(StringUtils.isNotBlank) && !isLimitedCostTrader),
       (flatRatePercentageRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.useThisRate).isDefined),
       (providingWorkersRow, scheme.sicAndCompliance.flatMap(_.supplyWorkers).isDefined),
       (numberOfWorkersRow, scheme.sicAndCompliance.flatMap(_.workers).isDefined),

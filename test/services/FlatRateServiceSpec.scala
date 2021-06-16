@@ -227,30 +227,43 @@ class FlatRateServiceSpec extends VatSpec {
   }
 
   "saveRegister" should {
-    "save that they want to register without business goods" in new Setup() {
+    val testSicCode = "testSicCode"
+    val testCategory = "testCategory"
+    val testType = "testType"
+    val testPercent: BigDecimal = 10.5
+
+    "save that they want to register without business goods, keeping category and percentage" in new Setup() {
       val data: FlatRateScheme = incompleteS4l.copy(overBusinessGoods = Some(false))
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(data)))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
+      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
-      await(service.saveRegister(answer = true)) mustBe data.copy(useThisRate = Some(true), categoryOfBusiness = None, percent = Some(defaultFlatRate))
+      await(service.saveRegister(answer = true)) mustBe data.copy(useThisRate = Some(true), categoryOfBusiness = Some(testCategory), percent = Some(testPercent))
     }
 
-    "save that they want to register with business goods" in new Setup() {
+    "save that they want to register with business goods, keeping category and percentage" in new Setup() {
       val data: FlatRateScheme = incompleteS4l.copy(estimateTotalSales = Some(1000L), overBusinessGoodsPercent = Some(false))
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(data)))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
+      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
       await(service.saveRegister(answer = true)) mustBe
-        data.copy(useThisRate = Some(true), categoryOfBusiness = None, percent = Some(defaultFlatRate))
+        data.copy(useThisRate = Some(true), categoryOfBusiness = Some(testCategory), percent = Some(testPercent))
     }
 
-    "save that they do not wish to register (clearing the start date, saving to the backend)" in new Setup() {
+    "save that they do not wish to register (clearing the start date, saving to the backend), keeping category and percentage" in new Setup() {
       val data: FlatRateScheme = incompleteS4l.copy(overBusinessGoods = Some(false), useThisRate = Some(true), frsStart = Some(Start(Some(LocalDate.of(2017, 10, 10)))))
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
@@ -261,9 +274,13 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(HttpResponse(200, "")))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
+      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
+      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
       await(service.saveRegister(answer = false)) mustBe
-        data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = None, percent = Some(defaultFlatRate), frsStart = None)
+        data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = Some(testCategory), percent = Some(testPercent), frsStart = None)
     }
   }
 

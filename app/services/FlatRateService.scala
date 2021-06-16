@@ -21,6 +21,7 @@ import connectors.{ConfigConnector, VatRegistrationConnector}
 import models.api.SicCode
 import models.{FRSDateChoice, Start, _}
 import play.api.Logger
+import services.FlatRateService._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 
@@ -33,9 +34,6 @@ class FlatRateService @Inject()(val s4LService: S4LService,
                                 val sicAndComplianceService: SicAndComplianceService,
                                 val configConnector: ConfigConnector,
                                 val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
-
-  private val defaultFlatRate: BigDecimal = 16.5
-  private val relevantGoodsPercent: Double = 0.02
 
   def applyPercentRoundUp(l: Long): Long = Math.ceil(l * relevantGoodsPercent).toLong
 
@@ -97,13 +95,15 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate { storedData =>
-      storedData.copy(
-        joinFrs = Some(answer),
-        useThisRate = Some(answer),
-        categoryOfBusiness = None,
-        percent = Some(defaultFlatRate),
-        frsStart = if (answer) storedData.frsStart else None)
+    retrieveSectorPercent.flatMap { case (category, _, percent) =>
+      updateFlatRate { storedData =>
+        storedData.copy(
+          joinFrs = Some(answer),
+          useThisRate = Some(answer),
+          categoryOfBusiness = Some(category),
+          percent = Some(percent),
+          frsStart = if (answer) storedData.frsStart else None)
+      }
     }
 
   def retrieveSectorPercent(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(String, String, BigDecimal)] = {
@@ -198,4 +198,9 @@ class FlatRateService @Inject()(val s4LService: S4LService,
         storedData.copy(useThisRate = None, categoryOfBusiness = Some(businessType), percent = None)
       }
     }
+}
+
+object FlatRateService {
+  val defaultFlatRate: BigDecimal = 16.5
+  val relevantGoodsPercent: Double = 0.02
 }
