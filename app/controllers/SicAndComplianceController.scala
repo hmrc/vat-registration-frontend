@@ -37,7 +37,8 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
                                            val keystoreConnector: KeystoreConnector,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
-                                           val iclService: ICLService
+                                           val iclService: ICLService,
+                                           val aboutToConfirmSicPage: about_to_confirm_sic
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
@@ -91,7 +92,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
-      Future.successful(Ok(about_to_confirm_sic()))
+      Future.successful(Ok(aboutToConfirmSicPage()))
   }
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
