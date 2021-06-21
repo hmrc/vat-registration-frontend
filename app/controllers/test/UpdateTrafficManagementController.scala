@@ -41,14 +41,16 @@ class UpdateTrafficManagementController @Inject()(mcc: MessagesControllerCompone
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),
-      newQuota =>
-        testVatRegConnector.updateTrafficManagementQuota(newQuota) map {
-          _.status match {
-            case OK => Ok("Updated")
-            case BAD_REQUEST => BadRequest("Backend returned bad request")
-            case _ => InternalServerError("Unexpected error when updating traffic management quota")
+      success = {
+        case (partyType, isEnrolled, quota) =>
+          testVatRegConnector.updateTrafficManagementQuota(partyType, isEnrolled, quota) map {
+            _.status match {
+              case OK => Ok("Updated")
+              case BAD_REQUEST => BadRequest("Backend returned bad request")
+              case _ => InternalServerError("Unexpected error when updating traffic management quota")
+            }
           }
-        }
+      }
     )
   }
 

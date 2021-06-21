@@ -21,8 +21,11 @@
     layout: layout,
     form: FormWithCSRF,
     errorSummary: components.errorSummary,
+    h1: components.h1,
     p: components.p,
     inputText: components.inputText,
+    inputRadio: components.inputRadio,
+    yesNoRadio: components.yesNoRadio,
     button: components.button
 )
 
@@ -32,12 +35,44 @@
 
     @errorSummary(updateForm.errors)
 
+    @h1("Setup traffic management")
+    @p { This page allows you to set the total of assigned traffic management tickets for a specific party type/enrolment state combination. }
+    @p { To set totals for multiple combinations you will need to submit the form once for each combination. }
+
     @form(action = controllers.test.routes.UpdateTrafficManagementController.submit, 'autoComplete -> "off") {
+        @inputRadio(
+            form = updateForm,
+            classes = "govuk-fieldset__legend--l",
+            legend = "Party type",
+            items = Seq(
+                RadioItem(
+                    content = Text("UK company"),
+                    value = Some("50"),
+                    checked = updateForm("partyType").value.contains("50")
+                ),
+                RadioItem(
+                    content = Text("Individual (Sole trader)"),
+                    value = Some("Z1"),
+                    checked = updateForm("partyType").value.contains("Z1")
+                )
+            ),
+            legendAsHeading = false,
+            fieldName = "partyType"
+        )
+
+        @yesNoRadio(
+            form = updateForm,
+            classes = "govuk-fieldset__legend--l",
+            headingKey = "Enrolled?",
+            isPageHeading = false,
+            fieldName = "isEnrolled"
+        )
+
         @inputText(
             form = updateForm,
             classes = Some("govuk-input--width-2"),
             name = "quota",
-            label = "New quota value",
+            label = "New current total",
             id = "quota",
             isPageHeading = true
         )
