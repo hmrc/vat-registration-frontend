@@ -14,37 +14,37 @@
  * limitations under the License.
  *@
 
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        bullets: bullets,
+        formWithCSRF: FormWithCSRF,
+        button: button
+)
+
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = titleNoForm(messages("pages.confirmsic.heading"))) {
+@layout(Some(titleNoForm(messages("pages.confirmsic.heading"))), backLink = true) {
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.confirmsic.heading")</h1>
+    @h1("pages.confirmsic.heading")
 
-    <p>@messages("pages.confirmsic.p1")</p>
-    <p>@messages("pages.confirmsic.p2")</p>
-    <p>@messages("pages.confirmsic.p3")</p>
+    @p{ @messages("pages.confirmsic.p1") }
+    @p{ @messages("pages.confirmsic.p2") }
+    @p{ @messages("pages.confirmsic.p3") }
 
-    <div class="form-group">
-        <ul class="list list-bullet">
-            <li>@messages("pages.confirmsic.bullet1")</li>
-            <li>@messages("pages.confirmsic.bullet2")</li>
-        </ul>
-    </div>
-    <p>@messages("pages.confirmsic.p4")</p>
+    @bullets(
+        "pages.confirmsic.bullet1",
+        "pages.confirmsic.bullet2"
+    )
 
-    @govHelpers.form(action = controllers.routes.SicAndComplianceController.submitSicHalt()) {
-    <div class="form-group">
-        <button class="btn button" type="submit" id="continue">@messages("app.common.continue")</button>
+    @p{ @messages("pages.confirmsic.p4") }
 
-        @saveProgressButton()
-    </div>
+    @formWithCSRF(action = controllers.routes.SicAndComplianceController.submitSicHalt()) {
+        @button("app.common.continue")
     }
 }

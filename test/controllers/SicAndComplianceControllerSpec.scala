@@ -27,10 +27,13 @@ import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
+import views.html.about_to_confirm_sic
 
 import scala.concurrent.Future
 
 class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
+
+  val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
 
   class Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController(
@@ -38,7 +41,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       mockKeystoreConnector,
       mockSicAndComplianceService,
       mockFlatRateService,
-      mockICLService
+      mockICLService,
+      mockAboutToConfirmSicView
     ) {
       override val iclFEurlwww: String = "www-url"
     }
