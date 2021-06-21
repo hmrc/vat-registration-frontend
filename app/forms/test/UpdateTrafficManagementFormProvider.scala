@@ -16,14 +16,21 @@
 
 package forms.test
 
+import forms.RequiredBooleanForm
 import play.api.data.Form
 import play.api.data.Forms._
 
-class UpdateTrafficManagementFormProvider  {
+class UpdateTrafficManagementFormProvider extends RequiredBooleanForm {
 
-  def apply() =
-    Form(single(
+  def apply(): Form[(String, Boolean, Int)] =
+    Form(mapping(
+      "partyType" -> text,
+      "isEnrolled" -> requiredBoolean,
       "quota" -> number
+    )(
+      apply = (partyType, isEnrolled, quota) => (partyType, isEnrolled, quota)
+    )(
+      unapply = { case (partyType, isEnrolled, quota) => Some((partyType, isEnrolled, quota)) }
     ))
 
 }

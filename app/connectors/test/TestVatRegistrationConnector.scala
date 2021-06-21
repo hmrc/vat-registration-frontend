@@ -43,8 +43,15 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
     }
   }
 
-  def updateTrafficManagementQuota(newQuota: Int)(implicit hc: HeaderCarrier) =
-    http.PUT(s"$vatRegUrl/vatreg/test-only/api/daily-quota", Json.obj("quota" -> newQuota)) recover {
+  def updateTrafficManagementQuota(partyType: String, isEnrolled: Boolean, newQuota: Int)(implicit hc: HeaderCarrier) =
+    http.PUT(
+      url = s"$vatRegUrl/vatreg/test-only/api/daily-quota",
+      body = Json.obj(
+        "partyType" -> partyType,
+        "isEnrolled" -> isEnrolled,
+        "quota" -> newQuota
+      )
+    ) recover {
       case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
     }
 

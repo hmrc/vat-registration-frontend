@@ -25,13 +25,14 @@
         inline: Boolean = true,
         classes: String = "govuk-fieldset__legend--xl",
         hiddenYesContent: Option[Html] = None,
-        hiddenNoContent: Option[Html] = None
+        hiddenNoContent: Option[Html] = None,
+        fieldName: String = "value"
 )(implicit messages: Messages)
 
 @GovukRadios(Radios(
     classes = if (inline) "govuk-radios--inline" else "",
     idPrefix = None,
-    name = "value",
+    name = fieldName,
     fieldset = Some(Fieldset(
         legend = Some(Legend(
             content = Text(messages(headingKey, headingMessageArgs:_*)),
@@ -47,16 +48,16 @@
             id = Some("value"),
             value = Some("true"),
             content = Text(messages("app.common.yes")),
-            checked = form("value").value.contains("true"),
+            checked = form(fieldName).value.contains("true"),
             conditionalHtml = hiddenYesContent
         ),
         RadioItem(
             id = Some("value-no"),
             value = Some("false"),
             content = Text(messages("app.common.no")),
-            checked = form("value").value.contains("false"),
+            checked = form(fieldName).value.contains("false"),
             conditionalHtml = hiddenNoContent
         )
     ),
-    errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+    errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
 ))
