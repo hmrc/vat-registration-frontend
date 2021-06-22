@@ -19,7 +19,7 @@ package views
 import org.jsoup.Jsoup
 import views.html.pages.application_submission_confirmation
 
-class ApplicationSubmissionConfirmationPageSpec extends VatRegViewSpec {
+class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
   val title = "Your application has been submitted - Register for VAT - GOV.UK"
   val heading = "Your application has been submitted"

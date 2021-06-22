@@ -16,41 +16,45 @@
 
 package views
 
+import java.time.LocalDate
+
 import config.FrontendAppConfig
-import views.html.{previous_address => PreviousAddressPage}
-import forms.PreviousAddressForm
-import models.view.PreviousAddressView
+import forms.FormerNameDateForm
+import models.view.FormerNameDateView
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
+import views.html.{former_name_date => FormerNameDatePage}
 
-class PreviousAddressPageSpec extends VatRegSpec with I18nSupport {
+class FormerNameDateViewSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
-  val injector : Injector = fakeApplication.injector
-  implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
+  val injector: Injector = fakeApplication.injector
+  implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
   implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
-  lazy val form = PreviousAddressForm.form
+  lazy val form = FormerNameDateForm.form(testApplicantDob)
 
-  "Previous Address Page" should {
+  "Former Name Date Page" should {
     "display the page without pre populated data" in {
-      lazy val view = PreviousAddressPage(form)
+      lazy val view = FormerNameDatePage(form, "Test Old Name")
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
-      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
+      document.getElementById("formerNameDate.day").attr("value") mustBe ""
+      document.getElementById("formerNameDate.month").attr("value") mustBe ""
+      document.getElementById("formerNameDate.year").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
-      val validPreviousAddress = PreviousAddressView(true, None)
+      val validFormerNameDate = FormerNameDateView(LocalDate.of(1998, 7, 12))
 
-      lazy val view = PreviousAddressPage(form.fill(validPreviousAddress))
+      lazy val view = FormerNameDatePage(form.fill(validFormerNameDate), "Test Old Name")
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
-      document.getElementById("previousAddressQuestionRadio-true").attr("checked") mustBe "checked"
+      document.getElementById("formerNameDate.day").attr("value") mustBe "12"
+      document.getElementById("formerNameDate.month").attr("value") mustBe "7"
+      document.getElementById("formerNameDate.year").attr("value") mustBe "1998"
     }
   }
 }

@@ -25,8 +25,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
-import views.html.{annual_costs_inclusive, frs_your_flat_rate}
-
+import views.html._
 import java.time.LocalDate
 import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,7 +34,8 @@ import scala.concurrent.Future
 class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture {
 
   val view = app.injector.instanceOf[frs_your_flat_rate]
-  val annualView = app.injector.instanceOf[annual_costs_inclusive]
+  val annualCostsInclusiveView = app.injector.instanceOf[annual_costs_inclusive]
+  val annualCostsLimitedView = app.injector.instanceOf[annual_costs_limited]
 
   val jsonBusinessTypes = Json.parse(
     s"""
@@ -67,7 +67,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       mockTimeService,
       mockSicAndComplianceService,
       view,
-      annualView
+      annualCostsInclusiveView,
+      annualCostsLimitedView
     )
 
     mockAuthenticated()
@@ -185,7 +186,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> "true"
+        "value" -> "true"
       )
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
@@ -203,7 +204,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate))
 
       private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "annualCostsLimitedRadio" -> "false"
+        "value" -> "false"
       )
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>

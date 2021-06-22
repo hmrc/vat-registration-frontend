@@ -20,7 +20,7 @@ import forms.genericForms.YesOrNoFormFactory
 import org.jsoup.Jsoup
 import views.html.frs_your_flat_rate
 
-class FrsYourFlatRatePageSpec extends VatRegViewSpec {
+class FrsYourFlatRateViewSpec extends VatRegViewSpec {
 
   val testPercentFormat = "9.5"
   val form = YesOrNoFormFactory.form()("frs.registerForWithSector")
@@ -29,7 +29,7 @@ class FrsYourFlatRatePageSpec extends VatRegViewSpec {
 
     val heading = s"The business’s VAT flat rate is $testPercentFormat%"
     val h2 = "Do you want the business to join the Flat Rate Scheme?"
-    val para1 = s"Businesses in their first year of VAT registration can take 1% off their flat rate."
+    val para1 = "Businesses in their first year of VAT registration can take 1% off their flat rate."
     val label = "Select yes if you expect the business to regularly claim VAT refunds from HMRC"
     val continue = "Save and continue"
     val yes = "Yes"

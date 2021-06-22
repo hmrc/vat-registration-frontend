@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.html.no_uk_bank_account
 
-class NoUKBankAccountPageSpec extends VatRegViewSpec with FeatureSwitching {
+class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val view: no_uk_bank_account = app.injector.instanceOf[no_uk_bank_account]
   implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)

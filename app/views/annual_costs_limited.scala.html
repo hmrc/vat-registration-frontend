@@ -17,43 +17,47 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
+@import views.html.components._
+@import views.html.layouts.layout
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
-@(annualCostsInclusiveForm: Form[Boolean], estimateVatTurnover: Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        bullets: bullets,
+        formWithCSRF: FormWithCSRF,
+        button: button,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary,
+)
 
-@main_template(title = title(annualCostsInclusiveForm, messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)))) {
+@(annualCostsLimitedForm: Form[Boolean], estimateVatTurnover: Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-    @errorSummary(
-        form = annualCostsInclusiveForm
-    )
+@layout(pageTitle = Some(title(annualCostsLimitedForm, messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)))), backLink = true) {
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover))</h1>
+    @errorSummary(annualCostsLimitedForm.errors)
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
-        <div class="form-group">
-        @vatInputRadioGroup(
-            field = annualCostsInclusiveForm("annualCostsLimitedRadio"),
-            Seq(
-                "true" -> messages("app.common.yes"),
-                "false" -> messages("app.common.no")
+    @formWithCSRF(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
+        @inputRadio(
+            form = annualCostsLimitedForm,
+            legend = messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
+            legendAsHeading = true,
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("app.common.yes")),
+                    value = Some("true"),
+                    checked = annualCostsLimitedForm("value").value.contains("true")
+                ),
+                RadioItem(
+                    content = Text(messages("app.common.no")),
+                    value = Some("false"),
+                    checked = annualCostsLimitedForm("value").value.contains("false")
+                )
             ),
-            '_labelAfter -> true,
-            '_labelClass -> "block-label",
-            '_legend -> messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
-            '_legendClass -> "visually-hidden"
+            inline = true
         )
-        </div>
 
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
-
+        @button("app.common.continue")
     }
 }

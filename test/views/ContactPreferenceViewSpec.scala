@@ -20,7 +20,7 @@ import forms.ContactPreferenceForm
 import org.jsoup.Jsoup
 import views.html.contact_preference
 
-class ContactPreferencePageSpec extends VatRegViewSpec {
+class ContactPreferenceViewSpec extends VatRegViewSpec {
 
   val title = "How should we contact the business about VAT?"
   val heading = "How should we contact the business about VAT?"

@@ -681,9 +681,9 @@ validation.frs.startDate.range.below.vatStartDate         = Enter a date that is
 
 ## FRS SUMMARY SECTION
 pages.summary.directorDetails.joinFrs                               = Do you want to join the Flat Rate Scheme?
-pages.summary.directorDetails.costsInclusive                        = Will the company spend more than £250 over the next 3 months on ’relevant goods’?
+pages.summary.directorDetails.costsInclusive                        = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
 pages.summary.directorDetails.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
-pages.summary.directorDetails.costsLimited                          = Will the company spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.summary.directorDetails.costsLimited                          = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
 pages.summary.directorDetails.businessSector                        = Business type for the Flat Rate Scheme
 pages.summary.directorDetails.flatRate                              = Do you want to use the {0}% flat rate?
 pages.summary.directorDetails.startDateFRS                          = When do you want to join the Flat Rate Scheme?

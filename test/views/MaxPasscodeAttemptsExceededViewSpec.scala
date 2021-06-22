@@ -19,7 +19,7 @@ package views
 import org.jsoup.Jsoup
 import views.html.pages.error.maxPasscodeAttemptsExceeded
 
-class MaxPasscodeAttemptsExceededPageSpec extends VatRegViewSpec {
+class MaxPasscodeAttemptsExceededViewSpec extends VatRegViewSpec {
 
   val view = app.injector.instanceOf[maxPasscodeAttemptsExceeded]
   implicit val doc = Jsoup.parse(view().body)

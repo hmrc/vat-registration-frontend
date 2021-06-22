@@ -21,7 +21,7 @@ import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
 import views.html.capture_telephone_number
 
-class CaptureTelephoneNumberPageSpec extends VatRegViewSpec with FeatureSwitching {
+class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val title = "What is your telephone number?"
   val heading = "What is your telephone number?"

@@ -16,36 +16,35 @@
 
 package views
 
-import forms.IntermediarySupplyForm
+import forms.BusinessActivityDescriptionForm
 import org.jsoup.Jsoup
-import views.html.labour.intermediary_supply
+import views.html.business_activity_description
 
-class IntermediarySupplyPageSpec extends VatRegViewSpec {
+class BusinessActivityDescriptionViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[intermediary_supply]
-  implicit val doc = Jsoup.parse(view(IntermediarySupplyForm.form).body)
+  val view = app.injector.instanceOf[business_activity_description]
+  val form = BusinessActivityDescriptionForm.form
+  implicit val doc = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
-    val title = "Are you an intermediary arranging the supply of workers? - Register for VAT - GOV.UK"
-    val heading = "Are you an intermediary arranging the supply of workers?"
-    val yes = "Yes"
-    val no = "No"
+    val heading = "What does the business do?"
+    val label = "Describe the type of goods or services the business sells."
     val continue = "Save and continue"
   }
 
-  "Intermediary Supply Page" should {
-    "have the correct page title" in new ViewSetup {
-      doc.title mustBe ExpectedContent.title
+  "The Business Activity Description page" must {
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
     }
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
-    "have yes/no radio options" in new ViewSetup {
-      doc.radio("true") mustBe Some(ExpectedContent.yes)
-      doc.radio("false") mustBe Some(ExpectedContent.no)
+    "have a textarea called description" in new ViewSetup {
+      doc.textArea("description") mustBe Some(ExpectedContent.label)
     }
     "have a primary action" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
+
 }
