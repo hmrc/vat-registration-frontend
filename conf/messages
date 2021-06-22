@@ -610,7 +610,7 @@ validation.frs.join.missing                     = Tell us if you want to registe
 
 ## Do you spend less than £1000 Page
 pages.frs.costsInclusive.heading                          = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
-pages.frs.costsInclusive.p1                               = ’Relevant goods’ are moveable items or materials used exclusively to run a business. They include gas and electricity.
+pages.frs.costsInclusive.p1                               = ’Relevant goods’ are movable items or materials used exclusively to run a business. They include gas and electricity.
 pages.frs.costsInclusive.list.heading                     = What you cannot include
 pages.frs.costsInclusive.list.head                        = Do not include:
 pages.frs.costsInclusive.list.bullet1                     = travel and accommodation expenses

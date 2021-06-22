@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object OverBusinessGoodsForm extends RequiredBooleanForm {
-  val RADIO_INCLUSIVE: String = "annualCostsInclusiveRadio"
+  val RADIO_INCLUSIVE: String = "value"
 
   override val errorMsg: String = "validation.frs.costsInclusive.missing"
 

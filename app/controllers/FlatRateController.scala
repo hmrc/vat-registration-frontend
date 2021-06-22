@@ -41,7 +41,8 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService,
-                                   frs_your_flat_rate: frs_your_flat_rate)
+                                   frs_your_flat_rate: frs_your_flat_rate,
+                                   annual_costs_inclusive: annual_costs_inclusive)
                                   (implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents)
@@ -70,7 +71,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
           val viewForm = flatRateScheme.overBusinessGoods.fold(overBusinessGoodsForm)(overBusinessGoodsForm.fill)
-          Ok(views.html.annual_costs_inclusive(viewForm))
+          Ok(annual_costs_inclusive(viewForm))
         }
   }
 
@@ -78,7 +79,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
     implicit request =>
       implicit profile =>
         overBusinessGoodsForm.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.annual_costs_inclusive(badForm))),
+          badForm => Future.successful(BadRequest(annual_costs_inclusive(badForm))),
           view => flatRateService.saveOverBusinessGoods(view) map { _ =>
             if (!view) {
               Redirect(controllers.routes.FlatRateController.registerForFrsPage())
