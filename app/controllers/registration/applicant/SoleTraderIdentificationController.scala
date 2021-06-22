@@ -25,6 +25,7 @@ import models.api.Individual
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -61,7 +62,16 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           (transactorDetails, optSoleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
           _ <- optSoleTrader.fold(Future.successful(ApplicantDetails()))(applicantDetailsService.saveApplicantDetails(_))
-        } yield Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
-    }
+          vatScheme <- vatRegistrationService.getVatScheme
+          isSoleTrader = vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+        } yield {
+          if (isSoleTrader) {
+            Redirect(applicantRoutes.FormerNameController.show())
+          }
+          else {
+            Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+          }
+        }
 
+    }
 }
