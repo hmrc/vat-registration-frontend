@@ -190,6 +190,13 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     UkCompany
   )
 
+  val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
+    validMandatoryRegistrationThirtyDays,
+    validTurnoverEstimates,
+    MTDfB,
+    Individual
+  )
+
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
@@ -201,6 +208,19 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+  )
+
+  val validSoleTraderVatScheme = VatScheme(
+    id = testRegId,
+    tradingDetails = Some(generateTradingDetails()),
+    businessContact = Some(validBusinessContactDetails),
+    applicantDetails = Some(completeApplicantDetails),
+    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
+    flatRateScheme = Some(validFlatRate),
+    bankAccount = Some(validBankAccount),
+    returns = Some(validReturns),
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(validSoleTraderEligibilitySubmissionData)
   )
 
   val validVatSchemeNoBank = VatScheme(

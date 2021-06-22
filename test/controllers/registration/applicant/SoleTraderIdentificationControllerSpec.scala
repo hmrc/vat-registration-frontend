@@ -16,10 +16,7 @@
 
 package controllers.registration.applicant
 
-import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
-import models.TransactorDetails
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -71,7 +68,19 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   }
 
   "retrieveSoleTraderDetails" must {
+    "redirect to the former name page if the user is a Sole Trader" in new Setup {
+      mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
+      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
+      mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+
+      val res = Controller.callback(testJourneyId)(FakeRequest())
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
+    }
+
     "redirect to the capture role page" in new Setup {
+      mockGetVatScheme(Future.successful(validVatScheme))
       mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
 

@@ -104,7 +104,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
     s"$sectionId.roleInTheBusiness",
-    vatApplicantDetails.roleInTheBusiness.map {
+    vatApplicantDetails.roleInTheBusiness.collect {
       case Director => "pages.roleInTheBusiness.radio1"
       case CompanySecretary => "pages.roleInTheBusiness.radio2"
     }.getOrElse(""),
@@ -398,7 +398,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),
       (dob, vatApplicantDetails.transactor.map(_.dateOfBirth).isDefined),
-      (roleInTheBusiness, true),
+      (roleInTheBusiness, !isSoleTrader),
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
       (homeAddress, vatApplicantDetails.homeAddress.exists(_.address.isDefined)),
