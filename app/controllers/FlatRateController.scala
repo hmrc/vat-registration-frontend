@@ -42,7 +42,8 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService,
                                    frs_your_flat_rate: frs_your_flat_rate,
-                                   annual_costs_inclusive: annual_costs_inclusive)
+                                   annual_costs_inclusive: annual_costs_inclusive,
+                                   annual_costs_limited: annual_costs_limited)
                                   (implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents)
@@ -96,8 +97,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         flatRateService.getFlatRate map { flatRateScheme =>
           val form = overBusinessGoodsPercentForm(flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get))
           val viewForm = flatRateScheme.overBusinessGoodsPercent.fold(form)(form.fill)
-
-          Ok(views.html.annual_costs_limited(viewForm, flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get)))
+          Ok(annual_costs_limited(viewForm, flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get)))
         }
   }
 
@@ -107,7 +107,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         flatRateService.getFlatRate flatMap { flatRateScheme =>
           val form = overBusinessGoodsPercentForm(flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get))
           form.bindFromRequest().fold(formErr => {
-            Future.successful(BadRequest(views.html.annual_costs_limited(formErr, flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get))))
+            Future.successful(BadRequest(annual_costs_limited(formErr, flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get))))
           },
             view => flatRateService.saveOverBusinessGoodsPercent(view) map { _ =>
               if (!view) {

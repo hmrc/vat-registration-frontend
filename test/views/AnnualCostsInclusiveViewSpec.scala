@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import views.html.annual_costs_inclusive
 
-class AnnualCostsInclusivePageSpec extends VatRegViewSpec {
+class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
 
   val view: annual_costs_inclusive = app.injector.instanceOf[annual_costs_inclusive]
 

@@ -37,7 +37,7 @@ object OverBusinessGoodsForm extends RequiredBooleanForm {
 }
 
 trait OverBusinessGoodsPercentForm extends RequiredBooleanForm {
-  val RADIO_INCLUSIVE: String = "annualCostsLimitedRadio"
+  val RADIO_INCLUSIVE: String = "value"
   val pct: Long
 
   override val errorMsg: String = "validation.frs.costsLimited.missing"

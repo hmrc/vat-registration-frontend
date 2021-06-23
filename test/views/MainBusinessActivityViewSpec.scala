@@ -27,7 +27,7 @@ import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import views.html.{main_business_activity => MainBusinessActivityPage}
 
-class MainBusinessActivityPageSpec extends VatRegSpec with I18nSupport {
+class MainBusinessActivityViewSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]

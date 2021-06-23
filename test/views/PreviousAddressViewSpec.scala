@@ -17,41 +17,40 @@
 package views
 
 import config.FrontendAppConfig
-import views.html.{former_name => FormerNamePage}
-import forms.FormerNameForm
-import models.view.FormerNameView
+import views.html.{previous_address => PreviousAddressPage}
+import forms.PreviousAddressForm
+import models.view.PreviousAddressView
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 
-class FormerNamePageSpec extends VatRegSpec with I18nSupport {
+class PreviousAddressViewSpec extends VatRegSpec with I18nSupport {
   implicit val request = FakeRequest()
   val injector : Injector = fakeApplication.injector
   implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
   implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
 
-  lazy val form = FormerNameForm.form
+  lazy val form = PreviousAddressForm.form
 
-  "Former Name Page" should {
+  "Previous Address Page" should {
     "display the page without pre populated data" in {
-      lazy val view = FormerNamePage(form)
+      lazy val view = PreviousAddressPage(form)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "formerNameRadio").size mustBe 2
+      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
       document.getElementsByAttributeValue("checked", "checked").size mustBe 0
-      document.getElementById("formerName").attr("value") mustBe ""
     }
 
     "display the page with form pre populated" in {
-      val validFormerName = FormerNameView(true, Some("Test Old Name"))
+      val validPreviousAddress = PreviousAddressView(true, None)
 
-      lazy val view = FormerNamePage(form.fill(validFormerName))
+      lazy val view = PreviousAddressPage(form.fill(validPreviousAddress))
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementById("formerNameRadio-true").attr("checked") mustBe "checked"
-      document.getElementById("formerName").attr("value") mustBe "Test Old Name"
+      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      document.getElementById("previousAddressQuestionRadio-true").attr("checked") mustBe "checked"
     }
   }
 }

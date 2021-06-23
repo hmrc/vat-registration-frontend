@@ -29,10 +29,7 @@
 
 @(continueApplicationForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(
-    pageTitle = Some(title(continueApplicationForm, messages("start-new-application.heading"))),
-    backLink = true
-) {
+@layout(pageTitle = Some(title(continueApplicationForm, messages("start-new-application.heading"))), backLink = true) {
 
     @errorSummary(continueApplicationForm.errors)
 
@@ -55,5 +52,4 @@
 
         @button("app.common.continue", showSaveProgressButton = false)
     }
-
 }

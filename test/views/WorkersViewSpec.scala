@@ -20,7 +20,7 @@ import forms.WorkersForm
 import org.jsoup.Jsoup
 import views.html.labour.workers
 
-class WorkersPageSpec extends VatRegViewSpec {
+class WorkersViewSpec extends VatRegViewSpec {
 
   lazy val view = app.injector.instanceOf[workers]
   implicit val doc = Jsoup.parse(view(WorkersForm.form).body)
