@@ -17,7 +17,9 @@
 package controllers.registration.sicandcompliance
 
 import fixtures.VatRegistrationFixture
-import models.IntermediarySupply
+import models.api.{Individual, UkCompany}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.SicAndComplianceServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -34,6 +36,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
+      mockVatRegistrationService,
       view
     )
 
@@ -72,8 +75,9 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       }
     }
 
-    "redirect with Yes selected" in new Setup {
+    "redirect to business trading name page with Yes selected" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
@@ -84,8 +88,9 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       }
     }
 
-    "redirect with No selected" in new Setup {
+    "redirect to business trading name page with No selected" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
@@ -93,6 +98,32 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
         response =>
           status(response) mustBe SEE_OTHER
           redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
+      }
+    }
+
+    "redirect to sole trader name page with Yes selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
+
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+        "value" -> "true"
+      )) {
+        response =>
+          status(response) mustBe SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe controllers.registration.applicant.routes.SoleTraderNameController.show().url
+      }
+    }
+
+    "redirect to sole trader name page with No selected" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
+
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+        "value" -> "false"
+      )) {
+        response =>
+          status(response) mustBe SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe controllers.registration.applicant.routes.SoleTraderNameController.show().url
       }
     }
   }

@@ -17,6 +17,7 @@
 package controllers.registration.applicant
 
 import fixtures.VatRegistrationFixture
+import models.api.{Individual, UkCompany}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -51,6 +52,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     "redirect to the STI journey url" in new Setup {
       mockGetVatScheme(Future.successful(validVatScheme))
       mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyUrl))
+      mockPartyType(Future.successful(Individual))
 
       val res = Controller.startJourney()(FakeRequest())
 
@@ -60,6 +62,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     "throw an exception if the call to STI fails" in new Setup {
       mockGetVatScheme(Future.successful(validVatScheme))
       mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.failed(new InternalServerException("")))
+      mockPartyType(Future.successful(UkCompany))
 
       intercept[InternalServerException] {
         await(Controller.startJourney()(FakeRequest()))
@@ -72,6 +75,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
       mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+      mockPartyType(Future.successful(Individual))
 
       val res = Controller.callback(testJourneyId)(FakeRequest())
 
@@ -83,6 +87,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       mockGetVatScheme(Future.successful(validVatScheme))
       mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+      mockPartyType(Future.successful(UkCompany))
 
       val res = Controller.callback(testJourneyId)(FakeRequest())
 

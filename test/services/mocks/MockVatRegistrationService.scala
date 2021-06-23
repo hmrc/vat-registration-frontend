@@ -17,7 +17,7 @@
 package services.mocks
 
 import models.CurrentProfile
-import models.api.VatScheme
+import models.api.{PartyType, VatScheme}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -58,4 +58,9 @@ trait MockVatRegistrationService extends MockitoSugar {
       ArgumentMatchers.eq(honestyDeclaration)
     )(any[HeaderCarrier])) thenReturn response
 
+  def mockPartyType(response: Future[PartyType]): OngoingStubbing[Future[PartyType]] =
+    when(vatRegistrationServiceMock.partyType(
+      any[CurrentProfile],
+      any[HeaderCarrier]
+    )) thenReturn response
 }

@@ -21,11 +21,10 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.ApplicantDetails
-import models.api.Individual
+import models.api.{Individual, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,14 +61,12 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           (transactorDetails, optSoleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
           _ <- optSoleTrader.fold(Future.successful(ApplicantDetails()))(applicantDetailsService.saveApplicantDetails(_))
-          vatScheme <- vatRegistrationService.getVatScheme
-          isSoleTrader = vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+          partyType <- vatRegistrationService.partyType
         } yield {
-          if (isSoleTrader) {
-            Redirect(applicantRoutes.FormerNameController.show())
-          }
-          else {
-            Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+          partyType match {
+            case Individual => Redirect(applicantRoutes.FormerNameController.show())
+            case UkCompany => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+            case _ => throw new IllegalStateException("PartyType not supported")
           }
         }
 

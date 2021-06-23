@@ -82,4 +82,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def storePartialVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] =
     vatRegConnector.upsertVatScheme(regId, partialVatScheme)
 
+  def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =
+    getVatScheme.map(_.eligibilitySubmissionData
+      .getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the back end for regId: ${profile.registrationId}"))
+      .partyType)
 }

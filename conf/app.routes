@@ -242,3 +242,8 @@ POST        /how-do-you-want-to-pay                                             
 ## PaynentFrequencyController
 GET         /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.show
 POST        /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.submit
+
+## SoleTraderNameController
+GET         /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.show
+POST        /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.submit
+

@@ -47,6 +47,12 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val isSoleTrader: Boolean = scheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
   val isLimitedCostTrader: Boolean = scheme.flatRateScheme.exists(_.limitedCostTrader.contains(true))
 
+  val tradingNameUrl: Call = if (isSoleTrader){
+    controllers.registration.applicant.routes.SoleTraderNameController.show()
+  } else {
+    controllers.registration.business.routes.TradingNameController.show()
+  }
+
   val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
     applicantRoutes.SoleTraderIdentificationController.startJourney()
   }
@@ -66,7 +72,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val tradingNameRow: SummaryRow = SummaryRow(
     s"$sectionId.tradingName",
     scheme.tradingDetails.flatMap(_.tradingNameView).flatMap(_.tradingName).getOrElse("app.common.no"),
-    Some(controllers.registration.business.routes.TradingNameController.show())
+    Some(tradingNameUrl)
   )
 
 

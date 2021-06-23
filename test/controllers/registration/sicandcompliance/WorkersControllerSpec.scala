@@ -17,6 +17,9 @@
 package controllers.registration.sicandcompliance
 
 import fixtures.VatRegistrationFixture
+import models.api.{Individual, UkCompany}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.SicAndComplianceServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -33,6 +36,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
+      mockVatRegistrationService,
       view
     )
 
@@ -69,14 +73,25 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
         result => status(result) mustBe BAD_REQUEST
       }
     }
-    "redirect to the trading name page" in new Setup {
+    "redirect to the business trading name page" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
-
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
           result redirectsTo controllers.registration.business.routes.TradingNameController.show().url
+      }
+    }
+
+    "redirect to the Sole Trader name page" in new Setup {
+      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+        "numberOfWorkers" -> "5"
+      )) {
+        result =>
+          result redirectsTo controllers.registration.applicant.routes.SoleTraderNameController.show().url
       }
     }
   }
