@@ -34,7 +34,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "bind successfully with data set to true" in {
       val data = Map(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> "Test Old Name"
       )
 
@@ -48,7 +48,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "bind successfully with data set to false" in {
       val data = Map(
-        "formerNameRadio" -> "false",
+        "value" -> "false",
         "formerName" -> ""
       )
 
@@ -62,17 +62,17 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "have the correct error if nothing is selected" in {
       val data = Map(
-        "formerNameRadio" -> "",
+        "value" -> "",
         "formerName" -> "Test Old Name"
       )
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("formerNameRadio" -> "validation.formerName.choice.missing")
+      boundForm shouldHaveErrors Seq("value" -> "validation.formerName.choice.missing")
     }
 
     "have the correct error if true is selected and no name is provided" in {
       val data = Map(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> ""
       )
       val boundForm = testForm.bind(data)
@@ -82,7 +82,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "have the correct error if true is selected and invalid name is provided" in {
       val data = Map(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> "wrong N@m€"
       )
       val boundForm = testForm.bind(data)
@@ -92,7 +92,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "have the correct error if true is selected and a too long name is provided" in {
       val data = Map(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> "tooooooooooooooooooo looooooooooonnnnnnng nnnnaaaaaaaaaaammeeeeeeeeeeee"
       )
       val boundForm = testForm.bind(data)
@@ -102,7 +102,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "Unbind successfully with true and valid name" in {
       val data = Map(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> "Test Old Name"
       )
 
@@ -111,7 +111,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "Unbind successfully with false and no name" in {
       val data = Map(
-        "formerNameRadio" -> "false"
+        "value" -> "false"
       )
 
       testForm.fill(testDataNoName).data shouldBe data

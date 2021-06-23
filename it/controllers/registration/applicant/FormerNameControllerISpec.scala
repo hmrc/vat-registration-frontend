@@ -117,7 +117,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/changed-name").post(Map("formerNameRadio" -> Seq("false")))
+      val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
@@ -144,7 +144,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/changed-name").post(Map(
-        "formerNameRadio" -> Seq("true"),
+        "value" -> Seq("true"),
         "formerName" -> Seq("New Name Cosmo")
       ))
 
@@ -167,7 +167,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/changed-name").post(Map(
-        "formerNameRadio" -> Seq("true"),
+        "value" -> Seq("true"),
         "formerName" -> Seq("New Name Cosmo")
       ))
       whenReady(response) { res =>

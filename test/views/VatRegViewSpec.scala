@@ -80,6 +80,8 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def submitButton: Option[String] = doc.select(button).headOption.map(_.text)
 
+      def hintText: Option[String] = doc.select(hint).headOption.map(_.text)
+
       def details: Option[Details] = {
         doc.select(detailsSummary).headOption map { summary =>
           Details(summary.text, doc.select(detailsContent).first.text)

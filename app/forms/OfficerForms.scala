@@ -29,7 +29,7 @@ import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object FormerNameForm {
   val FORMER_NAME_MAX_LENGTH = 70
-  val RADIO_YES_NO: String = "formerNameRadio"
+  val RADIO_YES_NO: String = "value"
   val INPUT_FORMER_NAME: String = "formerName"
 
   val FORMER_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]*$""".r
@@ -59,7 +59,7 @@ object FormerNameDateForm {
 
   val maxDate: LocalDate = LocalDate.now().plusDays(1)
 
-  def form(dob: LocalDate) = Form(
+  def form(dob: LocalDate): Form[FormerNameDateView] = Form(
     mapping(
       "formerNameDate" -> mapping(
         "day" -> text,

@@ -16,42 +16,60 @@
 
 package views
 
-import config.FrontendAppConfig
-import views.html.{former_name => FormerNamePage}
 import forms.FormerNameForm
 import models.view.FormerNameView
 import org.jsoup.Jsoup
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.inject.Injector
-import play.api.test.FakeRequest
-import testHelpers.VatRegSpec
+import org.jsoup.nodes.Document
+import play.api.data.Form
+import views.html.former_name
 
-class FormerNameViewSpec extends VatRegSpec with I18nSupport {
-  implicit val request = FakeRequest()
-  val injector : Injector = fakeApplication.injector
-  implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+class FormerNameViewSpec extends VatRegViewSpec {
 
-  lazy val form = FormerNameForm.form
+  lazy val view: former_name = app.injector.instanceOf[former_name]
+  lazy val form: Form[FormerNameView] = FormerNameForm.form
+  implicit val doc: Document = Jsoup.parse(view(form).body)
+
+  val heading = "Have you ever changed your name?"
+  val title = s"$heading - Register for VAT - GOV.UK"
+  val para = "This could be if you got married or changed your name by deed poll."
+  val label = "Enter your former name"
+  val hint = "First name and last name"
+  val yes = "Yes"
+  val no = "No"
+  val continue = "Save and continue"
 
   "Former Name Page" should {
-    "display the page without pre populated data" in {
-      lazy val view = FormerNamePage(form)
-      lazy val document = Jsoup.parse(view.body)
-
-      document.getElementsByAttributeValue("name", "formerNameRadio").size mustBe 2
-      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
-      document.getElementById("formerName").attr("value") mustBe ""
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
     }
 
-    "display the page with form pre populated" in {
-      val validFormerName = FormerNameView(true, Some("Test Old Name"))
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
+    }
 
-      lazy val view = FormerNamePage(form.fill(validFormerName))
-      lazy val document = Jsoup.parse(view.body)
+    "have the correct page title" in new ViewSetup {
+      doc.title mustBe title
+    }
 
-      document.getElementById("formerNameRadio-true").attr("checked") mustBe "checked"
-      document.getElementById("formerName").attr("value") mustBe "Test Old Name"
+    "have correct text" in new ViewSetup {
+      doc.para(1) mustBe Some(para)
+    }
+
+    "have a textbox label" in new ViewSetup {
+      doc.textBox("formerName") mustBe Some(label)
+    }
+
+    "have a hint" in new ViewSetup {
+      doc.hintText mustBe Some(hint)
+    }
+
+    "have yes/no radio options" in new ViewSetup {
+      doc.radio("true") mustBe Some(yes)
+      doc.radio("false") mustBe Some(no)
+    }
+
+    "have a save and continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(continue)
     }
   }
 }

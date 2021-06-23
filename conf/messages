@@ -550,16 +550,12 @@ validation.formerName.choice.missing                     = Select yes if you hav
 validation.formerName.missing                            = Enter your former name
 validation.formerName.invalid                            = Enter a valid former name
 validation.formerName.maxlen                             = Enter a former name that has 70 characters or less
-validation.formerName.match.cc                           = Enter a former name that’s different from your current name
 
 ## Former Name Date
 pages.formerNameDate.heading                             = When did you change your name?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 validation.formerNameDate.invalid                        = Enter a valid date
 validation.formerNameDate.missing                        = Tell us when the name changed
-validation.formerNameDate.day.invalid                    = Day
-validation.formerNameDate.month.invalid                  = Month
-validation.formerNameDate.year.invalid                   = Year
 validation.formerNameDate.range.below                    = Enter a date which is on or after your date of birth
 validation.formerNameDate.range.above                    = Enter a date that is in the past
 
