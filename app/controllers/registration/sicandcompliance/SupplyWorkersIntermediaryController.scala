@@ -20,17 +20,19 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.IntermediarySupplyForm
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionProfile, SicAndComplianceService}
+import models.api.{Individual, UkCompany}
+import play.api.mvc.{Action, AnyContent}
+import services.{SessionProfile, SicAndComplianceService, VatRegistrationService}
 import views.html.labour.intermediary_supply
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClientConnector,
                                                     val keystoreConnector: KeystoreConnector,
                                                     val sicAndCompService: SicAndComplianceService,
+                                                    val vatRegistrationService: VatRegistrationService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -52,8 +54,12 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
           badForm =>
             Future.successful(BadRequest(view(badForm))),
           data =>
-            sicAndCompService.updateSicAndCompliance(data) map { _ =>
-              Redirect(controllers.registration.business.routes.TradingNameController.show())
+            sicAndCompService.updateSicAndCompliance(data) flatMap { _ =>
+              vatRegistrationService.partyType.map {
+                case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
+                case UkCompany => Redirect(controllers.registration.business.routes.TradingNameController.show())
+                case _ => throw new IllegalStateException("PartyType not supported")
+              }
             }
         )
   }

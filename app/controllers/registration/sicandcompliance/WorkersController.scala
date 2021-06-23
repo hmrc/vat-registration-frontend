@@ -20,17 +20,18 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.WorkersForm
-import javax.inject.Inject
-import models.SicAndCompliance
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionProfile, SicAndComplianceService}
+import models.api.{Individual, UkCompany}
+import play.api.mvc.{Action, AnyContent}
+import services.{SessionProfile, SicAndComplianceService, VatRegistrationService}
 import views.html.labour.workers
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WorkersController @Inject()(val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val sicAndCompService: SicAndComplianceService,
+                                  val vatRegistrationService: VatRegistrationService,
                                   view: workers)
                                  (implicit val appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
@@ -50,10 +51,13 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         WorkersForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
-          data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
-            Redirect(controllers.registration.business.routes.TradingNameController.show())
+          data => sicAndCompService.updateSicAndCompliance(data) flatMap { _ =>
+            vatRegistrationService.partyType.map {
+              case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
+              case UkCompany => Redirect(controllers.registration.business.routes.TradingNameController.show())
+              case _ => throw new IllegalStateException("PartyType not supported")
+            }
           }
         )
   }
-
 }

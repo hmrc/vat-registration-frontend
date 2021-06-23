@@ -757,7 +757,7 @@ aas.paymentFrequency.quarterly                           = Quarterly
 aas.paymentFrequency.monthly                             = Monthly
 aas.paymentFrequency.notProvided                         = Tell us how often you want to make payments
 
-# AAS HOW WOULD YOU LIKE TO PAY
+## AAS HOW WOULD YOU LIKE TO PAY
 aas.paymentMethod.heading                                = How do you want to pay VAT?
 aas.paymentMethod.text                                   = HMRC will contact you if you change your payment method or bank details during your accounting year. This is to protect your VAT account from fraud.
 aas.paymentMethod.bacs                                   = BACS (internet banking) or Direct Debit
@@ -765,3 +765,14 @@ aas.paymentMethod.giro                                   = Bank Giro Transfer
 aas.paymentMethod.chaps                                  = Clearing House Automated Payment System (CHAPS)
 aas.paymentMethod.standingOrder                          = Standing order
 aas.paymentMethod.error.required                         = Tell us how you want to pay VAT bills
+
+## SOLE TRADER - TRADING NAME
+soleTrader.tradingName.heading                           = What is your trading name?
+soleTrader.tradingName.label                             = Enter the trading name
+soleTrader.tradingName.summary                           = What is a trading name?
+soleTrader.tradingName.para1                             = A sole trader can trade using a name that’s different from their registered name. This is also known as a ‘business name’.
+soleTrader.tradingName.para2                             = Some sole traders choose a different trading name to help with branding or getting a domain name for their website.
+soleTrader.tradingName.hint                              = You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’.
+validation.trading-name.invalid                          = Enter a valid trading name
+validation.trading-name.maxlen                           = Enter a trading name using 160 characters or less
+validation.trading-name.missing                          = Enter a trading name

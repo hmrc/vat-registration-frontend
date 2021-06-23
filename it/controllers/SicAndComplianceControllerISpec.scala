@@ -16,12 +16,13 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import fixtures.SicAndComplianceFixture
 import helpers.RequestsFinder
 import itutil.ControllerISpec
 import models.SicAndCompliance.{s4lKey => sicAndCompKey}
 import models._
-import models.api.SicCode
+import models.api.{Individual, SicCode, UkCompany, VatScheme}
 import models.test.SicStub
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -107,6 +108,12 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
+      .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+        )
+      )
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode)))))
       .s4lContainer.clearedByKey
       .audit.writesAudit()
@@ -129,6 +136,38 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
+      .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+        )
+      )
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .icl.fetchResults(List(sicCode1, sicCode2))
+
+    insertIntoDb(sessionId, iclSicCodeMapping)
+
+    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    whenReady(fetchResultsResponse) { res =>
+      res.status mustBe SEE_OTHER
+    }
+  }
+
+  "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER for SoleTrader" in new Setup {
+    val sicCode1 = SicCode("23456", "This is a fake description", "")
+    val sicCode2 = SicCode("12345", "This is another code", "")
+
+    given()
+      .user.isAuthorised
+      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
+      .vatScheme.contains(
+      VatScheme(id = currentProfile.registrationId,
+        status = VatRegStatus.draft,
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+      )
+    )
       .audit.writesAudit()
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1, sicCode2))
@@ -148,6 +187,12 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
       .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(BusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
+      .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+        )
+      )
       .audit.writesAudit()
       .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1))
@@ -187,6 +232,12 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
+      .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+        )
+      )
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
       .s4lContainer[SicAndCompliance].clearedByKey
       .audit.writesAudit()
@@ -198,6 +249,43 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+      val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
+
+      (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
+      (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
+      (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
+      (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
+    }
+  }
+
+  "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete for SoleTrader" in new Setup {
+
+    val incompleteModelWithoutSicCode = fullModel.copy(
+      mainBusinessActivity = None,
+      supplyWorkers = None,
+      workers = None,
+      intermediarySupply = None
+    )
+    given()
+      .user.isAuthorised
+      .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
+      .vatScheme.contains(
+      VatScheme(id = currentProfile.registrationId,
+        status = VatRegStatus.draft,
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+      )
+    )
+      .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
+      .s4lContainer[SicAndCompliance].clearedByKey
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+
+    insertIntoDb(sessionId, sicCodeMapping)
+
+    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
+    whenReady(response) { res =>
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
       val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
       (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription

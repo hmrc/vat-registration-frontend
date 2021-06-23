@@ -20,9 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import forms.MainBusinessActivityForm
-import javax.inject.{Inject, Singleton}
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.SicCode
+import models.api.{Individual, SicCode, UkCompany}
 import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Result}
@@ -30,6 +29,7 @@ import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -38,7 +38,8 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
                                            val iclService: ICLService,
-                                           val aboutToConfirmSicPage: about_to_confirm_sic
+                                           val aboutToConfirmSicPage: about_to_confirm_sic,
+                                           val vatRegistrationService: VatRegistrationService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
@@ -70,11 +71,16 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             )(selected => for {
               _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
               _ <- frsService.resetFRSForSAC(selected)
+              partyType <- vatRegistrationService.partyType
             } yield {
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
                 Redirect(routes.SicAndComplianceController.showComplianceIntro())
               } else {
-                Redirect(controllers.registration.business.routes.TradingNameController.show())
+                partyType match {
+                  case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
+                  case UkCompany => Redirect(controllers.registration.business.routes.TradingNameController.show())
+                  case _ => throw new IllegalStateException("PartyType not supported")
+                }
               }
             })
           )
@@ -128,6 +134,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
           iclCodes <- iclService.getICLSICCodes()
           _ <- keystoreConnector.cache(SIC_CODES_KEY, iclCodes)
           _ <- sicAndCompService.submitSicCodes(iclCodes)
+          partyType <- vatRegistrationService.partyType
         } yield {
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
@@ -135,7 +142,11 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
               controllers.routes.SicAndComplianceController.showComplianceIntro()
             case List(onlyOneCode) =>
-              controllers.registration.business.routes.TradingNameController.show()
+              partyType match {
+                case Individual => controllers.registration.applicant.routes.SoleTraderNameController.show()
+                case UkCompany => controllers.registration.business.routes.TradingNameController.show()
+                case _ => throw new IllegalStateException("PartyType not supported")
+              }
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
           })
