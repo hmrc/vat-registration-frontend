@@ -16,45 +16,54 @@
 
 package views
 
-import java.time.LocalDate
-
 import config.FrontendAppConfig
 import forms.FormerNameDateForm
 import models.view.FormerNameDateView
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
-import views.html.{former_name_date => FormerNameDatePage}
+import views.html.former_name_date
 
-class FormerNameDateViewSpec extends VatRegSpec with I18nSupport {
-  implicit val request = FakeRequest()
-  val injector: Injector = fakeApplication.injector
-  implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+import java.time.LocalDate
 
-  lazy val form = FormerNameDateForm.form(testApplicantDob)
+class FormerNameDateViewSpec extends VatRegViewSpec {
 
-  "Former Name Date Page" should {
-    "display the page without pre populated data" in {
-      lazy val view = FormerNameDatePage(form, "Test Old Name")
-      lazy val document = Jsoup.parse(view.body)
+  lazy val view: former_name_date = app.injector.instanceOf[former_name_date]
+  val testApplicantDob: LocalDate = LocalDate.of(2020, 1, 1)
+  val testName = "testName"
+  lazy val form: Form[FormerNameDateView] = FormerNameDateForm.form(testApplicantDob)
+  implicit val doc: Document = Jsoup.parse(view(form, testName).body)
 
-      document.getElementById("formerNameDate.day").attr("value") mustBe ""
-      document.getElementById("formerNameDate.month").attr("value") mustBe ""
-      document.getElementById("formerNameDate.year").attr("value") mustBe ""
+  val heading = "When did you change your name?"
+  val title = s"$heading - Register for VAT - GOV.UK"
+  val para = "This could be if you got married or changed your name by deed poll."
+  val hint = "For example, 31 3 2006."
+  val continue = "Save and continue"
+
+  "Former Name Page" should {
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
     }
 
-    "display the page with form pre populated" in {
-      val validFormerNameDate = FormerNameDateView(LocalDate.of(1998, 7, 12))
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
+    }
 
-      lazy val view = FormerNameDatePage(form.fill(validFormerNameDate), "Test Old Name")
-      lazy val document = Jsoup.parse(view.body)
+    "have the correct page title" in new ViewSetup {
+      doc.title mustBe title
+    }
 
-      document.getElementById("formerNameDate.day").attr("value") mustBe "12"
-      document.getElementById("formerNameDate.month").attr("value") mustBe "7"
-      document.getElementById("formerNameDate.year").attr("value") mustBe "1998"
+    "have a hint" in new ViewSetup {
+      doc.hintText mustBe Some(hint)
+    }
+
+    "have a save and continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(continue)
     }
   }
 }

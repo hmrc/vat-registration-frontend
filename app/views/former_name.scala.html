@@ -14,77 +14,58 @@
  * limitations under the License.
  *@
 
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-@import models.view.FormerNameView
-
 @import config.FrontendAppConfig
 @import controllers.registration.applicant.{routes => applicantRoutes}
+@import models.view.FormerNameView
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.components._
+@import views.html.layouts._
 
-@import views.html.helpers.saveProgressButton
+@this(
+        layout: layout,
+        h1: h1,
+        errorSummary: errorSummary,
+        yesNoRadio: yesNoRadio,
+        p: p,
+        formWithCSRF: FormWithCSRF,
+        inputText: inputText,
+        button: button
+)
+
 @(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@fieldSetClasses = @{
-    if(formerNameForm.hasErrors && (formerNameForm.errors.exists(_.args.nonEmpty))) "form-field--error" else ""
-}
+@layout(pageTitle = Some(title(formerNameForm, messages("pages.formerName.heading")))) {
 
-@main_template(title = title(formerNameForm, messages("pages.formerName.heading"))) {
+    @errorSummary(formerNameForm.errors)
 
-    @errorSummary(
-        formerNameForm,
-        Seq("formerName")
-    )
+    @h1("pages.formerName.heading")
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.formerName.heading")</h1>
-    <p>@messages("pages.formerName.married")</p>
+    @p{ @messages("pages.formerName.married") }
 
-    @govHelpers.form(action = applicantRoutes.FormerNameController.submit()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = formerNameForm("formerNameRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.formerName.heading"),
-                '_legendClass -> "visually-hidden"
-            )
+    @formWithCSRF(action = applicantRoutes.FormerNameController.submit()) {
+        @yesNoRadio(
+            form = formerNameForm,
+            headingKey = messages("pages.formerName.heading"),
+            isPageHeading = false,
+            inline = false,
+            classes = "govuk-visually-hidden",
+            hiddenYesContent = Some(hiddenYesContent)
+        )
 
-            <div class="panel panel-border-narrow @fieldSetClasses" id="former_name_panel">
-
-                @formerNameForm.errors.find(_.args.contains("formerName")).map { error =>
-                    @govHelpers.errorInline("formerName", Messages(error.message))
-                }
-
-                @vatInput(
-                    formerNameForm("formerName"),
-                    '_divClass -> "form-group",
-                    '_inputClass -> "form-control",
-                    '_label -> Messages("pages.formerName.fullName.label"),
-                    '_inputHint -> Messages("pages.formerName.fullName.hint"),
-                    '_labelClass -> "form-label"
-                )
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
+        @button(messages("app.common.continue"))
     }
 }
 
-<script type="text/javascript">
-        $(document).ready($(function () {
-            FormerNamePage.init()
-        }));
-</script>
+@hiddenYesContent = {
+    @inputText(
+        formerNameForm,
+        id = "formerName",
+        name = "formerName",
+        label = messages("pages.formerName.fullName.label"),
+        isLabelHidden = false,
+        isPageHeading = false,
+        hint = Some(Html(messages("pages.formerName.fullName.hint")))
+    )
+}

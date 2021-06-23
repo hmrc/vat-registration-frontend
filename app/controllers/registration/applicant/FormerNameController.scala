@@ -24,6 +24,7 @@ import forms.FormerNameForm
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.former_name
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,10 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class FormerNameController @Inject()(val authConnector: AuthConnector,
                                      val keystoreConnector: KeystoreConnector,
-                                     val applicantDetailsService: ApplicantDetailsService)
-                                    (implicit appConfig: FrontendAppConfig,
-                                     val executionContext: ExecutionContext,
-                                     baseControllerComponents: BaseControllerComponents)
+                                     val applicantDetailsService: ApplicantDetailsService,
+                                     formerNamePage: former_name
+                                    )(implicit appConfig: FrontendAppConfig,
+                                      val executionContext: ExecutionContext,
+                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -44,14 +46,14 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.formerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
         } yield
-          Ok(views.html.former_name(filledForm))
+          Ok(formerNamePage(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         FormerNameForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.former_name(badForm))),
+          badForm => Future.successful(BadRequest(formerNamePage(badForm))),
           data => applicantDetailsService.saveApplicantDetails(data) map { _ =>
             if (data.yesNo) {
               Redirect(applicantRoutes.FormerNameDateController.show())

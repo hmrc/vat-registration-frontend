@@ -21,20 +21,22 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameDateForm
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.former_name_date
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                                          val keystoreConnector: KeystoreConnector,
-                                         val applicantDetailsService: ApplicantDetailsService)
-                                        (implicit appConfig: FrontendAppConfig,
-                                         val executionContext: ExecutionContext,
-                                         baseControllerComponents: BaseControllerComponents)
+                                         val applicantDetailsService: ApplicantDetailsService,
+                                         formerNameDatePage: former_name_date
+                                        )(implicit appConfig: FrontendAppConfig,
+                                          val executionContext: ExecutionContext,
+                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -45,7 +47,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
           dob = applicant.transactor.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
           formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
           filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
-        } yield Ok(views.html.former_name_date(filledForm, formerName))
+        } yield Ok(formerNameDatePage(filledForm, formerName))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -58,7 +60,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
               badForm => for {
                 applicant <- applicantDetailsService.getApplicantDetails
                 formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
-              } yield BadRequest(views.html.former_name_date(badForm, formerName)),
+              } yield BadRequest(formerNameDatePage(badForm, formerName)),
               data => applicantDetailsService.saveApplicantDetails(data) map {
                 _ => Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
               }

@@ -22,6 +22,7 @@ import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
+import views.html.former_name
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -35,7 +36,8 @@ class FormerNameControllerSpec extends ControllerSpec
     val controller: FormerNameController = new FormerNameController(
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
+      app.injector.instanceOf[former_name]
     )
 
     mockAuthenticated()
@@ -74,7 +76,7 @@ class FormerNameControllerSpec extends ControllerSpec
     "Redirect to FormerNameDate with valid data no former name" in new Setup {
       mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "false")) { result =>
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
         redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
       }
     }
@@ -83,7 +85,7 @@ class FormerNameControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(FormerNameView(true, Some("some name")))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
-        "formerNameRadio" -> "true",
+        "value" -> "true",
         "formerName" -> "some name"
       )) { result =>
         redirectLocation(result) mustBe Some(applicantRoutes.FormerNameDateController.show().url)

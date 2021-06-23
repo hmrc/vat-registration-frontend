@@ -23,6 +23,7 @@ import models.view.{FormerNameDateView, FormerNameView}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
+import views.html.former_name_date
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -35,7 +36,8 @@ class FormerNameDateControllerSpec extends ControllerSpec
     val controller: FormerNameDateController = new FormerNameDateController(
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
+      app.injector.instanceOf[former_name_date]
     )
 
     mockAuthenticated()
