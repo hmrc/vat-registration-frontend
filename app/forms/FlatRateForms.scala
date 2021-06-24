@@ -106,7 +106,7 @@ object EstimateTotalSalesForm {
 object ChooseBusinessTypeForm {
   implicit val errorCode: ErrorCode = "frs.chooseBusinessType"
 
-  def form(validBusinessTypes: Seq[String]) = Form(single("businessType" -> optional(text)
+  def form(validBusinessTypes: Seq[String]) = Form(single("value" -> optional(text)
     .transform[String](_.getOrElse(""), Some(_))
     .verifying(matches(validBusinessTypes.toList, "validation.frs.chooseBusinessType.missing"))
   ))

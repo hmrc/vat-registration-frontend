@@ -37,26 +37,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   val annualCostsInclusiveView = app.injector.instanceOf[annual_costs_inclusive]
   val annualCostsLimitedView = app.injector.instanceOf[annual_costs_limited]
 
-  val jsonBusinessTypes = Json.parse(
-    s"""
-       |[
-       |  {
-       |    "groupLabel": "Test 1",
-       |    "categories": [
-       |      {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
-       |      {"id": "019", "businessType": "Test BusinessType", "currentFRSPercent": 3},
-       |      {"id": "038", "businessType": "Pubs", "currentFRSPercent": "5"}
-       |    ]
-       |  },
-       |  {
-       |    "groupLabel": "Test 2",
-       |    "categories": [
-       |      {"id": "039", "businessType": "Cafes", "currentFRSPercent": "5"}
-       |    ]
-       |  }
-       |]
-        """.stripMargin).as[Seq[JsObject]]
-
   trait Setup {
     val controller: FlatRateController = new FlatRateController(
       mockFlatRateService,
@@ -231,7 +211,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       callAuthorised(controller.confirmSectorFrsPage()) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.businessType(true).url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
       }
     }
   }
@@ -585,107 +565,5 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
   }
 
-  s"GET ${routes.FlatRateController.businessType()}" should {
-    val validFlatRate = FlatRateScheme(
-      Some(true),
-      Some(true),
-      Some(30000L),
-      None,
-      None,
-      None,
-      Some("019"),
-      None
-    )
 
-    "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
-        .thenReturn(Future.successful(validFlatRate.copy(categoryOfBusiness = None)))
-
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance(
-          mainBusinessActivity = Some(MainBusinessActivityView("12345678"))))
-        )
-
-      callAuthorised(controller.businessType()) { result =>
-        status(result) mustBe 200
-        val document = Jsoup.parse(contentAsString(result))
-        document.getElementsByAttributeValue("checked", "checked").size mustBe 0
-      }
-    }
-
-    "return a 200 and render the page with radio pre selected" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance(
-          mainBusinessActivity = Some(MainBusinessActivityView("12345678"))))
-        )
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-
-      callAuthorised(controller.businessType()) { result =>
-        status(result) mustBe 200
-        val document = Jsoup.parse(contentAsString(result))
-        val id = s"businessType-${validFlatRate.categoryOfBusiness.get}"
-        val elements = document.getElementsByAttributeValue("checked", "checked")
-        elements.size mustBe 1
-        elements.first.attr("id") mustBe id
-        document.getElementsByAttributeValue("for", id).first.text mustBe "Test BusinessType"
-      }
-    }
-  }
-
-  s"POST ${routes.FlatRateController.submitBusinessType()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitBusinessType())
-
-    "return 400 with Empty data" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-
-      submitAuthorised(controller.submitBusinessType(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 400 with incorrect data" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "businessType" -> "000"
-      )
-
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-
-      submitAuthorised(controller.submitBusinessType(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 303" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "businessType" -> "019"
-      )
-
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
-
-      val validFlatRate = FlatRateScheme(
-        Some(true),
-        Some(true),
-        Some(30000L),
-        None,
-        None,
-        None,
-        Some("019"),
-        None
-      )
-
-      when(mockFlatRateService.saveBusinessType(any())(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      submitAuthorised(controller.submitBusinessType(), request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.yourFlatRatePage().url)
-      }
-    }
-  }
 }

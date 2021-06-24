@@ -17,8 +17,8 @@
 package fixtures
 
 import java.time.LocalDate
-
 import models.{FlatRateScheme, Start}
+import play.api.libs.json.{JsObject, Json}
 
 trait FlatRateFixtures {
 
@@ -116,4 +116,37 @@ trait FlatRateFixtures {
     Some(true),
     Some(true)
   )
+
+  val businessCategory = "019"
+
+  val testFlatRate = FlatRateScheme(
+    joinFrs = Some(true),
+    overBusinessGoods = Some(true),
+    estimateTotalSales = Some(30000L),
+    overBusinessGoodsPercent = None,
+    useThisRate = None,
+    frsStart = None,
+    categoryOfBusiness = Some(businessCategory),
+    percent = None
+  )
+
+  val jsonBusinessTypes = Json.parse(
+    s"""
+       |[
+       |  {
+       |    "groupLabel": "Test 1",
+       |    "categories": [
+       |      {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
+       |      {"id": "019", "businessType": "Test BusinessType", "currentFRSPercent": 3},
+       |      {"id": "038", "businessType": "Pubs", "currentFRSPercent": "5"}
+       |    ]
+       |  },
+       |  {
+       |    "groupLabel": "Test 2",
+       |    "categories": [
+       |      {"id": "039", "businessType": "Cafes", "currentFRSPercent": "5"}
+       |    ]
+       |  }
+       |]
+        """.stripMargin).as[Seq[JsObject]]
 }

@@ -205,8 +205,8 @@ GET         /company-spend-goods                                                
 POST        /company-spend-goods                                                               controllers.FlatRateController.submitAnnualCostsLimited
 
 ## Choose business type
-GET         /choose-business-type                                                              controllers.FlatRateController.businessType(sendGA: Boolean ?= false)
-POST        /choose-business-type                                                              controllers.FlatRateController.submitBusinessType
+GET         /choose-business-type                                                              controllers.registration.flatratescheme.ChooseBusinessTypeController.show
+POST        /choose-business-type                                                              controllers.registration.flatratescheme.ChooseBusinessTypeController.submit
 
 ## FRS Confirm business sector page
 GET         /confirm-business-type                                                             controllers.FlatRateController.confirmSectorFrsPage
