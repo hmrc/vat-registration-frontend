@@ -21,7 +21,6 @@ import connectors.{ConfigConnector, KeystoreConnector}
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import play.api.data.Form
-import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -30,7 +29,6 @@ import views.html._
 import java.text.DecimalFormat
 import java.util.MissingResourceException
 import javax.inject.{Inject, Singleton}
-import scala.collection.immutable.ListMap
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -57,15 +55,6 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
   def overBusinessGoodsPercentForm(formPct: Long = 0): Form[Boolean] = new OverBusinessGoodsPercentForm {
     override val pct: Long = formPct
   }.form
-
-  lazy val groupingBusinessTypesValues: ListMap[String, Seq[(String, String)]] = ListMap(configConnector.businessTypes.map { jsObj =>
-    (
-      (jsObj \ "groupLabel").as[String],
-      (jsObj \ "categories").as[Seq[JsObject]].map(js => ((js \ "id").as[String], (js \ "businessType").as[String]))
-    )
-  }.sortBy(_._1): _*)
-
-  lazy val businessTypeIds: Seq[String] = groupingBusinessTypesValues.values.toSeq.flatMap(radioValues => radioValues map Function.tupled((id, _) => id))
 
   def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -127,7 +116,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           val (_, sector, pct) = view
           Ok(views.html.frs_confirm_business_sector((sector, pct)))
         } recover {
-          case _: MissingResourceException => Redirect(controllers.routes.FlatRateController.businessType(true))
+          case _: MissingResourceException => Redirect(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show())
         }
   }
 
@@ -251,31 +240,6 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           badForm => Future.successful(BadRequest(views.html.estimate_total_sales(badForm))),
           data => flatRateService.saveEstimateTotalSales(data) map {
             _ => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
-          }
-        )
-  }
-
-  def businessType(sendGA: Boolean = false): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          flatRateScheme <- flatRateService.getFlatRate
-          sicAndCompliance <- sicAndComplianceService.getSicAndCompliance
-          form = ChooseBusinessTypeForm.form(businessTypeIds)
-          formFilled = flatRateScheme.categoryOfBusiness.fold(form)(v => form.fill(v))
-          sendGAText = if (sendGA) sicAndCompliance.mainBusinessActivity.map(_.id) else None
-        } yield {
-          Ok(views.html.chooseBusinessType(formFilled, groupingBusinessTypesValues, sendGAText))
-        }
-  }
-
-  def submitBusinessType: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        ChooseBusinessTypeForm.form(businessTypeIds).bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.chooseBusinessType(badForm, groupingBusinessTypesValues))),
-          data => flatRateService.saveBusinessType(data) map {
-            _ => Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
           }
         )
   }

@@ -337,7 +337,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val businessSectorRow: SummaryRow = SummaryRow(
     s"$sectionId.businessSector",
     businessType.getOrElse(""),
-    Some(controllers.routes.FlatRateController.businessType())
+    Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show())
   )
 
   val providingWorkersRow: SummaryRow = yesNoRow(

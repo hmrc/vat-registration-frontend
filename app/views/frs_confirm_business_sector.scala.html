@@ -42,7 +42,7 @@
   <p id="businessTypeValue">@Html(sectorPct._1)</p>
 
   <div class="form-group">
-    <p><a id="changeBusinessType" href="@controllers.routes.FlatRateController.businessType()">@messages("pages.frs.confirmBusinessSector.changeLink")</a></p>
+    <p><a id="changeBusinessType" href="@controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show()">@messages("pages.frs.confirmBusinessSector.changeLink")</a></p>
   </div>
 
   @govHelpers.form(action = controllers.routes.FlatRateController.submitConfirmSectorFrs()) {
