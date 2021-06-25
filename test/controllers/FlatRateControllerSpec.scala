@@ -17,15 +17,14 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.{FlatRateScheme, MainBusinessActivityView, TurnoverEstimates, _}
-import org.jsoup.Jsoup
+import models.{FlatRateScheme, TurnoverEstimates, _}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
 import views.html._
+
 import java.time.LocalDate
 import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -100,7 +99,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.estimateTotalSales().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales().url)
       }
     }
 
@@ -462,108 +461,4 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
   }
-
-  s"GET ${routes.FlatRateController.estimateTotalSales()}" should {
-    val validFlatRate = FlatRateScheme(
-      Some(true),
-      Some(true),
-      None,
-      None,
-      None,
-      None,
-      None,
-      None
-    )
-
-    "return a 200 and render the page without pre population" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      callAuthorised(controller.estimateTotalSales()) { result =>
-        status(result) mustBe 200
-        val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("totalSalesEstimate").attr("value") mustBe ""
-      }
-    }
-
-    "return a 200 and render the page with pre populated data" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
-        .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(30000L))))
-
-      callAuthorised(controller.estimateTotalSales()) { result =>
-        status(result) mustBe 200
-        val document = Jsoup.parse(contentAsString(result))
-        document.getElementById("totalSalesEstimate").attr("value") mustBe "30000"
-      }
-    }
-  }
-
-  s"POST ${routes.FlatRateController.submitEstimateTotalSales()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitEstimateTotalSales())
-
-    "return 400 with Empty data" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 400 with value set to 0" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "totalSalesEstimate" -> "0"
-      )
-
-      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 400 with value set to 100000000000" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "totalSalesEstimate" -> "100000000000"
-      )
-
-      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 400 with decimal numbers" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "totalSalesEstimate" -> "30000.36"
-      )
-
-      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
-        status(result) mustBe 400
-      }
-    }
-
-    "return 303" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "totalSalesEstimate" -> "30000"
-      )
-
-      val validFlatRate = FlatRateScheme(
-        Some(true),
-        Some(true),
-        Some(30000L),
-        None,
-        None,
-        None,
-        None,
-        None
-      )
-
-      when(mockFlatRateService.saveEstimateTotalSales(any())(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      submitAuthorised(controller.submitEstimateTotalSales(), request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/company-spend-goods")
-      }
-    }
-  }
-
-
 }

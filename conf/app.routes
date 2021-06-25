@@ -189,8 +189,8 @@ GET         /business-spend-relevant-goods                                      
 POST        /business-spend-relevant-goods                                                     controllers.FlatRateController.submitAnnualInclusiveCosts
 
 ## Estimate Total Sales
-GET         /estimate-total-sales                                                              controllers.FlatRateController.estimateTotalSales
-POST        /estimate-total-sales                                                              controllers.FlatRateController.submitEstimateTotalSales
+GET         /estimate-total-sales                                                              controllers.registration.flatratescheme.EstimateTotalSalesController.estimateTotalSales
+POST        /estimate-total-sales                                                              controllers.registration.flatratescheme.EstimateTotalSalesController.submitEstimateTotalSales
 
 ## Do you want to register for FRS page
 GET         /business-flat-rate                                                                controllers.FlatRateController.registerForFrsPage

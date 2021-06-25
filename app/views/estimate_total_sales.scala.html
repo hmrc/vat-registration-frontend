@@ -14,52 +14,45 @@
  * limitations under the License.
  *@
 
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import views.html.main_template
-@import views.html.helpers.templates._
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        inputCurrency: inputCurrency,
+        errorSummary: errorSummary
+)
+
 @(estimateTotalSalesForm: Form[Long])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(estimateTotalSalesForm, messages("pages.frs.estimateTotalSales.heading"))) {
+@layout(pageTitle = Some(title(estimateTotalSalesForm, messages("pages.frs.estimateTotalSales.heading")))) {
 
-    @errorSummary(
-        estimateTotalSalesForm,
-        Seq("turnoverEstimate")
-    )
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.estimateTotalSales.heading")</h1>
+    @errorSummary(estimateTotalSalesForm.errors)
 
-    <div class="form-group">
-        <p>@messages("pages.frs.estimateTotalSales.info")</p>
-    </div>
+    @h1("pages.frs.estimateTotalSales.heading")
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitEstimateTotalSales) {
-        <div class="form-group">
-            <fieldset>
-                <legend class="bold">@messages("pages.frs.estimateTotalSales.legend")</legend>
-                @estimateTotalSalesForm.errors.find(_.args.contains("totalSalesEstimate")).map { error =>
-                    @govHelpers.errorInline("totalSalesEstimate", messages(error.message))
-                }
+    @p{ @messages("pages.frs.estimateTotalSales.info") }
 
-                @vatInput(
-                    estimateTotalSalesForm("totalSalesEstimate"),
-                    '_inputClass -> "form-control",
-                    '_label -> messages("app.common.gbp.symbol"),
-                    '_labelClass -> "",
-                    '_type -> "tel"
-                )
-            </fieldset>
-        </div>
+    @formWithCSRF(action = controllers.registration.flatratescheme.routes.EstimateTotalSalesController.submitEstimateTotalSales) {
+        @inputCurrency(
+            form = estimateTotalSalesForm,
+            id = "totalSalesEstimate",
+            name = "totalSalesEstimate",
+            classes = Some("govuk-input--width-10"),
+            isPageHeading = false,
+            label = Some(messages("pages.frs.estimateTotalSales.legend")),
+            labelClasses = Some("govuk-!-font-weight-bold")
+        )
 
-        <div class="form-group">
-            <button class="button" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
+        @button("app.common.continue")
     }
 }
 

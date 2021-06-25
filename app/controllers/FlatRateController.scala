@@ -74,7 +74,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             if (!view) {
               Redirect(controllers.routes.FlatRateController.registerForFrsPage())
             } else {
-              Redirect(controllers.routes.FlatRateController.estimateTotalSales())
+              Redirect(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales())
             }
           }
         )
@@ -220,26 +220,6 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             Redirect(controllers.routes.FlatRateController.frsStartDatePage())
           } else {
             Redirect(controllers.routes.SummaryController.show())
-          }
-        )
-  }
-
-  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        flatRateService.getFlatRate map { flatRateScheme =>
-          val form = flatRateScheme.estimateTotalSales.fold(EstimateTotalSalesForm.form)(v => EstimateTotalSalesForm.form.fill(v))
-          Ok(views.html.estimate_total_sales(form))
-        }
-  }
-
-  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        EstimateTotalSalesForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.estimate_total_sales(badForm))),
-          data => flatRateService.saveEstimateTotalSales(data) map {
-            _ => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
           }
         )
   }
