@@ -21,41 +21,44 @@
 
 @import config.FrontendAppConfig
 @import views.html.helpers.saveProgressButton
-@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
-@main_template(title = title(hasBankAccountForm, messages("pages.company.bank.account.heading"))) {
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    p: components.p,
+    button: components.button,
+    formWithCSRF: FormWithCSRF,
+    errorSummary: components.errorSummary,
+    panelIndent: components.panelIndent,
+    yesNoRadio: components.yesNoRadio
+)
 
-    @errorSummary(
-        form = hasBankAccountForm
-    )
+@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.company.bank.account.heading")</h1>
-    <p>@messages("pages.company.bank.account.para")</p>
+@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.company.bank.account.heading"))), backLink = true) {
+
+    @errorSummary(errors = hasBankAccountForm.errors)
 
 
-    @form(action = controllers.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = hasBankAccountForm("companyBankAccountRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.company.bank.account.heading"),
-                '_legendClass -> "visually-hidden"
+    @h1("pages.company.bank.account.heading")
+    @p { @messages("pages.company.bank.account.para") }
+
+
+    @formWithCSRF(action = controllers.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
+
+        @yesNoRadio(
+            form = hasBankAccountForm,
+            headingKey = messages("pages.company.bank.account.heading"),
+            isPageHeading = false,
+            inline = false,
+            classes = "govuk-visually-hidden",
+            fieldName = "value"
             )
-        </div>
 
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+    @button(messages("app.common.continue"))
 
-            @saveProgressButton()
-        </div>
     }
 }

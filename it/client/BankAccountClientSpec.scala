@@ -101,8 +101,8 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe false
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO").attributes.hasKey("checked") mustBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-no").attributes.hasKey("checked") mustBe false
     }
 
     "return a 200 and render the page with the 'yes' radio pre-popped from save4later" in new Setup {
@@ -115,8 +115,8 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe true
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO").attributes.hasKey("checked") mustBe true
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-no").attributes.hasKey("checked") mustBe false
     }
 
     "return a 200 and render the page with the 'yes' radio pre-popped from VAT Backend" in new Setup {
@@ -130,8 +130,8 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       response.status mustBe 200
 
       val document: Document = Jsoup.parse(response.body)
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-true").attributes.hasKey("checked") mustBe true
-      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-false").attributes.hasKey("checked") mustBe false
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO").attributes.hasKey("checked") mustBe true
+      document.getElementById(s"$HAS_COMPANY_BANK_ACCOUNT_RADIO-no").attributes.hasKey("checked") mustBe false
     }
   }
 

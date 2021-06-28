@@ -27,7 +27,7 @@ import scala.util.matching.Regex
 object HasCompanyBankAccountForm extends RequiredBooleanForm {
 
   override val errorMsg = "validation.company.bank.account.missing"
-  val HAS_COMPANY_BANK_ACCOUNT_RADIO: String = "companyBankAccountRadio"
+  val HAS_COMPANY_BANK_ACCOUNT_RADIO: String = "value"
 
   val form = Form(
     single(HAS_COMPANY_BANK_ACCOUNT_RADIO -> requiredBoolean)
