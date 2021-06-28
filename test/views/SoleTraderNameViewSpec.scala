@@ -40,6 +40,7 @@ class SoleTraderNameViewSpec extends VatRegViewSpec {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
+
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }

@@ -88,8 +88,8 @@ GET         /choose-standard-industry-classification-codes                      
 POST        /choose-standard-industry-classification-codes                                     controllers.SicAndComplianceController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-company                                                    controllers.SicAndComplianceController.showComplianceIntro
-POST        /tell-us-more-about-the-company                                                    controllers.SicAndComplianceController.submitComplianceIntro
+GET         /tell-us-more-about-the-company                                                    controllers.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-company                                                    controllers.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
 GET         /save-sic-codes                                                                    controllers.SicAndComplianceController.saveIclCodes
