@@ -209,8 +209,8 @@ GET         /choose-business-type                                               
 POST        /choose-business-type                                                              controllers.registration.flatratescheme.ChooseBusinessTypeController.submit
 
 ## FRS Confirm business sector page
-GET         /confirm-business-type                                                             controllers.FlatRateController.confirmSectorFrsPage
-POST        /confirm-business-type                                                             controllers.FlatRateController.submitConfirmSectorFrs
+GET         /confirm-business-type                                                             controllers.registration.flatratescheme.ConfirmBusinessTypeController.show
+POST        /confirm-business-type                                                             controllers.registration.flatratescheme.ConfirmBusinessTypeController.submit
 
 ## When do you want to join the Flat Rate Scheme?
 GET         /flat-rate-date                                                                    controllers.FlatRateController.frsStartDatePage

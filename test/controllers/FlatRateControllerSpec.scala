@@ -170,7 +170,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.confirmSectorFrsPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show().url)
       }
     }
 
@@ -189,48 +189,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage().url)
-      }
-    }
-  }
-
-  s"GET ${routes.FlatRateController.confirmSectorFrsPage()}" should {
-
-    "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
-
-      callAuthorised(controller.confirmSectorFrsPage()) { result =>
-        status(result) mustBe 200
-      }
-    }
-
-    "redirect to choose business type page if there's no match of the business type against main business activity" in new Setup {
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.failed(new MissingResourceException(s"Missing Business Type for id: testId", "ConfigConnector", "id")))
-
-      callAuthorised(controller.confirmSectorFrsPage()) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
-      }
-    }
-  }
-
-  s"POST ${routes.FlatRateController.submitConfirmSectorFrs()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitConfirmSectorFrs())
-
-    "works with Empty data" in new Setup {
-
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
-
-      when(mockFlatRateService.saveConfirmSector(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      submitAuthorised(controller.submitConfirmSectorFrs, request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/confirm-flat-rate")
       }
     }
   }
@@ -261,8 +219,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
   }
-
-  val testsector = ("id", "test", BigDecimal(10))
 
   s"POST ${routes.FlatRateController.submitFrsStartDate()}" should {
     val fakeRequest = FakeRequest(routes.FlatRateController.submitFrsStartDate())
