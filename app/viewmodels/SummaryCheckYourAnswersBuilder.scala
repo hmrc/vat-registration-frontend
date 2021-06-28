@@ -313,7 +313,7 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val estimateTotalSalesRow: SummaryRow = SummaryRow(
     s"$sectionId.estimateTotalSales",
     s"£${scheme.flatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).getOrElse("0")}",
-    Some(controllers.routes.FlatRateController.estimateTotalSales())
+    Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales())
   )
 
   val costsLimitedRow: SummaryRow = SummaryRow(
