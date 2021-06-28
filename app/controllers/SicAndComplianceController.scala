@@ -74,7 +74,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
               partyType <- vatRegistrationService.partyType
             } yield {
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
-                Redirect(routes.SicAndComplianceController.showComplianceIntro())
+                Redirect(routes.ComplianceIntroductionController.show())
               } else {
                 partyType match {
                   case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
@@ -85,15 +85,6 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             })
           )
         }
-  }
-
-  def showComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-      Future.successful(Ok(compliance_introduction()))
-  }
-
-  def submitComplianceIntro: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ => Future.successful(Redirect(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show()))
   }
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -140,7 +131,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             case codes if codes.size > 1 =>
               routes.SicAndComplianceController.showMainBusinessActivity()
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
-              controllers.routes.SicAndComplianceController.showComplianceIntro()
+              controllers.routes.ComplianceIntroductionController.show()
             case List(onlyOneCode) =>
               partyType match {
                 case Individual => controllers.registration.applicant.routes.SoleTraderNameController.show()

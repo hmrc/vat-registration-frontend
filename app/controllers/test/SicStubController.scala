@@ -62,7 +62,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
           } yield {
             if (sicCodesList.size == 1) {
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                Redirect(controllers.routes.SicAndComplianceController.showComplianceIntro())
+                Redirect(controllers.routes.ComplianceIntroductionController.show())
               } else {
                 partyType match {
                   case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())

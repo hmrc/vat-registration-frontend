@@ -90,7 +90,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
-        _ redirectsTo controllers.routes.SicAndComplianceController.showComplianceIntro().url
+        _ redirectsTo controllers.routes.ComplianceIntroductionController.show().url
       }
     }
   }

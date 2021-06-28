@@ -156,25 +156,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.SicAndComplianceController.showComplianceIntro().url
+            res redirectsTo controllers.routes.ComplianceIntroductionController.show().url
         }
-      }
-    }
-  }
-
-  s"GET ${routes.SicAndComplianceController.showComplianceIntro()}" should {
-    "display the introduction page to a set of compliance questions" in new Setup {
-      callAuthorised(controller.showComplianceIntro) {
-        status(_) mustBe OK
-      }
-    }
-  }
-
-  s"POST ${routes.SicAndComplianceController.submitComplianceIntro()}" should {
-    "redirect the user to the SIC code selection page" in new Setup {
-      callAuthorised(controller.submitComplianceIntro) {
-        result =>
-          result redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersController.show().url
       }
     }
   }
