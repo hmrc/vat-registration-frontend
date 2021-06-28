@@ -102,29 +102,10 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
               if (!view) {
                 Redirect(controllers.routes.FlatRateController.registerForFrsPage())
               } else {
-                Redirect(controllers.routes.FlatRateController.confirmSectorFrsPage())
+                Redirect(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show())
               }
             }
           )
-        }
-  }
-
-  def confirmSectorFrsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        flatRateService.retrieveSectorPercent map { view =>
-          val (_, sector, pct) = view
-          Ok(views.html.frs_confirm_business_sector((sector, pct)))
-        } recover {
-          case _: MissingResourceException => Redirect(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show())
-        }
-  }
-
-  def submitConfirmSectorFrs: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        flatRateService.saveConfirmSector map { _ =>
-          Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
         }
   }
 

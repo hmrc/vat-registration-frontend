@@ -149,4 +149,6 @@ trait FlatRateFixtures {
        |  }
        |]
         """.stripMargin).as[Seq[JsObject]]
+
+  val testsector = ("id", "test", BigDecimal(10))
 }

@@ -106,6 +106,9 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
         doc.select(s"textarea[id=$id]").headOption.map { elem =>
           doc.select(s"label[for=${elem.id}]").first.text
         }
+
+      def warningText(n: Int): Option[String] =
+        doc.select(s"$warning:nth-of-type($n)").headOption.map(_.text)
     }
   }
 }
