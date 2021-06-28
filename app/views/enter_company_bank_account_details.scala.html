@@ -24,117 +24,56 @@
 
 @import config.FrontendAppConfig
 @import views.html.helpers.saveProgressButton
+
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    p: components.p,
+    button: components.button,
+    formWithCSRF: FormWithCSRF,
+    errorSummary: components.errorSummary,
+    panelIndent: components.panelIndent,
+    inputText: components.inputText
+)
+
 @(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(bankDetailsForm, messages("pages.bankDetails.heading"))) {
+@layout(pageTitle = Some(title(bankDetailsForm, messages("pages.bankDetails.heading"))), backLink = true) {
 
-    @errorSummary(
-        form = bankDetailsForm,
-        errorFieldSuffix = Some(Map("sortCode" -> "part1"))
-    )
+    @errorSummary(errors = bankDetailsForm.errors)
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.bankDetails.heading")</h1>
-    <p>@Html(messages("pages.bankDetails.p1"))</p>
+    @h1("pages.bankDetails.heading")
+    @p { @messages("pages.bankDetails.p1") }
 
-    <div class="panel panel-border-wide" id="details-content-0" aria-hidden="true">
-        <p>@Html(messages("pages.bankDetails.info"))</p>
-    </div>
+    @panelIndent {
+        @messages("pages.bankDetails.info")
+    }
 
-    @govHelpers.form(action = controllers.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
-        <div class="form-group">
-            <div class="form-bank-details">
+    @formWithCSRF(action = controllers.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
+        @inputText(form = bankDetailsForm,
+                     id = "accountName",
+                     name = "accountName",
+                     label = messages("pages.bankDetails.accountName.label"),
+                     classes = Some("govuk-input--width-10"),
+                     isPageHeading = false,
+                     hint = Some(Html(messages(""))))
 
-                @vatInput(
-                    bankDetailsForm("accountName"),
-                    '_divClass -> "form-group",
-                    '_inputClass -> "form-control",
-                    '_labelClass -> "cascading",
-                    '_maxlength -> 150,
-                    '_label -> messages("pages.bankDetails.accountName.label"),
-                    '_autoComplete -> "off"
-                )
+        @inputText(form = bankDetailsForm,
+                     id = "accountNumber",
+                     name = "accountNumber",
+                     label = messages("pages.bankDetails.accountNumber.label"),
+                     classes = Some("govuk-input--width-10"),
+                     isPageHeading = false,
+                     hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
 
-                @defining(bankDetailsForm("sortCodeAndAccountGroup").errors.nonEmpty) { invalidCombinationErrorFound =>
-                    <div id="sortCodeAndAccountGroup" class="@if(invalidCombinationErrorFound) { form-group-error }">
+        @inputText(form = bankDetailsForm,
+                     id = "sortCode",
+                     name = "sortCode",
+                     label = messages("pages.bankDetails.sortCode.label"),
+                     classes = Some("govuk-input--width-5"),
+                     isPageHeading = false,
+                     hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
 
-                        @bankDetailsForm("sortCodeAndAccountGroup").errors.map { error =>
-                            <span class="error-notification" role="tooltip">
-                                @messages(error.message, error.args: _*)
-                            </span>
-                        }
-
-                        @vatInput(
-                            bankDetailsForm("accountNumber"),
-                            '_divClass -> "form-group",
-                            '_inputClass -> "form-control",
-                            '_labelClass -> "cascading",
-                            '_maxlength -> 8,
-                            '_label -> messages("pages.bankDetails.accountNumber.label"),
-                            '_autoComplete -> "off",
-                            '_inputHint -> messages("pages.bankDetails.accountNumber.hint")
-                        )
-
-                        @defining(bankDetailsForm("sortCode").errors.nonEmpty) { sortCodeErrorPresent =>
-                            <div class="form-date @if(sortCodeErrorPresent) { form-group-error }">
-
-                                <fieldset id="sort-code">
-                                    <legend class="visually-hidden">@messages("validation.companyBankAccount.sortCode.missing")</legend>
-                                    <label>
-                                        @bankDetailsForm("sortCode").errors.map { error =>
-                                            <span class="error-notification" role="tooltip">
-                                                @messages(error.message, error.args: _*)
-                                            </span>
-                                        }
-                                        @messages("pages.bankDetails.sortCode.label")
-                                        @*this is to make the clickable link in the error summary jump to the relevant place in the page*@
-                                        <input type="text" name="sortCode" value="" id="sortCode" class="hidden" />
-                                    </label>
-                                    <p class="form-hint">@messages("pages.bankDetails.sortCode.hint")</p>
-
-                                    @vatInput(
-                                        bankDetailsForm("sortCode.part1"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "first two digits",
-                                        '_maxlength -> 2,
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_autoComplete -> "off"
-                                    )
-
-                                    @vatInput(
-                                        bankDetailsForm("sortCode.part2"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "second two digits",
-                                        '_maxlength -> 2,
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_autoComplete -> "off"
-                                    )
-
-                                    @vatInput(
-                                        bankDetailsForm("sortCode.part3"),
-                                        '_divClass -> "form-group",
-                                        '_inputClass -> "form-control",
-                                        '_label -> "last two digits",
-                                        '_maxlength -> 2,
-                                        '_labelTextClass -> "hidden",
-                                        '_error_id -> "sort-code-legend",
-                                        '_autoComplete -> "off"
-                                    )
-                                </fieldset>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="form-group">
-            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
+        @button("app.common.continue")
     }
 }

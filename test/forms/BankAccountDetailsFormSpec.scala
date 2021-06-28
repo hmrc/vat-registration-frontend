@@ -28,19 +28,16 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
     val validAccountName = "testAccountName"
     val validAccountNumber = "12345678"
-    val (part1, part2, part3) = ("12", "34", "56")
-    val validSortCode = s"$part1-$part2-$part3"
+    val validSortCode = "123456"
 
     "successfully bind data to the form with no errors and allow the return of a valid BankAccountDetails case class" in {
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> part1,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> validSortCode
       )
 
-      val validBankAccountDetails = BankAccountDetails(validAccountName, validSortCode, validAccountNumber)
+      val validBankAccountDetails = BankAccountDetails(validAccountName, validAccountNumber, validSortCode)
 
       val boundForm = form.bind(formData)
       boundForm.get mustBe validBankAccountDetails
@@ -50,9 +47,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val formData = Map(
         ACCOUNT_NAME -> "",
         ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> part1,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -68,9 +63,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val formData = Map(
         ACCOUNT_NAME -> invalidAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> part1,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -84,9 +77,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         ACCOUNT_NUMBER -> "",
-        "sortCode.part1" -> part1,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -102,9 +93,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         ACCOUNT_NUMBER -> invalidAccountNumber,
-        "sortCode.part1" -> part1,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -114,31 +103,13 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe accountNumberInvalidKey
     }
 
-    "return a FormError when binding an empty sic code part to the form" in {
-      val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
-        ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> "",
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
-      )
-
-      val boundForm = form.bind(formData)
-
-      boundForm.errors.size mustBe 1
-      boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe sortCodeEmptyKey
-    }
-
-    "return a FormError when binding an invalid sic code part to the form" in {
-      val invalidSicCodePart = "ABCD"
+    "return a FormError when binding an invalid sort code part to the form" in {
+      val invalidSortCode = "ABCDEF"
 
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> invalidSicCodePart,
-        "sortCode.part2" -> part2,
-        "sortCode.part3" -> part3
+        SORT_CODE -> invalidSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -148,13 +119,13 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe sortCodeInvalidKey
     }
 
-    "return a single FormError when all three sort code parts are missing" in {
+    "return a single FormError when the sort code is missing" in {
+      val emptySortCode = ""
+
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        "sortCode.part1" -> "",
-        "sortCode.part2" -> "",
-        "sortCode.part3" -> ""
+        SORT_CODE -> emptySortCode
       )
 
       val boundForm = form.bind(formData)

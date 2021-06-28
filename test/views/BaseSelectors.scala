@@ -28,6 +28,7 @@ trait BaseSelectors {
   val a: Int => String = i => s"main a:nth-of-type($i)"
   val indent = "div.govuk-inset-text"
   val hint = "div.govuk-hint"
+  val multipleHints: Int => String = i => s"div.govuk-hint:nth-of-type($i)"
   val bullet: Int => String = i => s"main ul.govuk-list.govuk-list--bullet li:nth-of-type($i)"
   val label = "main label.govuk-label"
   val nthLabel: Int => String = i => s"form > div > div:nth-child($i) > label"

@@ -52,6 +52,7 @@ object EnterBankAccountDetailsForm {
 
   private val accountNameRegex = """^[A-Za-z0-9\-',/& ]{1,150}$""".r
   private val accountNumberRegex = """[0-9]{8}""".r
+  private val sortCodeRegex = """[0-9]{6}""".r
 
   val form = Form(
     mapping(
@@ -59,10 +60,13 @@ object EnterBankAccountDetailsForm {
         mandatory(accountNameEmptyKey),
         matchesRegex(accountNameRegex, accountNameInvalidKey)
       )),
-      SORT_CODE -> sortCodeMapping("part1", "part2", "part3"),
       ACCOUNT_NUMBER -> text.verifying(StopOnFirstFail(
         mandatory(accountNumberEmptyKey),
         matchesRegex(accountNumberRegex, accountNumberInvalidKey)
+      )),
+      SORT_CODE -> text.verifying(StopOnFirstFail(
+        mandatory(sortCodeEmptyKey),
+        matchesRegex(sortCodeRegex, sortCodeInvalidKey)
       ))
     )(BankAccountDetails.apply)(BankAccountDetails.unapply)
   )
@@ -70,24 +74,4 @@ object EnterBankAccountDetailsForm {
   val formWithInvalidAccountReputation: Form[BankAccountDetails] =
     form.withError(invalidAccountReputationKey, invalidAccountReputationMessage)
 
-  // SortCode mapping, to take three items off the page into a single string
-  def sortCodeMapping(a: String, b: String, c: String): Mapping[String] = {
-    type SortCode = (String, String, String)
-
-    val sortCodeRegex: Regex = """^([0-9]{2})-([0-9]{2})-([0-9]{2})$""".r
-
-    val toString = (sortCode: SortCode) => {
-      val (part1, part2, part3) = sortCode
-      s"${part1.trim}-${part2.trim}-${part3.trim}"
-    }
-
-    val fromString = (s: String) => s.split("-").toList match {
-      case (part1 :: part2 :: part3 :: Nil) => (part1, part2, part3)
-    }
-
-    tuple(a -> text, b -> text, c -> text)
-      .verifying(mandatoryTuple3(sortCodeEmptyKey))
-      .transform(toString, fromString)
-      .verifying(matchesRegex(sortCodeRegex, sortCodeInvalidKey))
-  }
 }
