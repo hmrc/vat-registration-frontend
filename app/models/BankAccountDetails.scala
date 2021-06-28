@@ -25,8 +25,8 @@ case class BankAccount(isProvided: Boolean,
                        reason: Option[NoUKBankAccount])
 
 case class BankAccountDetails(name: String,
-                              sortCode: String,
-                              number: String)
+                              number: String,
+                              sortCode: String)
 
 object BankAccountDetails {
   implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {

@@ -70,6 +70,8 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def hasErrorSummary: Boolean = errorSummary.isDefined
 
+      def hintWithMultiple(n: Int): Option[String] = doc.select(multipleHints(n)).headOption.map(_.text)
+
       def paras: List[String] = doc.select("main p").toList.map(_.text)
 
       def para(n: Int): Option[String] = doc.select(p(n)).headOption.map(_.text)

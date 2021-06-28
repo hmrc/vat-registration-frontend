@@ -75,8 +75,8 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
         |  "isProvided":true,
         |  "details":{
         |    "name":"testName",
-        |    "sortCode":"testSortCode",
-        |    "number":"testNumber"
+        |    "number":"testNumber",
+        |    "sortCode":"testSortCode"
         |  }
         |}
         |""".stripMargin).as[JsObject]
@@ -220,7 +220,7 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
       val formBody: JsObject = Json.obj(
         ACCOUNT_NAME -> "test account name",
         ACCOUNT_NUMBER -> "12345678",
-        SORT_CODE -> Json.obj("part1" -> "12", "part2" -> "34", "part3" -> "56")
+        SORT_CODE -> "123456"
       )
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 

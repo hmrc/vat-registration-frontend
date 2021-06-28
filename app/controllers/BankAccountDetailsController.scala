@@ -23,6 +23,7 @@ import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile}
+import views.html.enter_company_bank_account_details
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
-                                             val keystoreConnector: KeystoreConnector)
+                                             val keystoreConnector: KeystoreConnector,
+                                             bankAccountPage: enter_company_bank_account_details)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents)
@@ -74,7 +76,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
             case Some(BankAccount(_, Some(details), None)) => enterBankAccountDetailsForm.fill(details)
             case _ => enterBankAccountDetailsForm
           }
-          Ok(views.html.enter_company_bank_account_details(form))
+          Ok(bankAccountPage(form))
         }
   }
 
@@ -82,13 +84,13 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
     implicit request =>
       implicit profile =>
         enterBankAccountDetailsForm.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(views.html.enter_company_bank_account_details(errors))),
+          errors => Future.successful(BadRequest(bankAccountPage(errors))),
           accountDetails => bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
             if (accountDetailsValid) {
               Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
             } else {
               val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
-              Ok(views.html.enter_company_bank_account_details(invalidDetails))
+              Ok(bankAccountPage(invalidDetails))
             }
           }
         )
