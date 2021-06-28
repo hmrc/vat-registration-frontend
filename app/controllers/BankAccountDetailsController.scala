@@ -23,7 +23,7 @@ import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile}
-import views.html.enter_company_bank_account_details
+import views.html.{enter_company_bank_account_details, has_company_bank_account}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val keystoreConnector: KeystoreConnector,
-                                             bankAccountPage: enter_company_bank_account_details)
+                                             bankAccountPage: enter_company_bank_account_details,
+                                             hasBankAccountPage: has_company_bank_account)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents)
@@ -49,7 +50,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
             case Some(BankAccount(hasBankAccount, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
             case None => hasCompanyBankAccountForm
           }
-          Ok(views.html.has_company_bank_account(form))
+          Ok(hasBankAccountPage(form))
         }
   }
 
@@ -57,7 +58,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
     implicit request =>
       implicit profile =>
         hasCompanyBankAccountForm.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(views.html.has_company_bank_account(errors))),
+          errors => Future.successful(BadRequest(hasBankAccountPage(errors))),
           hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
             if (hasBankAccount) {
               Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
