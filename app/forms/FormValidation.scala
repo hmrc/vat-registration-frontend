@@ -238,7 +238,6 @@ object FormValidation {
   }
 
   def isValidPhoneNumber(formName:String): Constraint[String] = Constraint { phone: String =>
-
     val isValidNumber:Option[Int] = if(phone.matches("^[A-Z0-9 )/(*#+-]+$")) Some(phone.length) else None
 
     isValidNumber match {
@@ -247,9 +246,11 @@ object FormValidation {
       case _ => Invalid(s"validation.invalid.$formName")
     }
   }
-private def tupleToDate(dateTuple: (String,String,String)) = {
-   LocalDate.parse(s"${dateTuple._1}-${dateTuple._2}-${dateTuple._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
-}
+
+  private def tupleToDate(dateTuple: (String,String,String)) = {
+     LocalDate.parse(s"${dateTuple._1}-${dateTuple._2}-${dateTuple._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+  }
+
   def validDate(errKey: String): Constraint[(String, String, String)] = Constraint {
     input: (String, String, String) =>
       val date = Try {
@@ -265,8 +266,8 @@ private def tupleToDate(dateTuple: (String,String,String)) = {
     input: (String, String, String) =>
       val date = tupleToDate(input)
       if (date.isEqual(minDate) || date.isAfter(minDate))
-        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(ValidationError(afterMaxErr, args: _*))
-      else Invalid(ValidationError(beforeMinErr, args: _*))
+        if (date.isEqual(maxDate) || date.isBefore(maxDate)) Valid else Invalid(afterMaxErr, args: _*)
+      else Invalid(beforeMinErr, args: _*)
   }
 
   def withinFourYearsPast(errKey: String): Constraint[(String, String, String)] = Constraint {
@@ -275,18 +276,7 @@ private def tupleToDate(dateTuple: (String,String,String)) = {
       if (date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
 
-  def dateAtLeastMinDateOrVatStartDate(minDay: LocalDate, vatStartDate: Option[LocalDate], errKeyNoVatStart: String, errKeyVatStart: String): Constraint[(String, String, String)] = Constraint {
-    input: (String, String, String) =>
-      val date = tupleToDate(input)
-      vatStartDate.fold {
-        if (date.isEqual(minDay) || date.isAfter(minDay)) Valid else Invalid(errKeyNoVatStart)
-      } { startDate =>
-        if (date.isEqual(startDate) || date.isAfter(startDate)) Valid else Invalid(errKeyVatStart)
-      }
-  }
-
   object Dates {
-
     def nonEmptyDateModel(constraint: => Constraint[DateModel] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
       Constraint { dm =>
         mandatoryText.apply(Seq(dm.day, dm.month, dm.day).mkString.trim) match {

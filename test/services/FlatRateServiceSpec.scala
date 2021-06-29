@@ -373,7 +373,7 @@ class FlatRateServiceSpec extends VatSpec {
 
   "getPrepopulatedStartDate" should {
     "should get an empty model if there is nothing in S4L" in new Setup() {
-      val vatStartDate: Option[LocalDate] = validVatScheme.returns.get.startDate
+      val vatStartDate = validVatScheme.returns.get.startDate.get
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4l)))
 
@@ -382,7 +382,7 @@ class FlatRateServiceSpec extends VatSpec {
 
     "should get as different date if it does not match the vat start date" in new Setup() {
       val diffdate: LocalDate = LocalDate.of(2017, 11, 11)
-      val vatStartDate: Option[LocalDate] = validVatScheme.returns.get.startDate
+      val vatStartDate = validVatScheme.returns.get.startDate.get
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(
@@ -393,7 +393,7 @@ class FlatRateServiceSpec extends VatSpec {
     }
 
     "should get vat date if it matches the vat start date" in new Setup() {
-      val vatStartDate: Option[LocalDate] = validVatScheme.returns.get.startDate
+      val vatStartDate = validVatScheme.returns.get.startDate.get
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(
           Some(incompleteS4l.copy(frsStart = Some(Start(None))))

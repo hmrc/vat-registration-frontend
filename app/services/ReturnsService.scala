@@ -38,10 +38,10 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[MandatoryDateModel] = {
     for {
       calcDate <- retrieveCalculatedStartDate
-      vatDate <- getReturns.map(_.startDate)
+      optVatDate <- getReturns.map(_.startDate)
     } yield {
-      vatDate.fold(MandatoryDateModel(calcDate, None, None)) { startDate =>
-        MandatoryDateModel(calcDate, vatDate, Some(if (startDate == calcDate) DateSelection.calculated_date else DateSelection.specific_date))
+      optVatDate.fold(MandatoryDateModel(calcDate, None, None)) { startDate =>
+        MandatoryDateModel(calcDate, optVatDate, Some(if (startDate == calcDate) DateSelection.calculated_date else DateSelection.specific_date))
       }
     }
   }
@@ -65,7 +65,9 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
         threshold.thresholdPreviousThirtyDays,
         threshold.thresholdNextThirtyDays
       ).flatten
-        .min(Ordering.by((date: LocalDate) => date.toEpochDay))
+        .sortBy((date: LocalDate) => date.toEpochDay)
+        .headOption
+        .getOrElse(throw new InternalServerException("[ReturnsService] Unable to calculate start date due to missing threshold data"))
     }
   }
 

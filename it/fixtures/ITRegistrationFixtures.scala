@@ -51,8 +51,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val threshold = Threshold(
     mandatoryRegistration = true,
-    thresholdPreviousThirtyDays = Some(LocalDate.of(2016, 9, 30)),
-    thresholdInTwelveMonths = Some(LocalDate.of(2017, 1, 1))
+    thresholdPreviousThirtyDays = None,
+    thresholdInTwelveMonths = Some(LocalDate.of(2018, 5, 30))
   )
 
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))

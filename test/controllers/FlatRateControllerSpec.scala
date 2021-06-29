@@ -55,7 +55,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   }
 
   s"GET ${controllers.routes.FlatRateController.annualCostsInclusivePage()}" should {
-
     "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -66,7 +65,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(FlatRateScheme()))
 
@@ -77,11 +75,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   }
 
   s"POST ${controllers.routes.FlatRateController.submitAnnualInclusiveCosts()}" should {
-
     val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualInclusiveCosts())
 
     "return 400 with Empty data" in new Setup {
-
       val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
       submitAuthorised(controller.submitAnnualInclusiveCosts(), emptyRequest) { result =>
@@ -131,7 +127,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
@@ -145,7 +140,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualCostsLimited())
 
     "return a 400 when the request is empty" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
@@ -157,7 +151,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "redirect to confirm business sector when user selects Yes" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
@@ -175,7 +168,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
@@ -193,107 +185,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
   }
 
-  s"GET ${routes.FlatRateController.frsStartDatePage()}" should {
-
-    "return HTML when there's a frs start date in S4L" in new Setup {
-      when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
-        .thenReturn(Future.successful((Some(FRSDateChoice.VATDate), None)))
-
-      when(mockFlatRateService.fetchVatStartDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      callAuthorised(controller.frsStartDatePage) { result =>
-        status(result) mustBe 200
-      }
-    }
-
-    "return HTML when there's nothing in S4L and vatScheme contains data" in new Setup {
-      when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
-        .thenReturn(Future.successful((None, None)))
-
-      when(mockFlatRateService.fetchVatStartDate(any(), any()))
-        .thenReturn(Future.successful(None))
-
-      callAuthorised(controller.frsStartDatePage) { result =>
-        status(result) mustBe 200
-      }
-    }
-  }
-
-  s"POST ${routes.FlatRateController.submitFrsStartDate()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitFrsStartDate())
-
-    "return 400 when no data posted" in new Setup {
-      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
-
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
-
-      submitAuthorised(controller.submitFrsStartDate(), request) { result =>
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "return 400 when partial data is posted" in new Setup {
-      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(Some(LocalDate.of(2017, 3, 1))))
-
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDate" -> FRSDateChoice.DifferentDate,
-        "frsStartDate.day" -> "1",
-        "frsStartDate.month" -> "",
-        "frsStartDate.year" -> "2017"
-      )
-
-      submitAuthorised(controller.submitFrsStartDate(), request) { result =>
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "return 400 with Different Date selected and date that is less than 3 working days in the future" in new Setup {
-      System.setProperty("feature.system-date", "2017-03-18T01:43:23")
-      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
-
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDate" -> FRSDateChoice.DifferentDate,
-        "frsStartDate.day" -> "20",
-        "frsStartDate.month" -> "3",
-        "frsStartDateDate.year" -> "2017"
-      )
-
-      submitAuthorised(controller.submitFrsStartDate(), request) { result =>
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-
-    "return 303 with VAT Registration Date selected" in new Setup {
-      when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
-
-      when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
-        .thenReturn(Future.successful(validFlatRate))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "frsStartDateRadio" -> FRSDateChoice.VATDate
-      )
-
-      submitAuthorised(controller.submitFrsStartDate(), request) { result =>
-        status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
-      }
-    }
-  }
-
   s"GET ${routes.FlatRateController.registerForFrsPage()}" should {
-
     "return a 200 and render the page" in new Setup {
-
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -316,7 +209,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
-
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -329,12 +221,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.frsStartDatePage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show().url)
       }
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
-
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -353,7 +244,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   }
 
   s"GET ${routes.FlatRateController.yourFlatRatePage()}" should {
-
     "return a 200 and render the page" in new Setup {
 
       when(mockFlatRateService.getFlatRate(any(), any()))
@@ -382,7 +272,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Register For Flat Rate Scheme when Yes is selected" in new Setup {
-
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
@@ -395,12 +284,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.frsStartDatePage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show().url)
       }
     }
 
     "return 303 with Register For Flat Rate Scheme when No is selected" in new Setup {
-
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 

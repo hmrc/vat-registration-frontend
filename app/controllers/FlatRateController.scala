@@ -109,40 +109,6 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def frsStartDatePage: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          vatStartDate <- flatRateService.fetchVatStartDate
-          (choOpt, date) <- flatRateService.getPrepopulatedStartDate(vatStartDate)
-        } yield {
-          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-          val dynamicDate = timeService.dynamicFutureDateExample()
-          val viewForm = choOpt.fold(FRSStartDateForm.form(timeService.futureWorkingDate(3)))(choice => FRSStartDateForm.form(timeService.futureWorkingDate(3)).fill((choice, date)))
-          Ok(views.html.frs_start_date(viewForm, dynamicDate, vatStartDate))
-        }
-  }
-
-  def submitFrsStartDate: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        flatRateService.fetchVatStartDate flatMap { vatStartDate =>
-          implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
-          FRSStartDateForm.form(timeService.futureWorkingDate(3), vatStartDate).bindFromRequest().fold(
-            badForm => {
-              val dynamicDate = timeService.dynamicFutureDateExample()
-              Future.successful(BadRequest(views.html.frs_start_date(badForm, dynamicDate, vatStartDate)))
-            },
-            view => {
-              val (choice, date) = view
-              flatRateService.saveStartDate(choice, date) map { _ =>
-                Redirect(controllers.routes.SummaryController.show())
-              }
-            }
-          )
-        }
-  }
-
   def registerForFrsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
@@ -162,7 +128,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           badForm => Future.successful(BadRequest(views.html.frs_register_for(badForm))),
           view => flatRateService.saveRegister(view.answer) map { _ =>
             if (view.answer) {
-              Redirect(controllers.routes.FlatRateController.frsStartDatePage())
+              Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
             } else {
               Redirect(controllers.routes.SummaryController.show())
             }
@@ -198,7 +164,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           view => for {
             _ <- flatRateService.saveUseFlatRate(view.answer)
           } yield if (view.answer) {
-            Redirect(controllers.routes.FlatRateController.frsStartDatePage())
+            Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
           } else {
             Redirect(controllers.routes.SummaryController.show())
           }

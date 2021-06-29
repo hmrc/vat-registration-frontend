@@ -24,7 +24,7 @@ import models._
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, accounting_period_view => AccountingPeriodPage, start_date_incorp_view => VoluntaryStartDatePage}
 
@@ -32,6 +32,7 @@ import java.time.LocalDate
 import java.util
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Success, Try}
 
 @Singleton
 class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
@@ -168,7 +169,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
     implicit request =>
       implicit profile =>
         calculateEarliestStartDate.flatMap(incorpDate =>
-          returnsService.retrieveCalculatedStartDate flatMap { calcDate =>
+          returnsService.retrieveCalculatedStartDate.flatMap { calcDate =>
             MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
               errors => {
                 Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
