@@ -27,13 +27,14 @@ import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import views.html.about_to_confirm_sic
+import views.html._
 
 import scala.concurrent.Future
 
 class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
 
   val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
+  val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
 
   class Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController(
@@ -43,6 +44,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       mockFlatRateService,
       mockICLService,
       mockAboutToConfirmSicView,
+      mockMainBusinessActivityView,
       mockVatRegistrationService
     ) {
       override val iclFEurlwww: String = "www-url"
@@ -198,7 +200,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submitMainBusinessActivity(),
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> sicCode.code)
+        fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
       )(_ isA 400)
 
     }
@@ -213,7 +215,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submitMainBusinessActivity(),
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validLabourSicCode.code)
+        fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
 
     }
@@ -228,7 +230,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
       submitAuthorised(controller.submitMainBusinessActivity(),
 
-        fakeRequest.withFormUrlEncodedBody("mainBusinessActivityRadio" -> validNoCompliance.code)
+        fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
       )(_ redirectsTo s"$contextRoot/trading-name")
     }
   }

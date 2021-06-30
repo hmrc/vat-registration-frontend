@@ -17,11 +17,7 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
 
 @this(
     layout: layouts.layout,
@@ -52,7 +48,6 @@
                         RadioItem(
                             content = Text(label),
                             value = Some(value),
-                            id = Some(value),
                             checked = chooseBusinessTypeForm("value").value.contains(value)
                         )
                     }
