@@ -22,18 +22,21 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.business_contact_details
 
 import scala.concurrent.Future
 
 class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   class Setup {
+    val view = app.injector.instanceOf[business_contact_details]
     val controller: BusinessContactDetailsController = new BusinessContactDetailsController(
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockBusinessContactService,
       mockPrePopulationService,
-      mockAddressLookupService
+      mockAddressLookupService,
+      view
     ) {
       override lazy val dropoutUrl: String = "test otrs URL"
     }

@@ -33,7 +33,9 @@ class BusinessContactDetailsController @Inject()(val authConnector: AuthClientCo
                                                  val keystoreConnector: KeystoreConnector,
                                                  val businessContactService: BusinessContactService,
                                                  val prepopService: PrePopulationService,
-                                                 val addressLookupService: AddressLookupService)
+                                                 val addressLookupService: AddressLookupService,
+                                                 business_contact_details: business_contact_details
+                                                )
                                                 (implicit appConfig: FrontendAppConfig,
                                                  val executionContext: ExecutionContext,
                                                  baseControllerComponents: BaseControllerComponents)

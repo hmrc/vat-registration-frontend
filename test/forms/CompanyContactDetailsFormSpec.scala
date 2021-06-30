@@ -152,7 +152,7 @@ class CompanyContactDetailsFormSpec extends VatRegSpec {
 
       CompanyContactDetailsForm.transformErrors(formError).hasErrors shouldBe true
       CompanyContactDetailsForm.transformErrors(formError).hasGlobalErrors shouldBe true
-      CompanyContactDetailsForm.transformErrors(formError).globalError shouldBe Some(FormError("", "validation.businessContactDetails.missing", Seq("businessContactDetails")))
+      CompanyContactDetailsForm.transformErrors(formError).globalError shouldBe Some(FormError("", "validation.businessContactDetails.missing", Seq("email")))
     }
 
     "do nothing if form has errors and data is not empty" in {

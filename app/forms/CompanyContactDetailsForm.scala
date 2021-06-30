@@ -25,36 +25,35 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object CompanyContactDetailsForm {
 
-  val EMAIL_MAX_LENGTH      = 70
-  private val FORM_NAME     = "businessContactDetails"
-  private val EMAIL         = "email"
-  private val DAYTIME_PHONE = "daytimePhone"
-  private val MOBILE        = "mobile"
-  private val WEBSITE       = "website"
+  val emailMaxLength = 70
+  private val formName = "businessContactDetails"
+  private val email = "email"
+  private val daytimePhone = "daytimePhone"
+  private val mobile = "mobile"
+  private val website = "website"
+  private val atLeastOneNumber = "atLeastOneNumber"
 
-  private def validationError(field: String) = ValidationError(s"validation.businessContactDetails.$field.missing", field)
-
-  implicit val errorCode: ErrorCode = s"$FORM_NAME.$EMAIL"
+  implicit val errorCode: ErrorCode = s"$formName.$email"
 
   val form = Form(
     mapping(
-      EMAIL         -> textMapping().verifying(StopOnFirstFail(mandatoryText(),FormValidation.IsEmail,maxLenText(EMAIL_MAX_LENGTH))),
-      DAYTIME_PHONE -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
-      MOBILE        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(FORM_NAME))),
-      WEBSITE       -> optional(text)
+      email         -> textMapping().verifying(StopOnFirstFail(mandatoryText(),FormValidation.IsEmail,maxLenText(emailMaxLength))),
+      daytimePhone -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(formName))),
+      mobile        -> optional(text.transform(removeSpaces,identity[String]).verifying(isValidPhoneNumber(formName))),
+      website       -> optional(text)
     )(CompanyContactDetails.apply)(CompanyContactDetails.unapply).verifying(atLeastOnePhoneNumber)
   )
 
   def transformErrors(form: Form[CompanyContactDetails]): Form[CompanyContactDetails] = {
     if (form.hasErrors && form.data.filterKeys(_ != "csrfToken").forall(_._2 == "")) {
-      form.discardingErrors.withGlobalError("validation.businessContactDetails.missing", "businessContactDetails")
+      form.discardingErrors.withGlobalError("validation.businessContactDetails.missing", "email")
     } else {
       form
     }
   }
 
   private def atLeastOnePhoneNumber: Constraint[CompanyContactDetails] = Constraint {
-    case CompanyContactDetails(_, None, None, _) => Invalid(validationError("atLeastOneNumber"))
+    case CompanyContactDetails(_, None, None, _) => Invalid(ValidationError(s"validation.businessContactDetails.$atLeastOneNumber.missing", daytimePhone, atLeastOneNumber))
     case _                                       => Valid
   }
 }
