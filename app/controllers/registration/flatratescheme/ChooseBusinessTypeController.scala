@@ -24,7 +24,7 @@ import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionProfile, SicAndComplianceService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.chooseBusinessType
+import views.html.choose_business_type
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
@@ -35,7 +35,7 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
                                              val keystoreConnector: KeystoreConnector,
                                              configConnector: ConfigConnector,
                                              flatRateService: FlatRateService,
-                                             chooseBusinessTypeView: chooseBusinessType)
+                                             chooseBusinessTypeView: choose_business_type)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

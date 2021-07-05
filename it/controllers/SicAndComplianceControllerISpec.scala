@@ -245,7 +245,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
+    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
@@ -282,7 +282,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("mainBusinessActivityRadio" -> Seq(sicCodeId)))
+    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)

@@ -27,7 +27,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, VatRegSpec}
-import views.html.chooseBusinessType
+import views.html.choose_business_type
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 
   trait Setup {
-    val view = app.injector.instanceOf[chooseBusinessType]
+    val view = app.injector.instanceOf[choose_business_type]
     val controller: ChooseBusinessTypeController = new ChooseBusinessTypeController(
       mockAuthClientConnector,
       mockKeystoreConnector,
@@ -73,8 +73,8 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
         val document = Jsoup.parse(contentAsString(result))
         val elements = document.getElementsByAttribute("checked")
         elements.size mustBe 1
-        elements.first.attr("id") mustBe businessCategory
-        document.getElementsByAttributeValue("for", businessCategory).first.text mustBe "Test BusinessType"
+        elements.first.`val` mustBe businessCategory
+        document.getElementsByAttributeValue("for", elements.first.id).text mustBe "Test BusinessType"
       }
     }
   }

@@ -38,7 +38,7 @@ object BusinessActivityDescriptionForm {
 }
 
 object MainBusinessActivityForm {
-  val NAME_ID: String = "mainBusinessActivityRadio"
+  val NAME_ID: String = "value"
 
   val form = Form(
     mapping(
