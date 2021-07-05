@@ -76,25 +76,37 @@ object LimitedCompany {
   implicit val format: Format[LimitedCompany] = Json.format[LimitedCompany]
 }
 
-case class SoleTrader(sautr: String,
-                      registration: Option[String] = None,
-                      businessVerification: Option[BusinessVerificationStatus] = None,
+case class SoleTrader(firstName: String,
+                      lastName: String,
+                      dateOfBirth: LocalDate,
+                      nino: String,
+                      sautr: Option[String],
+                      registration: String,
+                      businessVerification: BusinessVerificationStatus,
                       bpSafeId: Option[String] = None,
                       identifiersMatch: Boolean) extends BusinessEntity
 
 object SoleTrader {
   val apiReads: Reads[SoleTrader] = (
-    (__ \ "sautr").read[String] and
-      (__ \ "registration" \ "registrationStatus").readNullable[String].orElse(Reads.pure(None)) and
-      (__ \ "businessVerification" \ "verificationStatus").readNullable[BusinessVerificationStatus].orElse(Reads.pure(None)) and
+    (__ \ "fullName" \ "firstName").read[String] and
+      (__ \ "fullName" \ "lastName").read[String] and
+      (__ \ "dateOfBirth").read[LocalDate] and
+      (__ \ "nino").read[String] and
+      (__ \ "sautr").readNullable[String] and
+      (__ \ "registration" \ "registrationStatus").read[String] and
+      (__ \ "businessVerification" \ "verificationStatus").read[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").readNullable[String].orElse(Reads.pure(None)) and
       (__ \ "identifiersMatch").read[Boolean].orElse(Reads.pure(true))
     ) (SoleTrader.apply _)
 
   val apiWrites: Writes[SoleTrader] = (
-    (__ \ "sautr").write[String] and
-      (__ \ "registration" \ "registrationStatus").writeNullable[String] and
-      (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
+    (__ \ "fullName" \ "firstName").write[String] and
+      (__ \ "fullName" \ "lastName").write[String] and
+      (__ \ "dateOfBirth").write[LocalDate] and
+      (__ \ "nino").write[String] and
+      (__ \ "sautr").writeNullable[String] and
+      (__ \ "registration" \ "registrationStatus").write[String] and
+      (__ \ "businessVerification" \ "verificationStatus").write[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").writeNullable[String] and
       (__ \ "identifiersMatch").write[Boolean]
     ) (unlift(SoleTrader.unapply))

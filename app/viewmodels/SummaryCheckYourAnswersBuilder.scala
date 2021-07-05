@@ -102,8 +102,9 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val sautr: SummaryRow = SummaryRow(
     s"$sectionId.sautr",
-    vatApplicantDetails.entity.collect {
+    vatApplicantDetails.entity.flatMap {
       case soleTrader: SoleTrader => soleTrader.sautr
+      case _ => None
     }.getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )

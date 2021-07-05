@@ -39,7 +39,7 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
       config = matches(config)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, Option[SoleTrader])]): OngoingStubbing[Future[(TransactorDetails, Option[SoleTrader])]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTrader)]): OngoingStubbing[Future[(TransactorDetails, SoleTrader)]] =
     when(mockSoleTraderIdConnector.retrieveSoleTraderDetails(
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response

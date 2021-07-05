@@ -56,11 +56,11 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
 
   "retrieveSoleTraderDetails" must {
     "return transactor details" in new Setup{
-      mockRetrieveSoleTraderDetails(testJourneyUrl)(Future.successful((testTransactorDetails, None)))
+      mockRetrieveSoleTraderDetails(testJourneyUrl)(Future.successful((testTransactorDetails, testSoleTrader)))
 
       val res = await(Service.retrieveSoleTraderDetails(testJourneyUrl))
 
-      res mustBe (testTransactorDetails, None)
+      res mustBe (testTransactorDetails, testSoleTrader)
     }
   }
 

@@ -20,20 +20,11 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
   val journeyUrl = "/sole-trader-identification/api/journey"
   val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
 
-  val testSTIResponse: JsObject = Json.obj(
-    "fullName" -> Json.obj(
-      "firstName" -> testFirstName,
-      "lastName" -> testLastName
-    ),
-    "nino" -> testApplicantNino,
-    "dateOfBirth" -> testApplicantDob
-  )
-
   val testSautr = "1234567890"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
 
-  val testFullSTIResponse: JsObject = Json.obj(
+  val testSTIResponse: JsObject = Json.obj(
     "fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
@@ -51,9 +42,13 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
   )
 
   val testSoleTrader: SoleTrader = SoleTrader(
-    sautr = testSautr,
-    registration = Some(testRegistration),
-    businessVerification = Some(BvPass),
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = testApplicantNino,
+    sautr = Some(testSautr),
+    registration = testRegistration,
+    businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
