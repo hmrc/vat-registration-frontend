@@ -40,8 +40,8 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
                                            val iclService: ICLService,
                                            val aboutToConfirmSicPage: about_to_confirm_sic,
                                            val mainBusinessActivityPage: main_business_activity,
-                                           val vatRegistrationService: VatRegistrationService,
-                                          )(implicit appConfig: FrontendAppConfig,
+                                           val vatRegistrationService: VatRegistrationService)
+                                           (implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
