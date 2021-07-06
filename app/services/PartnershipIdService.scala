@@ -16,26 +16,25 @@
 
 package services
 
-import connectors.IncorpIdConnector
-import models.external.LimitedCompany
-
-import javax.inject.{Inject, Singleton}
-import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import connectors.PartnershipIdConnector
+import models.external.GeneralPartnership
+import models.external.partnershipid.PartnershipIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class IncorpIdService @Inject()(incorpIdConnector: IncorpIdConnector) {
+class PartnershipIdService @Inject()(partnershipIdConnector: PartnershipIdConnector) {
 
   def createJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
-    val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
+    val journeyConfig = PartnershipIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
 
-    incorpIdConnector.createJourney(journeyConfig)
+    partnershipIdConnector.createJourney(journeyConfig)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[LimitedCompany] = {
-    incorpIdConnector.getDetails(journeyId)
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[GeneralPartnership] = {
+    partnershipIdConnector.getDetails(journeyId)
   }
 
 }

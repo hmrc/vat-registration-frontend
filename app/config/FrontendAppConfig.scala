@@ -51,7 +51,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def clearTrafficManagementUrl: String = s"$backendHost/vatreg/traffic-management/reg-info/clear"
 
-  lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
   lazy val otrsRoute: String = "https://www.tax.service.gov.uk/business-registration/select-taxes"
 
   lazy val eligibilityRouteUrl: String = s"$eligibilityUrl/gone-over-threshold"
@@ -148,6 +147,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Sole Trader Identification Section
 
+  lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
+
   def getRetrieveSoleTraderIdentificationResultUrl(journeyId: String): String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
@@ -163,6 +164,26 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def getSoleTraderIdentificationCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
+
+  // Partnership Identification Section
+
+  lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
+
+  def getCreateGeneralPartnershipIdJourneyUrl: String =
+    if (isEnabled(StubPartnershipIdentification)) {
+      s"$host/register-for-vat/test-only/partnership-identification"
+    } else {
+      s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
+    }
+
+  def getPartnershipIdDetailsUrl(journeyId: String): String =
+    if (isEnabled(StubPartnershipIdentification)) {
+      s"$host/register-for-vat/test-only/partnership-identification/$journeyId"
+    } else {
+      s"$partnershipIdHost/partnership-identification/api/journey/$journeyId"
+    }
+
+  def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
 
   // Email Verification Section
 

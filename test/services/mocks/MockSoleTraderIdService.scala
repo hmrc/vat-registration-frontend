@@ -17,7 +17,7 @@
 package services.mocks
 
 import models.TransactorDetails
-import models.external.incorporatedentityid.SoleTrader
+import models.external.SoleTrader
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing

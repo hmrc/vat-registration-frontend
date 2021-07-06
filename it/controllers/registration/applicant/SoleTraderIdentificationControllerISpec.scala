@@ -7,7 +7,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{Individual, UkCompany, VatScheme}
-import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, SoleTrader}
+import models.external.{BusinessVerificationStatus, BvPass, SoleTrader}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 

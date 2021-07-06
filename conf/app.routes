@@ -153,6 +153,10 @@ GET         /personal-details-validation-callback                               
 GET         /start-sti-journey                                                                 controllers.registration.applicant.SoleTraderIdentificationController.startJourney
 GET         /sti-callback                                                                      controllers.registration.applicant.SoleTraderIdentificationController.callback(journeyId)
 
+## Incorp ID Pages
+GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startPartnershipIdJourney()
+GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.partnershipIdCallback(journeyId)
+
 ## Email Verification Pages
 GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show
 POST        /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.submit

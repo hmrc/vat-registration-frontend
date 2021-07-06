@@ -18,7 +18,7 @@ package services
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
-import models.external.incorporatedentityid.SoleTrader
+import models.external.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 

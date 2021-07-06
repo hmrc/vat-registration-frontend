@@ -18,8 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.incorporatedentityid.{BvPass, LimitedCompany, SoleTrader}
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{BvPass, EmailAddress, EmailVerified, GeneralPartnership, LimitedCompany, SoleTrader}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
 
@@ -71,6 +70,7 @@ trait ApplicantDetailsFixtures {
   )
 
   val testSautr = "1234567890"
+  val testPostcode = "AA11AA"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
 
@@ -97,5 +97,14 @@ trait ApplicantDetailsFixtures {
     formerName = Some(FormerNameView(yesNo = false, None)),
     formerNameDate = None,
     previousAddress = Some(PreviousAddressView(yesNo = false, Some(validPrevAddress)))
+  )
+
+  val testGeneralPartnership: GeneralPartnership = GeneralPartnership(
+    sautr = Some(testSautr),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
   )
 }

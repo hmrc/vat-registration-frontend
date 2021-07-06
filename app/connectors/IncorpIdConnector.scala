@@ -17,9 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.external.LimitedCompany
 
 import javax.inject.{Inject, Singleton}
-import models.external.incorporatedentityid.{IncorpIdJourneyConfig, LimitedCompany}
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsError, JsSuccess, JsValue}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}

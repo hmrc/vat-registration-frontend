@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import models.external.incorporatedentityid.LimitedCompany
+import models.external.LimitedCompany
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

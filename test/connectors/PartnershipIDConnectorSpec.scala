@@ -17,57 +17,49 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UnauthorizedException}
 
-class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
+class PartnershipIDConnectorSpec extends VatRegSpec {
 
   class Setup {
     implicit val ex = scala.concurrent.ExecutionContext.Implicits.global
     val config = new FrontendAppConfig(mockServicesConfig, runModeConfiguration = Configuration())
-    val connector = new SoleTraderIdentificationConnector(mockHttpClient, config)(ex)
+    val connector = new PartnershipIdConnector(mockHttpClient, config)(ex)
     val testJourneyId = "1"
     val testJourneyUrl = "/test-journey-url"
-    val createJourneyUrl = "/sole-trader-identification/journey"
-    val retrieveDetailsUrl = s"/sole-trader-identification/journey/$testJourneyId"
+    val createJourneyUrl = "/partnership-identification/api/general-partnership/journey"
+    val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
-    val testJourneyConfig = SoleTraderIdJourneyConfig(
+    val testJourneyConfig = PartnershipIdJourneyConfig(
       continueUrl = "/test-url",
       optServiceName = Some("MTD"),
       deskProServiceId = "MTDSUR",
-      signOutUrl = "/test-sign-out",
-      enableSautrCheck = false
+      signOutUrl = "/test-sign-out"
     )
   }
 
-  "startJourney" when {
+  "createJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
         mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString))
 
-        val res = await(connector.startJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig))
 
         res mustBe testJourneyUrl
       }
-      "throw an InternalServerException when the response JSON doesn't contain the journeyId" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj().toString))
+    }
+    "the API returns Errors" must {
+      "throw an InternalServerException" in new Setup {
+        mockHttpPOST(createJourneyUrl, HttpResponse(INTERNAL_SERVER_ERROR, ""))
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
-        }
-      }
-    }
-    "the API returns UNAUTHORISED" must {
-      "throw an UnauthorizedException" in new Setup {
-        mockHttpPOST(createJourneyUrl, HttpResponse(UNAUTHORIZED, ""))
-
-        intercept[UnauthorizedException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig))
         }
       }
     }
@@ -76,50 +68,46 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, ""))
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig))
         }
       }
     }
   }
 
-  "retrieveSoleTraderDetails" must {
-    "return transactor details when STI returns OK" in new Setup {
-      val testSTIResponse: JsObject = Json.obj(
-        "fullName" -> Json.obj(
-          "firstName" -> testFirstName,
-          "lastName" -> testLastName
-        ),
-        "nino" -> testApplicantNino,
-        "dateOfBirth" -> testApplicantDob,
+  "getDetails" must {
+    "return GeneralPartnership when returns OK" in new Setup {
+      val testPIResponse: JsObject = Json.obj(
         "sautr" -> testSautr,
+        "postcode" -> testPostcode,
         "businessVerification" -> Json.obj(
           "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
         ),
         "registration" -> Json.obj(
           "registrationStatus" -> testRegistration,
           "registeredBusinessPartnerId" -> testSafeId
-        )
+        ),
+        "identifiersMatch" -> true
       )
 
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
-      val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-      res mustBe(testTransactorDetails, testSoleTrader)
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testPIResponse.toString()))
+      val res = await(connector.getDetails(testJourneyId))
+      res mustBe testGeneralPartnership
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
-      val invalidTransactorJson = {
-        Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
+      val invalidGeneralPartnershipJson = {
+        Json.toJson(testGeneralPartnership).as[JsObject] - "sautr"
       }
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> invalidTransactorJson))))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("sautr" -> invalidGeneralPartnershipJson))))
 
       intercept[InternalServerException] {
-        await(connector.retrieveSoleTraderDetails(testJourneyId))
+        await(connector.getDetails(testJourneyId))
       }
     }
     "throw an InternalServerException for any other status" in new Setup {
       mockHttpGET(retrieveDetailsUrl, HttpResponse(IM_A_TEAPOT, ""))
 
       intercept[InternalServerException] {
-        await(connector.retrieveSoleTraderDetails(testJourneyId))
+        await(connector.getDetails(testJourneyId))
       }
     }
   }
