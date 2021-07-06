@@ -17,6 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
@@ -90,12 +91,20 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
           "lastName" -> testLastName
         ),
         "nino" -> testApplicantNino,
-        "dateOfBirth" -> testApplicantDob
+        "dateOfBirth" -> testApplicantDob,
+        "sautr" -> testSautr,
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> testRegistration,
+          "registeredBusinessPartnerId" -> testSafeId
+        )
       )
 
       mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
       val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-      res mustBe (testTransactorDetails, None)
+      res mustBe(testTransactorDetails, testSoleTrader)
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {

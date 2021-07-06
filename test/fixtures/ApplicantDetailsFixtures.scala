@@ -75,9 +75,13 @@ trait ApplicantDetailsFixtures {
   val testSafeId = "X00000123456789"
 
   val testSoleTrader: SoleTrader = SoleTrader(
-    sautr = testSautr,
-    registration = Some(testRegistration),
-    businessVerification = Some(BvPass),
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = testApplicantNino,
+    sautr = Some(testSautr),
+    registration = testRegistration,
+    businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )

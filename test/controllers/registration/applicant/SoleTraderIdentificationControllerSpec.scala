@@ -73,8 +73,9 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   "retrieveSoleTraderDetails" must {
     "redirect to the former name page if the user is a Sole Trader" in new Setup {
       mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
-      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
+      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+      mockSaveApplicantDetails(testSoleTrader)(emptyApplicantDetails.copy(entity = Some(testSoleTrader)))
       mockPartyType(Future.successful(Individual))
 
       val res = Controller.callback(testJourneyId)(FakeRequest())
@@ -85,7 +86,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
     "redirect to the capture role page" in new Setup {
       mockGetVatScheme(Future.successful(validVatScheme))
-      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, None)))
+      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
       mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
       mockPartyType(Future.successful(UkCompany))
 

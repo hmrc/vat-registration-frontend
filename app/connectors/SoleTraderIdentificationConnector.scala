@@ -53,12 +53,12 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     }
 
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, Option[SoleTrader])] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTrader)] =
     httpClient.GET(appConfig.getRetrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
           (response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads),
-          response.json.validateOpt[SoleTrader](SoleTrader.apiFormat).orElse(JsSuccess(None))) match {
+          response.json.validate[SoleTrader](SoleTrader.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
             case (JsError(errors), _) =>

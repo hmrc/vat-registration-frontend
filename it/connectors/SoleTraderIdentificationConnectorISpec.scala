@@ -32,9 +32,13 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
   val testSafeId = "X00000123456789"
 
   val testSoleTrader: SoleTrader = SoleTrader(
-    sautr = testSautr,
-    registration = Some(testRegistration),
-    businessVerification = Some(BvPass),
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = testApplicantNino,
+    sautr = Some(testSautr),
+    registration = testRegistration,
+    businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -84,22 +88,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
           "lastName" -> testLastName
         ),
         "nino" -> testApplicantNino,
-        "dateOfBirth" -> testApplicantDob
-      )
-
-      stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, Option[SoleTrader]) = await(connector.retrieveSoleTraderDetails(testJourneyId))
-
-      res mustBe(testTransactorDetails, None)
-    }
-
-    "return transactor details when STI returns OK for a sole trader" in new Setup {
-      val testSTIResponse: JsObject = Json.obj(
-        "fullName" -> Json.obj(
-          "firstName" -> testFirstName,
-          "lastName" -> testLastName
-        ),
-        "nino" -> testApplicantNino,
         "dateOfBirth" -> testApplicantDob,
         "sautr" -> testSautr,
         "businessVerification" -> Json.obj(
@@ -112,9 +100,9 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, Option[SoleTrader]) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+      val res: (TransactorDetails, SoleTrader) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testTransactorDetails, Some(testSoleTrader))
+      res mustBe(testTransactorDetails, testSoleTrader)
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {

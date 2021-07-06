@@ -17,7 +17,7 @@
 package controllers.test
 
 import config.FrontendAppConfig
-import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass}
+import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, BvUnchallenged}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -65,7 +65,14 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
             )
           )
         } else {
-          Json.obj()
+          Json.obj(
+            "businessVerification" -> Json.obj(
+              "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvUnchallenged)
+            ),
+            "registration" -> Json.obj(
+              "registrationStatus" -> "REGISTRATION_NOT_CALLED"
+            )
+          )
         }
         )
     )
