@@ -19,8 +19,7 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import models._
-import models.external.incorporatedentityid.{BusinessEntity, LimitedCompany, SoleTrader}
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{BusinessEntity, EmailAddress, EmailVerified, LimitedCompany, SoleTrader}
 import models.view._
 import uk.gov.hmrc.http.HeaderCarrier
 

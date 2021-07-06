@@ -17,8 +17,7 @@
 package models
 
 import models.api.Address
-import models.external.incorporatedentityid.BusinessEntity
-import models.external.{EmailAddress, EmailVerified, Name}
+import models.external.{BusinessEntity, EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._

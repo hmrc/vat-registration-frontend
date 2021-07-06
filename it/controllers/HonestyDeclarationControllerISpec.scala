@@ -55,7 +55,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft))
+        .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft, eligibilitySubmissionData = Some(testEligibilitySubmissionData)))
         .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

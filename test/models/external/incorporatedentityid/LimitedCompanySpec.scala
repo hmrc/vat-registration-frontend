@@ -16,6 +16,7 @@
 
 package models.external.incorporatedentityid
 
+import models.external.LimitedCompany
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 

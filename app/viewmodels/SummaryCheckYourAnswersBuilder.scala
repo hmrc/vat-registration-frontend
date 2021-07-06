@@ -21,7 +21,7 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
 import models.api.{Address, Individual, Threshold, VatScheme}
-import models.external.incorporatedentityid.{LimitedCompany, SoleTrader}
+import models.external.{LimitedCompany, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call

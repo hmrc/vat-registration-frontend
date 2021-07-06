@@ -18,8 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.incorporatedentityid.{BvPass, LimitedCompany, SoleTrader}
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{BvPass, EmailAddress, EmailVerified, LimitedCompany, SoleTrader}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
 

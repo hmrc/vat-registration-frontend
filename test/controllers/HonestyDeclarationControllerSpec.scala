@@ -18,6 +18,7 @@ package controllers
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.VatRegistrationFixture
+import models.api.UkCompany
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
@@ -58,7 +59,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
 
   "submit" must {
     "return a SEE_OTHER with a redirect to Applicant Former Name Page" in {
-      mockGetVatScheme(Future.successful(emptyVatScheme))
+      mockPartyType(Future.successful(UkCompany))
       mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
 
       val res = TestController.submit(testPostRequest)

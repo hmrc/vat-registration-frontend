@@ -4,7 +4,7 @@ package connectors
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.TransactorDetails
-import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, SoleTrader}
+import models.external.{BusinessVerificationStatus, BvPass, SoleTrader}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}

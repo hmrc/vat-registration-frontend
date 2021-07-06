@@ -19,7 +19,8 @@ package connectors
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, LimitedCompany}
+import models.external.{BvPass, LimitedCompany}
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs

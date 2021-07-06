@@ -18,7 +18,7 @@ package connectors.mocks
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
-import models.external.incorporatedentityid.SoleTrader
+import models.external.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when

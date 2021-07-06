@@ -3,10 +3,9 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.external.{Applicant, BvPass, EmailAddress, EmailVerified, LimitedCompany, Name}
 import models.view._
 import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
-import models.external.incorporatedentityid.{BvPass, LimitedCompany}
 
 trait ApplicantDetailsFixture {
 

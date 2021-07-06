@@ -17,10 +17,11 @@
 package controllers.test
 
 import java.time.LocalDate
-
 import config.FrontendAppConfig
+import models.external.{BvPass, LimitedCompany}
+
 import javax.inject.{Inject, Singleton}
-import models.external.incorporatedentityid.{BvPass, IncorpIdJourneyConfig, LimitedCompany}
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
