@@ -17,11 +17,11 @@
 package forms
 
 import java.time.LocalDate
-
 import forms.FormValidation._
 import models.FRSDateChoice
 import play.api.data.Forms._
 import play.api.data.format.Formatter
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
@@ -53,8 +53,8 @@ object FRSStartDateForm {
   val frsDateSelectionEmpty = "validation.frs.startDate.choice.missing"
   val dateEmptyKey = "validation.frs.startDate.missing"
   val dateInvalidKey = "validation.frs.startDate.invalid"
-  val dateBeforeMin = "validation.frs.startDate.range.below"
   val dateBeforeVatStartDate = "validation.frs.startDate.range.below.vatStartDate"
+  val dateAfterMaxKey = "validation.frs.startDate.range.after.maxDate"
 
   val frsStartDateRadio: String = "frsStartDateRadio"
   val frsStartDateInput: String = "frsStartDate"
@@ -75,7 +75,7 @@ object FRSStartDateForm {
     def unbind(key: String, value: FRSDateChoice.Value) = Map(key -> value.toString)
   }
 
-  def form(minDate: LocalDate, vatStartDate: Option[LocalDate] = None) = Form(
+  def form(minDate: LocalDate, maxDate: LocalDate) = Form(
     tuple(
       frsStartDateRadio -> Forms.of[FRSDateChoice.Value],
       frsStartDateInput -> mandatoryIf(
@@ -83,11 +83,12 @@ object FRSStartDateForm {
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          dateAtLeastMinDateOrVatStartDate(minDate, vatStartDate, dateBeforeMin, dateBeforeVatStartDate)
-        )).transform[LocalDate](
-          date => LocalDate.of(date._3.toInt,date._2.toInt,date._1.toInt),
+          withinRange(minDate, maxDate, dateBeforeVatStartDate, dateAfterMaxKey, List(frsStartDateInput))
+        )).transform[LocalDate] ({
+          case (day, month, year) => LocalDate.of(year.toInt, month.toInt, day.toInt)
+        }, {
           date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
-        )
+        })
       )
     )
   )

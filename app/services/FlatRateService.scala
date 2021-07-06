@@ -167,9 +167,9 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       updateFlatRate(_.copy(frsStart = Some(Start(date))))
     }
 
-  def getPrepopulatedStartDate(vatStartDate: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
+  def getPrepopulatedStartDate(vatStartDate: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
     getFlatRate map {
-      case FlatRateScheme(_, _, _, _, _, Some(Start(frd)), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
+      case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
       case FlatRateScheme(_, _, _, _, _, Some(Start(None)), _, _, _) => (Some(FRSDateChoice.VATDate), None)
       case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
       case _ => (None, None)

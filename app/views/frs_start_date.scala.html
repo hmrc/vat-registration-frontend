@@ -14,116 +14,70 @@
  * limitations under the License.
  *@
 
-@import java.time.format.DateTimeFormatter
-@import java.time.LocalDate
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import views.html.main_template
-@import views.html.helpers.templates._
-
-@import models.FRSDateChoice
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
-@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String, vatStartDate: Option[LocalDate])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.helpers.templates.{errorSummary, vatInput, vatInputRadioGroup}
+@import models.FRSDateChoice
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.helpers.templates.vatInput
+@import java.time.LocalDate
 
-@main_template(title = title(frsStartDateForm, messages("pages.frs.startDate.heading"))) {
+@this(
+        layout: layouts.layout,
+        errorSummary: components.errorSummary,
+        form: FormWithCSRF,
+        govukRadios: GovukRadios,
+        inputRadio: components.inputRadio,
+        inputDate: components.inputDate,
+        p: components.p,
+        button: components.button
+)
 
-    @errorSummary(
-        form = frsStartDateForm,
-        errorFieldSuffix = Some(Map("frsStartDate" -> "day"))
-    )
+@(frsStartDateForm: Form[(FRSDateChoice.Value, Option[LocalDate])], dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.startDate.heading")</h1>
+@layout(pageTitle = Some(title(frsStartDateForm, messages("pages.frs.startDate.heading"))), backLink = true) {
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitFrsStartDate()) {
-        <div class="form-group">
+    @errorSummary(frsStartDateForm.errors)
 
-            @defining(DateTimeFormatter
-                    .ofLocalizedDate(java.time.format.FormatStyle.LONG)
-                    .withLocale(java.util.Locale.UK)) { formatter =>
+    @form(action = controllers.registration.flatratescheme.routes.StartDateController.submit()) {
+        @govukRadios(Radios(
+            name = "frsStartDateRadio",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("pages.frs.startDate.radio1")),
+                    value = Some(FRSDateChoice.VATDate.toString),
+                    checked = frsStartDateForm("frsStartDateRadio").value.contains(FRSDateChoice.VATDate.toString)
+                ),
+                RadioItem(
+                    content = Text(messages("pages.frs.startDate.radio2")),
+                    value = Some(FRSDateChoice.DifferentDate.toString),
+                    conditionalHtml = Some(otherDateBlock),
+                    checked = frsStartDateForm("frsStartDateRadio").value.contains(FRSDateChoice.DifferentDate.toString)
+                )
+            ),
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("pages.frs.startDate.heading")),
+                    isPageHeading = true,
+                    classes = "govuk-fieldset__legend--xl"
+                ))
+            ))
+        ))
 
-                    @vatInputRadioGroup(
-                        frsStartDateForm("frsStartDateRadio"),
-                        Seq(
-                            Some(FRSDateChoice.VATDate.toString -> Messages("pages.frs.startDate.radio1")),
-                            Some(FRSDateChoice.DifferentDate.toString -> Messages("pages.frs.startDate.radio2"))
-                        ).flatten,
-                        '_labelAfter -> true,
-                        '_labelClass -> "block-label",
-                        '_legend -> messages("pages.frs.startDate.heading"),
-                        '_legendClass -> "visually-hidden"
-                    )
-                }
-
-                <div class="panel panel-border-narrow hidden" id="different_date_panel">
-                    @{ vatStartDate.fold{ <p>{messages("pages.frs.startDate.noVatStartDateText")}</p>
-                        }{ _ => <p class="bold">{messages("pages.frs.startDate.hasVatStartDateText")}</p> }
-                    }
-
-                    <span class="form-hint">@messages("pages.frs.startDate.hint1", dateExample)</span>
-
-
-                    @defining(frsStartDateForm("frsStartDate").errors.nonEmpty) { errorPresent =>
-                        <div class="form-date @if(errorPresent) { form-group-error }">
-
-                            <fieldset id="frs-start-date">
-                                <legend class="visually-hidden">@messages("pages.frs.startDate.heading")</legend>
-                                @frsStartDateForm.error("frsStartDate").map { error =>
-                                    <span class="error-notification" role="tooltip">
-                                        @messages(error.message, error.args: _*)
-                                    </span>
-                                }
-                                <input type="hidden" name="frsStartDate" value="" id="frsStartDate" class="hidden" />
-
-                                @vatInput(
-                                    frsStartDateForm("frsStartDate.day"),
-                                    '_divClass -> "form-group",
-                                    '_inputClass -> "form-control",
-                                    '_maxlength -> 2,
-                                    '_label -> Messages("pages.frs.startDate.day"),
-                                    '_labelClass -> "form-label",
-                                    '_type -> "tel"
-                                )
-
-                                @vatInput(
-                                    frsStartDateForm("frsStartDate.month"),
-                                    '_divClass -> "form-group",
-                                    '_inputClass -> "form-control",
-                                    '_maxlength -> 2,
-                                    '_label -> Messages("pages.frs.startDate.month"),
-                                    '_labelClass -> "form-label",
-                                    '_type -> "tel"
-                                )
-
-                                @vatInput(
-                                    frsStartDateForm("frsStartDate.year"),
-                                    '_divClass -> "form-group form-group-year",
-                                    '_inputClass -> "form-control",
-                                    '_maxlength -> 4,
-                                    '_label -> Messages("pages.frs.startDate.year"),
-                                    '_labelClass -> "form-label",
-                                    '_type -> "tel"
-                                )
-                            </fieldset>
-                        </div>
-                    }
-                </div>
-        </div>
-
-        <div class="form-group">
-            <button class="button" type="submit" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
+        @button(messages("app.common.continue"))
     }
 }
 
-<script type="text/javascript">
-    $(document).ready($(function () {
-        FrsStartDatePage.init()
-    }));
-</script>
+@otherDateBlock = {
+
+    @p { @messages("pages.frs.startDate.hint") }
+
+    @inputDate(
+        form = frsStartDateForm,
+        legendContent = messages("pages.frs.startDate.legend"),
+        legendAsPageHeading = false,
+        legendClasses = "govuk-visually-hidden",
+        id = "frsStartDate",
+        hintText = Some(messages("pages.frs.startDate.hint1", dateExample))
+    )
+}

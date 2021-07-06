@@ -23,79 +23,51 @@ import models.FRSDateChoice
 import testHelpers.VatRegSpec
 
 class FlatRateFormSpec extends VatRegSpec {
-  val minDate: LocalDate       = LocalDate.of(2018, 5, 29)
-  val now: LocalDate           = LocalDate.of(2018, 5, 28)
-  val testformNoVatStartDate   = FRSStartDateForm.form(minDate, None)
-  val testformWithVatStartDate = FRSStartDateForm.form(minDate, Some(now.minusDays(1)))
+  val minDate: LocalDate = LocalDate.of(2018, 5, 1)
+  val now: LocalDate = LocalDate.of(2018, 5, 28)
+  val maxDate: LocalDate = now.plusMonths(3)
+  val testform = FRSStartDateForm.form(minDate, maxDate)
 
   "FRSStartDateForm form" should {
-    "be valid if date entered is equal to min date and user has not entered a vat start date " in {
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(minDate.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(minDate.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(minDate.getYear.toString))
-      testformNoVatStartDate.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(minDate)))
+    "be valid" when {
+      "the date entered is equal to min date" in {
+        val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+          "frsStartDate.day" -> Seq(minDate.getDayOfMonth.toString),
+          "frsStartDate.month" -> Seq(minDate.getMonthValue.toString),
+          "frsStartDate.year" -> Seq(minDate.getYear.toString))
+        testform.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(minDate)))
+      }
+      "the date entered is after min date" in {
+        val laterDate = minDate.plusDays(1)
+        val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+          "frsStartDate.day" -> Seq(laterDate.getDayOfMonth.toString),
+          "frsStartDate.month" -> Seq(laterDate.getMonthValue.toString),
+          "frsStartDate.year" -> Seq(laterDate.getYear.toString))
+        testform.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(laterDate)))
+      }
+      "the date given is equal to the max date" in {
+        val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+          "frsStartDate.day" -> Seq(maxDate.getDayOfMonth.toString),
+          "frsStartDate.month" -> Seq(maxDate.getMonthValue.toString),
+          "frsStartDate.year" -> Seq(maxDate.getYear.toString))
+        testform.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate, Some(maxDate)))
+      }
     }
-    "be valid if date entered is after min date and user has not entered a vat start date " in {
-      val laterDate = minDate.plusDays(1)
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(laterDate.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(laterDate.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(laterDate.getYear.toString))
-      testformNoVatStartDate.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(laterDate)))
-    }
-    "be invalid if date entered is before min date and user has not entered a vat start date" in {
-      val earlyDate = LocalDate.of(2018, 5, 25)
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(earlyDate.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(earlyDate.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(earlyDate.getYear.toString))
-      testformNoVatStartDate.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.range.below")
-    }
-    "be invalid if user does not provide complete date and user has not entered a vat start date" in {
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq("01"),
-        "frsStartDate.month" -> Seq(""),
-        "frsStartDate.year" -> Seq("2011"))
-      testformNoVatStartDate.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.missing")
-    }
-    "be invalid if date is in an invalid format and user has not entered a vat start date" in {
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq("01"),
-        "frsStartDate.month" -> Seq("XXXXXXXX"),
-        "frsStartDate.year" -> Seq("2011"))
-      testformNoVatStartDate.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.invalid")
-    }
-    "be valid if date is today as user has entered a vat start date" in {
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(now.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(now.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(now.getYear.toString))
-      testformWithVatStartDate.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(now)))
-    }
-    "be valid if date is 1 day after today as user has entered a vat start date" in {
-      val oneDayInFuture = now.plusDays(1)
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(oneDayInFuture.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(oneDayInFuture.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(oneDayInFuture.getYear.toString))
-      testformWithVatStartDate.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(oneDayInFuture)))
-    }
-    "be valid if date entered is yesterday as vat start date is yesterday" in {
-      val oneDayInPast = now.minusDays(1)
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(oneDayInPast.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(oneDayInPast.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(oneDayInPast.getYear.toString))
-      testformWithVatStartDate.bindFromRequest(data) shouldContainValue ((FRSDateChoice.DifferentDate,Some(oneDayInPast)))
-    }
-    "be invalid if date entered is two days in past as vat start date was yesterday" in {
-      val twoDaysInPast = now.minusDays(2)
-      val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
-        "frsStartDate.day" -> Seq(twoDaysInPast.getDayOfMonth.toString),
-        "frsStartDate.month" -> Seq(twoDaysInPast.getMonthValue.toString),
-        "frsStartDate.year" -> Seq(twoDaysInPast.getYear.toString))
-      testformWithVatStartDate.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.range.below.vatStartDate")
+    "be invalid" when {
+      "the date is before the min date" in {
+        val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+          "frsStartDate.day" -> Seq(minDate.minusDays(1).getDayOfMonth.toString),
+          "frsStartDate.month" -> Seq(minDate.minusMonths(1).getMonthValue.toString),
+          "frsStartDate.year" -> Seq(minDate.getYear.toString))
+        testform.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.range.below.vatStartDate")
+      }
+      "the date exceeds the max date" in {
+        val data = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+          "frsStartDate.day" -> Seq(maxDate.plusDays(1).getDayOfMonth.toString),
+          "frsStartDate.month" -> Seq(maxDate.getMonthValue.toString),
+          "frsStartDate.year" -> Seq(maxDate.getYear.toString))
+        testform.bindFromRequest(data) shouldHaveErrors Seq("frsStartDate" -> "validation.frs.startDate.range.after.maxDate")
+      }
     }
   }
 }

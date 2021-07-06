@@ -213,8 +213,8 @@ GET         /confirm-business-type                                              
 POST        /confirm-business-type                                                             controllers.registration.flatratescheme.ConfirmBusinessTypeController.submit
 
 ## When do you want to join the Flat Rate Scheme?
-GET         /flat-rate-date                                                                    controllers.FlatRateController.frsStartDatePage
-POST        /flat-rate-date                                                                    controllers.FlatRateController.submitFrsStartDate
+GET         /flat-rate-date                                                                    controllers.registration.flatratescheme.StartDateController.show
+POST        /flat-rate-date                                                                    controllers.registration.flatratescheme.StartDateController.submit
 
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable

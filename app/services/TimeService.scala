@@ -39,9 +39,12 @@ class TimeService @Inject()(val environment: Environment,
 
   import play.api.libs.json.JodaReads._
 
+  // TODO: Refactor to use Java LocalDate instead of Joda
   def currentDateTime: JodaLocalDateTime = SystemDate.getSystemDate
 
   def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate
+
+  def today: JavaLocalDate = JavaLocalDate.now
 
   lazy val bankHolidaySet: BankHolidaySet = {
     implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]

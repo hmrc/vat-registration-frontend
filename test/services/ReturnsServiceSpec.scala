@@ -25,7 +25,7 @@ import org.scalatest.MustMatchers
 import play.api.libs.json.JsString
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HttpResponse, NotFoundException}
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundException}
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -293,20 +293,13 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.retrieveCalculatedStartDate) mustBe nextThirtyDayDate
     }
 
-    "throw a RuntimeException when no dates are present" in new Setup {
+    "throw a InternalServerException when no dates are present" in new Setup {
       val thresholdNoDates: Threshold = generateThreshold()
 
       when(service.vatService.getThreshold(any())(any()))
         .thenReturn(Future.successful(thresholdNoDates))
 
-      intercept[RuntimeException](await(service.retrieveCalculatedStartDate))
-    }
-
-    "return a RuntimeException when the eligibilityChoice section of the scheme is not present" in new Setup {
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(emptyVatScheme))
-
-      intercept[RuntimeException](await(service.retrieveCalculatedStartDate))
+      intercept[InternalServerException](await(service.retrieveCalculatedStartDate))
     }
   }
 
