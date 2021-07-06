@@ -19,8 +19,8 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
+import models.external.LimitedCompany
 import models.{ApplicantDetails, S4LKey}
-import models.external.incorporatedentityid.LimitedCompany
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest

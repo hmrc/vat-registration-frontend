@@ -19,8 +19,7 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.UseSoleTraderIdentification
-import models.api.Individual
+import models.api.{Individual, Partnership, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, VatRegistrationService}
 import views.html.honesty_declaration
@@ -49,12 +48,12 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
       implicit profile =>
         for {
           _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
-          vatScheme <- vatRegistrationService.getVatScheme
+          partyType <- vatRegistrationService.partyType
         } yield {
-          if (vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual)) && isEnabled(UseSoleTraderIdentification)) {
-            Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
-          } else {
-            Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+          partyType match {
+            case Individual => Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+            case UkCompany => Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+            case Partnership => Redirect(applicantRoutes.PartnershipIdController.startPartnershipIdJourney())
           }
         }
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.external.incorporatedentityid
+package models.external
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -25,12 +25,13 @@ sealed trait BusinessEntity
 
 object BusinessEntity {
   val reads: Reads[BusinessEntity] = Reads { json =>
-    Json.fromJson(json)(LimitedCompany.format).orElse(Json.fromJson(json)(SoleTrader.format))
+    Json.fromJson(json)(LimitedCompany.format).orElse(Json.fromJson(json)(SoleTrader.format)).orElse(Json.fromJson(json)(GeneralPartnership.format))
   }
 
   val writes: Writes[BusinessEntity] = Writes {
     case limitedCompany: LimitedCompany => Json.toJson(limitedCompany)
     case soleTrader: SoleTrader => Json.toJson(soleTrader)
+    case generalPartnership: GeneralPartnership => Json.toJson(generalPartnership)
   }
 
   implicit val format: Format[BusinessEntity] = Format[BusinessEntity](reads, writes)
@@ -114,4 +115,26 @@ object SoleTrader {
   val apiFormat: Format[SoleTrader] = Format[SoleTrader](apiReads, apiWrites)
 
   implicit val format: Format[SoleTrader] = Json.format[SoleTrader]
+}
+
+case class GeneralPartnership(sautr: Option[String],
+                              postCode: Option[String],
+                              registration: String,
+                              businessVerification: BusinessVerificationStatus,
+                              bpSafeId: Option[String] = None,
+                              identifiersMatch: Boolean) extends BusinessEntity
+
+object GeneralPartnership {
+
+  val apiFormat: Format[GeneralPartnership] = (
+    (__ \ "sautr").formatNullable[String] and
+      (__ \ "postcode").formatNullable[String] and
+      (__ \ "registration" \ "registrationStatus").format[String] and
+      (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
+      (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
+      (__ \ "identifiersMatch").format[Boolean]
+    ) (GeneralPartnership.apply, unlift(GeneralPartnership.unapply))
+
+  implicit val format: Format[GeneralPartnership] = Json.format[GeneralPartnership]
+
 }

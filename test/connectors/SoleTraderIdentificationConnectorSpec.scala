@@ -17,14 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UnauthorizedException}
-
 
 class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 

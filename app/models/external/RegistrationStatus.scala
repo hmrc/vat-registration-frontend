@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.external.incorporatedentityid
+package models.external
 
 import play.api.libs.json._
 import uk.gov.hmrc.http.InternalServerException

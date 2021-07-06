@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.TransactorDetails
-import models.external.incorporatedentityid.SoleTrader
+import models.external.SoleTrader
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.Logger
 import play.api.http.Status._

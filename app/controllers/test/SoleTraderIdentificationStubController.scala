@@ -17,8 +17,8 @@
 package controllers.test
 
 import config.FrontendAppConfig
-import models.external.incorporatedentityid.{BusinessVerificationStatus, BvPass, BvUnchallenged}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.{BusinessVerificationStatus, BvPass, BvUnchallenged}
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController

@@ -21,8 +21,7 @@ import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
 import models.api.returns.{JanuaryStagger, Quarterly, Returns}
-import models.external.incorporatedentityid.{BvPass, LimitedCompany}
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{BvPass, EmailAddress, EmailVerified, LimitedCompany}
 import models.view._
 import play.api.libs.json.Json
 
