@@ -21,7 +21,7 @@ import connectors.KeystoreConnector
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import forms.MainBusinessActivityForm
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{Individual, SicCode, UkCompany}
+import models.api.SicCode
 import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Result}
@@ -39,11 +39,10 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
                                            val frsService: FlatRateService,
                                            val iclService: ICLService,
                                            val aboutToConfirmSicPage: about_to_confirm_sic,
-                                           val mainBusinessActivityPage: main_business_activity,
-                                           val vatRegistrationService: VatRegistrationService)
-                                           (implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
+                                           val mainBusinessActivityPage: main_business_activity)
+                                          (implicit appConfig: FrontendAppConfig,
+                                           val executionContext: ExecutionContext,
+                                           baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
@@ -72,16 +71,11 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             )(selected => for {
               _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
               _ <- frsService.resetFRSForSAC(selected)
-              partyType <- vatRegistrationService.partyType
             } yield {
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
                 Redirect(routes.ComplianceIntroductionController.show())
               } else {
-                partyType match {
-                  case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
-                  case UkCompany => Redirect(controllers.registration.business.routes.TradingNameController.show())
-                  case _ => throw new IllegalStateException("PartyType not supported")
-                }
+                Redirect(controllers.routes.TradingNameResolverController.resolve())
               }
             })
           )
@@ -126,7 +120,6 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
           iclCodes <- iclService.getICLSICCodes()
           _ <- keystoreConnector.cache(SIC_CODES_KEY, iclCodes)
           _ <- sicAndCompService.submitSicCodes(iclCodes)
-          partyType <- vatRegistrationService.partyType
         } yield {
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
@@ -134,11 +127,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
               controllers.routes.ComplianceIntroductionController.show()
             case List(onlyOneCode) =>
-              partyType match {
-                case Individual => controllers.registration.applicant.routes.SoleTraderNameController.show()
-                case UkCompany => controllers.registration.business.routes.TradingNameController.show()
-                case _ => throw new IllegalStateException("PartyType not supported")
-              }
+              controllers.routes.TradingNameResolverController.resolve()
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
           })

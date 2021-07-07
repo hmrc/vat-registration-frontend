@@ -17,7 +17,7 @@
 package controllers.test
 
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, SicCode, UkCompany}
+import models.api.SicCode
 import models.test.SicStub
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -36,7 +36,6 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockKeystoreConnector,
       mockS4LService,
       mockSicAndComplianceService,
-      mockVatRegistrationService,
       mockAuthClientConnector
     )
 
@@ -64,7 +63,6 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
         _ redirectsTo controllers.routes.SicAndComplianceController.showMainBusinessActivity().url
       }
@@ -76,9 +74,8 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
-        _ redirectsTo controllers.registration.business.routes.TradingNameController.show().url
+        _ redirectsTo controllers.routes.TradingNameResolverController.resolve().url
       }
     }
 
@@ -88,7 +85,6 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
         _ redirectsTo controllers.routes.ComplianceIntroductionController.show().url
       }

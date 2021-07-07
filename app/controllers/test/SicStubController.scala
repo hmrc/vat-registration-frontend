@@ -21,9 +21,8 @@ import connectors.{ConfigConnector, KeystoreConnector}
 import controllers.BaseController
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{Individual, UkCompany}
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, SicAndComplianceService, VatRegistrationService}
+import services.{S4LService, SessionProfile, SicAndComplianceService}
 import views.html.test._
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +33,6 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val s4LService: S4LService,
                                   val sicAndCompService: SicAndComplianceService,
-                                  val vatRegistrationService: VatRegistrationService,
                                   val authConnector: AuthClientConnector)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
@@ -58,17 +56,12 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
             }
             _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
             _ <- sicAndCompService.submitSicCodes(sicCodesList)
-            partyType <- vatRegistrationService.partyType
           } yield {
             if (sicCodesList.size == 1) {
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
                 Redirect(controllers.routes.ComplianceIntroductionController.show())
               } else {
-                partyType match {
-                  case Individual => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
-                  case UkCompany => Redirect(controllers.registration.business.routes.TradingNameController.show())
-                  case _ => throw new IllegalStateException("PartyType not supported")
-                }
+                Redirect(controllers.routes.TradingNameResolverController.resolve())
               }
             } else {
               Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity())

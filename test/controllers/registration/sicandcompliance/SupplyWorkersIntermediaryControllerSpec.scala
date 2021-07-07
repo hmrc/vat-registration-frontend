@@ -36,7 +36,6 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
-      mockVatRegistrationService,
       view
     )
 
@@ -75,7 +74,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       }
     }
 
-    "redirect to business trading name page with Yes selected" in new Setup {
+    "redirect to PartyType resolver with Yes selected for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
@@ -84,11 +83,11 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
       }
     }
 
-    "redirect to business trading name page with No selected" in new Setup {
+    "redirect to PartyType resolver with No selected for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
@@ -97,11 +96,11 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.registration.business.routes.TradingNameController.show().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
       }
     }
 
-    "redirect to sole trader name page with Yes selected" in new Setup {
+    "redirect to PartyType resolver with Yes selected for Sole Trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
@@ -110,11 +109,11 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.registration.applicant.routes.SoleTraderNameController.show().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
       }
     }
 
-    "redirect to sole trader name page with No selected" in new Setup {
+    "redirect to PartyType resolver with No selected for Sole Trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
@@ -123,9 +122,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.registration.applicant.routes.SoleTraderNameController.show().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
       }
     }
   }
-
 }

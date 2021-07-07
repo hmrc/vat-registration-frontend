@@ -248,7 +248,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
       (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
@@ -285,7 +285,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
 
       (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
