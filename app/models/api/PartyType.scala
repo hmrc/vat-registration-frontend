@@ -37,6 +37,7 @@ case object UnincorpAssoc extends PartyType
 case object TaxGroups extends PartyType
 case object AdminDivision extends PartyType
 case object Individual extends PartyType
+case object Invalid extends PartyType
 
 object PartyType {
 
@@ -60,7 +61,7 @@ object PartyType {
     Individual -> "Z1"
   )
 
-  val inverseStati = stati.map(_.swap)
+  val inverseStati = stati.map(_.swap).withDefaultValue(Invalid)
 
   def fromString(value: String): PartyType = inverseStati(value)
   def toJsString(value: PartyType): JsString = JsString(stati(value))

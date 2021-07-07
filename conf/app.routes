@@ -243,7 +243,7 @@ POST        /last-month-of-accounting-year                                      
 GET         /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.show
 POST        /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.submit
 
-## PaynentFrequencyController
+## PaymentFrequencyController
 GET         /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.show
 POST        /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.submit
 
@@ -251,3 +251,6 @@ POST        /how-often-you-pay                                                  
 GET         /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.show
 POST        /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.submit
 
+## LeadPartnerEntityController
+GET         /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
+POST        /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.submitLeadPartnerEntity

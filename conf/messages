@@ -769,3 +769,15 @@ soleTrader.tradingName.hint                              = You cannot include â€
 validation.trading-name.invalid                          = Enter a valid trading name
 validation.trading-name.maxlen                           = Enter a trading name using 160 characters or less
 validation.trading-name.missing                          = Enter a trading name
+
+## LEAD PARTNER ENTITY TYPE
+pages.leadPartnerEntityType.heading                      = What type of entity is the lead partner?
+pages.leadPartnerEntityType.soleTrader                   = Sole trader
+pages.leadPartnerEntityType.netp                         = Non-established taxable person (NETP)
+pages.leadPartnerEntityType.ukCompany                    = UK company
+pages.leadPartnerEntityType.scotPartner                  = Scottish partnership
+pages.leadPartnerEntityType.scotLimPartner               = Scottish limited partnership
+pages.leadPartnerEntityType.limLiaPartner                = Limited liability partnership
+pages.leadPartnerEntityType.cio                          = Charitable Incorporated Organisation (CIO)
+pages.leadPartnerEntityType.regSociety                   = Registered society
+pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
