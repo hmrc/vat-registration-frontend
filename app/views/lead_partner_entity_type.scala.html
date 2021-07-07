@@ -1,0 +1,94 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.data.Form
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components._
+@import views.html.layouts.layout
+@import config.FrontendAppConfig
+@import models.api.{PartyType, Individual, NonUkNonEstablished, UkCompany, ScotPartnership, ScotLtdPartnership, LtdLiabilityPartnership, CharitableOrg, RegSociety}
+
+
+@this(
+    layout: layout,
+    h1: h1,
+    button: button,
+    formWithCSRF: FormWithCSRF,
+    errorSummary: errorSummary,
+    inputRadio: inputRadio
+)
+
+@(form: Form[PartyType])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(form, messages("pages.leadPartnerEntityType.heading")))) {
+
+    @errorSummary(form.errors)
+
+    @h1("pages.leadPartnerEntityType.heading")
+
+    @formWithCSRF(action = controllers.registration.applicant.routes.LeadPartnerEntityController.submitLeadPartnerEntity(), 'autoComplete -> "off") {
+        @inputRadio(
+            form = form,
+            legend = messages("pages.leadPartnerEntityType.heading"),
+            items = Seq(
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.soleTrader")),
+                value = Some(PartyType.stati(Individual)),
+                checked = form("value").value.contains(Some(PartyType.stati(Individual)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.netp")),
+                value = Some(PartyType.stati(NonUkNonEstablished)),
+                checked = form("value").value.contains(Some(PartyType.stati(NonUkNonEstablished)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.ukCompany")),
+                value = Some(PartyType.stati(UkCompany)),
+                checked = form("value").value.contains(Some(PartyType.stati(UkCompany)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.scotPartner")),
+                value = Some(PartyType.stati(ScotPartnership)),
+                checked = form("value").value.contains(Some(PartyType.stati(ScotPartnership)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.scotLimPartner")),
+                value = Some(PartyType.stati(ScotLtdPartnership)),
+                checked = form("value").value.contains(Some(PartyType.stati(ScotLtdPartnership)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.limLiaPartner")),
+                value = Some(PartyType.stati(LtdLiabilityPartnership)),
+                checked = form("value").value.contains(Some(PartyType.stati(LtdLiabilityPartnership)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.cio")),
+                value = Some(PartyType.stati(CharitableOrg)),
+                checked = form("value").value.contains(Some(PartyType.stati(CharitableOrg)))
+            ),
+            RadioItem(
+                content = Text(messages("pages.leadPartnerEntityType.regSociety")),
+                value = Some(PartyType.stati(RegSociety)),
+                checked = form("value").value.contains(Some(PartyType.stati(RegSociety)))
+            )
+            ),
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden"
+            )
+
+        @button("app.common.continue")
+    }
+}
