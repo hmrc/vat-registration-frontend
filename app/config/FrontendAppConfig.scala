@@ -170,10 +170,18 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
 
   def getCreateGeneralPartnershipIdJourneyUrl: String =
-    s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
+    if (isEnabled(StubPartnershipIdentification)) {
+      s"$host/register-for-vat/test-only/partnership-identification"
+    } else {
+      s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
+    }
 
   def getPartnershipIdDetailsUrl(journeyId: String): String =
-    s"$partnershipIdHost/partnership-identification/api/journey/$journeyId"
+    if (isEnabled(StubPartnershipIdentification)) {
+      s"$host/register-for-vat/test-only/partnership-identification/$journeyId"
+    } else {
+      s"$partnershipIdHost/partnership-identification/api/journey/$journeyId"
+    }
 
   def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
 

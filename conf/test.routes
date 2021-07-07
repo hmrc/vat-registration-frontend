@@ -33,6 +33,10 @@ POST        /sole-trader-identification                       controllers.test.S
 GET         /sole-trader-identification/:journeyId            controllers.test.SoleTraderIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
+POST        /partnership-identification                       controllers.test.PartnershipIdentificationStubController.createJourney
+GET         /partnership-identification/:journeyId            controllers.test.PartnershipIdentificationStubController.retrieveValidationResult(journeyId)
+
++ nocsrf
 POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
 
 + nocsrf
