@@ -27,7 +27,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
         res.status mustBe OK
       }
     }
-    "return SEE_OTHER on submit redirecting to business trading name page" in new Setup {
+    "return SEE_OTHER on submit redirecting to party type resolver for UkCompany" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -48,11 +48,11 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       }
     }
 
-    "return SEE_OTHER on submit redirecting to sole trader name page" in new Setup {
+    "return SEE_OTHER on submit redirecting to party  type resolver for sole trader" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -73,7 +73,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       }
     }
   }

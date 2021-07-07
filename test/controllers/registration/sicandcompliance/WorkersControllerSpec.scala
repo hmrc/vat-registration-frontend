@@ -36,7 +36,6 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockSicAndComplianceService,
-      mockVatRegistrationService,
       view
     )
 
@@ -73,25 +72,25 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
         result => status(result) mustBe BAD_REQUEST
       }
     }
-    "redirect to the business trading name page" in new Setup {
+    "redirect to the Party type resolver for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.registration.business.routes.TradingNameController.show().url
+          result redirectsTo controllers.routes.TradingNameResolverController.resolve().url
       }
     }
 
-    "redirect to the Sole Trader name page" in new Setup {
+    "redirect to the party type resolver for sole trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.registration.applicant.routes.SoleTraderNameController.show().url
+          result redirectsTo controllers.routes.TradingNameResolverController.resolve().url
       }
     }
   }

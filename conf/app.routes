@@ -254,3 +254,6 @@ POST        /trading-name-not-incorporated                                      
 ## LeadPartnerEntityController
 GET         /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
 POST        /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
+
+## PartyTypeResolverController
+GET         /resolve-party-type                                                                controllers.TradingNameResolverController.resolve

@@ -12,7 +12,7 @@ import play.api.test.Helpers._
 class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture {
 
   "workers controller" should {
-    "redirect to business trading name page" in new Setup {
+    "redirect to party type resolver for UkCompany" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -33,11 +33,11 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       }
     }
 
-    "redirect to sole trader name page" in new Setup {
+    "redirect to party type resolver for sole trader" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
@@ -58,7 +58,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
       }
     }
   }

@@ -20,7 +20,7 @@ import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
 import models.SicAndCompliance
-import models.api.{Individual, SicCode, UkCompany}
+import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
@@ -44,8 +44,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       mockFlatRateService,
       mockICLService,
       mockAboutToConfirmSicView,
-      mockMainBusinessActivityView,
-      mockVatRegistrationService
+      mockMainBusinessActivityView
     ) {
       override val iclFEurlwww: String = "www-url"
     }
@@ -101,7 +100,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
         when(mockKeystoreConnector.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -118,7 +116,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
         when(mockKeystoreConnector.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -135,12 +132,11 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
         when(mockKeystoreConnector.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.registration.business.routes.TradingNameController.show().url
+            res redirectsTo controllers.routes.TradingNameResolverController.resolve().url
         }
       }
 
@@ -153,7 +149,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
         when(mockKeystoreConnector.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -197,7 +192,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submitMainBusinessActivity(),
         fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
@@ -212,7 +206,6 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submitMainBusinessActivity(),
         fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
@@ -225,13 +218,12 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockSicAndComplianceService.updateSicAndCompliance(any())(any(), any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
 
       submitAuthorised(controller.submitMainBusinessActivity(),
 
         fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo s"$contextRoot/trading-name")
+      )(_ redirectsTo controllers.routes.TradingNameResolverController.resolve().url)
     }
   }
 
