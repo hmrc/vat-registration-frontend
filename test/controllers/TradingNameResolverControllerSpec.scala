@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.{AdminDivision, Individual, UkCompany}
+import models.api.{AdminDivision, Individual, Partnership, UkCompany}
 import play.api.libs.iteratee.Execution.Implicits.defaultExecutionContext
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
@@ -42,15 +42,22 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  "show" must {
-    "redirect to /changed-name url for partyType Individual" in new Setup {
+  "resolve" must {
+    s"redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for partyType Individual" in new Setup {
       mockPartyType(Future.successful(Individual))
       val res = Controller.resolve()(FakeRequest())
       status(res) mustBe SEE_OTHER
       redirectLocation(res) must contain(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
     }
 
-    "redirect to /role-in-the-business url for partyType UkCompany" in new Setup {
+    s"redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for partyType Partnership" in new Setup {
+      mockPartyType(Future.successful(Partnership))
+      val res = Controller.resolve()(FakeRequest())
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) must contain(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+    }
+
+    s"redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for partyType UkCompany" in new Setup {
       mockPartyType(Future.successful(UkCompany))
       val res = Controller.resolve()(FakeRequest())
       status(res) mustBe SEE_OTHER

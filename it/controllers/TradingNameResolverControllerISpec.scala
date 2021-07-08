@@ -18,15 +18,15 @@ package controllers
 
 import common.enums.VatRegStatus
 import itutil.ControllerISpec
-import models.api.{Individual, UkCompany, VatScheme}
+import models.api.{Individual, Partnership, UkCompany, VatScheme}
 import models.{ApplicantDetails, TradingDetails}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
-  "Party type resolver" should {
-    "return SEE_OTHER and redirects to /former-name" in new Setup {
+  "Trading name page resolver" should {
+    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Indivitual" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
@@ -51,7 +51,32 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER and redirects to /trading-name-not-incorporated" in new Setup {
+    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Partnership" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[TradingDetails].isEmpty
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
+        .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+        )
+      )
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.doesNotHave("trading-details")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val  response = buildClient("/resolve-party-type").get()
+      whenReady(response) {res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+      }
+    }
+
+    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for UkCompany" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
