@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
   "Trading name page resolver" should {
-    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Indivitual" in new Setup {
+    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Individual" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
