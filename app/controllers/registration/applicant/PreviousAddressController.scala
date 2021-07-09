@@ -22,22 +22,24 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
-import javax.inject.{Inject, Singleton}
 import models.view.PreviousAddressView
 import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.previous_address
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                                           val keystoreConnector: KeystoreConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
-                                          val addressLookupService: AddressLookupService)
-                                         (implicit appConfig: FrontendAppConfig,
-                                          val executionContext: ExecutionContext,
-                                          baseControllerComponents: BaseControllerComponents)
+                                          val addressLookupService: AddressLookupService,
+                                          previousAddressPage: previous_address
+                                         )(implicit appConfig: FrontendAppConfig,
+                                           val executionContext: ExecutionContext,
+                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -47,7 +49,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
         } yield
-          Ok(views.html.previous_address(filledForm))
+          Ok(previousAddressPage(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -55,7 +57,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         PreviousAddressForm.form.bindFromRequest.fold(
           badForm =>
-            Future.successful(BadRequest(views.html.previous_address(badForm))),
+            Future.successful(BadRequest(previousAddressPage(badForm))),
           data =>
             if (data.yesNo) {
               applicantDetailsService.saveApplicantDetails(data) map {
@@ -80,7 +82,8 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
   }
 
   def change: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
+    implicit request =>
+      _ =>
         addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
   }
 

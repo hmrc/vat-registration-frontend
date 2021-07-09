@@ -16,41 +16,63 @@
 
 package views
 
-import config.FrontendAppConfig
-import views.html.{previous_address => PreviousAddressPage}
 import forms.PreviousAddressForm
 import models.view.PreviousAddressView
 import org.jsoup.Jsoup
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.inject.Injector
-import play.api.test.FakeRequest
-import testHelpers.VatRegSpec
+import org.jsoup.nodes.Document
+import play.api.data.Form
+import play.twirl.api.Html
+import views.html.previous_address
 
-class PreviousAddressViewSpec extends VatRegSpec with I18nSupport {
-  implicit val request = FakeRequest()
-  val injector : Injector = fakeApplication.injector
-  implicit val messagesApi : MessagesApi = injector.instanceOf[MessagesApi]
-  implicit val appConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+class PreviousAddressViewSpec extends VatRegViewSpec {
 
-  lazy val form = PreviousAddressForm.form
+  val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
+
+  lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form
+  lazy val view: Html = previousAddressPage(form)
+  implicit val doc: Document = Jsoup.parse(view.body)
+
+  val heading = "Have you lived at your current address for 3 years or more?"
+  val title = s"$heading - Register for VAT - GOV.UK"
+  val yes = "Yes"
+  val no = "No"
+  val continue = "Save and continue"
 
   "Previous Address Page" should {
     "display the page without pre populated data" in {
-      lazy val view = PreviousAddressPage(form)
-      lazy val document = Jsoup.parse(view.body)
-
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
-      document.getElementsByAttributeValue("checked", "checked").size mustBe 0
+      doc.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      doc.getElementsByAttribute("checked").size mustBe 0
     }
 
     "display the page with form pre populated" in {
-      val validPreviousAddress = PreviousAddressView(true, None)
+      val validPreviousAddress = PreviousAddressView(yesNo = true, None)
 
-      lazy val view = PreviousAddressPage(form.fill(validPreviousAddress))
+      lazy val view = previousAddressPage(form.fill(validPreviousAddress))
       lazy val document = Jsoup.parse(view.body)
 
       document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
-      document.getElementById("previousAddressQuestionRadio-true").attr("checked") mustBe "checked"
+      document.getElementsByAttribute("checked").size mustBe 1
+    }
+
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
+    }
+
+    "have the correct page title" in new ViewSetup {
+      doc.title mustBe title
+    }
+
+    "have yes/no radio options" in new ViewSetup {
+      doc.radio("true") mustBe Some(yes)
+      doc.radio("false") mustBe Some(no)
+    }
+
+    "have a save and continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(continue)
     }
   }
 }

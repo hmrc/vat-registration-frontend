@@ -18,16 +18,17 @@ package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import models.{ApplicantDetails, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{FormerNameView, HomeAddressView, PreviousAddressView}
+import models.{ApplicantDetails, TelephoneNumber}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
+import views.html.previous_address
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,7 +44,8 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
-      mockAddressLookupService
+      mockAddressLookupService,
+      app.injector.instanceOf[previous_address]
     )
 
     mockAuthenticated()

@@ -14,49 +14,39 @@
  * limitations under the License.
  *@
 
-@import models.view.PreviousAddressView
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
 @import controllers.registration.applicant.{routes => applicantRoutes}
+@import models.view.PreviousAddressView
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.components._
+@import views.html.layouts._
+@import forms.PreviousAddressForm
 
-@import views.html.helpers.saveProgressButton
+@this(
+        layout: layout,
+        errorSummary: errorSummary,
+        yesNoRadio: yesNoRadio,
+        formWithCSRF: FormWithCSRF,
+        button: button
+)
+
 @(previousAddressQuestionForm: Form[PreviousAddressView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(previousAddressQuestionForm, messages("pages.previousAddressQuestion.heading"))) {
+@layout(pageTitle = Some(title(previousAddressQuestionForm, messages("pages.previousAddressQuestion.heading")))) {
 
-    @errorSummary(
-        form = previousAddressQuestionForm
-    )
+    @errorSummary(previousAddressQuestionForm.errors)
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.previousAddressQuestion.heading")</h1>
+    @formWithCSRF(action = applicantRoutes.PreviousAddressController.submit()) {
+        @yesNoRadio(
+            form = previousAddressQuestionForm,
+            headingKey = "pages.previousAddressQuestion.heading",
+            isPageHeading = true,
+            inline = true,
+            fieldName = PreviousAddressForm.RADIO_YES_NO
+        )
 
-    @govHelpers.form(action = applicantRoutes.PreviousAddressController.submit()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = previousAddressQuestionForm("previousAddressQuestionRadio"),
-                Seq(
-                    "true" -> messages("app.common.yes"),
-                    "false" -> messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.previousAddressQuestion.heading"),
-                '_legendClass -> "visually-hidden"
-            )
-        </div>
-
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
-
-            @saveProgressButton()
-        </div>
-
+        @button("app.common.continue", showSaveProgressButton = true)
     }
 }
