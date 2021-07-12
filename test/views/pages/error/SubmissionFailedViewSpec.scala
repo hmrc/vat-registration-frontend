@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package views
+package views.pages.error
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.compliance_introduction
+import views.VatRegViewSpec
+import views.html.pages.error.submissionFailed
 
-class ComplianceIntroductionViewSpec extends VatRegViewSpec {
+class SubmissionFailedViewSpec extends VatRegViewSpec {
   object ExpectedContent {
-    val heading  = "Tell us more about your company"
-    val title    = s"$heading - Register for VAT - GOV.UK"
-    val para     = "So we can understand what your company does, we’re going to ask you a few questions about your business activities."
-    val continue = "Save and continue"
+    val heading = "We couldn’t process your application"
+    val title = s"$heading - Register for VAT - GOV.UK"
+    val para1 = "Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved."
+    val para2 = "Fill out the form below so we can help you complete your application."
   }
 
-  val view: compliance_introduction = app.injector.instanceOf[compliance_introduction]
+  val view: submissionFailed = app.injector.instanceOf[submissionFailed]
 
   implicit val doc: Document = Jsoup.parse(view().body)
 
-  "Compliance Introduction page" must {
-    "has back link" in new ViewSetup {
-      doc.hasBackLink mustBe true
+  "Submission Failed page" must {
+    "not has back link" in new ViewSetup {
+      doc.hasBackLink mustBe false
     }
 
     "has the correct heading" in new ViewSetup {
@@ -45,13 +46,9 @@ class ComplianceIntroductionViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "has correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.para)
-    }
-
-    "has a primary action" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.continue)
+    "have correct text" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.para1)
+      doc.para(2) mustBe Some(ExpectedContent.para2)
     }
   }
-
 }
