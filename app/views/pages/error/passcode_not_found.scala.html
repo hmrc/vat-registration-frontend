@@ -15,18 +15,29 @@
  *@
 
 @import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        link: link
+)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = titleNoForm(messages("page.passcodeNotFound.heading")), backEnabled = false) {
+@layout(Some(titleNoForm(messages("page.passcodeNotFound.heading"))), backLink = false) {
 
-    <h1 id="passcodeNotFound" class="heading-xlarge">@Messages("page.passcodeNotFound.heading")</h1>
-    <p>@Messages("page.passcodeNotFound.p1")</p>
-
-    <div class="govuk-body">
-        <p id="getNewPasscode">@Html(messages("page.passcodeNotFound.p2", controllers.registration.applicant.routes.CaptureEmailAddressController.show()))</p>
-    </div>
-
+    @h1("page.passcodeNotFound.heading")
+    @p{ @messages("page.passcodeNotFound.p1") }
+    @p{
+       @messages("page.passcodeNotFound.p2a")
+       @link(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url, messages("page.passcodeNotFound.linkText"))
+       @messages("page.passcodeNotFound.p2b")
+    }
 
 }
 
