@@ -18,17 +18,19 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.error.submissionFailed
+import views.html.pages.error.{submissionFailed, SubmissionRetryableView}
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val mockSubmissionFailedView = app.injector.instanceOf[submissionFailed]
+  val mockSubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
 
   trait Setup {
     val testErrorController: ErrorController = new ErrorController(
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockSubmissionFailedView
+      mockSubmissionFailedView,
+      mockSubmissionRetryableView
     )
 
     mockAuthenticated()
