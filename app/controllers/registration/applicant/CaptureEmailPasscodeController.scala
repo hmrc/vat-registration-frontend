@@ -20,6 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EmailPasscodeForm
+
 import javax.inject.Inject
 import models.CurrentProfile
 import models.external._
@@ -30,6 +31,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
 import controllers.registration.applicant.errors.{routes => errorRoutes}
+import views.html.pages.error.passcode_not_found
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,8 +39,9 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector,
                                                emailVerificationService: EmailVerificationService,
-                                               applicantDetailsService: ApplicantDetailsService
-                                              )(implicit appConfig: FrontendAppConfig,
+                                               applicantDetailsService: ApplicantDetailsService,
+                                               passcode_not_found: passcode_not_found)
+                                              (implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
@@ -74,10 +77,9 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                     key = EmailPasscodeForm.passcodeKey,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
-
                   Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm)))
                 case PasscodeNotFound =>
-                  Future.successful(BadRequest(views.html.pages.error.passcodeNotFound()))
+                  Future.successful(BadRequest(passcode_not_found()))
                 case MaxAttemptsExceeded =>
                   Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show()))
               }

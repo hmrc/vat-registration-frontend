@@ -15,15 +15,19 @@
  *@
 
 @import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+
 @this(
-h1: components.h1,
-p: components.p,
-layout: layouts.layout,
-link: components.link
+        h1: h1,
+        p: p,
+        layout: layout,
+        link: link
 )
+
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("page.MaxPasscodeAttemptsExceeded.heading"))), backLink = false) {
+@layout(Some(titleNoForm(messages("page.MaxPasscodeAttemptsExceeded.heading"))), backLink = false) {
 
     @h1(messages("page.MaxPasscodeAttemptsExceeded.heading"))
     @p{@messages("page.MaxPasscodeAttemptsExceeded.p1")}

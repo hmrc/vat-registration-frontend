@@ -145,7 +145,9 @@ pages.failedSubmission.p2               = Fill out the form below so we can help
 ##Passcode Not Found Page
 page.passcodeNotFound.heading           = You need to start again
 page.passcodeNotFound.p1                = The code we send you cannot be found or has expired.
-page.passcodeNotFound.p2                = You will need to  <a href="{0}">get a new code</a> to continue with the registration.
+page.passcodeNotFound.p2a               = You will need to
+page.passcodeNotFound.linkText          = get a new code
+page.passcodeNotFound.p2b               = to continue with the registration.
 
 ##Max Passcode Attempts Exceeded
 page.MaxPasscodeAttemptsExceeded.heading           = You need to start again
