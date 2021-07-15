@@ -33,7 +33,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/company-contact-details").get()
+      val response = buildClient("/business-contact-details").get()
       whenReady(response) { res =>
         res.status mustBe OK
       }
@@ -52,7 +52,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
+      val response = buildClient("/business-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
@@ -70,7 +70,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
+      val response = buildClient("/business-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
@@ -87,7 +87,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
+      val response = buildClient("/business-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe NOT_FOUND
       }
@@ -102,7 +102,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/company-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
+      val response = buildClient("/business-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe INTERNAL_SERVER_ERROR
       }

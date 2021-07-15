@@ -88,8 +88,8 @@ GET         /choose-standard-industry-classification-codes                      
 POST        /choose-standard-industry-classification-codes                                     controllers.SicAndComplianceController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-company                                                    controllers.ComplianceIntroductionController.show
-POST        /tell-us-more-about-the-company                                                    controllers.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-business                                                   controllers.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-business                                                   controllers.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
 GET         /save-sic-codes                                                                    controllers.SicAndComplianceController.saveIclCodes
@@ -112,8 +112,8 @@ GET         /principal-place-business                                           
 GET         /principal-place-business/acceptFromTxm                                            controllers.registration.business.PpobAddressController.callback(id: String ?= "")
 
 ## BUSINESS CONTACT DETAILS PAGE
-GET         /company-contact-details                                                           controllers.registration.business.BusinessContactDetailsController.show
-POST        /company-contact-details                                                           controllers.registration.business.BusinessContactDetailsController.submit
+GET         /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.show
+POST        /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.submit
 
 ## Applicant ADDRESS PAGE
 GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.redirectToAlf
