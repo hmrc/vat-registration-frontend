@@ -209,7 +209,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
       submitAuthorised(controller.submitMainBusinessActivity(),
         fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
-      )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-company")
+      )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-business")
 
     }
     "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {

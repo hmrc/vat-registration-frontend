@@ -321,7 +321,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/tell-us-more-about-the-company").get()
+    val response = buildClient("/tell-us-more-about-the-business").get()
     whenReady(response) { res =>
       res.status mustBe 200
     }
@@ -336,7 +336,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-    val response = buildClient("/tell-us-more-about-the-company").post(Map("" -> Seq("")))
+    val response = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show().url)
