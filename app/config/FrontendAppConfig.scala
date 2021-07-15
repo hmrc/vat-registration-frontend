@@ -49,6 +49,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
 
+  def partnersApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/partners"
+
   def clearTrafficManagementUrl: String = s"$backendHost/vatreg/traffic-management/reg-info/clear"
 
   lazy val otrsRoute: String = "https://www.tax.service.gov.uk/business-registration/select-taxes"
@@ -164,6 +166,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def getSoleTraderIdentificationCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
+
+  def leadPartnerSoleTraderIdCallbackUrl(isLeadPartner: Boolean): String = s"$hostUrl/register-for-vat/sti-partner-callback/$isLeadPartner"
 
   // Partnership Identification Section
 

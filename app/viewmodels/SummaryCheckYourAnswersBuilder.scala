@@ -19,13 +19,14 @@ package viewmodels
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
+import models.api._
 import models.api.returns._
-import models.api.{Address, Individual, Threshold, VatScheme}
-import models.external.{LimitedCompany, SoleTrader}
+import models.external.{BusinessEntity, GeneralPartnership, LimitedCompany, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
 import services.FlatRateService
+import uk.gov.hmrc.http.InternalServerException
 
 case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
                                           vatApplicantDetails: ApplicantDetails,
@@ -44,21 +45,28 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
 
   val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
   val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
-  val isSoleTrader: Boolean = scheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+  val partyType: PartyType = scheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
   val isLimitedCostTrader: Boolean = scheme.flatRateScheme.exists(_.limitedCostTrader.contains(true))
+  val optLeadPartner: Option[BusinessEntity] = if (partyType.equals(Partnership)) scheme.partners.flatMap(_.find(_.isLeadPartner).map(_.details)) else None
 
-  val tradingNameUrl: Call = if (isSoleTrader){
-    controllers.registration.applicant.routes.SoleTraderNameController.show()
-  } else {
+  val tradingNameUrl: Call = if (partyType.equals(UkCompany)) {
     controllers.registration.business.routes.TradingNameController.show()
+  } else {
+    controllers.registration.applicant.routes.SoleTraderNameController.show()
   }
 
-  val changeTransactorDetailsUrl: Call = if (isEnabled(UseSoleTraderIdentification)) {
-    applicantRoutes.SoleTraderIdentificationController.startJourney()
-  }
-  else {
-    applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-  }
+  val changeTransactorDetailsUrl: Call =
+    if (partyType.equals(Partnership)) {
+      optLeadPartner match {
+        case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => applicantRoutes.SoleTraderIdentificationController.startJourney()
+        case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
+      }
+    } else if (isEnabled(UseSoleTraderIdentification)) {
+      applicantRoutes.SoleTraderIdentificationController.startJourney()
+    }
+    else {
+      applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+    }
 
   def startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
@@ -99,11 +107,15 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     vatApplicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
     Some(changeTransactorDetailsUrl)
   )
-
+  //TODO add partnership SAUTR and Postcode and change the current sautr field if needed
   val sautr: SummaryRow = SummaryRow(
     s"$sectionId.sautr",
     vatApplicantDetails.entity.flatMap {
       case soleTrader: SoleTrader => soleTrader.sautr
+      case _: GeneralPartnership => optLeadPartner.flatMap{
+        case soleTrader: SoleTrader => soleTrader.sautr
+        case _ => None
+      }
       case _ => None
     }.getOrElse(""),
     Some(changeTransactorDetailsUrl)
@@ -398,14 +410,14 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyNumber, !isSoleTrader),
-      (ctutr, !isSoleTrader),
-      (sautr, isSoleTrader),
+      (companyNumber, partyType.equals(UkCompany)),
+      (ctutr, ctutr.answerMessageKeys.head.nonEmpty && partyType.equals(UkCompany)),
+      (sautr, sautr.answerMessageKeys.head.nonEmpty && (partyType.equals(Individual) || partyType.equals(Partnership))),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),
       (dob, vatApplicantDetails.transactor.map(_.dateOfBirth).isDefined),
-      (roleInTheBusiness, !isSoleTrader),
+      (roleInTheBusiness, partyType.equals(UkCompany)),
       (formerName, true),
       (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
       (homeAddress, vatApplicantDetails.homeAddress.exists(_.address.isDefined)),

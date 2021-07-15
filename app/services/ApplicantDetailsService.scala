@@ -19,7 +19,7 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import models._
-import models.external.{BusinessEntity, EmailAddress, EmailVerified, LimitedCompany, SoleTrader}
+import models.external.{BusinessEntity, EmailAddress, EmailVerified, GeneralPartnership, LimitedCompany, SoleTrader}
 import models.view._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -64,6 +64,8 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
         Incomplete(applicantDetails)
       case ApplicantDetails(Some(SoleTrader(_, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
         Complete(applicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor)))
+      case ApplicantDetails(Some(GeneralPartnership(_, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
+        Complete(applicantDetails.copy(roleInTheBusiness = Some(Partner)))
       case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), Some(_)) if fName.yesNo == fNameDate.isDefined =>
         Complete(applicantDetails)
       case _ =>

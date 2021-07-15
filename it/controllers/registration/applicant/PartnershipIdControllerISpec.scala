@@ -23,10 +23,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val journeyUrl = "/partnership-identification/api/general-partnership/journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
-  val testSautr = "1234567890"
   val testPostCode = "ZZ1 1ZZ"
-  val testRegistration = "REGISTERED"
-  val testSafeId = "X00000123456789"
 
   val testPartnershipIdResponse: JsObject = Json.obj(
     "sautr" -> testSautr,
@@ -98,7 +95,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
       }
     }
 
@@ -124,7 +121,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
       }
     }
   }

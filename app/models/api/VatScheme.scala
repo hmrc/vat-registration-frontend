@@ -31,7 +31,8 @@ case class VatScheme(id: String,
                      bankAccount : Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
                      status: VatRegStatus.Value,
-                     eligibilitySubmissionData: Option[EligibilitySubmissionData] = None)
+                     eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
+                     partners: Option[List[PartnerEntity]] = None)
 
 object VatScheme {
   val s4lFormat: Format[VatScheme] = (
@@ -45,7 +46,8 @@ object VatScheme {
     (__ \ BankAccount.s4lKey.key).formatNullable[BankAccount] and
     (__ \ FlatRateScheme.s4lKey.key).formatNullable[FlatRateScheme] and
     (__ \ "status").format[VatRegStatus.Value] and
-    (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData]
+    (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData] and
+    (__ \ "partners").formatNullable[List[PartnerEntity]]
   )(VatScheme.apply, unlift(VatScheme.unapply))
 
   implicit val format: OFormat[VatScheme] = (
@@ -59,6 +61,7 @@ object VatScheme {
       (__ \ "bankAccount").formatNullable[BankAccount] and
       (__ \ "flatRateScheme").formatNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
       (__ \ "status").format[VatRegStatus.Value] and
-      (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData]
+      (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData] and
+      (__ \ "partners").formatNullable[List[PartnerEntity]]
     )(VatScheme.apply, unlift(VatScheme.unapply))
 }

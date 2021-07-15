@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import fixtures.VatRegistrationFixture
 import models.api.{Individual, UkCompany}
 import play.api.test.FakeRequest
-import services.mocks.{MockApplicantDetailsService, MockSoleTraderIdService, MockVatRegistrationService}
+import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -30,6 +30,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   with MockApplicantDetailsService
   with MockSoleTraderIdService
   with MockVatRegistrationService
+  with MockPartnersService
   with VatRegistrationFixture {
 
   class Setup {
@@ -41,7 +42,8 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockApplicantDetailsService,
       mockSoleTraderIdService,
-      vatRegistrationServiceMock
+      vatRegistrationServiceMock,
+      mockPartnersService
     )
 
     mockAuthenticated()

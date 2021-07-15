@@ -25,6 +25,7 @@ import models.S4LKey
 import models.api.returns.Returns
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api.{SicCode, VatScheme}
+import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -509,6 +510,13 @@ trait StubUtils {
       stubFor(
         patch(urlPathMatching(s"/vatreg/1/.*"))
           .willReturn(aResponse().withStatus(202).withBody(tFmt.writes(t).toString())))
+      builder
+    }
+
+    def isUpdatedWithPartner[T](t: T)(implicit tFmt: Format[T]): PreconditionBuilder = {
+      stubFor(
+        put(urlPathMatching(s"/vatreg/1/partners/.*"))
+          .willReturn(aResponse().withStatus(CREATED).withBody(tFmt.writes(t).toString())))
       builder
     }
 

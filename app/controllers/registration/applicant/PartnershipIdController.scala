@@ -52,7 +52,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           partnershipDetails <- partnershipIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
         } yield {
-          Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType())
         }
   }
 

@@ -27,16 +27,15 @@ import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents,
-                                                       appConfig: FrontendAppConfig) extends FrontendController(mcc) {
+class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   val ukCompanyJourney = "1"
   val soleTraderJourney = "2"
 
-  def createJourney: Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { config =>
-    def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(appConfig.getSoleTraderIdentificationCallbackUrl + s"?journeyId=$id"))
+  def createJourney: Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
+    def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
 
-    if (config.body.enableSautrCheck) {
+    if (request.body.enableSautrCheck) {
       Created(json(soleTraderJourney))
     } else {
       Created(json(ukCompanyJourney))

@@ -17,19 +17,22 @@
 package controllers.registration.applicant
 
 import fixtures.ApplicantDetailsFixtures
+import models.PartnerEntity
+import models.api.Individual
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockPartnersService}
 import testHelpers.ControllerSpec
 import views.html.lead_partner_entity_type
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class LeadPartnerEntityControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
+  with MockPartnersService
   with ApplicantDetailsFixtures {
-
-  //TO DO To be updated when new API is implemented
 
   trait Setup {
     val view: lead_partner_entity_type = app.injector.instanceOf[lead_partner_entity_type]
@@ -37,29 +40,44 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
+      mockPartnersService,
       view
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
-    val fakeRequest = FakeRequest(routes.LeadPartnerEntityController.showLeadPartnerEntityType())
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.LeadPartnerEntityController.showLeadPartnerEntityType())
   }
 
   "showLeadPartnerEntityType" should {
-    "return OK" in new Setup {
+    "return OK without prepop" in new Setup {
+      mockGetLeadPartner(regId)(None)
+      callAuthorised(controller.showLeadPartnerEntityType()) {
+        status(_) mustBe OK
+      }
+    }
+
+    "return OK with prepop" in new Setup {
+      mockGetLeadPartner(regId)(Some(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
       callAuthorised(controller.showLeadPartnerEntityType()) {
         status(_) mustBe OK
       }
     }
   }
 
-  //TO DO This will be updated when the new API is implemented
-
   "submitLeadPartnerEntity" should {
-    "return a BAD_REQUEST" in new Setup {
-      callAuthorised(controller.submitLeadPartnerEntity) {
-        status(_) mustBe BAD_REQUEST //This is only so because the new API is not yet implemented
+    "return a redirect for a Sole Trader" in new Setup {
+      val soleTrader = "Z1"
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+      }
+    }
+
+    "return BAD_REQUEST with Empty data" in new Setup {
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody()) {
+        result => status(result) mustBe BAD_REQUEST
       }
     }
   }

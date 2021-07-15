@@ -152,6 +152,8 @@ GET         /personal-details-validation-callback                               
 ## Sole Trader Identification Journey
 GET         /start-sti-journey                                                                 controllers.registration.applicant.SoleTraderIdentificationController.startJourney
 GET         /sti-callback                                                                      controllers.registration.applicant.SoleTraderIdentificationController.callback(journeyId)
+GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney(isLeadPartner: Boolean)
+GET         /sti-partner-callback/:isLeadPartner                                               controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(isLeadPartner: Boolean, journeyId: String)
 
 ## Incorp ID Pages
 GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startPartnershipIdJourney()

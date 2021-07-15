@@ -2,10 +2,12 @@
 
 package controllers.registration.applicant
 
-import controllers.Assets.{NOT_IMPLEMENTED, OK}
+import controllers.Assets._
 import itutil.ControllerISpec
-import models.ApplicantDetails
+import models.PartnerEntity
+import models.api.Individual
 import org.jsoup.Jsoup
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -14,8 +16,6 @@ import scala.concurrent.Future
 
 class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
-  //TO DO To be updated when new API is implemented
-
   val url: String = controllers.registration.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType().url
 
   s"GET $url" should {
@@ -23,6 +23,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -31,28 +32,58 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe OK
 
-        Jsoup.parse(res.body).getElementById("value").attr("value") mustBe "Z1"
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 0
+      }
+    }
+
+    "display the page with prepop" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("partners", Json.toJson(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 1
       }
     }
   }
 
   s"POST $url" when {
-    val keyblock = "applicant-details"
     "the user selects Sole Trader" should {
       "post to the backend and begin a STI journey" in new Setup {
         given()
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
-          .s4lContainer[ApplicantDetails].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient("/lead-partner-entity").post(Map("value" -> "Z1")))
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "Z1")))
 
-        res.status mustBe NOT_IMPLEMENTED  //TO DO To be updated when new API has been implemented
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+      }
+    }
+
+    "the user selects Anything else" should {
+      "return a not implemented" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "50")))
+
+        res.status mustBe NOT_IMPLEMENTED
       }
     }
   }

@@ -25,10 +25,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     signOutUrl = "/test-sign-out"
   )
 
-  val testSautr = "1234567890"
   val testPostCode = "ZZ1 1ZZ"
-  val testRegistration = "REGISTERED"
-  val testSafeId = "X00000123456789"
 
   val testPartnershipIdResponse: JsObject = Json.obj(
     "sautr" -> testSautr,
