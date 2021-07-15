@@ -19,9 +19,11 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.LeadPartnerForm
+import models.api.Individual
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, PartnersService, SessionProfile}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.lead_partner_entity_type
 
@@ -31,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
                                             val keystoreConnector: KeystoreConnector,
                                             val applicantDetailsService: ApplicantDetailsService,
+                                            partnersService: PartnersService,
                                             leadPartnerEntityPage: lead_partner_entity_type
                                            )(implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
@@ -40,7 +43,11 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
   def showLeadPartnerEntityType: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        Future.successful(Ok(leadPartnerEntityPage(form = LeadPartnerForm.form))) // TO DO This will be updated when the new API is implemented
+        partnersService.getLeadPartner(profile.registrationId).map { optPartner =>
+          val form = optPartner.map(_.partyType).fold(LeadPartnerForm.form)(LeadPartnerForm.form.fill(_))
+
+          Ok(leadPartnerEntityPage(form))
+        }
   }
 
   def submitLeadPartnerEntity: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -48,8 +55,10 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         LeadPartnerForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(leadPartnerEntityPage(formWithErrors))),
-          leadPartnerEntity =>
-            Future.successful(NotImplemented) // TO DO This will be updated to use the new API
+          {
+            case Individual => Future.successful(Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true)))
+            case _ => Future.successful(NotImplemented)
+          }
         )
   }
 

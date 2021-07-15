@@ -21,7 +21,7 @@ import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
 import models.api.returns.{JanuaryStagger, Quarterly, Returns}
-import models.external.{BvPass, EmailAddress, EmailVerified, LimitedCompany}
+import models.external.{BvPass, EmailAddress, EmailVerified, LimitedCompany, SoleTrader}
 import models.view._
 import play.api.libs.json.Json
 
@@ -181,6 +181,21 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
   val testIncorpDetails = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+
+  val testSautr = "1234567890"
+  val testRegistration = "REGISTERED"
+  val testSafeId = "X00000123456789"
+  val testSoleTrader: SoleTrader = SoleTrader(
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = testApplicantNino,
+    sautr = Some(testSautr),
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
 
   val completeApplicantDetails = ApplicantDetails(
     entity = Some(testIncorpDetails),

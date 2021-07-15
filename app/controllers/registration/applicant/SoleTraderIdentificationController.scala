@@ -20,9 +20,10 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.PartnerEntity
 import models.api.{Individual, UkCompany}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SoleTraderIdentificationService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -33,10 +34,11 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
                                                    val authConnector: AuthConnector,
                                                    val applicantDetailsService: ApplicantDetailsService,
                                                    soleTraderIdentificationService: SoleTraderIdentificationService,
-                                                   vatRegistrationService: VatRegistrationService)
-                                                  (implicit val appConfig: FrontendAppConfig,
-                                                   val executionContext: ExecutionContext,
-                                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                                   vatRegistrationService: VatRegistrationService,
+                                                   partnersService: PartnersService
+                                                  )(implicit val appConfig: FrontendAppConfig,
+                                                    val executionContext: ExecutionContext,
+                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
     isAuthenticatedWithProfile() {
@@ -69,5 +71,30 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           }
         }
 
+    }
+
+  def startPartnerJourney(isLeadPartner: Boolean): Action[AnyContent] =
+    isAuthenticatedWithProfile() {
+      implicit request =>
+        implicit profile =>
+          soleTraderIdentificationService.startJourney(
+            continueUrl = appConfig.leadPartnerSoleTraderIdCallbackUrl(isLeadPartner),
+            serviceName = request2Messages(request)("service.name"),
+            deskproId = appConfig.contactFormServiceIdentifier,
+            signOutUrl = appConfig.feedbackUrl,
+            enableSautrCheck = true
+          ) map (url => Redirect(url))
+    }
+
+  def partnerCallback(isLeadPartner: Boolean, journeyId: String): Action[AnyContent] =
+    isAuthenticatedWithProfile() { implicit request =>
+      implicit profile =>
+        for {
+          (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+          _ <- if (isLeadPartner) applicantDetailsService.saveApplicantDetails(transactorDetails) else Future.successful()
+          _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, Individual, isLeadPartner)) //TODO Figure out indeces for non lead partners
+        } yield {
+          Redirect(applicantRoutes.FormerNameController.show())
+        }
     }
 }

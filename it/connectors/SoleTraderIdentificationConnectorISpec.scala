@@ -27,22 +27,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     enableSautrCheck = false
   )
 
-  val testSautr = "1234567890"
-  val testRegistration = "REGISTERED"
-  val testSafeId = "X00000123456789"
-
-  val testSoleTrader: SoleTrader = SoleTrader(
-    firstName = testFirstName,
-    lastName = testLastName,
-    dateOfBirth = testApplicantDob,
-    nino = testApplicantNino,
-    sautr = Some(testSautr),
-    registration = testRegistration,
-    businessVerification = BvPass,
-    bpSafeId = Some(testSafeId),
-    identifiersMatch = true
-  )
-
   "startJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in {
