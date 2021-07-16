@@ -29,9 +29,9 @@ class BusinessContactDetailsViewSpec extends VatRegViewSpec {
   lazy val form: Form[CompanyContactDetails] = CompanyContactDetailsForm.form
   implicit val doc: Document = Jsoup.parse(view(form).body)
 
-  val heading = "Company contact details"
+  val heading = "Business contact details"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para1 = "We may need to get in touch for more information about the company’s VAT affairs. Enter contact details for someone from the company."
+  val para1 = "We may need to get in touch for more information about the business’s VAT affairs. Enter contact details for someone from the business."
   val para2 = "You need to provide a contact email address."
   val indentText = "You need to provide at least one of the following contact numbers."
 

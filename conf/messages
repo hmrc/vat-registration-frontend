@@ -164,24 +164,24 @@ pages.cantconfirmidentity.body.link     = using another HMRC service
 pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
 ## Start Date Page
-pages.startDate.heading                               = What do you want the company’s VAT start date to be?
+pages.startDate.heading                               = What do you want the business’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
-pages.startDate.para1.post                            = You can choose the date the company becomes VAT registered when you register voluntarily.
+pages.startDate.para1.post                            = You can choose the date the business becomes VAT registered when you register voluntarily.
 pages.startDate.radio.whenRegistered                  = The date the company is registered with Companies House
 pages.startDate.radio.wasRegistered                   = The date the company was registered: {0}
 pages.startDate.radio.whenTrading                     = The date the company starts doing business: {0}
 pages.startDate.radio.specificDate                    = A different date
 pages.startDate.panels.specificDate.para1             = This can be up to 4 years ago or within the next 3 months.
 pages.startDate.panels.specificDate.bullet.3months    = within the next 3 months
-pages.startDate.panels.specificDate.bullet.onafter    = on or after the date the company was registered
+pages.startDate.panels.specificDate.bullet.onafter    = on or after the date the business was registered
 pages.startDate.panels.specificDate.bullet.3monthsf   = no more than 3 months in the future
 pages.startDate.panels.specificDate.bullet.4yearspa   = no more than 4 years in the past
 pages.startDate.panels.specificDate.hint              = For example, {0}
 pages.startDate.panels.specificDate.inputField.day    = Day
 pages.startDate.panels.specificDate.inputField.month  = Month
 pages.startDate.panels.specificDate.inputField.year   = Year
-pages.startDate.warning                               = Once the company is successfully registered for VAT you cannot change its VAT start date.
-validation.startDate.choice.missing                   = Tell us what you want the company’s VAT registration date to be
+pages.startDate.warning                               = Once the business is successfully registered for VAT you cannot change its VAT start date.
+validation.startDate.choice.missing                   = Tell us what you want the business’s VAT registration date to be
 validation.startDate.range.below4y                    = Enter a date which is no more than 4 years in the past
 validation.startDate.range                            = Enter a date between {0} and {1}
 validation.startDate.invalid                          = Enter a valid date
@@ -466,17 +466,17 @@ pages.mainBusinessActivity.heading                        = Which activity is th
 validation.mainBusinessActivity.missing                   = Tell us which activity is the business’s main source of income
 
 ## Confirm SIC
-pages.confirmsic.heading                                  = You are about to confirm the company’s Standard Industry Classification (SIC) codes for VAT
+pages.confirmsic.heading                                  = You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.p1                                       = A SIC code describes a business activity.
-pages.confirmsic.p2                                       = Every company has one or more SIC codes from when it registered with Companies House.
+pages.confirmsic.p2                                       = Every business has one or more SIC codes from when it registered with Companies House.
 pages.confirmsic.p3                                       = You must:
-pages.confirmsic.bullet1                                  = check the SIC codes for this company are still correct.
-pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the company’s business.
+pages.confirmsic.bullet1                                  = check the SIC codes for this business are still correct.
+pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the business’s activity.
 pages.confirmsic.p4                                       = We will guide you through this process.
 
 ## Compliance - Tell us more about your company page
-pages.compliance.introduction.heading                        = Tell us more about your company
-pages.compliance.introduction.para1                          = So we can understand what your company does, we’re going to ask you a few questions about your business activities.
+pages.compliance.introduction.heading                        = Tell us more about your business
+pages.compliance.introduction.para1                          = We’re going to ask you a few questions about your business activities so we can understand what the business does.
 
 ## Labour Compliance
 ## Does Company Provide Workers
@@ -500,8 +500,8 @@ pages.applyForEori.linkText                 = Find out more about EORI
 validation.applyForEori.missing             = Select yes if you need an EORI number
 
 ## Business Contact Details Page
-pages.businessContactDetails.heading                         = Company contact details
-pages.businessContactDetails.para1                           = We may need to get in touch for more information about the company’s VAT affairs. Enter contact details for someone from the company.
+pages.businessContactDetails.heading                         = Business contact details
+pages.businessContactDetails.para1                           = We may need to get in touch for more information about the business’s VAT affairs. Enter contact details for someone from the business.
 pages.businessContactDetails.para2                           = You need to provide a contact email address.
 pages.businessContactDetails.panelIndentText                 = You need to provide at least one of the following contact numbers.
 pages.businessContactDetails.emailAddress.label              = Email address

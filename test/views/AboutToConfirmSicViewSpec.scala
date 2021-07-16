@@ -24,14 +24,14 @@ class AboutToConfirmSicViewSpec extends VatRegViewSpec {
 
   val view: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
 
-  val heading = "You are about to confirm the company’s Standard Industry Classification (SIC) codes for VAT"
+  val heading = "You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para1 = "A SIC code describes a business activity."
-  val para2 = "Every company has one or more SIC codes from when it registered with Companies House."
+  val para2 = "Every business has one or more SIC codes from when it registered with Companies House."
   val para3 = "You must:"
   val para4 = "We will guide you through this process."
-  val bullet1 = "check the SIC codes for this company are still correct."
-  val bullet2 = "add any more SIC codes that are relevant to the company’s business."
+  val bullet1 = "check the SIC codes for this business are still correct."
+  val bullet2 = "add any more SIC codes that are relevant to the business’s activity."
   val continue = "Save and continue"
 
   implicit val doc: Document = Jsoup.parse(view().body)
