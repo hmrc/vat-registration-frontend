@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.external.LimitedCompany
+import models.external.IncorporatedEntity
 
 import javax.inject.{Inject, Singleton}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  def createJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+  def createLimitedCompanyJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = config.getCreateIncorpIdJourneyUrl()
 
     httpClient.POST(url, journeyConfig).map {
@@ -42,12 +42,23 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
     }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[LimitedCompany] = {
+  def createRegisteredSocietyJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = config.getCreateRegisteredSocietyIdJourneyUrl()
+
+    httpClient.POST(url, journeyConfig).map {
+      case response@HttpResponse(CREATED, _, _) =>
+        (response.json \ "journeyStartUrl").as[String]
+      case response =>
+        throw new InternalServerException(s"Invalid response from incorporated entity identification: Status: ${response.status} Body: ${response.body}")
+    }
+  }
+
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntity] = {
     val url = config.getIncorpIdDetailsUrl(journeyId)
 
     httpClient.GET[JsValue](url)
       .map(json => {
-        LimitedCompany.apiFormat.reads(json) match {
+        IncorporatedEntity.apiFormat.reads(json) match {
           case JsSuccess(value, _) => value
           case JsError(errors) => throw new Exception(s"Incorp ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
         }

@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
-import models.external.LimitedCompany
+import models.external.IncorporatedEntity
 import models.{ApplicantDetails, S4LKey}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -28,9 +28,9 @@ import play.api.test.Helpers.{CREATED, await, _}
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
-  val incorpDetailsJson = Json.toJson(testIncorpDetails)(LimitedCompany.apiFormat)
+  val incorpDetailsJson = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
 
-  "GET /start-incorp-id-journey" should {
+  "GET /start-incorp-id-journey-limited-company" should {
     "redirect to the returned journey url" in new Setup {
       implicit val request = FakeRequest()
 
@@ -47,7 +47,31 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl,  "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startIncorpIdJourney().url).get)
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startLimitedCompanyJourney().url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+  }
+
+  "GET /start-incorp-id-journey-registered-society" should {
+    "redirect to the returned journey url" in new Setup {
+      implicit val request = FakeRequest()
+
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
+
+      stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl,  "deskProServiceId" -> testDeskProServiceId).toString)
+
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startRegisteredSocietyJourney().url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -77,6 +101,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         }
       }
     }
+
     "when the UseSoleTraderIdentification feature switch is disabled" should {
       "redirect to PDV" in {
         disable(UseSoleTraderIdentification)

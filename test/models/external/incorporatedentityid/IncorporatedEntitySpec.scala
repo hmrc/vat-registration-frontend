@@ -16,37 +16,37 @@
 
 package models.external.incorporatedentityid
 
-import models.external.LimitedCompany
+import models.external.IncorporatedEntity
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
-class LimitedCompanySpec extends VatRegSpec {
+class IncorporatedEntitySpec extends VatRegSpec {
 
   "LimitedCompany" should {
     "parse successfully without optional data" in {
       val incorpDetails = testLimitedCompany.copy(businessVerification = None, bpSafeId = None)
       val json = Json.toJson(incorpDetails)
-      json.as[LimitedCompany] mustBe incorpDetails
+      json.as[IncorporatedEntity] mustBe incorpDetails
     }
 
     "parse successfully with optional data" in {
       val incorpDetails = testLimitedCompany
       val json = Json.toJson(incorpDetails)
-      json.as[LimitedCompany] mustBe incorpDetails
+      json.as[IncorporatedEntity] mustBe incorpDetails
     }
   }
 
   "LimitedCompany apiFormat" should {
     "parse successfully without optional data" in {
       val incorpDetails = testLimitedCompany.copy(businessVerification = None, bpSafeId = None)
-      val json = Json.toJson(incorpDetails)(LimitedCompany.apiFormat)
-      json.as[LimitedCompany](LimitedCompany.apiFormat) mustBe incorpDetails
+      val json = Json.toJson(incorpDetails)(IncorporatedEntity.apiFormat)
+      json.as[IncorporatedEntity](IncorporatedEntity.apiFormat) mustBe incorpDetails
     }
 
     "parse successfully with optional data" in {
       val incorpDetails = testLimitedCompany
-      val json = Json.toJson(incorpDetails)(LimitedCompany.apiFormat)
-      json.as[LimitedCompany](LimitedCompany.apiFormat) mustBe incorpDetails
+      val json = Json.toJson(incorpDetails)(IncorporatedEntity.apiFormat)
+      json.as[IncorporatedEntity](IncorporatedEntity.apiFormat) mustBe incorpDetails
     }
   }
 

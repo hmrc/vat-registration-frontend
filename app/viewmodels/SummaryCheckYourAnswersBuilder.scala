@@ -21,7 +21,8 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api._
 import models.api.returns._
-import models.external.{BusinessEntity, GeneralPartnership, LimitedCompany, SoleTrader}
+import models.api.{Address, Individual, Threshold, VatScheme}
+import models.external.{BusinessEntity, GeneralPartnership, IncorporatedEntity, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
@@ -83,7 +84,6 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Some(tradingNameUrl)
   )
 
-
   val firstName: SummaryRow = SummaryRow(
     s"$sectionId.firstName",
     vatApplicantDetails.transactor.map(_.firstName).getOrElse(""),
@@ -112,13 +112,36 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.sautr",
     vatApplicantDetails.entity.flatMap {
       case soleTrader: SoleTrader => soleTrader.sautr
-      case _: GeneralPartnership => optLeadPartner.flatMap{
+      case _: GeneralPartnership => optLeadPartner.flatMap {
         case soleTrader: SoleTrader => soleTrader.sautr
         case _ => None
       }
       case _ => None
     }.getOrElse(""),
     Some(changeTransactorDetailsUrl)
+  )
+
+  val partyTypeUrl: Option[Call] =
+    partyType match {
+      case UkCompany => Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney())
+      case RegSociety => Some(applicantRoutes.IncorpIdController.startRegisteredSocietyJourney())
+      case _ => None
+    }
+
+  val companyNumber: SummaryRow = SummaryRow(
+    s"$sectionId.companyNumber",
+    vatApplicantDetails.entity.collect {
+      case soleTrader: IncorporatedEntity => soleTrader.companyNumber
+    }.getOrElse(""),
+    partyTypeUrl
+  )
+
+  val ctutr: SummaryRow = SummaryRow(
+    s"$sectionId.ctutr",
+    vatApplicantDetails.entity.collect {
+      case soleTrader: IncorporatedEntity => soleTrader.ctutr
+    }.getOrElse(""),
+    partyTypeUrl
   )
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
@@ -289,22 +312,6 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView())
   )
 
-  val companyNumber: SummaryRow = SummaryRow(
-    s"$sectionId.companyNumber",
-    vatApplicantDetails.entity.collect {
-      case soleTrader: LimitedCompany => soleTrader.companyName
-    }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
-  )
-
-  val ctutr: SummaryRow = SummaryRow(
-    s"$sectionId.ctutr",
-    vatApplicantDetails.entity.collect {
-      case soleTrader: LimitedCompany => soleTrader.ctutr
-    }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
-  )
-
   val applyForEoriRow: SummaryRow = yesNoRow(
     "applyForEori",
     scheme.tradingDetails.flatMap(_.euGoods),
@@ -410,8 +417,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyNumber, partyType.equals(UkCompany)),
-      (ctutr, ctutr.answerMessageKeys.head.nonEmpty && partyType.equals(UkCompany)),
+      (companyNumber, partyType.equals(UkCompany) | partyType.equals(RegSociety)),
+      (ctutr, ctutr.answerMessageKeys.head.nonEmpty && partyType.equals(UkCompany) | partyType.equals(RegSociety)),
       (sautr, sautr.answerMessageKeys.head.nonEmpty && (partyType.equals(Individual) || partyType.equals(Partnership))),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),

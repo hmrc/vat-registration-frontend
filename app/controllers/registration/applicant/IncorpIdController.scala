@@ -39,10 +39,22 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startIncorpIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startLimitedCompanyJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit req =>
       _ =>
-        incorpIdService.createJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
+        incorpIdService.createLimitedCompanyJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
+          journeyStartUrl => SeeOther(journeyStartUrl)
+        )
+  }
+
+  def startRegisteredSocietyJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit req =>
+      _ =>
+        incorpIdService.createRegisteredSocietyJourney(appConfig.incorpIdCallbackUrl,
+          request2Messages(req)("service.name"),
+          appConfig.contactFormServiceIdentifier,
+          appConfig.feedbackUrl)
+          .map(
           journeyStartUrl => SeeOther(journeyStartUrl)
         )
   }
@@ -62,5 +74,6 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           }
         }
   }
+
 
 }

@@ -63,7 +63,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       val response: Future[WSResponse] = buildClient(url).post(Json.obj())
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startIncorpIdJourney().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney().url)
       }
     }
 
