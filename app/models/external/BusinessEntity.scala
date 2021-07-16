@@ -25,11 +25,11 @@ sealed trait BusinessEntity
 
 object BusinessEntity {
   val reads: Reads[BusinessEntity] = Reads { json =>
-    Json.fromJson(json)(LimitedCompany.format).orElse(Json.fromJson(json)(SoleTrader.format)).orElse(Json.fromJson(json)(GeneralPartnership.format))
+    Json.fromJson(json)(IncorporatedEntity.format).orElse(Json.fromJson(json)(SoleTrader.format)).orElse(Json.fromJson(json)(GeneralPartnership.format))
   }
 
   val writes: Writes[BusinessEntity] = Writes {
-    case limitedCompany: LimitedCompany => Json.toJson(limitedCompany)
+    case incorporatedEntity: IncorporatedEntity => Json.toJson(incorporatedEntity)
     case soleTrader: SoleTrader => Json.toJson(soleTrader)
     case generalPartnership: GeneralPartnership => Json.toJson(generalPartnership)
   }
@@ -37,18 +37,18 @@ object BusinessEntity {
   implicit val format: Format[BusinessEntity] = Format[BusinessEntity](reads, writes)
 }
 
-case class LimitedCompany(companyNumber: String,
-                          companyName: String,
-                          ctutr: String,
-                          dateOfIncorporation: LocalDate,
-                          countryOfIncorporation: String = "GB",
-                          identifiersMatch: Boolean,
-                          registration: Option[String] = None,
-                          businessVerification: Option[BusinessVerificationStatus] = None,
-                          bpSafeId: Option[String] = None) extends BusinessEntity
+case class IncorporatedEntity(companyNumber: String,
+                              companyName: String,
+                              ctutr: String,
+                              dateOfIncorporation: LocalDate,
+                              countryOfIncorporation: String = "GB",
+                              identifiersMatch: Boolean,
+                              registration: Option[String] = None,
+                              businessVerification: Option[BusinessVerificationStatus] = None,
+                              bpSafeId: Option[String] = None) extends BusinessEntity
 
-object LimitedCompany {
-  val apiReads: Reads[LimitedCompany] = (
+object IncorporatedEntity {
+  val apiReads: Reads[IncorporatedEntity] = (
     (__ \ "companyProfile" \ "companyNumber").read[String] and
       (__ \ "companyProfile" \ "companyName").read[String] and
       (__ \ "ctutr").read[String] and
@@ -58,9 +58,9 @@ object LimitedCompany {
       (__ \ "registration" \ "registrationStatus").readNullable[String].orElse(Reads.pure(None)) and
       (__ \ "businessVerification" \ "verificationStatus").readNullable[BusinessVerificationStatus].orElse(Reads.pure(None)) and
       (__ \ "registration" \ "registeredBusinessPartnerId").readNullable[String].orElse(Reads.pure(None))
-    ) (LimitedCompany.apply _)
+    ) (IncorporatedEntity.apply _)
 
-  val apiWrites: Writes[LimitedCompany] = (
+  val apiWrites: Writes[IncorporatedEntity] = (
     (__ \ "companyProfile" \ "companyNumber").write[String] and
       (__ \ "companyProfile" \ "companyName").write[String] and
       (__ \ "ctutr").write[String] and
@@ -70,11 +70,11 @@ object LimitedCompany {
       (__ \ "registration" \ "registrationStatus").writeNullable[String] and
       (__ \ "businessVerification" \ "verificationStatus").writeNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").writeNullable[String]
-    ) (unlift(LimitedCompany.unapply))
+    ) (unlift(IncorporatedEntity.unapply))
 
-  val apiFormat: Format[LimitedCompany] = Format[LimitedCompany](apiReads, apiWrites)
+  val apiFormat: Format[IncorporatedEntity] = Format[IncorporatedEntity](apiReads, apiWrites)
 
-  implicit val format: Format[LimitedCompany] = Json.format[LimitedCompany]
+  implicit val format: Format[IncorporatedEntity] = Json.format[IncorporatedEntity]
 }
 
 case class SoleTrader(firstName: String,

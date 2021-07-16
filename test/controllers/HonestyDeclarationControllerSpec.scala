@@ -65,7 +65,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(applicantRoutes.IncorpIdController.startIncorpIdJourney().url)
+      redirectLocation(res) mustBe Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney().url)
     }
   }
 }

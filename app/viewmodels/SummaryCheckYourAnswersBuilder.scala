@@ -21,7 +21,8 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api._
 import models.api.returns._
-import models.external.{BusinessEntity, GeneralPartnership, LimitedCompany, SoleTrader}
+import models.api.{Address, Individual, Threshold, VatScheme}
+import models.external.{BusinessEntity, GeneralPartnership, IncorporatedEntity, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
@@ -292,17 +293,17 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val companyNumber: SummaryRow = SummaryRow(
     s"$sectionId.companyNumber",
     vatApplicantDetails.entity.collect {
-      case soleTrader: LimitedCompany => soleTrader.companyName
+      case soleTrader: IncorporatedEntity => soleTrader.companyName
     }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+    Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney())
   )
 
   val ctutr: SummaryRow = SummaryRow(
     s"$sectionId.ctutr",
     vatApplicantDetails.entity.collect {
-      case soleTrader: LimitedCompany => soleTrader.ctutr
+      case soleTrader: IncorporatedEntity => soleTrader.ctutr
     }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+    Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney())
   )
 
   val applyForEoriRow: SummaryRow = yesNoRow(

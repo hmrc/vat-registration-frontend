@@ -17,7 +17,7 @@
 package services
 
 import connectors.IncorpIdConnector
-import models.external.LimitedCompany
+import models.external.IncorporatedEntity
 
 import javax.inject.{Inject, Singleton}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
@@ -28,13 +28,19 @@ import scala.concurrent.Future
 @Singleton
 class IncorpIdService @Inject()(incorpIdConnector: IncorpIdConnector) {
 
-  def createJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def createLimitedCompanyJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
     val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
 
-    incorpIdConnector.createJourney(journeyConfig)
+    incorpIdConnector.createLimitedCompanyJourney(journeyConfig)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[LimitedCompany] = {
+  def createRegisteredSocietyJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
+    val journeyConfig = IncorpIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
+
+    incorpIdConnector.createRegisteredSocietyJourney(journeyConfig)
+  }
+
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntity] = {
     incorpIdConnector.getDetails(journeyId)
   }
 
