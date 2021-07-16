@@ -18,7 +18,7 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.{BvPass, EmailAddress, EmailVerified, GeneralPartnership, LimitedCompany, SoleTrader}
+import models.external.{BvPass, EmailAddress, EmailVerified, GeneralPartnership, IncorporatedEntity, SoleTrader}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
 
@@ -54,7 +54,7 @@ trait ApplicantDetailsFixtures {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
-  val testLimitedCompany = LimitedCompany(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testLimitedCompany = IncorporatedEntity(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val completeApplicantDetails = ApplicantDetails(
     entity = Some(testLimitedCompany),
@@ -70,6 +70,7 @@ trait ApplicantDetailsFixtures {
   )
 
   val testSautr = "1234567890"
+  val testIncorpCountry = "GB"
   val testPostcode = "AA11AA"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
@@ -105,6 +106,15 @@ trait ApplicantDetailsFixtures {
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testRegisteredSociety: IncorporatedEntity = IncorporatedEntity(
+    companyNumber = testCrn,
+    companyName = testCompanyName,
+    ctutr = testCtUtr,
+    dateOfIncorporation = testIncorpDate,
+    countryOfIncorporation = testIncorpCountry,
     identifiersMatch = true
   )
 }

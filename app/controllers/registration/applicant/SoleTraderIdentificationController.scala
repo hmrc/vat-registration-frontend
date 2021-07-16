@@ -20,6 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.api.{Individual, RegSociety, UkCompany}
 import models.PartnerEntity
 import models.api.{Individual, UkCompany}
 import play.api.mvc.{Action, AnyContent}
@@ -66,7 +67,7 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
         } yield {
           partyType match {
             case Individual => Redirect(applicantRoutes.FormerNameController.show())
-            case UkCompany => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+            case UkCompany | RegSociety => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
             case _ => throw new IllegalStateException("PartyType not supported")
           }
         }
