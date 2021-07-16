@@ -118,6 +118,12 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
       s"$host/register-for-vat/test-only/api/incorp-id-journey"
     } else s"$incorpIdHost/incorporated-entity-identification/api/journey"
 
+  def getCreateRegisteredSocietyIdJourneyUrl(): String =
+    if (isEnabled(StubIncorpIdJourney)) {
+      s"$host/register-for-vat/test-only/api/incorp-id-journey"
+    } else s"$incorpIdHost/incorporated-entity-identification/api/journey"
+
+
   def getIncorpIdDetailsUrl(journeyId: String): String =
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey/$journeyId"

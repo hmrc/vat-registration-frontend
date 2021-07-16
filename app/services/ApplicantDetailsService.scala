@@ -19,7 +19,7 @@ package services
 import config.Logging
 import connectors.VatRegistrationConnector
 import models._
-import models.external.{BusinessEntity, EmailAddress, EmailVerified, GeneralPartnership, LimitedCompany, SoleTrader}
+import models.external.{BusinessEntity, EmailAddress, EmailVerified, GeneralPartnership, IncorporatedEntity, SoleTrader}
 import models.view._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -45,7 +45,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
     getApplicantDetails.map(_.entity.collect {
-      case incorpDetails: LimitedCompany => incorpDetails.dateOfIncorporation
+      case incorpDetails: IncorporatedEntity => incorpDetails.dateOfIncorporation
     })
 
   def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
@@ -53,7 +53,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       applicant <- getApplicantDetails
       companyName <- Future {
         applicant.entity.collect {
-          case incorpDetails: LimitedCompany => incorpDetails.companyName
+          case incorpDetails: IncorporatedEntity => incorpDetails.companyName
         }.getOrElse(throw new Exception("Missing company name"))
       }
     } yield companyName

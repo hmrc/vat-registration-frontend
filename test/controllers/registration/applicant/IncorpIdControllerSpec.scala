@@ -51,12 +51,24 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  "startIncorpIdJourney" should {
+  "startLimitedCompanyJourney" should {
     "redirect to the journeyStartUrl" in new Setup {
       lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(appConfig.incorpIdCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyStartUrl))
+      mockCreateLimitedCompanyJourney(appConfig.incorpIdCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyStartUrl))
 
-      lazy val res: Future[Result] = testController.startIncorpIdJourney()(fakeRequest)
+      lazy val res: Future[Result] = testController.startLimitedCompanyJourney()(fakeRequest)
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) mustBe Some(testJourneyStartUrl)
+    }
+  }
+
+  "startRegisteredSocietyJourney" should {
+    "redirect to the journeyStartUrl" in new Setup {
+      lazy val testJourneyStartUrl = "/test"
+      mockCreateRegisteredSocietyJourney(appConfig.incorpIdCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyStartUrl))
+
+      lazy val res: Future[Result] = testController.startRegisteredSocietyJourney()(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
