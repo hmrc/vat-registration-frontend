@@ -3,7 +3,7 @@ package fixtures
 
 import java.time.LocalDate
 import models.api.Address
-import models.external.{Applicant, BvPass, EmailAddress, EmailVerified, LimitedCompany, Name}
+import models.external.{Applicant, BvPass, EmailAddress, EmailVerified, IncorporatedEntity, Name}
 import models.view._
 import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
 
@@ -38,7 +38,7 @@ trait ApplicantDetailsFixture {
   val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
   val testBpSafeId = "testBpId"
 
-  val testApplicantIncorpDetails = LimitedCompany(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, testApplicantCompanyName, testApplicantCtUtr, testApplicantIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
 
   val validFullApplicantDetails = ApplicantDetails(
     transactor = Some(testTransactorDetails),

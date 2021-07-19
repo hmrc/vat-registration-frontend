@@ -19,7 +19,7 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.api.{Individual, Partnership, UkCompany}
+import models.api.{Individual, Partnership, RegSociety, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, VatRegistrationService}
 import views.html.honesty_declaration
@@ -52,7 +52,8 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
         } yield {
           partyType match {
             case Individual => Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
-            case UkCompany => Redirect(applicantRoutes.IncorpIdController.startIncorpIdJourney())
+            case UkCompany => Redirect(applicantRoutes.IncorpIdController.startLimitedCompanyJourney())
+            case RegSociety => Redirect(applicantRoutes.IncorpIdController.startRegisteredSocietyJourney())
             case Partnership => Redirect(applicantRoutes.PartnershipIdController.startPartnershipIdJourney())
           }
         }

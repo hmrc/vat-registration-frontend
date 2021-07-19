@@ -18,7 +18,7 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import models.api.{Individual, Partnership, UkCompany}
+import models.api.{Individual, Partnership, RegSociety, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -40,9 +40,8 @@ class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreCon
     implicit request =>
       implicit profile =>
         vatRegistrationService.partyType map {
-          case Individual |
-               Partnership => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
-          case UkCompany   => Redirect(controllers.registration.business.routes.TradingNameController.show())
+          case Individual | Partnership => Redirect(controllers.registration.applicant.routes.SoleTraderNameController.show())
+          case UkCompany | RegSociety => Redirect(controllers.registration.business.routes.TradingNameController.show())
           case pt          => throw new InternalServerException(s"PartyType: $pt not supported")
         }
   }
