@@ -16,7 +16,9 @@
 
 package services.mocks
 
+import models.api.PartyType
 import models.external.IncorporatedEntity
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,21 +32,10 @@ trait IncorpIdServiceMock {
 
   val mockIncorpIdService: IncorpIdService = mock[IncorpIdService]
 
-  def mockCreateLimitedCompanyJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(response: Future[String]): Unit =
-    when(mockIncorpIdService.createLimitedCompanyJourney(
-      ArgumentMatchers.eq(continueUrl),
-      ArgumentMatchers.eq(serviceName),
-      ArgumentMatchers.eq(deskProServiceId),
-      ArgumentMatchers.eq(signOutUrl)
-    )(ArgumentMatchers.any[HeaderCarrier]))
-      .thenReturn(response)
-
-  def mockCreateRegisteredSocietyJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(response: Future[String]): Unit =
-    when(mockIncorpIdService.createRegisteredSocietyJourney(
-      ArgumentMatchers.eq(continueUrl),
-      ArgumentMatchers.eq(serviceName),
-      ArgumentMatchers.eq(deskProServiceId),
-      ArgumentMatchers.eq(signOutUrl)
+  def mockCreateJourney(incorpIdJourneyConfig: IncorpIdJourneyConfig, partyType: PartyType)(response: Future[String]): Unit =
+    when(mockIncorpIdService.createJourney(
+      ArgumentMatchers.eq(incorpIdJourneyConfig),
+      ArgumentMatchers.eq(partyType)
     )(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 

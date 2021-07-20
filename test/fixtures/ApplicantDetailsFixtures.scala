@@ -16,11 +16,12 @@
 
 package fixtures
 
-import java.time.LocalDate
 import models.api.Address
-import models.external.{BvPass, EmailAddress, EmailVerified, GeneralPartnership, IncorporatedEntity, SoleTrader}
+import models.external._
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
+
+import java.time.LocalDate
 
 trait ApplicantDetailsFixtures {
 
@@ -33,6 +34,7 @@ trait ApplicantDetailsFixtures {
   val validPrevAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
 
   val testCrn = "testCrn"
+  val testChrn = "testChrn"
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
@@ -54,7 +56,18 @@ trait ApplicantDetailsFixtures {
 
   val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
 
-  val testLimitedCompany = IncorporatedEntity(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
+    testCrn,
+    testCompanyName,
+    Some(testCtUtr),
+    None,
+    testIncorpDate,
+    "GB",
+    identifiersMatch = true,
+    Some("REGISTERED"),
+    Some(BvPass),
+    Some(testBpSafeId)
+  )
 
   val completeApplicantDetails = ApplicantDetails(
     entity = Some(testLimitedCompany),
@@ -112,7 +125,18 @@ trait ApplicantDetailsFixtures {
   val testRegisteredSociety: IncorporatedEntity = IncorporatedEntity(
     companyNumber = testCrn,
     companyName = testCompanyName,
-    ctutr = testCtUtr,
+    ctutr = Some(testCtUtr),
+    chrn = None,
+    dateOfIncorporation = testIncorpDate,
+    countryOfIncorporation = testIncorpCountry,
+    identifiersMatch = true
+  )
+
+  val testCharitableOrganisation: IncorporatedEntity = IncorporatedEntity(
+    companyNumber = testCrn,
+    companyName = testCompanyName,
+    ctutr = None,
+    chrn = Some(testChrn),
     dateOfIncorporation = testIncorpDate,
     countryOfIncorporation = testIncorpCountry,
     identifiersMatch = true

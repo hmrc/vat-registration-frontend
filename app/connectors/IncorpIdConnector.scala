@@ -17,39 +17,32 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.IncorporatedEntity
-
-import javax.inject.{Inject, Singleton}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsError, JsSuccess, JsValue}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readRaw}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  def createLimitedCompanyJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
-    val url = config.getCreateIncorpIdJourneyUrl()
-
-    httpClient.POST(url, journeyConfig).map {
-      case response@HttpResponse(CREATED, _, _) =>
-        (response.json \ "journeyStartUrl").as[String]
-      case response =>
-        throw new InternalServerException(s"Invalid response from incorporated entity identification: Status: ${response.status} Body: ${response.body}")
+  def createJourney(journeyConfig: IncorpIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = partyType match {
+      case UkCompany => config.startUkCompanyIncorpJourneyUrl()
+      case RegSociety => config.startRegSocietyIncorpIdJourneyUrl()
+      case CharitableOrg => config.startCharitableOrgIncorpIdJourneyUrl()
     }
-  }
-
-  def createRegisteredSocietyJourney(journeyConfig: IncorpIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
-    val url = config.getCreateRegisteredSocietyIdJourneyUrl()
 
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
-        throw new InternalServerException(s"Invalid response from incorporated entity identification: Status: ${response.status} Body: ${response.body}")
+        throw new InternalServerException(s"Invalid response from incorporated entity identification for $partyType: Status: ${response.status} Body: ${response.body}")
     }
   }
 

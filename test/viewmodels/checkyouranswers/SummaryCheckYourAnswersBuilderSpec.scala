@@ -184,7 +184,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec with VatRegistration
     }
     "with section generate a valid summary section" in {
       sectionBuilder.section.id mustBe "directorDetails"
-      sectionBuilder.section.rows.length mustEqual 46
+      sectionBuilder.section.rows.length mustEqual 47
     }
   }
 

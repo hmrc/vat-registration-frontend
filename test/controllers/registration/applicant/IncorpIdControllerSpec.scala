@@ -18,21 +18,23 @@ package controllers.registration.applicant
 
 import _root_.models._
 import controllers.registration.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
+import models.api.{CharitableOrg, RegSociety, UkCompany}
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService, TimeServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
-import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
-import services.mocks.{MockApplicantDetailsService, TimeServiceMock}
 
 class IncorpIdControllerSpec extends ControllerSpec
   with VatRegistrationFixture
   with TimeServiceMock
   with FutureAssertions
   with MockApplicantDetailsService
+  with MockVatRegistrationService
   with FeatureSwitching {
 
   val testJourneyId = "testJourneyId"
@@ -42,7 +44,8 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockIncorpIdService,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
+      vatRegistrationServiceMock
     )
 
     mockAuthenticated()
@@ -51,24 +54,42 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  "startLimitedCompanyJourney" should {
-    "redirect to the journeyStartUrl" in new Setup {
-      lazy val testJourneyStartUrl = "/test"
-      mockCreateLimitedCompanyJourney(appConfig.incorpIdCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyStartUrl))
+  val testJourneyConfig: IncorpIdJourneyConfig = IncorpIdJourneyConfig(
+    appConfig.incorpIdCallbackUrl,
+    Some("Register for VAT"),
+    "vrs",
+    appConfig.feedbackUrl
+  )
 
-      lazy val res: Future[Result] = testController.startLimitedCompanyJourney()(fakeRequest)
+  "startJourney" should {
+    "redirect to the journeyStartUrl for UkCompany" in new Setup {
+      lazy val testJourneyStartUrl = "/test"
+      mockCreateJourney(testJourneyConfig, UkCompany)(Future.successful(testJourneyStartUrl))
+      mockPartyType(Future.successful(UkCompany))
+
+      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
     }
-  }
 
-  "startRegisteredSocietyJourney" should {
-    "redirect to the journeyStartUrl" in new Setup {
+    "redirect to the journeyStartUrl for RegSociety" in new Setup {
       lazy val testJourneyStartUrl = "/test"
-      mockCreateRegisteredSocietyJourney(appConfig.incorpIdCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyStartUrl))
+      mockCreateJourney(testJourneyConfig, RegSociety)(Future.successful(testJourneyStartUrl))
+      mockPartyType(Future.successful(RegSociety))
 
-      lazy val res: Future[Result] = testController.startRegisteredSocietyJourney()(fakeRequest)
+      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) mustBe Some(testJourneyStartUrl)
+    }
+
+    "redirect to the journeyStartUrl for CharitableOrg" in new Setup {
+      lazy val testJourneyStartUrl = "/test"
+      mockCreateJourney(testJourneyConfig, CharitableOrg)(Future.successful(testJourneyStartUrl))
+      mockPartyType(Future.successful(CharitableOrg))
+
+      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)

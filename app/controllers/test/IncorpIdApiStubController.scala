@@ -16,35 +16,40 @@
 
 package controllers.test
 
-import java.time.LocalDate
-import config.FrontendAppConfig
-import models.external.{BvPass, IncorporatedEntity}
-
-import javax.inject.{Inject, Singleton}
+import models.api._
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.{BvPass, IncorporatedEntity}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
-                                          appConfig: FrontendAppConfig)
+class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
   extends FrontendController(mcc) {
 
-  def createJourney: Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) (
-    req =>
-      Created(Json.obj("journeyStartUrl" -> JsString(appConfig.incorpIdCallbackUrl + "?journeyId=1")))
-  )
+  def createJourney(partyType: String): Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) {
+    request =>
+      val journeyId = PartyType.fromString(partyType) match {
+        case UkCompany => "1"
+        case RegSociety => "2"
+        case CharitableOrg => "3"
+      }
+
+      Created(Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$journeyId")))
+  }
 
   def getDetails(journeyId: String): Action[AnyContent] = Action.async { _ =>
     Future.successful(
       Ok(Json.toJson(IncorporatedEntity(
         companyName = "Test company",
         companyNumber = "12345678",
-        ctutr = "1234567890",
-        dateOfIncorporation = LocalDate.of(2020,1,1),
+        ctutr = if (!journeyId.equals("3")) Some("123567890") else None,
+        chrn = if (journeyId.equals("3")) Some("123567890") else None,
+        dateOfIncorporation = LocalDate.of(2020, 1, 1),
         identifiersMatch = true,
         registration = Some("REGISTERED"),
         businessVerification = Some(BvPass),

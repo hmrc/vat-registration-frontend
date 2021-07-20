@@ -39,7 +39,8 @@ object BusinessEntity {
 
 case class IncorporatedEntity(companyNumber: String,
                               companyName: String,
-                              ctutr: String,
+                              ctutr: Option[String] = None,
+                              chrn: Option[String] = None,
                               dateOfIncorporation: LocalDate,
                               countryOfIncorporation: String = "GB",
                               identifiersMatch: Boolean,
@@ -51,7 +52,8 @@ object IncorporatedEntity {
   val apiReads: Reads[IncorporatedEntity] = (
     (__ \ "companyProfile" \ "companyNumber").read[String] and
       (__ \ "companyProfile" \ "companyName").read[String] and
-      (__ \ "ctutr").read[String] and
+      (__ \ "ctutr").readNullable[String] and
+      (__ \ "chrn").readNullable[String] and
       (__ \ "companyProfile" \ "dateOfIncorporation").read[LocalDate] and
       Reads.pure("GB") and
       (__ \ "identifiersMatch").read[Boolean] and
@@ -63,7 +65,8 @@ object IncorporatedEntity {
   val apiWrites: Writes[IncorporatedEntity] = (
     (__ \ "companyProfile" \ "companyNumber").write[String] and
       (__ \ "companyProfile" \ "companyName").write[String] and
-      (__ \ "ctutr").write[String] and
+      (__ \ "ctutr").writeNullable[String] and
+      (__ \ "chrn").writeNullable[String] and
       (__ \ "companyProfile" \ "dateOfIncorporation").write[LocalDate] and
       (__ \ "companyProfile" \ "countryOfIncorporation").write[String] and
       (__ \ "identifiersMatch").write[Boolean] and

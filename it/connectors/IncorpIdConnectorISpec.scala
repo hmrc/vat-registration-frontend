@@ -19,8 +19,9 @@ package connectors
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.external.{BvPass, IncorporatedEntity}
+import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.{BvPass, IncorporatedEntity}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -32,23 +33,67 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
   "createLimitedCompanyJourney" when {
     "the stub Incorp ID feature switch is enabled" should {
-      "call the test only route to stub the journey" in {
+      "call the test only route to stub the journey for UkCompany" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
         enable(StubIncorpIdJourney)
 
         val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
-        stubPost("/register-for-vat/test-only/api/incorp-id-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(UkCompany)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createLimitedCompanyJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig, UkCompany))
+
+        res mustBe testJourneyStartUrl
+      }
+
+      "call the test only route to stub the journey for RegSociety" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        enable(StubIncorpIdJourney)
+
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(RegSociety)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val res = await(connector.createJourney(testJourneyConfig, RegSociety))
+
+        res mustBe testJourneyStartUrl
+      }
+
+      "call the test only route to stub the journey for CharitableOrg" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        enable(StubIncorpIdJourney)
+
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(CharitableOrg)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg))
 
         res mustBe testJourneyStartUrl
       }
     }
 
     "the stub Incorp ID feature switch is disabled" should {
-      "call the create Incorp ID journey API" in {
+      "call the create Incorp ID journey API for UkCompany" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
         disable(StubIncorpIdJourney)
 
         val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
@@ -57,32 +102,16 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createLimitedCompanyJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig, UkCompany))
 
         res mustBe testJourneyStartUrl
       }
-    }
-  }
 
-  "createRegisteredSocietyJourney" when {
-    "the stub Incorp ID feature switch is enabled" should {
-      "call the test only route to stub the journey" in {
-        enable(StubIncorpIdJourney)
+      "call the create Incorp ID journey API for RegSociety" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
-        val testJourneyStartUrl = "/test"
-        val testDeskProServiceId = "vrs"
-
-        stubPost("/register-for-vat/test-only/api/incorp-id-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
-
-        val res = await(connector.createRegisteredSocietyJourney(testJourneyConfig))
-
-        res mustBe testJourneyStartUrl
-      }
-    }
-
-    "the stub Incorp ID feature switch is disabled" should {
-      "call the create Incorp ID journey API" in {
         disable(StubIncorpIdJourney)
 
         val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
@@ -91,7 +120,25 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createRegisteredSocietyJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig, RegSociety))
+
+        res mustBe testJourneyStartUrl
+      }
+
+      "call the create Incorp ID journey API for CharitableOrg" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        disable(StubIncorpIdJourney)
+
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl")
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost("/incorporated-entity-identification/api/charitable-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg))
 
         res mustBe testJourneyStartUrl
       }
@@ -101,33 +148,57 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
   "getDetails" when {
     "incorp ID returns valid incorporation details" should {
       "return the incorporation details without optional data" in {
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false)
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, identifiersMatch = false)
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
 
-        res mustBe (validResponse)
+        res mustBe validResponse
       }
+
       "return the incorporation details with optional data" in {
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, testCtUtr, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
 
-        res mustBe (validResponse)
+        res mustBe validResponse
+      }
+
+      "return the incorporation details for a charitable organisation" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+        disable(StubIncorpIdJourney)
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
+
+        val res = await(connector.getDetails(testIncorpId))
+
+        res mustBe validResponse
       }
     }
     "incorp ID returns invalid incorporation details" should {
       "throw and exception" in {
-        val validResponse = Json.toJson(IncorporatedEntity(testCrn, testCompanyName, testCtUtr, testIncorpDate, identifiersMatch = false))
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
 
-        intercept[Exception] {
-          val res = await(connector.getDetails(testIncorpId))
-        }
+        intercept[Exception](await(connector.getDetails(testIncorpId)))
       }
     }
   }

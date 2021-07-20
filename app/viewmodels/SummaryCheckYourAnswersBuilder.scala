@@ -19,9 +19,8 @@ package viewmodels
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
-import models.api._
 import models.api.returns._
-import models.api.{Address, Individual, Threshold, VatScheme}
+import models.api.{Address, Individual, Threshold, VatScheme, _}
 import models.external.{BusinessEntity, GeneralPartnership, IncorporatedEntity, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
@@ -121,27 +120,30 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Some(changeTransactorDetailsUrl)
   )
 
-  val partyTypeUrl: Option[Call] =
-    partyType match {
-      case UkCompany => Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney())
-      case RegSociety => Some(applicantRoutes.IncorpIdController.startRegisteredSocietyJourney())
-      case _ => None
-    }
-
   val companyNumber: SummaryRow = SummaryRow(
     s"$sectionId.companyNumber",
     vatApplicantDetails.entity.collect {
       case soleTrader: IncorporatedEntity => soleTrader.companyNumber
     }.getOrElse(""),
-    partyTypeUrl
+    Some(applicantRoutes.IncorpIdController.startJourney())
   )
 
   val ctutr: SummaryRow = SummaryRow(
     s"$sectionId.ctutr",
-    vatApplicantDetails.entity.collect {
-      case soleTrader: IncorporatedEntity => soleTrader.ctutr
+    vatApplicantDetails.entity.flatMap {
+      case incorporatedEntity: IncorporatedEntity => incorporatedEntity.ctutr
+      case _ => None
     }.getOrElse(""),
-    partyTypeUrl
+    Some(applicantRoutes.IncorpIdController.startJourney())
+  )
+
+  val chrn: SummaryRow = SummaryRow(
+    s"$sectionId.chro",
+    vatApplicantDetails.entity.flatMap {
+      case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
+      case _ => None
+    }.getOrElse(""),
+    Some(applicantRoutes.IncorpIdController.startJourney())
   )
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
@@ -417,9 +419,10 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val section: SummarySection = SummarySection(
     sectionId,
     Seq(
-      (companyNumber, partyType.equals(UkCompany) | partyType.equals(RegSociety)),
-      (ctutr, ctutr.answerMessageKeys.head.nonEmpty && partyType.equals(UkCompany) | partyType.equals(RegSociety)),
-      (sautr, sautr.answerMessageKeys.head.nonEmpty && (partyType.equals(Individual) || partyType.equals(Partnership))),
+      (companyNumber, partyType.equals(UkCompany) || partyType.equals(RegSociety) || partyType.equals(CharitableOrg)),
+      (ctutr, ctutr.hasValue && (partyType.equals(UkCompany) || partyType.equals(RegSociety))),
+      (chrn, chrn.hasValue && partyType.equals(CharitableOrg)),
+      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership))),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),

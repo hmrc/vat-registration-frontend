@@ -18,6 +18,7 @@ package config
 
 import controllers.callbacks.routes
 import featureswitch.core.config._
+import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -114,21 +115,33 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
 
   // TODO Update to limited-company-journey
-  def getCreateIncorpIdJourneyUrl(): String =
+  def startUkCompanyIncorpJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
-      s"$host/register-for-vat/test-only/api/incorp-id-journey"
-    } else s"$incorpIdHost/incorporated-entity-identification/api/journey"
+      s"$host/register-for-vat/test-only/api/incorp-id-journey?partyType=${PartyType.stati(UkCompany)}"
+    } else {
+      s"$incorpIdHost/incorporated-entity-identification/api/journey"
+    }
 
-  def getCreateRegisteredSocietyIdJourneyUrl(): String =
+  def startRegSocietyIncorpIdJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
-      s"$host/register-for-vat/test-only/api/incorp-id-journey"
-    } else s"$incorpIdHost/incorporated-entity-identification/api/registered-society-journey"
+      s"$host/register-for-vat/test-only/api/incorp-id-journey?partyType=${PartyType.stati(RegSociety)}"
+    } else {
+      s"$incorpIdHost/incorporated-entity-identification/api/registered-society-journey"
+    }
 
+  def startCharitableOrgIncorpIdJourneyUrl(): String =
+    if (isEnabled(StubIncorpIdJourney)) {
+      s"$host/register-for-vat/test-only/api/incorp-id-journey?partyType=${PartyType.stati(CharitableOrg)}"
+    } else {
+      s"$incorpIdHost/incorporated-entity-identification/api/charitable-organisation-journey"
+    }
 
   def getIncorpIdDetailsUrl(journeyId: String): String =
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey/$journeyId"
-    } else s"$incorpIdHost/incorporated-entity-identification/api/journey/$journeyId"
+    } else {
+      s"$incorpIdHost/incorporated-entity-identification/api/journey/$journeyId"
+    }
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
 

@@ -142,8 +142,7 @@ GET         /current-address/changePreviousAddress                              
 GET         /current-address/acceptFromTxm                                                     controllers.registration.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
 
 ## Incorp ID Pages
-GET         /start-incorp-id-journey-limited-company                                           controllers.registration.applicant.IncorpIdController.startLimitedCompanyJourney()
-GET         /start-incorp-id-journey-registered-society                                        controllers.registration.applicant.IncorpIdController.startRegisteredSocietyJourney()
+GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startJourney
 GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
 
 ## Personal Details Validation Pages

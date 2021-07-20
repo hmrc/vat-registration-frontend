@@ -17,7 +17,8 @@
 package controllers.registration.applicant
 
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, UkCompany}
+import models.api.{CharitableOrg, Individual, RegSociety, UkCompany}
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -86,16 +87,18 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
     }
 
-    "redirect to the capture role page" in new Setup {
-      mockGetVatScheme(Future.successful(validVatScheme))
-      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
-      mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
-      mockPartyType(Future.successful(UkCompany))
+    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+      s"redirect to the capture role in the business page if the user is ${partyType.toString}" in new Setup {
+        mockGetVatScheme(Future.successful(validVatScheme))
+        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
+        mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+        mockPartyType(Future.successful(partyType))
 
-      val res = Controller.callback(testJourneyId)(FakeRequest())
+        val result: Future[Result] = Controller.callback(testJourneyId)(FakeRequest())
 
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) must contain(controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url)
+      }
     }
   }
 
