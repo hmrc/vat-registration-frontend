@@ -50,7 +50,11 @@ object SummaryRow {
 case class SummaryRow(id: String,
                       answerMessageKeys: Seq[String],
                       changeLink: Option[Call],
-                      questionArgs: Seq[String] = Nil)
+                      questionArgs: Seq[String] = Nil) {
+
+  def hasValue: Boolean = this.answerMessageKeys.head.nonEmpty
+
+}
 
 
 object SummaryFromQuestionAnswerJson {

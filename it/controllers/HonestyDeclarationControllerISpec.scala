@@ -21,7 +21,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import it.fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.{Individual, VatScheme}
+import models.api.{CharitableOrg, Individual, RegSociety, UkCompany, VatScheme}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -50,20 +50,26 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
   }
 
   s"POST $url" must {
-    "return a redirect to Incorp ID" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft, eligibilitySubmissionData = Some(testEligibilitySubmissionData)))
-        .vatRegistration.honestyDeclaration(testRegId, "true")
+    List(UkCompany, RegSociety, CharitableOrg).foreach { validPartyType =>
+      s"return a redirect to Incorp ID for ${validPartyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.contains(VatScheme(
+          currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = validPartyType))
+        ))
+          .vatRegistration.honestyDeclaration(testRegId, "true")
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).post(Json.obj())
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startLimitedCompanyJourney().url)
+        val response: Future[WSResponse] = buildClient(url).post(Json.obj())
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startJourney().url)
+        }
       }
     }
 

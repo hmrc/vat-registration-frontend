@@ -23,7 +23,7 @@ GET         /api/feature-switches                             featureswitch.api.
 POST        /api/feature-switches                             featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 + nocsrf
-POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney
+POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney(partyType: String)
 GET         /api/incorp-id-journey/:journeyId                 controllers.test.IncorpIdApiStubController.getDetails(journeyId)
 
 GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)

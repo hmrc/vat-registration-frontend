@@ -21,42 +21,45 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.UseSoleTraderIdentification
+import models.api.{CharitableOrg, RegSociety, UkCompany}
+import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import play.api.mvc.{Action, AnyContent}
+import services.{ApplicantDetailsService, IncorpIdService, SessionProfile, VatRegistrationService}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, IncorpIdService, SessionProfile}
-import uk.gov.hmrc.auth.core.AuthConnector
-
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class IncorpIdController @Inject()(val authConnector: AuthConnector,
                                    val keystoreConnector: KeystoreConnector,
                                    incorpIdService: IncorpIdService,
-                                   applicantDetailsService: ApplicantDetailsService
+                                   applicantDetailsService: ApplicantDetailsService,
+                                   vatRegistrationService: VatRegistrationService
                                   )(implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startLimitedCompanyJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit req =>
-      _ =>
-        incorpIdService.createLimitedCompanyJourney(appConfig.incorpIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
-          journeyStartUrl => SeeOther(journeyStartUrl)
-        )
-  }
-
-  def startRegisteredSocietyJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit req =>
-      _ =>
-        incorpIdService.createRegisteredSocietyJourney(appConfig.incorpIdCallbackUrl,
-          request2Messages(req)("service.name"),
+  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        val journeyConfig = IncorpIdJourneyConfig(
+          appConfig.incorpIdCallbackUrl,
+          Some(request2Messages(request)("service.name")),
           appConfig.contactFormServiceIdentifier,
-          appConfig.feedbackUrl)
-          .map(
-          journeyStartUrl => SeeOther(journeyStartUrl)
+          appConfig.feedbackUrl
         )
+
+        vatRegistrationService.partyType.flatMap {
+          case partyType@(UkCompany | RegSociety | CharitableOrg) => incorpIdService.createJourney(journeyConfig, partyType).map(
+            journeyStartUrl => SeeOther(journeyStartUrl)
+          )
+          case partyType =>
+            throw new InternalServerException(s"[IncorpIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}")
+        }
+
   }
 
   def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {

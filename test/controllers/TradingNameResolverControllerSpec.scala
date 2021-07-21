@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.{AdminDivision, Individual, Partnership, UkCompany}
+import models.api._
 import play.api.libs.iteratee.Execution.Implicits.defaultExecutionContext
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
@@ -32,6 +32,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
 
   class Setup {
     val testUrl = "/resolve-party-type"
+
     object Controller extends TradingNameResolverController(
       mockKeystoreConnector,
       mockAuthClientConnector,
@@ -57,11 +58,13 @@ class TradingNameResolverControllerSpec extends ControllerSpec
       redirectLocation(res) must contain(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
     }
 
-    s"redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for partyType UkCompany" in new Setup {
-      mockPartyType(Future.successful(UkCompany))
-      val res = Controller.resolve()(FakeRequest())
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(controllers.registration.business.routes.TradingNameController.show().url)
+    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+      s"redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for partyType ${partyType.toString}" in new Setup {
+        mockPartyType(Future.successful(partyType))
+        val res = Controller.resolve()(FakeRequest())
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.business.routes.TradingNameController.show().url)
+      }
     }
 
     "throw an exception for unsupported partyType" in new Setup {

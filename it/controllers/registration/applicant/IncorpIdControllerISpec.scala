@@ -16,62 +16,103 @@
 
 package controllers.registration.applicant
 
+import common.enums.VatRegStatus
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
+import models.ApplicantDetails
+import models.api.{CharitableOrg, RegSociety, UkCompany, VatScheme}
 import models.external.IncorporatedEntity
-import models.{ApplicantDetails, S4LKey}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CREATED, await, _}
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
-  val incorpDetailsJson = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
+  val incorpDetailsJson: JsValue = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
 
-  "GET /start-incorp-id-journey-limited-company" should {
-    "redirect to the returned journey url" in new Setup {
-      implicit val request = FakeRequest()
+  "GET /start-incorp-id-journey" should {
+    "redirect to the returned journey url for UkCompany" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(VatScheme(
+        currentProfile.registrationId,
+        status = VatRegStatus.draft,
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+      ))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
 
-      stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl,  "deskProServiceId" -> testDeskProServiceId).toString)
+      stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startLimitedCompanyJourney().url).get)
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startJourney().url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
     }
-  }
 
-  "GET /start-incorp-id-journey-registered-society" should {
-    "redirect to the returned journey url" in new Setup {
-      implicit val request = FakeRequest()
+    "redirect to the returned journey url for RegSociety" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(VatScheme(
+        currentProfile.registrationId,
+        status = VatRegStatus.draft,
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = RegSociety))
+      ))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
 
-      stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl,  "deskProServiceId" -> testDeskProServiceId).toString)
+      stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startRegisteredSocietyJourney().url).get)
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startJourney().url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+
+    "redirect to the returned journey url for CharitableOrg" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.contains(VatScheme(
+        currentProfile.registrationId,
+        status = VatRegStatus.draft,
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg))
+      ))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
+
+      stubPost("/incorporated-entity-identification/api/charitable-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startJourney().url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -87,9 +128,10 @@ class IncorpIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .audit.writesAudit()
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-          .vatScheme.has(ApplicantDetails.s4lKey.key, Json.toJson(ApplicantDetails()))
-          .vatScheme.patched(ApplicantDetails.s4lKey.key, Json.obj())
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
@@ -110,7 +152,9 @@ class IncorpIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .audit.writesAudit()
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
