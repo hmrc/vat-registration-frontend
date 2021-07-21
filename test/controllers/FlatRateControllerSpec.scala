@@ -24,9 +24,6 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
 import views.html._
-
-import java.time.LocalDate
-import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -35,6 +32,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   val view = app.injector.instanceOf[frs_your_flat_rate]
   val annualCostsInclusiveView = app.injector.instanceOf[annual_costs_inclusive]
   val annualCostsLimitedView = app.injector.instanceOf[annual_costs_limited]
+  val frsRegisterForView = app.injector.instanceOf[frs_register_for]
+  val frsYourFlatRateView = app.injector.instanceOf[frs_your_flat_rate]
 
   trait Setup {
     val controller: FlatRateController = new FlatRateController(
@@ -45,9 +44,10 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       mockConfigConnector,
       mockTimeService,
       mockSicAndComplianceService,
-      view,
       annualCostsInclusiveView,
-      annualCostsLimitedView
+      annualCostsLimitedView,
+      frsRegisterForView,
+      frsYourFlatRateView
     )
 
     mockAuthenticated()
@@ -216,7 +216,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsRadio" -> "true"
+        "value" -> "true"
       )
 
       submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
@@ -233,7 +233,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(testsector))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "registerForFrsRadio" -> "false"
+        "value" -> "false"
       )
 
       submitAuthorised(controller.submitRegisterForFrs(), request) { result =>

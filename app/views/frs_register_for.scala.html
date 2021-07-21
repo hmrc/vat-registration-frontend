@@ -18,51 +18,47 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import views.html.main_template
-@import views.html.helpers.templates._
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        h1: h1,
+        h2:h2,
+        p: p,
+        panelIndent: panelIndent,
+        formWithCSRF: FormWithCSRF,
+        button: button,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary,
+        yesNoRadio: yesNoRadio
+)
+
 @(registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = title(registerForFrsForm, messages("pages.frs.registerFor.heading"))) {
 
-    @errorSummary(
-        form = registerForFrsForm
-    )
+@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerFor.heading"))), backLink = true) {
 
-    <h1 class="form-title heading-large" id="pageHeading">@messages("pages.frs.registerFor.heading")</h1>
+    @errorSummary(registerForFrsForm.errors)
 
-    <p>@messages("pages.frs.registerFor.p")</p>
+    @h1(messages("pages.frs.registerFor.heading"))
 
-    <div class="panel panel-border-wide form-group">
-        <p>@messages("pages.frs.registerFor.panel1.para")</p>
-    </div>
+    @p{ @messages("pages.frs.registerFor.para") }
 
-    <h2>@messages("pages.frs.registerFor.subheading1")</h2>
+    @panelIndent{ @messages("pages.frs.registerFor.indentText") }
 
-    @govHelpers.form(action = controllers.routes.FlatRateController.submitRegisterForFrs()) {
-        <div class="form-group">
-            @vatInputRadioGroup(
-                field = registerForFrsForm("registerForFrsRadio"),
-                Seq(
-                    "true" -> Messages("app.common.yes"),
-                    "false" -> Messages("app.common.no")
-                ),
-                '_groupClass -> "inline",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label",
-                '_legend -> messages("pages.frs.registerFor.subheading1"),
-                '_legendClass -> "visually-hidden"
-            )
-        </div>
+    @h2(messages("pages.frs.registerFor.subheading"))
 
-        <div class="form-group">
-            <button class="button" role="button" id="continue">@messages("app.common.continue")</button>
+    @formWithCSRF(action = controllers.routes.FlatRateController.submitRegisterForFrs()) {
+        @yesNoRadio(
+            form = registerForFrsForm,
+            headingKey = messages("pages.frs.registerFor.subheading"),
+            isPageHeading = false,
+            inline = true,
+            classes = "govuk-visually-hidden"
+        )
 
-            @saveProgressButton()
-        </div>
-
+        @button("app.common.continue")
     }
 }

@@ -645,11 +645,11 @@ validation.frs.confirmBusinessSector.missing              = Tell us if you want 
 pages.frs.chooseBusinessType.heading      = Choose the main business type
 validation.frs.chooseBusinessType.missing = Tell us what the business’s main business type is
 
-## Do you want to register for FRS Page 16.55% rate
+## Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the business must use the 16.5% flat rate
-pages.frs.registerFor.p                                   = This is because the business doesn’t spend enough (including VAT) on relevant goods.
-pages.frs.registerFor.panel1.para                         = Businesses in their first year of VAT registration can take an extra 1% off their flat rate.
-pages.frs.registerFor.subheading1                         = Do you want the business to join the Flat Rate Scheme with this rate?
+pages.frs.registerFor.para                                = This is because the business doesn’t spend enough (including VAT) on relevant goods.
+pages.frs.registerFor.indentText                           = Businesses in their first year of VAT registration can take an extra 1% off their flat rate.
+pages.frs.registerFor.subheading                          = Do you want the business to join the Flat Rate Scheme with this rate?
 validation.frs.registerFor.missing                        = Tell us if you want to use the 16.5% flat rate
 
 ## Do you want to register for FRS Page business sector rate

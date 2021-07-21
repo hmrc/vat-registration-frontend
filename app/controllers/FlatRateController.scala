@@ -23,11 +23,8 @@ import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html._
-
 import java.text.DecimalFormat
-import java.util.MissingResourceException
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,15 +36,16 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService,
-                                   frs_your_flat_rate: frs_your_flat_rate,
                                    annual_costs_inclusive: annual_costs_inclusive,
-                                   annual_costs_limited: annual_costs_limited)
+                                   annual_costs_limited: annual_costs_limited,
+                                   frs_register_for: frs_register_for,
+                                   frs_your_flat_rate: frs_your_flat_rate)
                                   (implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("registerForFrsRadio")("frs.registerFor")
+  val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerFor")
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form("joinFrs")("frs.join")
   val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerForWithSector")
   val overBusinessGoodsForm: Form[Boolean] = OverBusinessGoodsForm.form
@@ -117,7 +115,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             case Some(useRate) => registerForFrsForm.fill(YesOrNoAnswer(useRate))
             case None => registerForFrsForm
           }
-          Ok(views.html.frs_register_for(form))
+          Ok(frs_register_for(form))
         }
   }
 
@@ -125,7 +123,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
     implicit request =>
       implicit profile =>
         registerForFrsForm.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(views.html.frs_register_for(badForm))),
+          badForm => Future.successful(BadRequest(frs_register_for(badForm))),
           view => flatRateService.saveRegister(view.answer) map { _ =>
             if (view.answer) {
               Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
