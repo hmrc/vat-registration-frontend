@@ -57,7 +57,7 @@ class ReturnsControllerISpec extends ControllerISpec {
         .vatScheme.patched("applicant-details", applicantJson)
 
       val res = buildClient("/vat-start-date").post(Json.obj(
-        "startDateRadio" -> DateSelection.specific_date,
+        "value" -> DateSelection.specific_date,
         "startDate" -> Json.obj(
           "day" -> today.getDayOfMonth.toString,
           "month" -> today.getMonthOfYear.toString,
