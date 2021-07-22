@@ -16,36 +16,40 @@
 
 package controllers.test
 
-import config.FrontendAppConfig
+import models.api.{Partnership, PartyType, Trust}
 import models.external.partnershipid.PartnershipIdJourneyConfig
-import models.external.{BusinessVerificationStatus, BvPass}
+import models.external.{BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
-class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerComponents,
-                                                        appConfig: FrontendAppConfig) extends FrontendController(mcc) {
+class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def createJourney: Action[PartnershipIdJourneyConfig] = Action(parse.json[PartnershipIdJourneyConfig]) (_ =>
-    Created(Json.obj("journeyStartUrl" -> JsString(appConfig.partnershipIdCallbackUrl + s"?journeyId=1")))
-  )
+  def createJourney(partyType: String): Action[PartnershipIdJourneyConfig] = Action(parse.json[PartnershipIdJourneyConfig]) {
+    journeyConfig =>
+      val journeyId = PartyType.fromString(partyType) match {
+        case Partnership => "1"
+        case Trust => "2"
+      }
 
-  def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
-    Ok(Json.obj(
-      "sautr" -> "1234567890",
-      "postcode" -> "AA11AA",
-      "businessVerification" -> Json.obj(
-        "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-      ),
-      "registration" -> Json.obj(
-        "registrationStatus" -> "REGISTERED",
-        "registeredBusinessPartnerId" -> "X00000123456789"
-      ),
-      "identifiersMatch" -> true
-    )
+      Created(Json.obj("journeyStartUrl" -> JsString(journeyConfig.body.continueUrl + s"?journeyId=$journeyId")))
+  }
+
+  def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action.async {
+    Future.successful(
+      Ok(Json.toJson(PartnershipIdEntity(
+        sautr = Some("1234567890"),
+        postCode = if (journeyId.equals("1")) Some("AA11AA") else None,
+        chrn = if (journeyId.equals("2")) Some("1234567890") else None,
+        registration = "REGISTERED",
+        businessVerification = BvPass,
+        bpSafeId = Some("testBpId"),
+        identifiersMatch = true
+      ))(PartnershipIdEntity.apiFormat))
     )
   }
 

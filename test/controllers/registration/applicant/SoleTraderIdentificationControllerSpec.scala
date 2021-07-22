@@ -17,7 +17,7 @@
 package controllers.registration.applicant
 
 import fixtures.VatRegistrationFixture
-import models.api.{CharitableOrg, Individual, RegSociety, UkCompany}
+import models.api.{CharitableOrg, Individual, RegSociety, Trust, UkCompany}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockSoleTraderIdService, MockVatRegistrationService}
@@ -87,7 +87,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
     }
 
-    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+    List(UkCompany, RegSociety, CharitableOrg, Trust).foreach { partyType =>
       s"redirect to the capture role in the business page if the user is ${partyType.toString}" in new Setup {
         mockGetVatScheme(Future.successful(validVatScheme))
         mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))

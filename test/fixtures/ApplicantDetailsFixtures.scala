@@ -113,9 +113,20 @@ trait ApplicantDetailsFixtures {
     previousAddress = Some(PreviousAddressView(yesNo = false, Some(validPrevAddress)))
   )
 
-  val testGeneralPartnership: GeneralPartnership = GeneralPartnership(
+  val testGeneralPartnership: PartnershipIdEntity = PartnershipIdEntity(
     sautr = Some(testSautr),
     postCode = Some(testPostcode),
+    chrn = None,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = Some(testSautr),
+    postCode = None,
+    chrn = Some(testChrn),
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),

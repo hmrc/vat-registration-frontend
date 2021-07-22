@@ -21,7 +21,7 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
 import models.api.{Address, Individual, Threshold, VatScheme, _}
-import models.external.{BusinessEntity, GeneralPartnership, IncorporatedEntity, SoleTrader}
+import models.external.{BusinessEntity, IncorporatedEntity, PartnershipIdEntity, SoleTrader}
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
@@ -52,21 +52,20 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   val tradingNameUrl: Call = if (partyType.equals(UkCompany)) {
     controllers.registration.business.routes.TradingNameController.show()
   } else {
-    controllers.registration.applicant.routes.SoleTraderNameController.show()
+    controllers.registration.business.routes.MandatoryTradingNameController.show()
   }
 
-  val changeTransactorDetailsUrl: Call =
-    if (partyType.equals(Partnership)) {
-      optLeadPartner match {
+  val changeTransactorDetailsUrl: Call = {
+    partyType match {
+      case Partnership => optLeadPartner match {
         case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => applicantRoutes.SoleTraderIdentificationController.startJourney()
         case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
       }
-    } else if (isEnabled(UseSoleTraderIdentification)) {
-      applicantRoutes.SoleTraderIdentificationController.startJourney()
+      case Trust => applicantRoutes.PartnershipIdController.startJourney()
+      case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney()
+      case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
     }
-    else {
-      applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-    }
+  }
 
   def startDateRow: SummaryRow = SummaryRow(
     s"$sectionId.startDate",
@@ -111,7 +110,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.sautr",
     vatApplicantDetails.entity.flatMap {
       case soleTrader: SoleTrader => soleTrader.sautr
-      case _: GeneralPartnership => optLeadPartner.flatMap {
+      case trust: PartnershipIdEntity if partyType.eq(Trust) => trust.sautr
+      case _: PartnershipIdEntity => optLeadPartner.flatMap {
         case soleTrader: SoleTrader => soleTrader.sautr
         case _ => None
       }
@@ -138,12 +138,17 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
   )
 
   val chrn: SummaryRow = SummaryRow(
-    s"$sectionId.chro",
+    s"$sectionId.chrn",
     vatApplicantDetails.entity.flatMap {
       case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
+      case partnerEntity: PartnershipIdEntity => partnerEntity.chrn
       case _ => None
     }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startJourney())
+    partyType match {
+      case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney())
+      case Trust => Some(applicantRoutes.PartnershipIdController.startJourney())
+      case _ => None
+    }
   )
 
   val roleInTheBusiness: SummaryRow = SummaryRow(
@@ -421,8 +426,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Seq(
       (companyNumber, partyType.equals(UkCompany) || partyType.equals(RegSociety) || partyType.equals(CharitableOrg)),
       (ctutr, ctutr.hasValue && (partyType.equals(UkCompany) || partyType.equals(RegSociety))),
-      (chrn, chrn.hasValue && partyType.equals(CharitableOrg)),
-      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership))),
+      (chrn, chrn.hasValue && (partyType.equals(CharitableOrg) || partyType.equals(Trust))),
+      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership) || partyType.equals(Trust))),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),

@@ -20,39 +20,61 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.Partner
+import models.api.{Partnership, Trust}
+import models.external.partnershipid.PartnershipIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile}
+import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PartnershipIdController @Inject()(val authConnector: AuthConnector,
                                         val keystoreConnector: KeystoreConnector,
                                         partnershipIdService: PartnershipIdService,
-                                        applicantDetailsService: ApplicantDetailsService
+                                        applicantDetailsService: ApplicantDetailsService,
+                                        vatRegistrationService: VatRegistrationService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startPartnershipIdJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit req =>
-      _ =>
-        partnershipIdService.createJourney(appConfig.partnershipIdCallbackUrl, request2Messages(req)("service.name"), appConfig.contactFormServiceIdentifier, appConfig.feedbackUrl).map(
-          journeyStartUrl => SeeOther(journeyStartUrl)
+  def startJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        val journeyConfig = PartnershipIdJourneyConfig(
+          appConfig.partnershipIdCallbackUrl,
+          Some(request2Messages(request)("service.name")),
+          appConfig.contactFormServiceIdentifier,
+          appConfig.feedbackUrl
         )
+
+        vatRegistrationService.partyType.flatMap {
+          case partyType@(Partnership | Trust) => partnershipIdService.createJourney(journeyConfig, partyType).map(
+            journeyStartUrl => SeeOther(journeyStartUrl)
+          )
+          case partyType => throw new InternalServerException(
+            s"[PartnershipIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
+          )
+        }
   }
 
-  def partnershipIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def callback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
           partnershipDetails <- partnershipIdService.getDetails(journeyId)
+          partyType <- vatRegistrationService.partyType
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
+          _ <- if (partyType.equals(Partnership)) applicantDetailsService.saveApplicantDetails(Partner) else Future.successful()
         } yield {
-          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType())
+          partyType match {
+            case Partnership => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType())
+            case Trust => Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+          }
         }
   }
 

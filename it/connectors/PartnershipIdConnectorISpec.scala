@@ -1,10 +1,26 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package connectors
 
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.api.{Partnership, Trust}
 import models.external.partnershipid.PartnershipIdJourneyConfig
-import models.external.{BusinessVerificationStatus, BvPass, GeneralPartnership}
+import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -12,10 +28,14 @@ import uk.gov.hmrc.http.InternalServerException
 
 class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  val testJourneyId = "1"
+  val testPartnershipJourneyId = "1"
+  val testTrustJourneyId = "2"
   val testJourneyUrl = "/test-journey-url"
-  val createJourneyUrl = "/partnership-identification/api/general-partnership/journey"
-  val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
+  val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
+  val createTrustJourneyUrl = "/partnership-identification/api/trust/journey"
+
+  def retrieveDetailsUrl(journeyId: String) = s"/partnership-identification/api/journey/$journeyId"
+
   val connector: PartnershipIdConnector = app.injector.instanceOf[PartnershipIdConnector]
 
   val testJourneyConfig: PartnershipIdJourneyConfig = PartnershipIdJourneyConfig(
@@ -27,7 +47,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
   val testPostCode = "ZZ1 1ZZ"
 
-  val testPartnershipIdResponse: JsObject = Json.obj(
+  val testPartnershipResponse: JsObject = Json.obj(
     "sautr" -> testSautr,
     "postcode" -> testPostCode,
     "businessVerification" -> Json.obj(
@@ -40,9 +60,33 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "identifiersMatch" -> true
   )
 
-  val testPartnership: GeneralPartnership = GeneralPartnership(
+  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
     Some(testPostCode),
+    None,
+    testRegistration,
+    BvPass,
+    Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testTrustResponse: JsObject = Json.obj(
+    "sautr" -> testSautr,
+    "chrn" -> testChrn,
+    "businessVerification" -> Json.obj(
+      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+    ),
+    "registration" -> Json.obj(
+      "registrationStatus" -> testRegistration,
+      "registeredBusinessPartnerId" -> testSafeId
+    ),
+    "identifiersMatch" -> true
+  )
+
+  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
+    Some(testSautr),
+    None,
+    Some(testChrn),
     testRegistration,
     BvPass,
     Some(testSafeId),
@@ -51,14 +95,26 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
   "createJourney" when {
     "the API returns CREATED" must {
-      "return the journey ID when the response JSON includes the journeyId" in {
+      "return the journey ID when the response JSON includes the journeyId for a Partnership" in {
         given()
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        stubPost(createJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+        stubPost(createPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig, Partnership))
+
+        res mustBe testJourneyUrl
+      }
+
+      "return the journey ID when the response JSON includes the journeyId for a Trust" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        stubPost(createTrustJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, Trust))
 
         res mustBe testJourneyUrl
       }
@@ -68,10 +124,10 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        stubPost(createJourneyUrl, CREATED, "{}")
+        stubPost(createPartnershipJourneyUrl, CREATED, "{}")
 
         intercept[JsResultException] {
-          await(connector.createJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig, Partnership))
         }
       }
     }
@@ -82,25 +138,36 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        stubPost(createJourneyUrl, UNAUTHORIZED, "")
+        stubPost(createPartnershipJourneyUrl, UNAUTHORIZED, "")
 
         intercept[InternalServerException] {
-          await(connector.createJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig, Partnership))
         }
       }
     }
   }
 
   "getDetails" must {
-    "return transactor details when Partnership Id returns OK" in new Setup {
+    "return partnership when Partnership Id returns OK" in new Setup {
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      stubGet(retrieveDetailsUrl, OK, Json.stringify(testPartnershipIdResponse))
-      val res: GeneralPartnership = await(connector.getDetails(testJourneyId))
+      stubGet(retrieveDetailsUrl(testPartnershipJourneyId), OK, Json.stringify(testPartnershipResponse))
+      val res: PartnershipIdEntity = await(connector.getDetails(testPartnershipJourneyId))
 
       res mustBe testPartnership
+    }
+
+    "return trust when Partnership Id returns OK" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(testTrustResponse))
+      val res: PartnershipIdEntity = await(connector.getDetails(testTrustJourneyId))
+
+      res mustBe testTrust
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
@@ -108,11 +175,11 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val invalidTransactorJson: JsObject = testPartnershipIdResponse - "identifiersMatch"
-      stubGet(retrieveDetailsUrl, OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
+      val invalidTransactorJson: JsObject = testPartnershipResponse - "identifiersMatch"
+      stubGet(retrieveDetailsUrl(testPartnershipJourneyId), OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
 
       intercept[InternalServerException] {
-        await(connector.getDetails(testJourneyId))
+        await(connector.getDetails(testPartnershipJourneyId))
       }
     }
 
@@ -121,10 +188,10 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      stubGet(retrieveDetailsUrl, IM_A_TEAPOT, "")
+      stubGet(retrieveDetailsUrl(testPartnershipJourneyId), IM_A_TEAPOT, "")
 
       intercept[InternalServerException] {
-        await(connector.getDetails(testJourneyId))
+        await(connector.getDetails(testPartnershipJourneyId))
       }
     }
   }

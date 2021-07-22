@@ -17,13 +17,14 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.api.Partnership
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
-import play.api.libs.json.{JsObject, JsResultException, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UnauthorizedException}
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 
 class PartnershipIDConnectorSpec extends VatRegSpec {
 
@@ -49,7 +50,7 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
         mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString))
 
-        val res = await(connector.createJourney(testJourneyConfig))
+        val res = await(connector.createJourney(testJourneyConfig, Partnership))
 
         res mustBe testJourneyUrl
       }
@@ -59,7 +60,7 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(INTERNAL_SERVER_ERROR, ""))
 
         intercept[InternalServerException] {
-          await(connector.createJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig, Partnership))
         }
       }
     }
@@ -68,7 +69,7 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, ""))
 
         intercept[InternalServerException] {
-          await(connector.createJourney(testJourneyConfig))
+          await(connector.createJourney(testJourneyConfig, Partnership))
         }
       }
     }

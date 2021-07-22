@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
   "Trading name page resolver" should {
-    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Individual" in new Setup {
+    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for Individual" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
@@ -47,11 +47,11 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       val  response = buildClient("/resolve-party-type").get()
       whenReady(response) {res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
       }
     }
 
-    s"return SEE_OTHER and redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for Partnership" in new Setup {
+    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for Partnership" in new Setup {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
@@ -72,7 +72,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       val  response = buildClient("/resolve-party-type").get()
       whenReady(response) {res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
       }
     }
 

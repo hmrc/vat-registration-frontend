@@ -17,7 +17,8 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.external.GeneralPartnership
+import models.api.{Partnership, PartyType, Trust}
+import models.external.PartnershipIdEntity
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
@@ -30,8 +31,13 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class PartnershipIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  def createJourney(journeyConfig: PartnershipIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
-    httpClient.POST(config.getCreateGeneralPartnershipIdJourneyUrl, journeyConfig).map {
+  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = partyType match {
+      case Partnership => config.startGeneralPartnershipJourneyUrl
+      case Trust => config.startTrustJourneyUrl
+    }
+
+    httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
@@ -39,10 +45,10 @@ class PartnershipIdConnector @Inject()(httpClient: HttpClient, config: FrontendA
     }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[GeneralPartnership] = {
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] = {
     httpClient.GET(config.getPartnershipIdDetailsUrl(journeyId)).map { response =>
       response.status match {
-        case OK => response.json.validate[GeneralPartnership](GeneralPartnership.apiFormat) match {
+        case OK => response.json.validate[PartnershipIdEntity](PartnershipIdEntity.apiFormat) match {
           case JsSuccess(value, _) => value
           case JsError(errors) =>
             throw new InternalServerException(s"[PartnershipIdConnector] Partnership ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")

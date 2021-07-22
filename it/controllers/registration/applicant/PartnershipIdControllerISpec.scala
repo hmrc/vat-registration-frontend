@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.registration.applicant
 
@@ -5,9 +20,9 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.ApplicantDetails
-import models.api.{Partnership, VatScheme}
-import models.external.{BusinessVerificationStatus, BvPass, GeneralPartnership}
+import models.{ApplicantDetails, Partner}
+import models.api.{Partnership, Trust, VatScheme}
+import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -20,12 +35,13 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
 
-  val journeyUrl = "/partnership-identification/api/general-partnership/journey"
+  val partnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
+  val trustJourneyUrl = "/partnership-identification/api/trust/journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
   val testPostCode = "ZZ1 1ZZ"
 
-  val testPartnershipIdResponse: JsObject = Json.obj(
+  val testPartnershipResponse: JsObject = Json.obj(
     "sautr" -> testSautr,
     "postcode" -> testPostCode,
     "businessVerification" -> Json.obj(
@@ -38,28 +54,71 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testPartnership: GeneralPartnership = GeneralPartnership(
+  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
     Some(testPostCode),
+    None,
     testRegistration,
     BvPass,
     Some(testSafeId),
     identifiersMatch = true
   )
 
-  val partnershipApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership))
+  val testTrustResponse: JsObject = Json.obj(
+    "sautr" -> testSautr,
+    "chrn" -> testChrn,
+    "businessVerification" -> Json.obj(
+      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+    ),
+    "registration" -> Json.obj(
+      "registrationStatus" -> testRegistration,
+      "registeredBusinessPartnerId" -> testSafeId
+    ),
+    "identifiersMatch" -> true
+  )
+
+  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
+    Some(testSautr),
+    None,
+    Some(testChrn),
+    testRegistration,
+    BvPass,
+    Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val partnershipApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
+  val trustApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testTrust))
 
   "GET /start-partnership-id-journey" when {
     "STI returns a journey ID" must {
-      "redirect to the journey using the ID provided" in new Setup {
+      "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme)
+          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        stubPost(journeyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+        stubPost(partnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-partnership-id-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+
+      "redirect to the journey using the ID provided for Trust" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(trustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-partnership-id-journey").get()
 
@@ -72,56 +131,114 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   }
 
   "GET /partnership-id-callback" must {
-    "redirect to the lead partner entity type page" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
-        .vatScheme.contains(
-        VatScheme(
-          id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+    "redirect to the lead partner entity type page for Partnership" when {
+      "S4L model is not full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+          )
         )
-      )
 
-      stubGet(retrieveDetailsUrl, OK, testPartnershipIdResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+        }
+      }
+
+      "the model in S4l is full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.isUpdatedWith(partnershipApplicantDetails)
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+          ))
+
+        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+        }
       }
     }
 
-    "redirect to the lead partner entity type page when the model in S4l is full" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(partnershipApplicantDetails)
-        .vatScheme.contains(
-        VatScheme(
-          id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
-        ))
+    "redirect to sole trader identification for Trust" when {
+      "S4L model is not full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
+          )
+        )
 
-      stubGet(retrieveDetailsUrl, OK, testPartnershipIdResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubGet(retrieveDetailsUrl, OK, testTrustResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        }
+      }
+
+      "model in S4l is full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.isUpdatedWith(trustApplicantDetails)
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
+          ))
+
+        stubGet(retrieveDetailsUrl, OK, testTrustResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        }
       }
     }
   }

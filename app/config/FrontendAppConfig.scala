@@ -18,7 +18,7 @@ package config
 
 import controllers.callbacks.routes
 import featureswitch.core.config._
-import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
+import models.api._
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -193,11 +193,18 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
 
-  def getCreateGeneralPartnershipIdJourneyUrl: String =
+  def startGeneralPartnershipJourneyUrl: String =
     if (isEnabled(StubPartnershipIdentification)) {
-      s"$host/register-for-vat/test-only/partnership-identification"
+      s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(Partnership)}"
     } else {
       s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
+    }
+
+  def startTrustJourneyUrl: String =
+    if (isEnabled(StubPartnershipIdentification)) {
+      s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(Trust)}"
+    } else {
+      s"$partnershipIdHost/partnership-identification/api/trust/journey"
     }
 
   def getPartnershipIdDetailsUrl(journeyId: String): String =

@@ -44,18 +44,13 @@ class TradingNameResolverControllerSpec extends ControllerSpec
   }
 
   "resolve" must {
-    s"redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for partyType Individual" in new Setup {
-      mockPartyType(Future.successful(Individual))
-      val res = Controller.resolve()(FakeRequest())
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
-    }
-
-    s"redirects to ${controllers.registration.applicant.routes.SoleTraderNameController.show().url} for partyType Partnership" in new Setup {
-      mockPartyType(Future.successful(Partnership))
-      val res = Controller.resolve()(FakeRequest())
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(controllers.registration.applicant.routes.SoleTraderNameController.show().url)
+    List(Individual, Partnership, Trust).foreach { partyType =>
+      s"redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for partyType ${partyType.toString}" in new Setup {
+        mockPartyType(Future.successful(partyType))
+        val res = Controller.resolve()(FakeRequest())
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
+      }
     }
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
