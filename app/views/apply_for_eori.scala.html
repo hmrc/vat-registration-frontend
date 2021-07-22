@@ -19,24 +19,22 @@
 @import views.html.layouts.layout
 
 @this(
-    layout: layout,
-    errorSummary: errorSummary,
-    p: p,
-    form: FormWithCSRF,
-    yesNoRadio: yesNoRadio,
-    button: button,
-    link: link,
-    h1: h1
+        layout: layout,
+        errorSummary: errorSummary,
+        p: p,
+        form: FormWithCSRF,
+        yesNoRadio: yesNoRadio,
+        button: button,
+        link: link,
+        h1: h1
 )
 
 @(applyForEoriForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(
-    pageTitle = Some(title(applyForEoriForm, messages("pages.applyForEori.heading"))),
-    backLink = true
-) {
+@layout(pageTitle = Some(title(applyForEoriForm, messages("pages.applyForEori.heading"))), backLink = true) {
 
     @errorSummary(applyForEoriForm.errors)
+
     @h1(messages("pages.applyForEori.heading"))
 
     @p{ @messages("pages.applyForEori.p1") }
