@@ -17,7 +17,8 @@
 package services
 
 import connectors.PartnershipIdConnector
-import models.external.GeneralPartnership
+import models.api.PartyType
+import models.external.PartnershipIdEntity
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -27,13 +28,11 @@ import scala.concurrent.Future
 @Singleton
 class PartnershipIdService @Inject()(partnershipIdConnector: PartnershipIdConnector) {
 
-  def createJourney(continueUrl: String, serviceName: String, deskProServiceId: String, signOutUrl: String)(implicit hc: HeaderCarrier): Future[String] = {
-    val journeyConfig = PartnershipIdJourneyConfig(continueUrl, Some(serviceName), deskProServiceId, signOutUrl)
-
-    partnershipIdConnector.createJourney(journeyConfig)
+  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    partnershipIdConnector.createJourney(journeyConfig, partyType)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[GeneralPartnership] = {
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] = {
     partnershipIdConnector.getDetails(journeyId)
   }
 

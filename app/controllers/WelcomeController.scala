@@ -16,9 +16,11 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import featureswitch.core.config.SaveAndContinueLater
+import models.CurrentProfile
 import play.api.mvc._
 import services._
 
@@ -61,10 +63,10 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def startNewJourney: Action[AnyContent] = isAuthenticated { implicit request =>
     getProfile.flatMap {
-      case Some(_) => Future.successful(Redirect(appConfig.eligibilityUrl))
-      case None => vatRegistrationService.createRegistrationFootprint
+      case None | Some(CurrentProfile(_, VatRegStatus.held)) => vatRegistrationService.createRegistrationFootprint
         .flatMap(scheme => currentProfileService.buildCurrentProfile(scheme.id))
         .map(_ => Redirect(appConfig.eligibilityUrl))
+      case Some(_) => Future.successful(Redirect(appConfig.eligibilityUrl))
     }
   }
 }

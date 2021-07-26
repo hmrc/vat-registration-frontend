@@ -156,8 +156,8 @@ GET         /start-sti-partner-journey                                          
 GET         /sti-partner-callback/:isLeadPartner                                               controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(isLeadPartner: Boolean, journeyId: String)
 
 ## Incorp ID Pages
-GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startPartnershipIdJourney()
-GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.partnershipIdCallback(journeyId)
+GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney()
+GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
 
 ## Email Verification Pages
 GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show
@@ -249,9 +249,9 @@ POST        /how-do-you-want-to-pay                                             
 GET         /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.show
 POST        /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.submit
 
-## SoleTraderNameController
-GET         /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.show
-POST        /trading-name-not-incorporated                                                     controllers.registration.applicant.SoleTraderNameController.submit
+## MandatoryTradingNameController
+GET         /trading-name-not-incorporated                                                     controllers.registration.business.MandatoryTradingNameController.show
+POST        /trading-name-not-incorporated                                                     controllers.registration.business.MandatoryTradingNameController.submit
 
 ## LeadPartnerEntityController
 GET         /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.showLeadPartnerEntityType

@@ -25,13 +25,13 @@ sealed trait BusinessEntity
 
 object BusinessEntity {
   val reads: Reads[BusinessEntity] = Reads { json =>
-    Json.fromJson(json)(IncorporatedEntity.format).orElse(Json.fromJson(json)(SoleTrader.format)).orElse(Json.fromJson(json)(GeneralPartnership.format))
+    Json.fromJson(json)(IncorporatedEntity.format).orElse(Json.fromJson(json)(SoleTrader.format)).orElse(Json.fromJson(json)(PartnershipIdEntity.format))
   }
 
   val writes: Writes[BusinessEntity] = Writes {
     case incorporatedEntity: IncorporatedEntity => Json.toJson(incorporatedEntity)
     case soleTrader: SoleTrader => Json.toJson(soleTrader)
-    case generalPartnership: GeneralPartnership => Json.toJson(generalPartnership)
+    case generalPartnership: PartnershipIdEntity => Json.toJson(generalPartnership)
   }
 
   implicit val format: Format[BusinessEntity] = Format[BusinessEntity](reads, writes)
@@ -120,24 +120,26 @@ object SoleTrader {
   implicit val format: Format[SoleTrader] = Json.format[SoleTrader]
 }
 
-case class GeneralPartnership(sautr: Option[String],
-                              postCode: Option[String],
-                              registration: String,
-                              businessVerification: BusinessVerificationStatus,
-                              bpSafeId: Option[String] = None,
-                              identifiersMatch: Boolean) extends BusinessEntity
+case class PartnershipIdEntity(sautr: Option[String],
+                               postCode: Option[String],
+                               chrn: Option[String],
+                               registration: String,
+                               businessVerification: BusinessVerificationStatus,
+                               bpSafeId: Option[String] = None,
+                               identifiersMatch: Boolean) extends BusinessEntity
 
-object GeneralPartnership {
+object PartnershipIdEntity {
 
-  val apiFormat: Format[GeneralPartnership] = (
+  val apiFormat: Format[PartnershipIdEntity] = (
     (__ \ "sautr").formatNullable[String] and
       (__ \ "postcode").formatNullable[String] and
+      (__ \ "chrn").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
       (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
       (__ \ "identifiersMatch").format[Boolean]
-    ) (GeneralPartnership.apply, unlift(GeneralPartnership.unapply))
+    ) (PartnershipIdEntity.apply, unlift(PartnershipIdEntity.unapply))
 
-  implicit val format: Format[GeneralPartnership] = Json.format[GeneralPartnership]
+  implicit val format: Format[PartnershipIdEntity] = Json.format[PartnershipIdEntity]
 
 }

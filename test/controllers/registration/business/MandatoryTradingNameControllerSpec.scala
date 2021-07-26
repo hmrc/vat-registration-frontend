@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.registration.applicant
+package controllers.registration.business
 
 import fixtures.VatRegistrationFixture
 import models.{TradingDetails, TradingNameView}
@@ -28,12 +28,12 @@ import views.html.soletrader_name
 
 import scala.concurrent.Future
 
-class SoleTraderNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
-  val fakeRequest = FakeRequest(controllers.registration.applicant.routes.SoleTraderNameController.show)
+class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
+  val fakeRequest = FakeRequest(controllers.registration.business.routes.MandatoryTradingNameController.show())
 
   class Setup {
     val view = app.injector.instanceOf[soletrader_name]
-    val testController = new SoleTraderNameController(
+    val testController = new MandatoryTradingNameController(
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,

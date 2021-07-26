@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.registration.applicant
+package controllers.registration.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
@@ -29,14 +29,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SoleTraderNameController @Inject() (val keystoreConnector: KeystoreConnector,
-                                          val authConnector: AuthConnector,
-                                          val applicantDetailsService: ApplicantDetailsService,
-                                          val tradingDetailsService: TradingDetailsService,
-                                          view: soletrader_name
-                                         )(implicit val appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
+                                               val authConnector: AuthConnector,
+                                               val applicantDetailsService: ApplicantDetailsService,
+                                               val tradingDetailsService: TradingDetailsService,
+                                               view: soletrader_name
+                                              )(implicit val appConfig: FrontendAppConfig,
+                                                val executionContext: ExecutionContext,
+                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -46,6 +46,7 @@ class SoleTraderNameController @Inject() (val keystoreConnector: KeystoreConnect
           form = tradingDetails.tradingNameView.fold(SoleTraderNameForm.form)(tradingName => SoleTraderNameForm.form.fill(tradingName.tradingName.get))
         } yield Ok(view(form))
   }
+
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
