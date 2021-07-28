@@ -30,7 +30,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 trait StartDateForm {
-  protected val START_DATE_SELECTION = "startDateRadio"
+  protected val START_DATE_SELECTION = "value"
   protected val START_DATE = "startDate"
 
   protected val startDateChoiceMissing = "validation.startDate.choice.missing"
@@ -39,7 +39,7 @@ trait StartDateForm {
   protected val dateInvalidKey = "validation.startDate.invalid"
   protected val dateRange = "validation.startDate.range"
 
-  protected val dateFormat: DateTimeFormatter = DateTimeFormatter
+  val dateFormat: DateTimeFormatter = DateTimeFormatter
     .ofLocalizedDate(java.time.format.FormatStyle.LONG)
     .withLocale(java.util.Locale.UK)
 

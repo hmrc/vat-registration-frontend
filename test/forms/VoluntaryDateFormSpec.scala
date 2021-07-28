@@ -49,7 +49,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
   "Binding VoluntaryDateForm" should {
     "Bind successfully for an incorp date selection" in {
       val data = Map(
-        "startDateRadio" -> "company_registration_date",
+        "value" -> "company_registration_date",
         "startDate" -> ""
       )
       form.bind(data).get mustBe (company_registration_date, None)
@@ -57,7 +57,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Bind successfully for a business start date selection" in {
       val data = Map(
-        "startDateRadio" -> "business_start_date",
+        "value" -> "business_start_date",
         "startDate" -> ""
       )
       form.bind(data).get mustBe (business_start_date, None)
@@ -65,7 +65,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Bind successfully with a date input" in {
       val data = Map(
-        "startDateRadio"  -> "specific_date",
+        "value"  -> "specific_date",
         "startDate.day"   -> s"${validDate.getDayOfMonth}",
         "startDate.month" -> s"${validDate.getMonthValue}",
         "startDate.year"  -> s"${validDate.getYear}"
@@ -75,7 +75,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Bind successfully with a date 2 days from now" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
+        "value" -> "specific_date",
         "startDate.day" -> s"${lowerLimitDate.getDayOfMonth}",
         "startDate.month" -> s"${lowerLimitDate.getMonthValue}",
         "startDate.year" -> s"${lowerLimitDate.getYear}"
@@ -85,7 +85,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Bind successfully with a date 3 months from now" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
+        "value" -> "specific_date",
         "startDate.day" -> s"${upperLimitDate.getDayOfMonth}",
         "startDate.month" -> s"${upperLimitDate.getMonthValue}",
         "startDate.year" -> s"${upperLimitDate.getYear}"
@@ -95,7 +95,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Fail to bind successfully for no input" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
+        "value" -> "specific_date",
         "startDate.day" -> "",
         "startDate.month" -> "",
         "startDate.year" -> ""
@@ -108,7 +108,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Fail to bind successfully for an invalid input" in {
       val data = Map(
-        "startDateRadio" -> "specific_date",
+        "value" -> "specific_date",
         "startDate.day" -> "INVALID",
         "startDate.month" -> "INVALID",
         "startDate.year" -> "INVALID"
@@ -121,14 +121,14 @@ class VoluntaryDateFormSpec extends VatRegSpec {
 
     "Fail to bind for an invalid selection" in {
       val data = Map(
-        "startDateRadio" -> "invalid_selection",
+        "value" -> "invalid_selection",
         "startDate.day" -> s"${validDate.getDayOfMonth}",
         "startDate.month" -> s"${validDate.getMonthValue}",
         "startDate.year" -> s"${validDate.getYear}"
       )
       val bound = form.bind(data)
       bound.errors.size mustBe 1
-      bound.errors.head.key mustBe "startDateRadio"
+      bound.errors.head.key mustBe "value"
       bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
   }

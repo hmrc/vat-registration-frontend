@@ -44,7 +44,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
   "Binding MandatoryDateForm" should {
     "Bind successfully for an incorp date selection" in {
       val data = Map(
-        "startDateRadio"  -> "company_registration_date",
+        "value"  -> "company_registration_date",
         "startDate"       -> ""
       )
       form.bind(data).get mustBe (company_registration_date, None)
@@ -52,7 +52,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
 
     "Bind successfully for a business start date selection" in {
       val data = Map(
-        "startDateRadio"  -> "business_start_date",
+        "value"  -> "business_start_date",
         "startDate"       -> ""
       )
       form.bind(data).get mustBe (business_start_date, None)
@@ -60,7 +60,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
 
     "Bind successfully for a valid specific date selection" in {
       val data = Map(
-        "startDateRadio"  -> "specific_date",
+        "value"  -> "specific_date",
         "startDate.day"   -> "5",
         "startDate.month" -> "1",
         "startDate.year"  -> "2018"
@@ -70,23 +70,23 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
 
     "Fail to bind successfully for no selection" in {
       val data = Map(
-        "startDateRadio"  -> "",
+        "value"  -> "",
         "startDate"       -> ""
       )
       val bound = form.bind(data)
       bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "startDateRadio"
+      bound.errors.head.key     mustBe "value"
       bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
 
     "Fail to bind successfully for an invalid selection" in {
       val data = Map(
-        "startDateRadio"  -> "invalidSelection",
+        "value"  -> "invalidSelection",
         "startDate"       -> ""
       )
       val bound = form.bind(data)
       bound.errors.size         mustBe 1
-      bound.errors.head.key     mustBe "startDateRadio"
+      bound.errors.head.key     mustBe "value"
       bound.errors.head.message mustBe "validation.startDate.choice.missing"
     }
   }

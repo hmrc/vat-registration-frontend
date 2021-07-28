@@ -24,15 +24,14 @@ import models._
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
-import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, accounting_period_view => AccountingPeriodPage, start_date_incorp_view => VoluntaryStartDatePage}
+import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view, accounting_period_view => AccountingPeriodPage}
 
 import java.time.LocalDate
 import java.util
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
 
 @Singleton
 class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
@@ -41,7 +40,8 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService,
                                   mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
-                                  returnFrequencyPage: return_frequency_view
+                                  returnFrequencyPage: return_frequency_view,
+                                  voluntaryStartDateIncorpPage: start_date_incorp_view,
                                  )(implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -128,7 +128,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
 
           val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-          Ok(VoluntaryStartDatePage(filledForm, incorpDate, incorpDateAfter, exampleVatStartDate))
+          Ok(voluntaryStartDateIncorpPage(filledForm, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, exampleVatStartDate))
         }
       }
   }
@@ -143,7 +143,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
               val dynamicDate = timeService.dynamicFutureDateExample()
               val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-              Future.successful(BadRequest(VoluntaryStartDatePage(errors, incorpDate, incorpDateAfter, dynamicDate)))
+              Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, dynamicDate)))
             },
             success => returnsService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
               Redirect(routes.ReturnsController.returnsFrequencyPage())
