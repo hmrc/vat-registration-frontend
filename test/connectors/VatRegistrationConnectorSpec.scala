@@ -613,23 +613,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling saveTransactionID" should {
-    "succeed" when {
-      "saving a transactionID" in new Setup {
-        mockHttpPATCH[String, HttpResponse]("tst-url", HttpResponse(200, ""))
-        val resp: HttpResponse = await(connector.saveTransactionId("tstID", "transID"))
-
-        resp.status mustBe 200
-      }
-    }
-    "fail" when {
-      "saving a transactionID" in new Setup {
-        mockHttpFailedPATCH[String, HttpResponse]("tst-url", new Upstream4xxResponse("400", 400, 400))
-        intercept[Upstream4xxResponse](await(connector.saveTransactionId("tstID", "transID")))
-      }
-    }
-  }
-
   "getEligibilityData" should {
     "return 200 and a JsObject" in new Setup {
       val json = Json.obj("foo" -> "bar")

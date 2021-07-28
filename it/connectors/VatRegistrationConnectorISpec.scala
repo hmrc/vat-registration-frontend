@@ -16,13 +16,9 @@
 
 package connectors
 
-import java.time.LocalDate
-
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.api.VatScheme
-import models.external.{IncorpStatusEvent, IncorpSubscription, IncorporationInfo}
-import play.api.libs.json.JsString
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
@@ -30,38 +26,6 @@ import uk.gov.hmrc.http.Upstream5xxResponse
 class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
-
-  val transactionID = "000-431-TEST"
-
-  def incorpInfo(backUrl: String = "http://localhost:9896/callbackUrl", txId: String = transactionID) = IncorporationInfo(
-    IncorpSubscription(
-      transactionId = txId,
-      regime = "vat",
-      subscriber = "scrs",
-      callbackUrl = backUrl),
-    IncorpStatusEvent(
-      status = "accepted",
-      crn = Some("90000001"),
-      incorporationDate = Some(LocalDate.parse("2016-08-05")),
-      description = None))
-
-  val incorpInfoRaw =
-    s"""
-       |{
-       |  "statusEvent": {
-       |    "crn": "90000001",
-       |    "incorporationDate": "2016-08-05",
-       |    "status": "accepted"
-       |  },
-       |  "subscription": {
-       |    "callbackUrl": "#",
-       |    "regime": "vat",
-       |    "subscriber": "scrs",
-       |    "transactionId": "000-431-TEST"
-       |  }
-       |}
-    """.stripMargin
-
 
   override def additionalConfig: Map[String, String] =
     Map(
