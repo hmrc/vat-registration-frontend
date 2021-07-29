@@ -41,7 +41,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val timeService: TimeService,
                                   mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
                                   returnFrequencyPage: return_frequency_view,
-                                  voluntaryStartDateIncorpPage: start_date_incorp_view,
+                                  voluntaryStartDateIncorpPage: start_date_incorp_view
                                  )(implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
