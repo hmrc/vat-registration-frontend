@@ -132,6 +132,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
@@ -156,6 +157,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 

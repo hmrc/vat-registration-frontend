@@ -48,6 +48,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -58,12 +59,12 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
     }
 
     "returns an OK with prepopulated data" in new Setup {
-
       given()
         .user.isAuthorised
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -88,6 +89,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -106,8 +108,9 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

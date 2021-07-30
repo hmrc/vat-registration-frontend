@@ -50,6 +50,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .alfeJourney.initialisedSuccessfully()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -114,6 +115,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

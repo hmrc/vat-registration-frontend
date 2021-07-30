@@ -51,8 +51,8 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
         chrn = if (journeyId.equals("3")) Some("123567890") else None,
         dateOfIncorporation = LocalDate.of(2020, 1, 1),
         identifiersMatch = true,
-        registration = Some("REGISTERED"),
-        businessVerification = Some(BvPass),
+        registration = "REGISTERED",
+        businessVerification = BvPass,
         bpSafeId = Some("testBpId")
       ))(IncorporatedEntity.apiFormat))
     )

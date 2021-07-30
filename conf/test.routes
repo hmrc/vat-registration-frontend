@@ -37,6 +37,10 @@ POST        /partnership-identification                       controllers.test.P
 GET         /partnership-identification/:journeyId            controllers.test.PartnershipIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
+POST        /business-identification                          controllers.test.BusinessIdentificationStubController.createJourney(partyType: String)
+GET         /business-identification/:journeyId               controllers.test.BusinessIdentificationStubController.retrieveValidationResult(journeyId)
+
++ nocsrf
 POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
 
 + nocsrf

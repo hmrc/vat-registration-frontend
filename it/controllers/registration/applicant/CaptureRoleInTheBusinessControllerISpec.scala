@@ -31,6 +31,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -56,6 +57,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy())
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -75,8 +77,9 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

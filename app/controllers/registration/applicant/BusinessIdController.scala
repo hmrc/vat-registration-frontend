@@ -20,11 +20,10 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.Partner
-import models.api.Partnership
-import models.external.partnershipid.PartnershipIdJourneyConfig
+import models.api.{Trust, UnincorpAssoc}
+import models.external.businessid.BusinessIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, BusinessIdService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -32,32 +31,32 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class PartnershipIdController @Inject()(val authConnector: AuthConnector,
-                                        val keystoreConnector: KeystoreConnector,
-                                        partnershipIdService: PartnershipIdService,
-                                        applicantDetailsService: ApplicantDetailsService,
-                                        vatRegistrationService: VatRegistrationService
-                                       )(implicit appConfig: FrontendAppConfig,
-                                         val executionContext: ExecutionContext,
-                                         baseControllerComponents: BaseControllerComponents)
+class BusinessIdController @Inject()(val authConnector: AuthConnector,
+                                     val keystoreConnector: KeystoreConnector,
+                                     businessIdService: BusinessIdService,
+                                     applicantDetailsService: ApplicantDetailsService,
+                                     vatRegistrationService: VatRegistrationService
+                                    )(implicit appConfig: FrontendAppConfig,
+                                      val executionContext: ExecutionContext,
+                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        val journeyConfig = PartnershipIdJourneyConfig(
-          appConfig.partnershipIdCallbackUrl,
+        val journeyConfig = BusinessIdJourneyConfig(
+          appConfig.businessIdCallbackUrl,
           Some(request2Messages(request)("service.name")),
           appConfig.contactFormServiceIdentifier,
           appConfig.feedbackUrl
         )
 
         vatRegistrationService.partyType.flatMap {
-          case partyType@Partnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
+          case partyType@(Trust | UnincorpAssoc) => businessIdService.createJourney(journeyConfig, partyType).map(
             journeyStartUrl => SeeOther(journeyStartUrl)
           )
           case partyType => throw new InternalServerException(
-            s"[PartnershipIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
+            s"[BusinessIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
           )
         }
   }
@@ -66,11 +65,10 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         for {
-          partnershipDetails <- partnershipIdService.getDetails(journeyId)
-          _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
-          _ <- applicantDetailsService.saveApplicantDetails(Partner)
+          businessDetails <- businessIdService.getDetails(journeyId)
+          _ <- applicantDetailsService.saveApplicantDetails(businessDetails)
         } yield {
-          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType())
+          Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
         }
   }
 

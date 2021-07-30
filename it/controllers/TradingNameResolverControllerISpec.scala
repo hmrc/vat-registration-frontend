@@ -39,7 +39,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         )
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -64,7 +64,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       )
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -89,7 +89,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       )
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

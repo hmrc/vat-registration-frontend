@@ -16,21 +16,21 @@
 
 package connectors
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Format
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class S4LConnector @Inject()(val shortCache: ShortLivedCache)
                             (implicit ec: ExecutionContext) {
 
-  def save[T](Id: String, formId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+  def save[T](Id: String, formId: String, data: T)(implicit hc: HeaderCarrier, writes: Writes[T]): Future[CacheMap] =
     shortCache.cache[T](Id, formId, data)
 
-  def fetchAndGet[T](Id: String, formId: String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+  def fetchAndGet[T](Id: String, formId: String)(implicit hc: HeaderCarrier, reads: Reads[T]): Future[Option[T]] =
     shortCache.fetchAndGetEntry[T](Id, formId)
 
   def clear(Id: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = shortCache.remove(Id)

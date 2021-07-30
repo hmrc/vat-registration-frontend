@@ -21,7 +21,7 @@ import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
-import models.external.{BvPass, IncorporatedEntity}
+import models.external.{BvFail, BvPass, IncorporatedEntity}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -152,7 +152,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, identifiersMatch = false)
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", BvFail, None)
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -166,7 +166,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -180,7 +180,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, testCompanyName, None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 

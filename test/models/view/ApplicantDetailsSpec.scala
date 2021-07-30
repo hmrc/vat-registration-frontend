@@ -18,7 +18,7 @@ package models.view
 
 import java.time.LocalDate
 import models.{ApplicantDetails, TelephoneNumber}
-import models.api.Address
+import models.api.{Address, UkCompany}
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
@@ -47,7 +47,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
-      ApplicantDetails.apiReads.reads(json) mustBe JsSuccess(applicantDetails)
+      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
     }
 
     "return a correct partial ApplicantDetails view model with partial name" in {
@@ -68,7 +68,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
-      ApplicantDetails.apiReads.reads(json) mustBe JsSuccess(applicantDetails)
+      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
     }
 
     "return a correct full ApplicantDetails view model with max data" in {
@@ -137,7 +137,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
 
-      ApplicantDetails.apiReads.reads(json) mustBe JsSuccess(applicantDetails)
+      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
     }
 
     "return a correct full ApplicantDetails view model with min data" in {
@@ -176,7 +176,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
-      ApplicantDetails.apiReads.reads(json) mustBe JsSuccess(applicantDetails)
+      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
     }
   }
 
@@ -185,7 +185,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val data = ApplicantDetails()
       val validJson = Json.obj()
 
-      Json.toJson(data)(ApplicantDetails.apiWrites) mustBe validJson
+      Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
     }
 
     "return a correct full JsValue with maximum data" in {
@@ -250,7 +250,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(ApplicantDetails.apiWrites) mustBe validJson
+      Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
     }
 
     "return a correct full JsValue with minimum data" in {
@@ -279,7 +279,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  }
            |}""".stripMargin)
 
-      Json.toJson(data)(ApplicantDetails.apiWrites) mustBe validJson
+      Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
     }
   }
 

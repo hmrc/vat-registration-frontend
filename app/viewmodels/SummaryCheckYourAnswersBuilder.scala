@@ -21,7 +21,7 @@ import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
 import models.api.{Address, Individual, Threshold, VatScheme, _}
-import models.external.{BusinessEntity, IncorporatedEntity, PartnershipIdEntity, SoleTrader}
+import models.external._
 import models.view.{SummaryRow, SummarySection}
 import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Call
@@ -61,7 +61,6 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
         case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => applicantRoutes.SoleTraderIdentificationController.startJourney()
         case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
       }
-      case Trust => applicantRoutes.PartnershipIdController.startJourney()
       case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney()
       case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
     }
@@ -110,14 +109,22 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.sautr",
     vatApplicantDetails.entity.flatMap {
       case soleTrader: SoleTrader => soleTrader.sautr
-      case trust: PartnershipIdEntity if partyType.eq(Trust) => trust.sautr
+      case business: BusinessIdEntity => business.sautr
       case _: PartnershipIdEntity => optLeadPartner.flatMap {
         case soleTrader: SoleTrader => soleTrader.sautr
         case _ => None
       }
       case _ => None
     }.getOrElse(""),
-    Some(changeTransactorDetailsUrl)
+    partyType match {
+      case Partnership => optLeadPartner match {
+        case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => Some(applicantRoutes.SoleTraderIdentificationController.startJourney())
+        case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
+      }
+      case UnincorpAssoc | Trust => Some(applicantRoutes.BusinessIdController.startJourney())
+      case _ if isEnabled(UseSoleTraderIdentification) => Some(applicantRoutes.SoleTraderIdentificationController.startJourney())
+      case _ => Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+    }
   )
 
   val companyNumber: SummaryRow = SummaryRow(
@@ -141,12 +148,12 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     s"$sectionId.chrn",
     vatApplicantDetails.entity.flatMap {
       case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
-      case partnerEntity: PartnershipIdEntity => partnerEntity.chrn
+      case businessIdEntity: BusinessIdEntity => businessIdEntity.chrn
       case _ => None
     }.getOrElse(""),
     partyType match {
       case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney())
-      case Trust => Some(applicantRoutes.PartnershipIdController.startJourney())
+      case Trust | UnincorpAssoc => Some(applicantRoutes.BusinessIdController.startJourney())
       case _ => None
     }
   )
@@ -426,8 +433,8 @@ case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
     Seq(
       (companyNumber, partyType.equals(UkCompany) || partyType.equals(RegSociety) || partyType.equals(CharitableOrg)),
       (ctutr, ctutr.hasValue && (partyType.equals(UkCompany) || partyType.equals(RegSociety))),
-      (chrn, chrn.hasValue && (partyType.equals(CharitableOrg) || partyType.equals(Trust))),
-      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership) || partyType.equals(Trust))),
+      (chrn, chrn.hasValue && (partyType.equals(CharitableOrg) || partyType.equals(Trust) || partyType.equals(UnincorpAssoc))),
+      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership) || partyType.equals(Trust) || partyType.equals(UnincorpAssoc))),
       (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
       (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
       (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),

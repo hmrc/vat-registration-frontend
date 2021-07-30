@@ -120,7 +120,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)
+        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
@@ -145,7 +145,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)
+        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
@@ -220,7 +220,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)
+        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,

@@ -16,9 +16,9 @@
 
 package controllers.test
 
-import models.api.{Partnership, PartyType, Trust}
-import models.external.partnershipid.PartnershipIdJourneyConfig
-import models.external.{BvPass, PartnershipIdEntity}
+import models.api.{PartyType, Trust, UnincorpAssoc}
+import models.external.businessid.BusinessIdJourneyConfig
+import models.external.{BusinessIdEntity, BvPass}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -27,12 +27,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+class BusinessIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def createJourney(partyType: String): Action[PartnershipIdJourneyConfig] = Action(parse.json[PartnershipIdJourneyConfig]) {
+  def createJourney(partyType: String): Action[BusinessIdJourneyConfig] = Action(parse.json[BusinessIdJourneyConfig]) {
     journeyConfig =>
       val journeyId = PartyType.fromString(partyType) match {
-        case Partnership => "1"
+        case UnincorpAssoc => "1"
+        case Trust => "2"
       }
 
       Created(Json.obj("journeyStartUrl" -> JsString(journeyConfig.body.continueUrl + s"?journeyId=$journeyId")))
@@ -40,14 +41,16 @@ class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerC
 
   def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action.async {
     Future.successful(
-      Ok(Json.toJson(PartnershipIdEntity(
+      Ok(Json.toJson(BusinessIdEntity(
         sautr = Some("1234567890"),
-        postCode = if (journeyId.equals("1")) Some("AA11AA") else None,
+        postCode = Some("AA11AA"),
+        chrn = Some("1234567890"),
+        casc = if (journeyId.equals("1")) Some("1234567890") else None,
         registration = "REGISTERED",
         businessVerification = BvPass,
         bpSafeId = Some("testBpId"),
         identifiersMatch = true
-      ))(PartnershipIdEntity.apiFormat))
+      ))(BusinessIdEntity.apiFormat))
     )
   }
 

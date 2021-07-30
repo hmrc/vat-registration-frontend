@@ -51,10 +51,10 @@ class FormerNameControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "returns an OK" in new Setup {
-
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,11 +65,11 @@ class FormerNameControllerISpec extends ControllerISpec {
     }
 
     "returns an OK with prepopulated data" in new Setup {
-
       given()
         .user.isAuthorised
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -114,6 +114,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -140,6 +141,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -163,6 +165,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -21,6 +21,7 @@ class ReturnsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       val res = buildClient("/vat-start-date").get()
 
@@ -46,7 +47,7 @@ class ReturnsControllerISpec extends ControllerISpec {
   "POST /vat-start-date" must {
     "Redirect to the next page when all data is valid" in {
       val today = LocalDate.now().plusDays(1)
-      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat)
+      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes)
 
       given()
         .user.isAuthorised
@@ -55,6 +56,7 @@ class ReturnsControllerISpec extends ControllerISpec {
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.has("applicant-details", applicantJson)
         .vatScheme.patched("applicant-details", applicantJson)
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       val res = buildClient("/vat-start-date").post(Json.obj(
         "value" -> DateSelection.specific_date,

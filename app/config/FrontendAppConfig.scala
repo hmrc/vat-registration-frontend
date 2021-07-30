@@ -38,6 +38,7 @@ trait AppConfig {
   val contactFrontendUrl: String
 }
 
+// scalastyle:off
 @Singleton
 class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig with FeatureSwitching {
 
@@ -200,13 +201,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
       s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
     }
 
-  def startTrustJourneyUrl: String =
-    if (isEnabled(StubPartnershipIdentification)) {
-      s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(Trust)}"
-    } else {
-      s"$partnershipIdHost/partnership-identification/api/trust/journey"
-    }
-
   def getPartnershipIdDetailsUrl(journeyId: String): String =
     if (isEnabled(StubPartnershipIdentification)) {
       s"$host/register-for-vat/test-only/partnership-identification/$journeyId"
@@ -215,6 +209,33 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
+
+  // Business Identification Section
+
+  lazy val businessIdHost: String = servicesConfig.baseUrl("business-identification-frontend")
+
+  def startUnincorpAssocJourneyUrl: String =
+    if (isEnabled(StubBusinessIdentification)) {
+      s"$host/register-for-vat/test-only/business-identification?partyType=${PartyType.stati(UnincorpAssoc)}"
+    } else {
+      s"$businessIdHost/business-identification/api/unincorporated-association/journey"
+    }
+
+  def startTrustJourneyUrl: String =
+    if (isEnabled(StubBusinessIdentification)) {
+      s"$host/register-for-vat/test-only/business-identification?partyType=${PartyType.stati(Trust)}"
+    } else {
+      s"$businessIdHost/business-identification/api/trust/journey"
+    }
+
+  def getBusinessIdDetailsUrl(journeyId: String): String =
+    if (isEnabled(StubBusinessIdentification)) {
+      s"$host/register-for-vat/test-only/business-identification/$journeyId"
+    } else {
+      s"$businessIdHost/business-identification/api/journey/$journeyId"
+    }
+
+  def businessIdCallbackUrl: String = s"$hostUrl/register-for-vat/business-id-callback"
 
   // Email Verification Section
 

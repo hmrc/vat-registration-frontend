@@ -18,6 +18,7 @@ package models
 
 import models.api.PartyType
 import models.external.BusinessEntity
+import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class PartnerEntity(details: BusinessEntity,
@@ -25,5 +26,17 @@ case class PartnerEntity(details: BusinessEntity,
                          isLeadPartner: Boolean)
 
 object PartnerEntity {
-  implicit val format: Format[PartnerEntity] = Json.format[PartnerEntity]
+  val reads: Reads[PartnerEntity] =
+    (__ \ "partyType").read[PartyType].flatMap { partyType =>
+      (
+        (__ \ "details").read[BusinessEntity](BusinessEntity.reads(partyType)) and
+        Reads.pure(partyType) and
+        (__ \ "isLeadPartner").read[Boolean]
+      )(PartnerEntity.apply _)
+    }
+
+  val writes: OWrites[PartnerEntity] = Json.writes[PartnerEntity]
+
+  implicit val format: Format[PartnerEntity] = Format(reads, writes)
+
 }

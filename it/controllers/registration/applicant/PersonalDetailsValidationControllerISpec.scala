@@ -32,6 +32,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .audit.writesAudit()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -48,7 +49,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
       disable(StubPersonalDetailsValidation)
 
       val testValidationId: String = "testValidationId"
-      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiWrites)
+      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes)
 
       given()
         .user.isAuthorised
@@ -57,6 +58,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
         .vatScheme.patched("applicant-details", applicantJson)
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].cleared
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

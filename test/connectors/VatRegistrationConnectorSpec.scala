@@ -331,32 +331,32 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling getApplicantDetails(testRegId)" should {
     "return ApplicantDetails" in new Setup {
       mockHttpGET[Option[ApplicantDetails]]("tst-url", Some(completeApplicantDetails))
-      connector.getApplicantDetails(testRegId) returns Some(completeApplicantDetails)
+      connector.getApplicantDetails(testRegId, UkCompany) returns Some(completeApplicantDetails)
     }
 
     "return empty ApplicantDetails" in new Setup {
       mockHttpGET[Option[ApplicantDetails]]("tst-url", None)
-      connector.getApplicantDetails(testRegId) returns None
+      connector.getApplicantDetails(testRegId, UkCompany) returns None
     }
 
     "throw a NotFoundException if the registration does not exist" in new Setup {
       mockHttpFailedGET[HttpResponse]("tst-url", notFound)
-      connector.getApplicantDetails(testRegId) failedWith notFound
+      connector.getApplicantDetails(testRegId, UkCompany) failedWith notFound
     }
 
     "throw an Upstream4xxResponse with Forbidden status" in new Setup {
       mockHttpFailedGET[HttpResponse]("tst-url", forbidden)
-      connector.getApplicantDetails(testRegId) failedWith forbidden
+      connector.getApplicantDetails(testRegId, UkCompany) failedWith forbidden
     }
 
     "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
       mockHttpFailedGET[HttpResponse]("tst-url", internalServerError)
-      connector.getApplicantDetails(testRegId) failedWith internalServerError
+      connector.getApplicantDetails(testRegId, UkCompany) failedWith internalServerError
     }
 
     "throw an Exception if the call failed" in new Setup {
       mockHttpFailedGET[HttpResponse]("tst-url", exception)
-      connector.getApplicantDetails(testRegId) failedWith exception
+      connector.getApplicantDetails(testRegId, UkCompany) failedWith exception
     }
   }
 

@@ -17,7 +17,9 @@
 package services
 
 import fixtures.VatRegistrationFixture
+import models.api.UkCompany
 import models.{ApplicantDetails, _}
+import play.api.libs.json.{Reads, Writes}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -32,12 +34,14 @@ class S4LServiceSpec extends VatRegSpec {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
       mockS4LSaveForm[ApplicantDetails](cacheMap)
+      implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
       service.save(emptyApplicantDetails) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(S4LKey[ApplicantDetails].key, Some(emptyApplicantDetails))
+      implicit val reads: Reads[ApplicantDetails]= ApplicantDetails.s4LReads(UkCompany)
       service.fetchAndGet[ApplicantDetails] returns Some(emptyApplicantDetails)
     }
 

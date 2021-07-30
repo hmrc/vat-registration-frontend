@@ -35,6 +35,7 @@ trait ApplicantDetailsFixtures {
 
   val testCrn = "testCrn"
   val testChrn = "testChrn"
+  val testCasc = "testCasc"
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
@@ -64,8 +65,8 @@ trait ApplicantDetailsFixtures {
     testIncorpDate,
     "GB",
     identifiersMatch = true,
-    Some("REGISTERED"),
-    Some(BvPass),
+    "REGISTERED",
+    BvPass,
     Some(testBpSafeId)
   )
 
@@ -116,17 +117,28 @@ trait ApplicantDetailsFixtures {
   val testGeneralPartnership: PartnershipIdEntity = PartnershipIdEntity(
     sautr = Some(testSautr),
     postCode = Some(testPostcode),
-    chrn = None,
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
 
-  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
+  val testTrust: BusinessIdEntity = BusinessIdEntity(
     sautr = Some(testSautr),
     postCode = None,
     chrn = Some(testChrn),
+    casc = None,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testUnincorpAssoc: BusinessIdEntity = BusinessIdEntity(
+    sautr = Some(testSautr),
+    postCode = None,
+    chrn = Some(testChrn),
+    casc = Some(testCasc),
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
@@ -140,7 +152,10 @@ trait ApplicantDetailsFixtures {
     chrn = None,
     dateOfIncorporation = testIncorpDate,
     countryOfIncorporation = testIncorpCountry,
-    identifiersMatch = true
+    identifiersMatch = true,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId)
   )
 
   val testCharitableOrganisation: IncorporatedEntity = IncorporatedEntity(
@@ -150,6 +165,9 @@ trait ApplicantDetailsFixtures {
     chrn = Some(testChrn),
     dateOfIncorporation = testIncorpDate,
     countryOfIncorporation = testIncorpCountry,
-    identifiersMatch = true
+    identifiersMatch = true,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId)
   )
 }

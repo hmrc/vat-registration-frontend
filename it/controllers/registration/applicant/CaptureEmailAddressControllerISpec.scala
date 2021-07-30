@@ -45,6 +45,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,6 +61,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -84,6 +86,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           )
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -106,6 +109,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           )
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -124,10 +128,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))
-          .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+          .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
