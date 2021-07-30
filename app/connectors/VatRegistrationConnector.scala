@@ -112,12 +112,8 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
   }
 
-  def clearVatScheme(transId: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[HttpResponse] = {
-    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$transId/clear-scheme", Json.obj())
-  }
-
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")
+    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")  //Doesn't actually exist on VRS-EL-FE
   }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
@@ -241,11 +237,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
       case e: Exception => throw logResponse(e, "patchBankAccount")
     }
-  }
-
-  def saveTransactionId(regId: String, transactionId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val js = Json.parse(s"""{"transactionID": "$transactionId"}""").as[JsObject]
-    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/transaction-id", js)
   }
 
   def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {

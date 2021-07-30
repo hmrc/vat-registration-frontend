@@ -370,22 +370,6 @@ trait StubUtils {
       builder
     }
 
-    def savesTransactionId(regId: String = "1"): PreconditionBuilder = {
-      stubFor(
-        patch(urlPathEqualTo(s"/vatreg/$regId/transaction-id"))
-          .willReturn(ok(""))
-      )
-      builder
-    }
-
-    def clearsUserData(txId: String = "000-431-TEST"): PreconditionBuilder = {
-      stubFor(
-        patch(urlPathEqualTo(s"/vatreg/$txId/clear-scheme"))
-          .willReturn(ok())
-      )
-      builder
-    }
-
     def honestyDeclaration(regId: String, honestyDeclaration: String): PreconditionBuilder = {
       stubFor(
         patch(urlPathEqualTo(s"/vatreg/$regId/honesty-declaration"))

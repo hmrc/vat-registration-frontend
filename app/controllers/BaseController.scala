@@ -17,13 +17,10 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig, Logging}
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater, TrafficManagementPredicate}
-
-import javax.inject.Inject
-import models.{CurrentProfile, IncorpUpdate}
+import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
+import models.CurrentProfile
 import play.api.Logger
 import play.api.i18n.I18nSupport
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 import play.api.mvc._
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
@@ -32,8 +29,9 @@ import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
 
 abstract class BaseController @Inject()(implicit ec: ExecutionContext,
                                         bcc: BaseControllerComponents,
@@ -103,15 +101,5 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
           f(request)(profile)
         }
       } handleErrorResult
-  }
-
-  protected def withJsonBody(f: IncorpUpdate => Future[Result])(implicit request: Request[JsValue]): Future[Result] = {
-    implicit val jsonReads: Reads[IncorpUpdate] = IncorpUpdate.reads
-
-    Try(request.body.validate[IncorpUpdate]) match {
-      case Success(JsSuccess(payload, _)) => f(payload)
-      case Success(JsError(errs)) => Future.successful(BadRequest(s"Invalid payload: $errs"))
-      case Failure(e) => Future.successful(BadRequest(s"could not parse body due to ${e.getMessage}"))
-    }
   }
 }
