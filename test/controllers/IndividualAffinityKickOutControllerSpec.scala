@@ -19,14 +19,14 @@ package controllers
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
-import views.html.pages.error.individualAffinityKickOut
+import views.html.pages.error.IndividualAffinityKickOut
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class IndividualAffinityKickOutControllerSpec extends ControllerSpec {
 
   val TestController = new IndividualAffinityKickOutController(
-    app.injector.instanceOf[individualAffinityKickOut],
+    app.injector.instanceOf[IndividualAffinityKickOut],
     mockAuthClientConnector,
     mockKeystoreConnector
   )
@@ -38,6 +38,7 @@ class IndividualAffinityKickOutControllerSpec extends ControllerSpec {
 
   val testGetRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/individual-affinity")
   val testGetRedirectRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/individual-affinity-redirect")
+  val testGetBusinessSignInRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/individual-affinity-signin")
 
   "show" must {
     "return an OK" in {
@@ -50,11 +51,20 @@ class IndividualAffinityKickOutControllerSpec extends ControllerSpec {
   }
 
   "signOutAndRedirect" must {
-    "return a SEE_OTHER with a redirect to Applicant Former Name Page" in {
+    "return a SEE_OTHER with a redirect to business registration Page" in {
       val res = TestController.signOutAndRedirect(testGetRedirectRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(appConfig.individualKickoutUrl(routes.WelcomeController.show().url))
+    }
+  }
+
+  "businessSignInRedirect" must {
+    "return a SEE_OTHER with a redirect to business sign-in Page" in {
+      val res = TestController.businessSignInRedirect(testGetBusinessSignInRequest)
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) mustBe Some(appConfig.businessSignInLink)
     }
   }
 }

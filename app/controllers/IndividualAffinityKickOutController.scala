@@ -21,12 +21,12 @@ import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.pages.error.individualAffinityKickOut
+import views.html.pages.error.IndividualAffinityKickOut
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IndividualAffinityKickOutController @Inject()(view: individualAffinityKickOut,
+class IndividualAffinityKickOutController @Inject()(view: IndividualAffinityKickOut,
                                                     val authConnector: AuthConnector,
                                                     val keystoreConnector: KeystoreConnector
                                                    )(implicit appConfig: FrontendAppConfig,
@@ -44,4 +44,7 @@ class IndividualAffinityKickOutController @Inject()(view: individualAffinityKick
     Future.successful(SeeOther(appConfig.individualKickoutUrl(routes.WelcomeController.show().url)).withNewSession)
   }
 
+  val businessSignInRedirect: Action[AnyContent] = Action.async {
+    Future.successful(SeeOther(appConfig.businessSignInLink).withNewSession)
+  }
 }

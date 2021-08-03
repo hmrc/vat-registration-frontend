@@ -232,6 +232,7 @@ GET         /error/passcode-too-many-attempts                                   
 ##individual affinity kick out
 GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
 GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
+GET         /error/individual-affinity-signin                                                  controllers.IndividualAffinityKickOutController.businessSignInRedirect
 
 ## Continue Application Page
 GET         /new-application                                                                   controllers.StartNewApplicationController.show
