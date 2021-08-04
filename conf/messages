@@ -423,17 +423,18 @@ pages.summary.directorDetails.intermediarySupply             = Intermediary arra
 
 
 ## Error Pages
-error.error_template.tryagain                  = Try again
+error.error_template.tryagain                        = Try again
 
 ## Individual Affinity
-page.IndividualAffinityKickOut.heading         = Set up an organisation account
-page.IndividualAffinityKickOut.p1              = To register for VAT and manage your VAT online, you need to have an organisation account. The account you currently have is a personal account.
-page.IndividualAffinityKickOut.link            = Sign out and create an organisation account
+page.IndividualAffinityKickOut.heading               = You need to use a business tax account for this service
+page.IndividualAffinityKickOut.p1                    = To register for VAT and manage your VAT online, you need to use a business tax account. The account you have signed into is for personal tax.
+page.IndividualAffinityKickOut.signInLink            = Sign into your organisation’s business tax account
+page.IndividualAffinityKickOut.createLink            = Create a business tax account
 
 ## Company Bank Account
-pages.company.bank.account.heading              = Does the business have a bank or building society account?
-pages.company.bank.account.para                 = The account does not have to be a dedicated business account but must be separate from a personal account. We will use this account for VAT repayments.
-validation.company.bank.account.missing         = Select yes if the business has a bank or building society account
+pages.company.bank.account.heading                   = Does the business have a bank or building society account?
+pages.company.bank.account.para                      = The account does not have to be a dedicated business account but must be separate from a personal account. We will use this account for VAT repayments.
+validation.company.bank.account.missing              = Select yes if the business has a bank or building society account
 
 ## No UK Bank Account
 pages.noUKBankAccount.heading                        = Why is the bank account not set up?

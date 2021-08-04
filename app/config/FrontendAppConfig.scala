@@ -256,4 +256,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
 
   def individualKickoutUrl(continueUrl: String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
+  lazy val businessSignInLink = "https://www.gov.uk/guidance/sign-in-to-your-hmrc-business-tax-account"
 }

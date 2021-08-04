@@ -30,7 +30,10 @@
     @h1(messages("page.IndividualAffinityKickOut.heading"))
     @p{@messages("page.IndividualAffinityKickOut.p1")}
 
-    @link(routes.IndividualAffinityKickOutController.signOutAndRedirect.url, messages("page.IndividualAffinityKickOut.link"))
-
+    <div class="govuk-body">
+        @link(routes.IndividualAffinityKickOutController.businessSignInRedirect.url, messages("page.IndividualAffinityKickOut.signInLink"))
+    </div>
+    <div>
+        @link(routes.IndividualAffinityKickOutController.signOutAndRedirect.url, messages("page.IndividualAffinityKickOut.createLink"))
+    </div>
 }
-

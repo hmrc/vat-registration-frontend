@@ -17,33 +17,51 @@
 package views
 
 import org.jsoup.Jsoup
-import views.html.pages.error.{individualAffinityKickOut}
+import views.html.pages.error.IndividualAffinityKickOut
 
 class IndividualAffinityKickOutViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[individualAffinityKickOut]
+  val view = app.injector.instanceOf[IndividualAffinityKickOut]
   implicit val doc = Jsoup.parse(view().body)
 
-  val title = "Set up an organisation account"
-  val header = "Set up an organisation account"
-  val text = "To register for VAT and manage your VAT online, you need to have an organisation account. The account you currently have is a personal account."
-  val link = "Sign out and create an organisation account"
+  object ExpectedContent {
+    val title = "You need to use a business tax account for this service"
+    val header = "You need to use a business tax account for this service"
+    val text = "To register for VAT and manage your VAT online, you need to use a business tax account. The account you have signed into is for personal tax."
+    val signInLinkText = "Sign into your organisation’s business tax account"
+    val createLinkText = "Create a business tax account"
+    val signInLink = "/register-for-vat/error/individual-affinity-signin"
+    val createLink = "/register-for-vat/error/individual-affinity-redirect"
+  }
 
   "Individual Affinity Kickout Page" must {
 
     "have the right title" in {
-      doc.title() mustBe title
+      doc.title() mustBe ExpectedContent.title
     }
 
     "have the right header" in {
-      doc.select(Selectors.h1).text() mustBe header
+      doc.select(Selectors.h1).text() mustBe ExpectedContent.header
     }
 
     "have the right text" in {
-      doc.select(Selectors.p(1)).text() mustBe text
+      doc.select(Selectors.p(1)).text() mustBe ExpectedContent.text
     }
-    "have the correct link text" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(link, "/register-for-vat/error/individual-affinity-redirect"))
+
+    "have the correct sign-in link text" in new ViewSetup {
+      doc.select(Selectors.a(1)).get(0).text mustBe ExpectedContent.signInLinkText
+    }
+
+    "have the correct sign-in link" in new ViewSetup {
+      doc.select(Selectors.a(1)).get(0).attr("href") mustBe ExpectedContent.signInLink
+    }
+
+    "have the correct create link text" in new ViewSetup {
+      doc.select(Selectors.a(1)).get(1).text mustBe ExpectedContent.createLinkText
+    }
+
+    "have the correct create link" in new ViewSetup {
+      doc.select(Selectors.a(1)).get(1).attr("href") mustBe ExpectedContent.createLink
     }
   }
 }
