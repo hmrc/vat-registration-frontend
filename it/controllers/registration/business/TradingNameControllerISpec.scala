@@ -33,8 +33,9 @@ class TradingNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.apiFormat))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,9 +54,10 @@ class TradingNameControllerISpec extends ControllerISpec {
         .vatScheme.doesNotHave("trading-details")
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .s4lContainer[TradingDetails].clearedByKey
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

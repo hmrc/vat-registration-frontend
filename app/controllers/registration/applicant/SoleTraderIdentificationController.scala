@@ -66,7 +66,7 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
         } yield {
           partyType match {
             case Individual => Redirect(applicantRoutes.FormerNameController.show())
-            case UkCompany | RegSociety | CharitableOrg | Trust => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+            case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
             case _ => throw new IllegalStateException("PartyType not supported")
           }
         }

@@ -78,8 +78,9 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getApplicantDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[ApplicantDetails]] = {
-    implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.apiReads
+  def getApplicantDetails(regId: String, partyType: PartyType)(implicit hc: HeaderCarrier): Future[Option[ApplicantDetails]] = {
+    implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.reads(partyType)
+
     http.GET[Option[ApplicantDetails]](s"$vatRegUrl/vatreg/$regId/applicant-details").recover {
       case e => throw logResponse(e, "getApplicantDetails")
     }
@@ -94,7 +95,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def patchApplicantDetails(data: ApplicantDetails)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[JsValue] = {
-    val json = Json.toJson(data)(ApplicantDetails.apiWrites).as[JsObject]
+    val json = Json.toJson(data)(ApplicantDetails.writes).as[JsObject]
     http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/applicant-details", json) map {
       _ => json
     } recover {

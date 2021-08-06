@@ -44,7 +44,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
   }
 
   "resolve" must {
-    List(Individual, Partnership, Trust).foreach { partyType =>
+    List(Individual, Partnership, Trust, UnincorpAssoc).foreach { partyType =>
       s"redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(partyType))
         val res = Controller.resolve()(FakeRequest())

@@ -18,13 +18,14 @@ package services
 
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
-import models.api.Address
+import models.api.{Address, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
 import models.view._
 import models.{ApplicantDetails, CurrentProfile, OwnerProprietor, TelephoneNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
+import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -32,7 +33,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures {
+class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures with MockVatRegistrationService {
   override val testRegId = "testRegId"
 
   override implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
@@ -45,13 +46,14 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[ApplicantDetails] = None) {
     val service = new ApplicantDetailsService(
       mockVatRegistrationConnector,
+      vatRegistrationServiceMock,
       mockS4LService
     )
 
     when(mockS4LService.fetchAndGet[ApplicantDetails](any(), any(), any(), any()))
       .thenReturn(Future.successful(s4lData))
 
-    when(mockVatRegistrationConnector.getApplicantDetails(any())(any()))
+    when(mockVatRegistrationConnector.getApplicantDetails(any(), any())(any()))
       .thenReturn(Future.successful(backendData))
 
     when(mockS4LService.save(any())(any(), any(), any(), any()))
@@ -61,6 +63,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   class SetupForS4LSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
       mockVatRegistrationConnector,
+      vatRegistrationServiceMock,
       mockS4LService
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
@@ -75,6 +78,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   class SetupForBackendSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
       mockVatRegistrationConnector,
+      mockVatRegistrationService,
       mockS4LService
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
@@ -83,7 +87,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     }
 
     when(mockVatRegistrationConnector.patchApplicantDetails(any())(any(), any()))
-      .thenReturn(Future.successful(Json.toJson(applicantDetails)))
+      .thenReturn(Future.successful(Json.toJson(applicantDetails)(ApplicantDetails.writes)))
 
     when(mockS4LService.clearKey(any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
@@ -91,10 +95,12 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
   "Calling getApplicantDetails" should {
     "return a full ApplicantDetails view model from backend" in new Setup(None, Some(completeApplicantDetails)) {
+      mockPartyType(Future.successful(UkCompany))
       service.getApplicantDetails returns completeApplicantDetails
     }
 
     "return a full ApplicantDetails view model from f4l" in new Setup(Some(completeApplicantDetails), None) {
+      mockPartyType(Future.successful(UkCompany))
       service.getApplicantDetails returns completeApplicantDetails
     }
   }

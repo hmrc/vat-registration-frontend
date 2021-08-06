@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.Address
+import models.api.{Address, PartyType}
 import models.external.{BusinessEntity, EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
 import play.api.libs.functional.syntax._
@@ -36,11 +36,10 @@ case class ApplicantDetails(entity: Option[BusinessEntity] = None,
                             roleInTheBusiness: Option[RoleInTheBusiness] = None)
 
 object ApplicantDetails {
-  implicit val format: Format[ApplicantDetails] = Json.format[ApplicantDetails]
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
 
-  val apiReads: Reads[ApplicantDetails] = (
-    (__ \ "entity").readNullable[BusinessEntity].orElse(Reads.pure(None)) and
+  def reads(partyType: PartyType): Reads[ApplicantDetails] = (
+    (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
       (__ \ "transactor").readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
       (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
       (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
@@ -54,8 +53,8 @@ object ApplicantDetails {
       (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
     ) (ApplicantDetails.apply _)
 
-  val apiWrites: Writes[ApplicantDetails] = (
-    (__ \ "entity").writeNullable[BusinessEntity] and
+  val writes: Writes[ApplicantDetails] = (
+    (__ \ "entity").writeNullable[BusinessEntity](BusinessEntity.writes) and
       (__ \ "transactor").writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
       (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
       (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
@@ -67,10 +66,11 @@ object ApplicantDetails {
       (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
     ) (unlift(ApplicantDetails.unapply))
 
-  val apiFormat: Format[ApplicantDetails] = Format(
-    apiReads,
-    apiWrites
-  )
+  def s4LReads(partyType: PartyType): Reads[ApplicantDetails] = {
+    implicit val businessEntityReads: Reads[BusinessEntity] = BusinessEntity.reads(partyType)
+    Json.reads[ApplicantDetails]
+  }
+  implicit val s4LWrites: Writes[ApplicantDetails] = Json.writes[ApplicantDetails]
 
   private def splitName(fullName: String): Name = {
     val split = fullName.trim.split("\\s+")

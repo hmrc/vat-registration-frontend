@@ -55,8 +55,10 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
               Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
             case UkCompany | RegSociety | CharitableOrg =>
               Redirect(applicantRoutes.IncorpIdController.startJourney())
-            case Partnership | Trust =>
+            case Partnership =>
               Redirect(applicantRoutes.PartnershipIdController.startJourney())
+            case UnincorpAssoc | Trust =>
+              Redirect(applicantRoutes.BusinessIdController.startJourney())
           }
         }
   }

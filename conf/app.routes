@@ -155,9 +155,13 @@ GET         /sti-callback                                                       
 GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney(isLeadPartner: Boolean)
 GET         /sti-partner-callback/:isLeadPartner                                               controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(isLeadPartner: Boolean, journeyId: String)
 
-## Incorp ID Pages
+## Partnership ID Pages
 GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney()
 GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
+
+## Business ID Pages
+GET         /start-business-id-journey                                                         controllers.registration.applicant.BusinessIdController.startJourney()
+GET         /business-id-callback                                                              controllers.registration.applicant.BusinessIdController.callback(journeyId)
 
 ## Email Verification Pages
 GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show

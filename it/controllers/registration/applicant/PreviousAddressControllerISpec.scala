@@ -83,6 +83,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -164,6 +165,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

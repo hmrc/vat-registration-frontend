@@ -20,9 +20,9 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{ApplicantDetails, Partner}
-import models.api.{Partnership, Trust, VatScheme}
+import models.api.{Partnership, VatScheme}
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
+import models.{ApplicantDetails, Partner}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -36,7 +36,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testJourneyUrl = "/test-journey-url"
 
   val partnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
-  val trustJourneyUrl = "/partnership-identification/api/trust/journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
   val testPostCode = "ZZ1 1ZZ"
@@ -57,30 +56,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
     Some(testPostCode),
-    None,
-    testRegistration,
-    BvPass,
-    Some(testSafeId),
-    identifiersMatch = true
-  )
-
-  val testTrustResponse: JsObject = Json.obj(
-    "sautr" -> testSautr,
-    "chrn" -> testChrn,
-    "businessVerification" -> Json.obj(
-      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-    ),
-    "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
-      "registeredBusinessPartnerId" -> testSafeId
-    ),
-    "identifiersMatch" -> true
-  )
-
-  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
-    Some(testSautr),
-    None,
-    Some(testChrn),
     testRegistration,
     BvPass,
     Some(testSafeId),
@@ -88,7 +63,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   )
 
   val partnershipApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
-  val trustApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testTrust))
 
   "GET /start-partnership-id-journey" when {
     "STI returns a journey ID" must {
@@ -101,24 +75,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(partnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
-
-        val res: Future[WSResponse] = buildClient("/start-partnership-id-journey").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(testJourneyUrl)
-        }
-      }
-
-      "redirect to the journey using the ID provided for Trust" in new Setup {
-        given()
-          .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-        stubPost(trustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-partnership-id-journey").get()
 
@@ -183,61 +139,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
           result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
-        }
-      }
-    }
-
-    "redirect to sole trader identification for Trust" when {
-      "S4L model is not full" in new Setup {
-        given()
-          .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
-          )
-        )
-
-        stubGet(retrieveDetailsUrl, OK, testTrustResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
-        }
-      }
-
-      "model in S4l is full" in new Setup {
-        given()
-          .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.isUpdatedWith(trustApplicantDetails)
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
-          ))
-
-        stubGet(retrieveDetailsUrl, OK, testTrustResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
         }
       }
     }

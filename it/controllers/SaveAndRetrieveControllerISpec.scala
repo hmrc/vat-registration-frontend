@@ -18,7 +18,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
   val fullVatSchemeJson = Json.toJson(fullVatScheme)
 
   val s4lKey = "partialVatScheme"
-  val s4lCacheMap = Map(s4lKey -> Json.toJson(fullVatScheme)(VatScheme.s4lFormat))
+  val s4lCacheMap = Map(s4lKey -> Json.toJson(fullVatScheme))
 
   "GET /schemes/save-for-later" when {
     "the VAT scheme is retrieved successfully from the back end" when {

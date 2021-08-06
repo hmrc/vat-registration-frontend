@@ -39,6 +39,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(s4lContents)
         .audit.writesAudit()
         .audit.writesAuditMerged()
+        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -59,6 +60,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -78,6 +80,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,6 +99,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -113,6 +117,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .vatScheme.contains(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

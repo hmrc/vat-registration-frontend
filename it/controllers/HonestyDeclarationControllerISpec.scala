@@ -74,7 +74,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       }
     }
 
-    List(Partnership, Trust).foreach { validPartyType =>
+    List(Partnership).foreach { validPartyType =>
       s"return a redirect to Partnership ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
@@ -93,6 +93,29 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         whenReady(response) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PartnershipIdController.startJourney().url)
+        }
+      }
+    }
+
+    List(Trust, UnincorpAssoc).foreach { validPartyType =>
+      s"return a redirect to Business ID for ${validPartyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.contains(VatScheme(
+          currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = validPartyType))
+        ))
+          .vatRegistration.honestyDeclaration(testRegId, "true")
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response: Future[WSResponse] = buildClient(url).post(Json.obj())
+        whenReady(response) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.BusinessIdController.startJourney().url)
         }
       }
     }

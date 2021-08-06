@@ -33,6 +33,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubUpscan,
     StubBars,
     StubPartnershipIdentification,
+    StubBusinessIdentification,
     TrafficManagementPredicate,
     UseSoleTraderIdentification,
     UseUpscan,
@@ -85,6 +86,11 @@ case object StubBars extends FeatureSwitch {
 case object StubPartnershipIdentification extends FeatureSwitch {
   val configName = "feature-switch.partnership-identification"
   val displayName = "Stub Partnership Identification"
+}
+
+case object StubBusinessIdentification extends FeatureSwitch {
+  val configName = "feature-switch.business-identification"
+  val displayName = "Stub Business Identification"
 }
 
 case object TrafficManagementPredicate extends FeatureSwitch {

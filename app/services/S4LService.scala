@@ -29,10 +29,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class S4LService @Inject()(val s4LConnector: S4LConnector)
                           (implicit executionContext: ExecutionContext) {
 
-  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[CacheMap] =
+  def save[T: S4LKey](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, writes: Writes[T]): Future[CacheMap] =
     s4LConnector.save[T](profile.registrationId, S4LKey[T].key, data)
 
-  def fetchAndGet[T: S4LKey](implicit profile: CurrentProfile, hc: HeaderCarrier, format: Format[T]): Future[Option[T]] =
+  def fetchAndGet[T: S4LKey](implicit profile: CurrentProfile, hc: HeaderCarrier, reads: Reads[T]): Future[Option[T]] =
     s4LConnector.fetchAndGet[T](profile.registrationId, S4LKey[T].key).recover {
       case _: JsResultException => None
     }

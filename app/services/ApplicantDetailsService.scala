@@ -18,9 +18,10 @@ package services
 
 import config.Logging
 import connectors.VatRegistrationConnector
-import models._
+import models.{ApplicantDetails, _}
 import models.external._
 import models.view._
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -29,17 +30,22 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
+                                        val vatRegistrationService: VatRegistrationService,
                                         val s4LService: S4LService
                                        )(implicit ec: ExecutionContext) extends Logging {
 
   def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
-    s4LService.fetchAndGet[ApplicantDetails] flatMap {
-      case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None)) =>
-        vatRegistrationConnector.getApplicantDetails(cp.registrationId).flatMap {
-          case Some(applicantDetails) => Future.successful(applicantDetails)
-          case None => Future.successful(ApplicantDetails())
-        }
-      case Some(applicantDetails) => Future.successful(applicantDetails)
+    vatRegistrationService.partyType.flatMap { partyType =>
+      implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.s4LReads(partyType)
+
+      s4LService.fetchAndGet[ApplicantDetails].flatMap {
+        case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None)) =>
+          vatRegistrationConnector.getApplicantDetails(cp.registrationId, partyType).flatMap {
+            case Some(applicantDetails) => Future.successful(applicantDetails)
+            case None => Future.successful(ApplicantDetails())
+          }
+        case Some(applicantDetails) => Future.successful(applicantDetails)
+      }
     }
   }
 
@@ -73,6 +79,8 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     getApplicantDetails.flatMap { applicantDetails =>
+      implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
+
       isModelComplete(updateModel(data, applicantDetails)).fold(
         incomplete => s4LService.save[ApplicantDetails](incomplete).map(_ => incomplete),
         complete => for {

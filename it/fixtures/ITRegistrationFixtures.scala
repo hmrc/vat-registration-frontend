@@ -104,6 +104,11 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     """.stripMargin
   )
 
+  val emptyUkCompanyVatScheme: VatScheme = VatScheme(
+    testRegId,
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+  )
 
   val vatReg = VatScheme(
     id = "1",
@@ -177,11 +182,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val testCrn = "testCrn"
   val testChrn = "testChrn"
+  val testCasc = "testCasc"
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
-  val testIncorpDetails = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, Some("REGISTERED"), Some(BvPass), Some(testBpSafeId))
+  val testIncorpDetails = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
 
   val testSautr = "1234567890"
   val testRegistration = "REGISTERED"

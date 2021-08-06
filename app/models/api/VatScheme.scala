@@ -17,8 +17,8 @@
 package models.api
 
 import common.enums.VatRegStatus
-import models.{ApplicantDetails, _}
 import models.api.returns.Returns
+import models.{ApplicantDetails, _}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -28,40 +28,58 @@ case class VatScheme(id: String,
                      sicAndCompliance: Option[SicAndCompliance] = None,
                      businessContact: Option[BusinessContact] = None,
                      returns: Option[Returns] = None,
-                     bankAccount : Option[BankAccount] = None,
+                     bankAccount: Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
                      status: VatRegStatus.Value,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      partners: Option[List[PartnerEntity]] = None)
 
 object VatScheme {
-  val s4lFormat: Format[VatScheme] = (
-    (__ \ "registrationId").format[String] and
-    (__ \ ApplicantDetails.s4lKey.key).formatNullable[ApplicantDetails] and
-    (__ \ TradingDetails.s4lKey.key).formatNullable[TradingDetails] and
-    (__ \ SicAndCompliance.s4lKey.key).formatNullable[SicAndCompliance]
-      .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
-    (__ \ BusinessContact.s4lKey.key).formatNullable[BusinessContact] and
-    (__ \ Returns.s4lKey.key).formatNullable[Returns] and
-    (__ \ BankAccount.s4lKey.key).formatNullable[BankAccount] and
-    (__ \ FlatRateScheme.s4lKey.key).formatNullable[FlatRateScheme] and
-    (__ \ "status").format[VatRegStatus.Value] and
-    (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData] and
-    (__ \ "partners").formatNullable[List[PartnerEntity]]
-  )(VatScheme.apply, unlift(VatScheme.unapply))
 
-  implicit val format: OFormat[VatScheme] = (
-      (__ \ "registrationId").format[String] and
-      (__ \ "applicantDetails").formatNullable[ApplicantDetails](ApplicantDetails.apiFormat) and
-      (__ \ "tradingDetails").formatNullable[TradingDetails](TradingDetails.apiFormat) and
-      (__ \ "sicAndCompliance").formatNullable[SicAndCompliance](SicAndCompliance.apiFormat)
-        .inmap[Option[SicAndCompliance]](_ => Option.empty[SicAndCompliance], _ => Option.empty[SicAndCompliance]) and
-      (__ \ "businessContact").formatNullable[BusinessContact](BusinessContact.apiFormat) and
-      (__ \ "returns").formatNullable[Returns] and
-      (__ \ "bankAccount").formatNullable[BankAccount] and
-      (__ \ "flatRateScheme").formatNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
-      (__ \ "status").format[VatRegStatus.Value] and
-      (__ \ "eligibilitySubmissionData").formatNullable[EligibilitySubmissionData] and
-      (__ \ "partners").formatNullable[List[PartnerEntity]]
-    )(VatScheme.apply, unlift(VatScheme.unapply))
+  val reads: Reads[VatScheme] =
+    (__ \ "eligibilitySubmissionData" \ "partyType").readNullable[PartyType].flatMap {
+      case Some(partyType) => (
+        (__ \ "registrationId").read[String] and
+          (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
+          (__ \ "tradingDetails").readNullable[TradingDetails](TradingDetails.apiFormat) and
+          (__ \ "sicAndCompliance").readNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
+          (__ \ "businessContact").readNullable[BusinessContact](BusinessContact.apiFormat) and
+          (__ \ "returns").readNullable[Returns] and
+          (__ \ "bankAccount").readNullable[BankAccount] and
+          (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+          (__ \ "status").read[VatRegStatus.Value] and
+          (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
+          (__ \ "partners").readNullable[List[PartnerEntity]]
+        ) (VatScheme.apply _)
+      case None => (
+        (__ \ "registrationId").read[String] and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          Reads.pure(None) and
+          (__ \ "status").read[VatRegStatus.Value] and
+          Reads.pure(None) and
+          Reads.pure(None)
+        ) (VatScheme.apply _)
+    }
+
+  val writes: Writes[VatScheme] = (
+    (__ \ "registrationId").write[String] and
+      (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
+      (__ \ "tradingDetails").writeNullable[TradingDetails](TradingDetails.apiFormat) and
+      (__ \ "sicAndCompliance").writeNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
+      (__ \ "businessContact").writeNullable[BusinessContact](BusinessContact.apiFormat) and
+      (__ \ "returns").writeNullable[Returns] and
+      (__ \ "bankAccount").writeNullable[BankAccount] and
+      (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+      (__ \ "status").write[VatRegStatus.Value] and
+      (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
+      (__ \ "partners").writeNullable[List[PartnerEntity]]
+    ) (unlift(VatScheme.unapply))
+
+  implicit val format: Format[VatScheme] = Format(reads, writes)
+
 }

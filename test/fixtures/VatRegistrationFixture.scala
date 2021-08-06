@@ -128,6 +128,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
     description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
     mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
+    businessActivities = Some(BusinessActivities(List(sicCode))),
     supplyWorkers = None,
     workers = None,
     intermediarySupply = None)

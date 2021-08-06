@@ -173,7 +173,7 @@ trait StubUtils {
     }
 
 
-    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Format[T]): MappingBuilder = {
+    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Writes[T]): MappingBuilder = {
       val s4lData = Json.toJson(t)
       val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
 
@@ -252,12 +252,12 @@ trait StubUtils {
   @deprecated("please change the types on this once all refactoring has been completed, both should be same type instead of C & T")
   class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) {
 
-    def contains[T](t: T)(implicit fmt: Format[T]): PreconditionBuilder = {
+    def contains[T](t: T)(implicit fmt: Writes[T]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LGet[C, T](t))
       builder
     }
 
-    def isUpdatedWith(t: C)(implicit key: S4LKey[C], fmt: Format[C]): PreconditionBuilder = {
+    def isUpdatedWith(t: C)(implicit key: S4LKey[C], fmt: Writes[C]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()))
       builder
     }
@@ -490,7 +490,7 @@ trait StubUtils {
       builder
     }
 
-    def isUpdatedWith[T](t: T)(implicit tFmt: Format[T]) = {
+    def isUpdatedWith[T](t: T)(implicit tFmt: Writes[T]) = {
       stubFor(
         patch(urlPathMatching(s"/vatreg/1/.*"))
           .willReturn(aResponse().withStatus(202).withBody(tFmt.writes(t).toString())))

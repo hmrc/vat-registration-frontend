@@ -18,7 +18,7 @@ package connectors
 
 import it.fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.{Partnership, Trust}
+import models.api.Partnership
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
@@ -29,10 +29,8 @@ import uk.gov.hmrc.http.InternalServerException
 class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
   val testPartnershipJourneyId = "1"
-  val testTrustJourneyId = "2"
   val testJourneyUrl = "/test-journey-url"
   val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
-  val createTrustJourneyUrl = "/partnership-identification/api/trust/journey"
 
   def retrieveDetailsUrl(journeyId: String) = s"/partnership-identification/api/journey/$journeyId"
 
@@ -63,30 +61,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
   val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
     Some(testPostCode),
-    None,
-    testRegistration,
-    BvPass,
-    Some(testSafeId),
-    identifiersMatch = true
-  )
-
-  val testTrustResponse: JsObject = Json.obj(
-    "sautr" -> testSautr,
-    "chrn" -> testChrn,
-    "businessVerification" -> Json.obj(
-      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-    ),
-    "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
-      "registeredBusinessPartnerId" -> testSafeId
-    ),
-    "identifiersMatch" -> true
-  )
-
-  val testTrust: PartnershipIdEntity = PartnershipIdEntity(
-    Some(testSautr),
-    None,
-    Some(testChrn),
     testRegistration,
     BvPass,
     Some(testSafeId),
@@ -103,18 +77,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         stubPost(createPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
         val res = await(connector.createJourney(testJourneyConfig, Partnership))
-
-        res mustBe testJourneyUrl
-      }
-
-      "return the journey ID when the response JSON includes the journeyId for a Trust" in {
-        given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-
-        stubPost(createTrustJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
-
-        val res = await(connector.createJourney(testJourneyConfig, Trust))
 
         res mustBe testJourneyUrl
       }
@@ -157,17 +119,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
       val res: PartnershipIdEntity = await(connector.getDetails(testPartnershipJourneyId))
 
       res mustBe testPartnership
-    }
-
-    "return trust when Partnership Id returns OK" in new Setup {
-      given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-
-      stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(testTrustResponse))
-      val res: PartnershipIdEntity = await(connector.getDetails(testTrustJourneyId))
-
-      res mustBe testTrust
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
