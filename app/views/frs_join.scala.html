@@ -16,27 +16,20 @@
 
 @import forms.genericForms.YesOrNoAnswer
 @import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import views.html.helpers.templates.newWindowLink
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
 
 @this(
-    layout: layouts.layout,
-    errorSummary: components.errorSummary,
-    h1: components.h1,
-    h2: components.h2,
-    p: components.p,
-    bullets: components.bullets,
-    link: components.link,
-    form: FormWithCSRF,
-    details: components.details,
-    yesNoRadio: components.yesNoRadio,
-    button: components.button
+        layout: layouts.layout,
+        errorSummary: components.errorSummary,
+        h1: components.h1,
+        h2: components.h2,
+        p: components.p,
+        bullets: components.bullets,
+        link: components.link,
+        form: FormWithCSRF,
+        details: components.details,
+        yesNoRadio: components.yesNoRadio,
+        button: components.button
 )
 
 @(joinFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)

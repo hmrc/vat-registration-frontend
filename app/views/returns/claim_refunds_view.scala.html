@@ -15,23 +15,17 @@
  *@
 
 @import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
-@import views.html.main_template
-@import views.html.helpers.templates._
-
 @import config.FrontendAppConfig
 
 @this(
-    layout: layouts.layout,
-    errorSummary: components.errorSummary,
-    h1: components.h1,
-    p: components.p,
-    details: components.details,
-    form: FormWithCSRF,
-    yesNoRadio: components.yesNoRadio,
-    button: components.button
+        layout: layouts.layout,
+        errorSummary: components.errorSummary,
+        h1: components.h1,
+        p: components.p,
+        details: components.details,
+        form: FormWithCSRF,
+        yesNoRadio: components.yesNoRadio,
+        button: components.button
 )
 
 @(chargeExpectancyForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
