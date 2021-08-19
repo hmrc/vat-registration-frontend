@@ -19,10 +19,11 @@ package controllers
 import _root_.connectors.KeystoreConnector
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
+import models.api.NETP
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile}
+import services.{BankAccountDetailsService, SessionProfile, VatRegistrationService}
 import views.html.{enter_company_bank_account_details, has_company_bank_account}
 
 import javax.inject.{Inject, Singleton}
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val keystoreConnector: KeystoreConnector,
+                                             val vatRegistrationService: VatRegistrationService,
                                              bankAccountPage: enter_company_bank_account_details,
                                              hasBankAccountPage: has_company_bank_account)
                                             (implicit appConfig: FrontendAppConfig,
@@ -60,10 +62,10 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
         hasCompanyBankAccountForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(hasBankAccountPage(errors))),
           hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
-            if (hasBankAccount) {
-              Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
-            } else {
-              Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView())
+            vatRegistrationService.partyType.flatMap {
+              case partyType@(NETP) => Future.successful(Redirect(routes.OverseasBankAccountController.showOverseasBankAccountView()))
+              case partyType@(anything else) => Future.successful(Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()))
+              case _ => Future.successful(Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView()))
             }
           }
         )

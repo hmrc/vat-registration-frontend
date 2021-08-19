@@ -786,3 +786,18 @@ pages.leadPartnerEntityType.limLiaPartner                = Limited liability par
 pages.leadPartnerEntityType.cio                          = Charitable Incorporated Organisation (CIO)
 pages.leadPartnerEntityType.regSociety                   = Registered society
 pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
+
+## OVERSEAS BANK ACCOUNT
+
+pages.overseasBankAccount.heading                        = Bank or building society account details
+pages.overseasBankAccount.name                           = Name on the account
+pages.overseasBankAccount.bic                            = BIC or SWIFT code
+pages.overseasBankAccount.bicHint                        = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
+pages.overseasBankAccount.iban                           = IBAN
+pages.overseasBankAccount.ibanHint                       = You can ask your bank or check your bank statement
+validation.overseasBankAccount.name.missing              = Enter the account name
+validation.overseasBankAccount.name.invalid              = Enter an account name using letters numbers and  \ - ’ , / & ]
+validation.overseasBankAccount.bic.missing               = Enter the BIC
+validation.overseasBankAccount.bic.invalid               = Enter a valid BIC
+validation.overseasBankAccount.iban.missing              = Enter the IBAN
+validation.overseasBankAccount.iban.invalid              = Enter a valid IBAN

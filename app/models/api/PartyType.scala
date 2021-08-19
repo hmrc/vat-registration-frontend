@@ -37,6 +37,7 @@ case object UnincorpAssoc extends PartyType
 case object TaxGroups extends PartyType
 case object AdminDivision extends PartyType
 case object Individual extends PartyType
+case object NETP extends PartyType
 case object Invalid extends PartyType
 
 object PartyType {
@@ -58,7 +59,8 @@ object PartyType {
     UnincorpAssoc -> "63",
     TaxGroups -> "64",
     AdminDivision -> "65",
-    Individual -> "Z1"
+    Individual -> "Z1",
+    NETP -> "NETP"
   )
 
   val inverseStati = stati.map(_.swap).withDefaultValue(Invalid)

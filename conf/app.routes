@@ -67,6 +67,10 @@ POST        /companys-bank-account                                              
 GET         /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.showNoUKBankAccountView
 POST        /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.submitNoUKBankAccount
 
+## OVERSEAS BANK ACCOUNT
+GET         /bank-details-overseas                                                             controllers.OverseasBankAccountController.showOverseasBankAccountView
+POST        /bank-details-overseas                                                             controllers.OverseasBankAccountController.submitOverseasBankAccount
+
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
 GET         /account-details                                                                   controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
 POST        /account-details                                                                   controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
