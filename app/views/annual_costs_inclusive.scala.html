@@ -15,27 +15,21 @@
  *@
 
 @import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
-@import views.html.main_template
-@import views.html.helpers.templates._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
-
 @import config.FrontendAppConfig
 
-
 @this(
-    layout: layout,
-    h1: h1,
-    h2: h2,
-    p: p,
-    button: button,
-    bullets: bullets,
-    inputRadio: inputRadio,
-    formWithCSRF: FormWithCSRF,
-    errorSummary: errorSummary
+        layout: layout,
+        h1: h1,
+        h2: h2,
+        p: p,
+        button: button,
+        bullets: bullets,
+        inputRadio: inputRadio,
+        formWithCSRF: FormWithCSRF,
+        errorSummary: errorSummary
 )
 
 @(annualCostsInclusiveForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)

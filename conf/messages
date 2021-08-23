@@ -92,7 +92,7 @@ addressLookup.addressThreeYearsOrLess.editPage.searchAgainLinkText       = Searc
 addressLookup.addressThreeYearsOrLess.confirmPage.title                  = Confirm your previous home address
 addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Confirm your previous home address
 addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
-addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this addresss
+addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
 addressLookup.businessActivities.lookupPage.title                   = What is the business address?
 addressLookup.businessActivities.lookupPage.heading                 = What is the business address?

@@ -17,23 +17,17 @@
 @import play.api.data.Form
 @import play.api.mvc.Request
 @import play.api.i18n.Messages
-@import views.html.main_template
-
 @import config.FrontendAppConfig
-@import views.html.helpers.saveProgressButton
-
-@import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.templates.{errorSummary, vatInputRadioGroup}
 
 @this(
-    layout: layouts.layout,
-    h1: components.h1,
-    p: components.p,
-    button: components.button,
-    formWithCSRF: FormWithCSRF,
-    errorSummary: components.errorSummary,
-    panelIndent: components.panelIndent,
-    yesNoRadio: components.yesNoRadio
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        button: components.button,
+        formWithCSRF: FormWithCSRF,
+        errorSummary: components.errorSummary,
+        panelIndent: components.panelIndent,
+        yesNoRadio: components.yesNoRadio
 )
 
 @(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
