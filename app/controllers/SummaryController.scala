@@ -20,13 +20,13 @@ import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors._
-
-import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.pages.Summary
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -35,7 +35,8 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val vrs: VatRegistrationService,
                                   val s4LService: S4LService,
                                   val summaryService: SummaryService,
-                                  val nonRepudiationService: NonRepudiationService)
+                                  val nonRepudiationService: NonRepudiationService,
+                                  val summaryPage: Summary)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -48,7 +49,7 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
           eligibilitySummary <- summaryService.getEligibilityDataSummary
           summary <- summaryService.getRegistrationSummary
           _ <- s4LService.clear
-          html = views.html.pages.summary(eligibilitySummary, summary)
+          html = summaryPage(eligibilitySummary, summary)
           _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
         } yield Ok(html)
   }

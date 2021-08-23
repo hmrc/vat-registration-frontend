@@ -17,35 +17,51 @@
 package models.view
 
 import fixtures.VatRegistrationFixture
-import play.api.libs.json.Json
-import play.api.mvc.Call
+import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationFixture {
 
+  def eligibilityCall(uri: String): String = s"http://vatRegEFEUrl/question?pageId=$uri"
+
+  val changeText = "Change"
+
   "summaryReads" should {
-    "return a summary with 2 sections from Full Json" in {
-      val res = Json.fromJson[Summary](fullEligibilityDataJson)(SummaryFromQuestionAnswerJson.summaryReads).get
-      res mustBe fullSummaryModelFromFullEligiblityJson
+    "return a summary with from Full Json" in {
+      val res = Json.fromJson[SummaryList](fullEligibilityDataJson)(
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+      )
+
+      res.map(_.rows.length).get mustBe 8
     }
 
     "one section exists with questionId's with dashes in. all dashes and characters after the dash are removed for change links" in {
-      val eligibilityJsonWithQuestionIdDashes = Json.parse("""
-                                             |{ "sections": [
-                                             |            {
-                                             |              "title": "section_1",
-                                             |              "data": [
-                                             |                {"questionId": "mandatoryRegistration-foo", "question": "Question 1", "answer": "FOO", "answerValue": true},
-                                             |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
-                                             |                {"questionId": "thresholdPreviousThirtyDays-", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
-                                             |                {"questionId": "thresholdInTwelveMonths-foo-bar", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
-                                             |              ]
-                                             |            }]}""".stripMargin)
-      val res = Json.fromJson[Summary](eligibilityJsonWithQuestionIdDashes)(SummaryFromQuestionAnswerJson.summaryReads).get
-      res mustBe Summary(section1 :: Nil)
+      val eligibilityJsonWithQuestionIdDashes = Json.parse(
+        """
+          |{ "sections": [
+          |            {
+          |              "title": "section_1",
+          |              "data": [
+          |                {"questionId": "mandatoryRegistration-foo", "question": "Question 1", "answer": "FOO", "answerValue": true},
+          |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
+          |                {"questionId": "thresholdPreviousThirtyDays-", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
+          |                {"questionId": "thresholdInTwelveMonths-foo-bar", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+          |              ]
+          |}]}""".stripMargin
+      )
+
+      val res = Json.fromJson[SummaryList](eligibilityJsonWithQuestionIdDashes)(
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+      )
+
+      res.map(_.rows.length).get mustBe 4
+      res.map(_.rows.count(row => row.actions.toString.contains("-"))).get mustBe 0
     }
+
     "return a JsError if section is missing an answer" in {
-      val invalidJson = Json.parse("""
+      val invalidJson = Json.parse(
+        """
           |{ "sections": [
           |            {
           |              "title": "section_1",
@@ -56,15 +72,20 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
           |             }
           |           ]
           |  }
-        """.stripMargin)
+        """.stripMargin
+      )
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
+      val res = Json.fromJson[SummaryList](invalidJson)(
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+      )
+
       res.isError mustBe true
-      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0][1].answer"
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0].data[1].answer"
     }
 
     "return a JsError if section is missing a question" in {
-      val invalidJson = Json.parse("""
+      val invalidJson = Json.parse(
+        """
           |{ "sections": [
           |            {
           |              "title": "section_1",
@@ -75,41 +96,35 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
           |             }
           |           ]
           |  }
-        """.stripMargin)
+        """.stripMargin
+      )
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
-      res.isError mustBe true
-      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0][0].question"
-    }
-    "return a JsError if title is missing for a section" in {
-      val invalidJson = Json.parse("""
-                                     |{ "sections": [
-                                     |            {
-                                     |              "data": [
-                                     |                {"questionId": "mandatoryRegistration", "question": "Question 1","answer": "bar", "answerValue": true}
-                                     |                ]
-                                     |             }
-                                     |           ]
-                                     |  }
-                                   """.stripMargin)
+      val res = Json.fromJson[SummaryList](invalidJson)(
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+      )
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
       res.isError mustBe true
-      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0]"
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0].data[0].question"
     }
+
     "return a JsError if section doesn't have data block" in {
-      val invalidJson = Json.parse("""
-                                     |{ "sections": [
-                                     |            {
-                                     |             "title" : "foo"
-                                     |             }
-                                     |           ]
-                                     |  }
-                                   """.stripMargin)
+      val invalidJson = Json.parse(
+        """
+          |{ "sections": [
+          |            {
+          |             "title" : "foo"
+          |             }
+          |           ]
+          |  }
+                                   """.stripMargin
+      )
 
-      val res = Json.fromJson[Summary](invalidJson)(SummaryFromQuestionAnswerJson.summaryReads)
+      val res = Json.fromJson[SummaryList](invalidJson)(
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+      )
+
       res.isError mustBe true
-      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0]"
+      res.asEither.left.get.head._1.toJsonString mustBe "obj.sections[0].data"
     }
   }
 }

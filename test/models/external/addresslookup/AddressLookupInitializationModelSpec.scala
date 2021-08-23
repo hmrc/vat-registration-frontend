@@ -21,6 +21,7 @@ import config.{AddressLookupConfiguration, FrontendAppConfig}
 import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
 class AddressLookupInitializationModelSpec extends VatRegSpec {
@@ -28,7 +29,7 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
   val messagesApi = app.injector.instanceOf[MessagesApi]
   val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val testJourneyId = AddressLookupJourneyIdentifier.homeAddress
-  val testContinueUrl = "http://continueUrl"
+  val testContinueUrl = Call("GET", "/continueUrl")
 
   def addressInitializationModel: AddressLookupConfigurationModel =
     new AddressLookupConfiguration()(frontendAppConfig, messagesApi).apply(testJourneyId, testContinueUrl)
@@ -69,7 +70,7 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
   val addressInitializationJson: JsValue = Json.obj(
     "version" -> 2,
     "options" -> Json.obj(
-      "continueUrl" -> "http://localhost:9895http://vatRegEFEUrl/question?pageId=http://continueUrl",
+      "continueUrl" -> "http://localhost:9895/continueUrl",
       "signOutHref" -> "http://localhost:9514/feedback/vat-registration",
       "phaseFeedbackLink" -> "http://localhost:9250/contact/beta-feedback?service=vrs",
       "accessibilityFooterUrl" -> "http://localhost:12346/accessibility-statement/vat-registration",

@@ -347,6 +347,7 @@ pages.summary.directorDetails.reclaimMoreVat            = Expect to claim VAT re
 
 ## Summary Page Company details
 pages.summary.directorDetails.tradingName                 = Different Trading name
+pages.summary.directorDetails.mandatoryName               = Trading name
 pages.summary.directorDetails.flatRateScheme              = Flat rate scheme
 pages.summary.directorDetails.emailBusiness               = Business email address
 pages.summary.directorDetails.daytimePhoneBusiness        = Business daytime phone number

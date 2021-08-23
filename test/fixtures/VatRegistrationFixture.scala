@@ -20,10 +20,10 @@ import common.enums.VatRegStatus
 import models._
 import models.api._
 import models.api.returns.{Monthly, Returns}
-import models.view.{Summary, SummaryRow, SummarySection}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -322,8 +322,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       |     }
     """.stripMargin).as[JsObject]
 
-  implicit def urlCreator: String => Call = (s: String) => Call("GET", s"http://vatRegEFEUrl/question?pageId=$s")
-
   val fullEligibilityDataJson = Json.parse(
     """
       |{ "sections": [
@@ -357,21 +355,4 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       |         }
                                            """.stripMargin)
 
-  val section1 = SummarySection("section_1",
-    Seq(
-      (SummaryRow("Question 1", Seq("FOO"), Some(urlCreator("mandatoryRegistration"))), true),
-      (SummaryRow("Question 2", Seq("BAR"), Some(urlCreator("voluntaryRegistration"))), true),
-      (SummaryRow("Question 3", Seq("wizz"), Some(urlCreator("thresholdPreviousThirtyDays"))), true),
-      (SummaryRow("Question 4", Seq("woosh"), Some(urlCreator("thresholdInTwelveMonths"))), true)
-    ), true)
-
-  val section2 = SummarySection("section_2",
-    Seq(
-      (SummaryRow("Question 5", Seq("bang"), Some(urlCreator("applicantUKNino"))), true),
-      (SummaryRow("Question 6", Seq("BUZZ"), Some(urlCreator("turnoverEstimate"))), true),
-      (SummaryRow("Question 7", Seq("cablam"), Some(urlCreator("completionCapacity"))), true),
-      (SummaryRow("Question 8", Seq("weez"), Some(urlCreator("completionCapacityFillingInFor"))), true)
-    ), true)
-
-  val fullSummaryModelFromFullEligiblityJson = Summary(section1 :: section2 :: Nil)
 }

@@ -16,67 +16,24 @@
 
 package controllers
 
-import itutil.{ControllerISpec, WiremockHelper}
-import models.{ApplicantDetails, SicAndCompliance}
-import models.api.returns.{JanuaryStagger, Quarterly, Returns}
+import itutil.ControllerISpec
+import models.{Director, Email, SicAndCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
-import java.time.LocalDate
+import scala.collection.JavaConverters._
+import scala.concurrent.Future
 
 class SummaryControllerISpec extends ControllerISpec {
-
-  val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
-  val currentThreshold = "50000"
-  val eligibilitySummaryUrl = (s: String) => s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}/uriELFE/foo?pageId=$s"
-  val applicantJson = Json.parse(
-    s"""
-       |{
-       |  "transactor": {
-       |    "name": {
-       |      "first": "${validApplicant.name.first}",
-       |      "middle": "${validApplicant.name.middle}",
-       |      "last": "${validApplicant.name.last}"
-       |    },
-       |    "dob": "$applicantDob",
-       |    "nino": "$applicantNino"
-       |  },
-       |  "role": "${validApplicant.role}",
-       |  "currentAddress": {
-       |    "line1": "${validCurrentAddress.line1}",
-       |    "line2": "${validCurrentAddress.line2}",
-       |    "postcode": "${validCurrentAddress.postcode}",
-       |    "addressValidated": true
-       |  },
-       |  "contact": {
-       |    "email": "$applicantEmail",
-       |    "emailVerified": true,
-       |    "telephone": "1234"
-       |  },
-       |  "changeOfName": {
-       |    "name": {
-       |      "first": "New",
-       |      "middle": "Name",
-       |      "last": "Cosmo"
-       |    },
-       |    "change": "2000-07-12"
-       |  }
-       |}""".stripMargin)
 
   "GET Summary page" should {
     "display the summary page correctly" in new Setup {
       given()
         .user.isAuthorised
         .vatScheme.contains(fullVatScheme)
-        .vatScheme.has("applicant-details", applicantJson)
-        .s4lContainer[SicAndCompliance].isEmpty
-        .s4lContainer[SicAndCompliance].isUpdatedWith(vatRegIncorporated.sicAndCompliance.get)
-        .vatScheme.has("sicAndComp", SicAndCompliance.toApiWrites.writes(vatRegIncorporated.sicAndCompliance.get))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[SicAndCompliance].cleared
-        .s4lContainer[Returns].contains(Returns(Some(10000), None, Some(Quarterly), Some(JanuaryStagger), None))
         .vatRegistration.storesNrsPayload(testRegId)
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -84,31 +41,60 @@ class SummaryControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/check-confirm-answers").get()
+      val response: Future[WSResponse] = buildClient("/check-confirm-answers").get()
       whenReady(response) { res =>
         res.status mustBe 200
         val document = Jsoup.parse(res.body)
         document.title() mustBe "Check your answers before sending your application - Register for VAT - GOV.UK"
-        document.getElementById("pageHeading").text mustBe "Check your answers before sending your application"
+        document.select("h1").first().text() mustBe "Check your answers before sending your application"
 
+        val cyaRows = document
+          .getElementsByTag("dl").last()
+          .getElementsByTag("div")
+          .asScala.toList.map { element =>
+          (
+            element.getElementsByTag("dt").first().text(),
+            element.getElementsByTag("dd").first().text()
+          )
+        }
 
-        document.getElementById("sectionA.0Question").text mustBe "Question 1"
-        document.getElementById("sectionA.0Answer").text mustBe "FOO"
-        document.getElementById("sectionA.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("mandatoryRegistration")
-        document.getElementById("sectionA.1Question").text mustBe "Question 2"
-        document.getElementById("sectionA.1Answer").text mustBe "BAR"
-        document.getElementById("sectionA.1ChangeLink").attr("href").contains(eligibilitySummaryUrl("voluntaryRegistration")) mustBe true
+        val expectedCyaRows: List[(String, String)] = List(
+          ("Company registration number", testCrn),
+          ("Unique Taxpayer Reference number", testCtUtr),
+          ("First Name", testFirstName),
+          ("Last Name", testLastName),
+          ("National Insurance number", testApplicantNino),
+          ("Date of birth", "1 January 2020"),
+          ("Role in the business", Director.toString),
+          ("Former name", "New Name Cosmo"),
+          ("Date former name changed", "12 July 2000"),
+          ("Email address", "test@t.test"),
+          ("Telephone number", testApplicantPhone),
+          ("Home address", "Testline1 Testline2 TE 1ST"),
+          ("Lived at current address for more than 3 years", "No"),
+          ("Previous address", "Testline11 Testline22 TE1 1ST"),
+          ("Business email address", "test@foo.com"),
+          ("Business daytime phone number", "123"),
+          ("Business mobile number", "987654"),
+          ("Business website address", "/test/url"),
+          ("Business address", "Line1 Line2 XX XX United Kingdom"),
+          ("Contact preference", Email.toString),
+          ("What does the business do?", "test company desc"),
+          ("Main business activity", "super business"),
+          ("SIC codes", "super business"),
+          ("Confirm the business’s Standard Industry Classification (SIC) codes for VAT", "AB123 - super business"),
+          ("VAT start date", "The date the company is registered with Companies House"),
+          ("Zero rated turnover for the next 12 months", "£1,234.00"),
+          ("Expect to claim VAT refunds regularly?", "Yes"),
+          ("When do you want to submit VAT Returns?", "January, April, July and October"),
+          ("Different Trading name", "No"),
+          ("Apply for EORI?", "No"),
+          ("Have a business bank account set up", "Yes"),
+          ("Bank details", "testName 12-34-56 12345678"),
+          ("Do you want to join the Flat Rate Scheme?", "No")
+        )
 
-        document.getElementById("sectionB.0Question").text mustBe "Question 5"
-        document.getElementById("sectionB.0Answer").text mustBe "bang"
-        document.getElementById("sectionB.0ChangeLink").attr("href") mustBe eligibilitySummaryUrl("applicantUKNino")
-        document.getElementById("sectionB.1Question").text mustBe "Question 6"
-        document.getElementById("sectionB.1Answer").text mustBe "BUZZ"
-        document.getElementById("sectionB.1ChangeLink").attr("href") mustBe eligibilitySummaryUrl("turnoverEstimate")
-
-        document.getElementById("directorDetails.joinFrsAnswer").text mustBe "No"
-        document.getElementById("directorDetails.formerNameAnswer").text mustBe "New Name Cosmo"
-        document.getElementById("directorDetails.accountingPeriodAnswer").text mustBe "January, April, July and October"
+        cyaRows.zipWithIndex.foreach { case (tuple, index) => tuple mustBe expectedCyaRows(index) }
       }
     }
   }
@@ -126,7 +112,7 @@ class SummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
-        val response = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show().url)

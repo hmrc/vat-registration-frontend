@@ -127,7 +127,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     id = "1",
     status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
-    applicantDetails = None,
+    applicantDetails = Some(validFullApplicantDetails),
     sicAndCompliance = Some(sicAndCompliance),
     businessContact = Some(validBusinessContactDetails),
     flatRateScheme = Some(flatRateScheme),

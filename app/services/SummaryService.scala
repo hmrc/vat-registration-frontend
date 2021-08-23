@@ -16,55 +16,38 @@
 
 package services
 
-import connectors.ConfigConnector
-import javax.inject.{Inject, Singleton}
+import config.FrontendAppConfig
 import models.CurrentProfile
-import models.api.VatScheme
-import models.view.{Summary, SummaryFromQuestionAnswerJson}
-import play.api.mvc.Call
+import models.view.EligibilityJsonParser
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import viewmodels.SummaryCheckYourAnswersBuilder
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SummaryService @Inject()(val vrs: VatRegistrationService,
-                               val applicantDetailsService: ApplicantDetailsService,
-                               val sicAndComplianceService: SicAndComplianceService,
-                               val flatRateService: FlatRateService,
-                               val configConnector: ConfigConnector,
-                               config: ServicesConfig)(implicit ec: ExecutionContext) {
+class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
+                               summaryCheckYourAnswersBuilder: SummaryCheckYourAnswersBuilder
+                              )(implicit ec: ExecutionContext,
+                                appConfig: FrontendAppConfig) {
 
-  lazy val vatRegEFEUrl: String = config.getConfString("vat-registration-eligibility-frontend.uri", throw new Exception("vat-registration-eligibility-frontend.uri could not be found"))
-  lazy val vatRegEFEQuestionUri: String = config.getConfString("vat-registration-eligibility-frontend.question", throw new Exception("vat-registration-eligibility-frontend.question could not be found"))
+  private[services] def eligibilityCall(uri: String): String = s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri"
 
-  private[services] def eligibilityCall(uri: String): Call = Call("GET", vatRegEFEUrl + vatRegEFEQuestionUri + s"?pageId=$uri")
-
-  def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
-    vrs.getEligibilityData.map {
-      _.validate[Summary](SummaryFromQuestionAnswerJson.summaryReads(eligibilityCall)).fold(
+  def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[SummaryList] = {
+    vatRegistrationService.getEligibilityData.map { json =>
+      json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, messages("app.common.change"))).fold(
         errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
         identity
       )
     }
   }
 
-  def getRegistrationSummary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Summary] = {
-    for {
-      applicant <- applicantDetailsService.getApplicantDetails
-      sac <- sicAndComplianceService.getSicAndCompliance
-      summary <- vrs.getVatScheme.map(scheme => registrationToSummary(scheme.copy(applicantDetails = Some(applicant), sicAndCompliance = Some(sac))))
-    } yield summary
+  def getRegistrationSummary(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[SummaryList] = {
+    vatRegistrationService.getVatScheme.map { vatScheme =>
+      summaryCheckYourAnswersBuilder.generateSummaryList(vatScheme, messages)
+    }
   }
 
-  def registrationToSummary(vs: VatScheme): Summary = {
-    Summary(Seq(
-      viewmodels.SummaryCheckYourAnswersBuilder(vs,
-        vs.applicantDetails.getOrElse(throw new IllegalStateException("Missing Applicant Details data to show summary")),
-        vs.flatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))),
-        vs.flatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-        vs.eligibilitySubmissionData.map(_.estimates), vs.eligibilitySubmissionData.map(_.threshold),
-        vs.returns).section
-    ))
-  }
 }
