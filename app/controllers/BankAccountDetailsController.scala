@@ -61,11 +61,11 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         hasCompanyBankAccountForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(hasBankAccountPage(errors))),
-          hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
-            vatRegistrationService.partyType.flatMap {
-              case partyType@(NETP) => Future.successful(Redirect(routes.OverseasBankAccountController.showOverseasBankAccountView()))
-              case partyType@(anything else) => Future.successful(Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails()))
-              case _ => Future.successful(Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView()))
+          hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) flatMap { _ =>
+            vatRegistrationService.partyType.map {
+              case NETP => Redirect(routes.OverseasBankAccountController.showOverseasBankAccountView())
+              case _ if hasBankAccount => Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+              case _ => Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView())
             }
           }
         )
