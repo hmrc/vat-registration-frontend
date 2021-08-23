@@ -14,24 +14,28 @@
  * limitations under the License.
  *@
 
+@import views.html.components._
+@import views.html.layouts.layout
 @import config.FrontendAppConfig
-@import views.html.helpers.templates.newWindowLink
-@import uk.gov.hmrc.play.views.html.helpers.form
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        button: button,
+        formWithCSRF: FormWithCSRF
+)
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@main_template(title = titleNoForm(pageTitle), backEnabled = false) {
+@layout(pageTitle = Some(titleNoForm(pageTitle)), backLink = true) {
 
-    <header class="page-header">
-        <h1 class="form-title heading-large" id="main-heading">@heading</h1>
-    </header>
+    @h1(heading)
 
-    <p>@message</p>
+    @p{ @message }
 
-    @form(action = controllers.routes.WelcomeController.show()) {
-        <div class="form-group">
-            <button class="btn button" role="button" id="error_template">@messages("error.error_template.tryagain")</button>
-        </div>
+    @formWithCSRF(action = controllers.routes.WelcomeController.show()) {
+        @button(messages("error.error_template.tryagain"), showSaveProgressButton = false)
     }
 
 }

@@ -19,11 +19,11 @@
 @import views.html.layouts.layout
 
 @this(
-    layout: layout,
-    h1: h1,
-    p: p,
-    button: button,
-    formWithCSRF: FormWithCSRF
+        layout: layout,
+        h1: h1,
+        p: p,
+        button: button,
+        formWithCSRF: FormWithCSRF
 )
 
 @(formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
