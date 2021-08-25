@@ -16,35 +16,36 @@
 
 package services
 
+import config.FrontendAppConfig
+import models.view.EligibilityJsonParser
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.Call
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import viewmodels.SummaryCheckYourAnswersBuilder
 
 import scala.concurrent.Future
 
 class SummaryServiceSpec extends VatRegSpec {
 
   class Setup {
+    implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+    val mockSummaryCheckYourAnswersBuilder: SummaryCheckYourAnswersBuilder = mock[SummaryCheckYourAnswersBuilder]
     val testService: SummaryService = new SummaryService(
       mockVatRegistrationService,
-      mockApplicantDetailsServiceOld,
-      mockSicAndComplianceService,
-      mockFlatRateService,
-      mockConfigConnector,
-      mockServicesConfig
-    ) {
-      override lazy val vatRegEFEUrl: String = "http://vatRegEFEUrl"
-      override lazy val vatRegEFEQuestionUri = "/question"
-    }
+      mockSummaryCheckYourAnswersBuilder
+    )
   }
 
   "eligibilityCall" should {
     "return a full url" in new Setup {
-      val res: Call = testService.eligibilityCall("page1OfEligibility")
-      res.url mustBe "http://vatRegEFEUrl/question?pageId=page1OfEligibility"
-      res mustBe Call("GET", "http://vatRegEFEUrl/question?pageId=page1OfEligibility")
+      val res: String = testService.eligibilityCall("page1OfEligibility")
+      res mustBe "http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=page1OfEligibility"
     }
   }
 
@@ -52,19 +53,10 @@ class SummaryServiceSpec extends VatRegSpec {
     "map a valid VatScheme object to a Summary object" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockApplicantDetailsServiceOld.getApplicantDetails(any(), any()))
-        .thenReturn(Future.successful(completeApplicantDetails))
+      when(mockSummaryCheckYourAnswersBuilder.generateSummaryList(ArgumentMatchers.eq(validVatScheme), ArgumentMatchers.eq(messages)))
+        .thenReturn(SummaryList())
 
-      testService.getRegistrationSummary.map(summary => summary.sections.length mustEqual 2)
-    }
-  }
-
-  "registrationToSummary" should {
-    "map valid VatScheme object to a Summary object" in new Setup {
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("test business type", BigDecimal(6.32)))
-
-      testService.registrationToSummary(validVatScheme).sections.length mustEqual 1
+      await(testService.getRegistrationSummary) mustBe SummaryList()
     }
   }
 
@@ -72,7 +64,7 @@ class SummaryServiceSpec extends VatRegSpec {
     "return a Summary when valid json is returned from vatregservice" in new Setup {
       when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(fullEligibilityDataJson.as[JsObject])
 
-      await(testService.getEligibilityDataSummary) mustBe fullSummaryModelFromFullEligiblityJson
+      await(testService.getEligibilityDataSummary).rows.length mustBe 8
     }
     "return an exception when json is invalid returned from vatregservice" in new Setup {
       when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(Json.obj("foo" -> "bar"))

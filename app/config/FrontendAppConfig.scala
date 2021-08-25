@@ -49,6 +49,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val eligibilityHost: String = servicesConfig.baseUrl("vat-registration-eligibility-frontend")
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
+  lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
+
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
 
   def partnersApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/partners"

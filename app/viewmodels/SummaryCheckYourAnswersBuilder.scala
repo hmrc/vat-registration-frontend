@@ -16,469 +16,514 @@
 
 package viewmodels
 
+import connectors.ConfigConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.registration.business.{routes => businessContactRoutes}
+import controllers.registration.returns.{routes => returnsRoutes}
+import controllers.registration.sicandcompliance.{routes => sicAndCompRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api.returns._
-import models.api.{Address, Individual, Threshold, VatScheme, _}
+import models.api.{Address, Individual, VatScheme, _}
 import models.external._
-import models.view.{SummaryRow, SummarySection}
-import org.apache.commons.lang3.StringUtils
-import play.api.mvc.Call
+import models.view.SummaryListRowUtils._
+import play.api.i18n.Messages
 import services.FlatRateService
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 
-case class SummaryCheckYourAnswersBuilder(scheme: VatScheme,
-                                          vatApplicantDetails: ApplicantDetails,
-                                          calculatedOnEstimatedSales: Option[Long],
-                                          businessType: Option[String],
-                                          turnoverEstimates: Option[TurnoverEstimates],
-                                          threshold: Option[Threshold],
-                                          returnsBlock: Option[Returns]) extends SummarySectionBuilder with FeatureSwitching {
+import java.time.format.DateTimeFormatter
+import javax.inject.{Inject, Singleton}
 
-  override val sectionId: String = "directorDetails"
+// scalastyle:off
+@Singleton
+class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
+                                               flatRateService: FlatRateService) extends FeatureSwitching {
 
-  val joinFrsContainsTrue: Boolean = scheme.flatRateScheme.flatMap(_.joinFrs).contains(true)
-  val isflatRatePercentYes: Boolean = scheme.flatRateScheme.flatMap(_.useThisRate).contains(true)
-  val isBusinessGoodsYes: Boolean = joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).contains(true)
-  val isAAS: Boolean = scheme.returns.flatMap(_.returnsFrequency).contains(Annual)
+  val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
+  val sectionId: String = "pages.summary.directorDetails"
 
-  val thresholdBlock: Threshold = threshold.getOrElse(throw new IllegalStateException("Missing threshold block to show summary"))
-  val voluntaryRegistration: Boolean = !thresholdBlock.mandatoryRegistration
-  val partyType: PartyType = scheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
-  val isLimitedCostTrader: Boolean = scheme.flatRateScheme.exists(_.limitedCostTrader.contains(true))
-  val optLeadPartner: Option[BusinessEntity] = if (partyType.equals(Partnership)) scheme.partners.flatMap(_.find(_.isLeadPartner).map(_.details)) else None
+  def generateSummaryList(implicit vatScheme: VatScheme, messages: Messages): SummaryList = {
+    implicit val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
 
-  val tradingNameUrl: Call = if (partyType.equals(UkCompany)) {
-    controllers.registration.business.routes.TradingNameController.show()
-  } else {
-    controllers.registration.business.routes.MandatoryTradingNameController.show()
+    SummaryList(
+      applicantDetailsSection ++
+        businessContactSection ++
+        sicAndComplianceSection ++
+        returnsSection ++
+        tradingDetailsSection ++
+        bankAccountSection ++
+        flatRateSchemeSection
+    )
   }
 
-  val changeTransactorDetailsUrl: Call = {
-    partyType match {
-      case Partnership => optLeadPartner match {
-        case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => applicantRoutes.SoleTraderIdentificationController.startJourney()
-        case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
+  def applicantDetailsSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val applicantDetails = vatScheme.applicantDetails.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing applicant details block"))
+
+    val changeTransactorDetailsUrl: String = {
+      partyType match {
+        case Individual | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
       }
-      case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney()
-      case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
     }
-  }
 
-  def startDateRow: SummaryRow = SummaryRow(
-    s"$sectionId.startDate",
-    returnsBlock.flatMap(_.startDate) match {
-      case Some(date) => date.format(presentationFormatter)
-      case _ => s"pages.summary.$sectionId.mandatoryStartDate"
-    },
-    if (voluntaryRegistration) Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage()) else None
-  )
+    val companyNumber = optSummaryListRowString(
+      s"$sectionId.companyNumber",
+      applicantDetails.entity.collect {
+        case incorpIdEntity: IncorporatedEntity => incorpIdEntity.companyNumber
+      },
+      Some(applicantRoutes.IncorpIdController.startJourney().url)
+    )
 
-  val tradingNameRow: SummaryRow = SummaryRow(
-    s"$sectionId.tradingName",
-    scheme.tradingDetails.flatMap(_.tradingNameView).flatMap(_.tradingName).getOrElse("app.common.no"),
-    Some(tradingNameUrl)
-  )
+    val ctutr = optSummaryListRowString(
+      s"$sectionId.ctutr",
+      applicantDetails.entity.flatMap {
+        case incorpIdEntity: IncorporatedEntity => incorpIdEntity.ctutr
+        case _ => None
+      },
+      Some(applicantRoutes.IncorpIdController.startJourney().url)
+    )
 
-  val firstName: SummaryRow = SummaryRow(
-    s"$sectionId.firstName",
-    vatApplicantDetails.transactor.map(_.firstName).getOrElse(""),
-    Some(changeTransactorDetailsUrl)
-  )
-
-  val lastName: SummaryRow = SummaryRow(
-    s"$sectionId.lastName",
-    vatApplicantDetails.transactor.map(_.lastName).getOrElse(""),
-    Some(changeTransactorDetailsUrl)
-  )
-
-  val nino: SummaryRow = SummaryRow(
-    s"$sectionId.nino",
-    vatApplicantDetails.transactor.map(_.nino).getOrElse(""),
-    Some(changeTransactorDetailsUrl)
-  )
-
-  val dob: SummaryRow = SummaryRow(
-    s"$sectionId.dob",
-    vatApplicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)).getOrElse(""),
-    Some(changeTransactorDetailsUrl)
-  )
-  //TODO add partnership SAUTR and Postcode and change the current sautr field if needed
-  val sautr: SummaryRow = SummaryRow(
-    s"$sectionId.sautr",
-    vatApplicantDetails.entity.flatMap {
-      case soleTrader: SoleTrader => soleTrader.sautr
-      case business: BusinessIdEntity => business.sautr
-      case _: PartnershipIdEntity => optLeadPartner.flatMap {
+    val sautr = optSummaryListRowString(
+      s"$sectionId.sautr",
+      applicantDetails.entity.flatMap {
         case soleTrader: SoleTrader => soleTrader.sautr
+        case business: BusinessIdEntity => business.sautr
+        case partnership: PartnershipIdEntity => partnership.sautr
+        case _ => None
+      },
+      partyType match {
+        case Partnership => Some(applicantRoutes.PartnershipIdController.startJourney().url)
+        case UnincorpAssoc | Trust => Some(applicantRoutes.BusinessIdController.startJourney().url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+      }
+    )
+
+    val chrn = optSummaryListRowString(
+      s"$sectionId.chrn",
+      applicantDetails.entity.flatMap {
+        case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
+        case businessIdEntity: BusinessIdEntity => businessIdEntity.chrn
+        case _ => None
+      },
+      partyType match {
+        case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney().url)
+        case Trust | UnincorpAssoc => Some(applicantRoutes.BusinessIdController.startJourney().url)
         case _ => None
       }
-      case _ => None
-    }.getOrElse(""),
-    partyType match {
-      case Partnership => optLeadPartner match {
-        case Some(SoleTrader(_, _, _, _, _, _, _, _, _)) => Some(applicantRoutes.SoleTraderIdentificationController.startJourney())
-        case None => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Partnership missing main partner")
-      }
-      case UnincorpAssoc | Trust => Some(applicantRoutes.BusinessIdController.startJourney())
-      case _ if isEnabled(UseSoleTraderIdentification) => Some(applicantRoutes.SoleTraderIdentificationController.startJourney())
-      case _ => Some(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
-    }
-  )
-
-  val companyNumber: SummaryRow = SummaryRow(
-    s"$sectionId.companyNumber",
-    vatApplicantDetails.entity.collect {
-      case soleTrader: IncorporatedEntity => soleTrader.companyNumber
-    }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startJourney())
-  )
-
-  val ctutr: SummaryRow = SummaryRow(
-    s"$sectionId.ctutr",
-    vatApplicantDetails.entity.flatMap {
-      case incorporatedEntity: IncorporatedEntity => incorporatedEntity.ctutr
-      case _ => None
-    }.getOrElse(""),
-    Some(applicantRoutes.IncorpIdController.startJourney())
-  )
-
-  val chrn: SummaryRow = SummaryRow(
-    s"$sectionId.chrn",
-    vatApplicantDetails.entity.flatMap {
-      case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
-      case businessIdEntity: BusinessIdEntity => businessIdEntity.chrn
-      case _ => None
-    }.getOrElse(""),
-    partyType match {
-      case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney())
-      case Trust | UnincorpAssoc => Some(applicantRoutes.BusinessIdController.startJourney())
-      case _ => None
-    }
-  )
-
-  val roleInTheBusiness: SummaryRow = SummaryRow(
-    s"$sectionId.roleInTheBusiness",
-    vatApplicantDetails.roleInTheBusiness.collect {
-      case Director => "pages.roleInTheBusiness.radio1"
-      case CompanySecretary => "pages.roleInTheBusiness.radio2"
-    }.getOrElse(""),
-    Some(applicantRoutes.CaptureRoleInTheBusinessController.show())
-  )
-
-  val formerName: SummaryRow = SummaryRow(
-    s"$sectionId.formerName",
-    vatApplicantDetails.formerName.flatMap(_.formerName).getOrElse(s"pages.summary.$sectionId.noFormerName"),
-    Some(applicantRoutes.FormerNameController.show())
-  )
-
-  val formerNameDate: SummaryRow = SummaryRow(
-    s"$sectionId.formerNameDate",
-    vatApplicantDetails.formerNameDate.map(_.date.format(presentationFormatter)).getOrElse(""),
-    Some(applicantRoutes.FormerNameController.show())
-  )
-
-  val email: SummaryRow = SummaryRow(
-    s"$sectionId.email",
-    vatApplicantDetails.emailAddress.map(_.email).getOrElse(""),
-    Some(applicantRoutes.CaptureEmailAddressController.show())
-  )
-
-  val telephone: SummaryRow = SummaryRow(
-    s"$sectionId.telephone",
-    vatApplicantDetails.telephoneNumber.map(_.telephone).getOrElse(""),
-    Some(applicantRoutes.CaptureTelephoneNumberController.show())
-  )
-
-  val homeAddress: SummaryRow = SummaryRow(
-    s"$sectionId.homeAddress",
-    vatApplicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq).getOrElse(Seq.empty),
-    Some(applicantRoutes.HomeAddressController.redirectToAlf())
-  )
-
-  val moreThanThreeYears: SummaryRow = yesNoRow(
-    "moreThanThreeYears",
-    vatApplicantDetails.previousAddress.map(_.yesNo),
-    applicantRoutes.PreviousAddressController.show()
-  )
-
-  val previousAddress: SummaryRow = SummaryRow(
-    s"$sectionId.previousAddress",
-    vatApplicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq).getOrElse(Seq.empty),
-    Some(applicantRoutes.PreviousAddressController.show())
-  )
-
-  val zeroRatedRow: SummaryRow = SummaryRow.mandatory(
-    s"$sectionId.zeroRated",
-    scheme.returns.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
-    Some(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
-  )
-
-  val expectClaimRefundsRow: SummaryRow = yesNoRow(
-    "claimRefunds",
-    scheme.returns.flatMap(_.reclaimVatOnMostReturns),
-    controllers.registration.returns.routes.ClaimRefundsController.show()
-  )
-
-  val accountingPeriodRow: SummaryRow = SummaryRow(
-    s"$sectionId.accountingPeriod",
-    (scheme.returns.flatMap(_.returnsFrequency), scheme.returns.flatMap(_.staggerStart)) match {
-      case (Some(Monthly), _) => s"pages.summary.$sectionId.accountingPeriod.monthly"
-      case (Some(Quarterly), Some(period)) =>
-        s"pages.summary.$sectionId.accountingPeriod.${period.toString.substring(0, 3).toLowerCase()}"
-      case (Some(Annual), _) =>
-        s"pages.summary.$sectionId.accountingPeriod.annual"
-      case _ => ""
-    },
-    Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage())
-  )
-
-  val lastMonthOfAccountingYearRow: SummaryRow = SummaryRow(
-    s"$sectionId.lastMonthOfAccountingYear",
-    scheme.returns.flatMap(_.staggerStart) match {
-      case Some(period: AnnualStagger) => s"pages.summary.$sectionId.lastMonthOfAccountingYear.${period.toString}"
-      case _ => ""
-    },
-    Some(controllers.registration.returns.routes.LastMonthOfAccountingYearController.show())
-  )
-
-  val paymentFrequencyRow: SummaryRow = SummaryRow(
-    s"$sectionId.paymentFrequency",
-    scheme.returns.flatMap(_.annualAccountingDetails.map(_.paymentFrequency)) match {
-      case Some(Some(paymentFrequency)) => s"pages.summary.$sectionId.paymentFrequency.${paymentFrequency.toString}"
-      case _ => ""
-    },
-    Some(controllers.registration.returns.routes.PaymentFrequencyController.show())
-  )
-
-  val paymentMethodRow: SummaryRow = SummaryRow(
-    s"$sectionId.paymentMethod",
-    scheme.returns.flatMap(_.annualAccountingDetails.map(_.paymentMethod)) match {
-      case Some(Some(paymentMethod)) => s"pages.summary.$sectionId.paymentMethod.${paymentMethod.toString}"
-      case _ => ""
-    },
-    Some(controllers.registration.returns.routes.PaymentMethodController.show())
-  )
-
-  val sicAndComp: SicAndCompliance = scheme.sicAndCompliance.fold(SicAndCompliance())(a => a)
-
-  val companyBusinessDescriptionRow: SummaryRow = SummaryRow(
-    s"$sectionId.businessDescription",
-    sicAndComp.description.fold("app.common.no")(desc =>
-      if (desc.description.isEmpty) "app.common.no" else desc.description),
-    Some(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show())
-  )
-
-  val mainActivityRow: SummaryRow = SummaryRow.mandatory(
-    s"$sectionId.mainSicCode",
-    for {
-      sicAndCompliance <- scheme.sicAndCompliance
-      activity <- sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description))
-    } yield activity,
-    Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
-  )
-
-  val sicCodesRow: SummaryRow = SummaryRow(
-    s"$sectionId.sicCodes", {
-      val mainActivity = (for {
-        sicAndCompliance <- scheme.sicAndCompliance
-        activity <- sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description))
-      } yield activity).toList
-
-      val otherActivities = (for {
-        sicAndCompliance <- scheme.sicAndCompliance
-        activities <- sicAndCompliance.businessActivities.map(_.sicCodes.map(_.description))
-      } yield activities).getOrElse(List.empty)
-
-      (otherActivities ++ mainActivity).distinct
-    },
-    Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
-  )
-
-  val confirmIndustryClassificationCodesRow: SummaryRow = SummaryRow(
-    s"$sectionId.businessActivities",
-    sicAndComp.businessActivities.fold(Seq("app.common.no"))(codes => codes.sicCodes.map(
-      sicCode => sicCode.code + " - " + sicCode.description
-    )),
-    Some(controllers.routes.SicAndComplianceController.returnToICL())
-  )
-
-  val accountIsProvidedRow: SummaryRow = yesNoRow(
-    "companyBankAccount",
-    scheme.bankAccount.map(_.isProvided),
-    controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView()
-  )
-
-  val companyBankAccountDetails: SummaryRow = SummaryRow(
-    s"$sectionId.companyBankAccount.details",
-    scheme.bankAccount.flatMap(_.details).map(BankAccountDetails.bankSeq).getOrElse(Seq.empty),
-    Some(controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
-  )
-
-  val noUKBankAccount: SummaryRow = SummaryRow(
-    s"$sectionId.companyBankAccount.reason",
-    scheme.bankAccount.flatMap(_.reason.map {
-      case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
-      case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
-      case NameChange => "pages.noUKBankAccount.reason.nameChange"
-    }).getOrElse(""),
-    Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView())
-  )
-
-  val applyForEoriRow: SummaryRow = yesNoRow(
-    "applyForEori",
-    scheme.tradingDetails.flatMap(_.euGoods),
-    controllers.registration.business.routes.ApplyForEoriController.show()
-  )
-
-  val joinFrsRow: SummaryRow = yesNoRow(
-    "joinFrs",
-    scheme.flatRateScheme.flatMap(_.joinFrs),
-    controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()
-  )
-
-  val costsInclusiveRow: SummaryRow = yesNoRow(
-    "costsInclusive",
-    scheme.flatRateScheme.flatMap(_.overBusinessGoods),
-    controllers.routes.FlatRateController.annualCostsInclusivePage()
-  )
-
-  val estimateTotalSalesRow: SummaryRow = SummaryRow(
-    s"$sectionId.estimateTotalSales",
-    s"£${scheme.flatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).getOrElse("0")}",
-    Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales())
-  )
-
-  val costsLimitedRow: SummaryRow = SummaryRow(
-    s"$sectionId.costsLimited",
-    if (scheme.flatRateScheme.flatMap(_.overBusinessGoodsPercent).contains(true)) "app.common.yes" else "app.common.no",
-    Some(controllers.routes.FlatRateController.annualCostsLimitedPage()),
-    Seq(calculatedOnEstimatedSales.map("%,d".format(_)).getOrElse("0"))
-  )
-
-  val flatRatePercentageRow: SummaryRow = {
-    SummaryRow(
-      s"$sectionId.flatRate",
-      if (scheme.flatRateScheme.flatMap(_.useThisRate).contains(true)) "app.common.yes" else "app.common.no",
-      Some(if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage()
-      else controllers.routes.FlatRateController.yourFlatRatePage()),
-      Seq(if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString else scheme.flatRateScheme.flatMap(_.percent).getOrElse(0.0).toString)
     )
+
+    //TODO add Partnership lead partner identifiers
+
+    val firstName = optSummaryListRowString(
+      s"$sectionId.firstName",
+      applicantDetails.transactor.map(_.firstName),
+      Some(changeTransactorDetailsUrl)
+    )
+
+    val lastName = optSummaryListRowString(
+      s"$sectionId.lastName",
+      applicantDetails.transactor.map(_.lastName),
+      Some(changeTransactorDetailsUrl)
+    )
+
+    val nino = optSummaryListRowString(
+      s"$sectionId.nino",
+      applicantDetails.transactor.map(_.nino),
+      Some(changeTransactorDetailsUrl)
+    )
+
+    val dob = optSummaryListRowString(
+      s"$sectionId.dob",
+      applicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)),
+      Some(changeTransactorDetailsUrl)
+    )
+
+    val roleInTheBusiness = optSummaryListRowString(
+      s"$sectionId.roleInTheBusiness",
+      applicantDetails.roleInTheBusiness.collect {
+        case Director => "pages.roleInTheBusiness.radio1"
+        case CompanySecretary => "pages.roleInTheBusiness.radio2"
+      },
+      Some(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
+    )
+
+    val formerName = optSummaryListRowString(
+      s"$sectionId.formerName",
+      applicantDetails.formerName.flatMap(_.formerName) match {
+        case None => Some(s"$sectionId.noFormerName")
+        case formerName => formerName
+      },
+      Some(applicantRoutes.FormerNameController.show().url)
+    )
+
+    val formerNameDate = optSummaryListRowString(
+      s"$sectionId.formerNameDate",
+      applicantDetails.formerNameDate.map(_.date.format(presentationFormatter)),
+      Some(applicantRoutes.FormerNameController.show().url)
+    )
+
+    val email = optSummaryListRowString(
+      s"$sectionId.email",
+      applicantDetails.emailAddress.map(_.email),
+      Some(applicantRoutes.CaptureEmailAddressController.show().url)
+    )
+
+    val telephone = optSummaryListRowString(
+      s"$sectionId.telephone",
+      applicantDetails.telephoneNumber.map(_.telephone),
+      Some(applicantRoutes.CaptureTelephoneNumberController.show().url)
+    )
+
+    val homeAddress = optSummaryListRowSeq(
+      s"$sectionId.homeAddress",
+      applicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq),
+      Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+    )
+
+    val moreThanThreeYears = optSummaryListRowBoolean(
+      s"$sectionId.moreThanThreeYears",
+      applicantDetails.previousAddress.map(_.yesNo),
+      Some(applicantRoutes.PreviousAddressController.show().url)
+    )
+
+    val previousAddress = optSummaryListRowSeq(
+      s"$sectionId.previousAddress",
+      applicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq),
+      Some(applicantRoutes.PreviousAddressController.show().url)
+    )
+
+    Seq(
+      companyNumber,
+      ctutr,
+      sautr,
+      chrn,
+      firstName,
+      lastName,
+      nino,
+      dob,
+      roleInTheBusiness,
+      formerName,
+      formerNameDate,
+      email,
+      telephone,
+      homeAddress,
+      moreThanThreeYears,
+      previousAddress
+    ).flatten
   }
 
+  def businessContactSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
 
-  val businessSectorRow: SummaryRow = SummaryRow(
-    s"$sectionId.businessSector",
-    businessType.getOrElse(""),
-    Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show())
-  )
+    val businessContact: BusinessContact = vatScheme.businessContact.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing business contact block"))
 
-  val providingWorkersRow: SummaryRow = yesNoRow(
-    "supplyWorkers",
-    scheme.sicAndCompliance.flatMap(_.supplyWorkers).map(_.yesNo),
-    controllers.registration.sicandcompliance.routes.SupplyWorkersController.show()
-  )
-
-  val numberOfWorkersRow: SummaryRow = SummaryRow(
-    s"$sectionId.numberOfWorkers",
-    scheme.sicAndCompliance.flatMap(_.workers).fold("")(_.numberOfWorkers.toString),
-    Some(controllers.registration.sicandcompliance.routes.WorkersController.show())
-  )
-
-  val intermediarySupplyRow: SummaryRow = yesNoRow(
-    "intermediarySupply",
-    scheme.sicAndCompliance.flatMap(_.intermediarySupply).map(_.yesNo),
-    controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show()
-  )
-
-  val businessEmailRow: SummaryRow = SummaryRow(
-    s"$sectionId.emailBusiness",
-    scheme.businessContact.fold("")(_.companyContactDetails.get.email),
-    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
-  )
-
-  val businessDaytimePhoneNumberRow: SummaryRow = SummaryRow(
-    s"$sectionId.daytimePhoneBusiness",
-    scheme.businessContact.fold("")(_.companyContactDetails.get.phoneNumber.getOrElse("")),
-    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
-  )
-
-  val businessMobilePhoneNumberRow: SummaryRow = SummaryRow(
-    s"$sectionId.mobileBusiness",
-    scheme.businessContact.fold("")(_.companyContactDetails.get.mobileNumber.getOrElse("")),
-    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
-  )
-
-  val businessWebsiteRow: SummaryRow = SummaryRow(
-    s"$sectionId.website",
-    scheme.businessContact.fold("")(_.companyContactDetails.get.websiteAddress.getOrElse("")),
-    Some(controllers.registration.business.routes.BusinessContactDetailsController.show())
-  )
-
-  val ppobRow: SummaryRow = SummaryRow(
-    s"$sectionId.ppob",
-    scheme.businessContact.map(bc => Address.normalisedSeq(bc.ppobAddress.get)).getOrElse(Seq()),
-    Some(controllers.registration.business.routes.PpobAddressController.startJourney())
-  )
-
-  val contactPreferenceRow: SummaryRow = SummaryRow.mandatory(
-    s"$sectionId.contactPreference",
-    scheme.businessContact.flatMap(_.contactPreference.map(_.toString)),
-    Some(controllers.routes.ContactPreferenceController.showContactPreference())
-  )
-
-  val section: SummarySection = SummarySection(
-    sectionId,
-    Seq(
-      (companyNumber, partyType.equals(UkCompany) || partyType.equals(RegSociety) || partyType.equals(CharitableOrg)),
-      (ctutr, ctutr.hasValue && (partyType.equals(UkCompany) || partyType.equals(RegSociety))),
-      (chrn, chrn.hasValue && (partyType.equals(CharitableOrg) || partyType.equals(Trust) || partyType.equals(UnincorpAssoc))),
-      (sautr, sautr.hasValue && (partyType.equals(Individual) || partyType.equals(Partnership) || partyType.equals(Trust) || partyType.equals(UnincorpAssoc))),
-      (firstName, vatApplicantDetails.transactor.map(_.firstName).isDefined),
-      (lastName, vatApplicantDetails.transactor.map(_.lastName).isDefined),
-      (nino, vatApplicantDetails.transactor.map(_.nino).isDefined),
-      (dob, vatApplicantDetails.transactor.map(_.dateOfBirth).isDefined),
-      (roleInTheBusiness, partyType.equals(UkCompany)),
-      (formerName, true),
-      (formerNameDate, vatApplicantDetails.formerName.exists(_.yesNo)),
-      (homeAddress, vatApplicantDetails.homeAddress.exists(_.address.isDefined)),
-      (moreThanThreeYears, true),
-      (previousAddress, vatApplicantDetails.previousAddress.exists(_.address.isDefined)),
-      (email, vatApplicantDetails.emailAddress.map(_.email).isDefined),
-      (telephone, vatApplicantDetails.telephoneNumber.map(_.telephone).isDefined),
-      (businessEmailRow, true),
-      (businessDaytimePhoneNumberRow, scheme.businessContact.exists(_.companyContactDetails.exists(_.phoneNumber.isDefined))),
-      (businessMobilePhoneNumberRow, scheme.businessContact.exists(_.companyContactDetails.exists(_.mobileNumber.isDefined))),
-      (businessWebsiteRow, scheme.businessContact.exists(_.companyContactDetails.exists(_.websiteAddress.isDefined))),
-      (ppobRow, true),
-      (contactPreferenceRow, scheme.businessContact.flatMap(_.contactPreference).isDefined),
-      (companyBusinessDescriptionRow, true),
-      (confirmIndustryClassificationCodesRow, true),
-      (sicCodesRow, true),
-      (mainActivityRow, true),
-      (zeroRatedRow, scheme.returns.flatMap(_.zeroRatedSupplies).isDefined),
-      (expectClaimRefundsRow, scheme.returns.flatMap(_.reclaimVatOnMostReturns).isDefined),
-      (startDateRow, isflatRatePercentYes && scheme.flatRateScheme.flatMap(_.frsStart).isDefined),
-      (accountingPeriodRow, true),
-      (lastMonthOfAccountingYearRow, isAAS),
-      (paymentFrequencyRow, isAAS),
-      (paymentMethodRow, isAAS),
-      (applyForEoriRow, scheme.tradingDetails.flatMap(_.euGoods).isDefined),
-      (joinFrsRow, scheme.flatRateScheme.flatMap(_.joinFrs).isDefined),
-      (costsInclusiveRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.overBusinessGoods).isDefined),
-      (estimateTotalSalesRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.estimateTotalSales).isDefined),
-      (costsLimitedRow, isBusinessGoodsYes && scheme.flatRateScheme.flatMap(_.overBusinessGoodsPercent).isDefined),
-      (businessSectorRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.categoryOfBusiness).exists(StringUtils.isNotBlank) && !isLimitedCostTrader),
-      (flatRatePercentageRow, joinFrsContainsTrue && scheme.flatRateScheme.flatMap(_.useThisRate).isDefined),
-      (providingWorkersRow, scheme.sicAndCompliance.flatMap(_.supplyWorkers).isDefined),
-      (numberOfWorkersRow, scheme.sicAndCompliance.flatMap(_.workers).isDefined),
-      (intermediarySupplyRow, scheme.sicAndCompliance.flatMap(_.intermediarySupply).isDefined),
-      (tradingNameRow, true),
-      (accountIsProvidedRow, true),
-      (companyBankAccountDetails, scheme.bankAccount.exists(_.isProvided)),
-      (noUKBankAccount, !scheme.bankAccount.exists(_.isProvided))
+    val businessEmailRow = optSummaryListRowString(
+      s"$sectionId.emailBusiness",
+      businessContact.companyContactDetails.map(_.email),
+      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
     )
-  )
 
+    val businessDaytimePhoneNumberRow = optSummaryListRowString(
+      s"$sectionId.daytimePhoneBusiness",
+      businessContact.companyContactDetails.flatMap(_.phoneNumber),
+      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+    )
+
+    val businessMobilePhoneNumberRow = optSummaryListRowString(
+      s"$sectionId.mobileBusiness",
+      businessContact.companyContactDetails.flatMap(_.mobileNumber),
+      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+    )
+
+    val businessWebsiteRow = optSummaryListRowString(
+      s"$sectionId.website",
+      businessContact.companyContactDetails.flatMap(_.websiteAddress),
+      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+    )
+
+    val ppobRow = optSummaryListRowSeq(
+      s"$sectionId.ppob",
+      businessContact.ppobAddress.map(Address.normalisedSeq),
+      Some(businessContactRoutes.PpobAddressController.startJourney().url)
+    )
+
+    val contactPreferenceRow = optSummaryListRowString(
+      s"$sectionId.contactPreference",
+      businessContact.contactPreference.map(_.toString),
+      Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
+    )
+
+    Seq(
+      businessEmailRow,
+      businessDaytimePhoneNumberRow,
+      businessMobilePhoneNumberRow,
+      businessWebsiteRow,
+      ppobRow,
+      contactPreferenceRow
+    ).flatten
+  }
+
+  def sicAndComplianceSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val sicAndCompliance: SicAndCompliance = vatScheme.sicAndCompliance.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing sic and compliance block"))
+
+    val companyBusinessDescriptionRow = optSummaryListRowString(
+      s"$sectionId.businessDescription",
+      sicAndCompliance.description.map(_.description),
+      Some(sicAndCompRoutes.BusinessActivityDescriptionController.show().url)
+    )
+
+    val mainActivityRow = optSummaryListRowString(
+      s"$sectionId.mainSicCode",
+      sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description)),
+      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity().url)
+    )
+
+    val sicCodesRow = optSummaryListRowSeq(
+      s"$sectionId.sicCodes",
+      sicAndCompliance.businessActivities.map(_.sicCodes.map(_.description)),
+      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity().url)
+    )
+
+    val confirmIndustryClassificationCodesRow = optSummaryListRowSeq(
+      s"$sectionId.businessActivities",
+      sicAndCompliance.businessActivities.map(codes => codes.sicCodes.map(
+        sicCode => sicCode.code + " - " + sicCode.description
+      )),
+      Some(controllers.routes.SicAndComplianceController.returnToICL().url)
+    )
+
+    val providingWorkersRow = optSummaryListRowBoolean(
+      s"$sectionId.supplyWorkers",
+      sicAndCompliance.supplyWorkers.map(_.yesNo),
+      Some(sicAndCompRoutes.SupplyWorkersController.show().url)
+    )
+
+    val numberOfWorkersRow = optSummaryListRowString(
+      s"$sectionId.numberOfWorkers",
+      sicAndCompliance.workers.map(_.numberOfWorkers.toString),
+      Some(sicAndCompRoutes.WorkersController.show().url)
+    )
+
+    val intermediarySupplyRow = optSummaryListRowBoolean(
+      s"$sectionId.intermediarySupply",
+      sicAndCompliance.intermediarySupply.map(_.yesNo),
+      Some(sicAndCompRoutes.SupplyWorkersIntermediaryController.show().url)
+    )
+
+    Seq(
+      companyBusinessDescriptionRow,
+      mainActivityRow,
+      sicCodesRow,
+      confirmIndustryClassificationCodesRow,
+      providingWorkersRow,
+      numberOfWorkersRow,
+      intermediarySupplyRow
+    ).flatten
+  }
+
+  def returnsSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val returns: Returns = vatScheme.returns.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing returns block"))
+    val mandatoryRegistration: Boolean = vatScheme.eligibilitySubmissionData.map(_.threshold).exists(_.mandatoryRegistration)
+
+    val startDateRow = optSummaryListRowString(
+      s"$sectionId.startDate",
+      returns.startDate match {
+        case Some(date) => Some(date.format(presentationFormatter))
+        case None => Some(s"$sectionId.mandatoryStartDate")
+      },
+      if (mandatoryRegistration) Some(returnsRoutes.ReturnsController.mandatoryStartPage().url)
+      else Some(returnsRoutes.ReturnsController.voluntaryStartPage().url)
+    )
+
+    val zeroRatedRow = optSummaryListRowString(
+      s"$sectionId.zeroRated",
+      returns.zeroRatedSupplies.map(Formatters.currency),
+      Some(returnsRoutes.ZeroRatedSuppliesController.show().url)
+    )
+
+    val expectClaimRefundsRow = optSummaryListRowBoolean(
+      s"$sectionId.claimRefunds",
+      returns.reclaimVatOnMostReturns,
+      Some(returnsRoutes.ClaimRefundsController.show().url)
+    )
+
+    val accountingPeriodRow = optSummaryListRowString(
+      s"$sectionId.accountingPeriod",
+      (returns.returnsFrequency, returns.staggerStart) match {
+        case (Some(Monthly), _) =>
+          Some(s"$sectionId.accountingPeriod.monthly")
+        case (Some(Quarterly), Some(period)) =>
+          Some(s"$sectionId.accountingPeriod.${period.toString.substring(0, 3).toLowerCase()}")
+        case (Some(Annual), _) =>
+          Some(s"$sectionId.accountingPeriod.annual")
+        case _ => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Invalid accounting period")
+      },
+      Some(returnsRoutes.ReturnsController.accountPeriodsPage().url)
+    )
+
+    val lastMonthOfAccountingYearRow = optSummaryListRowString(
+      s"$sectionId.lastMonthOfAccountingYear",
+      returns.staggerStart match {
+        case Some(period: AnnualStagger) => Some(s"$sectionId.lastMonthOfAccountingYear.${period.toString}")
+        case _ => None
+      },
+      Some(returnsRoutes.LastMonthOfAccountingYearController.show().url)
+    )
+
+    val paymentFrequencyRow = optSummaryListRowString(
+      s"$sectionId.paymentFrequency",
+      returns.annualAccountingDetails.flatMap(_.paymentFrequency).map { paymentFrequency =>
+        s"$sectionId.paymentFrequency.${paymentFrequency.toString}"
+      },
+      Some(returnsRoutes.PaymentFrequencyController.show().url)
+    )
+
+    val paymentMethodRow = optSummaryListRowString(
+      s"$sectionId.paymentMethod",
+      returns.annualAccountingDetails.flatMap(_.paymentMethod).map { paymentMethod =>
+        s"$sectionId.paymentMethod.${paymentMethod.toString}"
+      },
+      Some(returnsRoutes.PaymentMethodController.show().url)
+    )
+
+    Seq(
+      startDateRow,
+      zeroRatedRow,
+      expectClaimRefundsRow,
+      accountingPeriodRow,
+      lastMonthOfAccountingYearRow,
+      paymentFrequencyRow,
+      paymentMethodRow
+    ).flatten
+  }
+
+  def tradingDetailsSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val tradingDetails: TradingDetails = vatScheme.tradingDetails.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing trading details block"))
+    val tradingNameOptional: Boolean = Seq(UkCompany, RegSociety, CharitableOrg).contains(partyType)
+
+    val tradingNameRow = optSummaryListRowString(
+      if (tradingNameOptional) {
+        s"$sectionId.tradingName"
+      } else {
+        s"$sectionId.mandatoryName"
+      },
+      tradingDetails.tradingNameView.flatMap(_.tradingName) match {
+        case None => Some("app.common.no")
+        case optTradingName => optTradingName
+      },
+      if (tradingNameOptional) {
+        Some(controllers.registration.business.routes.TradingNameController.show().url)
+      } else {
+        Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
+      }
+    )
+
+    val applyForEoriRow = optSummaryListRowBoolean(
+      s"$sectionId.applyForEori",
+      tradingDetails.euGoods,
+      Some(controllers.registration.business.routes.ApplyForEoriController.show().url)
+    )
+
+    Seq(
+      tradingNameRow,
+      applyForEoriRow
+    ).flatten
+  }
+
+  def bankAccountSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val bankAccount: BankAccount = vatScheme.bankAccount.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing bank account block"))
+
+    val accountIsProvidedRow = optSummaryListRowBoolean(
+      s"$sectionId.companyBankAccount",
+      Some(bankAccount.isProvided),
+      Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+    )
+
+    val companyBankAccountDetails = optSummaryListRowSeq(
+      s"$sectionId.companyBankAccount.details",
+      bankAccount.details.map(BankAccountDetails.bankSeq),
+      Some(controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails().url)
+    )
+
+    val noUKBankAccount = optSummaryListRowString(
+      s"$sectionId.companyBankAccount.reason",
+      bankAccount.reason.map {
+        case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
+        case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
+        case NameChange => "pages.noUKBankAccount.reason.nameChange"
+      },
+      Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView().url)
+    )
+
+    Seq(
+      accountIsProvidedRow,
+      companyBankAccountDetails,
+      noUKBankAccount
+    ).flatten
+  }
+
+  def flatRateSchemeSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val optFlatRateScheme: Option[FlatRateScheme] = vatScheme.flatRateScheme
+    val isLimitedCostTrader: Boolean = optFlatRateScheme.exists(_.limitedCostTrader.contains(true))
+
+    val joinFrsRow = optSummaryListRowBoolean(
+      s"$sectionId.joinFrs",
+      optFlatRateScheme.flatMap(_.joinFrs),
+      Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show().url)
+    )
+
+    val costsInclusiveRow = optSummaryListRowBoolean(
+      s"$sectionId.costsInclusive",
+      optFlatRateScheme.flatMap(_.overBusinessGoods),
+      Some(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
+    )
+
+    val estimateTotalSalesRow = optSummaryListRowString(
+      s"$sectionId.estimateTotalSales",
+      optFlatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).map(sales => s"£$sales"),
+      Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales().url)
+    )
+
+    val costsLimitedRow = optSummaryListRowBoolean(
+      s"$sectionId.costsLimited",
+      optFlatRateScheme.flatMap(_.overBusinessGoodsPercent),
+      Some(controllers.routes.FlatRateController.annualCostsLimitedPage().url),
+      Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))).map("%,d".format(_)).getOrElse("0"))
+    )
+
+    val flatRatePercentageRow = optSummaryListRowBoolean(
+      s"$sectionId.flatRate",
+      optFlatRateScheme.flatMap(_.useThisRate),
+      Some(
+        if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage().url
+        else controllers.routes.FlatRateController.yourFlatRatePage().url
+      ),
+      Seq(
+        if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString
+        else optFlatRateScheme.flatMap(_.percent).getOrElse(0.0).toString
+      )
+    )
+
+    val businessSectorRow = optSummaryListRowString(
+      s"$sectionId.businessSector",
+      optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
+      Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show().url)
+    )
+
+    Seq(
+      joinFrsRow,
+      costsInclusiveRow,
+      estimateTotalSalesRow,
+      costsLimitedRow,
+      flatRatePercentageRow,
+      businessSectorRow
+    ).flatten
+  }
 }

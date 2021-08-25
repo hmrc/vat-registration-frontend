@@ -16,71 +16,105 @@
 
 package models.view
 
+import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsResult, JsValue, Reads, _}
-import play.api.mvc.Call
+import play.api.libs.json.{Reads, _}
+import uk.gov.hmrc.govukfrontend.views.Aliases._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 
-case class Summary(sections: Seq[SummarySection])
-
-case class SummarySection(id: String,
-                          rows: Seq[(SummaryRow, Boolean)],
-                          display: Boolean = true)
-
-
-object SummaryRow {
-  def apply(id: String, answerMessageKey: String, changeLink: Option[Call]): SummaryRow = {
-    SummaryRow(id, Seq(answerMessageKey), changeLink)
+object SummaryListRowUtils {
+  def optSummaryListRowString(questionId: String,
+                              optAnswer: Option[String],
+                              optUrl: Option[String],
+                              questionArgs: Seq[String] = Nil
+                             )(implicit messages: Messages): Option[SummaryListRow] = {
+    optSummaryListRow(
+      questionId,
+      optAnswer.map(answer => HtmlContent(messages(answer))),
+      optUrl,
+      questionArgs
+    )
   }
 
-  def apply(id: String, answerMessageKey: String, changeLink: Option[Call], questionArgs: Seq[String]): SummaryRow = {
-    SummaryRow(id, Seq(answerMessageKey), changeLink, questionArgs)
-  }
+  def optSummaryListRowBoolean(questionId: String,
+                               optAnswer: Option[Boolean],
+                               optUrl: Option[String],
+                               questionArgs: Seq[String] = Nil
+                              )(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRow(
+      questionId,
+      optAnswer.map {
+        case true => HtmlContent(messages("app.common.yes"))
+        case false => HtmlContent(messages("app.common.no"))
+      },
+      optUrl,
+      questionArgs
+    )
 
-  def mandatory(id: String, answer: Option[String], changeLink: Option[Call]): SummaryRow =
-    SummaryRow(id, answer.getOrElse(missingData(id)), changeLink)
+  def optSummaryListRowSeq(questionId: String,
+                           optAnswers: Option[Seq[String]],
+                           optUrl: Option[String],
+                           questionArgs: Seq[String] = Nil
+                          )(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRow(
+      questionId,
+      optAnswers.map(answers => HtmlContent(answers.map(messages(_)).mkString("<br>"))),
+      optUrl,
+      questionArgs
+    )
 
-  def optional(id: String, answer: Option[String], changeLink: Option[Call]): SummaryRow =
-    SummaryRow(id, answer.getOrElse(""), changeLink)
-
-  private def missingData(name: String) =
-    throw new Exception(s"[SummarySectionBuilder] Cannot build Check your answers page because '$name' is missing")
-
-}
-
-case class SummaryRow(id: String,
-                      answerMessageKeys: Seq[String],
-                      changeLink: Option[Call],
-                      questionArgs: Seq[String] = Nil) {
-
-  def hasValue: Boolean = this.answerMessageKeys.head.nonEmpty
-
-}
-
-
-object SummaryFromQuestionAnswerJson {
-  private def summaryRowReads(implicit f: String => Call): Reads[(SummaryRow, Boolean)] = (
-    (__ \ "question").read[String] and
-      (__ \ "answer").read[String] and
-      (__ \ "questionId").read[String].map(_.replaceAll("[-](?<=-).*", ""))
-    ) ((ques, ans, id) => (SummaryRow(ques, ans, Some(f(id))), true))
-
-  private def summarySectionReads(implicit f: String => Call): Reads[SummarySection] = new Reads[SummarySection] {
-    override def reads(json: JsValue): JsResult[SummarySection] = {
-      val sectionId = (json \ "title").validate[String]
-      val summaryRows = (json \ "data").validate(Reads.seq[(SummaryRow, Boolean)](summaryRowReads))
-
-      val seqErrors = sectionId.fold(identity, _ => Seq.empty) ++ summaryRows.fold(identity, _ => Seq.empty)
-      if (seqErrors.nonEmpty) {
-        JsError(seqErrors)
-      } else {
-        JsSuccess(SummarySection(
-          id = sectionId.get,
-          rows = summaryRows.get,
-          true
-        ))
-      }
+  private def optSummaryListRow(questionId: String,
+                                optAnswer: Option[HtmlContent],
+                                optUrl: Option[String],
+                                questionArgs: Seq[String] = Nil
+                               )(implicit messages: Messages): Option[SummaryListRow] =
+    optAnswer.map { answer =>
+      SummaryListRow(
+        key = Key(Text(messages(questionId, questionArgs: _*)), "govuk-!-width-one-half"),
+        value = Value(answer),
+        actions = optUrl.map { url =>
+          Actions(
+            items = Seq(
+              ActionItem(
+                href = url,
+                content = Text(messages("app.common.change")),
+                visuallyHiddenText = Some(messages(questionId, questionArgs: _*))
+              )
+            )
+          )
+        }
+      )
     }
+}
+
+object EligibilityJsonParser {
+
+  private def eligibilitySummaryRowReads(changeUrl: String => String, changeText: String): Reads[SummaryListRow] = {
+    (
+      (__ \ "question").read[String] and
+        (__ \ "answer").read[String] and
+        (__ \ "questionId").read[String].map(_.replaceAll("[-](?<=-).*", ""))
+      ) ((question, answer, questionId) =>
+      SummaryListRow(
+        key = Key(Text(question), "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions(
+          items = Seq(
+            ActionItem(
+              href = changeUrl(questionId),
+              content = Text(changeText),
+              visuallyHiddenText = Some(question)
+            )
+          )
+        ))
+      )
+    )
   }
 
-  def summaryReads(implicit f: String => Call): Reads[Summary] = (__ \ "sections").read[Seq[SummarySection]](Reads.seq[SummarySection](summarySectionReads)) map Summary.apply
+  def eligibilitySummaryListReads(changeUrl: String => String, changeText: String): Reads[SummaryList] = {
+    (__ \ "sections").read(Reads.seq[Seq[SummaryListRow]](
+      (__ \ "data").read(Reads.seq[SummaryListRow](eligibilitySummaryRowReads(changeUrl, changeText)))
+    )).map(rowLists => SummaryList(rowLists.flatten))
+  }
+
 }
