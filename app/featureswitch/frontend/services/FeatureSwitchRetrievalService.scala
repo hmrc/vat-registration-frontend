@@ -30,7 +30,9 @@ class FeatureSwitchRetrievalService @Inject()(featureSwitchConfig: FeatureSwitch
                                               featureSwitchApiConnector: FeatureSwitchApiConnector)
                                              (implicit ec: ExecutionContext) {
 
-  def retrieveFeatureSwitches()(implicit hc: HeaderCarrier): Future[Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])]] = {
+  type MicroserviceSwitchSettings = Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])]
+
+  def retrieveFeatureSwitches(implicit hc: HeaderCarrier): Future[MicroserviceSwitchSettings] = {
 
     val featureSwitchSeq: Seq[(FeatureSwitchProvider, Future[Seq[FeatureSwitchSetting]])] =
       featureSwitchConfig.featureSwitchProviders.map {
@@ -46,29 +48,11 @@ class FeatureSwitchRetrievalService @Inject()(featureSwitchConfig: FeatureSwitch
     }
   }
 
-  val featureSwitchKeyRegex: Regex = "(.+?)\\.(.+)".r
-
-  def updateFeatureSwitches(updatedFeatureSwitchKeys: Iterable[String]
-                           )(implicit hc: HeaderCarrier): Future[Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])]] = {
-    val updatedFeatureSwitches: Future[Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])]] =
-      retrieveFeatureSwitches().map {
-        currentFeatureSwitches =>
-          currentFeatureSwitches.map {
-            case (featureSwitchProvider, providerFeatureSwitches) =>
-              featureSwitchProvider -> providerFeatureSwitches.map {
-                currentFeatureSwitch =>
-                  val isEnabled = updatedFeatureSwitchKeys.exists {
-                    case featureSwitchKeyRegex(microserviceKey, featureSwitchKey) =>
-                      microserviceKey == featureSwitchProvider.id && featureSwitchKey == currentFeatureSwitch.configName
-                    case _ =>
-                      false
-                  }
-                  currentFeatureSwitch.copy(isEnabled = isEnabled)
-              }
-          }
-      }
-
-    updatedFeatureSwitches.flatMap {
+  def updateFeatureSwitches(switchesToEnable: Iterable[String]
+                           )(implicit hc: HeaderCarrier): Future[MicroserviceSwitchSettings] =
+   retrieveFeatureSwitches
+     .map(currentSettings => updateSwitchSettings(currentSettings, switchesToEnable))
+     .flatMap {
       Future.traverse(_) {
         case (featureSwitchProvider, featureSwitchSettings) =>
           featureSwitchApiConnector.updateFeatureSwitches(featureSwitchProvider.url, featureSwitchSettings).map {
@@ -76,6 +60,14 @@ class FeatureSwitchRetrievalService @Inject()(featureSwitchConfig: FeatureSwitch
           }
       }
     }
-  }
+
+
+  private def updateSwitchSettings(currentSettings: MicroserviceSwitchSettings, switchesToEnable: Iterable[String]): MicroserviceSwitchSettings =
+    for {
+      (microservice, switchSettings) <- currentSettings
+      updatedSettings = switchSettings.map(switch =>
+        switch.copy(isEnabled = switchesToEnable.exists(_ == s"${microservice.id}.${switch.configName}"))
+      )
+    } yield (microservice, updatedSettings)
 
 }
