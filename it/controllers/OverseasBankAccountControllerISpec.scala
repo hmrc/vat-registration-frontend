@@ -1,32 +1,19 @@
-/*
- * Copyright 2020 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package controllers
 
 import itutil.ControllerISpec
-import models.{BankAccount, BeingSetup}
+import models.api.NETP
+import models.{BankAccount, OverseasBankDetails}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
-class NoUKBankAccountControllerISpec extends ControllerISpec {
+class OverseasBankAccountControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.routes.NoUKBankAccountController.showNoUKBankAccountView().url
+  val url: String = controllers.routes.OverseasBankAccountController.showOverseasBankAccountView().url
 
   s"GET $url" must {
     "return an OK" in new Setup {
@@ -48,7 +35,9 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .audit.writesAudit()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .audit.writesAuditMerged()
+        .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,7 +46,9 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe 200
 
-        Jsoup.parse(res.body).getElementById("value").attr("value") mustBe "beingSetup"
+        Jsoup.parse(res.body).getElementById("name").`val`() mustBe "testName"
+        Jsoup.parse(res.body).getElementById("bic").`val`() mustBe "123456"
+        Jsoup.parse(res.body).getElementById("iban").`val`() mustBe "12345678"
       }
     }
   }
@@ -68,12 +59,16 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
         .s4lContainer[BankAccount].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
+      val response: Future[WSResponse] = buildClient(url).post(Map(
+        "name" -> "testName",
+        "bic" -> "123456",
+        "iban" -> "12345678"
+      ))
 
       whenReady(response) { res =>
         res.status mustBe 303
@@ -81,4 +76,5 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       }
     }
   }
+
 }

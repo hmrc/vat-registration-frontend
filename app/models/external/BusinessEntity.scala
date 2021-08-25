@@ -29,7 +29,7 @@ object BusinessEntity {
   def reads(partyType: PartyType): Reads[BusinessEntity] = Reads { json =>
     partyType match {
       case UkCompany | RegSociety | CharitableOrg => Json.fromJson(json)(IncorporatedEntity.format)
-      case Individual => Json.fromJson(json)(SoleTrader.format)
+      case Individual | NETP => Json.fromJson(json)(SoleTrader.format)
       case Partnership => Json.fromJson(json)(PartnershipIdEntity.format)
       case UnincorpAssoc | Trust => Json.fromJson(json)(BusinessIdEntity.format)
       case _ => throw new InternalServerException("Tried to parse business entity for an unsupported party type")

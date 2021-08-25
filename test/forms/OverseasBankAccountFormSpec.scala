@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.OverseasBankAccountForm.{ACCOUNT_NAME, BIC, IBAN, accountNameEmptyKey, accountNameInvalidKey, bicEmptyKey, ibanEmptyKey}
+import forms.OverseasBankAccountForm._
 import models.OverseasBankDetails
 import org.scalatestplus.play.PlaySpec
 
@@ -30,7 +30,7 @@ class OverseasBankAccountFormSpec extends PlaySpec {
     val validBic = "12345678"
     val validIban = "123456"
 
-    "successfully bind data to the form with no errors and allow the return of a valid BankAccountDetails case class" in {
+    "successfully bind data to the form with no errors and allow the return of a valid OverseasBankAccountDetails case class" in {
       val formData = Map(
         ACCOUNT_NAME -> validAccountName,
         BIC -> validBic,
@@ -100,7 +100,7 @@ class OverseasBankAccountFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe BIC
-      boundForm.errors.head.message mustBe invalidBic
+      boundForm.errors.head.message mustBe bicInvalidKey
     }
 
     "return a FormError when binding an invalid IBAN to the form" in {
@@ -116,7 +116,7 @@ class OverseasBankAccountFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe IBAN
-      boundForm.errors.head.message mustBe invalidIban
+      boundForm.errors.head.message mustBe ibanInvalidKey
     }
 
     "return a single FormError when the IBAN is missing" in {

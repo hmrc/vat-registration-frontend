@@ -40,10 +40,10 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
     val bankAccount = if (hasBankAccount) {
       fetchBankAccountDetails map {
         case Some(bankAccountDetails) => bankAccountDetails.copy(isProvided = true)
-        case None => BankAccount(hasBankAccount, None, None)
+        case None => BankAccount(hasBankAccount, None, None, None)
       }
     } else {
-      Future.successful(BankAccount(isProvided = false, None, None))
+      Future.successful(BankAccount(isProvided = false, None, None, None))
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -53,7 +53,7 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
     bankAccountRepService.validateBankDetails(accountDetails).flatMap { validDetails =>
       if (validDetails) {
-        val bankAccount = BankAccount(isProvided = true, Some(accountDetails), None)
+        val bankAccount = BankAccount(isProvided = true, Some(accountDetails), None, None)
         saveBankAccountDetails(bankAccount) map (_ => true)
       } else {
         Future.successful(false)
@@ -63,8 +63,9 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): Completion[BankAccount] = {
     bankAccount match {
-      case BankAccount(true, Some(_), None) => Complete(bankAccount)
-      case BankAccount(false, _, Some(_)) => Complete(bankAccount.copy(details = None))
+      case BankAccount(true, Some(_), None, None) => Complete(bankAccount)
+      case BankAccount(true, _, Some(_), _) => Complete(bankAccount.copy(details = None, reason = None))
+      case BankAccount(false, _, _, Some(_)) => Complete(bankAccount.copy(details = None, overseasDetails = None))
       case _ => Incomplete(bankAccount)
     }
   }

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.OverseasBankAccountForm
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{BankAccountDetailsService, SessionProfile}
 import views.html.overseas_bank_account
 
 import javax.inject.Inject
@@ -28,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_bank_account,
                                               val authConnector: AuthClientConnector,
-                                              val keystoreConnector: KeystoreConnector)
+                                              val keystoreConnector: KeystoreConnector,
+                                              val bankAccountDetailsService: BankAccountDetailsService)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents)
@@ -36,8 +37,12 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
 
   val showOverseasBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        Future.successful(Ok(overseasBankAccountView(OverseasBankAccountForm.form)))
+      implicit profile =>
+        for {
+          optBankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+          optOverseasDetails = optBankDetails.flatMap(_.overseasDetails)
+          form = optOverseasDetails.fold(OverseasBankAccountForm.form)(details => OverseasBankAccountForm.form.fill(details))
+        } yield Ok(overseasBankAccountView(form))
   }
 
   val submitOverseasBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {

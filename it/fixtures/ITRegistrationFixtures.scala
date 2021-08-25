@@ -56,7 +56,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
   val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
-  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
+  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
   val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
   val fullReturns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))

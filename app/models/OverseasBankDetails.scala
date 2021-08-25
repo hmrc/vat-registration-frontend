@@ -16,29 +16,20 @@
 
 package models
 
-import play.api.libs.json.{JsObject, Json, OFormat, OWrites}
+import play.api.libs.json.{Format, Json}
 
 case class OverseasBankDetails(name: String,
-                               BIC: String,
-                               IBAN: String)
+                               bic: String,
+                               iban: String)
 
 object OverseasBankDetails {
-  implicit val overseasAccountReputationWrites: OWrites[OverseasBankDetails] = new OWrites[OverseasBankDetails] {
-    override def writes(o: OverseasBankDetails): JsObject = {
-      Json.obj("account" -> Json.obj(
-        "accountName" -> o.name,
-        "BIC" -> o.BIC,
-        "IBAN" -> o.IBAN
-      ))
-    }
-  }
-  val format: OFormat[OverseasBankDetails] = Json.format[OverseasBankDetails]
+  implicit val format: Format[OverseasBankDetails] = Json.format[OverseasBankDetails]
 
   def bankSeq(overseasBankAccount: OverseasBankDetails): Seq[String] = {
     Seq(
       overseasBankAccount.name,
-      overseasBankAccount.BIC,
-      overseasBankAccount.IBAN
+      overseasBankAccount.bic,
+      overseasBankAccount.iban
     )
   }
 

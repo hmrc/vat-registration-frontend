@@ -238,7 +238,6 @@ pages.pages.vat.charge.expectancy.example.para1             = If a business sell
 validation.vat.charge.expectancy.missing                    = Select yes if you expect the business to regularly claim VAT refunds from HMRC
 
 ## Vat Return Frequency
-pages.vat.return.frequency.heading                         = How often do you want the business to submit VAT Returns?
 pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
 pages.vat.return.frequency.para                            = Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year.
 pages.vat.return.frequency.radio.monthly                   = Monthly
@@ -797,7 +796,7 @@ pages.overseasBankAccount.iban                           = IBAN
 pages.overseasBankAccount.ibanHint                       = You can ask your bank or check your bank statement
 validation.overseasBankAccount.name.missing              = Enter the name on the account
 validation.overseasBankAccount.name.invalid              = Enter an account name using letters numbers and  \ - ’ , / & ]
-validation.overseasBankAccount.bic.missing               = Enter the BIC
-validation.overseasBankAccount.bic.invalid               = Enter a valid BIC
-validation.overseasBankAccount.iban.missing              = Enter the IBAN
-validation.overseasBankAccount.iban.invalid              = Enter a valid IBAN
+validation.overseasBankAccount.bic.missing               = Enter a BIC or SWIFT code
+validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT code between 8 and 11 characters long
+validation.overseasBankAccount.iban.missing              = Enter an IBAN
+validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer

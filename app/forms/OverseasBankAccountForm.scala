@@ -24,9 +24,9 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object OverseasBankAccountForm {
 
-  val ACCOUNT_NAME = "accountName"
-  val BIC = "BIC"
-  val IBAN = "IBAN"
+  val ACCOUNT_NAME = "name"
+  val BIC = "bic"
+  val IBAN = "iban"
 
   val accountNameEmptyKey = "validation.overseasBankAccount.name.missing"
   val accountNameInvalidKey = "validation.overseasBankAccount.name.invalid"

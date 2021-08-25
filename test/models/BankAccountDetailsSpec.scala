@@ -23,16 +23,16 @@ class BankAccountDetailsSpec extends VatRegSpec {
 
   "bankAccount" should {
     "parse successfully from Json when details is present" in {
-      Json.toJson(validBankAccount).validate[BankAccount] mustBe JsSuccess(validBankAccount)
+      Json.toJson(validUkBankAccount).validate[BankAccount] mustBe JsSuccess(validUkBankAccount)
     }
 
     "parse successfully from Json when reason is present" in {
-      val expected = validBankAccount.copy(details = None, reason = Some(BeingSetup))
+      val expected = validUkBankAccount.copy(details = None, reason = Some(BeingSetup))
       Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
     }
 
     "parse successfully from Json when neither details or reason are present" in {
-      val expected = validBankAccount.copy(details = None, reason = None)
+      val expected = validUkBankAccount.copy(details = None, reason = None)
       Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
     }
   }

@@ -44,10 +44,10 @@
 
     @formWithCSRF(action = controllers.routes.OverseasBankAccountController.submitOverseasBankAccount()) {
         @inputText(form = overseasBankAccountForm,
-                   id = "accountName",
-                   name = "accountName",
+                   id = "name",
+                   name = "name",
                    label = messages("pages.overseasBankAccount.name"),
-                   classes = Some("govuk-input--width-10"),
+                   classes = Some("govuk-input--width-20"),
                    isPageHeading = false,
                    hint = Some(Html(messages(""))))
 
@@ -63,7 +63,7 @@
                    id = "iban",
                    name = "iban",
                    label = messages("pages.overseasBankAccount.iban"),
-                   classes = Some("govuk-input--width-5"),
+                   classes = Some("govuk-input--width-20"),
                    isPageHeading = false,
                    hint = Some(Html(messages("pages.overseasBankAccount.ibanHint"))))
 

@@ -49,7 +49,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { details =>
           val form: Form[Boolean] = details match {
-            case Some(BankAccount(hasBankAccount, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case Some(BankAccount(hasBankAccount, _, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
             case None => hasCompanyBankAccountForm
           }
           Ok(hasBankAccountPage(form))
@@ -76,7 +76,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { account =>
           val form: Form[BankAccountDetails] = account match {
-            case Some(BankAccount(_, Some(details), None)) => enterBankAccountDetailsForm.fill(details)
+            case Some(BankAccount(_, Some(details), None, None)) => enterBankAccountDetailsForm.fill(details)
             case _ => enterBankAccountDetailsForm
           }
           Ok(bankAccountPage(form))
