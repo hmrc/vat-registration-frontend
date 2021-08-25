@@ -18,7 +18,8 @@ package connectors.mocks
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
-import models.external.SoleTrader
+import models.api.PartyType
+import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
@@ -34,12 +35,12 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
 
   val mockSoleTraderIdConnector = mock[SoleTraderIdentificationConnector]
 
-  def mockStartJourney(config: SoleTraderIdJourneyConfig)(response: Future[String]): OngoingStubbing[Future[String]] =
+  def mockStartJourney(config: SoleTraderIdJourneyConfig, partyType: PartyType)(response: Future[String]): OngoingStubbing[Future[String]] =
     when(mockSoleTraderIdConnector.startJourney(
-      config = matches(config)
+      config = matches(config), matches(partyType)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTrader)]): OngoingStubbing[Future[(TransactorDetails, SoleTrader)]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(TransactorDetails, SoleTraderIdEntity)]] =
     when(mockSoleTraderIdConnector.retrieveSoleTraderDetails(
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response

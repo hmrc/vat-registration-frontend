@@ -23,7 +23,7 @@ import java.time.LocalDate
 
 case class TransactorDetails(firstName: String,
                              lastName: String,
-                             nino: String,
+                             nino: Option[String],
                              dateOfBirth: LocalDate)
 
 object TransactorDetails {
@@ -32,21 +32,21 @@ object TransactorDetails {
   val soleTraderIdentificationReads: Reads[TransactorDetails] = (
     (__ \ "fullName" \ "firstName").read[String] and
     (__ \ "fullName" \ "lastName").read[String] and
-    (__ \ "nino").read[String] and
+    (__ \ "nino").formatNullable[String] and
     (__ \ "dateOfBirth").read[LocalDate]
   )(TransactorDetails.apply(_, _, _, _))
 
   val apiReads: Reads[TransactorDetails] = (
     (__ \ "name" \ "first").read[String] orElse Reads.pure("") and
     (__ \ "name" \ "last").read[String] and
-    (__ \ "nino").read[String] and
+    (__ \ "nino").formatNullable[String] and
     (__ \ "dateOfBirth").read[LocalDate]
   )(TransactorDetails.apply(_, _, _, _))
 
   val apiWrites: Writes[TransactorDetails] = (
     (__ \ "name" \ "first").write[String] and
     (__ \ "name" \ "last").write[String] and
-    (__ \ "nino").write[String] and
+    (__ \ "nino").formatNullable[String] and
     (__ \ "dateOfBirth").write[LocalDate]
   )(unlift(TransactorDetails.unapply))
 

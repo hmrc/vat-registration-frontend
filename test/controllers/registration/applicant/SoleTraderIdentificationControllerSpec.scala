@@ -53,19 +53,28 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
   "startJourney" must {
     "redirect to the STI journey url" in new Setup {
-      mockGetVatScheme(Future.successful(validVatScheme))
-      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.successful(testJourneyUrl))
-      mockPartyType(Future.successful(Individual))
+      mockPartyType(Future.successful(UkCompany))
+      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, false, partyType = UkCompany)(Future.successful(testJourneyUrl))
 
       val res = Controller.startJourney()(FakeRequest())
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyUrl)
     }
+
+    "redirect to the STI journey url for Individual" in new Setup {
+      mockPartyType(Future.successful(Individual))
+      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, true, partyType = Individual)(Future.successful(testJourneyUrl))
+
+      val res = Controller.startJourney()(FakeRequest())
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) mustBe Some(testJourneyUrl)
+    }
+
     "throw an exception if the call to STI fails" in new Setup {
-      mockGetVatScheme(Future.successful(validVatScheme))
-      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl)(Future.failed(new InternalServerException("")))
       mockPartyType(Future.successful(UkCompany))
+      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, false, partyType = UkCompany)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
         await(Controller.startJourney()(FakeRequest()))
@@ -74,17 +83,19 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   }
 
   "retrieveSoleTraderDetails" must {
-    "redirect to the former name page if the user is a Sole Trader" in new Setup {
-      mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
-      mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
-      mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
-      mockSaveApplicantDetails(testSoleTrader)(emptyApplicantDetails.copy(entity = Some(testSoleTrader)))
-      mockPartyType(Future.successful(Individual))
+    List(Individual, NETP).foreach { partyType =>
+      s"redirect to the former name page if the user is a $partyType" in new Setup {
+        mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
+        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
+        mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+        mockSaveApplicantDetails(testSoleTrader)(emptyApplicantDetails.copy(entity = Some(testSoleTrader)))
+        mockPartyType(Future.successful(partyType))
 
-      val res = Controller.callback(testJourneyId)(FakeRequest())
+        val res = Controller.callback(testJourneyId)(FakeRequest())
 
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
+      }
     }
 
     List(UkCompany, RegSociety, CharitableOrg, Trust, UnincorpAssoc).foreach { partyType =>

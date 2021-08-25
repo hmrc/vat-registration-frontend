@@ -1,10 +1,26 @@
+/*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package connectors
 
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.TransactorDetails
-import models.external.{BusinessVerificationStatus, BvPass, SoleTrader}
+import models.api.Individual
+import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
@@ -32,7 +48,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       "return the journey ID when the response JSON includes the journeyId" in {
         stubPost(createJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.startJourney(testJourneyConfig))
+        val res = await(connector.startJourney(testJourneyConfig, Individual))
 
         res mustBe testJourneyUrl
       }
@@ -40,7 +56,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, Individual))
         }
       }
     }
@@ -49,7 +65,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createJourneyUrl, UNAUTHORIZED, "")
 
         intercept[UnauthorizedException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, Individual))
         }
       }
     }
@@ -58,7 +74,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, Individual))
         }
       }
     }
@@ -84,9 +100,33 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, SoleTrader) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
       res mustBe(testTransactorDetails, testSoleTrader)
+    }
+
+    "return transactor details for NETP when STI returns OK" in new Setup {
+      val testSTIResponse: JsObject = Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> testFirstName,
+          "lastName" -> testLastName
+        ),
+        "dateOfBirth" -> testApplicantDob,
+        "sautr" -> testSautr,
+        "trn" -> testTrn,
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> testRegistration,
+          "registeredBusinessPartnerId" -> testSafeId
+        )
+      )
+
+      stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
+      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+
+      res mustBe(testNetpTransactorDetails, testNetpSoleTrader)
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {

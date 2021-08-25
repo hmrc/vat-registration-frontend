@@ -17,7 +17,7 @@
 package connectors
 
 import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig

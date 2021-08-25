@@ -30,7 +30,8 @@ trait ApplicantDetailsFixture {
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), testApplicantDob)
+  val testNetpTransactorDetails = TransactorDetails(testFirstName, testLastName, None, testApplicantDob)
 
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"

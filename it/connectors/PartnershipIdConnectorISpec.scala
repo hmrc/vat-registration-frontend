@@ -16,7 +16,7 @@
 
 package connectors
 
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.Partnership
 import models.external.partnershipid.PartnershipIdJourneyConfig

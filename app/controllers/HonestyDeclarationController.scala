@@ -51,7 +51,7 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
           partyType <- vatRegistrationService.partyType
         } yield {
           partyType match {
-            case Individual =>
+            case Individual | NETP =>
               Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
             case UkCompany | RegSociety | CharitableOrg =>
               Redirect(applicantRoutes.IncorpIdController.startJourney())

@@ -63,7 +63,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val changeTransactorDetailsUrl: String = {
       partyType match {
-        case Individual | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case Individual | NETP | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
         case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney().url
         case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
       }
@@ -89,7 +89,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val sautr = optSummaryListRowString(
       s"$sectionId.sautr",
       applicantDetails.entity.flatMap {
-        case soleTrader: SoleTrader => soleTrader.sautr
+        case soleTrader: SoleTraderIdEntity => soleTrader.sautr
         case business: BusinessIdEntity => business.sautr
         case partnership: PartnershipIdEntity => partnership.sautr
         case _ => None
@@ -131,7 +131,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
-      applicantDetails.transactor.map(_.nino),
+      applicantDetails.transactor.flatMap(_.nino),
       Some(changeTransactorDetailsUrl)
     )
 

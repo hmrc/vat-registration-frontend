@@ -18,7 +18,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.libs.json.{JsObject, JsString, Json}

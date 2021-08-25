@@ -17,7 +17,8 @@
 package services.mocks
 
 import models.TransactorDetails
-import models.external.SoleTrader
+import models.api.PartyType
+import models.external.SoleTraderIdEntity
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
@@ -37,7 +38,8 @@ trait MockSoleTraderIdService extends MockitoSugar {
                        serviceName: String,
                        deskproId: String,
                        signOutUrl: String,
-                       enableSautrCheck: Boolean = false)
+                       enableSautrCheck: Boolean,
+                       partyType: PartyType)
                       (response: Future[String]): OngoingStubbing[Future[String]] =
     when(
       mockSoleTraderIdService.startJourney(
@@ -45,11 +47,12 @@ trait MockSoleTraderIdService extends MockitoSugar {
         serviceName = matches(serviceName),
         deskproId = matches(deskproId),
         signOutUrl = matches(signOutUrl),
-        enableSautrCheck = matches(enableSautrCheck)
+        enableSautrCheck = matches(enableSautrCheck),
+        partyType = matches(partyType)
       )(any[HeaderCarrier])
     ) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTrader)]): OngoingStubbing[Future[(TransactorDetails, SoleTrader)]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(TransactorDetails, SoleTraderIdEntity)]] =
     when(
       mockSoleTraderIdService.retrieveSoleTraderDetails(journeyId = matches(journeyId))
       (any[HeaderCarrier])

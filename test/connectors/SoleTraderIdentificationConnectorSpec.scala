@@ -17,6 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.api.NETP
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
@@ -50,7 +51,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
         mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString))
 
-        val res = await(connector.startJourney(testJourneyConfig))
+        val res = await(connector.startJourney(testJourneyConfig, NETP))
 
         res mustBe testJourneyUrl
       }
@@ -58,7 +59,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(CREATED, Json.obj().toString))
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, NETP))
         }
       }
     }
@@ -67,7 +68,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(UNAUTHORIZED, ""))
 
         intercept[UnauthorizedException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, NETP))
         }
       }
     }
@@ -76,7 +77,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createJourneyUrl, HttpResponse(IM_A_TEAPOT, ""))
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig))
+          await(connector.startJourney(testJourneyConfig, NETP))
         }
       }
     }

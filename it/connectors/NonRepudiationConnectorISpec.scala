@@ -3,7 +3,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import play.api.libs.json.Json
 import play.api.test.Helpers._
