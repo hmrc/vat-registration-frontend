@@ -19,7 +19,7 @@ package controllers
 import common.enums.VatRegStatus
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import play.api.http.HeaderNames

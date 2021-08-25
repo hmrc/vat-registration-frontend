@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package it.fixtures
+package fixtures
 
 import common.enums.VatRegStatus
-import fixtures.ApplicantDetailsFixture
 import models._
 import models.api._
 import models.api.returns.{JanuaryStagger, Quarterly, Returns}
-import models.external.{BvPass, EmailAddress, EmailVerified, IncorporatedEntity, SoleTrader}
+import models.external._
 import models.view._
 import play.api.libs.json.Json
 
@@ -190,14 +189,29 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testIncorpDetails = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
 
   val testSautr = "1234567890"
+  val testTrn = "0001234567"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
-  val testSoleTrader: SoleTrader = SoleTrader(
+  val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
     lastName = testLastName,
     dateOfBirth = testApplicantDob,
-    nino = testApplicantNino,
+    nino = Some(testApplicantNino),
     sautr = Some(testSautr),
+    trn = None,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testNetpSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = None,
+    sautr = Some(testSautr),
+    trn = Some(testTrn),
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),

@@ -17,6 +17,7 @@
 package services
 
 import connectors.mocks.MockSoleTraderIdConnector
+import models.api.Individual
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
@@ -32,6 +33,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val testDeskproId = "testDeskproId"
     val testSignOutUrl = "/test-sign-out-url"
     val testJourneyUrl = "/testJourneyUrl"
+    val partyType = Individual
     val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, enableSautrCheck = false)
 
     object Service extends SoleTraderIdentificationService(mockSoleTraderIdConnector)
@@ -39,17 +41,17 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
 
   "startJourney" must {
     "return a journeyId when provided with config" in new Setup {
-      mockStartJourney(testJourneyConfig)(Future.successful(testJourneyUrl))
+      mockStartJourney(testJourneyConfig, partyType)(Future.successful(testJourneyUrl))
 
-      val res = await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false))
+      val res = await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false, partyType))
 
       res mustBe testJourneyUrl
     }
     "throw an exception if the call to STI fails" in new Setup {
-      mockStartJourney(testJourneyConfig)(Future.failed(new InternalServerException("")))
+      mockStartJourney(testJourneyConfig, partyType)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
-        await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false))
+        await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false, partyType))
       }
     }
   }

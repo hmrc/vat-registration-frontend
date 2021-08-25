@@ -44,13 +44,14 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          vatRegistrationService.getVatScheme.flatMap { vatScheme =>
+          vatRegistrationService.partyType.flatMap { partyType =>
             soleTraderIdentificationService.startJourney(
               continueUrl = appConfig.getSoleTraderIdentificationCallbackUrl,
               serviceName = request2Messages(request)("service.name"),
               deskproId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
-              enableSautrCheck = vatScheme.eligibilitySubmissionData.exists(_.partyType.equals(Individual))
+              enableSautrCheck = partyType.equals(Individual),
+              partyType
             ) map (url => Redirect(url))
           }
     }
@@ -62,10 +63,10 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           partyType <- vatRegistrationService.partyType
           (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
-          _ <- if (partyType.equals(Individual)) applicantDetailsService.saveApplicantDetails(soleTrader) else Future.successful()
+          _ <- if (partyType.equals(Individual) || partyType.equals(NETP)) applicantDetailsService.saveApplicantDetails(soleTrader) else Future.successful()
         } yield {
           partyType match {
-            case Individual => Redirect(applicantRoutes.FormerNameController.show())
+            case Individual | NETP => Redirect(applicantRoutes.FormerNameController.show())
             case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
             case _ => throw new IllegalStateException("PartyType not supported")
           }
@@ -82,7 +83,8 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
             serviceName = request2Messages(request)("service.name"),
             deskproId = appConfig.contactFormServiceIdentifier,
             signOutUrl = appConfig.feedbackUrl,
-            enableSautrCheck = true
+            enableSautrCheck = true,
+            Partnership //partyType is used only for SoleTraderIdentificationStubController to work
           ) map (url => Redirect(url))
     }
 

@@ -55,7 +55,7 @@ trait ApplicantDetailsFixtures {
 
   val testBpSafeId = "testBpId"
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, testApplicantNino, testApplicantDob)
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), testApplicantDob)
 
   val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
     testCrn,
@@ -84,17 +84,32 @@ trait ApplicantDetailsFixtures {
   )
 
   val testSautr = "1234567890"
+  val testTrn = "testTrn"
   val testIncorpCountry = "GB"
   val testPostcode = "AA11AA"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
 
-  val testSoleTrader: SoleTrader = SoleTrader(
+  val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
     lastName = testLastName,
     dateOfBirth = testApplicantDob,
-    nino = testApplicantNino,
+    nino = Some(testApplicantNino),
     sautr = Some(testSautr),
+    trn = None,
+    registration = testRegistration,
+    businessVerification = BvPass,
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testNetpSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = None,
+    sautr = Some(testSautr),
+    trn = Some(testTrn),
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),

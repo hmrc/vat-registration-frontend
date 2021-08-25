@@ -16,7 +16,6 @@
 
 package controllers.test
 
-import config.FrontendAppConfig
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass, BvUnchallenged}
 import play.api.libs.json.{JsObject, JsString, Json}
@@ -31,19 +30,29 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
 
   val ukCompanyJourney = "1"
   val soleTraderJourney = "2"
+  val soleTraderNetpJourney = "3"
 
-  def createJourney: Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
+  def createJourney(partyType: String): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
     def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
 
     if (request.body.enableSautrCheck) {
       Created(json(soleTraderJourney))
-    } else {
+    } else if(partyType == "NETP") {
+      Created(json(soleTraderNetpJourney))
+    }else {
       Created(json(ukCompanyJourney))
     }
   }
 
-  def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
-    Ok(
+  def retrieveValidationResult(journeyId: String): Action[AnyContent] = {
+    if (journeyId == soleTraderNetpJourney) {
+      Action(Ok(netpValidationResult(journeyId)))
+    } else {
+      Action(Ok(validationResult(journeyId)))
+    }
+}
+
+  def validationResult(journeyId: String) : JsObject = {
       Json.obj(
         "fullName" -> Json.obj(
           "firstName" -> "testFirstName",
@@ -73,8 +82,25 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
             )
           )
         }
-        )
     )
   }
 
+  def netpValidationResult(journeyId: String) : JsObject =  {
+      Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> "testFirstName",
+          "lastName" -> "testLastName"
+        ),
+        "dateOfBirth" -> LocalDate.of(1990, 1, 1),
+        "sautr" -> "1234567890",
+        "trn" -> "testTrn",
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> "REGISTERED",
+          "registeredBusinessPartnerId" -> "X00000123456789"
+        )
+    )
+  }
 }

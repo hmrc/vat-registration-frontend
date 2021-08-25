@@ -18,7 +18,8 @@ package connectors
 
 import config.FrontendAppConfig
 import models.TransactorDetails
-import models.external.SoleTrader
+import models.api.PartyType
+import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.Logger
 import play.api.http.Status._
@@ -36,8 +37,10 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
   private val journeyUrlKey = "journeyStartUrl"
   private val personalDetailsKey = "personalDetails"
 
-  def startJourney(config: SoleTraderIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] =
-    httpClient.POST(appConfig.soleTraderIdentificationJourneyUrl, Json.toJson(config)) map { response =>
+  def startJourney(config: SoleTraderIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.soleTraderIdentificationJourneyUrl(partyType)
+
+    httpClient.POST(url, Json.toJson(config)) map { response =>
       Logger.info("url " + response.body)
       response.status match {
         case CREATED => (response.json \  journeyUrlKey).validate[String] match {
@@ -51,14 +54,15 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
           throw new InternalServerException(s"[SoleTraderIdentificationConnector] Sole trader identification returned an unexpected status: $status")
       }
     }
+  }
 
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTrader)] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
     httpClient.GET(appConfig.getRetrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
           (response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads),
-          response.json.validate[SoleTrader](SoleTrader.apiFormat)) match {
+          response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
             case (JsError(errors), _) =>

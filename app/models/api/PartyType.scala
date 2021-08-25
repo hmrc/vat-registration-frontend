@@ -16,7 +16,7 @@
 
 package models.api
 
-import play.api.libs.json.{Format, JsString, JsSuccess, Reads, Writes}
+import play.api.libs.json.{Format, JsString, Reads, Writes}
 import uk.gov.hmrc.http.InternalServerException
 
 sealed trait PartyType
@@ -38,6 +38,7 @@ case object TaxGroups extends PartyType
 case object AdminDivision extends PartyType
 case object Individual extends PartyType
 case object Invalid extends PartyType
+case object NETP extends PartyType
 
 object PartyType {
 
@@ -58,7 +59,8 @@ object PartyType {
     UnincorpAssoc -> "63",
     TaxGroups -> "64",
     AdminDivision -> "65",
-    Individual -> "Z1"
+    Individual -> "Z1",
+    NETP -> "NETP"
   )
 
   val inverseStati = stati.map(_.swap).withDefaultValue(Invalid)

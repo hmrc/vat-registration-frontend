@@ -18,7 +18,8 @@ package services
 
 import connectors.SoleTraderIdentificationConnector
 import models.TransactorDetails
-import models.external.SoleTrader
+import models.api.PartyType
+import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -33,7 +34,8 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
                    serviceName: String,
                    deskproId: String,
                    signOutUrl: String,
-                   enableSautrCheck: Boolean)
+                   enableSautrCheck: Boolean,
+                   partyType: PartyType)
                   (implicit hc: HeaderCarrier): Future[String] =
     soleTraderIdentificationConnector.startJourney(config = SoleTraderIdJourneyConfig(
       continueUrl = continueUrl,
@@ -41,8 +43,8 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
       deskProServiceId = deskproId,
       signOutUrl = signOutUrl,
       enableSautrCheck = enableSautrCheck
-    ))
+    ), partyType)
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTrader)] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
     soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId)
 }

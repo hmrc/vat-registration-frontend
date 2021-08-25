@@ -57,7 +57,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
         val expectedData = TransactorDetails(
           testFirstName,
           testLastName,
-          testNino,
+          Some(testNino),
           testDateOfBirth
         )
 
@@ -94,7 +94,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
         val expectedData = TransactorDetails(
           testFirstName,
           testLastName,
-          testNino,
+          Some(testNino),
           testDateOfBirth
         )
 

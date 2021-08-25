@@ -3,7 +3,7 @@ package itutil
 
 import featureswitch.core.config.FeatureSwitching
 import helpers.RequestsFinder
-import it.fixtures.ITRegistrationFixtures
+import fixtures.ITRegistrationFixtures
 import org.scalatest.concurrent.ScalaFutures
 import support.AppAndStubs
 
