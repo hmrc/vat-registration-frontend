@@ -31,7 +31,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an OK with prepopulated data" in new Setup {
+    "return an OK with pre-populated data" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
