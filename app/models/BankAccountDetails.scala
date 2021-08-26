@@ -22,6 +22,7 @@ import utils.JsonUtilities
 
 case class BankAccount(isProvided: Boolean,
                        details: Option[BankAccountDetails],
+                       overseasDetails: Option[OverseasBankDetails],
                        reason: Option[NoUKBankAccount])
 
 case class BankAccountDetails(name: String,
@@ -51,13 +52,14 @@ object BankAccountDetails {
 }
 
 object BankAccount extends JsonUtilities {
-  implicit val s4lKey: S4LKey[BankAccount]    = S4LKey[BankAccount]("bankAccount")
+  implicit val s4lKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")
 
-   val reads: Reads[BankAccount] = (
+  val reads: Reads[BankAccount] = (
     (__ \ "isProvided").read[Boolean] and
-      (__ \ "details").readNullable[BankAccountDetails](BankAccountDetails.format) and
-        (__ \ "reason").readNullable[NoUKBankAccount]
-    ) (apply _)
+    (__ \ "details").readNullable[BankAccountDetails](BankAccountDetails.format) and
+    (__ \ "overseasDetails").readNullable[OverseasBankDetails] and
+    (__ \ "reason").readNullable[NoUKBankAccount]
+  ) (apply _)
 
   val writes: Writes[BankAccount] = Writes[BankAccount] { bankAccount =>
     Json.obj(
@@ -69,8 +71,9 @@ object BankAccount extends JsonUtilities {
           "number" -> details.number
         )
       ),
+      "overseasDetails" -> bankAccount.overseasDetails.map(details => Json.toJson(details)),
       "reason" -> bankAccount.reason
-    ) filterNullFields
+    ).filterNullFields
 
   }
 

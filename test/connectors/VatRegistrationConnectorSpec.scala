@@ -577,8 +577,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling getBankAccount" should {
     "return the correct response when the microservice completes and returns a BankAccount model" in new Setup {
-      mockHttpGET[BankAccount]("tst-url", bankAccount)
-      connector.getBankAccount("tstID") returns Some(bankAccount)
+      mockHttpGET[BankAccount]("tst-url", ukBankAccount)
+      connector.getBankAccount("tstID") returns Some(ukBankAccount)
     }
     "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[BankAccount]("tst-url", forbidden)
@@ -596,20 +596,20 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
   "Calling patchBankAccount" should {
     "return the correct response when the microservice completes and returns a BankAccount model" in new Setup {
-      mockHttpPATCH[BankAccount, BankAccount]("tst-url", bankAccount)
-      connector.patchBankAccount("tstID", bankAccount) returns bankAccount
+      mockHttpPATCH[BankAccount, BankAccount]("tst-url", ukBankAccount)
+      connector.patchBankAccount("tstID", ukBankAccount) returns ukBankAccount
     }
     "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", forbidden)
-      connector.patchBankAccount("tstID", bankAccount) failedWith forbidden
+      connector.patchBankAccount("tstID", ukBankAccount) failedWith forbidden
     }
     "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
       mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", notFound)
-      connector.patchBankAccount("tstID", bankAccount) failedWith notFound
+      connector.patchBankAccount("tstID", ukBankAccount) failedWith notFound
     }
     "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedPATCH[BankAccount, BankAccount]("tst-url", internalServiceException)
-      connector.patchBankAccount("tstID", bankAccount) failedWith internalServiceException
+      connector.patchBankAccount("tstID", ukBankAccount) failedWith internalServiceException
     }
   }
 

@@ -19,10 +19,11 @@ package controllers
 import _root_.connectors.KeystoreConnector
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import forms.{EnterBankAccountDetailsForm, HasCompanyBankAccountForm}
+import models.api.NETP
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile}
+import services.{BankAccountDetailsService, SessionProfile, VatRegistrationService}
 import views.html.{enter_company_bank_account_details, has_company_bank_account}
 
 import javax.inject.{Inject, Singleton}
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val keystoreConnector: KeystoreConnector,
+                                             val vatRegistrationService: VatRegistrationService,
                                              bankAccountPage: enter_company_bank_account_details,
                                              hasBankAccountPage: has_company_bank_account)
                                             (implicit appConfig: FrontendAppConfig,
@@ -47,7 +49,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { details =>
           val form: Form[Boolean] = details match {
-            case Some(BankAccount(hasBankAccount, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
+            case Some(BankAccount(hasBankAccount, _, _, _)) => hasCompanyBankAccountForm.fill(hasBankAccount)
             case None => hasCompanyBankAccountForm
           }
           Ok(hasBankAccountPage(form))
@@ -59,11 +61,11 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         hasCompanyBankAccountForm.bindFromRequest.fold(
           errors => Future.successful(BadRequest(hasBankAccountPage(errors))),
-          hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) map { _ =>
-            if (hasBankAccount) {
-              Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
-            } else {
-              Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView())
+          hasBankAccount => bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) flatMap { _ =>
+            vatRegistrationService.partyType.map {
+              case NETP => Redirect(routes.OverseasBankAccountController.showOverseasBankAccountView())
+              case _ if hasBankAccount => Redirect(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails())
+              case _ => Redirect(routes.NoUKBankAccountController.showNoUKBankAccountView())
             }
           }
         )
@@ -74,7 +76,7 @@ class BankAccountDetailsController @Inject()(val authConnector: AuthClientConnec
       implicit profile =>
         bankAccountDetailsService.fetchBankAccountDetails map { account =>
           val form: Form[BankAccountDetails] = account match {
-            case Some(BankAccount(_, Some(details), None)) => enterBankAccountDetailsForm.fill(details)
+            case Some(BankAccount(_, Some(details), None, None)) => enterBankAccountDetailsForm.fill(details)
             case _ => enterBankAccountDetailsForm
           }
           Ok(bankAccountPage(form))

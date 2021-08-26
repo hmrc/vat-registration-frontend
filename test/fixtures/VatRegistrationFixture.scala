@@ -60,7 +60,7 @@ trait BaseFixture {
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
   with ApplicantDetailsFixtures with ReturnsFixture {
 
-  val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None)
+  val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None, None)
 
   val sicCode = SicCode("88888", "description", "displayDetails")
 
@@ -169,7 +169,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
   )
 
-  val validBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
+  val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
@@ -205,7 +205,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validBankAccount),
+    bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
@@ -218,7 +218,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validBankAccount),
+    bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validSoleTraderEligibilitySubmissionData)
@@ -244,7 +244,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validBankAccount),
+    bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
@@ -257,7 +257,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutDescription),
     flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validBankAccount),
+    bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
@@ -270,7 +270,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithLabour),
     flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validBankAccount),
+    bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)

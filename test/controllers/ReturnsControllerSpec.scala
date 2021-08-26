@@ -20,6 +20,7 @@ import _root_.models._
 import controllers.registration.returns.ReturnsController
 import fixtures.VatRegistrationFixture
 import forms.{AccountingPeriodForm, ReturnFrequencyForm}
+import models.api.{NETP, UkCompany}
 import models.api.returns._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -29,6 +30,8 @@ import play.api.test.FakeRequest
 import services.MandatoryDateModel
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.HeaderCarrier
+import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 import views.html.returns.{AccountingPeriodView, mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -51,6 +54,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockReturnsService,
       mockApplicantDetailsServiceOld,
       mockTimeService,
+      mockVatRegistrationService,
       view,
       returnFrequencyView,
       startDateIncorpView,
@@ -91,6 +95,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the bank account date page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.janStaggerKey
@@ -105,6 +111,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the bank account page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.janStaggerKey
@@ -119,6 +127,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the bank account page when they select the feb may aug nov option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.febStaggerKey
@@ -133,6 +143,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     "redirect to the bank account page when they select the mar may sep dec option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.marStaggerKey
@@ -141,6 +153,22 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
+      }
+    }
+
+    "redirect to the flat rate page when the party type is NETP option" in new Setup {
+      when(mockReturnsService.saveStaggerStart(any())(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(NETP))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "value" -> AccountingPeriodForm.marStaggerKey
+      )
+
+      submitAuthorised(testController.submitAccountPeriods, request) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
       }
     }
 
