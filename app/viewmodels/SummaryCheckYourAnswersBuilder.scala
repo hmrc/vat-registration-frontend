@@ -101,6 +101,15 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       }
     )
 
+    val trn = optSummaryListRowString(
+      s"$sectionId.trn",
+      applicantDetails.entity.flatMap {
+        case soleTrader: SoleTraderIdEntity => soleTrader.trn
+        case _ => None
+      },
+      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+    )
+
     val chrn = optSummaryListRowString(
       s"$sectionId.chrn",
       applicantDetails.entity.flatMap {
@@ -199,6 +208,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       companyNumber,
       ctutr,
       sautr,
+      trn,
       chrn,
       firstName,
       lastName,
