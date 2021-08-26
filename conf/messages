@@ -338,12 +338,13 @@ pages.summary.directorDetails.email                    = Email address
 pages.summary.directorDetails.daytimePhone             = Daytime phone number
 pages.summary.directorDetails.mobile                   = Mobile number
 pages.summary.directorDetails.telephone                = Telephone number
-pages.summary.directorDetails.companyNumber             = Company registration number
-pages.summary.directorDetails.ctutr                     = Unique Taxpayer Reference number
-pages.summary.directorDetails.chrn                      = Charity registration number
-pages.summary.directorDetails.sautr                     = Unique Taxpayer Reference number
-pages.summary.directorDetails.zeroRatedSupplies         = Zero-rated turnover for the next 12 months
-pages.summary.directorDetails.reclaimMoreVat            = Expect to claim VAT refunds regularly
+pages.summary.directorDetails.companyNumber            = Company registration number
+pages.summary.directorDetails.ctutr                    = Unique Taxpayer Reference number
+pages.summary.directorDetails.chrn                     = Charity registration number
+pages.summary.directorDetails.sautr                    = Unique Taxpayer Reference number
+pages.summary.directorDetails.trn                      = Temporary Reference number
+pages.summary.directorDetails.zeroRatedSupplies        = Zero-rated turnover for the next 12 months
+pages.summary.directorDetails.reclaimMoreVat           = Expect to claim VAT refunds regularly
 
 ## Summary Page Company details
 pages.summary.directorDetails.tradingName                 = Different Trading name
