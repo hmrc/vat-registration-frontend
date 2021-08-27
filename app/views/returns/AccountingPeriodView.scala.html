@@ -1,0 +1,80 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import forms.AccountingPeriodForm.{febStaggerKey, janStaggerKey, marStaggerKey}
+@import models.api.returns.QuarterlyStagger
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        h1: h1,
+        p: p,
+        details: details,
+        bullets: bullets,
+        link: link,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary
+)
+
+
+@(accountingPeriodForm: Form[QuarterlyStagger])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(accountingPeriodForm, messages("pages.accounting.period.heading")))) {
+
+    @errorSummary(accountingPeriodForm.errors)
+
+    @h1("pages.accounting.period.heading")
+
+    @p{ @messages("pages.accounting.period.para1") }
+
+    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitAccountPeriods()) {
+        @inputRadio(
+            form = accountingPeriodForm,
+            legend = messages("pages.accounting.period.heading"),
+            items = Seq(
+                RadioItem(
+                    content = Text(Messages("pages.accounting.period.radio.january")),
+                    value = Some(janStaggerKey),
+                    checked = accountingPeriodForm("value").value.contains(janStaggerKey)
+                ),
+                RadioItem(
+                    content = Text(Messages("pages.accounting.period.radio.february")),
+                    value = Some(febStaggerKey),
+                    checked = accountingPeriodForm("value").value.contains(febStaggerKey)
+                ),
+                RadioItem(
+                    content = Text(Messages("pages.accounting.period.radio.march")),
+                    value = Some(marStaggerKey),
+                    checked = accountingPeriodForm("value").value.contains(marStaggerKey)
+                )
+
+            ),
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            inline = false
+        )
+
+        @button("app.common.continue", showSaveProgressButton = true)
+
+    }
+}
