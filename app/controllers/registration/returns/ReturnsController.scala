@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
-import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view, accounting_period_view => AccountingPeriodPage}
+import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view, AccountingPeriodView}
 
 import java.time.LocalDate
 import java.util
@@ -41,7 +41,8 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val timeService: TimeService,
                                   mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
                                   returnFrequencyPage: return_frequency_view,
-                                  voluntaryStartDateIncorpPage: start_date_incorp_view
+                                  voluntaryStartDateIncorpPage: start_date_incorp_view,
+                                  accountingPeriodPage: AccountingPeriodView
                                  )(implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -51,8 +52,8 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
       implicit profile =>
         returnsService.getReturns map { returns =>
           returns.staggerStart match {
-            case Some(stagger: QuarterlyStagger) => Ok(AccountingPeriodPage(AccountingPeriodForm.form.fill(stagger)))
-            case _ => Ok(AccountingPeriodPage(AccountingPeriodForm.form))
+            case Some(stagger: QuarterlyStagger) => Ok(accountingPeriodPage(AccountingPeriodForm.form.fill(stagger)))
+            case _ => Ok(accountingPeriodPage(AccountingPeriodForm.form))
           }
         }
   }
@@ -61,7 +62,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
     implicit request =>
       implicit profile =>
         AccountingPeriodForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(AccountingPeriodPage(errors))),
+          errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success => returnsService.saveStaggerStart(success) map { _ =>
             Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
           }

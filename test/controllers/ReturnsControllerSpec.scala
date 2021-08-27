@@ -29,7 +29,7 @@ import play.api.test.FakeRequest
 import services.MandatoryDateModel
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
+import views.html.returns.{AccountingPeriodView, mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
@@ -44,6 +44,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val view: mandatory_start_date_incorp_view = app.injector.instanceOf[mandatory_start_date_incorp_view]
     val returnFrequencyView: return_frequency_view = app.injector.instanceOf[return_frequency_view]
     val startDateIncorpView: start_date_incorp_view = app.injector.instanceOf[start_date_incorp_view]
+    val accountingPeriodView: AccountingPeriodView = app.injector.instanceOf[AccountingPeriodView]
     val testController = new ReturnsController(
       mockKeystoreConnector,
       mockAuthClientConnector,
@@ -52,7 +53,8 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       mockTimeService,
       view,
       returnFrequencyView,
-      startDateIncorpView
+      startDateIncorpView,
+      accountingPeriodView
     )
 
     mockAuthenticated()
@@ -91,7 +93,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriodForm.janStaggerKey
+        "value" -> AccountingPeriodForm.janStaggerKey
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
@@ -105,7 +107,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriodForm.janStaggerKey
+        "value" -> AccountingPeriodForm.janStaggerKey
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
@@ -119,7 +121,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriodForm.febStaggerKey
+        "value" -> AccountingPeriodForm.febStaggerKey
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
@@ -133,7 +135,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> AccountingPeriodForm.marStaggerKey
+        "value" -> AccountingPeriodForm.marStaggerKey
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
@@ -144,7 +146,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return 400 when they do not select an option" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> ""
+        "value" -> ""
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
@@ -154,7 +156,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     "return 400 when they submit an invalid choice" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "accountingPeriodRadio" -> "INVALID_SELECTION"
+        "value" -> "INVALID_SELECTION"
       )
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>

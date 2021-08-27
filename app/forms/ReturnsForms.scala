@@ -61,7 +61,7 @@ trait StartDateForm {
 object AccountingPeriodForm {
 
   private val accountingPeriodInvalidKey = "validation.accounting.period.missing"
-  private val ACCOUNTING_PERIOD = "accountingPeriodRadio"
+  private val ACCOUNTING_PERIOD = "value"
 
   val janStaggerKey = "jan"
   val febStaggerKey = "feb"
