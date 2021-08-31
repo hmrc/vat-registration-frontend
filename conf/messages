@@ -787,6 +787,7 @@ pages.leadPartnerEntityType.cio                          = Charitable Incorporat
 pages.leadPartnerEntityType.regSociety                   = Registered society
 pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
 
+
 ## OVERSEAS BANK ACCOUNT
 
 pages.overseasBankAccount.heading                        = Bank or building society account details
@@ -802,8 +803,16 @@ validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT 
 validation.overseasBankAccount.iban.missing              = Enter an IBAN
 validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer
 
+
 ## DISPATCH FROM WAREHOUSE
 pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?
 pages.dispatchFromWarehouse.para1                        = You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by
 pages.dispatchFromWarehouse.link                         = searching the registered businesses list
 validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse
+
+pages.netp.warehouseLocation.title                       = Where are you storing your goods for dispatch?
+pages.netp.warehouseLocation.heading                     = Where are you storing your goods for dispatch?
+pages.netp.warehouseLocation.uk                          = Within the United Kingdom
+pages.netp.warehouseLocation.overseas                    = Overseas
+pages.netp.warehouseLocation.error                       = Select where you store your goods for dispatch
+
