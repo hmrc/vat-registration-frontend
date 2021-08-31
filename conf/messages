@@ -238,7 +238,6 @@ pages.pages.vat.charge.expectancy.example.para1             = If a business sell
 validation.vat.charge.expectancy.missing                    = Select yes if you expect the business to regularly claim VAT refunds from HMRC
 
 ## Vat Return Frequency
-pages.vat.return.frequency.heading                         = How often do you want the business to submit VAT Returns?
 pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
 pages.vat.return.frequency.para                            = Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year.
 pages.vat.return.frequency.radio.monthly                   = Monthly
@@ -787,3 +786,18 @@ pages.leadPartnerEntityType.limLiaPartner                = Limited liability par
 pages.leadPartnerEntityType.cio                          = Charitable Incorporated Organisation (CIO)
 pages.leadPartnerEntityType.regSociety                   = Registered society
 pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
+
+## OVERSEAS BANK ACCOUNT
+
+pages.overseasBankAccount.heading                        = Bank or building society account details
+pages.overseasBankAccount.name                           = Name on the account
+pages.overseasBankAccount.bic                            = BIC or SWIFT code
+pages.overseasBankAccount.bicHint                        = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
+pages.overseasBankAccount.iban                           = IBAN
+pages.overseasBankAccount.ibanHint                       = You can ask your bank or check your bank statement
+validation.overseasBankAccount.name.missing              = Enter the name on the account
+validation.overseasBankAccount.name.invalid              = Enter a name that does not contain special characters.
+validation.overseasBankAccount.bic.missing               = Enter a BIC or SWIFT code
+validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT code between 8 and 11 characters long
+validation.overseasBankAccount.iban.missing              = Enter an IBAN
+validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer

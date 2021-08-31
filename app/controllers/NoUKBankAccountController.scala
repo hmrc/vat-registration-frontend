@@ -52,7 +52,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
         NoUKBankAccountForm().bindFromRequest().fold(
           badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
           reason =>
-            bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, reason = Some(reason))).map(_ =>
+            bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, overseasDetails = None, reason = Some(reason))).map(_ =>
               Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
             )
 

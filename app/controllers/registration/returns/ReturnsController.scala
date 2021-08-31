@@ -21,6 +21,7 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import forms._
 import models._
+import models.api.NETP
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -39,6 +40,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
                                   val returnsService: ReturnsService,
                                   val applicantDetailsService: ApplicantDetailsService,
                                   val timeService: TimeService,
+                                  val vatRegistrationService: VatRegistrationService,
                                   mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
                                   returnFrequencyPage: return_frequency_view,
                                   voluntaryStartDateIncorpPage: start_date_incorp_view,
@@ -63,8 +65,11 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
       implicit profile =>
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
-          success => returnsService.saveStaggerStart(success) map { _ =>
-            Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+          success => returnsService.saveStaggerStart(success) flatMap { _ =>
+            vatRegistrationService.partyType.map {
+              case NETP => Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()) //TODO Remove this page skip when etmp are ready to handle overseas
+              case _ => Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+            }
           }
         )
   }

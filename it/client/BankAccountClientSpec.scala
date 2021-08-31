@@ -18,10 +18,12 @@ package client
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import controllers.routes
+import fixtures.ITRegistrationFixtures
 import forms.EnterBankAccountDetailsForm._
 import forms.HasCompanyBankAccountForm.HAS_COMPANY_BANK_ACCOUNT_RADIO
 import helpers.ClientHelper
 import itutil.IntegrationSpecBase
+import models.api.UkCompany
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Application
@@ -36,7 +38,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with ClientHelper {
+class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with ClientHelper with ITRegistrationFixtures {
   val regId = "1"
 
   val userId = "user-id-12345"
@@ -140,37 +142,33 @@ class BankAccountClientSpec extends IntegrationSpecBase with AppAndStubs with Cl
     val url = routes.BankAccountDetailsController.showHasCompanyBankAccountView().url
     val client = buildClient(url)
 
-    "save the form data to save4later when 'yes' was selected and the rest of the bank account block is empty and return a 303" +
+    "save the form data to save4later when 'yes' was selected and the rest of the bank account block is empty and return a 303 " +
       "and redirect to the 'enter company bank details' page" in new Setup {
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
       stubS4LSaveBankAccount(regId)
       stubAuthWithAffinity(Organisation)
+      given()
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> true)
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
-
       response.status mustBe 303
       redirectLocation(response) mustBe Some(routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails().url)
     }
 
     "save the form data to VAT backend and S4L when 'no' was selected and return a 303 and redirect to the 'join frs' page" in new Setup {
-      Given("There is no bank account details in S4L or VAT backend")
       stubS4LFetchBankAccount(regId, None)
       stubVATFetchBankAccount(regId, None)
-
-      And("The user is logged in with an Organisation account")
       stubAuthWithAffinity(Organisation)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      And("The form data will be saved to both S4L and VAT backend")
       stubS4LSaveBankAccount(regId)
       stubVATPatchBankAccount(regId, bankAccountNotProvidedJson)
-
-      When("The 'has a bank account' page is submitted with the 'no' radio button selected")
+      given()
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
       val formBody: JsObject = Json.obj(HAS_COMPANY_BANK_ACCOUNT_RADIO -> false)
       val response: WSResponse = await(client.withSessionCookieHeader(userId).withCSRFTokenHeader.post(formBody))
 
