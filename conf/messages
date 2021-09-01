@@ -801,3 +801,9 @@ validation.overseasBankAccount.bic.missing               = Enter a BIC or SWIFT 
 validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT code between 8 and 11 characters long
 validation.overseasBankAccount.iban.missing              = Enter an IBAN
 validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer
+
+## DISPATCH FROM WAREHOUSE
+pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?
+pages.dispatchFromWarehouse.para1                        = You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by
+pages.dispatchFromWarehouse.link                         = searching the registered businesses list
+validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse

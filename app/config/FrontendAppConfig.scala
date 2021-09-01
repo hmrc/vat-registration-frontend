@@ -280,4 +280,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def individualKickoutUrl(continueUrl: String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
   lazy val businessSignInLink = "https://www.gov.uk/guidance/sign-in-to-your-hmrc-business-tax-account"
+  lazy val fhddsRegisteredBusinessesListUrl = "https://www.gov.uk/government/publications/fulfilment-house-due-diligence-scheme-registered-businesses-list"
 }

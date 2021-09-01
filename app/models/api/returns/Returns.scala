@@ -42,11 +42,11 @@ object AASDetails {
   implicit val format: Format[AASDetails] = Json.format[AASDetails]
 }
 
-case class OverseasCompliance(goodsToOverseas: Option[Boolean],
-                              goodsToEu: Option[Boolean],
-                              storingGoodsForDispatch: Option[StoringGoodsForDispatch],
-                              usingWarehouse: Option[Boolean],
-                              fulfilmentWarehouseNumber: Option[String])
+case class OverseasCompliance(goodsToOverseas: Option[Boolean] = None,
+                              goodsToEu: Option[Boolean] = None,
+                              storingGoodsForDispatch: Option[StoringGoodsForDispatch] = None,
+                              usingWarehouse: Option[Boolean] = None,
+                              fulfilmentWarehouseNumber: Option[String] = None)
 
 object OverseasCompliance {
   implicit val format: Format[OverseasCompliance] = Json.format[OverseasCompliance]
@@ -64,6 +64,7 @@ object StoringGoodsForDispatch {
   val inverseMap: Map[String, StoringGoodsForDispatch] = statusMap.map(_.swap)
 
   def fromString(value: String): StoringGoodsForDispatch = inverseMap(value)
+
   def toJsString(value: StoringGoodsForDispatch): JsString = JsString(statusMap(value))
 
   val writes: Writes[StoringGoodsForDispatch] = Writes[StoringGoodsForDispatch] { storingGoods =>
