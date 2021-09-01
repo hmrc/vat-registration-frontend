@@ -106,7 +106,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         }
       }
       "the user submits Storing Overseas" must {
-        "redirect to the Start Date page" in new Setup {
+        "redirect to the Returns Frequency page" in new Setup {
           given()
             .user.isAuthorised
             .s4lContainer[Returns].contains(testReturns)
@@ -119,7 +119,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
         }
       }
       "the user submits an invalid answer" must {

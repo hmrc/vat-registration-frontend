@@ -25,16 +25,18 @@ import play.api.test.Helpers._
 
 class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
-  lazy val url: String = routes.DispatchFromWarehouseController.show().url
+  val url: String = routes.DispatchFromWarehouseController.show().url
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk))
 
   s"GET $url" must {
-    "Return OK when there is no value for 'usingWarehouse' in the backend" in {
+    "Return OK when there is no value for 'usingWarehouse' in the backend" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).get()
 
@@ -44,12 +46,32 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'usingWarehouse' in the backend" in {
+    "Return OK with prepop when there is a value for 'usingWarehouse' in the backend" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAuditMerged()
+        .audit.writesAudit()
+        .vatScheme.has("returns", Json.toJson(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
+        .s4lContainer[Returns].isEmpty
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).get()
+
+      whenReady(res) { result =>
+        result.status mustBe OK
+        Jsoup.parse(result.body).getElementsByAttribute("checked").first().parent().text() mustBe "No"
+      }
+    }
+
+    "Return OK with prepop when there is a value for 'usingWarehouse' in S4L" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).get()
 
@@ -61,24 +83,25 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the fulfilment warehouse number page when the answer is yes" in {
+    "redirect to the fulfilment warehouse number page when the answer is yes" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
-        .vatScheme.has("threshold-data", Json.toJson(threshold))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).post(Json.obj("value" -> "true"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.DispatchFromWarehouseController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNumberController.show().url)
       }
     }
 
-    "redirect to the mandatory vat start date page when the answer is no" in {
+    "redirect to the returns frequency page when the answer is no" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
@@ -86,11 +109,29 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val res = buildClient(url).post(Json.obj("value" -> "false"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.mandatoryStartPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage().url)
+      }
+    }
+
+    "return a bad request when the answer is invalid" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAuditMerged()
+        .audit.writesAudit()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Json.obj("value" -> ""))
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
+        Jsoup.parse(result.body).getElementById("value-error").text mustBe "Error: Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse"
       }
     }
   }

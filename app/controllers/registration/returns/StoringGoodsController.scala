@@ -63,7 +63,7 @@ class StoringGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
             case StoringWithinUk =>
               Redirect(controllers.registration.returns.routes.DispatchFromWarehouseController.show())
             case StoringOverseas =>
-              Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
+              Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
           }
       )
   }
