@@ -274,6 +274,10 @@ GET         /resolve-party-type                                                 
 GET         /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.show
 POST        /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.submit
 
+## Send EU Goods Page
+GET         /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.show
+POST        /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.submit
+
 ## NETP Storing Goods page
 GET         /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.show
 POST        /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.submit
