@@ -1,0 +1,55 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import models.api.returns.StoringGoodsForDispatch
+
+@this(
+    errorSummary: components.errorSummary,
+    layout: layouts.layout,
+    inputRadio: components.inputRadio,
+    button: components.button,
+    formWithCSRF: FormWithCSRF
+)
+
+@(warehouseLocationForm: Form[StoringGoodsForDispatch])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(warehouseLocationForm, messages("pages.netp.warehouseLocation.title")))) {
+
+    @errorSummary(warehouseLocationForm.errors)
+
+    @formWithCSRF(controllers.registration.returns.routes.StoringGoodsController.submit()) {
+        @inputRadio(
+            form = warehouseLocationForm,
+            legend = messages("pages.netp.warehouseLocation.heading"),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("pages.netp.warehouseLocation.uk")),
+                    value = Some("UK"),
+                    checked = warehouseLocationForm("value").value.contains("UK")
+                ),
+                RadioItem(
+                    content = Text(messages("pages.netp.warehouseLocation.overseas")),
+                    value = Some("OVERSEAS"),
+                    checked = warehouseLocationForm("value").value.contains("OVERSEAS")
+                )
+            )
+        )
+
+        @button(messages("app.common.continue"), showSaveProgressButton = true)
+    }
+
+}

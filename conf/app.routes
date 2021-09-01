@@ -269,7 +269,11 @@ POST        /lead-partner-entity                                                
 ## PartyTypeResolverController
 GET         /resolve-party-type                                                                controllers.TradingNameResolverController.resolve
 
-## Dispatch From Warehouse Page
 
+## Dispatch From Warehouse Page
 GET         /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.show
 POST        /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.submit
+
+## NETP Storing Goods page
+GET         /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.show
+POST        /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.submit
