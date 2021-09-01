@@ -56,11 +56,4 @@ object ContactPreferenceForm {
     }
   }
 
-  def contactPreferenceForm: Form[ContactPreference] = Form(
-    single(
-      contactPreference -> of(formatter)
-    )
-  )
-
-
 }
