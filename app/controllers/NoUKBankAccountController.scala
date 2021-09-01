@@ -49,7 +49,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
   val submitNoUKBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile => {
-        NoUKBankAccountForm().bindFromRequest().fold(
+        NoUKBankAccountForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
           reason =>
             bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, overseasDetails = None, reason = Some(reason))).map(_ =>
