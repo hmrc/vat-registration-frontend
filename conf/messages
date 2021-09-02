@@ -810,6 +810,11 @@ pages.dispatchFromWarehouse.para1                        = You can check if the 
 pages.dispatchFromWarehouse.link                         = searching the registered businesses list
 validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse
 
+## SEND EU GOODS
+pages.sendEUGoods.heading                                = Do you intend to send goods direct to customers from within the EU?
+validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU.
+
+## WAREHOUSE LOCATION
 pages.netp.warehouseLocation.title                       = Where are you storing your goods for dispatch?
 pages.netp.warehouseLocation.heading                     = Where are you storing your goods for dispatch?
 pages.netp.warehouseLocation.uk                          = Within the United Kingdom
