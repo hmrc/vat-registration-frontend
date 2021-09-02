@@ -41,7 +41,7 @@
     @p { @messages("pages.company.bank.account.para") }
 
 
-    @formWithCSRF(action = controllers.routes.BankAccountDetailsController.submitHasCompanyBankAccount()) {
+    @formWithCSRF(action = controllers.registration.bankdetails.routes.HasBankAccountController.submit()) {
 
         @yesNoRadio(
             form = hasBankAccountForm,
@@ -50,7 +50,7 @@
             inline = false,
             classes = "govuk-visually-hidden",
             fieldName = "value"
-            )
+        )
 
     @button(messages("app.common.continue"))
 

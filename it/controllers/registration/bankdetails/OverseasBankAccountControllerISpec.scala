@@ -1,6 +1,6 @@
 
 
-package controllers
+package controllers.registration.bankdetails
 
 import itutil.ControllerISpec
 import models.api.NETP
@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 class OverseasBankAccountControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.routes.OverseasBankAccountController.showOverseasBankAccountView().url
+  val url: String = routes.OverseasBankAccountController.show().url
 
   s"GET $url" must {
     "return an OK" in new Setup {

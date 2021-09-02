@@ -452,13 +452,13 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
       Some(bankAccount.isProvided),
-      Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+      Some(controllers.registration.bankdetails.routes.HasBankAccountController.show().url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(
       s"$sectionId.companyBankAccount.details",
       bankAccount.details.map(BankAccountDetails.bankSeq),
-      Some(controllers.routes.BankAccountDetailsController.showEnterCompanyBankAccountDetails().url)
+      Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show().url)
     )
 
     val noUKBankAccount = optSummaryListRowString(
@@ -468,7 +468,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
         case NameChange => "pages.noUKBankAccount.reason.nameChange"
       },
-      Some(controllers.routes.NoUKBankAccountController.showNoUKBankAccountView().url)
+      Some(controllers.registration.bankdetails.routes.NoUKBankAccountController.show().url)
     )
 
     Seq(

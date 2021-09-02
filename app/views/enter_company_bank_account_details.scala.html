@@ -42,7 +42,7 @@
         @messages("pages.bankDetails.info")
     }
 
-    @formWithCSRF(action = controllers.routes.BankAccountDetailsController.submitEnterCompanyBankAccountDetails()) {
+    @formWithCSRF(action = controllers.registration.bankdetails.routes.UkBankAccountDetailsController.submit()) {
         @inputText(form = bankDetailsForm,
                      id = "accountName",
                      name = "accountName",

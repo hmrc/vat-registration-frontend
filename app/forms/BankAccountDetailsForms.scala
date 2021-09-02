@@ -54,7 +54,7 @@ object EnterBankAccountDetailsForm {
   private val accountNumberRegex = """[0-9]{8}""".r
   private val sortCodeRegex = """[0-9]{6}""".r
 
-  val form = Form(
+  val form = Form[BankAccountDetails] (
     mapping(
       ACCOUNT_NAME -> text.verifying(StopOnFirstFail(
         mandatory(accountNameEmptyKey),

@@ -40,7 +40,7 @@
 
     @h1("pages.noUKBankAccount.heading")
 
-    @formWithCSRF(action = controllers.routes.NoUKBankAccountController.submitNoUKBankAccount(), 'autoComplete -> "off") {
+    @formWithCSRF(action = controllers.registration.bankdetails.routes.NoUKBankAccountController.submit(), 'autoComplete -> "off") {
         @inputRadio(
             form = form,
             legend = messages("pages.noUKBankAccount.heading"),

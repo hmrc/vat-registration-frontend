@@ -60,20 +60,20 @@ GET         /how-often-submit-returns                                           
 POST        /how-often-submit-returns                                                          controllers.registration.returns.ReturnsController.submitReturnsFrequency
 
 ## COMPANY BANK ACCOUNT
-GET         /companys-bank-account                                                             controllers.BankAccountDetailsController.showHasCompanyBankAccountView
-POST        /companys-bank-account                                                             controllers.BankAccountDetailsController.submitHasCompanyBankAccount
+GET         /companys-bank-account                                                             controllers.registration.bankdetails.HasBankAccountController.show
+POST        /companys-bank-account                                                             controllers.registration.bankdetails.HasBankAccountController.submit
 
 ## NO UK BANK ACCOUNT
-GET         /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.showNoUKBankAccountView
-POST        /bank-account-not-set-up                                                           controllers.NoUKBankAccountController.submitNoUKBankAccount
+GET         /bank-account-not-set-up                                                           controllers.registration.bankdetails.NoUKBankAccountController.show
+POST        /bank-account-not-set-up                                                           controllers.registration.bankdetails.NoUKBankAccountController.submit
 
 ## OVERSEAS BANK ACCOUNT
-GET         /bank-details-overseas                                                             controllers.OverseasBankAccountController.showOverseasBankAccountView
-POST        /bank-details-overseas                                                             controllers.OverseasBankAccountController.submitOverseasBankAccount
+GET         /bank-details-overseas                                                             controllers.registration.bankdetails.OverseasBankAccountController.show
+POST        /bank-details-overseas                                                             controllers.registration.bankdetails.OverseasBankAccountController.submit
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /account-details                                                                   controllers.BankAccountDetailsController.showEnterCompanyBankAccountDetails
-POST        /account-details                                                                   controllers.BankAccountDetailsController.submitEnterCompanyBankAccountDetails
+GET         /account-details                                                                   controllers.registration.bankdetails.UkBankAccountDetailsController.show
+POST        /account-details                                                                   controllers.registration.bankdetails.UkBankAccountDetailsController.submit
 
 ## Contact Preference
 GET         /contact-preference                                                                controllers.ContactPreferenceController.showContactPreference
