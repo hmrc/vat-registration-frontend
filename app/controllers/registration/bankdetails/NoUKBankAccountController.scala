@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
+import controllers.BaseController
 import forms.NoUKBankAccountForm
 import models.BankAccount
 import play.api.mvc.{Action, AnyContent}
@@ -37,7 +38,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val showNoUKBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -46,7 +47,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
         } yield Ok(noUKBankAccountView(form))
   }
 
-  val submitNoUKBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile => {
         NoUKBankAccountForm.form.bindFromRequest().fold(

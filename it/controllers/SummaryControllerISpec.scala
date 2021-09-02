@@ -90,7 +90,7 @@ class SummaryControllerISpec extends ControllerISpec {
           ("Different Trading name", "No"),
           ("Apply for EORI?", "No"),
           ("Have a business bank account set up", "Yes"),
-          ("Bank details", "testName 12-34-56 12345678"),
+          ("Bank details", "testName 12345678 12-34-56"),
           ("Do you want to join the Flat Rate Scheme?", "No")
         )
 

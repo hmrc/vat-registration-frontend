@@ -42,7 +42,7 @@
 
     @h1("pages.overseasBankAccount.heading")
 
-    @formWithCSRF(action = controllers.routes.OverseasBankAccountController.submitOverseasBankAccount()) {
+    @formWithCSRF(action = controllers.registration.bankdetails.routes.OverseasBankAccountController.submit()) {
         @inputText(form = overseasBankAccountForm,
                    id = "name",
                    name = "name",

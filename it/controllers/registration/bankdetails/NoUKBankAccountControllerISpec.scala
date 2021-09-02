@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.bankdetails
 
 import itutil.ControllerISpec
 import models.{BankAccount, BeingSetup}
@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class NoUKBankAccountControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.routes.NoUKBankAccountController.showNoUKBankAccountView().url
+  val url: String = routes.NoUKBankAccountController.show().url
 
   s"GET $url" must {
     "return an OK" in new Setup {

@@ -79,7 +79,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.bankdetails.routes.HasBankAccountController.show().url)
       }
     }
 
@@ -98,7 +98,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.bankdetails.routes.HasBankAccountController.show().url)
       }
     }
 

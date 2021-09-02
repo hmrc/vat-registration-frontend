@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import forms.{EnterBankAccountDetailsForm, OverseasBankAccountForm}
+import controllers.BaseController
+import forms.OverseasBankAccountForm
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile}
 import views.html.overseas_bank_account
@@ -35,7 +36,7 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val showOverseasBankAccountView: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +46,7 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
         } yield Ok(overseasBankAccountView(form))
   }
 
-  val submitOverseasBankAccount: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         OverseasBankAccountForm.form.bindFromRequest().fold(

@@ -68,7 +68,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           success => returnsService.saveStaggerStart(success) flatMap { _ =>
             vatRegistrationService.partyType.map {
               case NETP => Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()) //TODO Remove this page skip when etmp are ready to handle overseas
-              case _ => Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+              case _ => Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show())
             }
           }
         )
@@ -106,7 +106,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           },
           success => returnsService.saveFrequency(success) map { _ =>
             success match {
-              case Monthly => Redirect(controllers.routes.BankAccountDetailsController.showHasCompanyBankAccountView())
+              case Monthly => Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show())
               case Annual => Redirect(routes.LastMonthOfAccountingYearController.show())
               case _ => Redirect(routes.ReturnsController.accountPeriodsPage())
             }
