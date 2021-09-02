@@ -16,31 +16,27 @@
 
 package views.returns
 
+import forms.WarehouseNumberForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.data.Forms.{boolean, single}
 import views.VatRegViewSpec
-import views.html.returns.DispatchFromWarehouseView
+import views.html.returns.WarehouseNumberView
 
-class DispatchFromWarehouseViewSpec extends VatRegViewSpec {
+class WarehouseNumberViewSpec extends VatRegViewSpec {
 
-  val form: Form[Boolean] = Form(single("value" -> boolean))
-  val view: DispatchFromWarehouseView = app.injector.instanceOf[DispatchFromWarehouseView]
+  val form: Form[String] = WarehouseNumberForm.form
+  val view: WarehouseNumberView = app.injector.instanceOf[WarehouseNumberView]
   implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
-    val heading = "Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?"
+    val heading = "What is the Fulfilment Warehouse number?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val linkText = "searching the registered businesses list (opens in new tab)"
-    val url = "https://www.gov.uk/government/publications/fulfilment-house-due-diligence-scheme-registered-businesses-list"
-    val para1 = s"You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by $linkText."
+    val para1 = "This is a 15 character number that starts with 3 letters followed by 12 numbers."
     val continue = "Save and continue"
-    val yes = "Yes"
-    val no = "No"
   }
 
-  "Dispatch from warehouse page" must {
+  "Warehouse number page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
@@ -55,15 +51,6 @@ class DispatchFromWarehouseViewSpec extends VatRegViewSpec {
 
     "have the correct text" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.para1)
-    }
-
-    "have the correct link text" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.linkText, ExpectedContent.url))
-    }
-
-    "have yes/no radio options" in new ViewSetup {
-      doc.radio("true") mustBe Some(ExpectedContent.yes)
-      doc.radio("false") mustBe Some(ExpectedContent.no)
     }
 
     "have a primary action" in new ViewSetup {

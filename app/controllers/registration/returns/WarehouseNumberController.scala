@@ -19,22 +19,23 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.DispatchFromWarehouseForm
+import forms.WarehouseNumberForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile}
-import views.html.returns.DispatchFromWarehouseView
+import views.html.returns.WarehouseNumberView
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreConnector,
-                                                val authConnector: AuthClientConnector,
-                                                val returnsService: ReturnsService,
-                                                val dispachFromWarehouseView: DispatchFromWarehouseView)
-                                               (implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents)
+@Singleton
+class WarehouseNumberController @Inject()(val keystoreConnector: KeystoreConnector,
+                                          val authConnector: AuthClientConnector,
+                                          val returnsService: ReturnsService,
+                                          val warehouseNumberView: WarehouseNumberView)
+                                         (implicit appConfig: FrontendAppConfig,
+                                          val executionContext: ExecutionContext,
+                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -42,10 +43,10 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
       implicit profile =>
         returnsService.getReturns map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, _, _, Some(usingWarehouse), _)) =>
-              Ok(dispachFromWarehouseView(DispatchFromWarehouseForm.form.fill(usingWarehouse)))
+            case Some(OverseasCompliance(_, _, _, _, Some(warehouseNumber))) =>
+              Ok(warehouseNumberView(WarehouseNumberForm.form.fill(warehouseNumber)))
             case _ =>
-              Ok(dispachFromWarehouseView(DispatchFromWarehouseForm.form))
+              Ok(warehouseNumberView(WarehouseNumberForm.form))
           }
         }
   }
@@ -53,24 +54,19 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        DispatchFromWarehouseForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(dispachFromWarehouseView(errors))),
+        WarehouseNumberForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(warehouseNumberView(errors))),
           success => {
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
                 overseasCompliance = returns.overseasCompliance.map(_.copy(
-                  usingWarehouse = Some(success)
+                  fulfilmentWarehouseNumber = Some(success)
                 ))
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              if (success) {
-                Redirect(routes.WarehouseNumberController.show)
-              }
-              else {
-                Redirect(routes.ReturnsController.returnsFrequencyPage)
-              }
+              Redirect(routes.WarehouseNumberController.show) //TODO Update to route to warehouse name page
             }
           }
         )

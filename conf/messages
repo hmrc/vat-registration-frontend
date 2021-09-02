@@ -803,13 +803,6 @@ validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT 
 validation.overseasBankAccount.iban.missing              = Enter an IBAN
 validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer
 
-
-## DISPATCH FROM WAREHOUSE
-pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?
-pages.dispatchFromWarehouse.para1                        = You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by
-pages.dispatchFromWarehouse.link                         = searching the registered businesses list
-validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse
-
 ## SEND EU GOODS
 pages.sendEUGoods.heading                                = Do you intend to send goods direct to customers from within the EU?
 validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU.
@@ -821,3 +814,15 @@ pages.netp.warehouseLocation.uk                          = Within the United Kin
 pages.netp.warehouseLocation.overseas                    = Overseas
 pages.netp.warehouseLocation.error                       = Select where you store your goods for dispatch
 
+## DISPATCH FROM WAREHOUSE
+pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?
+pages.dispatchFromWarehouse.para1                        = You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by
+pages.dispatchFromWarehouse.link                         = searching the registered businesses list
+validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse
+
+## WAREHOUSE NUMBER
+pages.warehouseNumber.heading                            = What is the Fulfilment Warehouse number?
+pages.warehouseNumber.para1                              = This is a 15 character number that starts with 3 letters followed by 12 numbers.
+validation.warehouseNumber.missing                       = Enter the fulfilment warehouse number
+validation.warehouseNumber.regex                         = Enter a number that does not contain special characters
+validation.warehouseNumber.format                        = Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers
