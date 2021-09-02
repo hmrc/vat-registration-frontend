@@ -787,9 +787,7 @@ pages.leadPartnerEntityType.cio                          = Charitable Incorporat
 pages.leadPartnerEntityType.regSociety                   = Registered society
 pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
 
-
 ## OVERSEAS BANK ACCOUNT
-
 pages.overseasBankAccount.heading                        = Bank or building society account details
 pages.overseasBankAccount.name                           = Name on the account
 pages.overseasBankAccount.bic                            = BIC or SWIFT code
@@ -826,3 +824,8 @@ pages.warehouseNumber.para1                              = This is a 15 characte
 validation.warehouseNumber.missing                       = Enter the fulfilment warehouse number
 validation.warehouseNumber.regex                         = Enter a number that does not contain special characters
 validation.warehouseNumber.format                        = Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers
+
+## NETP - SEND GOODS OVERSEAS
+netp.overseas.heading                                    = Will the business send goods directly to customers from overseas countries?
+netp.overseas.hint                                       = England, Scotland, Wales and Northern Ireland are the only countries not considered as overseas for the purposes of VAT.
+validation.overseas.error                                = Select yes if the business send goods directly to customers from overseas countries

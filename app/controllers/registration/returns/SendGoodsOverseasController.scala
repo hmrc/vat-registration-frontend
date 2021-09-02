@@ -16,37 +16,38 @@
 
 package controllers.registration.returns
 
-import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.DispatchFromWarehouseForm
+import forms.SendGoodsOverseasForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile}
-import views.html.returns.DispatchFromWarehouseView
+import uk.gov.hmrc.auth.core.AuthConnector
+import views.html.returns.SendGoodsOverseasView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreConnector,
-                                                val authConnector: AuthClientConnector,
-                                                val returnsService: ReturnsService,
-                                                val dispatchFromWarehouseView: DispatchFromWarehouseView)
-                                               (implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents)
+class SendGoodsOverseasController @Inject()(val authConnector: AuthConnector,
+                                            val keystoreConnector: KeystoreConnector,
+                                            val returnsService: ReturnsService,
+                                            val view: SendGoodsOverseasView)
+                                           (implicit appConfig: FrontendAppConfig,
+                                            val executionContext: ExecutionContext,
+                                            baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns map { returns =>
+        returnsService.getReturns.map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, _, _, Some(usingWarehouse), _)) =>
-              Ok(dispatchFromWarehouseView(DispatchFromWarehouseForm.form.fill(usingWarehouse)))
+            case Some(OverseasCompliance(Some(goodsToOverseas), _, _, _, _)) =>
+              Ok(view(SendGoodsOverseasForm.form.fill(goodsToOverseas)))
             case _ =>
-              Ok(dispatchFromWarehouseView(DispatchFromWarehouseForm.form))
+              Ok(view(SendGoodsOverseasForm.form))
           }
         }
   }
@@ -54,23 +55,25 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        DispatchFromWarehouseForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(dispatchFromWarehouseView(errors))),
+        SendGoodsOverseasForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(view(errors))),
           success => {
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
-                overseasCompliance = returns.overseasCompliance.map(_.copy(
-                  usingWarehouse = Some(success)
-                ))
+                overseasCompliance = returns.overseasCompliance match {
+                  case None => Some(OverseasCompliance(goodsToOverseas = Some(success)))
+                  case Some(_) => returns.overseasCompliance.map(_.copy(
+                                    goodsToOverseas = Some(success)
+                                  ))
+                }
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
               if (success) {
-                Redirect(routes.WarehouseNumberController.show)
-              }
-              else {
-                Redirect(routes.ReturnsController.returnsFrequencyPage)
+                Redirect(routes.SendEUGoodsController.show)
+              } else {
+                Redirect(routes.StoringGoodsController.show)
               }
             }
           }
