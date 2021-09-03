@@ -284,3 +284,7 @@ POST        /using-fulfilment-warehouse                                         
 ## Warehouse Number Page
 GET         /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.show
 POST        /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.submit
+
+## Send Goods Overseas page
+GET         /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.show
+POST        /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.submit
