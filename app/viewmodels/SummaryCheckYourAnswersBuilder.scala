@@ -400,6 +400,45 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(returnsRoutes.PaymentMethodController.show().url)
     )
 
+    val sendGoodsOverseas = optSummaryListRowBoolean(
+      s"$sectionId.sendGoodsOverseas",
+      returns.overseasCompliance.flatMap(_.goodsToOverseas),
+      Some(returnsRoutes.SendGoodsOverseasController.show().url)
+    )
+
+    val sendGoodsToEu = optSummaryListRowBoolean(
+      s"$sectionId.sendGoodsToEu",
+      returns.overseasCompliance.flatMap(_.goodsToEu),
+      Some(returnsRoutes.SendEUGoodsController.show().url)
+    )
+
+    val storingGoods = optSummaryListRowString(
+      s"$sectionId.storingGoods",
+      returns.overseasCompliance.flatMap(_.storingGoodsForDispatch).map{
+        case StoringWithinUk => s"$sectionId.storingGoods.uk"
+        case StoringOverseas => s"$sectionId.storingGoods.overseas"
+      },
+      Some(returnsRoutes.StoringGoodsController.show().url)
+    )
+
+    val dispatchFromWarehouse = optSummaryListRowBoolean(
+      s"$sectionId.dispatchFromWarehouse",
+      returns.overseasCompliance.flatMap(_.usingWarehouse),
+      Some(returnsRoutes.DispatchFromWarehouseController.show().url)
+    )
+
+    val warehouseNumber = optSummaryListRowString(
+      s"$sectionId.warehouseNumber",
+      returns.overseasCompliance.flatMap(_.fulfilmentWarehouseNumber),
+      Some(returnsRoutes.WarehouseNumberController.show().url)
+    )
+
+    val warehouseName = optSummaryListRowString(
+      s"$sectionId.warehouseName",
+      returns.overseasCompliance.flatMap(_.fulfilmentWarehouseName),
+      Some(returnsRoutes.WarehouseNameController.show().url)
+    )
+
     Seq(
       startDateRow,
       zeroRatedRow,
@@ -407,7 +446,13 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       accountingPeriodRow,
       lastMonthOfAccountingYearRow,
       paymentFrequencyRow,
-      paymentMethodRow
+      paymentMethodRow,
+      sendGoodsOverseas,
+      sendGoodsToEu,
+      storingGoods,
+      dispatchFromWarehouse,
+      warehouseNumber,
+      warehouseName
     ).flatten
   }
 

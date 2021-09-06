@@ -43,7 +43,7 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
       implicit profile =>
         returnsService.getReturns map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, _, _, Some(usingWarehouse), _)) =>
+            case Some(OverseasCompliance(_, _, _, Some(usingWarehouse), _, _)) =>
               Ok(dispatchFromWarehouseView(DispatchFromWarehouseForm.form.fill(usingWarehouse)))
             case _ =>
               Ok(dispatchFromWarehouseView(DispatchFromWarehouseForm.form))
@@ -60,9 +60,16 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
-                overseasCompliance = returns.overseasCompliance.map(_.copy(
-                  usingWarehouse = Some(success)
-                ))
+                overseasCompliance = returns.overseasCompliance.map {
+                  case compliance if success => compliance.copy(
+                    usingWarehouse = Some(success)
+                  )
+                  case compliance => compliance.copy(
+                    usingWarehouse = Some(success),
+                    fulfilmentWarehouseNumber = None,
+                    fulfilmentWarehouseName = None
+                  )
+                }
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {

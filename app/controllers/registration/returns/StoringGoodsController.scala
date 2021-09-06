@@ -56,12 +56,24 @@ class StoringGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
         answer =>
           for {
             returns <- returnsService.getReturns
-            updatedCompliance = returns.overseasCompliance.map(_.copy(storingGoodsForDispatch = Some(answer)))
+            updatedCompliance = returns.overseasCompliance.map {
+              case compliance if answer.eq(StoringOverseas) =>
+                compliance.copy(
+                  storingGoodsForDispatch = Some(answer),
+                  usingWarehouse = None,
+                  fulfilmentWarehouseNumber = None,
+                  fulfilmentWarehouseName = None
+                )
+              case compliance if answer.eq(StoringWithinUk) =>
+                compliance.copy(
+                  storingGoodsForDispatch = Some(answer)
+                )
+          }
             updatedReturns = returns.copy(overseasCompliance = updatedCompliance)
             _ <- returnsService.submitReturns(updatedReturns)
           } yield answer match {
             case StoringWithinUk =>
-              Redirect(controllers.registration.returns.routes.DispatchFromWarehouseController.show())
+              Redirect(controllers.registration.returns.routes.DispatchFromWarehouseController.show)
             case StoringOverseas =>
               Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
           }

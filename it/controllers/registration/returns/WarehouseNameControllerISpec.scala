@@ -23,13 +23,13 @@ import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 
-class WarehouseNumberControllerISpec extends ControllerISpec {
+class WarehouseNameControllerISpec extends ControllerISpec {
 
-  val url: String = routes.WarehouseNumberController.show().url
-  val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk), Some(true))
+  val url: String = routes.WarehouseNameController.show().url
+  val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk), Some(true), Some(testWarehouseNumber))
 
   s"GET $url" must {
-    "Return OK when there is no value for 'fulfilmentWarehouseNumber' saved" in new Setup {
+    "Return OK when there is no value for 'fulfilmentWarehouseName' saved" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
@@ -42,17 +42,17 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
-        Jsoup.parse(result.body).getElementById("warehouseNumber").attr("value") mustBe ""
+        Jsoup.parse(result.body).getElementById("warehouseName").attr("value") mustBe ""
       }
     }
 
-    "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in the backend" in new Setup {
+    "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in the backend" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .vatScheme.has("returns", Json.toJson(Returns(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
         .s4lContainer[Returns].isEmpty
 
@@ -62,17 +62,17 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
-        Jsoup.parse(result.body).getElementById("warehouseNumber").attr("value") mustBe testWarehouseNumber
+        Jsoup.parse(result.body).getElementById("warehouseName").attr("value") mustBe testWarehouseName
       }
     }
 
-    "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in S4L" in new Setup {
+    "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in S4L" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       ))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -81,7 +81,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
-        Jsoup.parse(result.body).getElementById("warehouseNumber").attr("value") mustBe testWarehouseNumber
+        Jsoup.parse(result.body).getElementById("warehouseName").attr("value") mustBe testWarehouseName
       }
     }
   }
@@ -94,32 +94,16 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseName)))
       ))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> testWarehouseNumber))
+      val res = buildClient(url).post(Json.obj("warehouseName" -> testWarehouseName))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNameController.show().url)
-      }
-    }
-
-    "return a bad request when the answer is not formatted correctly" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "ts1234567890123"))
-
-      whenReady(res) { result =>
-        result.status mustBe BAD_REQUEST
-        Jsoup.parse(result.body).getElementById("warehouseNumber-error").text mustBe "Error: Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers"
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage().url)
       }
     }
 
@@ -131,11 +115,11 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> ""))
+      val res = buildClient(url).post(Json.obj("warehouseName" -> ""))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
-        Jsoup.parse(result.body).getElementById("warehouseNumber-error").text mustBe "Error: Enter the fulfilment warehouse number"
+        Jsoup.parse(result.body).getElementById("warehouseName-error").text mustBe "Error: Enter the business name of the Fulfilment Warehouse"
       }
     }
 
@@ -147,11 +131,11 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "/"))
+      val res = buildClient(url).post(Json.obj("warehouseName" -> "|"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
-        Jsoup.parse(result.body).getElementById("warehouseNumber-error").text mustBe "Error: Enter a number that does not contain special characters"
+        Jsoup.parse(result.body).getElementById("warehouseName-error").text mustBe "Error: Enter a business name that starts with a number or letter"
       }
     }
   }

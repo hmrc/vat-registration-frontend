@@ -43,7 +43,7 @@ class WarehouseNumberController @Inject()(val keystoreConnector: KeystoreConnect
       implicit profile =>
         returnsService.getReturns map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, _, _, _, Some(warehouseNumber))) =>
+            case Some(OverseasCompliance(_, _, _, _, Some(warehouseNumber), _)) =>
               Ok(warehouseNumberView(WarehouseNumberForm.form.fill(warehouseNumber)))
             case _ =>
               Ok(warehouseNumberView(WarehouseNumberForm.form))
@@ -66,7 +66,7 @@ class WarehouseNumberController @Inject()(val keystoreConnector: KeystoreConnect
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              Redirect(routes.WarehouseNumberController.show) //TODO Update to route to warehouse name page
+              Redirect(routes.WarehouseNameController.show)
             }
           }
         )
