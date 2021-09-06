@@ -18,14 +18,12 @@ package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.{BaseController, routes}
-import models.BankAccount
+import controllers.BaseController
+import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
 import models.api.NETP
-import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, VatRegistrationService}
 import views.html.has_company_bank_account
-import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,10 +39,13 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
-      for {
-        bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
-        filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
-      } yield Ok(view(filledForm))
+        vatRegistrationService.partyType.flatMap {
+          case NETP => Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()))
+          case _ => for {
+            bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+            filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
+          } yield Ok(view(filledForm))
+        }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {

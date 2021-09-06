@@ -447,23 +447,29 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
   def bankAccountSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
 
-    val bankAccount: BankAccount = vatScheme.bankAccount.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing bank account block"))
+    val bankAccount: Option[BankAccount] = vatScheme.bankAccount
 
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
-      Some(bankAccount.isProvided),
+      bankAccount.map(_.isProvided),
       Some(controllers.registration.bankdetails.routes.HasBankAccountController.show().url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(
       s"$sectionId.companyBankAccount.details",
-      bankAccount.details.map(BankAccountDetails.bankSeq),
-      Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show().url)
+      partyType match {
+        case NETP => bankAccount.flatMap(_.overseasDetails.map(OverseasBankDetails.overseasBankSeq))
+        case _ => bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq))
+      },
+      partyType match {
+        case NETP => Some(controllers.registration.bankdetails.routes.OverseasBankAccountController.show().url)
+        case _ => Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show().url)
+      }
     )
 
     val noUKBankAccount = optSummaryListRowString(
       s"$sectionId.companyBankAccount.reason",
-      bankAccount.reason.map {
+      bankAccount.flatMap(_.reason).map {
         case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
         case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
         case NameChange => "pages.noUKBankAccount.reason.nameChange"
