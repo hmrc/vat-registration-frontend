@@ -24,4 +24,12 @@ case class OverseasBankDetails(name: String,
 
 object OverseasBankDetails {
   implicit val format: Format[OverseasBankDetails] = Json.format[OverseasBankDetails]
+
+  def overseasBankSeq(overseasBankAccount: OverseasBankDetails): Seq[String] = {
+    Seq(
+      overseasBankAccount.name,
+      overseasBankAccount.bic,
+      overseasBankAccount.iban
+    )
+  }
 }

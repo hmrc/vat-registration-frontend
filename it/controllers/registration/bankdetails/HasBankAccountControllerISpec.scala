@@ -3,7 +3,7 @@ package controllers.registration.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.{EligibilitySubmissionData, NETP}
+import models.api.NETP
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -18,6 +18,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+      ))
         .vatScheme.doesNotExistForKey("bank-account")
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -28,10 +31,30 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
+    "return SEE_OTHER when the party type is NETP option" in new Setup {
+      given
+        .user.isAuthorised
+        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
+      ))
+        .vatScheme.doesNotExistForKey("bank-account")
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+    }
     "return OK with 'Yes' pre-populated from S4L" in new Setup {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+      ))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -47,6 +70,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(true, None, None, None)))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+      ))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -61,6 +87,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+      ))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -76,6 +105,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(false, None, None, None)))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+      ))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

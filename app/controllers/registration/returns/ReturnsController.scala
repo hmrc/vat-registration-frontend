@@ -21,13 +21,12 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import forms._
 import models._
-import models.api.NETP
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
-import views.html.returns.{mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view, AccountingPeriodView}
+import views.html.returns.{AccountingPeriodView, mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 
 import java.time.LocalDate
 import java.util
@@ -66,10 +65,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success => returnsService.saveStaggerStart(success) flatMap { _ =>
-            vatRegistrationService.partyType.map {
-              case NETP => Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()) //TODO Remove this page skip when etmp are ready to handle overseas
-              case _ => Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show())
-            }
+            Future.successful(Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show()))
           }
         )
   }
