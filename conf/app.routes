@@ -269,6 +269,10 @@ POST        /lead-partner-entity                                                
 ## PartyTypeResolverController
 GET         /resolve-party-type                                                                controllers.TradingNameResolverController.resolve
 
+## Send Goods Overseas page
+GET         /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.show
+POST        /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.submit
+
 ## Send EU Goods Page
 GET         /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.show
 POST        /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.submit
@@ -285,6 +289,6 @@ POST        /using-fulfilment-warehouse                                         
 GET         /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.show
 POST        /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.submit
 
-## Send Goods Overseas page
-GET         /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.show
-POST        /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.submit
+## Warehouse Name Page
+GET         /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.show
+POST        /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.submit

@@ -44,7 +44,7 @@ class SendGoodsOverseasController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         returnsService.getReturns.map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(Some(goodsToOverseas), _, _, _, _)) =>
+            case Some(OverseasCompliance(Some(goodsToOverseas), _, _, _, _, _)) =>
               Ok(view(SendGoodsOverseasForm.form.fill(goodsToOverseas)))
             case _ =>
               Ok(view(SendGoodsOverseasForm.form))
@@ -62,10 +62,17 @@ class SendGoodsOverseasController @Inject()(val authConnector: AuthConnector,
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
                 overseasCompliance = returns.overseasCompliance match {
-                  case None => Some(OverseasCompliance(goodsToOverseas = Some(success)))
-                  case Some(_) => returns.overseasCompliance.map(_.copy(
-                                    goodsToOverseas = Some(success)
-                                  ))
+                  case None =>
+                    Some(OverseasCompliance(goodsToOverseas = Some(success)))
+                  case Some(_) if success =>
+                    returns.overseasCompliance.map(_.copy(
+                      goodsToOverseas = Some(success)
+                    ))
+                  case Some(_) =>
+                    returns.overseasCompliance.map(_.copy(
+                      goodsToOverseas = Some(success),
+                      goodsToEu = None
+                    ))
                 }
               )
               _ <- returnsService.submitReturns(updatedReturns)

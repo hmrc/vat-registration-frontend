@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns.{JanuaryStagger, Quarterly, Returns}
+import models.api.returns.{JanuaryStagger, OverseasCompliance, Quarterly, Returns, StoringWithinUk}
 import models.external._
 import models.view._
 import play.api.libs.json.Json
@@ -60,10 +60,25 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testAccountNumber = "12345678"
   val testUkBankDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode)
   val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None, None)
+  val testBic = "BIC"
+  val testIban = "IBAN"
+  val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)
+  val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
   val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
-  val fullReturns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None)
+  val fullReturns: Returns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
   val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
+
+  val testWarehouseNumber = "tst123456789012"
+  val testWarehouseName = "testWarehouseName"
+  val testFullOverseasCompliance: OverseasCompliance = OverseasCompliance(
+    goodsToOverseas = Some(true),
+    goodsToEu = Some(true),
+    storingGoodsForDispatch = Some(StoringWithinUk),
+    usingWarehouse = Some(true),
+    fulfilmentWarehouseNumber = Some(testWarehouseNumber),
+    fulfilmentWarehouseName = Some(testWarehouseName)
+  )
 
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
@@ -137,6 +152,14 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     bankAccount = Some(bankAccount),
     returns = Some(fullReturns),
     eligibilitySubmissionData = Some(testEligibilitySubmissionData)
+  )
+
+  lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
+    applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), transactor = Some(testNetpTransactorDetails))),
+    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))))),
+    returns = Some(fullReturns.copy(overseasCompliance = Some(testFullOverseasCompliance))),
+    bankAccount = Some(testOverseasBankAccount)
   )
 
   val vatRegIncorporated = VatScheme(

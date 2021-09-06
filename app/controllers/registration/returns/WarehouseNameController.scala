@@ -16,37 +16,37 @@
 
 package controllers.registration.returns
 
-import config.{BaseControllerComponents, FrontendAppConfig}
+import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.SendEuGoodsForm
+import forms.WarehouseNameForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, ReturnsService, SessionProfile}
-import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.returns.SendEUGoodsView
+import services.{ReturnsService, SessionProfile}
+import views.html.returns.WarehouseNameView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SendEUGoodsController @Inject()(val authConnector: AuthConnector,
-                                      val keystoreConnector: KeystoreConnector,
-                                      val applicantDetailsService: ApplicantDetailsService,
-                                      returnsService: ReturnsService,
-                                      sendEUGoodsPage: SendEUGoodsView
-                                     )(implicit appConfig: FrontendAppConfig,
-                                       val executionContext: ExecutionContext,
-                                       baseControllerComponents: BaseControllerComponents)
+class WarehouseNameController @Inject()(val keystoreConnector: KeystoreConnector,
+                                        val authConnector: AuthClientConnector,
+                                        val returnsService: ReturnsService,
+                                        val warehouseNameView: WarehouseNameView)
+                                       (implicit appConfig: FrontendAppConfig,
+                                        val executionContext: ExecutionContext,
+                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns.map { returns =>
+        returnsService.getReturns map { returns =>
           returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, Some(sendEuGoods), _, _, _, _)) => Ok(sendEUGoodsPage(SendEuGoodsForm.form.fill(sendEuGoods)))
-            case _ => Ok(sendEUGoodsPage(SendEuGoodsForm.form))
+            case Some(OverseasCompliance(_, _, _, _, _, Some(warehouseName))) =>
+              Ok(warehouseNameView(WarehouseNameForm.form.fill(warehouseName)))
+            case _ =>
+              Ok(warehouseNameView(WarehouseNameForm.form))
           }
         }
   }
@@ -54,19 +54,19 @@ class SendEUGoodsController @Inject()(val authConnector: AuthConnector,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        SendEuGoodsForm.form.bindFromRequest.fold(
-          badForm => Future.successful(BadRequest(sendEUGoodsPage(badForm))),
-          successForm => {
+        WarehouseNameForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(warehouseNameView(errors))),
+          success => {
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
                 overseasCompliance = returns.overseasCompliance.map(_.copy(
-                  goodsToEu = Some(successForm)
+                  fulfilmentWarehouseName = Some(success)
                 ))
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              Redirect(controllers.registration.returns.routes.StoringGoodsController.show)
+              Redirect(routes.ReturnsController.returnsFrequencyPage)
             }
           }
         )

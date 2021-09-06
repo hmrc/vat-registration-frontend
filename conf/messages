@@ -422,6 +422,15 @@ pages.summary.directorDetails.supplyWorkers                  = Supplying workers
 pages.summary.directorDetails.numberOfWorkers                = Number of workers supplied
 pages.summary.directorDetails.intermediarySupply             = Intermediary arranging the supply of workers
 
+## Summary Page Overseas Compliance
+pages.summary.directorDetails.sendGoodsOverseas      = Will the business send goods directly to customers from overseas countries?
+pages.summary.directorDetails.sendGoodsToEu          = Do you intend to send goods direct to customers from within the EU?
+pages.summary.directorDetails.storingGoods           = Where are you storing your goods for dispatch?
+pages.summary.directorDetails.storingGoods.uk        = Within the United Kingdom
+pages.summary.directorDetails.storingGoods.overseas  = Overseas
+pages.summary.directorDetails.dispatchFromWarehouse  = Will the business dispatch goods from a FHDDS registered warehouse?
+pages.summary.directorDetails.warehouseNumber        = Fulfilment Warehouse number
+pages.summary.directorDetails.warehouseName          = Fulfilment Warehouse business name
 
 ## Error Pages
 error.error_template.tryagain                        = Try again
@@ -801,6 +810,11 @@ validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT 
 validation.overseasBankAccount.iban.missing              = Enter an IBAN
 validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer
 
+## NETP - SEND GOODS OVERSEAS
+netp.overseas.heading                                    = Will the business send goods directly to customers from overseas countries?
+netp.overseas.hint                                       = England, Scotland, Wales and Northern Ireland are the only countries not considered as overseas for the purposes of VAT.
+validation.overseas.error                                = Select yes if the business send goods directly to customers from overseas countries
+
 ## SEND EU GOODS
 pages.sendEUGoods.heading                                = Do you intend to send goods direct to customers from within the EU?
 validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU.
@@ -813,7 +827,7 @@ pages.netp.warehouseLocation.overseas                    = Overseas
 pages.netp.warehouseLocation.error                       = Select where you store your goods for dispatch
 
 ## DISPATCH FROM WAREHOUSE
-pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligance Scheme (FHDDS) registered warehouse?
+pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse?
 pages.dispatchFromWarehouse.para1                        = You can check if the business that stores and dispatches your goods in the UK is registered with the FHDDS by
 pages.dispatchFromWarehouse.link                         = searching the registered businesses list
 validation.dispatchFromWarehouse.missing                 = Select yes if the business will dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse
@@ -825,7 +839,7 @@ validation.warehouseNumber.missing                       = Enter the fulfilment 
 validation.warehouseNumber.regex                         = Enter a number that does not contain special characters
 validation.warehouseNumber.format                        = Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers
 
-## NETP - SEND GOODS OVERSEAS
-netp.overseas.heading                                    = Will the business send goods directly to customers from overseas countries?
-netp.overseas.hint                                       = England, Scotland, Wales and Northern Ireland are the only countries not considered as overseas for the purposes of VAT.
-validation.overseas.error                                = Select yes if the business send goods directly to customers from overseas countries
+## WAREHOUSE NAME
+pages.warehouseName.heading                              = What is the business name of the Fulfilment Warehouse?
+validation.warehouseName.missing                         = Enter the business name of the Fulfilment Warehouse
+validation.warehouseName.format                          = Enter a business name that starts with a number or letter
