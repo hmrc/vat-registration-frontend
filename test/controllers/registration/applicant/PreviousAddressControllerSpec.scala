@@ -18,7 +18,7 @@ package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import models.api.Address
+import models.api.{Address, NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{FormerNameView, HomeAddressView, PreviousAddressView}
 import models.{ApplicantDetails, TelephoneNumber}
@@ -26,7 +26,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.previous_address
 
@@ -37,7 +37,8 @@ class PreviousAddressControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with ApplicantDetailsFixtures {
+  with ApplicantDetailsFixtures
+  with MockVatRegistrationService {
 
   trait Setup {
     val controller: PreviousAddressController = new PreviousAddressController(
@@ -45,6 +46,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockKeystoreConnector,
       mockApplicantDetailsService,
       mockAddressLookupService,
+      vatRegistrationServiceMock,
       app.injector.instanceOf[previous_address]
     )
 
@@ -52,7 +54,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val address = Address(line1 = "TestLine1", line2 = "TestLine1", postcode = Some("TE 1ST"), addressValidated = true)
+  val address = Address(line1 = "TestLine1", line2 = Some("TestLine1"), postcode = Some("TE 1ST"), addressValidated = true)
 
   val incompleteApplicantDetails = ApplicantDetails(
     homeAddress = Some(HomeAddressView(address.id, Some(address))),
@@ -71,7 +73,6 @@ class PreviousAddressControllerSpec extends ControllerSpec
         status(_) mustBe OK
       }
     }
-
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
@@ -89,8 +90,8 @@ class PreviousAddressControllerSpec extends ControllerSpec
         result => status(result) mustBe BAD_REQUEST
       }
     }
-
     "return SEE_OTHER with Yes selected" in new Setup {
+      mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(PreviousAddressView(true, None))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -100,8 +101,8 @@ class PreviousAddressControllerSpec extends ControllerSpec
         redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show().url)
       }
     }
-
     "redirect the user to TxM address capture page with No selected" in new Setup {
+      mockPartyType(Future.successful(UkCompany))
       when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
@@ -110,6 +111,16 @@ class PreviousAddressControllerSpec extends ControllerSpec
       ) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some("TxM")
+      }
+    }
+    "redirect to International address capture for NETP when No selected" in new Setup {
+      mockPartyType(Future.successful(NETP))
+
+      submitAuthorised(controller.submit(),
+        fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
+      ) { res =>
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(routes.InternationalPreviousAddressController.show().url)
       }
     }
   }

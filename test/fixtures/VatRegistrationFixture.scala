@@ -150,8 +150,14 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   //Api models
+
+  val testLine1 = "line1"
+  val testLine2 = "line2"
+  val testLine3 = "line3"
+  val testLine4 = "line4"
+  val testLine5 = "line5"
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val testAddress = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
+  val testAddress = Address(testLine1, Some(testLine2), None, None, None, Some(testPostcode), Some(testCountry), addressValidated = true)
 
   val validCompRegProfileJson: JsObject = Json.parse(
     """

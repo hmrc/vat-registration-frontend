@@ -24,8 +24,8 @@ import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
 class ApplicantDetailsSpec extends VatRegSpec {
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
-  val previousAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
+  val currentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
+  val previousAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
   "apiReads" should {
     "return a correct partial ApplicantDetails view model with full name" in {

@@ -31,12 +31,13 @@ object Country {
 }
 
 case class Address(line1: String,
-                   line2: String,
+                   line2: Option[String] = None,
                    line3: Option[String] = None,
                    line4: Option[String] = None,
+                   line5: Option[String] = None,
                    postcode: Option[String] = None,
                    country: Option[Country] = None,
-                   addressValidated: Boolean) {
+                   addressValidated: Boolean = false) {
 
   val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
@@ -48,9 +49,10 @@ case class Address(line1: String,
   def normalise(): Address =
     Address(
       this.line1.trim,
-      this.line2.trim,
+      this.line2 map (_.trim) filterNot(_.isEmpty),
       this.line3 map (_.trim) filterNot (_.isEmpty),
       this.line4 map (_.trim) filterNot (_.isEmpty),
+      this.line5 map (_.trim) filterNot (_.isEmpty),
       this.postcode map (_.trim) filterNot (_.isEmpty),
       this.country.flatMap { country =>
         val optCode = country.code.map(_.trim).filterNot(_.isEmpty)
@@ -93,7 +95,7 @@ object Address {
       } else if (lineMap.size < 2) {
         JsError(JsonValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
       } else {
-        JsSuccess(Address(lineMap(0), lineMap(1), lineMap.get(2), lineMap.get(3), postcode, country, addressValidated))
+        JsSuccess(Address(lineMap(0), lineMap.get(1), lineMap.get(2), lineMap.get(3), lineMap.get(4), postcode, country, addressValidated))
       }
     }
   }
@@ -101,9 +103,10 @@ object Address {
   def normalisedSeq(address: Address): Seq[String] = {
     Seq[Option[AddressLineOrPostcode]](
       Option(AddressLine(address.line1)),
-      Option(AddressLine(address.line2)),
+      address.line2.map(AddressLine),
       address.line3.map(AddressLine),
       address.line4.map(AddressLine),
+      address.line5.map(AddressLine),
       address.postcode.map(Postcode),
       address.country.flatMap(_.name).map(AddressLine)
     ).collect {

@@ -46,7 +46,7 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
         await(alfConnector.getAddress("addressId")) mustBe Address(
           line1 = "16 Coniston Court",
-          line2 = "Holland road",
+          line2 = Some("Holland road"),
           country = Some(Country(Some("UK"), Some("United Kingdom"))),
           postcode = Some("BN3 1JU"),
           addressValidated = true

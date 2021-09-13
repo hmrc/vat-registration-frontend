@@ -19,24 +19,28 @@ package controllers.registration.applicant
 import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
+import models.api.{NETP, UkCompany}
 import models.view.{FormerNameDateView, FormerNameView}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.former_name_date
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FormerNameDateControllerSpec extends ControllerSpec
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with ApplicantDetailsFixtures {
+  with ApplicantDetailsFixtures
+  with MockVatRegistrationService {
 
   trait Setup {
     val controller: FormerNameDateController = new FormerNameDateController(
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
+      vatRegistrationServiceMock,
       app.injector.instanceOf[former_name_date]
     )
 
@@ -63,7 +67,6 @@ class FormerNameDateControllerSpec extends ControllerSpec
         status(_) mustBe OK
       }
     }
-
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
@@ -71,7 +74,6 @@ class FormerNameDateControllerSpec extends ControllerSpec
 
       status(res) mustBe OK
     }
-
     "throw an IllegalStateException when the former name is missing" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
@@ -91,9 +93,9 @@ class FormerNameDateControllerSpec extends ControllerSpec
         status(_) mustBe BAD_REQUEST
       }
     }
-
-    "Redirect to ContactDetails when Former name Date selected" in new Setup {
+    "Redirect to ALF when Former name Date selected" in new Setup {
       mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
+      mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
@@ -103,6 +105,20 @@ class FormerNameDateControllerSpec extends ControllerSpec
       )) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+      }
+    }
+    "Redirect to International home address as a NETP when Former name Date selected" in new Setup {
+      mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
+      mockPartyType(Future.successful(NETP))
+      mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
+
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+        "formerNameDate.day" -> "1",
+        "formerNameDate.month" -> "2",
+        "formerNameDate.year" -> "2020"
+      )) { res =>
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
       }
     }
   }

@@ -108,7 +108,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   "Calling updateApplicantDetails" should {
     "return a ApplicantDetails" when {
       "updating current address" that {
-        val currentAddress = Address(line1 = "Line1", line2 = "Line2", postcode = Some("PO BOX"), addressValidated = true)
+        val currentAddress = Address(line1 = "Line1", line2 = Some("Line2"), postcode = Some("PO BOX"), addressValidated = true)
         val applicantHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
@@ -246,7 +246,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
 
       "updating applicant previous address" that {
-        val addr = Address(line1 = "PrevLine1", line2 = "PrevLine2", postcode = Some("PO PRE"), addressValidated = true)
+        val addr = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
         val previousAddress = PreviousAddressView(true, Some(addr))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {

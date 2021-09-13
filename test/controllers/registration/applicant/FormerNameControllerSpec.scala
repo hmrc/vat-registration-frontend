@@ -17,26 +17,31 @@
 package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
-import fixtures.ApplicantDetailsFixtures
+import fixtures.{ApplicantDetailsFixtures, VatRegistrationFixture}
+import models.api.{NETP, UkCompany}
 import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.former_name
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FormerNameControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with ApplicantDetailsFixtures {
+  with ApplicantDetailsFixtures
+  with VatRegistrationFixture
+  with MockVatRegistrationService {
 
   trait Setup {
     val controller: FormerNameController = new FormerNameController(
       mockAuthClientConnector,
       mockKeystoreConnector,
       mockApplicantDetailsService,
+      vatRegistrationServiceMock,
       app.injector.instanceOf[former_name]
     )
 
@@ -68,16 +73,27 @@ class FormerNameControllerSpec extends ControllerSpec
 
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
+
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
         status(result) mustBe BAD_REQUEST
       }
     }
 
-    "Redirect to FormerNameDate with valid data no former name" in new Setup {
+    "Redirect to ALF if no former name" in new Setup {
+      mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
         redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+      }
+    }
+
+    "Redirect to International Address capture if no former name and NETP" in new Setup {
+      mockPartyType(Future.successful(NETP))
+      mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
+
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
       }
     }
 

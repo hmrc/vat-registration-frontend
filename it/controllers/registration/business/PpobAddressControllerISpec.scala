@@ -44,7 +44,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .address("fudgesicle", addressWithCountry.line1, addressWithCountry.line2, "UK", "XX XX").isFound
+        .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].clearedByKey
@@ -66,7 +66,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .address("fudgesicle", addressWithCountry.line1, addressWithCountry.line2, "UK", "XX XX").isFound
+        .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")

@@ -60,7 +60,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         val businessContact = BusinessContact(
           ppobAddress = Some(Address(
             line1 = "testLine1",
-            line2 = "testLine2",
+            line2 = Some("testLine2"),
             line3 = Some("testLine3"),
             line4 = Some("testLine4"),
             postcode = Some("TE57 7ET"),

@@ -21,8 +21,8 @@ trait ApplicantDetailsFixture {
   val applicantNino = "ZZ987654A"
   val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
   val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
-  val validCurrentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
-  val validPrevAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
+  val validCurrentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
+  val validPrevAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
   val applicantEmail = "test@test"
   val testApplicantPhone = "1234"
   val testFirstName = "testFirstName"

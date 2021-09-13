@@ -17,11 +17,10 @@
 package connectors
 
 import java.util.MissingResourceException
-
 import javax.inject.{Inject, Singleton}
-import models.api.SicCode
+import models.api.{Country, SicCode}
 import play.api.Environment
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.io.Source
@@ -41,6 +40,19 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
 
     val json = Json.parse(fileContents).as[JsObject]
     (json \ "businessTypes").as[Seq[JsObject]]
+  }
+
+  lazy val countries: Seq[Country] = {
+    val countriesFile = "conf/countries-en.json"
+    val countriesBuffer = Source.fromFile(environment.getFile(countriesFile))
+    val rawJson = countriesBuffer.getLines().mkString
+    countriesBuffer.close
+
+    val json = Json.parse(rawJson).as[Map[String, JsValue]]
+
+    json.map {
+      case (code, json) => Country(Some(code), (json \ "name").asOpt[String])
+    }.toSeq.sortBy(_.name)
   }
 
   def getSicCodeDetails(sicCode: String): SicCode = {

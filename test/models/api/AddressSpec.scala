@@ -28,6 +28,33 @@ class AddressSpec extends VatRegSpec with Inspectors {
       val validJson = Json.parse(
         """{
           | "address": {
+          |   "lines": ["line 1", "line 2", "line 3", "line 4", "line 5"],
+          |   "postcode": "BN3 1JU",
+          |   "country": {
+          |     "code": "UK"
+          |   }
+          | },
+          | "id": "testId"
+          |}""".stripMargin)
+
+      implicit val alReads = Address.addressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(
+        Address(
+          line1 = "line 1",
+          line2 = Some("line 2"),
+          line3 = Some("line 3"),
+          line4 = Some("line 4"),
+          line5 = Some("line 5"),
+          country = Some(Country(Some("UK"), None)),
+          postcode = Some("BN3 1JU"),
+          addressValidated = true
+        ))
+    }
+
+    "read successfully when line 5 is missing" in {
+      val validJson = Json.parse(
+        """{
+          | "address": {
           |   "lines": ["line 1", "line 2", "line 3", "line 4"],
           |   "postcode": "BN3 1JU",
           |   "country": {
@@ -41,9 +68,10 @@ class AddressSpec extends VatRegSpec with Inspectors {
       validJson.validate[Address] mustBe JsSuccess(
         Address(
           line1 = "line 1",
-          line2 = "line 2",
+          line2 = Some("line 2"),
           line3 = Some("line 3"),
           line4 = Some("line 4"),
+          line5 = None,
           country = Some(Country(Some("UK"), None)),
           postcode = Some("BN3 1JU"),
           addressValidated = true
@@ -60,7 +88,7 @@ class AddressSpec extends VatRegSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", postcode = Some("BN3 1JU"), addressValidated = false))
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), postcode = Some("BN3 1JU"), addressValidated = false))
     }
 
 
@@ -76,7 +104,7 @@ class AddressSpec extends VatRegSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", country = Some(testCountry.copy(name = None)), addressValidated = false))
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry.copy(name = None)), addressValidated = false))
     }
 
     "read from valid minimal Json - no postcode - country code present" in {
@@ -92,7 +120,7 @@ class AddressSpec extends VatRegSpec with Inspectors {
           |}""".stripMargin)
 
       implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", "line 2", country = Some(testCountry), addressValidated = false))
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry), addressValidated = false))
     }
 
   }
