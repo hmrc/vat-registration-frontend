@@ -20,8 +20,9 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.SoleTraderNameForm
+import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
+import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.soletrader_name
 
@@ -33,6 +34,7 @@ class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreCo
                                                val authConnector: AuthConnector,
                                                val applicantDetailsService: ApplicantDetailsService,
                                                val tradingDetailsService: TradingDetailsService,
+                                               val vatRegistrationService: VatRegistrationService,
                                                view: soletrader_name
                                               )(implicit val appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
@@ -57,8 +59,12 @@ class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreCo
             } yield BadRequest(view(errors)),
           success => {
             val name = success
-            tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) map {
-              _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
+            tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) flatMap {
+              _ =>
+                vatRegistrationService.partyType.map {
+                  case NETP => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
+                  case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
+                }
             }
           }
         )

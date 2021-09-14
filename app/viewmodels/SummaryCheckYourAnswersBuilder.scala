@@ -343,6 +343,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.startDate",
       returns.startDate match {
         case Some(date) => Some(date.format(presentationFormatter))
+        case None if partyType.equals(NETP) => None
         case None => Some(s"$sectionId.mandatoryStartDate")
       },
       if (mandatoryRegistration) Some(returnsRoutes.ReturnsController.mandatoryStartPage().url)

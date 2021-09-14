@@ -21,8 +21,9 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.returns.{routes => baseRoutes}
 import forms.ChargeExpectancyForm
+import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, VatRegistrationService}
 import views.html.returns.claim_refunds_view
 
 import javax.inject.Inject
@@ -31,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
                                        val authConnector: AuthClientConnector,
                                        val returnsService: ReturnsService,
+                                       val vatRegistrationService: VatRegistrationService,
                                        val claimRefundsView: claim_refunds_view)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
@@ -57,16 +59,13 @@ class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
             for {
               _ <- returnsService.saveReclaimVATOnMostReturns(success)
               isVoluntary <- returnsService.isVoluntary
-            } yield {
-              if (isVoluntary) {
-                Redirect(baseRoutes.ReturnsController.voluntaryStartPage())
-              }
-              else {
-                Redirect(baseRoutes.ReturnsController.mandatoryStartPage())
-              }
+              partyType <- vatRegistrationService.partyType
+            } yield (isVoluntary, partyType) match {
+              case (_, NETP) => Redirect(routes.SendGoodsOverseasController.show())
+              case (true, _) => Redirect(baseRoutes.ReturnsController.voluntaryStartPage())
+              case (false, _) => Redirect(baseRoutes.ReturnsController.mandatoryStartPage())
             }
           }
         )
   }
-
 }

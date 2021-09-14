@@ -17,13 +17,15 @@
 package controllers.registration.business
 
 import fixtures.VatRegistrationFixture
-import models.{TradingDetails, TradingNameView}
+import models.api.UkCompany
+import models.{CurrentProfile, TradingDetails, TradingNameView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.soletrader_name
 
 import scala.concurrent.Future
@@ -38,6 +40,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
       mockTradingDetailsService,
+      mockVatRegistrationService,
       view
     )
 
@@ -97,6 +100,8 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
         .thenReturn(Future.successful(fullS4L))
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
         .thenReturn(Future.successful(tradingName))
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "trading-name" -> "Test Trader"

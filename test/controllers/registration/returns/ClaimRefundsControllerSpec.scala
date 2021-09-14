@@ -18,6 +18,7 @@ package controllers.registration.returns
 
 import _root_.models._
 import fixtures.VatRegistrationFixture
+import models.api.UkCompany
 import models.api.returns.Returns
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -25,6 +26,7 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.returns.claim_refunds_view
 
 import scala.concurrent.Future
@@ -36,6 +38,7 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
       mockKeystoreConnector,
       mockAuthClientConnector,
       mockReturnsService,
+      mockVatRegistrationService,
       app.injector.instanceOf[claim_refunds_view]
     )
 
@@ -69,8 +72,11 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
 
   "submit" should {
     "return SEE_OTHER when they expect to reclaim more vat than they charge and redirect to VAT Start Page - mandatory flow" in new Setup {
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
+
 
       when(mockReturnsService.isVoluntary(any(), any()))
         .thenReturn(Future.successful(!voluntary))
@@ -86,6 +92,8 @@ class ClaimRefundsControllerSpec extends ControllerSpec with VatRegistrationFixt
     }
 
     "return SEE_OTHER when they don't expect to reclaim more vat than they charge and redirect to VAT Start Page - voluntarily flow" in new Setup {
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(false))))
 

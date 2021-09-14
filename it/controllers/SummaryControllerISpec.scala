@@ -151,7 +151,6 @@ class SummaryControllerISpec extends ControllerISpec {
           ("Main business activity", "super business"),
           ("SIC codes", "super business"),
           ("Confirm the business’s Standard Industry Classification (SIC) codes for VAT", "AB123 - super business"),
-          ("VAT start date", "The date the company is registered with Companies House"),
           ("Zero rated turnover for the next 12 months", "£1,234.00"),
           ("Expect to claim VAT refunds regularly?", "Yes"),
           ("When do you want to submit VAT Returns?", "January, April, July and October"),
@@ -162,7 +161,6 @@ class SummaryControllerISpec extends ControllerISpec {
           ("Fulfilment Warehouse number", testWarehouseNumber),
           ("Fulfilment Warehouse business name", testWarehouseName),
           ("Trading name", testCompanyName),
-          ("Apply for EORI?", "No"),
           ("Have a business bank account set up", "Yes"),
           ("Bank details", "testName BIC IBAN"),
           ("Do you want to join the Flat Rate Scheme?", "No")

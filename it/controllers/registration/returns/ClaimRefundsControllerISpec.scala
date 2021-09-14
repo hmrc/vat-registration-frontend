@@ -2,7 +2,7 @@
 package controllers.registration.returns
 
 import itutil.ControllerISpec
-import models.api.Threshold
+import models.api.{Threshold, UkCompany}
 import models.api.returns.Returns
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -42,6 +42,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -56,6 +57,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
