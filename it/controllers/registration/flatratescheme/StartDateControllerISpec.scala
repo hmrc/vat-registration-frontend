@@ -2,7 +2,6 @@
 package controllers.registration.flatratescheme
 
 import itutil.ControllerISpec
-import models.api.Threshold
 import models.api.returns.Returns
 import models.{FRSDateChoice, FlatRateScheme, Start}
 import org.jsoup.Jsoup
@@ -48,7 +47,7 @@ class StartDateControllerISpec extends ControllerISpec {
     reclaimVatOnMostReturns = Some(true),
     returnsFrequency = None,
     staggerStart = None,
-    startDate = Some(LocalDate.of(2017,1,2))
+    startDate = Some(LocalDate.of(2017, 1, 2))
   ))
 
   implicit val s4lFrsKey = FlatRateScheme.s4lKey
@@ -69,7 +68,7 @@ class StartDateControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("threshold-data", Json.toJson(threshold))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
         .vatScheme.has("returns", returnsData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -88,7 +87,7 @@ class StartDateControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("threshold-data", Json.toJson(threshold))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
         .vatScheme.has("returns", returnsDataWithStartDate)
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -112,7 +111,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
-          .vatScheme.has("threshold-data", Json.toJson(threshold))
+          .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -132,7 +131,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsData)
-          .vatScheme.has("threshold-data", Json.toJson(threshold))
+          .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -151,8 +150,8 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("returns",returnsDataWithStartDate)
-          .vatScheme.has("threshold-data", Json.toJson(threshold))
+          .vatScheme.has("returns", returnsDataWithStartDate)
+          .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -175,7 +174,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+          .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = voluntaryThreshold))))
           .vatScheme.has("returns", returnsDataWithStartDate)
           .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(oneDayBeforeEdrDate)))))
           .audit.writesAudit()
@@ -195,7 +194,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+          .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = voluntaryThreshold))))
           .vatScheme.doesNotHave("returns")
           .audit.writesAudit()
           .audit.writesAuditMerged()

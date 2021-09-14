@@ -17,7 +17,7 @@
 package services
 
 import _root_.models._
-import _root_.models.api.Threshold
+import _root_.models.api.{NETP, Threshold}
 import models.api.returns._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -249,57 +249,93 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     val overTwelveMonthDate = LocalDate.of(2017, 6, 6)
     val pastThirtyDayDate = LocalDate.of(2017, 12, 12)
     val nextThirtyDayDate = LocalDate.of(2017, 12, 12)
+    val overseasDate = LocalDate.now()
 
-    "return a date when both the vatThresholdPostIncorp and vatExpectedThresholdPostIncorp dates are present" in new Setup {
+    "return a date when both the thresholdPreviousThirtyDays and thresholdInTwelveMonths dates are present" in new Setup {
       val thresholdDates: Threshold = Threshold(
         mandatoryRegistration = true,
         Some(pastThirtyDayDate),
         Some(overTwelveMonthDate)
       )
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdDates))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdDates))
+        ))
+      )
 
       await(service.retrieveCalculatedStartDate) mustBe overTwelveMonthDate.withDayOfMonth(1).plusMonths(2)
     }
 
-    "return a date when just the overTwelveMonthDate is present" in new Setup {
+    "return a date when just the thresholdInTwelveMonths is present" in new Setup {
       val thresholdFirstDateOnly: Threshold = Threshold(mandatoryRegistration = true, None, Some(overTwelveMonthDate))
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdFirstDateOnly))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdFirstDateOnly))
+        ))
+      )
 
       await(service.retrieveCalculatedStartDate) mustBe overTwelveMonthDate.withDayOfMonth(1).plusMonths(2)
     }
 
-    "return a date when just the pastThirtyDayDate is present" in new Setup {
+    "return a date when just the thresholdPreviousThirtyDays is present" in new Setup {
       val thresholdSecondDateOnly: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(pastThirtyDayDate))
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdSecondDateOnly))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdSecondDateOnly))
+        ))
+      )
 
       await(service.retrieveCalculatedStartDate) mustBe pastThirtyDayDate
     }
 
-    "return a date when just the nextThirtyDayDate is present" in new Setup {
+    "return a date when just the thresholdNextThirtyDays is present" in new Setup {
       val thresholdSecondDateOnly: Threshold = Threshold(
         mandatoryRegistration = true,
         thresholdNextThirtyDays = Some(nextThirtyDayDate)
       )
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdSecondDateOnly))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdSecondDateOnly))
+        ))
+      )
 
       await(service.retrieveCalculatedStartDate) mustBe nextThirtyDayDate
     }
 
+    "return a date when thresholdOverseas is present for an overseas user" in new Setup {
+      val thresholdSecondDateOnly: Threshold = Threshold(
+        mandatoryRegistration = true,
+        thresholdOverseas = Some(overseasDate)
+      )
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdSecondDateOnly, partyType = NETP))
+        ))
+      )
+
+      await(service.retrieveCalculatedStartDate) mustBe overseasDate
+    }
+
     "throw a InternalServerException when no dates are present" in new Setup {
       val thresholdNoDates: Threshold = generateThreshold()
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdNoDates))
+        ))
+      )
 
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(thresholdNoDates))
+      intercept[InternalServerException](await(service.retrieveCalculatedStartDate)).message mustBe "[ReturnsService] Unable to calculate start date due to missing threshold data"
+    }
 
-      intercept[InternalServerException](await(service.retrieveCalculatedStartDate))
+    "throw a InternalServerException when overseas date is missing for overseas user" in new Setup {
+      val thresholdNoDates: Threshold = generateThreshold()
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdNoDates, partyType = NETP))
+        ))
+      )
+
+      intercept[InternalServerException](await(service.retrieveCalculatedStartDate)).message mustBe "[ReturnsService] Overseas user missing overseas threshold date"
     }
   }
 
@@ -335,8 +371,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsFixed)))
 
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(threshold))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = threshold))
+        ))
+      )
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.calculated_date))
     }
@@ -347,8 +386,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(Some(returnsAlt)))
 
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(threshold))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = threshold))
+        ))
+      )
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.specific_date))
     }
@@ -357,8 +399,11 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(threshold))
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = threshold))
+        ))
+      )
 
       await(service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, None, None)
     }
