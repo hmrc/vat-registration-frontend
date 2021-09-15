@@ -20,7 +20,6 @@ import fixtures.VatRegistrationFixture
 import models.{TradingDetails, TradingNameView}
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded

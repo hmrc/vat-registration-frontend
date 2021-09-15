@@ -157,7 +157,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), transactor = Some(testNetpTransactorDetails))),
-    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))))),
+    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None)),
     returns = Some(fullReturns.copy(overseasCompliance = Some(testFullOverseasCompliance))),
     bankAccount = Some(testOverseasBankAccount)
   )

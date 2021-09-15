@@ -39,7 +39,7 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
     }
 
   def getS4LCompletion(data: TradingDetails): Completion[TradingDetails] = data match {
-    case TradingDetails(Some(_), Some(_)) => Complete(data)
+    case TradingDetails(Some(_), _) => Complete(data)
     case _ => Incomplete(data)
   }
 

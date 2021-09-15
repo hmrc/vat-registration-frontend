@@ -106,15 +106,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
     }
   }
 
-  "submitTradingDetails" should {
-    "if the S4L model is incomplete, save to S4L" in new Setup() {
-      when(mockS4LService.save(any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      await(service.submitTradingDetails(regId, incompleteS4L)) mustBe incompleteS4L
-    }
-
-    "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
+  "submitTradingDetails" should {"if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clearKey(any(), any(), any()))
@@ -126,11 +118,13 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
   }
 
   "saveTradingName" should {
-    "amend the trading name on a S4L model should not save to pre pop" in new Setup() {
+    "save a complete model without EORI flag to the backend and clear S4L" in new Setup() {
       when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.save(any())(any(), any(), any(), any()))
+      when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
+      when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveTradingName(regId, tradingNameViewNo.yesNo, tradingNameViewNo.tradingName)) mustBe TradingDetails(Some(tradingNameViewNo))
     }
