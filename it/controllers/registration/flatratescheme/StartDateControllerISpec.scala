@@ -186,7 +186,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
         }
       }
       "return INTERNAL_SERVER_ERROR when no returns or threshold data exists" in new Setup {

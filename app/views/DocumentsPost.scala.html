@@ -1,0 +1,56 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import featureswitch.core.config.SaveAndContinueLater
+@import config.FrontendAppConfig
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        panelIndent: components.panelIndent,
+        link: components.link,
+        saveProgressButton: components.saveProgressButton
+)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("pages.attachments.documentsPost.title")))) {
+
+    @h1("pages.attachments.documentsPost.title")
+
+    @p { @messages("pages.attachments.documentsPost.para") }
+    @panelIndent {
+        @messages("pages.attachments.documentsPost.line1")<br>
+        @messages("pages.attachments.documentsPost.line2")<br>
+        @messages("pages.attachments.documentsPost.line3")<br>
+        @messages("pages.attachments.documentsPost.postCode")<br>
+        @messages("pages.attachments.documentsPost.country")
+    }
+
+    <div class="govuk-button-group">
+        @link(
+            link = controllers.routes.SummaryController.show().url,
+            messageKey = "app.common.continue",
+            isButton = true
+        )
+
+        @if(appConfig.isEnabled(SaveAndContinueLater)) {
+            @saveProgressButton()
+        }
+    </div>
+
+}

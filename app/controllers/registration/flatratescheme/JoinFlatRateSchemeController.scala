@@ -46,7 +46,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
         vatRegistrationService.fetchTurnoverEstimates flatMap { res =>
           val turnoverEstimates = res.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates"))
           if (turnoverEstimates.turnoverEstimate > 150000L) {
-            Future.successful(Redirect(controllers.routes.SummaryController.show()))
+            Future.successful(Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve()))
           } else {
             flatRateService.getFlatRate map { flatRateScheme =>
               val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
@@ -65,7 +65,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
             if (joiningFRS.answer) {
               Redirect(controllers.routes.FlatRateController.annualCostsInclusivePage())
             } else {
-              Redirect(controllers.routes.SummaryController.show())
+              Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
             }
           }
         )

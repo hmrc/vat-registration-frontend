@@ -71,7 +71,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
         answers => {
           val (choice, optDate) = answers
           flatRateService.saveStartDate(choice, optDate) map { _ =>
-            Redirect(controllers.routes.SummaryController.show())
+            Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
           }
         }
       )

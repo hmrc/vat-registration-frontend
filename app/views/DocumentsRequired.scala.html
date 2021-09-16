@@ -1,0 +1,64 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import featureswitch.core.config.SaveAndContinueLater
+@import config.FrontendAppConfig
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        bullets: components.bullets,
+        link: components.link,
+        saveProgressButton: components.saveProgressButton
+)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("pages.attachments.documentsRequired.title")))) {
+
+    @h1("pages.attachments.documentsRequired.title")
+
+    @p { @messages("pages.attachments.documentsRequired.evidence") }
+    @bullets(
+        "pages.attachments.documentsRequired.bullet1",
+        "pages.attachments.documentsRequired.bullet2",
+        "pages.attachments.documentsRequired.bullet3"
+    )
+
+    @p { @messages("pages.attachments.documentsRequired.additionalEvidence") }
+    @bullets(
+        "pages.attachments.documentsRequired.additionalBullet1",
+        "pages.attachments.documentsRequired.additionalBullet2",
+        "pages.attachments.documentsRequired.additionalBullet3",
+        "pages.attachments.documentsRequired.additionalBullet4",
+        "pages.attachments.documentsRequired.additionalBullet5",
+        "pages.attachments.documentsRequired.additionalBullet6"
+    )
+
+    <div class="govuk-button-group">
+        @link(
+            link = controllers.registration.attachments.routes.DocumentsPostController.show.url,
+            messageKey = "app.common.continue",
+            isButton = true
+        )
+
+        @if(appConfig.isEnabled(SaveAndContinueLater)) {
+            @saveProgressButton()
+        }
+    </div>
+
+}

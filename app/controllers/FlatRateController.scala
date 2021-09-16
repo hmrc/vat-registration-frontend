@@ -128,7 +128,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             if (view.answer) {
               Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
             } else {
-              Redirect(controllers.routes.SummaryController.show())
+              Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
             }
           }
         )
@@ -164,7 +164,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           } yield if (view.answer) {
             Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
           } else {
-            Redirect(controllers.routes.SummaryController.show())
+            Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
           }
         )
   }

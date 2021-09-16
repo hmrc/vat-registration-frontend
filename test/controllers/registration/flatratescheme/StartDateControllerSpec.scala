@@ -166,7 +166,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
 
         submitAuthorised(controller.submit(), request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
+          redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
         }
       }
       "a valid different date is posted" in new Setup {
