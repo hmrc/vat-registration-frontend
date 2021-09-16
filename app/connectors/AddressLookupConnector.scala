@@ -16,6 +16,7 @@
 
 package connectors
 
+import config.FrontendAppConfig
 import models.api.Address
 import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.http.HeaderNames._
@@ -29,27 +30,21 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
 
 @Singleton
-class AddressLookupConnector @Inject()(val http: HttpClient, config: ServicesConfig)
+class AddressLookupConnector @Inject()(val http: HttpClient, appConfig: FrontendAppConfig)
                                       (implicit ec: ExecutionContext) {
-
-  lazy val addressLookupFrontendUrl: String = config.baseUrl("address-lookup-frontend")
 
   implicit val reads: Address.addressLookupReads.type = Address.addressLookupReads
 
-  def getAddress(id: String)(implicit hc: HeaderCarrier): Future[Address] = {
-    http.GET[Address](s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id")
-  }
+  def getAddress(id: String)(implicit hc: HeaderCarrier): Future[Address] =
+    http.GET[Address](appConfig.addressLookupRetrievalUrl(id))
 
-  def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] = {
-    val postUrl = s"$addressLookupFrontendUrl/api/v2/init"
-
-    http.POST[AddressLookupConfigurationModel, HttpResponse](postUrl, alfConfig).map { resp =>
+  def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] =
+    http.POST[AddressLookupConfigurationModel, HttpResponse](appConfig.addressLookupJourneyUrl, alfConfig).map { resp =>
       resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
         logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
         throw new ALFLocationHeaderNotSetException
       }
     }
-  }
 }
 
 private[connectors] class ALFLocationHeaderNotSetException extends NoStackTrace

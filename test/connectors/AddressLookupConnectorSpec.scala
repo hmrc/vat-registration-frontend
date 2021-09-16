@@ -16,6 +16,7 @@
 
 package connectors
 
+import config.FrontendAppConfig
 import fixtures.{AddressLookupConstants, VatRegistrationFixture}
 import models.api.Address
 import models.external.addresslookup._
@@ -29,43 +30,40 @@ import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 
 class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture {
 
+  val appConfig = app.injector.instanceOf[FrontendAppConfig]
   class Setup {
     val connector: AddressLookupConnector = new AddressLookupConnector(
       mockHttpClient,
-      mockServicesConfig
-    ) {
-      override lazy val addressLookupFrontendUrl: String = "tst-url"
-    }
+      appConfig
+    )
 
-    val dummyUrl = "test-url"
     val redirectUrl = "redirect-url"
     val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"), addressValidated = true)
   }
 
   "getAddress" should {
     "return an ScrsAddress successfully" in new Setup {
-      mockHttpGET[Address]("tst-url", testAddress)
+      mockHttpGET[Address](appConfig.addressLookupRetrievalUrl("id"), testAddress)
       connector.getAddress("id") returns testAddress
     }
 
     "return the correct response when an Internal Server Error occurs" in new Setup {
-      mockHttpFailedGET[Address](dummyUrl, internalServiceException)
+      mockHttpFailedGET[Address](appConfig.addressLookupRetrievalUrl("id"), internalServiceException)
       connector.getAddress("id") failedWith classOf[InternalServerException]
     }
   }
 
-
   "getOnRampUrl" should {
     "return a valid call to be used in a redirect" in new Setup {
       val successfulResponse = HttpResponse(PERMANENT_REDIRECT, responseHeaders = Map(LOCATION -> Seq(redirectUrl)))
-      mockHttpPOST[JsObject, HttpResponse](dummyUrl, successfulResponse)
+      mockHttpPOST[JsObject, HttpResponse](appConfig.addressLookupJourneyUrl, successfulResponse)
 
       connector.getOnRampUrl(AddressLookupConstants.testAlfConfig) returns Call(GET, redirectUrl)
     }
 
     "throw an exception when address lookup service does not respond with redirect location" in new Setup {
       val badResponse = HttpResponse(OK, responseHeaders = Map.empty)
-      mockHttpPOST[JsObject, HttpResponse](dummyUrl, badResponse)
+      mockHttpPOST[JsObject, HttpResponse](appConfig.addressLookupJourneyUrl, badResponse)
 
       connector.getOnRampUrl(AddressLookupConstants.testAlfConfig) failedWith classOf[ALFLocationHeaderNotSetException]
     }

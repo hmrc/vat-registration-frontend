@@ -28,6 +28,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubIncorpIdJourney,
     StubPersonalDetailsValidation,
     StubEmailVerification,
+    StubAlf,
     StubIcl,
     StubSoleTraderIdentification,
     StubUpscan,
@@ -76,6 +77,11 @@ case object StubSoleTraderIdentification extends FeatureSwitch {
 case object StubUpscan extends FeatureSwitch {
   val configName = "feature-switch.stub-upscan"
   val displayName = "Stub Upscan flow"
+}
+
+case object StubAlf extends FeatureSwitch {
+  val configName = "feature-switch.stub-alf"
+  val displayName = "Stub Address Lookup Frontend"
 }
 
 case object StubBars extends FeatureSwitch {

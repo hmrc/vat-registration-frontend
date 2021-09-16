@@ -46,7 +46,7 @@ lazy val microservice = Project(appName, file("."))
     bobbyRulesURL := Some(new URL("https://webstore.tax.service.gov.uk/bobby-config/deprecated-dependencies.json"))
   )
   .settings(
-    fork                       in IntegrationTest := false,
+    fork                       in IntegrationTest := true,
     testForkedParallel         in IntegrationTest := false,
     parallelExecution          in IntegrationTest := false,
     logBuffered                in IntegrationTest := false,
