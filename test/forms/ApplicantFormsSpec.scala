@@ -183,7 +183,7 @@ class ApplicantFormsSpec extends VatRegSpec {
   }
 
   "ApplicantHomeAddressForm" should {
-    val address = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+    val address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
     val testForm = HomeAddressForm.form
     val testData = HomeAddressView(address.id, Some(address))
 
@@ -215,7 +215,7 @@ class ApplicantFormsSpec extends VatRegSpec {
   }
 
   "PreviousAddressForm" should {
-    val address = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+    val address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
     val testForm = PreviousAddressForm.form
     val testData = PreviousAddressView(yesNo = false, Some(address))
 

@@ -4,7 +4,7 @@ package controllers.registration.applicant
 import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Address, Country}
+import models.api.{Address, Country, EligibilitySubmissionData, NETP}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, FormerNameView, HomeAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
@@ -28,7 +28,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     role = role
   )
 
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
   "POST Previous Address page" should {
     val s4lData = ApplicantDetails(
@@ -75,6 +75,22 @@ class PreviousAddressControllerISpec extends ControllerISpec {
          |  }
          |}""".stripMargin)
 
+    "redirect to International Address capture if the user is a NETP" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .vatScheme.contains(emptyVatSchemeNetp)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit().url)
+        .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
+    }
     "patch Applicant Details in backend" in new Setup {
       given()
         .user.isAuthorised
@@ -93,8 +109,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
-        (json \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
+        (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
+        (json \ "currentAddress" \ "line2").as[JsString].value mustBe testLine2
         (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
         (json \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
         (json \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"

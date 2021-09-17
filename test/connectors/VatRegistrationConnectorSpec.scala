@@ -182,7 +182,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling getBusinessContact" should {
 
     val businessContactJson = Json.parse(
-      """
+      s"""
         |{
         | "digitalContact": {
         |   "email": "me@you.com",
@@ -191,9 +191,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         | },
         | "website": "www.wwwwwwwwwww.com",
         | "ppob": {
-        |   "line1": "test",
-        |   "line2": "test",
-        |   "postcode": "XX1 1XX",
+        |   "line1": "$testLine1",
+        |   "line2": "$testLine2",
+        |   "postcode": "$testPostcode",
         |   "country": {
         |     "name": "United Kingdom",
         |     "code": "UK"
@@ -206,11 +206,11 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
 
     val expectedModel = BusinessContact(
       ppobAddress = Some(Address(
-        line1 = "test",
-        line2 = "test",
+        line1 = testLine1,
+        line2 = Some(testLine2),
         line3 = None,
         line4 = None,
-        postcode = Some("XX1 1XX"),
+        postcode = Some(testPostcode),
         country = Some(testCountry),
         addressValidated = true
       )),
@@ -379,7 +379,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "return a JsValue with a full Applicant Details view model" in new Setup {
-      val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+      val currentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
       val fullApplicantDetails: ApplicantDetails = partialApplicantDetails.copy(
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),

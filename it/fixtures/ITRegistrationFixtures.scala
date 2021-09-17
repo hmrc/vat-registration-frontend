@@ -28,7 +28,6 @@ import java.time.LocalDate
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testRegId = "1"
-  val address = Address(line1 = "3 Test Building", line2 = "5 Test Road", postcode = Some("TE1 1ST"), addressValidated = true)
 
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
@@ -66,8 +65,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
   val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
   val fullReturns: Returns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
+
+  val testLine1 = "line1"
+  val testLine2 = "line2"
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val addressWithCountry = Address("line1", "line2", None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
+  val address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE1 1ST"), addressValidated = true)
+  val addressWithCountry = Address(testLine1, Some(testLine2), None, None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
 
   val testWarehouseNumber = "tst123456789012"
   val testWarehouseName = "testWarehouseName"
@@ -126,6 +129,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     testRegId,
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+  )
+
+  val emptyVatSchemeNetp: VatScheme = VatScheme(
+    testRegId,
+    status = VatRegStatus.draft,
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
   )
 
   val vatReg = VatScheme(

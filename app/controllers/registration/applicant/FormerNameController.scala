@@ -21,8 +21,9 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameForm
+import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.former_name
 
@@ -33,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FormerNameController @Inject()(val authConnector: AuthConnector,
                                      val keystoreConnector: KeystoreConnector,
                                      val applicantDetailsService: ApplicantDetailsService,
+                                     vatRegistrationService: VatRegistrationService,
                                      formerNamePage: former_name
                                     )(implicit appConfig: FrontendAppConfig,
                                       val executionContext: ExecutionContext,
@@ -54,12 +56,17 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         FormerNameForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(formerNamePage(badForm))),
-          data => applicantDetailsService.saveApplicantDetails(data) map { _ =>
+          data => applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
             if (data.yesNo) {
-              Redirect(applicantRoutes.FormerNameDateController.show())
+              Future.successful(Redirect(applicantRoutes.FormerNameDateController.show()))
             }
             else {
-              Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
+              vatRegistrationService.partyType map {
+                case NETP =>
+                  Redirect(applicantRoutes.InternationalHomeAddressController.show())
+                case _ =>
+                  Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
+              }
             }
           }
         )

@@ -64,6 +64,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val changeTransactorDetailsUrl: String = {
       partyType match {
         case Individual | NETP | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case Individual | NETP | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
         case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney().url
         case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
       }
@@ -189,7 +190,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val homeAddress = optSummaryListRowSeq(
       s"$sectionId.homeAddress",
       applicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq),
-      Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+      partyType match {
+        case NETP =>
+          Some(applicantRoutes.InternationalHomeAddressController.show().url)
+        case _ =>
+          Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+      }
     )
 
     val moreThanThreeYears = optSummaryListRowBoolean(
@@ -201,7 +207,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val previousAddress = optSummaryListRowSeq(
       s"$sectionId.previousAddress",
       applicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq),
-      Some(applicantRoutes.PreviousAddressController.show().url)
+      partyType match {
+        case NETP =>
+          Some(applicantRoutes.InternationalPreviousAddressController.show().url)
+        case _ =>
+          Some(applicantRoutes.PreviousAddressController.show().url)
+      }
     )
 
     Seq(
@@ -256,7 +267,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val ppobRow = optSummaryListRowSeq(
       s"$sectionId.ppob",
       businessContact.ppobAddress.map(Address.normalisedSeq),
-      Some(businessContactRoutes.PpobAddressController.startJourney().url)
+      partyType match {
+        case NETP =>
+          Some(businessContactRoutes.InternationalPpobAddressController.show().url)
+        case _ =>
+          Some(businessContactRoutes.PpobAddressController.startJourney().url)
+      }
     )
 
     val contactPreferenceRow = optSummaryListRowString(

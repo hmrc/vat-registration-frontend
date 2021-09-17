@@ -30,8 +30,8 @@ trait ApplicantDetailsFixtures {
   val testApplicantNino = "AB123456C"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
   val testRole = Some(Director)
-  val validCurrentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
-  val validPrevAddress = Address(line1 = "TestLine11", line2 = "TestLine22", postcode = Some("TE1 1ST"), addressValidated = true)
+  val validCurrentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
+  val validPrevAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
   val testCrn = "testCrn"
   val testChrn = "testChrn"

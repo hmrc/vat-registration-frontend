@@ -39,7 +39,7 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
 
     val dummyUrl = "test-url"
     val redirectUrl = "redirect-url"
-    val testAddress = Address(line1 = "line1", line2 = "line2", postcode = Some("postcode"), addressValidated = true)
+    val testAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some(testPostcode), addressValidated = true)
   }
 
   "getAddress" should {

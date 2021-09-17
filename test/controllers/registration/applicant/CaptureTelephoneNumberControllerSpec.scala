@@ -19,29 +19,32 @@ package controllers.registration.applicant
 import controllers.{routes => appRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.TelephoneNumber
+import models.api.{NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
 import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.capture_telephone_number
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class CaptureTelephoneNumberControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with ApplicantDetailsFixtures {
+  with ApplicantDetailsFixtures
+  with MockVatRegistrationService {
 
   trait Setup {
-
     val view: capture_telephone_number = app.injector.instanceOf[capture_telephone_number]
     val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
       view,
       mockAuthClientConnector,
       mockKeystoreConnector,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
+      vatRegistrationServiceMock
     )
 
     mockAuthenticated()
@@ -49,9 +52,6 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
   }
 
   val fakeRequest = FakeRequest(routes.CaptureTelephoneNumberController.show())
-
-
-
   val incompleteApplicantDetails = emptyApplicantDetails.copy(
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
@@ -82,18 +82,28 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
         result => status(result) mustBe BAD_REQUEST
       }
     }
-
     "return SEE_OTHER with valid Contact Details entered" in new Setup {
       val phone = "01234567891"
 
       mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
+      mockPartyType(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) {
-        res =>
+      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
+   "return SEE_OTHER with valid Contact Details entered for a NETP" in new Setup {
+     val phone = "01234567891"
+
+     mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
+     mockPartyType(Future.successful(NETP))
+
+     submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
+         status(res) mustBe SEE_OTHER
+         redirectLocation(res) mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+     }
+   }
   }
 
 }

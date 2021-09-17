@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package testControllers.registration.business
+package controllers.registration.business
 
-import controllers.registration.business.PpobAddressController
 import fixtures.VatRegistrationFixture
 import models.api.Address
 import testHelpers.{ControllerSpec, FutureAssertions}

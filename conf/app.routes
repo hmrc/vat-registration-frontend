@@ -115,6 +115,10 @@ POST        /arrange-supply-of-workers                                          
 GET         /principal-place-business                                                          controllers.registration.business.PpobAddressController.startJourney
 GET         /principal-place-business/acceptFromTxm                                            controllers.registration.business.PpobAddressController.callback(id: String ?= "")
 
+# International PPOB address
+GET         /principal-place-business/international                                            controllers.registration.business.InternationalPpobAddressController.show
+POST        /principal-place-business/international                                            controllers.registration.business.InternationalPpobAddressController.submit
+
 ## BUSINESS CONTACT DETAILS PAGE
 GET         /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.show
 POST        /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.submit
@@ -122,6 +126,14 @@ POST        /business-contact-details                                           
 ## Applicant ADDRESS PAGE
 GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.redirectToAlf
 GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
+
+## International home address
+GET         /home-address/international                                                        controllers.registration.applicant.InternationalHomeAddressController.show
+POST        /home-address/international                                                        controllers.registration.applicant.InternationalHomeAddressController.submit
+
+## International home address
+GET         /previous-address/international                                                    controllers.registration.applicant.InternationalPreviousAddressController.show
+POST        /previous-address/international                                                    controllers.registration.applicant.InternationalPreviousAddressController.submit
 
 ## TELEPHONE PAGE
 GET         /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.show

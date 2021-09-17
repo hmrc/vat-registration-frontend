@@ -42,6 +42,8 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
     roleInTheBusiness = Some(Director)
   )
 
+  val keyblock = "applicant-details"
+
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
@@ -78,7 +80,6 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
-    val keyblock = "applicant-details"
     "the ApplicantDetails model is incomplete" should {
       "update S4L and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
@@ -99,6 +100,24 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
+    "update S4L and redirect to International Address for a NETP" in new Setup {
+      disable(StubEmailVerification)
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+        .vatScheme.contains(emptyVatSchemeNetp)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+    }
     "the ApplicantDetails model is complete" should {
       "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
@@ -118,6 +137,25 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
+      }
+      "post to the backend and redirect to International Address for a NETP" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.contains(emptyVatSchemeNetp)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
       }
     }
   }

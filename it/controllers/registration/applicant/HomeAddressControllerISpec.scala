@@ -29,7 +29,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
     role = role
   )
 
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
 
   "GET redirectToAlf" should {

@@ -29,7 +29,13 @@
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 )
 
-@(pageTitle: Option[String] = None, beforeContentBlock: Option[Html] = None, backLink: Boolean = true, signOutLink: Boolean = true, timeout: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(
+        pageTitle: Option[String] = None,
+        beforeContentBlock: Option[Html] = None,
+        backLink: Boolean = true,
+        signOutLink: Boolean = true,
+        timeout: Boolean = true
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @hmrcTrackingConsentSnippet()
 @head = {

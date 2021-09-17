@@ -22,9 +22,10 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
+import models.api.NETP
 import models.view.PreviousAddressView
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, ApplicantDetailsService, SessionProfile}
+import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.previous_address
 
@@ -36,6 +37,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                                           val keystoreConnector: KeystoreConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val addressLookupService: AddressLookupService,
+                                          val vatRegistrationService: VatRegistrationService,
                                           previousAddressPage: previous_address
                                          )(implicit appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext,
@@ -64,10 +66,16 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                 _ => Redirect(routes.CaptureEmailAddressController.show())
               }
             } else {
-              addressLookupService.getJourneyUrl(
-                addressThreeYearsOrLess,
-                applicantRoutes.PreviousAddressController.addressLookupCallback()
-              ) map Redirect
+              vatRegistrationService.partyType flatMap {
+                case NETP =>
+                  Future.successful(Redirect(routes.InternationalPreviousAddressController.show()))
+                case _ =>
+                  addressLookupService.getJourneyUrl(
+                    addressThreeYearsOrLess,
+                    applicantRoutes.PreviousAddressController.addressLookupCallback()
+                  ) map Redirect
+              }
+
             }
         )
   }

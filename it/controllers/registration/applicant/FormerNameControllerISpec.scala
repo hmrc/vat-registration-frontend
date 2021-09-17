@@ -32,7 +32,7 @@ class FormerNameControllerISpec extends ControllerISpec {
     role = role
   )
 
-  val currentAddress = Address(line1 = "TestLine1", line2 = "TestLine2", postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
@@ -124,8 +124,8 @@ class FormerNameControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "currentAddress" \ "line1").as[JsString].value mustBe currentAddress.line1
-        (json \ "currentAddress" \ "line2").as[JsString].value mustBe currentAddress.line2
+        (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
+        (json \ "currentAddress" \ "line2").as[JsString].value mustBe testLine2
         (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
         (json \ "contact" \ "email").as[JsString].value mustBe email
         (json \ "contact" \ "tel").as[JsString].value mustBe "1234"

@@ -20,10 +20,12 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TelephoneNumberForm
+
 import javax.inject.{Inject, Singleton}
 import models.TelephoneNumber
+import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_telephone_number
 
@@ -33,7 +35,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                  val authConnector: AuthConnector,
                                                  val keystoreConnector: KeystoreConnector,
-                                                 applicantDetailsService: ApplicantDetailsService
+                                                 applicantDetailsService: ApplicantDetailsService,
+                                                 vatRegistrationService: VatRegistrationService
                                                 )(implicit appConfig: FrontendAppConfig,
                                                   val executionContext: ExecutionContext,
                                                   baseControllerComponents: BaseControllerComponents)
@@ -56,8 +59,13 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
           formWithErrors =>
             Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit(), formWithErrors))),
           telephone =>
-            applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).map {
-              _ => Redirect(controllers.registration.business.routes.PpobAddressController.startJourney())
+            applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).flatMap { _ =>
+              vatRegistrationService.partyType map {
+                case NETP =>
+                  Redirect(controllers.registration.business.routes.InternationalPpobAddressController.show())
+                case _ =>
+                  Redirect(controllers.registration.business.routes.PpobAddressController.startJourney())
+              }
             }
         )
   }
