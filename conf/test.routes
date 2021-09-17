@@ -41,6 +41,10 @@ POST        /business-identification                          controllers.test.B
 GET         /business-identification/:journeyId               controllers.test.BusinessIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
+POST        /address-lookup/init                              controllers.test.AddressLookupStubController.createJourney
+GET         /address-lookup/confirmed                         controllers.test.AddressLookupStubController.retrieve(id: String)
+
++ nocsrf
 POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
 
 + nocsrf

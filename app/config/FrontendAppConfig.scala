@@ -103,11 +103,20 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
   // Bank holidays
-
   lazy val bankHolidaysUrl = servicesConfig.getString("microservice.services.bank-holidays.url")
 
-  // Bank Account Reputation Section
+  // ALF
+  lazy val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
 
+  def addressLookupJourneyUrl: String =
+    if (isEnabled(StubAlf)) s"$host/register-for-vat/test-only/address-lookup/init"
+    else s"$addressLookupFrontendUrl/api/v2/init"
+
+  def addressLookupRetrievalUrl(id: String): String =
+    if (isEnabled(StubAlf)) s"$host/register-for-vat/test-only/address-lookup/confirmed?id=$id"
+    else s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id"
+
+  // Bank Account Reputation Section
   lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")
 
   def validateBankDetailsUrl: String =
