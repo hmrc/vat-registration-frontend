@@ -25,12 +25,18 @@
 
 @(msg: String, showSaveProgressButton: Boolean = true)(implicit messages: Messages, appConfig: FrontendAppConfig)
 
-@govukButton(Button(
-    content = Text(messages(msg)),
-    preventDoubleClick = true,
-    classes = "govuk-!-margin-right-3"
-))
+@button = {
+    @govukButton(Button(
+        content = Text(messages(msg)),
+        preventDoubleClick = true
+    ))
+}
 
 @if(showSaveProgressButton && appConfig.isEnabled(SaveAndContinueLater)) {
-    @saveProgressButton()
+    <div class="govuk-button-group">
+        @button
+        @saveProgressButton()
+    </div>
+} else {
+    @button
 }

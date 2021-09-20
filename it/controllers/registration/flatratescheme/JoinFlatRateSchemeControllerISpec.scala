@@ -100,7 +100,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.SummaryController.show().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
       }
     }
   }

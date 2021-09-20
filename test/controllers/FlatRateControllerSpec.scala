@@ -238,7 +238,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
+        redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
       }
     }
   }
@@ -301,7 +301,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitYourFlatRate(), request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/check-confirm-answers")
+        redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
       }
     }
   }

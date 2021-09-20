@@ -96,7 +96,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.SummaryController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
       }
     }
 
@@ -156,7 +156,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
       )
 
       submitAuthorised(controller.submit(), request) { result =>
-        redirectLocation(result) mustBe Some(s"$contextRoot/check-confirm-answers")
+        redirectLocation(result) mustBe Some(s"$contextRoot/attachments-resolve")
       }
     }
   }
