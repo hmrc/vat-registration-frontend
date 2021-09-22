@@ -79,7 +79,7 @@
 
 @bulletPost = {
     @messages("pages.application.submission.confirmation.list.post")
-    @link("#", messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
+    @link(controllers.registration.attachments.routes.PostalCoverSheetController.show().url, messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
 }
 
 @bulletLetter = {
