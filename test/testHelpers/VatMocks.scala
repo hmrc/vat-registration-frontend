@@ -66,6 +66,7 @@ trait VatMocks
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockPrePopulationService: PrePopulationService = mock[PrePopulationService]
   implicit lazy val mockTrafficManagementService = mock[TrafficManagementService]
+  implicit lazy val mockAttachmentsService = mock[AttachmentsService]
   lazy val mockTradingDetailsService = mock[TradingDetailsService]
   lazy val mockSummaryService: SummaryService = mock[SummaryService]
   lazy val mockBusinessContactService = mock[BusinessContactService]
@@ -77,8 +78,6 @@ trait VatMocks
   def resetMocks() {
     reset(
       mockHttpClient,
-      mockVatRegistrationService,
-      mockS4LConnector,
       mockS4LConnector,
       mockS4LService,
       mockKeystoreConnector,
@@ -94,6 +93,7 @@ trait VatMocks
       mockAddressLookupConnector,
       mockCurrentProfileService,
       mockReturnsService,
+      mockAttachmentsService,
       mockApplicantDetailsServiceOld,
       mockFlatRateService,
       mockSicAndComplianceService,
