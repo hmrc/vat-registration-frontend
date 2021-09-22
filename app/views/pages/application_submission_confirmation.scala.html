@@ -25,14 +25,14 @@
         p: p,
         formWithCSRF: FormWithCSRF,
         govukPanel: GovukPanel,
-        orderedList: orderedList,
+        orderedListHtml: orderedListHtml,
         link: link,
         govukInsetText: GovukInsetText,
         button: button,
         form: formWithCSRF
 )
 
-@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(identityEvidence: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
@@ -43,7 +43,11 @@
 
     @h1(messages("pages.application.submission.confirmation.heading2"))
 
-    @orderedList(messages("pages.application.submission.confirmation.list.item1"), messages("pages.application.submission.confirmation.list.item2"))
+    @if(identityEvidence) {
+        @orderedListHtml(bulletPost, bulletLetter, bulletRegistration)
+    } else {
+        @orderedListHtml(bulletLetter, bulletRegistration)
+    }
 
     @h1(messages("pages.application.submission.confirmation.heading3"))
 
@@ -68,4 +72,18 @@
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
         @button("pages.application.submission.confirmation.button", showSaveProgressButton = false)
     }
+}
+
+@bulletPost = {
+    @messages("pages.application.submission.confirmation.list.post")
+    @link("#", messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
+}
+
+@bulletLetter = {
+    @messages("pages.application.submission.confirmation.list.item1")
+
+}
+
+@bulletRegistration = {
+    @messages("pages.application.submission.confirmation.list.item2")
 }

@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.returns.Returns
+import models.api.IdentityEvidence
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -33,7 +33,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     fakeApplication.injector.instanceOf[application_submission_confirmation]
 
   val testController = new ApplicationSubmissionController(
-    mockReturnsService,
+    mockAttachmentsService,
     mockAuthClientConnector,
     mockKeystoreConnector,
     applicationSubmissionConfirmationView
@@ -50,8 +50,25 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("testAckRef"))
 
-      when(mockReturnsService.getReturns(any(), any()))
-        .thenReturn(Future.successful(Returns()))
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(List()))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+      }
+    }
+    "display the submission confirmation page to the user when IdentityEvidence is available" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any()))
+        .thenReturn(Future.successful(validVatScheme))
+
+      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("testAckRef"))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK

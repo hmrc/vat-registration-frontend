@@ -18,15 +18,16 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
-import javax.inject.{Inject, Singleton}
+import models.api.IdentityEvidence
 import play.api.mvc._
-import services.{ReturnsService, SessionProfile}
+import services.{AttachmentsService, SessionProfile}
 import views.html.pages.application_submission_confirmation
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationSubmissionController @Inject()(val returnsService: ReturnsService,
+class ApplicationSubmissionController @Inject()(val attachmentsService: AttachmentsService,
                                                 val authConnector: AuthClientConnector,
                                                 val keystoreConnector: KeystoreConnector,
                                                 val applicationSubmissionConfirmationView: application_submission_confirmation)
@@ -38,9 +39,9 @@ class ApplicationSubmissionController @Inject()(val returnsService: ReturnsServi
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        for {
-          returns <- returnsService.getReturns
-        } yield Ok(applicationSubmissionConfirmationView())
+        attachmentsService.getAttachmentList(profile.registrationId).map { attachments =>
+            Ok(applicationSubmissionConfirmationView(attachments.contains(IdentityEvidence)))
+        }
   }
 
   def submit: Action[AnyContent] = isAuthenticated {
