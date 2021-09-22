@@ -50,7 +50,7 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
               serviceName = request2Messages(request)("service.name"),
               deskproId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
-              enableSautrCheck = partyType.equals(Individual),
+              enableSautrCheck = partyType.equals(Individual) || partyType.equals(NETP),
               partyType
             ) map (url => Redirect(url))
           }
