@@ -22,17 +22,19 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Session
+import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.pages.application_submission_confirmation
 
 import scala.concurrent.Future
 
-class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
+class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with MockVatRegistrationService with VatRegistrationFixture {
 
   val applicationSubmissionConfirmationView: application_submission_confirmation =
     fakeApplication.injector.instanceOf[application_submission_confirmation]
 
   val testController = new ApplicationSubmissionController(
+    vatRegistrationServiceMock,
     mockAttachmentsService,
     mockAuthClientConnector,
     mockKeystoreConnector,
@@ -44,11 +46,8 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
-        .thenReturn(Future.successful("testAckRef"))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
         .thenReturn(Future.successful(List()))
@@ -61,14 +60,11 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(mockVatRegistrationService.getVatScheme(any(), any()))
-        .thenReturn(Future.successful(validVatScheme))
-
-      when(mockVatRegistrationService.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
-        .thenReturn(Future.successful("testAckRef"))
-
       when(mockAttachmentsService.getAttachmentList(any())(any()))
         .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK

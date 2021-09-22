@@ -21,10 +21,13 @@ import views.html.pages.application_submission_confirmation
 
 class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
+  val refNum = "VRS 1234 1234 1234"
+
   object ExpectedContent {
     val title = "Your application has been submitted - Register for VAT - GOV.UK"
     val heading = "Your application has been submitted"
     val heading2 = "What happens next"
+    val ackRef = "Your reference number VRS 1234 1234 1234"
     val heading3 = "More information"
     val paragraph = "We have received your application and will write to you with a decision. This usually takes about 20 days."
     val paragraph2 = "Find out more about:"
@@ -44,17 +47,18 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   val viewInstance: application_submission_confirmation = app.injector.instanceOf[application_submission_confirmation]
 
   "Application submission confirmation page" should {
-    lazy val view = viewInstance(false)
-    lazy val doc = Jsoup.parse(view.body)
+    lazy val view = viewInstance(refNum, false)
+    implicit lazy val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
       doc.title must include(ExpectedContent.title)
     }
 
-    "have the correct headings" in {
-      doc.selectFirst(Selectors.h1).text mustBe ExpectedContent.heading
-      doc.select(Selectors.h1).get(1).text mustBe ExpectedContent.heading2
-      doc.select(Selectors.h1).get(2).text mustBe ExpectedContent.heading3
+    "have the correct headings" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+      doc.select("h2:nth-of-type(1)").first().text() mustBe ExpectedContent.heading2
+      doc.select("h2:nth-of-type(2)").first().text() mustBe ExpectedContent.heading3
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
     }
 
     "have the correct paragraphs" in {
@@ -89,7 +93,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   }
 
   "Application submission confirmation page with IdentityEvidence" should {
-    lazy val view = viewInstance(true)
+    lazy val view = viewInstance(refNum, true)
     lazy val doc = Jsoup.parse(view.body)
 
     "have the correct list" in {

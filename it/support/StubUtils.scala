@@ -357,7 +357,7 @@ trait StubUtils {
     def acknowledgementReference(regId: String, ackRef: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/vatreg/$regId/acknowledgement-reference"))
-          .willReturn(ok(ackRef))
+          .willReturn(ok(Json.toJson(ackRef).toString()))
       )
       builder
     }
