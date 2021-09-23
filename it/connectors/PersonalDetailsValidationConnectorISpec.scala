@@ -16,14 +16,14 @@
 
 package connectors
 
-import java.time.LocalDate
-
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import itutil.IntegrationSpecBase
 import models.TransactorDetails
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
+
+import java.time.LocalDate
 
 class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
   "retrieveValidationResult" when {
@@ -58,6 +58,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           testFirstName,
           testLastName,
           Some(testNino),
+          None,
+          identifiersMatch = true,
           testDateOfBirth
         )
 
@@ -95,6 +97,8 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           testFirstName,
           testLastName,
           Some(testNino),
+          None,
+          identifiersMatch = true,
           testDateOfBirth
         )
 

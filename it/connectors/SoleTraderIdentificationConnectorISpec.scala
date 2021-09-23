@@ -120,7 +120,8 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         "registration" -> Json.obj(
           "registrationStatus" -> testRegistration,
           "registeredBusinessPartnerId" -> testSafeId
-        )
+        ),
+        "identifiersMatch" -> false
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
