@@ -28,10 +28,11 @@ trait ApplicantDetailsFixture {
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
+  val testTrn = "0001234567"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), testApplicantDob)
-  val testNetpTransactorDetails = TransactorDetails(testFirstName, testLastName, None, testApplicantDob)
+  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
+  val testNetpTransactorDetails = TransactorDetails(testFirstName, testLastName, None, Some(testTrn), identifiersMatch = false, testApplicantDob)
 
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"

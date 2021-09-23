@@ -225,7 +225,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testIncorpDetails = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
 
   val testSautr = "1234567890"
-  val testTrn = "0001234567"
   val testRegistration = "REGISTERED"
   val testSafeId = "X00000123456789"
   val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
@@ -251,7 +250,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     registration = testRegistration,
     businessVerification = BvPass,
     bpSafeId = Some(testSafeId),
-    identifiersMatch = true
+    identifiersMatch = false
   )
 
   val completeApplicantDetails = ApplicantDetails(

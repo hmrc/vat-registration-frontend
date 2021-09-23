@@ -17,8 +17,8 @@
 package models.view
 
 import java.time.LocalDate
-import models.{ApplicantDetails, TelephoneNumber}
-import models.api.{Address, UkCompany}
+import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
+import models.api.{Address, NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified, Name}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
@@ -81,7 +81,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |      "last": "testLastName"
            |    },
            |    "dateOfBirth": "2020-01-01",
-           |    "nino": "AB123456C"
+           |    "nino": "AB123456C",
+           |    "identifiersMatch": true
            |  },
            |  "entity": {
            |    "companyNumber": "testCrn",
@@ -138,6 +139,77 @@ class ApplicantDetailsSpec extends VatRegSpec {
       )
 
       ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
+    }
+
+    "return a correct full ApplicantDetails view model with netp data" in {
+      val json = Json.parse(
+        s"""
+           |{
+           |  "transactor": {
+           |    "name": {
+           |      "first": "testFirstName",
+           |      "last": "testLastName"
+           |    },
+           |    "dateOfBirth": "2020-01-01",
+           |    "trn": "$testTrn",
+           |    "identifiersMatch": true
+           |  },
+           |  "entity": {
+           |    "firstName": "$testFirstName",
+           |    "lastName": "$testLastName",
+           |    "dateOfBirth": "$testApplicantDob",
+           |    "trn": "$testTrn",
+           |    "sautr": "$testSautr",
+           |    "identifiersMatch": true,
+           |    "businessVerification": "PASS",
+           |    "registration": "REGISTERED",
+           |    "bpSafeId": "$testSafeId"
+           |  },
+           |  "currentAddress": {
+           |    "line1": "TestLine1",
+           |    "line2": "TestLine2",
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
+           |  },
+           |  "contact": {
+           |    "email": "test@t.test",
+           |    "emailVerified": true,
+           |    "tel": "1234"
+           |  },
+           |  "roleInTheBusiness": "03",
+           |  "changeOfName": {
+           |    "name": {
+           |      "first": "New",
+           |      "middle": "Name",
+           |      "last": "Cosmo"
+           |    },
+           |    "change": "2000-07-12"
+           |  },
+           |  "previousAddress": {
+           |    "line1": "TestLine11",
+           |    "line2": "TestLine22",
+           |    "postcode": "TE1 1ST",
+           |    "addressValidated": true
+           |  }
+           |}
+         """.stripMargin)
+
+      val formerName = Name(first = Some("New"), middle = Some("Name"), last = "Cosmo")
+
+      val applicantDetails = ApplicantDetails(
+        entity = Some(testNetpSoleTrader),
+        transactor = Some(testTransactorDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = true)),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
+        formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
+        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
+        roleInTheBusiness = Some(Director)
+      )
+
+      ApplicantDetails.reads(NETP).reads(json) mustBe JsSuccess(applicantDetails)
     }
 
     "return a correct full ApplicantDetails view model with min data" in {
@@ -210,7 +282,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |      "last": "testLastName"
            |    },
            |    "dateOfBirth": "2020-01-01",
-           |    "nino": "AB123456C"
+           |    "nino": "AB123456C",
+           |    "identifiersMatch": true
            |  },
            |  "entity": {
            |    "companyNumber": "testCrn",
@@ -249,6 +322,75 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "addressValidated": true
            |  }
            |}""".stripMargin)
+
+      Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
+    }
+
+    "return a correct full JsValue with netp data" in {
+      val data = ApplicantDetails(
+        entity = Some(testNetpSoleTrader),
+        transactor = Some(testTransactorDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = false)),
+        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+        emailAddress = Some(EmailAddress("test@t.test")),
+        emailVerified = Some(EmailVerified(true)),
+        telephoneNumber = Some(TelephoneNumber("1234")),
+        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
+        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
+        roleInTheBusiness = Some(OwnerProprietor)
+      )
+
+      val validJson = Json.parse(
+        s"""
+           |{
+           |  "transactor": {
+           |    "name": {
+           |      "first": "testFirstName",
+           |      "last": "testLastName"
+           |    },
+           |    "dateOfBirth": "2020-01-01",
+           |    "trn": "$testTrn",
+           |    "identifiersMatch": false
+           |  },
+           |  "entity": {
+           |    "firstName": "$testFirstName",
+           |    "lastName": "$testLastName",
+           |    "dateOfBirth": "$testApplicantDob",
+           |    "sautr": "$testSautr",
+           |    "trn": "$testTrn",
+           |    "identifiersMatch": true,
+           |    "businessVerification": "PASS",
+           |    "registration": "REGISTERED",
+           |    "bpSafeId": "$testSafeId"
+           |  },
+           |  "currentAddress": {
+           |    "line1": "TestLine1",
+           |    "line2": "TestLine2",
+           |    "postcode": "TE 1ST",
+           |    "addressValidated": true
+           |  },
+           |  "contact": {
+           |    "email": "test@t.test",
+           |    "emailVerified": true,
+           |    "tel": "1234"
+           |  },
+           |  "roleInTheBusiness": "01",
+           |  "changeOfName": {
+           |    "name": {
+           |      "first": "New",
+           |      "middle": "Name",
+           |      "last": "Cosmo"
+           |    },
+           |    "change": "2000-07-12"
+           |  },
+           |  "previousAddress": {
+           |    "line1": "TestLine11",
+           |    "line2": "TestLine22",
+           |    "postcode": "TE1 1ST",
+           |    "addressValidated": true
+           |  }
+           |}
+         """.stripMargin)
 
       Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
     }

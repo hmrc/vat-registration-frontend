@@ -24,29 +24,44 @@ import java.time.LocalDate
 case class TransactorDetails(firstName: String,
                              lastName: String,
                              nino: Option[String],
+                             trn: Option[String],
+                             identifiersMatch: Boolean,
                              dateOfBirth: LocalDate)
 
-object TransactorDetails {
-  implicit val format: OFormat[TransactorDetails] = Json.format[TransactorDetails]
+object TransactorDetails { //TODO remove all defaults here when PDV is removed
+  implicit val format: OFormat[TransactorDetails] = (
+    (__ \ "firstName").format[String] and
+    (__ \ "lastName").format[String] and
+    (__ \ "nino").formatNullable[String] and
+    (__ \ "trn").formatNullable[String] and
+    (__ \ "identifiersMatch").formatWithDefault[Boolean](true) and
+    (__ \ "dateOfBirth").format[LocalDate]
+    )(TransactorDetails.apply, unlift(TransactorDetails.unapply))
 
   val soleTraderIdentificationReads: Reads[TransactorDetails] = (
     (__ \ "fullName" \ "firstName").read[String] and
     (__ \ "fullName" \ "lastName").read[String] and
-    (__ \ "nino").formatNullable[String] and
+    (__ \ "nino").readNullable[String] and
+    (__ \ "trn").readNullable[String] and
+    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
     (__ \ "dateOfBirth").read[LocalDate]
-  )(TransactorDetails.apply(_, _, _, _))
+  )(TransactorDetails.apply _)
 
   val apiReads: Reads[TransactorDetails] = (
     (__ \ "name" \ "first").read[String] orElse Reads.pure("") and
     (__ \ "name" \ "last").read[String] and
-    (__ \ "nino").formatNullable[String] and
+    (__ \ "nino").readNullable[String] and
+    (__ \ "trn").readNullable[String] and
+    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
     (__ \ "dateOfBirth").read[LocalDate]
-  )(TransactorDetails.apply(_, _, _, _))
+  )(TransactorDetails.apply _)
 
   val apiWrites: Writes[TransactorDetails] = (
     (__ \ "name" \ "first").write[String] and
     (__ \ "name" \ "last").write[String] and
-    (__ \ "nino").formatNullable[String] and
+    (__ \ "nino").writeNullable[String] and
+    (__ \ "trn").writeNullable[String] and
+    (__ \ "identifiersMatch").write[Boolean] and
     (__ \ "dateOfBirth").write[LocalDate]
   )(unlift(TransactorDetails.unapply))
 
