@@ -20,14 +20,15 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import models.api.IdentityEvidence
 import play.api.mvc._
-import services.{AttachmentsService, SessionProfile}
+import services.{AttachmentsService, SessionProfile, VatRegistrationService}
 import views.html.pages.application_submission_confirmation
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationSubmissionController @Inject()(val attachmentsService: AttachmentsService,
+class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatRegistrationService,
+                                                val attachmentsService: AttachmentsService,
                                                 val authConnector: AuthClientConnector,
                                                 val keystoreConnector: KeystoreConnector,
                                                 val applicationSubmissionConfirmationView: application_submission_confirmation)
@@ -36,12 +37,20 @@ class ApplicationSubmissionController @Inject()(val attachmentsService: Attachme
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  private val prefixLength = 3
+  private val groupSize = 4
+  private val separator = " "
+
   def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map { attachments =>
-            Ok(applicationSubmissionConfirmationView(attachments.contains(IdentityEvidence)))
-        }
+        for {
+          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
+          acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
+          prefix = acknowledgementRef.take(prefixLength)
+          groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
+          formattedRef = prefix +: groups mkString separator
+        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachments.contains(IdentityEvidence)))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

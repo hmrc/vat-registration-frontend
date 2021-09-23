@@ -21,8 +21,9 @@
 
 @this(
         layout: layout,
-        h1: h1,
+        h2: h2,
         p: p,
+        strong: strong,
         formWithCSRF: FormWithCSRF,
         govukPanel: GovukPanel,
         orderedListHtml: orderedListHtml,
@@ -32,16 +33,19 @@
         form: formWithCSRF
 )
 
-@(identityEvidence: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(acknowledgementReference: String, identityEvidence: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
     @govukPanel(Panel(
-        title = Text(messages("pages.application.submission.confirmation.heading"))
+        title = Text(messages("pages.application.submission.confirmation.heading")),
+        headingLevel = 1,
+        content = HtmlContent(referenceNumber)
     ))
+
     @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
 
-    @h1(messages("pages.application.submission.confirmation.heading2"))
+    @h2(messages("pages.application.submission.confirmation.heading2"))
 
     @if(identityEvidence) {
         @orderedListHtml(bulletPost, bulletLetter, bulletRegistration)
@@ -49,8 +53,7 @@
         @orderedListHtml(bulletLetter, bulletRegistration)
     }
 
-    @h1(messages("pages.application.submission.confirmation.heading3"))
-
+    @h2(messages("pages.application.submission.confirmation.heading3"))
     @p(content = Html(messages("pages.application.submission.confirmation.par2")), id = Some("confirmation-par2"))
 
     <ul class="govuk-list govuk-list--bullet">
@@ -87,3 +90,10 @@
 @bulletRegistration = {
     @messages("pages.application.submission.confirmation.list.item2")
 }
+
+@referenceNumber = {
+    @messages("pages.application.submission.confirmation.reference")
+    <br>
+    @strong(Html(acknowledgementReference))
+}
+

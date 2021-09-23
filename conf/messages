@@ -287,6 +287,7 @@ pages.summary.print                                         = Print Page
 
 ## Application Submission Confirmation page
 pages.application.submission.confirmation.heading                   = Your application has been submitted
+pages.application.submission.confirmation.reference                 = Your reference number
 pages.application.submission.confirmation.par1                      = We have received your application and will write to you with a decision. This usually takes about 20 days.
 pages.application.submission.confirmation.heading2                  = What happens next
 pages.application.submission.confirmation.list.post                 = Post copies of the supporting documents and the cover letter to HMRC so we can process your application.

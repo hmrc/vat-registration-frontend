@@ -57,8 +57,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference")
-      .map(_.body)
+    http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference")
       .recover {
         case e: Exception => throw logResponse(e, "getAckRef")
       }
