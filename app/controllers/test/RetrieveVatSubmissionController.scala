@@ -20,11 +20,11 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import connectors.test.TestVatRegistrationConnector
 import controllers.BaseController
+import play.api.libs.json.Json
 import play.api.mvc._
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import views.html.test.vat_submission_json
-import play.api.libs.json.Json
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -37,7 +37,7 @@ class RetrieveVatSubmissionController @Inject()(val authConnector: AuthConnector
                                                 bcc: BaseControllerComponents,
                                                 appConfig: FrontendAppConfig) extends BaseController with SessionProfile with AuthorisedFunctions {
 
-  def retrieveSubmissionJson: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+  def retrieveSubmissionJson: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
         testVatRegistrationConnector.retrieveVatSubmission(profile.registrationId) map (json => Ok(view(Json.prettyPrint(json))))

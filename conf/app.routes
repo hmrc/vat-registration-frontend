@@ -311,3 +311,6 @@ GET         /documents-required                                                 
 
 ## Documents Post Page
 GET         /post-documents                                                                    controllers.registration.attachments.DocumentsPostController.show
+
+## Postal Cover Sheet Page
+GET         /postal-cover-sheet                                                                controllers.registration.attachments.PostalCoverSheetController.show
