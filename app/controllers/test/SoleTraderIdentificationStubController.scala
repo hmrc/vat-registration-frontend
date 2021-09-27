@@ -35,11 +35,11 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
   def createJourney(partyType: String): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
     def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
 
-    if (request.body.enableSautrCheck) {
+    if (partyType.equals("Z1")) {
       Created(json(soleTraderJourney))
-    } else if(partyType == "NETP") {
+    } else if (partyType.equals("NETP")) {
       Created(json(soleTraderNetpJourney))
-    }else {
+    } else {
       Created(json(ukCompanyJourney))
     }
   }
@@ -50,57 +50,57 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
     } else {
       Action(Ok(validationResult(journeyId)))
     }
-}
-
-  def validationResult(journeyId: String) : JsObject = {
-      Json.obj(
-        "fullName" -> Json.obj(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName"
-        ),
-        "nino" -> "AA123456A",
-        "dateOfBirth" -> LocalDate.of(1990, 1, 1)
-      ) ++ (
-        if (journeyId == soleTraderJourney) {
-          Json.obj(
-            "sautr" -> "1234567890",
-            "businessVerification" -> Json.obj(
-              "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-            ),
-            "registration" -> Json.obj(
-              "registrationStatus" -> "REGISTERED",
-              "registeredBusinessPartnerId" -> "X00000123456789"
-            )
-          )
-        } else {
-          Json.obj(
-            "businessVerification" -> Json.obj(
-              "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvUnchallenged)
-            ),
-            "registration" -> Json.obj(
-              "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-            )
-          )
-        }
-    )
   }
 
-  def netpValidationResult(journeyId: String) : JsObject =  {
-      Json.obj(
-        "fullName" -> Json.obj(
-          "firstName" -> "testFirstName",
-          "lastName" -> "testLastName"
-        ),
-        "dateOfBirth" -> LocalDate.of(1990, 1, 1),
-        "sautr" -> "1234567890",
-        "trn" -> "testTrn",
-        "businessVerification" -> Json.obj(
-          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-        ),
-        "registration" -> Json.obj(
-          "registrationStatus" -> "REGISTERED",
-          "registeredBusinessPartnerId" -> "X00000123456789"
+  def validationResult(journeyId: String): JsObject = {
+    Json.obj(
+      "fullName" -> Json.obj(
+        "firstName" -> "testFirstName",
+        "lastName" -> "testLastName"
+      ),
+      "nino" -> "AA123456A",
+      "dateOfBirth" -> LocalDate.of(1990, 1, 1)
+    ) ++ (
+      if (journeyId == soleTraderJourney) {
+        Json.obj(
+          "sautr" -> "1234567890",
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> "X00000123456789"
+          )
         )
+      } else {
+        Json.obj(
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvUnchallenged)
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTRATION_NOT_CALLED"
+          )
+        )
+      }
+      )
+  }
+
+  def netpValidationResult(journeyId: String): JsObject = {
+    Json.obj(
+      "fullName" -> Json.obj(
+        "firstName" -> "testFirstName",
+        "lastName" -> "testLastName"
+      ),
+      "dateOfBirth" -> LocalDate.of(1990, 1, 1),
+      "sautr" -> "1234567890",
+      "trn" -> "testTrn",
+      "businessVerification" -> Json.obj(
+        "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+      ),
+      "registration" -> Json.obj(
+        "registrationStatus" -> "REGISTERED",
+        "registeredBusinessPartnerId" -> "X00000123456789"
+      )
     )
   }
 }
