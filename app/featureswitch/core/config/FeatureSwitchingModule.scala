@@ -39,7 +39,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     UseSoleTraderIdentification,
     UseUpscan,
     SaveAndContinueLater,
-    AnnualAccountingScheme
+    AnnualAccountingScheme,
+    NorthernIrelandProtocol
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -121,5 +122,10 @@ case object SaveAndContinueLater extends FeatureSwitch {
 
 case object AnnualAccountingScheme extends FeatureSwitch {
   val configName: String = "feature-switch.annual-accounting-scheme"
-  val displayName: String = "Enable Annual Accounting Scheme journey (use with the AAS FS on eligbility)"
+  val displayName: String = "Enable Annual Accounting Scheme journey (use with the AAS FS on eligibility)"
+}
+
+case object NorthernIrelandProtocol extends FeatureSwitch {
+  val configName: String = "feature-switch.northern-ireland-protocol"
+  val displayName: String = "Enable Northern Ireland protocol (NIP) flow"
 }
