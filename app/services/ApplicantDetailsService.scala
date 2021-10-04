@@ -68,7 +68,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
     applicantDetails match {
       case ApplicantDetails(None, None, None, None, None, None, _, None, None, None) =>
         Incomplete(applicantDetails)
-      case ApplicantDetails(Some(SoleTraderIdEntity(_, _, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
+      case ApplicantDetails(Some(SoleTraderIdEntity(_, _, _, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
         Complete(applicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor)))
       case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), Some(_)) if fName.yesNo == fNameDate.isDefined =>
         Complete(applicantDetails)

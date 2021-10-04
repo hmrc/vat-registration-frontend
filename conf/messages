@@ -346,6 +346,8 @@ pages.summary.directorDetails.ctutr                    = Unique Taxpayer Referen
 pages.summary.directorDetails.chrn                     = Charity registration number
 pages.summary.directorDetails.sautr                    = Unique Taxpayer Reference number
 pages.summary.directorDetails.trn                      = Temporary Reference number
+pages.summary.directorDetails.overseasIdentifier       = Overseas tax identifier
+pages.summary.directorDetails.overseasCountry          = Overseas country
 pages.summary.directorDetails.zeroRatedSupplies        = Zero-rated turnover for the next 12 months
 pages.summary.directorDetails.reclaimMoreVat           = Expect to claim VAT refunds regularly
 

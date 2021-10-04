@@ -21,7 +21,7 @@ import itutil.IntegrationSpecBase
 import models.TransactorDetails
 import models.api.Individual
 import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -128,6 +128,35 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
       res mustBe(testNetpTransactorDetails, testNetpSoleTrader)
+    }
+
+    "return transactor details for NETP when an overseas identifier is returned" in new Setup {
+      val testSTIResponse: JsObject = Json.obj(
+        "fullName" -> Json.obj(
+          "firstName" -> testFirstName,
+          "lastName" -> testLastName
+        ),
+        "dateOfBirth" -> testApplicantDob,
+        "sautr" -> testSautr,
+        "trn" -> testTrn,
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> testRegistration,
+          "registeredBusinessPartnerId" -> testSafeId
+        ),
+        "overseas" -> Json.obj(
+          "taxIdentifier" -> "123456789",
+          "country" -> "FR"
+        ),
+        "identifiersMatch" -> false
+      )
+
+      stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
+      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+
+      res mustBe(testNetpTransactorDetails, testNetpSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("123456789", "FR"))))
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
