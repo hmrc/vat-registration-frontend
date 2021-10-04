@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.api.NETP
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
@@ -83,28 +83,58 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
     }
   }
 
-  "retrieveSoleTraderDetails" must {
-    "return transactor details when STI returns OK" in new Setup {
-      val testSTIResponse: JsObject = Json.obj(
-        "fullName" -> Json.obj(
-          "firstName" -> testFirstName,
-          "lastName" -> testLastName
-        ),
-        "nino" -> testApplicantNino,
-        "dateOfBirth" -> testApplicantDob,
-        "sautr" -> testSautr,
-        "businessVerification" -> Json.obj(
-          "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-        ),
-        "registration" -> Json.obj(
-          "registrationStatus" -> testRegistration,
-          "registeredBusinessPartnerId" -> testSafeId
+  "retrieveSoleTraderDetails" when {
+    "overseas details are not returned" must {
+      "return transactor details" in new Setup {
+        val testSTIResponse: JsObject = Json.obj(
+          "fullName" -> Json.obj(
+            "firstName" -> testFirstName,
+            "lastName" -> testLastName
+          ),
+          "nino" -> testApplicantNino,
+          "dateOfBirth" -> testApplicantDob,
+          "sautr" -> testSautr,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> testRegistration,
+            "registeredBusinessPartnerId" -> testSafeId
+          )
         )
-      )
 
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
-      val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-      res mustBe(testTransactorDetails, testSoleTrader)
+        mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
+        val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
+        res mustBe(testTransactorDetails, testSoleTrader)
+      }
+    }
+    "overseas details are returned" must {
+      "return transactor details when all overseas details are provided" in new Setup {
+        val testSTIResponse: JsObject = Json.obj(
+          "fullName" -> Json.obj(
+            "firstName" -> testFirstName,
+            "lastName" -> testLastName
+          ),
+          "nino" -> testApplicantNino,
+          "dateOfBirth" -> testApplicantDob,
+          "sautr" -> testSautr,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+          ),
+          "overseas" -> Json.obj(
+            "taxIdentifier" -> "1234",
+            "country" -> "ES"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> testRegistration,
+            "registeredBusinessPartnerId" -> testSafeId
+          )
+        )
+
+        mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
+        val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
+        res mustBe(testTransactorDetails, testSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("1234", "ES"))))
+      }
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {

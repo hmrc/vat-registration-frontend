@@ -17,6 +17,7 @@
 package models.external
 
 import models.api._
+import models.external.soletraderid.OverseasIdentifierDetails
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import uk.gov.hmrc.http.InternalServerException
@@ -81,6 +82,7 @@ case class SoleTraderIdEntity(firstName: String,
                               registration: String,
                               businessVerification: BusinessVerificationStatus,
                               bpSafeId: Option[String] = None,
+                              overseas: Option[OverseasIdentifierDetails] = None,
                               identifiersMatch: Boolean = true) extends BusinessEntity
 
 object SoleTraderIdEntity {
@@ -94,6 +96,7 @@ object SoleTraderIdEntity {
       (__ \ "registration" \ "registrationStatus").format[String] and
       (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
+      (__ \ "overseas").formatNullable[OverseasIdentifierDetails] and
       OFormat((__ \ "identifiersMatch").read[Boolean].orElse(Reads.pure(true)), (__ \ "identifiersMatch").write[Boolean])
     ) (SoleTraderIdEntity.apply, unlift(SoleTraderIdEntity.unapply))
 

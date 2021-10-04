@@ -111,6 +111,29 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
     )
 
+    val overseasIdentifier = optSummaryListRowString(
+      s"$sectionId.overseasIdentifier",
+      applicantDetails.entity.flatMap{
+        case soleTraderIdEntity: SoleTraderIdEntity => soleTraderIdEntity.overseas.map(_.taxIdentifier)
+        case _ => None
+      },
+      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+    )
+
+    val overseasCountry = optSummaryListRowString(
+      s"$sectionId.overseasCountry",
+      applicantDetails.entity.flatMap{
+        case soleTraderIdEntity: SoleTraderIdEntity =>
+          for {
+            countryCode <- soleTraderIdEntity.overseas.map(_.country)
+            country = configConnector.countries.find(_.code.contains(countryCode))
+            optCountryName <- country.flatMap(_.name)
+          } yield optCountryName
+        case _ => None
+      },
+      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+    )
+
     val chrn = optSummaryListRowString(
       s"$sectionId.chrn",
       applicantDetails.entity.flatMap {
@@ -220,6 +243,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       ctutr,
       sautr,
       trn,
+      overseasIdentifier,
+      overseasCountry,
       chrn,
       firstName,
       lastName,
