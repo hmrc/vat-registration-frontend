@@ -19,22 +19,22 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.ReceiveGoodsNIPForm
+import forms.ReceiveGoodsNipForm
 import models.api.NETP
 import models.{ConditionalValue, NIPCompliance}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.returns.ReceiveGoodsNIP
+import views.html.returns.ReceiveGoodsNip
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReceiveGoodsNIPController @Inject()(val keystoreConnector: KeystoreConnector,
+class ReceiveGoodsNipController @Inject()(val keystoreConnector: KeystoreConnector,
                                           val authConnector: AuthClientConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val returnsService: ReturnsService,
                                           val vatRegistrationService: VatRegistrationService,
-                                          view: ReceiveGoodsNIP)
+                                          view: ReceiveGoodsNip)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
                                           baseControllerComponents: BaseControllerComponents)
@@ -45,8 +45,8 @@ class ReceiveGoodsNIPController @Inject()(val keystoreConnector: KeystoreConnect
       implicit profile =>
         returnsService.getReturns.map { returns =>
           returns.northernIrelandProtocol match {
-            case Some(NIPCompliance(_, Some(ConditionalValue(receiveGoods, amount)))) => Ok(view(ReceiveGoodsNIPForm.form.fill(receiveGoods, amount)))
-            case _ => Ok(view(ReceiveGoodsNIPForm.form))
+            case Some(NIPCompliance(_, Some(ConditionalValue(receiveGoods, amount)))) => Ok(view(ReceiveGoodsNipForm.form.fill(receiveGoods, amount)))
+            case _ => Ok(view(ReceiveGoodsNipForm.form))
           }
         }
   }
@@ -54,24 +54,24 @@ class ReceiveGoodsNIPController @Inject()(val keystoreConnector: KeystoreConnect
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        ReceiveGoodsNIPForm.form.bindFromRequest.fold(
+        ReceiveGoodsNipForm.form.bindFromRequest.fold(
           badForm => Future.successful(BadRequest(view(badForm))),
           successForm => {
             val (receiveGoods, amount) = successForm
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
-                northernIrelandProtocol = returns.northernIrelandProtocol.map(_.copy(
-                  goodsFromEU = Some(ConditionalValue(receiveGoods, amount)
-                  ))
+                northernIrelandProtocol = Some(NIPCompliance(returns.northernIrelandProtocol.flatMap(_.goodsToEU), Some(ConditionalValue(receiveGoods,amount)))
                 )
               )
               _ <- returnsService.submitReturns(updatedReturns)
-              partyType <- vatRegistrationService.partyType
+              v <- returnsService.isVoluntary
+              pt <- vatRegistrationService.partyType
             } yield {
-              partyType match {
-                case NETP => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage())
-                case _ => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage())
+              (v, pt) match {
+                case (_, NETP) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage())
+                case (true, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage())
+                case (false, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage())
               }
             }
           }

@@ -942,6 +942,16 @@ pages.PostalCoverSheet.panel6                            = United Kingdom
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
 pages.northernIrelandReceiveGoods.hint                   = What is the value of these goods?
-validation.NorthernIrelandReceiveGoods.missing           = Select ''yes'' if the business expects to receive goods in Northern Ireland from an EU country
+nip.receiveGoods.missing                                 = Select ''yes'' if the business expects to receive goods in Northern Ireland from an EU country
 validation.northernIrelandReceiveGoods.missing           = Enter the value of these goods
 validation.northernIrelandReceiveGoods.invalid           = Enter the value of these goods using characters 0 to 9
+
+# NORTHERN IRELAND PROTOCOL
+
+nip.sellOrMove.heading                                   = Does the business expect to do any of the following in the next 12 months?
+nip.sellOrMove.para                                      = Tell us if the business will do any of the following:
+nip.sellOrMove.bullet1                                   = sell goods located in Northern Ireland to any country
+nip.sellOrMove.bullet2                                   = sell or move goods from Northern Ireland to an EU country
+nip.sellOrMove.hint                                      = What is the value of these goods?
+nip.error.missing                                        = Select ''yes'' if the business will do any of the activities in the next 12 months
+validation.sellOrMoveNip.missing                         = Enter the value of these goods

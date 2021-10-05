@@ -19,6 +19,7 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import featureswitch.core.config.NorthernIrelandProtocol
 import forms.DispatchFromWarehouseForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
@@ -73,12 +74,12 @@ class DispatchFromWarehouseController @Inject()(val keystoreConnector: KeystoreC
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              if (success) {
+              if (success)
                 Redirect(routes.WarehouseNumberController.show)
-              }
-              else {
+              else if (isEnabled(NorthernIrelandProtocol))
+                Redirect(routes.SellOrMoveNipController.show)
+              else
                 Redirect(routes.ReturnsController.returnsFrequencyPage)
-              }
             }
           }
         )

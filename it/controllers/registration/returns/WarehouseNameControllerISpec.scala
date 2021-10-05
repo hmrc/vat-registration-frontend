@@ -16,6 +16,7 @@
 
 package controllers.registration.returns
 
+import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
 import models.api.returns.{OverseasCompliance, Returns, StoringWithinUk}
 import org.jsoup.Jsoup
@@ -87,7 +88,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the fulfilment warehouse name page when the answer is a valid number" in new Setup {
+    "redirect to the return frequency page when the answer has a name" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
@@ -104,6 +105,27 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage().url)
+      }
+    }
+
+    "redirect to the Northern Ireland Protocol page when the answer has a name" in new Setup {
+      enable(NorthernIrelandProtocol)
+      given()
+        .user.isAuthorised
+        .audit.writesAuditMerged()
+        .audit.writesAudit()
+        .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance =
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseName)))
+      ))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Json.obj("warehouseName" -> testWarehouseName))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show().url)
       }
     }
 
