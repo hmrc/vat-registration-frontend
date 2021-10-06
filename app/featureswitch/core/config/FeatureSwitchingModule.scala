@@ -40,7 +40,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     UseUpscan,
     SaveAndContinueLater,
     AnnualAccountingScheme,
-    NorthernIrelandProtocol
+    NorthernIrelandProtocol,
+    EmailAttachments
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -128,4 +129,9 @@ case object AnnualAccountingScheme extends FeatureSwitch {
 case object NorthernIrelandProtocol extends FeatureSwitch {
   val configName: String = "feature-switch.northern-ireland-protocol"
   val displayName: String = "Enable Northern Ireland protocol (NIP) flow"
+}
+
+case object EmailAttachments extends FeatureSwitch {
+  val configName: String = "feature-switch.email-attachments"
+  val displayName: String = "Enable Email attachments"
 }
