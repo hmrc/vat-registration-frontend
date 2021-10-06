@@ -17,15 +17,17 @@
 package controllers.registration.returns
 
 import itutil.ControllerISpec
+import models.api.Threshold
 import models.api.returns.Returns
 import models.{ConditionalValue, NIPCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 
-class ReceiveGoodsNIPControllerISpec extends ControllerISpec {
+class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   val testAmount: BigDecimal = 1234.123
-  lazy val url: String = controllers.registration.returns.routes.ReceiveGoodsNIPController.show().url
+  lazy val url: String = controllers.registration.returns.routes.ReceiveGoodsNipController.show().url
   val testNIPCompliance: NIPCompliance = NIPCompliance(None, Some(ConditionalValue(true, Some(testAmount))))
 
   "show Northern Ireland Receive page" should {
@@ -68,6 +70,7 @@ class ReceiveGoodsNIPControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.contains(emptyVatSchemeNetp)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -79,13 +82,14 @@ class ReceiveGoodsNIPControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER when Non NETP" in new Setup {
+    "return SEE_OTHER when Non NETP and voluntary registration" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
         .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -94,6 +98,25 @@ class ReceiveGoodsNIPControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage().url)
+      }
+    }
+
+    "return SEE_OTHER when Non NETP and mandatory registration" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAuditMerged()
+        .audit.writesAudit()
+        .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
+        .vatScheme.contains(emptyUkCompanyVatScheme)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage().url)
       }
     }
   }

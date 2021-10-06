@@ -19,7 +19,7 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import controllers.registration.returns.{routes => baseRoutes}
+import featureswitch.core.config.NorthernIrelandProtocol
 import forms.ChargeExpectancyForm
 import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
@@ -58,12 +58,13 @@ class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
           success => {
             for {
               _ <- returnsService.saveReclaimVATOnMostReturns(success)
-              isVoluntary <- returnsService.isVoluntary
-              partyType <- vatRegistrationService.partyType
-            } yield (isVoluntary, partyType) match {
+              v <- returnsService.isVoluntary
+              pt <- vatRegistrationService.partyType
+            } yield (v, pt) match {
               case (_, NETP) => Redirect(routes.SendGoodsOverseasController.show())
-              case (true, _) => Redirect(baseRoutes.ReturnsController.voluntaryStartPage())
-              case (false, _) => Redirect(baseRoutes.ReturnsController.mandatoryStartPage())
+              case (_, _) if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
+              case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage())
+              case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage())
             }
           }
         )

@@ -33,7 +33,7 @@
     @errorSummary(form.errors)
     @h1(messages("pages.northernIrelandReceiveGoods.heading"))
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReceiveGoodsNIPController.submit()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.ReceiveGoodsNipController.submit()) {
         @yesNoRadio(
             form = form,
             headingKey = messages("pages.northernIrelandReceiveGoods.heading"),

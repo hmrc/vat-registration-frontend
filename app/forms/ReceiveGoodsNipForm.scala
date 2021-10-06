@@ -21,8 +21,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import uk.gov.voa.play.form.ConditionalMappings._
 
-object ReceiveGoodsNIPForm extends RequiredBooleanForm {
-  override val errorMsg = "validation.northernIrelandReceiveGoods.missing"
+object ReceiveGoodsNipForm extends RequiredBooleanForm {
+  override val errorMsg = "nip.receiveGoods.missing"
   val inputAmount: String = "northernIrelandReceiveGoods"
   implicit val errorCode: ErrorCode = inputAmount
   val yesNo: String = "value"

@@ -23,8 +23,8 @@ case class NIPCompliance(goodsToEU: Option[ConditionalValue],
                          goodsFromEU: Option[ConditionalValue])
 
 
-case class ConditionalValue(receiveGoods: Boolean,
-                            amount: Option[BigDecimal])
+case class ConditionalValue(answer: Boolean,
+                            value: Option[BigDecimal])
 
 object ConditionalValue {
   implicit val format = Json.format[ConditionalValue]

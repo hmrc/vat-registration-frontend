@@ -16,6 +16,7 @@
 
 package controllers.registration.returns
 
+import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
 import models.api.returns.{OverseasCompliance, Returns, StoringWithinUk}
 import org.jsoup.Jsoup
@@ -102,6 +103,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returns frequency page when the answer is no" in new Setup {
+      disable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
         .audit.writesAuditMerged()
@@ -116,6 +118,25 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage().url)
+      }
+    }
+
+    "redirect to the Northern Ireland Protocol page when the answer is no" in new Setup {
+      enable(NorthernIrelandProtocol)
+      given()
+        .user.isAuthorised
+        .audit.writesAuditMerged()
+        .audit.writesAudit()
+        .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Json.obj("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show().url)
       }
     }
 

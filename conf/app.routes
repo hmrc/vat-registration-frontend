@@ -316,5 +316,9 @@ GET         /post-documents                                                     
 GET         /postal-cover-sheet                                                                controllers.registration.attachments.PostalCoverSheetController.show
 
 ## Northern Ireland Receive Goods Page
-GET         /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNIPController.show
-POST        /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNIPController.submit
+GET         /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.show
+POST        /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.submit
+
+## Northern Ireland Sell Or Move Page
+GET         /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.show
+POST        /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.submit

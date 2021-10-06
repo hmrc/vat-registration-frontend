@@ -19,6 +19,7 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import featureswitch.core.config.NorthernIrelandProtocol
 import forms.StoringGoodsForm
 import models.api.returns.{StoringOverseas, StoringWithinUk}
 import play.api.mvc.{Action, AnyContent}
@@ -74,6 +75,8 @@ class StoringGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
           } yield answer match {
             case StoringWithinUk =>
               Redirect(controllers.registration.returns.routes.DispatchFromWarehouseController.show)
+            case StoringOverseas if isEnabled(NorthernIrelandProtocol) =>
+              Redirect(routes.SellOrMoveNipController.show)
             case StoringOverseas =>
               Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
           }

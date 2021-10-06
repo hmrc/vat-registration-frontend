@@ -19,59 +19,50 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import featureswitch.core.config.NorthernIrelandProtocol
-import forms.WarehouseNameForm
-import models.api.returns.OverseasCompliance
+import forms.SellOrMoveNipForm
+import models.{ConditionalValue, NIPCompliance}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile}
-import views.html.returns.WarehouseNameView
+import views.html.returns.SellOrMoveNip
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class WarehouseNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class SellOrMoveNipController @Inject()(val keystoreConnector: KeystoreConnector,
                                         val authConnector: AuthClientConnector,
                                         val returnsService: ReturnsService,
-                                        val warehouseNameView: WarehouseNameView)
+                                        view: SellOrMoveNip)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns map { returns =>
-          returns.overseasCompliance match {
-            case Some(OverseasCompliance(_, _, _, _, _, Some(warehouseName))) =>
-              Ok(warehouseNameView(WarehouseNameForm.form.fill(warehouseName)))
-            case _ =>
-              Ok(warehouseNameView(WarehouseNameForm.form))
+        returnsService.getReturns.map { r =>
+          r.northernIrelandProtocol match {
+            case Some(NIPCompliance(Some(ConditionalValue(answer, amount)), _)) =>
+              Ok(view(SellOrMoveNipForm.form.fill(answer, amount)))
+            case _ => Ok(view(SellOrMoveNipForm.form))
           }
         }
   }
-
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        WarehouseNameForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(warehouseNameView(errors))),
-          success => {
+        SellOrMoveNipForm.form.bindFromRequest.fold(
+          badForm => Future.successful(BadRequest(view(badForm))),
+          successForm => {
+            val (goodsToEU, amount) = successForm
             for {
-              returns <- returnsService.getReturns
-              updatedReturns = returns.copy(
-                overseasCompliance = returns.overseasCompliance.map(_.copy(
-                  fulfilmentWarehouseName = Some(success)
-                ))
+              r <- returnsService.getReturns
+              updatedReturns = r.copy(
+                northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(goodsToEU, amount)), r.northernIrelandProtocol.flatMap(_.goodsFromEU)))
               )
-              _ <- returnsService.submitReturns(updatedReturns)
-            } yield {
-              if(isEnabled(NorthernIrelandProtocol))
-                Redirect(routes.SellOrMoveNipController.show)
-              else
-                Redirect(routes.ReturnsController.returnsFrequencyPage)
-            }
+              _  <- returnsService.submitReturns(updatedReturns)
+            } yield
+              Redirect(controllers.registration.returns.routes.ReceiveGoodsNipController.show())
           }
         )
   }
