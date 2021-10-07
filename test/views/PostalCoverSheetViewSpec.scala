@@ -33,6 +33,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
   val heading = "Print cover letter for documents"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para1 = "Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your supporting documents."
+  val warningText = "Do not post the original documents to HMRC as we are unable to return them to you."
   val panel1 = s"Register for VAT reference number: $testRef"
   val heading2 = "What you must post to us"
   val para2 = "Include a copy of one piece of evidence that includes a government issued photo. This could be a:"
@@ -63,6 +64,13 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
   "The Postal Cover Sheet page" must {
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(heading)
+    }
+
+    "have the correct warning text" in new ViewSetup {
+      doc.warningText(1) match {
+        case Some(value) => value must include(warningText)
+        case None => fail()
+      }
     }
 
     "have the correct panel text" in new ViewSetup {

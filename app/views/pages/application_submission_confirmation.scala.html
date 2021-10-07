@@ -43,7 +43,11 @@
         content = HtmlContent(referenceNumber)
     ))
 
-    @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
+    @if(identityEvidence) {
+        @p(content = Html(messages("pages.application.submission.confirmation.attachments.par1")), id = Some("confirmation-par1"))
+    } else {
+        @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
+    }
 
     @h2(messages("pages.application.submission.confirmation.heading2"))
 

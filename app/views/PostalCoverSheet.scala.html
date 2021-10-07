@@ -28,7 +28,8 @@
         panelIndent: panelIndent,
         bullets: bullets,
         subheading: subheadingP,
-        strong: strong
+        strong: strong,
+        warningText: warningText
 )
 
 @(ackRef: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -37,6 +38,8 @@
 
     @h1(messages("pages.PostalCoverSheet.heading"))
     @p{ @messages("pages.PostalCoverSheet.para") }
+
+    @warningText{ @messages("pages.PostalCoverSheet.warningText") }
 
     @panelIndent{
         @strong { @messages(s"pages.PostalCoverSheet.panel1") }
