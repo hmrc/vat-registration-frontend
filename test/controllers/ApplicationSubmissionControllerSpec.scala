@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.IdentityEvidence
+import models.api.{Attached, Attachments, IdentityEvidence, Other, Post}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -50,7 +50,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         .thenReturn(Future.successful("123412341234"))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List()))
+        .thenReturn(Future.successful(Attachments(None, List())))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
@@ -61,7 +61,52 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
+        .thenReturn(Future.successful(Attachments(None, List(IdentityEvidence))))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+      }
+    }
+
+    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Other" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(Attachments(Some(Other), List(IdentityEvidence))))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+      }
+    }
+
+    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Attached" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(Attachments(Some(Attached), List(IdentityEvidence))))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+      }
+    }
+
+    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Post" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(Attachments(Some(Post), List(IdentityEvidence))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))

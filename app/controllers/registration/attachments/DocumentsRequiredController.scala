@@ -40,8 +40,8 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
   val resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map { attachments =>
-          if (attachments.contains(IdentityEvidence)) {
+        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentsList =>
+          if (attachmentsList.attachments.contains(IdentityEvidence)) {
             Redirect(routes.DocumentsRequiredController.show())
           } else {
             Redirect(controllers.routes.SummaryController.show())
