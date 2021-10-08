@@ -439,6 +439,10 @@ pages.summary.directorDetails.dispatchFromWarehouse  = Will the business dispatc
 pages.summary.directorDetails.warehouseNumber        = Fulfilment Warehouse number
 pages.summary.directorDetails.warehouseName          = Fulfilment Warehouse business name
 
+## Northern Ireland Protocol
+pages.summary.directorDetails.sellOrMoveNip          = Sell or move goods from Northern Ireland?
+pages.summary.directorDetails.receiveGoodsNip        = Receive goods in Northern Ireland from EU?
+
 ## Error Pages
 error.error_template.tryagain                        = Try again
 
