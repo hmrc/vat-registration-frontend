@@ -45,12 +45,12 @@ class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatR
     implicit request =>
       implicit profile =>
         for {
-          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
+          attachmentsList <- attachmentsService.getAttachmentList(profile.registrationId)
           acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
           formattedRef = prefix +: groups mkString separator
-        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachments.contains(IdentityEvidence)))
+        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentsList.attachments.contains(IdentityEvidence)))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

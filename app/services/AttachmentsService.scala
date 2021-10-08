@@ -17,7 +17,7 @@
 package services
 
 import connectors.{AttachmentsConnector, KeystoreConnector}
-import models.api.AttachmentType
+import models.api.Attachments
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class AttachmentsService @Inject()(val s4LService: S4LService,
                                    val keystoreConnector: KeystoreConnector
                                   )(implicit ec: ExecutionContext) {
 
-  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
+  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[Attachments] =
     attachmentsConnector.getAttachmentList(regId)
 
 }
