@@ -322,3 +322,6 @@ POST        /receive-goods-nip                                                  
 ## Northern Ireland Sell Or Move Page
 GET         /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.show
 POST        /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.submit
+
+## Attachments Email Documents Page
+GET         /attachments/email-documents                                                       controllers.registration.attachments.EmailDocumentsController.show
