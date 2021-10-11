@@ -4,7 +4,7 @@ package controllers.registration.returns
 import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
 import models.api.returns.Returns
-import models.api.{NETP, Threshold, UkCompany}
+import models.api.{NETP, NonUkNonEstablished, Threshold, UkCompany}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -87,6 +87,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
       }
     }
+
     "redirect to send goods overseas page when the user is NETP" in {
       given()
         .user.isAuthorised
@@ -94,6 +95,22 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
+
+      val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show().url)
+      }
+    }
+
+    "redirect to send goods overseas page when the user is Non UK Company" in {
+      given()
+        .user.isAuthorised
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
+        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.ReceiveGoodsNipForm
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import models.{ConditionalValue, NIPCompliance}
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -69,7 +69,7 @@ class ReceiveGoodsNipController @Inject()(val keystoreConnector: KeystoreConnect
               pt <- vatRegistrationService.partyType
             } yield {
               (v, pt) match {
-                case (_, NETP) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage())
+                case (_, NETP | NonUkNonEstablished) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage())
                 case (true, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage())
                 case (false, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage())
               }

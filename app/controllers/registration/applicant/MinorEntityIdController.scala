@@ -20,10 +20,10 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.api.{Trust, UnincorpAssoc}
-import models.external.businessid.BusinessIdJourneyConfig
+import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
+import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, BusinessIdService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, MinorEntityIdService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -31,32 +31,32 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class BusinessIdController @Inject()(val authConnector: AuthConnector,
-                                     val keystoreConnector: KeystoreConnector,
-                                     businessIdService: BusinessIdService,
-                                     applicantDetailsService: ApplicantDetailsService,
-                                     vatRegistrationService: VatRegistrationService
-                                    )(implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
+class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
+                                        val keystoreConnector: KeystoreConnector,
+                                        minorEntityIdService: MinorEntityIdService,
+                                        applicantDetailsService: ApplicantDetailsService,
+                                        vatRegistrationService: VatRegistrationService
+                                       )(implicit appConfig: FrontendAppConfig,
+                                         val executionContext: ExecutionContext,
+                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        val journeyConfig = BusinessIdJourneyConfig(
-          appConfig.businessIdCallbackUrl,
+        val journeyConfig = MinorEntityIdJourneyConfig(
+          appConfig.minorEntityIdCallbackUrl,
           Some(request2Messages(request)("service.name")),
           appConfig.contactFormServiceIdentifier,
           appConfig.feedbackUrl
         )
 
         vatRegistrationService.partyType.flatMap {
-          case partyType@(Trust | UnincorpAssoc) => businessIdService.createJourney(journeyConfig, partyType).map(
+          case partyType@(Trust | UnincorpAssoc | NonUkNonEstablished) => minorEntityIdService.createJourney(journeyConfig, partyType).map(
             journeyStartUrl => SeeOther(journeyStartUrl)
           )
           case partyType => throw new InternalServerException(
-            s"[BusinessIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
+            s"[MinorEntityIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
           )
         }
   }
@@ -65,7 +65,7 @@ class BusinessIdController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         for {
-          businessDetails <- businessIdService.getDetails(journeyId)
+          businessDetails <- minorEntityIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(businessDetails)
         } yield {
           Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())

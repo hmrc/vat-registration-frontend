@@ -37,8 +37,8 @@ POST        /partnership-identification                       controllers.test.P
 GET         /partnership-identification/:journeyId            controllers.test.PartnershipIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
-POST        /business-identification                          controllers.test.BusinessIdentificationStubController.createJourney(partyType: String)
-GET         /business-identification/:journeyId               controllers.test.BusinessIdentificationStubController.retrieveValidationResult(journeyId)
+POST        /minor-entity-identification                      controllers.test.MinorEntityIdentificationStubController.createJourney(partyType: String)
+GET         /minor-entity-identification/:journeyId           controllers.test.MinorEntityIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
 POST        /address-lookup/init                              controllers.test.AddressLookupStubController.createJourney

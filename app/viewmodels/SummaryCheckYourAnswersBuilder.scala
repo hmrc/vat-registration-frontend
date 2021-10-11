@@ -26,6 +26,7 @@ import models._
 import models.api.returns._
 import models.api.{Address, Individual, VatScheme, _}
 import models.external._
+import models.external.soletraderid.OverseasIdentifierDetails
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
 import services.FlatRateService
@@ -82,22 +83,26 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.ctutr",
       applicantDetails.entity.flatMap {
         case incorpIdEntity: IncorporatedEntity => incorpIdEntity.ctutr
+        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.ctutr
         case _ => None
       },
-      Some(applicantRoutes.IncorpIdController.startJourney().url)
+      partyType match {
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case _ => Some(applicantRoutes.IncorpIdController.startJourney().url)
+      }
     )
 
     val sautr = optSummaryListRowString(
       s"$sectionId.sautr",
       applicantDetails.entity.flatMap {
         case soleTrader: SoleTraderIdEntity => soleTrader.sautr
-        case business: BusinessIdEntity => business.sautr
+        case business: MinorEntityIdEntity => business.sautr
         case partnership: PartnershipIdEntity => partnership.sautr
         case _ => None
       },
       partyType match {
         case Partnership => Some(applicantRoutes.PartnershipIdController.startJourney().url)
-        case UnincorpAssoc | Trust => Some(applicantRoutes.BusinessIdController.startJourney().url)
+        case UnincorpAssoc | Trust | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
         case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
       }
     )
@@ -113,37 +118,45 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val overseasIdentifier = optSummaryListRowString(
       s"$sectionId.overseasIdentifier",
-      applicantDetails.entity.flatMap{
+      applicantDetails.entity.flatMap {
         case soleTraderIdEntity: SoleTraderIdEntity => soleTraderIdEntity.overseas.map(_.taxIdentifier)
+        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.overseas.map(_.taxIdentifier)
         case _ => None
       },
-      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
-    )
+      partyType match {
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+      }    )
+
+    def optCountryName(overseas: Option[OverseasIdentifierDetails]): Option[String] = for {
+      countryCode <- overseas.map(_.country)
+      country = configConnector.countries.find(_.code.contains(countryCode))
+      optCountryName <- country.flatMap(_.name)
+    } yield optCountryName
 
     val overseasCountry = optSummaryListRowString(
       s"$sectionId.overseasCountry",
-      applicantDetails.entity.flatMap{
-        case soleTraderIdEntity: SoleTraderIdEntity =>
-          for {
-            countryCode <- soleTraderIdEntity.overseas.map(_.country)
-            country = configConnector.countries.find(_.code.contains(countryCode))
-            optCountryName <- country.flatMap(_.name)
-          } yield optCountryName
+      applicantDetails.entity.flatMap {
+        case soleTraderEntity: SoleTraderIdEntity => optCountryName(soleTraderEntity.overseas)
+        case minorEntityIdEntity: MinorEntityIdEntity => optCountryName(minorEntityIdEntity.overseas)
         case _ => None
       },
-      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+      partyType match {
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+      }
     )
 
     val chrn = optSummaryListRowString(
       s"$sectionId.chrn",
       applicantDetails.entity.flatMap {
         case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
-        case businessIdEntity: BusinessIdEntity => businessIdEntity.chrn
+        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.chrn
         case _ => None
       },
       partyType match {
         case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney().url)
-        case Trust | UnincorpAssoc => Some(applicantRoutes.BusinessIdController.startJourney().url)
+        case Trust | UnincorpAssoc | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
         case _ => None
       }
     )
@@ -456,7 +469,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val storingGoods = optSummaryListRowString(
       s"$sectionId.storingGoods",
-      returns.overseasCompliance.flatMap(_.storingGoodsForDispatch).map{
+      returns.overseasCompliance.flatMap(_.storingGoodsForDispatch).map {
         case StoringWithinUk => s"$sectionId.storingGoods.uk"
         case StoringOverseas => s"$sectionId.storingGoods.overseas"
       },

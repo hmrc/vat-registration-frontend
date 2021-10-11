@@ -175,9 +175,9 @@ GET         /sti-partner-callback/:isLeadPartner                                
 GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney()
 GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
 
-## Business ID Pages
-GET         /start-business-id-journey                                                         controllers.registration.applicant.BusinessIdController.startJourney()
-GET         /business-id-callback                                                              controllers.registration.applicant.BusinessIdController.callback(journeyId)
+## Minor Entity ID Pages
+GET         /start-minor-entity-id-journey                                                     controllers.registration.applicant.MinorEntityIdController.startJourney()
+GET         /minor-entity-id-callback                                                          controllers.registration.applicant.MinorEntityIdController.callback(journeyId)
 
 ## Email Verification Pages
 GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show

@@ -138,8 +138,9 @@ trait ApplicantDetailsFixtures {
     identifiersMatch = true
   )
 
-  val testTrust: BusinessIdEntity = BusinessIdEntity(
+  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
     sautr = Some(testSautr),
+    ctutr = None,
     postCode = None,
     chrn = Some(testChrn),
     casc = None,
@@ -149,8 +150,9 @@ trait ApplicantDetailsFixtures {
     identifiersMatch = true
   )
 
-  val testUnincorpAssoc: BusinessIdEntity = BusinessIdEntity(
+  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
     sautr = Some(testSautr),
+    ctutr = None,
     postCode = None,
     chrn = Some(testChrn),
     casc = Some(testCasc),

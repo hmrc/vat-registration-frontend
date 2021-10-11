@@ -3,7 +3,7 @@ package controllers.registration.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -31,12 +31,29 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
-    "return SEE_OTHER when the party type is NETP option" in new Setup {
+    "return SEE_OTHER when the party type is NETP" in new Setup {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .vatScheme.contains(emptyUkCompanyVatScheme.copy(
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
+      ))
+        .vatScheme.doesNotExistForKey("bank-account")
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+    }
+    "return SEE_OTHER when the party type is Non UK Company" in new Setup {
+      given
+        .user.isAuthorised
+        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
       ))
         .vatScheme.doesNotExistForKey("bank-account")
         .audit.writesAudit()

@@ -54,6 +54,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
 
   def partnersApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/partners"
+
   def attachmentsApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/attachments"
 
   def clearTrafficManagementUrl: String = s"$backendHost/vatreg/traffic-management/reg-info/clear"
@@ -194,7 +195,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   def soleTraderIdentificationJourneyUrl(partyType: PartyType): String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification?partyType=${PartyType.stati(partyType)}"
-    }  else {
+    } else {
       s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/journey"
     }
 
@@ -222,32 +223,39 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
 
-  // Business Identification Section
+  // Minor Entity Identification Section
 
-  lazy val businessIdHost: String = servicesConfig.baseUrl("business-identification-frontend")
+  lazy val minorEntityIdHost: String = servicesConfig.baseUrl("minor-entity-identification-frontend")
 
   def startUnincorpAssocJourneyUrl: String =
-    if (isEnabled(StubBusinessIdentification)) {
-      s"$host/register-for-vat/test-only/business-identification?partyType=${PartyType.stati(UnincorpAssoc)}"
+    if (isEnabled(StubMinorEntityIdentification)) {
+      s"$host/register-for-vat/test-only/minor-entity-identification?partyType=${PartyType.stati(UnincorpAssoc)}"
     } else {
-      s"$businessIdHost/business-identification/api/unincorporated-association/journey"
+      s"$minorEntityIdHost/minor-entity-identification/api/unincorporated-association-journey"
     }
 
   def startTrustJourneyUrl: String =
-    if (isEnabled(StubBusinessIdentification)) {
-      s"$host/register-for-vat/test-only/business-identification?partyType=${PartyType.stati(Trust)}"
+    if (isEnabled(StubMinorEntityIdentification)) {
+      s"$host/register-for-vat/test-only/minor-entity-identification?partyType=${PartyType.stati(Trust)}"
     } else {
-      s"$businessIdHost/business-identification/api/trust/journey"
+      s"$minorEntityIdHost/minor-entity-identification/api/trust-journey"
     }
 
-  def getBusinessIdDetailsUrl(journeyId: String): String =
-    if (isEnabled(StubBusinessIdentification)) {
-      s"$host/register-for-vat/test-only/business-identification/$journeyId"
+  def startNonUKCompanyJourneyUrl: String =
+    if (isEnabled(StubMinorEntityIdentification)) {
+      s"$host/register-for-vat/test-only/minor-entity-identification?partyType=${PartyType.stati(NonUkNonEstablished)}"
     } else {
-      s"$businessIdHost/business-identification/api/journey/$journeyId"
+      s"$minorEntityIdHost/minor-entity-identification/api/overseas-company-journey"
     }
 
-  def businessIdCallbackUrl: String = s"$hostUrl/register-for-vat/business-id-callback"
+  def getMinorEntityIdDetailsUrl(journeyId: String): String =
+    if (isEnabled(StubMinorEntityIdentification)) {
+      s"$host/register-for-vat/test-only/minor-entity-identification/$journeyId"
+    } else {
+      s"$minorEntityIdHost/minor-entity-identification/api/journey/$journeyId"
+    }
+
+  def minorEntityIdCallbackUrl: String = s"$hostUrl/register-for-vat/minor-entity-id-callback"
 
   // Email Verification Section
 
@@ -289,6 +297,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
 
   def individualKickoutUrl(continueUrl: String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
+
   lazy val businessSignInLink = "https://www.gov.uk/guidance/sign-in-to-your-hmrc-business-tax-account"
   lazy val fhddsRegisteredBusinessesListUrl = "https://www.gov.uk/government/publications/fulfilment-house-due-diligence-scheme-registered-businesses-list"
 }

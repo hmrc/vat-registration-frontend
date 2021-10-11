@@ -18,27 +18,30 @@ package connectors
 
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.{Trust, UnincorpAssoc}
-import models.external.businessid.BusinessIdJourneyConfig
-import models.external.{BusinessIdEntity, BusinessVerificationStatus, BvPass}
+import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
+import models.external.minorentityid.MinorEntityIdJourneyConfig
+import models.external.soletraderid.OverseasIdentifierDetails
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntityIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
 
-class BusinessIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
+class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
   val testUnincorpAssocJourneyId = "1"
   val testTrustJourneyId = "2"
+  val testNonUkCompanyJourneyId = "3"
   val testJourneyUrl = "/test-journey-url"
-  val createTrustJourneyUrl = "/business-identification/api/trust/journey"
-  val createUnincorpAssocJourneyUrl = "/business-identification/api/unincorporated-association/journey"
+  val createTrustJourneyUrl = "/minor-entity-identification/api/trust-journey"
+  val createUnincorpAssocJourneyUrl = "/minor-entity-identification/api/unincorporated-association-journey"
+  val createNonUkCompanyJourneyUrl = "/minor-entity-identification/api/overseas-company-journey"
 
-  def retrieveDetailsUrl(journeyId: String) = s"/business-identification/api/journey/$journeyId"
+  def retrieveDetailsUrl(journeyId: String) = s"/minor-entity-identification/api/journey/$journeyId"
 
-  val connector: BusinessIdConnector = app.injector.instanceOf[BusinessIdConnector]
+  val connector: MinorEntityIdConnector = app.injector.instanceOf[MinorEntityIdConnector]
 
-  val testJourneyConfig: BusinessIdJourneyConfig = BusinessIdJourneyConfig(
+  val testJourneyConfig: MinorEntityIdJourneyConfig = MinorEntityIdJourneyConfig(
     continueUrl = "/test-url",
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
@@ -61,8 +64,10 @@ class BusinessIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with
     "identifiersMatch" -> true
   )
 
-  val testTrust: BusinessIdEntity = BusinessIdEntity(
+  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
     Some(testSautr),
+    None,
+    None,
     Some(testPostCode),
     Some(testChrn),
     None,
@@ -87,11 +92,46 @@ class BusinessIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with
     "identifiersMatch" -> true
   )
 
-  val testUnincorpAssoc: BusinessIdEntity = BusinessIdEntity(
+  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
     Some(testSautr),
+    None,
+    None,
     Some(testPostCode),
     Some(testChrn),
     Some(testCasc),
+    testRegistration,
+    BvPass,
+    Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testOverseasIdentifier = "1234567890"
+  val testOverseasIdentifierCountry = "EE"
+  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+
+  val testNonUkCompanyResponse: JsObject = Json.obj(
+    "ctutr" -> testCrn,
+    "overseas" -> Json.obj(
+      "taxIdentifier" -> testOverseasIdentifier,
+      "country" -> testOverseasIdentifierCountry
+    ),
+    "businessVerification" -> Json.obj(
+      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+    ),
+    "registration" -> Json.obj(
+      "registrationStatus" -> testRegistration,
+      "registeredBusinessPartnerId" -> testSafeId
+    ),
+    "identifiersMatch" -> true
+  )
+
+  val testNonUkCompany: MinorEntityIdEntity = MinorEntityIdEntity(
+    None,
+    Some(testCrn),
+    Some(testOverseasIdentifierDetails),
+    None,
+    None,
+    None,
     testRegistration,
     BvPass,
     Some(testSafeId),
@@ -124,6 +164,18 @@ class BusinessIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with
         res mustBe testJourneyUrl
       }
 
+      "return the journey ID when the response JSON includes the journeyId for a Non UK Company" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, NonUkNonEstablished))
+
+        res mustBe testJourneyUrl
+      }
+
       "throw a JsResultException when the response JSON doesn't contain the journeyId" in {
         given()
           .audit.writesAudit()
@@ -146,33 +198,44 @@ class BusinessIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with
         stubPost(createUnincorpAssocJourneyUrl, UNAUTHORIZED, "")
 
         intercept[InternalServerException] {
-          await(connector.createJourney(testJourneyConfig, Trust))
+          await(connector.createJourney(testJourneyConfig, UnincorpAssoc))
         }
       }
     }
   }
 
   "getDetails" must {
-    "return trust when Business Id returns OK" in new Setup {
+    "return trust when Minor Entity Id returns OK" in new Setup {
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(testTrustResponse))
-      val res: BusinessIdEntity = await(connector.getDetails(testTrustJourneyId))
+      val res: MinorEntityIdEntity = await(connector.getDetails(testTrustJourneyId))
 
       res mustBe testTrust
     }
 
-    "return unincorporated association when Business Id returns OK" in new Setup {
+    "return unincorporated association when Minor Entity Id returns OK" in new Setup {
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, Json.stringify(testUnincorpAssocResponse))
-      val res: BusinessIdEntity = await(connector.getDetails(testUnincorpAssocJourneyId))
+      val res: MinorEntityIdEntity = await(connector.getDetails(testUnincorpAssocJourneyId))
 
       res mustBe testUnincorpAssoc
+    }
+
+    "return Non UK Company when Minor Entity Id returns OK" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, Json.stringify(testNonUkCompanyResponse))
+      val res: MinorEntityIdEntity = await(connector.getDetails(testNonUkCompanyJourneyId))
+
+      res mustBe testNonUkCompany
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {

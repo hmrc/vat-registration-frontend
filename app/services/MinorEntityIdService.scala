@@ -16,24 +16,24 @@
 
 package services
 
-import connectors.BusinessIdConnector
+import connectors.MinorEntityIdConnector
 import models.api.PartyType
-import models.external.BusinessIdEntity
-import models.external.businessid.BusinessIdJourneyConfig
+import models.external.MinorEntityIdEntity
+import models.external.minorentityid.MinorEntityIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class BusinessIdService @Inject()(businessIdConnector: BusinessIdConnector) {
+class MinorEntityIdService @Inject()(minorEntityIdConnector: MinorEntityIdConnector) {
 
-  def createJourney(journeyConfig: BusinessIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
-    businessIdConnector.createJourney(journeyConfig, partyType)
+  def createJourney(journeyConfig: MinorEntityIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    minorEntityIdConnector.createJourney(journeyConfig, partyType)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[BusinessIdEntity] = {
-    businessIdConnector.getDetails(journeyId)
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntityIdEntity] = {
+    minorEntityIdConnector.getDetails(journeyId)
   }
 
 }

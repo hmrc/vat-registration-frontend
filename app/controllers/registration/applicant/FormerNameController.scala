@@ -21,7 +21,7 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameForm
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -62,7 +62,7 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
             }
             else {
               vatRegistrationService.partyType map {
-                case NETP =>
+                case NETP | NonUkNonEstablished =>
                   Redirect(applicantRoutes.InternationalHomeAddressController.show())
                 case _ =>
                   Redirect(applicantRoutes.HomeAddressController.redirectToAlf())

@@ -20,7 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.SoleTraderNameForm
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -62,7 +62,7 @@ class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreCo
             tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) flatMap {
               _ =>
                 vatRegistrationService.partyType.map {
-                  case NETP => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
+                  case NETP | NonUkNonEstablished => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
                   case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
                 }
             }

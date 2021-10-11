@@ -17,9 +17,9 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.api.{PartyType, Trust, UnincorpAssoc}
-import models.external.BusinessIdEntity
-import models.external.businessid.BusinessIdJourneyConfig
+import models.api.{NonUkNonEstablished, PartyType, Trust, UnincorpAssoc}
+import models.external.MinorEntityIdEntity
+import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
@@ -29,32 +29,33 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class MinorEntityIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  def createJourney(journeyConfig: BusinessIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+  def createJourney(journeyConfig: MinorEntityIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
     val url = partyType match {
       case UnincorpAssoc => config.startUnincorpAssocJourneyUrl
       case Trust => config.startTrustJourneyUrl
+      case NonUkNonEstablished => config.startNonUKCompanyJourneyUrl
     }
 
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
-        throw new InternalServerException(s"[BusinessIdConnector] Invalid response from business identification: Status: ${response.status} Body: ${response.body}")
+        throw new InternalServerException(s"[MinorEntityIdConnector] Invalid response from minor entity identification: Status: ${response.status} Body: ${response.body}")
     }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[BusinessIdEntity] = {
-    httpClient.GET(config.getBusinessIdDetailsUrl(journeyId)).map { response =>
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntityIdEntity] = {
+    httpClient.GET(config.getMinorEntityIdDetailsUrl(journeyId)).map { response =>
       response.status match {
-        case OK => response.json.validate[BusinessIdEntity](BusinessIdEntity.apiFormat) match {
+        case OK => response.json.validate[MinorEntityIdEntity](MinorEntityIdEntity.apiFormat) match {
           case JsSuccess(value, _) => value
           case JsError(errors) =>
-            throw new InternalServerException(s"[BusinessIdConnector] Business ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+            throw new InternalServerException(s"[MinorEntityIdConnector] Minor Entity ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
         }
         case status =>
-          throw new InternalServerException(s"[BusinessIdConnector] Unexpected status returned from business ID: $status")
+          throw new InternalServerException(s"[MinorEntityIdConnector] Unexpected status returned from minor entity ID: $status")
       }
     }
   }
