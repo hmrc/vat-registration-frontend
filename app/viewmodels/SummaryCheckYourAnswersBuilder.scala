@@ -41,7 +41,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
                                                flatRateService: FlatRateService) extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
-  val sectionId: String = "pages.summary.directorDetails"
+  val sectionId: String = "cya"
 
   def generateSummaryList(implicit vatScheme: VatScheme, messages: Messages): SummaryList = {
     implicit val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
