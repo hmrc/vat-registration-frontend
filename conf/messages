@@ -312,136 +312,133 @@ pages.application.progress.saved.link                               = return to 
 pages.application.progress.saved.inset                              = Saved applications will only be available for 7 days
 
 ## Summary Page VAT details
-pages.summary.directorDetails.overThresholdThirtySelection           = VAT taxable sales over £{0} in the 30 days after company is registered
-pages.summary.directorDetails.necessity                              = Register voluntarily
-pages.summary.directorDetails.overThresholdSelection                 = Since {0} has the company’s VAT taxable turnover gone over £{1}?
-pages.summary.directorDetails.overThresholdDate                      = Month turnover went over £{0}
-pages.summary.directorDetails.expectationOverThresholdSelection      = Thought turnover would go over VAT registration in a single 30-day period
-pages.summary.directorDetails.expectationOverThresholdDate           = Date you first thought sales would go over threshold
-pages.summary.directorDetails.voluntaryRegistrationReason            = Voluntary registration reason
-pages.summary.directorDetails.startDate                              = VAT start date
-pages.summary.directorDetails.mandatoryStartDate                     = The date the company is registered with Companies House
-
+cya.overThresholdThirtySelection                     = VAT taxable sales over £{0} in the 30 days after company is registered
+cya.necessity                                        = Register voluntarily
+cya.overThresholdSelection                           = Since {0} has the company’s VAT taxable turnover gone over £{1}?
+cya.overThresholdDate                                = Month turnover went over £{0}
+cya.expectationOverThresholdSelection                = Thought turnover would go over VAT registration in a single 30-day period
+cya.expectationOverThresholdDate                     = Date you first thought sales would go over threshold
+cya.voluntaryRegistrationReason                      = Voluntary registration reason
+cya.startDate                                        = VAT start date
+cya.mandatoryStartDate                               = The date the company is registered with Companies House
 
 ## Summary Page Director details
-pages.summary.directorDetails.sectionHeading           = Applicant details
-pages.summary.directorDetails.whoIsRegistering         = Who is registering the company for VAT
-pages.summary.directorDetails.firstName                = First Name
-pages.summary.directorDetails.lastName                 = Last Name
-pages.summary.directorDetails.roleInTheBusiness        = Role in the business
-pages.summary.directorDetails.formerName               = Former name
-pages.summary.directorDetails.formerNameDate           = Date former name changed
-pages.summary.directorDetails.noFormerName             = No former name
-pages.summary.directorDetails.homeAddress              = Home address
-pages.summary.directorDetails.moreThanThreeYears       = Lived at current address for more than 3 years
-pages.summary.directorDetails.previousAddress          = Previous address
-pages.summary.directorDetails.dob                      = Date of birth
-pages.summary.directorDetails.nino                     = National Insurance number
-pages.summary.directorDetails.completionCapacity       = Person registering the company for VAT
-pages.summary.directorDetails.email                    = Email address
-pages.summary.directorDetails.daytimePhone             = Daytime phone number
-pages.summary.directorDetails.mobile                   = Mobile number
-pages.summary.directorDetails.telephone                = Telephone number
-pages.summary.directorDetails.companyNumber            = Company registration number
-pages.summary.directorDetails.ctutr                    = Unique Taxpayer Reference number
-pages.summary.directorDetails.chrn                     = Charity registration number
-pages.summary.directorDetails.sautr                    = Unique Taxpayer Reference number
-pages.summary.directorDetails.trn                      = Temporary Reference number
-pages.summary.directorDetails.overseasIdentifier       = Overseas tax identifier
-pages.summary.directorDetails.overseasCountry          = Overseas country
-pages.summary.directorDetails.zeroRatedSupplies        = Zero-rated turnover for the next 12 months
-pages.summary.directorDetails.reclaimMoreVat           = Expect to claim VAT refunds regularly
+cya.sectionHeading                                   = Applicant details
+cya.whoIsRegistering                                 = Who is registering the company for VAT
+cya.firstName                                        = First Name
+cya.lastName                                         = Last Name
+cya.roleInTheBusiness                                = Role in the business
+cya.formerName                                       = Former name
+cya.formerNameDate                                   = Date former name changed
+cya.noFormerName                                     = No former name
+cya.homeAddress                                      = Home address
+cya.moreThanThreeYears                               = Lived at current address for more than 3 years
+cya.previousAddress                                  = Previous address
+cya.dob                                              = Date of birth
+cya.nino                                             = National Insurance number
+cya.completionCapacity                               = Person registering the company for VAT
+cya.email                                            = Email address
+cya.daytimePhone                                     = Daytime phone number
+cya.mobile                                           = Mobile number
+cya.telephone                                        = Telephone number
+cya.companyNumber                                    = Company registration number
+cya.ctutr                                            = Unique Taxpayer Reference number
+cya.chrn                                             = Charity registration number
+cya.sautr                                            = Unique Taxpayer Reference number
+cya.trn                                              = Temporary Reference number
+cya.overseasIdentifier                               = Overseas tax identifier
+cya.overseasCountry                                  = Overseas country
+cya.zeroRatedSupplies                                = Zero-rated turnover for the next 12 months
+cya.reclaimMoreVat                                   = Expect to claim VAT refunds regularly
 
 ## Summary Page Company details
-pages.summary.directorDetails.tradingName                 = Different Trading name
-pages.summary.directorDetails.mandatoryName               = Trading name
-pages.summary.directorDetails.flatRateScheme              = Flat rate scheme
-pages.summary.directorDetails.emailBusiness               = Business email address
-pages.summary.directorDetails.daytimePhoneBusiness        = Business daytime phone number
-pages.summary.directorDetails.mobileBusiness              = Business mobile number
-pages.summary.directorDetails.website                     = Business website address
-pages.summary.directorDetails.ppob                        = Business address
-pages.summary.directorDetails.contactPreference           = Contact preference
-pages.summary.directorDetails.businessDescription         = What does the business do?
-pages.summary.directorDetails.sicCodes                    = SIC codes
-pages.summary.directorDetails.mainSicCode                 = Main business activity
-pages.summary.directorDetails.zeroRated                   = Zero rated turnover for the next 12 months
-pages.summary.directorDetails.claimRefunds                = Expect to claim VAT refunds regularly?
-pages.summary.directorDetails.applyForEori                = Apply for EORI?
+cya.tradingName                                      = Different Trading name
+cya.mandatoryName                                    = Trading name
+cya.flatRateScheme                                   = Flat rate scheme
+cya.emailBusiness                                    = Business email address
+cya.daytimePhoneBusiness                             = Business daytime phone number
+cya.mobileBusiness                                   = Business mobile number
+cya.website                                          = Business website address
+cya.ppob                                             = Business address
+cya.contactPreference                                = Contact preference
+cya.businessDescription                              = What does the business do?
+cya.sicCodes                                         = SIC codes
+cya.mainSicCode                                      = Main business activity
+cya.zeroRated                                        = Zero rated turnover for the next 12 months
+cya.claimRefunds                                     = Expect to claim VAT refunds regularly?
+cya.applyForEori                                     = Apply for EORI?
 
 ## Summary Page Business Activities
-pages.summary.directorDetails.businessActivities          = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
-pages.summary.directorDetails.mainBusinessActivity        = Main business activity
+cya.businessActivities                               = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
+cya.mainBusinessActivity                             = Main business activity
 
 ## Summary Page Business Bank Details
-pages.summary.directorDetails.companyBankAccount                 = Have a business bank account set up
-pages.summary.directorDetails.companyBankAccount.details         = Bank details
-pages.summary.directorDetails.companyBankAccount.reason          = Reason the bank account is not set up yet
+cya.companyBankAccount                               = Have a business bank account set up
+cya.companyBankAccount.details                       = Bank details
+cya.companyBankAccount.reason                        = Reason the bank account is not set up yet
 
 ## Summary Page Taxable Sales
-pages.summary.directorDetails.estimatedSalesValue                = Estimated VAT taxable sales
+cya.estimatedSalesValue                              = Estimated VAT taxable sales
 
 ## Summary Page Director Addresses
-pages.summary.directorDetails.currentAddressThreeYears      = Lived at current address for more than 3 years
+cya.currentAddressThreeYears                         = Lived at current address for more than 3 years
 
 ## Summary Page Returns
-pages.summary.directorDetails.zeroRatedSuppliesValue                  = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
+cya.zeroRatedSuppliesValue                           = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
 
-pages.summary.directorDetails.reclaimMoreVatClaim                     = VAT claims and charges
-pages.summary.directorDetails.reclaimMoreVat.yes                      = Yes, I expect to reclaim more VAT than I charge
-pages.summary.directorDetails.reclaimMoreVat.no                       = No, I expect to charge more VAT than I reclaim
+cya.reclaimMoreVatClaim                              = VAT claims and charges
+cya.reclaimMoreVat.yes                               = Yes, I expect to reclaim more VAT than I charge
+cya.reclaimMoreVat.no                                = No, I expect to charge more VAT than I reclaim
 
-pages.summary.directorDetails.accountingPeriod                        = When do you want to submit VAT Returns?
-pages.summary.directorDetails.accountingPeriod.monthly                = Once a month
-pages.summary.directorDetails.accountingPeriod.jan                    = January, April, July and October
-pages.summary.directorDetails.accountingPeriod.feb                    = February, May, August and November
-pages.summary.directorDetails.accountingPeriod.mar                    = March, June, September and December
-pages.summary.directorDetails.accountingPeriod.annual                 = I would like to join the Annual Accounting Scheme
+cya.accountingPeriod                                 = When do you want to submit VAT Returns?
+cya.accountingPeriod.monthly                         = Once a month
+cya.accountingPeriod.jan                             = January, April, July and October
+cya.accountingPeriod.feb                             = February, May, August and November
+cya.accountingPeriod.mar                             = March, June, September and December
+cya.accountingPeriod.annual                          = I would like to join the Annual Accounting Scheme
 
-pages.summary.directorDetails.lastMonthOfAccountingYear               = Last month of your accounting year
-pages.summary.directorDetails.lastMonthOfAccountingYear.FebJanStagger = January
-pages.summary.directorDetails.lastMonthOfAccountingYear.MarFebStagger = February
-pages.summary.directorDetails.lastMonthOfAccountingYear.AprMarStagger = March
-pages.summary.directorDetails.lastMonthOfAccountingYear.MayAprStagger = April
-pages.summary.directorDetails.lastMonthOfAccountingYear.JunMayStagger = May
-pages.summary.directorDetails.lastMonthOfAccountingYear.JulJunStagger = June
-pages.summary.directorDetails.lastMonthOfAccountingYear.AugJulStagger = July
-pages.summary.directorDetails.lastMonthOfAccountingYear.SepAugStagger = August
-pages.summary.directorDetails.lastMonthOfAccountingYear.OctSepStagger = September
-pages.summary.directorDetails.lastMonthOfAccountingYear.NovOctStagger = October
-pages.summary.directorDetails.lastMonthOfAccountingYear.DecNovStagger = November
-pages.summary.directorDetails.lastMonthOfAccountingYear.JanDecStagger = December
+cya.lastMonthOfAccountingYear                        = Last month of your accounting year
+cya.lastMonthOfAccountingYear.FebJanStagger          = January
+cya.lastMonthOfAccountingYear.MarFebStagger          = February
+cya.lastMonthOfAccountingYear.AprMarStagger          = March
+cya.lastMonthOfAccountingYear.MayAprStagger          = April
+cya.lastMonthOfAccountingYear.JunMayStagger          = May
+cya.lastMonthOfAccountingYear.JulJunStagger          = June
+cya.lastMonthOfAccountingYear.AugJulStagger          = July
+cya.lastMonthOfAccountingYear.SepAugStagger          = August
+cya.lastMonthOfAccountingYear.OctSepStagger          = September
+cya.lastMonthOfAccountingYear.NovOctStagger          = October
+cya.lastMonthOfAccountingYear.DecNovStagger          = November
+cya.lastMonthOfAccountingYear.JanDecStagger          = December
 
-pages.summary.directorDetails.paymentFrequency                        = How often do you want to make payments?
-pages.summary.directorDetails.paymentFrequency.MonthlyPayment         = Monthly
-pages.summary.directorDetails.paymentFrequency.QuarterlyPayment       = Quarterly
+cya.paymentFrequency                                 = How often do you want to make payments?
+cya.paymentFrequency.MonthlyPayment                  = Monthly
+cya.paymentFrequency.QuarterlyPayment                = Quarterly
 
-pages.summary.directorDetails.paymentMethod                           = How do you want to pay VAT?
-pages.summary.directorDetails.paymentMethod.BACS                      = BACS or internet banking
-pages.summary.directorDetails.paymentMethod.BankGIRO                  = Bank Giro Transfer
-pages.summary.directorDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
-pages.summary.directorDetails.paymentMethod.StandingOrder             = Standing order
-pages.summary.directorDetails.paymentMethod.BACS.hiddenContent        = To pay by Direct Debit, complete your VAT registration to get your VAT Registration Number. You can then
-pages.summary.directorDetails.paymentMethod.BACS.linkText             = print off and fill in a Direct debit mandate
+cya.paymentMethod                                    = How do you want to pay VAT?
+cya.paymentMethod.BACS                               = BACS or internet banking
+cya.paymentMethod.BankGIRO                           = Bank Giro Transfer
+cya.paymentMethod.CHAPS                              = Clearing House Automated Payment System (CHAPS)
+cya.paymentMethod.StandingOrder                      = Standing order
 
 ## Summary Page Labour Compliance
-pages.summary.directorDetails.supplyWorkers                  = Supplying workers to provide a service to another business
-pages.summary.directorDetails.numberOfWorkers                = Number of workers supplied
-pages.summary.directorDetails.intermediarySupply             = Intermediary arranging the supply of workers
+cya.supplyWorkers                                    = Supplying workers to provide a service to another business
+cya.numberOfWorkers                                  = Number of workers supplied
+cya.intermediarySupply                               = Intermediary arranging the supply of workers
 
 ## Summary Page Overseas Compliance
-pages.summary.directorDetails.sendGoodsOverseas      = Will the business send goods directly to customers from overseas countries?
-pages.summary.directorDetails.sendGoodsToEu          = Do you intend to send goods direct to customers from within the EU?
-pages.summary.directorDetails.storingGoods           = Where are you storing your goods for dispatch?
-pages.summary.directorDetails.storingGoods.uk        = Within the United Kingdom
-pages.summary.directorDetails.storingGoods.overseas  = Overseas
-pages.summary.directorDetails.dispatchFromWarehouse  = Will the business dispatch goods from a FHDDS registered warehouse?
-pages.summary.directorDetails.warehouseNumber        = Fulfilment Warehouse number
-pages.summary.directorDetails.warehouseName          = Fulfilment Warehouse business name
+cya.sendGoodsOverseas                                = Will the business send goods directly to customers from overseas countries?
+cya.sendGoodsToEu                                    = Do you intend to send goods direct to customers from within the EU?
+cya.storingGoods                                     = Where are you storing your goods for dispatch?
+cya.storingGoods.uk                                  = Within the United Kingdom
+cya.storingGoods.overseas                            = Overseas
+cya.dispatchFromWarehouse                            = Will the business dispatch goods from a FHDDS registered warehouse?
+cya.warehouseNumber                                  = Fulfilment Warehouse number
+cya.warehouseName                                    = Fulfilment Warehouse business name
 
 ## Northern Ireland Protocol
-pages.summary.directorDetails.sellOrMoveNip          = Sell or move goods from Northern Ireland?
-pages.summary.directorDetails.receiveGoodsNip        = Receive goods in Northern Ireland from EU?
+cya.sellOrMoveNip                                    = Sell or move goods from Northern Ireland?
+cya.receiveGoodsNip                                  = Receive goods in Northern Ireland from EU?
 
 ## Error Pages
 error.error_template.tryagain                        = Try again
@@ -698,13 +695,13 @@ validation.frs.startDate.range.below.vatStartDate         = Enter a date that is
 validation.frs.startDate.range.after.maxDate              = The joining date must be within the first three months of VAT registration
 
 ## FRS SUMMARY SECTION
-pages.summary.directorDetails.joinFrs                               = Do you want to join the Flat Rate Scheme?
-pages.summary.directorDetails.costsInclusive                        = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
-pages.summary.directorDetails.estimateTotalSales                    = Total sales, including VAT, for the next 3 months
-pages.summary.directorDetails.costsLimited                          = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
-pages.summary.directorDetails.businessSector                        = Business type for the Flat Rate Scheme
-pages.summary.directorDetails.flatRate                              = Do you want to use the {0}% flat rate?
-pages.summary.directorDetails.startDateFRS                          = When do you want to join the Flat Rate Scheme?
+cya.joinFrs                                             = Do you want to join the Flat Rate Scheme?
+cya.costsInclusive                                      = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
+cya.estimateTotalSales                                  = Total sales, including VAT, for the next 3 months
+cya.costsLimited                                        = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+cya.businessSector                                      = Business type for the Flat Rate Scheme
+cya.flatRate                                            = Do you want to use the {0}% flat rate?
+cya.startDateFRS                                        = When do you want to join the Flat Rate Scheme?
 pages.summary.frs.startDate.dateOfRegistration                      = Date of registration
 
 ## ICL CUSTOM MESSAGES
@@ -735,15 +732,15 @@ capture-email-passcode.error.incorrect_passcode         = Enter the correct conf
 capture-email-passcode.error.incorrect_length           = Enter the 6 digit confirmation code
 
 ## EMAIL VERIFIED MESSAGES
-email-verified.heading                                    = Email address confirmed
+email-verified.heading                                   = Email address confirmed
 
 ## CAPTURE TELEPHONE NUMBER MESSAGES
-capture-telephone-number.heading                        = What is your telephone number?
-capture-telephone-number.paragraph                      = We may need to contact you about the application.
-capture-telephone-number.label                          = UK telephone number
-capture-telephone-number.error.incorrect_format         = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
-capture-telephone-number.error.nothing_entered          = Enter a UK telephone number
-capture-telephone-number.error.incorrect_length         = The telephone number must be 24 characters or fewer
+capture-telephone-number.heading                         = What is your telephone number?
+capture-telephone-number.paragraph                       = We may need to contact you about the application.
+capture-telephone-number.label                           = UK telephone number
+capture-telephone-number.error.incorrect_format          = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
+capture-telephone-number.error.nothing_entered           = Enter a UK telephone number
+capture-telephone-number.error.incorrect_length          = The telephone number must be 24 characters or fewer
 
 ## CONTINUE APPLICATION MESSAGES
 start-new-application.heading                            = Are you starting a new application?
@@ -783,6 +780,8 @@ aas.paymentMethod.giro                                   = Bank Giro Transfer
 aas.paymentMethod.chaps                                  = Clearing House Automated Payment System (CHAPS)
 aas.paymentMethod.standingOrder                          = Standing order
 aas.paymentMethod.error.required                         = Tell us how you want to pay VAT bills
+aas.paymentMethod.bacs.hiddenContent                     = To pay by Direct Debit, complete your VAT registration to get your VAT Registration Number. You can then
+aas.paymentMethod.bacs.linkText                          = print off and fill in a Direct debit mandate
 
 ## SOLE TRADER - TRADING NAME
 soleTrader.tradingName.heading                           = What is your trading name?
