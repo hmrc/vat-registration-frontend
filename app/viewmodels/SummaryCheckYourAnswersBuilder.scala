@@ -481,6 +481,18 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(returnsRoutes.WarehouseNameController.show().url)
     )
 
+    val sellOrMoveNip = optSummaryListRowBoolean(
+      s"$sectionId.sellOrMoveNip",
+      returns.northernIrelandProtocol.flatMap(_.goodsToEU).map(_.answer),
+      Some(returnsRoutes.SellOrMoveNipController.show().url)
+    )
+
+    val receiveGoodsNip = optSummaryListRowBoolean(
+      s"$sectionId.receiveGoodsNip",
+      returns.northernIrelandProtocol.flatMap(_.goodsFromEU).map(_.answer),
+      Some(returnsRoutes.ReceiveGoodsNipController.show().url)
+    )
+
     Seq(
       startDateRow,
       zeroRatedRow,
@@ -494,7 +506,9 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       storingGoods,
       dispatchFromWarehouse,
       warehouseNumber,
-      warehouseName
+      warehouseName,
+      sellOrMoveNip,
+      receiveGoodsNip
     ).flatten
   }
 
