@@ -305,9 +305,14 @@ POST        /warehouse-number                                                   
 GET         /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.show
 POST        /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.submit
 
+## Attachment Method Page
+GET         /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.show
+POST        /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.submit
+
 ## Documents Required Page
 GET         /attachments-resolve                                                               controllers.registration.attachments.DocumentsRequiredController.resolve
 GET         /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.show
+POST        /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.submit
 
 ## Documents Post Page
 GET         /post-documents                                                                    controllers.registration.attachments.DocumentsPostController.show

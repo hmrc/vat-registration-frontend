@@ -22,7 +22,7 @@ import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, Passcod
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, Upstream5xxResponse}
+import uk.gov.hmrc.http.InternalServerException
 
 class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
 

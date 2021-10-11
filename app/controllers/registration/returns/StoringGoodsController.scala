@@ -39,7 +39,6 @@ class StoringGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  // TODO: Redirect to here if NO selected on "Will business send goods directly to overseas customers" page
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
       for {

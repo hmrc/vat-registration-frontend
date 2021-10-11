@@ -1,6 +1,7 @@
 
 package controllers.registration.attachments
 
+import featureswitch.core.config.EmailAttachments
 import itutil.ControllerISpec
 import models.api.{Attached, AttachmentType, Attachments, IdentityEvidence, Other, Post}
 import play.api.http.HeaderNames
@@ -18,7 +19,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other),List[AttachmentType](IdentityEvidence))))
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
@@ -33,7 +34,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached),List[AttachmentType](IdentityEvidence))))
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
@@ -48,7 +49,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post),List[AttachmentType](IdentityEvidence))))
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
@@ -63,7 +64,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(Attachments(None ,List[AttachmentType]())))
+        .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType]())))
 
       val res = buildClient(resolveUrl).get()
 
@@ -75,7 +76,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
   }
 
   s"GET $showUrl" must {
-    "return an OK" in {
+    "return OK" in {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -85,6 +86,42 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
+      }
+    }
+  }
+
+  s"POST $showUrl" when {
+    "the EmailAttachments feature switch is enabled" must {
+      "redirect to the AttachmentMethod page" in {
+        enable(EmailAttachments)
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        val res = buildClient(showUrl).post(Json.obj())
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show().url)
+        }
+      }
+    }
+    "the EmailAttachments feature switch is disabled" must {
+      "redirect to the Document Post page" in {
+        disable(EmailAttachments)
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.storesAttachments(Attachments(method = Some(Post), List()))
+
+        val res = buildClient(showUrl).post(Json.obj())
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show().url)
+        }
       }
     }
   }

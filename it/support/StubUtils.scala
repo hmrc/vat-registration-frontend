@@ -24,7 +24,7 @@ import itutil.IntegrationSpecBase
 import models.S4LKey
 import models.api.returns.Returns
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
-import models.api.{SicCode, VatScheme}
+import models.api.{Attachments, SicCode, VatScheme}
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -494,6 +494,13 @@ trait StubUtils {
       stubFor(
         patch(urlPathMatching(s"/vatreg/1/.*"))
           .willReturn(aResponse().withStatus(202).withBody(tFmt.writes(t).toString())))
+      builder
+    }
+
+    def storesAttachments(data: Attachments)(implicit writes: Writes[Attachments]) = {
+      stubFor(
+        put(urlPathMatching(s"/vatreg/1/attachments"))
+          .willReturn(aResponse().withStatus(OK).withBody(writes.writes(data).toString())))
       builder
     }
 

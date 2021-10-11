@@ -24,23 +24,20 @@ import services.{SessionProfile, VatRegistrationService}
 import views.html.EmailDocuments
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EmailDocumentsController @Inject()(view: EmailDocuments,
-                                           val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector,
-                                           val vatRegistrationService: VatRegistrationService
-                                          )(implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                         val authConnector: AuthClientConnector,
+                                         val keystoreConnector: KeystoreConnector)
+                                        (implicit appConfig: FrontendAppConfig,
+                                         val executionContext: ExecutionContext,
+                                         baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.getAckRef(profile.registrationId).map(ackRef =>
-          Ok(view(ackRef))
-        )
+          Future.successful(Ok(view()))
   }
+
 }

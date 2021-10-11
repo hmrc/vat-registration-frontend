@@ -16,19 +16,21 @@
 
 package services
 
-import connectors.{AttachmentsConnector, KeystoreConnector}
-import models.api.Attachments
+import connectors.AttachmentsConnector
+import models.api.{AttachmentMethod, Attachments}
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AttachmentsService @Inject()(val s4LService: S4LService,
-                                   val attachmentsConnector: AttachmentsConnector,
-                                   val keystoreConnector: KeystoreConnector
-                                  )(implicit ec: ExecutionContext) {
+class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnector)
+                                  (implicit ec: ExecutionContext) {
 
   def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[Attachments] =
     attachmentsConnector.getAttachmentList(regId)
+
+  def storeAttachmentDetails(regId: String, method: AttachmentMethod)(implicit hc: HeaderCarrier): Future[JsValue] =
+    attachmentsConnector.storeAttachmentDetails(regId, method)
 
 }
