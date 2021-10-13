@@ -18,86 +18,66 @@ package controllers
 
 import common.enums.VatRegStatus
 import itutil.ControllerISpec
-import models.api.{Individual, Partnership, UkCompany, VatScheme}
+import models.api._
 import models.{ApplicantDetails, TradingDetails}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
+
   "Trading name page resolver" should {
-    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for Individual" in new Setup {
-      given()
-        .user.isAuthorised
-        .s4lContainer[TradingDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .vatScheme.contains(
+    List(Individual, Partnership, Trust, UnincorpAssoc, NETP, NonUkNonEstablished).foreach { partyType =>
+      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for ${partyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
+          .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
           )
         )
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.doesNotHave("trading-details")
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .vatScheme.doesNotHave("trading-details")
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val  response = buildClient("/resolve-party-type").get()
-      whenReady(response) {res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
+        val response = buildClient("/resolve-party-type").get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
+        }
       }
     }
 
-    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for Partnership" in new Setup {
-      given()
-        .user.isAuthorised
-        .s4lContainer[TradingDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for ${partyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
+          .vatScheme.contains(
+          VatScheme(id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
+          )
         )
-      )
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.doesNotHave("trading-details")
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .vatScheme.doesNotHave("trading-details")
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val  response = buildClient("/resolve-party-type").get()
-      whenReady(response) {res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
-      }
-    }
-
-    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.TradingNameController.show().url} for UkCompany" in new Setup {
-      given()
-        .user.isAuthorised
-        .s4lContainer[TradingDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
-        )
-      )
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.doesNotHave("trading-details")
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val  response = buildClient("/resolve-party-type").get()
-      whenReady(response) {res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+        val response = buildClient("/resolve-party-type").get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+        }
       }
     }
   }

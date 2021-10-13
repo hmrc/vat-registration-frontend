@@ -156,6 +156,50 @@ class FormerNameControllerISpec extends ControllerISpec {
       }
     }
 
+    "Update S4L with no formerName and redirect to the International Home Address page for NETP" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.doesNotExistForKey("applicant-details")
+        .vatScheme.contains(emptyVatSchemeNetp)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/changed-name").post(Map(
+        "value" -> "false"
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+      }
+    }
+
+    "Update S4L with no formerName and redirect to the International Home Address page for Non UK Company" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.doesNotExistForKey("applicant-details")
+        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/changed-name").post(Map(
+        "value" -> "false"
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+      }
+    }
+
     "save Applicant Details to S4L if user needs to provide a former name date" in new Setup {
       val updatedS4LData = s4lData.copy(formerNameDate = None)
 

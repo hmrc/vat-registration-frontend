@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models.external.businessid
+package models.external.minorentityid
 
 import play.api.libs.json.{Json, OFormat}
 
-case class BusinessIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String, signOutUrl: String)
+case class MinorEntityIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String, signOutUrl: String)
 
-object BusinessIdJourneyConfig {
-  implicit val format: OFormat[BusinessIdJourneyConfig] = Json.format[BusinessIdJourneyConfig]
+object MinorEntityIdJourneyConfig {
+  implicit val format: OFormat[MinorEntityIdJourneyConfig] = Json.format[MinorEntityIdJourneyConfig]
 }

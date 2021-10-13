@@ -91,6 +91,24 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
     }
+
+    "redirect to International Address capture if the user is a Non UK Company" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit().url)
+        .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
+    }
+
     "patch Applicant Details in backend" in new Setup {
       given()
         .user.isAuthorised

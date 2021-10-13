@@ -57,8 +57,8 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
               Redirect(applicantRoutes.IncorpIdController.startJourney())
             case Partnership =>
               Redirect(applicantRoutes.PartnershipIdController.startJourney())
-            case UnincorpAssoc | Trust =>
-              Redirect(applicantRoutes.BusinessIdController.startJourney())
+            case UnincorpAssoc | Trust | NonUkNonEstablished =>
+              Redirect(applicantRoutes.MinorEntityIdController.startJourney())
           }
         }
   }

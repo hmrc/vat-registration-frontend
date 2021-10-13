@@ -22,7 +22,7 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import models.view.PreviousAddressView
 import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, VatRegistrationService}
@@ -67,7 +67,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
               }
             } else {
               vatRegistrationService.partyType flatMap {
-                case NETP =>
+                case NETP | NonUkNonEstablished =>
                   Future.successful(Redirect(routes.InternationalPreviousAddressController.show()))
                 case _ =>
                   addressLookupService.getJourneyUrl(

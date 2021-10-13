@@ -97,8 +97,8 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       }
     }
 
-    List(Trust, UnincorpAssoc).foreach { validPartyType =>
-      s"return a redirect to Business ID for ${validPartyType.toString}" in new Setup {
+    List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { validPartyType =>
+      s"return a redirect to Minor Entity ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
           .audit.writesAudit()
@@ -115,7 +115,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         val response: Future[WSResponse] = buildClient(url).post(Json.obj())
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.BusinessIdController.startJourney().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.MinorEntityIdController.startJourney().url)
         }
       }
     }

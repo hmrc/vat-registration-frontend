@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, VatRegistrationService}
 import views.html.has_company_bank_account
@@ -40,7 +40,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
         vatRegistrationService.partyType.flatMap {
-          case NETP => Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()))
+          case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()))
           case _ => for {
             bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
             filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
@@ -56,7 +56,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
         hasBankAccount =>
           bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) flatMap { _ =>
             vatRegistrationService.partyType.map {
-              case NETP =>
+              case NETP | NonUkNonEstablished =>
                 Redirect(routes.OverseasBankAccountController.show())
               case _ if hasBankAccount =>
                 Redirect(routes.UkBankAccountDetailsController.show())

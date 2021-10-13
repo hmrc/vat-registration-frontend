@@ -20,25 +20,28 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Partnership, Trust, UnincorpAssoc, VatScheme}
-import models.external.{BusinessIdEntity, BusinessVerificationStatus, BvPass}
-import models.{ApplicantDetails, Partner}
+import models.ApplicantDetails
+import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc, VatScheme}
+import models.external.soletraderid.OverseasIdentifierDetails
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntityIdEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class BusinessIdControllerISpec extends ControllerISpec {
+class MinorEntityIdControllerISpec extends ControllerISpec {
 
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val testUnincorpAssocJourneyId = "1"
   val testTrustJourneyId = "2"
+  val testNonUkCompanyJourneyId = "3"
   val testJourneyUrl = "/test-journey-url"
-  val createTrustJourneyUrl = "/business-identification/api/trust/journey"
-  val createUnincorpAssocJourneyUrl = "/business-identification/api/unincorporated-association/journey"
+  val createTrustJourneyUrl = "/minor-entity-identification/api/trust-journey"
+  val createUnincorpAssocJourneyUrl = "/minor-entity-identification/api/unincorporated-association-journey"
+  val createNonUkCompanyJourneyUrl = "/minor-entity-identification/api/overseas-company-journey"
 
-  def retrieveDetailsUrl(journeyId: String) = s"/business-identification/api/journey/$journeyId"
+  def retrieveDetailsUrl(journeyId: String) = s"/minor-entity-identification/api/journey/$journeyId"
 
   val testPostCode = "ZZ1 1ZZ"
 
@@ -56,8 +59,10 @@ class BusinessIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testTrust: BusinessIdEntity = BusinessIdEntity(
+  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
     Some(testSautr),
+    None,
+    None,
     Some(testPostCode),
     Some(testChrn),
     None,
@@ -84,8 +89,10 @@ class BusinessIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testUnincorpAssoc: BusinessIdEntity = BusinessIdEntity(
+  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
     Some(testSautr),
+    None,
+    None,
     Some(testPostCode),
     Some(testChrn),
     Some(testCasc),
@@ -97,7 +104,42 @@ class BusinessIdControllerISpec extends ControllerISpec {
 
   val unincorpAssocApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testUnincorpAssoc))
 
-  "GET /start-business-id-journey" when {
+  val testOverseasIdentifier = "1234567890"
+  val testOverseasIdentifierCountry = "EE"
+  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+
+  val testNonUkCompanyResponse: JsObject = Json.obj(
+    "ctutr" -> testCrn,
+    "overseas" -> Json.obj(
+      "taxIdentifier" -> testOverseasIdentifier,
+      "country" -> testOverseasIdentifierCountry
+    ),
+    "businessVerification" -> Json.obj(
+      "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+    ),
+    "registration" -> Json.obj(
+      "registrationStatus" -> testRegistration,
+      "registeredBusinessPartnerId" -> testSafeId
+    ),
+    "identifiersMatch" -> true
+  )
+
+  val testNonUkCompany: MinorEntityIdEntity = MinorEntityIdEntity(
+    None,
+    Some(testCrn),
+    Some(testOverseasIdentifierDetails),
+    None,
+    None,
+    None,
+    testRegistration,
+    BvPass,
+    Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val nonUkCompanyApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testNonUkCompany))
+
+  "GET /start-minor-entity-id-journey" when {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided for Trust" in new Setup {
         given()
@@ -109,7 +151,7 @@ class BusinessIdControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createTrustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-business-id-journey").get()
+        val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -127,7 +169,25 @@ class BusinessIdControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createUnincorpAssocJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-business-id-journey").get()
+        val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+
+      "redirect to the journey using the ID provided for Non UK Company" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -137,7 +197,7 @@ class BusinessIdControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /business-id-callback" must {
+  "GET /minor-entity-id-callback" must {
     "redirect to the lead business entity type page for Trust" when {
       "S4L model is not full" in new Setup {
         given()
@@ -158,7 +218,7 @@ class BusinessIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/business-id-callback?journeyId=$testTrustJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testTrustJourneyId").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -184,7 +244,7 @@ class BusinessIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/business-id-callback?journeyId=$testTrustJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testTrustJourneyId").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -213,7 +273,7 @@ class BusinessIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/business-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -239,7 +299,62 @@ class BusinessIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/business-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        }
+      }
+    }
+
+    "redirect to the lead business entity type page for Non UK Company" when {
+      "S4L model is not full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testNonUkCompany)))
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
+          )
+        )
+
+        stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testNonUkCompanyJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        }
+      }
+
+      "the model in S4l is full" in new Setup {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .vatScheme.isUpdatedWith(nonUkCompanyApplicantDetails)
+          .vatScheme.contains(
+          VatScheme(
+            id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
+          ))
+
+        stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testNonUkCompanyJourneyId").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER

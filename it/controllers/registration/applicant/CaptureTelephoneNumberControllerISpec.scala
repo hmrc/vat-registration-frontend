@@ -100,6 +100,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
       }
     }
+
     "update S4L and redirect to International Address for a NETP" in new Setup {
       disable(StubEmailVerification)
 
@@ -118,6 +119,26 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
     }
+
+    "update S4L and redirect to International Address for a Non UK Company" in new Setup {
+      disable(StubEmailVerification)
+
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+    }
+
     "the ApplicantDetails model is complete" should {
       "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
