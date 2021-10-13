@@ -884,6 +884,13 @@ internationalAddress.error.postcode.empty                = Enter a UK postcode
 internationalAddress.error.country                       = Select a country
 internationalAddress.error.country.invalid               = Select a country
 
+## ATTACHMENT METHOD
+
+attachmentMethod.title                                   = How would you like to send the additional documents?
+attachmentMethod.options.email                           = Email copies to HMRC
+attachmentMethod.options.post                            = Post copies to HMRC
+attachmentMethod.error.missing                           = Select how you want to send copies of the documents to HMRC
+
 ## DOCUMENTS REQUIRED
 
 pages.attachments.documentsRequired.title                = We require three pieces of additional information from you so we can prove your identity

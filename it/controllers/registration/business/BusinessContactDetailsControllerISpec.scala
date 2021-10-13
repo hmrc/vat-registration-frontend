@@ -76,7 +76,6 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
       }
     }
-    //TODO - See if this test is still valid
     "return NOT_FOUND when vat returns a 404" ignore new Setup {
       given()
         .user.isAuthorised

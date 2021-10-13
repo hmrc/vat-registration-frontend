@@ -25,9 +25,8 @@ class EmailDocumentsViewSpec extends VatRegViewSpec {
 
   val emailDocumentsPage: EmailDocuments = app.injector.instanceOf[EmailDocuments]
 
-  val testRef = "VRN12345689"
 
-  lazy val view: Html = emailDocumentsPage(ackRef = testRef)
+  lazy val view: Html = emailDocumentsPage()
   implicit val doc = Jsoup.parse(view.body)
 
   object ExpectedContent {

@@ -22,8 +22,8 @@
         h1: components.h1,
         p: components.p,
         bullets: components.bullets,
-        link: components.link,
-        saveProgressButton: components.saveProgressButton
+        form: FormWithCSRF,
+        button: components.button
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -49,16 +49,8 @@
         "pages.attachments.documentsRequired.additionalBullet6"
     )
 
-    <div class="govuk-button-group">
-        @link(
-            link = controllers.registration.attachments.routes.DocumentsPostController.show.url,
-            messageKey = "app.common.continue",
-            isButton = true
-        )
-
-        @if(appConfig.isEnabled(SaveAndContinueLater)) {
-            @saveProgressButton()
-        }
-    </div>
+    @form(controllers.registration.attachments.routes.DocumentsRequiredController.submit()) {
+        @button(messages("app.common.continue"), showSaveProgressButton = true)
+    }
 
 }

@@ -81,7 +81,7 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec
 
   "personalDetailsValidationCallback" when {
     "the transactor details successfully returned" should {
-      "redirect to the capture role page" in new Setup { //TODO update to store the retrieved data and redirect to the correct page
+      "redirect to the capture role page" in new Setup {
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
         val testValidationId = "testValidationId"
 

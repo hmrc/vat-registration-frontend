@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.attachments
 
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
@@ -36,7 +36,6 @@ class EmailDocumentsControllerISpec extends ControllerISpec with ITRegistrationF
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -31,8 +31,6 @@ class ReturnsControllerISpec extends ControllerISpec {
     }
 
     "Return INTERNAL_SERVER_ERROR when the user is not authenticated" in {
-      /* TODO: It SHOULD return UNAUTHORIZED, but we need to alter how the standard error template is
-          rendered first as the way it is currently would cause user confusion */
       given()
         .user.isNotAuthorised
 

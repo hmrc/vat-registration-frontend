@@ -19,13 +19,14 @@ package controllers.registration.attachments
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import models.api.IdentityEvidence
+import featureswitch.core.config.EmailAttachments
+import models.api.{IdentityEvidence, Post}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile}
 import views.html.DocumentsRequired
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, promise}
 
 @Singleton
 class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
@@ -53,4 +54,16 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
     implicit request => _ =>
       Future.successful(Ok(documentsRequiredPage()))
   }
+
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request => implicit profile =>
+      if (isEnabled(EmailAttachments)) {
+        Future.successful(Redirect(routes.AttachmentMethodController.show()))
+      } else {
+        attachmentsService.storeAttachmentDetails(profile.registrationId, Post).map { _ =>
+          Redirect(routes.DocumentsPostController.show())
+        }
+      }
+  }
+
 }
