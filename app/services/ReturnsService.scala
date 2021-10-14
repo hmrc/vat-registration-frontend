@@ -79,6 +79,8 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
+    case Returns(_, _, _, _, _, _, _, Some(NIPCompliance(goodsToEU, None))) =>
+      Incomplete(returns)
     case Returns(Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _, _, _) =>
       Complete(returns.copy(returnsFrequency = Some(Quarterly), annualAccountingDetails = None))
     case Returns(Some(zeroRated), Some(true), Some(Monthly), _, _, _, _, _) =>

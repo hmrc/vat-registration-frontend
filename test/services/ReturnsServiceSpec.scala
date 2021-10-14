@@ -54,6 +54,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   val emptyReturns: Returns = Returns(None, None, None, None, None, None)
   val incomplete: Returns = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
+  val incompleteNIP: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date), None, None ,Some(NIPCompliance(Some(ConditionalValue(false, None)),None)))
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
@@ -102,6 +103,9 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
     }
     "return an Incomplete model when less than minimum data is provided" in new Setup {
       service.handleView(emptyReturns) mustBe Incomplete(emptyReturns)
+    }
+    "return an Incomplete model when NIP Compliance isn't complete but the rest of returns is provided" in new Setup {
+      service.handleView(incompleteNIP) mustBe Incomplete(incompleteNIP)
     }
   }
 
