@@ -49,7 +49,8 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           appConfig.partnershipIdCallbackUrl,
           Some(request2Messages(request)("service.name")),
           appConfig.contactFormServiceIdentifier,
-          appConfig.feedbackUrl
+          appConfig.feedbackUrl,
+          appConfig.accessibilityStatementUrl
         )
 
         vatRegistrationService.partyType.flatMap {

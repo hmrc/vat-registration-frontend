@@ -48,7 +48,8 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
           appConfig.minorEntityIdCallbackUrl,
           Some(request2Messages(request)("service.name")),
           appConfig.contactFormServiceIdentifier,
-          appConfig.feedbackUrl
+          appConfig.feedbackUrl,
+          appConfig.accessibilityStatementUrl
         )
 
         vatRegistrationService.partyType.flatMap {

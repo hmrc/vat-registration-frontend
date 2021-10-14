@@ -18,7 +18,11 @@ package models.external.partnershipid
 
 import play.api.libs.json.{Json, OFormat}
 
-case class PartnershipIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String, signOutUrl: String)
+case class PartnershipIdJourneyConfig(continueUrl: String,
+                                      optServiceName: Option[String] = None,
+                                      deskProServiceId: String,
+                                      signOutUrl: String,
+                                      accessibilityUrl: String)
 
 object PartnershipIdJourneyConfig {
   implicit val format: OFormat[PartnershipIdJourneyConfig] = Json.format[PartnershipIdJourneyConfig]

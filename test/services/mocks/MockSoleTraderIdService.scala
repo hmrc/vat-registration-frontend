@@ -38,6 +38,7 @@ trait MockSoleTraderIdService extends MockitoSugar {
                        serviceName: String,
                        deskproId: String,
                        signOutUrl: String,
+                       accessibilityUrl: String,
                        enableSautrCheck: Boolean,
                        partyType: PartyType)
                       (response: Future[String]): OngoingStubbing[Future[String]] =
@@ -47,6 +48,7 @@ trait MockSoleTraderIdService extends MockitoSugar {
         serviceName = matches(serviceName),
         deskproId = matches(deskproId),
         signOutUrl = matches(signOutUrl),
+        accessibilityUrl = matches(accessibilityUrl),
         enableSautrCheck = matches(enableSautrCheck),
         partyType = matches(partyType)
       )(any[HeaderCarrier])

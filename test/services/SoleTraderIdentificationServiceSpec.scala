@@ -32,9 +32,10 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val testServiceName = "testServiceName"
     val testDeskproId = "testDeskproId"
     val testSignOutUrl = "/test-sign-out-url"
+    val testAccessibilityUrl = "/test-accessibility-url"
     val testJourneyUrl = "/testJourneyUrl"
     val partyType = Individual
-    val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, enableSautrCheck = false)
+    val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false)
 
     object Service extends SoleTraderIdentificationService(mockSoleTraderIdConnector)
   }
@@ -43,7 +44,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     "return a journeyId when provided with config" in new Setup {
       mockStartJourney(testJourneyConfig, partyType)(Future.successful(testJourneyUrl))
 
-      val res = await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false, partyType))
+      val res = await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false, partyType))
 
       res mustBe testJourneyUrl
     }
@@ -51,7 +52,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
       mockStartJourney(testJourneyConfig, partyType)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
-        await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, enableSautrCheck = false, partyType))
+        await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false, partyType))
       }
     }
   }
