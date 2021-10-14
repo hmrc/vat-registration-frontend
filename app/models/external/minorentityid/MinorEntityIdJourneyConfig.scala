@@ -18,7 +18,11 @@ package models.external.minorentityid
 
 import play.api.libs.json.{Json, OFormat}
 
-case class MinorEntityIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String, signOutUrl: String)
+case class MinorEntityIdJourneyConfig(continueUrl: String,
+                                      optServiceName: Option[String] = None,
+                                      deskProServiceId: String,
+                                      signOutUrl: String,
+                                      accessibilityUrl: String)
 
 object MinorEntityIdJourneyConfig {
   implicit val format: OFormat[MinorEntityIdJourneyConfig] = Json.format[MinorEntityIdJourneyConfig]

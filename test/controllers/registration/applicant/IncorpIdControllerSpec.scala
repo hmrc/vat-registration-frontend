@@ -58,7 +58,8 @@ class IncorpIdControllerSpec extends ControllerSpec
     appConfig.incorpIdCallbackUrl,
     Some("Register for VAT"),
     "vrs",
-    appConfig.feedbackUrl
+    appConfig.feedbackUrl,
+    appConfig.accessibilityStatementUrl
   )
 
   "startJourney" should {

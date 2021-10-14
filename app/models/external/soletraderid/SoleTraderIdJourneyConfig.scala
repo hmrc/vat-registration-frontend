@@ -18,7 +18,12 @@ package models.external.soletraderid
 
 import play.api.libs.json.{Format, Json}
 
-case class SoleTraderIdJourneyConfig(continueUrl: String, optServiceName: Option[String] = None, deskProServiceId: String, signOutUrl: String, enableSautrCheck: Boolean)
+case class SoleTraderIdJourneyConfig(continueUrl: String,
+                                     optServiceName: Option[String] = None,
+                                     deskProServiceId: String,
+                                     signOutUrl: String,
+                                     accessibilityUrl: String,
+                                     enableSautrCheck: Boolean)
 
 object SoleTraderIdJourneyConfig {
   implicit val format: Format[SoleTraderIdJourneyConfig] = Json.format[SoleTraderIdJourneyConfig]

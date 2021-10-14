@@ -40,6 +40,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
+    accessibilityUrl = "/accessibility-url",
     enableSautrCheck = false
   )
 

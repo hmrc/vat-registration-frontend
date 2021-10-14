@@ -34,6 +34,7 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
                    serviceName: String,
                    deskproId: String,
                    signOutUrl: String,
+                   accessibilityUrl: String,
                    enableSautrCheck: Boolean,
                    partyType: PartyType)
                   (implicit hc: HeaderCarrier): Future[String] =
@@ -42,6 +43,7 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
       optServiceName = Some(serviceName),
       deskProServiceId = deskproId,
       signOutUrl = signOutUrl,
+      accessibilityUrl = accessibilityUrl,
       enableSautrCheck = enableSautrCheck
     ), partyType)
 

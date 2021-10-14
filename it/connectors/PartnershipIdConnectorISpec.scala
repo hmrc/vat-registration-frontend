@@ -40,7 +40,8 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     continueUrl = "/test-url",
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
-    signOutUrl = "/test-sign-out"
+    signOutUrl = "/test-sign-out",
+    accessibilityUrl = "/accessibility-url"
   )
 
   val testPostCode = "ZZ1 1ZZ"

@@ -54,7 +54,15 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   "startJourney" must {
     "redirect to the STI journey url" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, false, partyType = UkCompany)(Future.successful(testJourneyUrl))
+      mockStartJourney(
+        appConfig.getSoleTraderIdentificationCallbackUrl,
+        "Register for VAT",
+        "vrs",
+        appConfig.feedbackUrl,
+        appConfig.accessibilityStatementUrl,
+        false,
+        partyType = UkCompany
+      )(Future.successful(testJourneyUrl))
 
       val res = Controller.startJourney()(FakeRequest())
 
@@ -64,7 +72,15 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
     "redirect to the STI journey url for Individual" in new Setup {
       mockPartyType(Future.successful(Individual))
-      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, true, partyType = Individual)(Future.successful(testJourneyUrl))
+      mockStartJourney(
+        appConfig.getSoleTraderIdentificationCallbackUrl,
+        "Register for VAT",
+        "vrs",
+        appConfig.feedbackUrl,
+        appConfig.accessibilityStatementUrl,
+        true,
+        partyType = Individual
+      )(Future.successful(testJourneyUrl))
 
       val res = Controller.startJourney()(FakeRequest())
 
@@ -74,7 +90,15 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
     "throw an exception if the call to STI fails" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      mockStartJourney(appConfig.getSoleTraderIdentificationCallbackUrl, "Register for VAT", "vrs", appConfig.feedbackUrl, false, partyType = UkCompany)(Future.failed(new InternalServerException("")))
+      mockStartJourney(
+        appConfig.getSoleTraderIdentificationCallbackUrl,
+        "Register for VAT",
+        "vrs",
+        appConfig.feedbackUrl,
+        appConfig.accessibilityStatementUrl,
+        false,
+        partyType = UkCompany
+      )(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
         await(Controller.startJourney()(FakeRequest()))
