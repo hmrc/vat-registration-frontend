@@ -55,7 +55,7 @@ class ApplyForEoriController @Inject()(val keystoreConnector: KeystoreConnector,
         ApplyForEoriForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(applyForEoriView(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-            Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesController.show())
+            Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve())
           }
         )
   }

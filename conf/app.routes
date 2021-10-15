@@ -43,6 +43,9 @@ POST        /trading-name                                                       
 GET         /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.show
 POST        /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.submit
 
+## ZERO RATED SUPPLIES RESOLVER
+GET         /resolve-zero-rated-turnover                                                       controllers.registration.returns.ZeroRatedSuppliesResolverController.resolve
+
 ## ZERO RATED SUPPLIES PAGE
 GET         /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.show
 POST        /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.submit

@@ -93,7 +93,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.returns.routes.ZeroRatedSuppliesController.show().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
       }
     }
   }

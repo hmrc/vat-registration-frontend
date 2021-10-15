@@ -20,7 +20,7 @@ import java.text.DecimalFormat
 
 object Formatters {
 
-  private val currencyFormat = new DecimalFormat("£#,###.00")
+  private val currencyFormat = new DecimalFormat("£#,##0.00")
 
   def currency(value: BigDecimal): String = currencyFormat.format(value)
 
