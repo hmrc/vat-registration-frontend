@@ -508,7 +508,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     Seq(
       startDateRow,
-      zeroRatedRow,
+      if (vatScheme.eligibilitySubmissionData.map(_.estimates.turnoverEstimate).contains(0)) None else zeroRatedRow,
       expectClaimRefundsRow,
       accountingPeriodRow,
       lastMonthOfAccountingYearRow,
