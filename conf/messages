@@ -293,11 +293,13 @@ pages.application.submission.confirmation.par1                      = We have re
 pages.application.submission.confirmation.attachments.par1          = We have received your application and will write to you with a decision. This usually takes about 30 days.
 pages.application.submission.confirmation.heading2                  = What happens next
 pages.application.submission.confirmation.list.post                 = Post copies of the supporting documents and the cover letter to HMRC so we can process your application.
+pages.application.submission.confirmation.list.email                = Email copies of the supporting documents to HMRC so we can process your application. You can
 pages.application.submission.confirmation.list.item1                = Wait for your letter which will confirm whether you have been registered for VAT or granted an exemption or exception.
 pages.application.submission.confirmation.list.item2                = Wait until your registration is confirmed before getting software, if you are going to follow the rules for Making Tax Digital for VAT.
 pages.application.submission.confirmation.heading3                  = More information
 pages.application.submission.confirmation.par2                      = Find out more about:
 pages.application.submission.confirmation.post.link                 = You can print the cover letter here
+pages.application.submission.confirmation.email.link                = view and print the instructions for emailing your documents here
 pages.application.submission.confirmation.link1                     = VAT
 pages.application.submission.confirmation.link2                     = Making Tax Digital for VAT
 pages.application.submission.confirmation.link3                     = Software for Making Tax Digital for VAT
@@ -949,6 +951,32 @@ pages.PostalCoverSheet.panel3                            = BT VAT
 pages.PostalCoverSheet.panel4                            = HM Revenue and Customs
 pages.PostalCoverSheet.panel5                            = BX9 1WR
 pages.PostalCoverSheet.panel6                            = United Kingdom
+
+## EMAIL ATTACHMENTS
+
+pages.EmailCoverSheet.heading                           = How to email documents to HMRC
+pages.EmailCoverSheet.para                              = The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your supporting documents.
+pages.EmailCoverSheet.panel1                            = Register for VAT reference number:
+pages.EmailCoverSheet.heading2                          = What you must attach to the email
+pages.EmailCoverSheet.para2                             = Include a copy of
+pages.EmailCoverSheet.para2Bold                         = one
+pages.EmailCoverSheet.para2Finish                       = piece of evidence that includes a government issued photo. This could be a:
+pages.EmailCoverSheet.bullet1                           = passport
+pages.EmailCoverSheet.bullet2                           = driving licence photocard
+pages.EmailCoverSheet.bullet3                           = national identity card
+pages.EmailCoverSheet.heading3                          = And
+pages.EmailCoverSheet.para3                             = Also include
+pages.EmailCoverSheet.para3Bold                         = two
+pages.EmailCoverSheet.para3Finish                       = additional pieces of evidence which can be copies of a:
+pages.EmailCoverSheet.bullet4                           = mortgage statement
+pages.EmailCoverSheet.bullet5                           = lease or rental agreement
+pages.EmailCoverSheet.bullet6                           = work permit or visa
+pages.EmailCoverSheet.bullet7                           = letter from the Department for Work and Pensions for confirming entitlement to benefits
+pages.EmailCoverSheet.bullet8                           = utility bill
+pages.EmailCoverSheet.bullet9                           = birth certificate
+pages.EmailCoverSheet.heading4                          = Email address
+pages.EmailCoverSheet.para4                             = Send the supporting documents to:
+pages.EmailCoverSheet.panel2                            = vrs.newregistrations@hmrc.gov.uk
 
 
 ## Northern Ireland Protocol

@@ -1,0 +1,87 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        h1: h1,
+        h2:h2,
+        p: p,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        panelIndent: panelIndent,
+        bullets: bullets,
+        subheading: subheadingP,
+        strong: strong,
+        print: print
+)
+
+@(ackRef: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("pages.EmailCoverSheet.heading"))), backLink = true) {
+
+    @h1(messages("pages.EmailCoverSheet.heading"))
+    @p{ @messages("pages.EmailCoverSheet.para") }
+
+    @panelIndent{
+        @strong { @messages(s"pages.EmailCoverSheet.panel1") }
+        @messages(ackRef)
+    }
+
+    @h2(messages("pages.EmailCoverSheet.heading2"))
+
+    @p{
+        @messages("pages.EmailCoverSheet.para2")
+        @strong { @messages(s"pages.EmailCoverSheet.para2Bold") }
+        @messages("pages.EmailCoverSheet.para2Finish")
+    }
+
+    @bullets(
+        messages("pages.EmailCoverSheet.bullet1"),
+        messages("pages.EmailCoverSheet.bullet2"),
+        messages("pages.EmailCoverSheet.bullet3")
+    )
+
+    @h2(messages("pages.EmailCoverSheet.heading3"))
+
+    @p{
+        @messages("pages.EmailCoverSheet.para3")
+        @strong { @messages(s"pages.EmailCoverSheet.para3Bold") }
+        @messages("pages.EmailCoverSheet.para3Finish")
+    }
+
+    @bullets(
+        messages("pages.EmailCoverSheet.bullet4"),
+        messages("pages.EmailCoverSheet.bullet5"),
+        messages("pages.EmailCoverSheet.bullet6"),
+        messages("pages.EmailCoverSheet.bullet7"),
+        messages("pages.EmailCoverSheet.bullet8"),
+        messages("pages.EmailCoverSheet.bullet9")
+    )
+
+    @h2(messages("pages.EmailCoverSheet.heading4"))
+
+    @p{ @messages("pages.EmailCoverSheet.para4") }
+
+    @panelIndent{
+        @messages("pages.EmailCoverSheet.panel2")
+    }
+
+    @print("app.common.print")
+}

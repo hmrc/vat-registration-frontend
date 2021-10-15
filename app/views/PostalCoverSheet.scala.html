@@ -29,7 +29,8 @@
         bullets: bullets,
         subheading: subheadingP,
         strong: strong,
-        warningText: warningText
+        warningText: warningText,
+        print: print
 )
 
 @(ackRef: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -97,9 +98,5 @@
         @messages("pages.PostalCoverSheet.panel6")
     }
 
-    <div onClick="window.print()" class="govuk-button-group">
-    @button("app.common.print")
-    </div>
-
-
+    @print("app.common.print")
 }

@@ -18,6 +18,9 @@
 @import views.html.components._
 @import views.html.layouts.layout
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import models.api.AttachmentMethod
+@import models.api.Post
+@import models.api.EmailMethod
 
 @this(
         layout: layout,
@@ -33,7 +36,7 @@
         form: formWithCSRF
 )
 
-@(acknowledgementReference: String, identityEvidence: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(acknowledgementReference: String, attachmentMethod: Option[AttachmentMethod], identityEvidence: Boolean )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
@@ -43,16 +46,20 @@
         content = HtmlContent(referenceNumber)
     ))
 
-    @if(identityEvidence) {
-        @p(content = Html(messages("pages.application.submission.confirmation.attachments.par1")), id = Some("confirmation-par1"))
-    } else {
+    @if(attachmentMethod.contains(EmailMethod)) {
         @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
+    } else {
+        @p(content = Html(messages("pages.application.submission.confirmation.attachments.par1")), id = Some("confirmation-par1"))
     }
 
     @h2(messages("pages.application.submission.confirmation.heading2"))
 
     @if(identityEvidence) {
-        @orderedListHtml(bulletPost, bulletLetter, bulletRegistration)
+        @attachmentMethod match {
+            case Some(Post) => {@orderedListHtml(bulletPost, bulletLetter, bulletRegistration)}
+            case Some(EmailMethod) => {@orderedListHtml(bulletEmail, bulletLetter, bulletRegistration)}
+            case _ => {@orderedListHtml(bulletPost, bulletLetter, bulletRegistration)}
+        }
     } else {
         @orderedListHtml(bulletLetter, bulletRegistration)
     }
@@ -84,6 +91,11 @@
 @bulletPost = {
     @messages("pages.application.submission.confirmation.list.post")
     @link(controllers.registration.attachments.routes.PostalCoverSheetController.show().url, messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
+}
+
+@bulletEmail = {
+    @messages("pages.application.submission.confirmation.list.email")
+    @link(controllers.registration.attachments.routes.EmailCoverSheetController.show().url, messages("pages.application.submission.confirmation.email.link"), Some("cover-letter-link"), true, false)
 }
 
 @bulletLetter = {
