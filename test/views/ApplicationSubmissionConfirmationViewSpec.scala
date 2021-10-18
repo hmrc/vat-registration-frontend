@@ -16,6 +16,7 @@
 
 package views
 
+import models.api.{EmailMethod, Post}
 import org.jsoup.Jsoup
 import views.html.pages.application_submission_confirmation
 
@@ -23,17 +24,22 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
   val refNum = "VRS 1234 1234 1234"
 
+  val postMethod = Some(Post)
+  val emailMethod = Some(EmailMethod)
+
   object ExpectedContent {
     val title = "Your application has been submitted - Register for VAT - GOV.UK"
     val heading = "Your application has been submitted"
     val heading2 = "What happens next"
     val ackRef = "Your reference number VRS 1234 1234 1234"
     val heading3 = "More information"
-    val paragraph = "We have received your application and will write to you with a decision. This usually takes about 20 days."
+    val paragraphEmail = "We have received your application and will write to you with a decision. This usually takes about 20 days."
+    val paragraph = "We have received your application and will write to you with a decision. This usually takes about 30 days."
     val paragraph2 = "Find out more about:"
-    val listPostItem = "Post copies of the supporting documents and the cover letter to HMRC so we can process your application. You can print the cover letter here (opens in new tab)"
     val listItem1 = "Wait for your letter which will confirm whether you have been registered for VAT or granted an exemption or exception."
     val listItem2 = "Wait until your registration is confirmed before getting software, if you are going to follow the rules for Making Tax Digital for VAT."
+    val listItemPost = "Post copies of the supporting documents and the cover letter to HMRC so we can process your application. You can print the cover letter here (opens in new tab)"
+    val listItemEmail = "Email copies of the supporting documents to HMRC so we can process your application. You can view and print the instructions for emailing your documents here (opens in new tab)"
     val linkText1 = "VAT (opens in new tab)"
     val linkText2 = "Making Tax Digital for VAT (opens in new tab)"
     val linkText3 = "Software for Making Tax Digital for VAT (opens in new tab)"
@@ -47,7 +53,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   val viewInstance: application_submission_confirmation = app.injector.instanceOf[application_submission_confirmation]
 
   "Application submission confirmation page" should {
-    lazy val view = viewInstance(refNum, false)
+    lazy val view = viewInstance(refNum, None, false)
     implicit lazy val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -92,14 +98,33 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
   }
 
-  "Application submission confirmation page with IdentityEvidence" should {
-    lazy val view = viewInstance(refNum, true)
+  "Application submission confirmation page with IdentityEvidence and Post attachment method" should {
+    lazy val view = viewInstance(refNum, postMethod, true)
     lazy val doc = Jsoup.parse(view.body)
 
     "have the correct list" in {
-      doc.select(Selectors.orderedList(1)).text mustBe ExpectedContent.listPostItem
+      doc.select(Selectors.orderedList(1)).text mustBe ExpectedContent.listItemPost
       doc.select(Selectors.orderedList(2)).text mustBe ExpectedContent.listItem1
       doc.select(Selectors.orderedList(3)).text mustBe ExpectedContent.listItem2
+    }
+
+    "have the correct paragraph" in {
+      doc.select(Selectors.p(1)).text mustBe ExpectedContent.paragraph
+    }
+  }
+
+  "Application submission confirmation page with IdentityEvidence and Email attachment method" should {
+    lazy val view = viewInstance(refNum, emailMethod, true)
+    lazy val doc = Jsoup.parse(view.body)
+
+    "have the correct list" in {
+      doc.select(Selectors.orderedList(1)).text mustBe ExpectedContent.listItemEmail
+      doc.select(Selectors.orderedList(2)).text mustBe ExpectedContent.listItem1
+      doc.select(Selectors.orderedList(3)).text mustBe ExpectedContent.listItem2
+    }
+
+    "have the correct paragraph" in {
+      doc.select(Selectors.p(1)).text mustBe ExpectedContent.paragraphEmail
     }
   }
 }

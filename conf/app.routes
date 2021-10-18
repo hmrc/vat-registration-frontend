@@ -323,6 +323,9 @@ GET         /post-documents                                                     
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                                                controllers.registration.attachments.PostalCoverSheetController.show
 
+## Email Cover Sheet Page
+GET         /email-cover-sheet                                                                 controllers.registration.attachments.EmailCoverSheetController.show
+
 ## Northern Ireland Receive Goods Page
 GET         /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.show
 POST        /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.submit

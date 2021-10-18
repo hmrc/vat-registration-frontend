@@ -17,7 +17,7 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.{Attached, Attachments, IdentityEvidence, Other, Post}
+import models.api.{Attached, Attachments, EmailMethod, IdentityEvidence, Other, Post}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -107,6 +107,21 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
         .thenReturn(Future.successful(Attachments(Some(Post), List(IdentityEvidence))))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+      }
+    }
+
+    "display the submission confirmation page to the user when IdentityEvidence is available and Method is EmailMethod" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(Attachments(Some(EmailMethod), List(IdentityEvidence))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
