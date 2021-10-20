@@ -185,23 +185,30 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
 
-  def getRetrieveSoleTraderIdentificationResultUrl(journeyId: String): String =
+  def soleTraderJourneyUrl(partyType: PartyType): String =
+    if (isEnabled(StubSoleTraderIdentification)) {
+      s"$host/register-for-vat/test-only/sole-trader-identification?partyType=${PartyType.stati(partyType)}"
+    } else {
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/sole-trader-journey"
+    }
+
+  def individualJourneyUrl: String =
+    if (isEnabled(StubSoleTraderIdentification)) {
+      s"$host/register-for-vat/test-only/sole-trader-identification"
+    } else {
+      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/individual-journey"
+    }
+
+  def retrieveSoleTraderIdentificationResultUrl(journeyId: String): String =
     if (isEnabled(StubSoleTraderIdentification)) {
       s"$host/register-for-vat/test-only/sole-trader-identification/$journeyId"
     } else {
       s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/journey/$journeyId"
     }
 
-  def soleTraderIdentificationJourneyUrl(partyType: PartyType): String =
-    if (isEnabled(StubSoleTraderIdentification)) {
-      s"$host/register-for-vat/test-only/sole-trader-identification?partyType=${PartyType.stati(partyType)}"
-    } else {
-      s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/journey"
-    }
-
-  def getSoleTraderIdentificationCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
-
-  def leadPartnerSoleTraderIdCallbackUrl(isLeadPartner: Boolean): String = s"$hostUrl/register-for-vat/sti-partner-callback/$isLeadPartner"
+  def soleTraderCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
+  def individualCallbackUrl: String = s"$hostUrl/register-for-vat/sti-individual-callback"
+  def leadPartnerCallbackUrl(isLeadPartner: Boolean): String = s"$hostUrl/register-for-vat/sti-partner-callback/$isLeadPartner"
 
   // Partnership Identification Section
 

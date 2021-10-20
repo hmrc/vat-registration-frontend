@@ -22,9 +22,11 @@ import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.PartnerEntity
 import models.api._
+import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,22 +40,29 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
                                                    partnersService: PartnersService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
-                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                                    baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          vatRegistrationService.partyType.flatMap { partyType =>
-            soleTraderIdentificationService.startJourney(
-              continueUrl = appConfig.getSoleTraderIdentificationCallbackUrl,
-              serviceName = request2Messages(request)("service.name"),
-              deskproId = appConfig.contactFormServiceIdentifier,
-              signOutUrl = appConfig.feedbackUrl,
-              accessibilityUrl = appConfig.accessibilityStatementUrl,
-              enableSautrCheck = partyType.equals(Individual) || partyType.equals(NETP),
-              partyType
-            ) map (url => Redirect(url))
+          vatRegistrationService.partyType.flatMap {
+            case partyType@(Individual | NETP) =>
+              soleTraderIdentificationService.startSoleTraderJourney(
+                SoleTraderIdJourneyConfig(
+                  continueUrl = appConfig.soleTraderCallbackUrl,
+                  optServiceName = Some(request2Messages(request)("service.name")),
+                  deskProServiceId = appConfig.contactFormServiceIdentifier,
+                  signOutUrl = appConfig.feedbackUrl,
+                  accessibilityUrl = appConfig.accessibilityStatementUrl
+                ),
+                partyType
+              ).map(url => Redirect(url))
+            case partyType => throw new InternalServerException(
+              s"[SoleTraderIdentificationController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
+            )
+
           }
     }
 
@@ -61,33 +70,28 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
     isAuthenticatedWithProfile() { implicit request =>
       implicit profile =>
         for {
-          partyType <- vatRegistrationService.partyType
           (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
-          _ <- if (partyType.equals(Individual) || partyType.equals(NETP)) applicantDetailsService.saveApplicantDetails(soleTrader) else Future.successful()
+          _ <- applicantDetailsService.saveApplicantDetails(soleTrader)
         } yield {
-          partyType match {
-            case Individual | NETP => Redirect(applicantRoutes.FormerNameController.show())
-            case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
-            case _ => throw new IllegalStateException("PartyType not supported")
-          }
+          Redirect(applicantRoutes.FormerNameController.show())
         }
-
     }
 
   def startPartnerJourney(isLeadPartner: Boolean): Action[AnyContent] =
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          soleTraderIdentificationService.startJourney(
-            continueUrl = appConfig.leadPartnerSoleTraderIdCallbackUrl(isLeadPartner),
-            serviceName = request2Messages(request)("service.name"),
-            deskproId = appConfig.contactFormServiceIdentifier,
-            signOutUrl = appConfig.feedbackUrl,
-            accessibilityUrl = appConfig.accessibilityStatementUrl,
-            enableSautrCheck = true,
-            Partnership //partyType is used only for SoleTraderIdentificationStubController to work
-          ) map (url => Redirect(url))
+          soleTraderIdentificationService.startSoleTraderJourney(
+            SoleTraderIdJourneyConfig(
+              continueUrl = appConfig.leadPartnerCallbackUrl(isLeadPartner),
+              optServiceName = Some(request2Messages(request)("service.name")),
+              deskProServiceId = appConfig.contactFormServiceIdentifier,
+              signOutUrl = appConfig.feedbackUrl,
+              accessibilityUrl = appConfig.accessibilityStatementUrl
+            ),
+            Partnership
+          ).map(url => Redirect(url))
     }
 
   def partnerCallback(isLeadPartner: Boolean, journeyId: String): Action[AnyContent] =

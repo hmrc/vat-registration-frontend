@@ -18,7 +18,7 @@ package controllers.registration.applicant
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import play.api.mvc.Result
+import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -38,6 +38,14 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     val testJourneyId = "testJourneyId"
     val testJourneyUrl = "/test-journey-url"
 
+    val soleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
+      appConfig.soleTraderCallbackUrl,
+      Some("Register for VAT"),
+      "vrs",
+      appConfig.feedbackUrl,
+      appConfig.accessibilityStatementUrl
+    )
+
     object Controller extends SoleTraderIdentificationController(
       mockKeystoreConnector,
       mockAuthClientConnector,
@@ -52,33 +60,10 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   }
 
   "startJourney" must {
-    "redirect to the STI journey url" in new Setup {
-      mockPartyType(Future.successful(UkCompany))
-      mockStartJourney(
-        appConfig.getSoleTraderIdentificationCallbackUrl,
-        "Register for VAT",
-        "vrs",
-        appConfig.feedbackUrl,
-        appConfig.accessibilityStatementUrl,
-        false,
-        partyType = UkCompany
-      )(Future.successful(testJourneyUrl))
-
-      val res = Controller.startJourney()(FakeRequest())
-
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(testJourneyUrl)
-    }
-
-    "redirect to the STI journey url for Individual" in new Setup {
+    "redirect to the STI journey url for Sole Traders" in new Setup {
       mockPartyType(Future.successful(Individual))
-      mockStartJourney(
-        appConfig.getSoleTraderIdentificationCallbackUrl,
-        "Register for VAT",
-        "vrs",
-        appConfig.feedbackUrl,
-        appConfig.accessibilityStatementUrl,
-        true,
+      mockStartSoleTraderJourney(
+        soleTraderIdJourneyConfig,
         partyType = Individual
       )(Future.successful(testJourneyUrl))
 
@@ -90,13 +75,8 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
     "throw an exception if the call to STI fails" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      mockStartJourney(
-        appConfig.getSoleTraderIdentificationCallbackUrl,
-        "Register for VAT",
-        "vrs",
-        appConfig.feedbackUrl,
-        appConfig.accessibilityStatementUrl,
-        false,
+      mockStartSoleTraderJourney(
+        soleTraderIdJourneyConfig,
         partyType = UkCompany
       )(Future.failed(new InternalServerException("")))
 
@@ -119,20 +99,6 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
-      }
-    }
-
-    List(UkCompany, RegSociety, CharitableOrg, Trust, UnincorpAssoc).foreach { partyType =>
-      s"redirect to the capture role in the business page if the user is ${partyType.toString}" in new Setup {
-        mockGetVatScheme(Future.successful(validVatScheme))
-        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
-        mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
-        mockPartyType(Future.successful(partyType))
-
-        val result: Future[Result] = Controller.callback(testJourneyId)(FakeRequest())
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) must contain(controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url)
       }
     }
   }

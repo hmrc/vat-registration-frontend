@@ -19,6 +19,7 @@ package services.mocks
 import models.TransactorDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
+import models.external.soletraderid.SoleTraderIdJourneyConfig
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
@@ -34,29 +35,34 @@ trait MockSoleTraderIdService extends MockitoSugar {
 
   val mockSoleTraderIdService = mock[SoleTraderIdentificationService]
 
-  def mockStartJourney(continueUrl: String,
-                       serviceName: String,
-                       deskproId: String,
-                       signOutUrl: String,
-                       accessibilityUrl: String,
-                       enableSautrCheck: Boolean,
-                       partyType: PartyType)
-                      (response: Future[String]): OngoingStubbing[Future[String]] =
+  def mockStartSoleTraderJourney(config: SoleTraderIdJourneyConfig,
+                                 partyType: PartyType)
+                                (response: Future[String]): OngoingStubbing[Future[String]] =
     when(
-      mockSoleTraderIdService.startJourney(
-        continueUrl = matches(continueUrl),
-        serviceName = matches(serviceName),
-        deskproId = matches(deskproId),
-        signOutUrl = matches(signOutUrl),
-        accessibilityUrl = matches(accessibilityUrl),
-        enableSautrCheck = matches(enableSautrCheck),
+      mockSoleTraderIdService.startSoleTraderJourney(
+        config = matches(config),
         partyType = matches(partyType)
+      )(any[HeaderCarrier])
+    ) thenReturn response
+
+  def mockStartIndividualJourney(config: SoleTraderIdJourneyConfig,
+                                 partyType: PartyType)
+                                (response: Future[String]): OngoingStubbing[Future[String]] =
+    when(
+      mockSoleTraderIdService.startIndividualJourney(
+        config = matches(config)
       )(any[HeaderCarrier])
     ) thenReturn response
 
   def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(TransactorDetails, SoleTraderIdEntity)]] =
     when(
       mockSoleTraderIdService.retrieveSoleTraderDetails(journeyId = matches(journeyId))
+      (any[HeaderCarrier])
+    ) thenReturn response
+
+  def mockRetrieveIndividualDetails(journeyId: String)(response: Future[TransactorDetails]): OngoingStubbing[Future[TransactorDetails]] =
+    when(
+      mockSoleTraderIdService.retrieveIndividualDetails(journeyId = matches(journeyId))
       (any[HeaderCarrier])
     ) thenReturn response
 

@@ -69,7 +69,7 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
           businessDetails <- minorEntityIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(businessDetails)
         } yield {
-          Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+          Redirect(applicantRoutes.IndividualIdentificationController.startJourney())
         }
   }
 

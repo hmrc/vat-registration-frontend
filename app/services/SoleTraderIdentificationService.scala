@@ -30,23 +30,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnector: SoleTraderIdentificationConnector)
                                                (implicit ec: ExecutionContext) {
 
-  def startJourney(continueUrl: String,
-                   serviceName: String,
-                   deskproId: String,
-                   signOutUrl: String,
-                   accessibilityUrl: String,
-                   enableSautrCheck: Boolean,
-                   partyType: PartyType)
-                  (implicit hc: HeaderCarrier): Future[String] =
-    soleTraderIdentificationConnector.startJourney(config = SoleTraderIdJourneyConfig(
-      continueUrl = continueUrl,
-      optServiceName = Some(serviceName),
-      deskProServiceId = deskproId,
-      signOutUrl = signOutUrl,
-      accessibilityUrl = accessibilityUrl,
-      enableSautrCheck = enableSautrCheck
-    ), partyType)
+  def startSoleTraderJourney(config: SoleTraderIdJourneyConfig,
+                             partyType: PartyType)
+                            (implicit hc: HeaderCarrier): Future[String] =
+    soleTraderIdentificationConnector.startSoleTraderJourney(config, partyType)
 
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
     soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId)
+
+  def startIndividualJourney(config: SoleTraderIdJourneyConfig)
+                            (implicit hc: HeaderCarrier): Future[String] =
+    soleTraderIdentificationConnector.startIndividualJourney(config)
+
+  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+    soleTraderIdentificationConnector.retrieveIndividualDetails(journeyId)
 }

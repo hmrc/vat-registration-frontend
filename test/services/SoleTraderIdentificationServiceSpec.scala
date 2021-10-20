@@ -35,35 +35,63 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val testAccessibilityUrl = "/test-accessibility-url"
     val testJourneyUrl = "/testJourneyUrl"
     val partyType = Individual
-    val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false)
+    val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, testAccessibilityUrl)
 
     object Service extends SoleTraderIdentificationService(mockSoleTraderIdConnector)
+
   }
 
-  "startJourney" must {
+  "startSoleTraderJourney" must {
     "return a journeyId when provided with config" in new Setup {
-      mockStartJourney(testJourneyConfig, partyType)(Future.successful(testJourneyUrl))
+      mockStartSoleTraderJourney(testJourneyConfig, partyType)(Future.successful(testJourneyUrl))
 
-      val res = await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false, partyType))
+      val res = await(Service.startSoleTraderJourney(testJourneyConfig, partyType))
 
       res mustBe testJourneyUrl
     }
     "throw an exception if the call to STI fails" in new Setup {
-      mockStartJourney(testJourneyConfig, partyType)(Future.failed(new InternalServerException("")))
+      mockStartSoleTraderJourney(testJourneyConfig, partyType)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
-        await(Service.startJourney(testContinueUrl, testServiceName, testDeskproId, testSignOutUrl, testAccessibilityUrl, enableSautrCheck = false, partyType))
+        await(Service.startSoleTraderJourney(testJourneyConfig, partyType))
+      }
+    }
+  }
+
+  "startIndividualJourney" must {
+    "return a journeyId when provided with config" in new Setup {
+      mockStartIndividualJourney(testJourneyConfig)(Future.successful(testJourneyUrl))
+
+      val res = await(Service.startIndividualJourney(testJourneyConfig))
+
+      res mustBe testJourneyUrl
+    }
+    "throw an exception if the call to STI fails" in new Setup {
+      mockStartIndividualJourney(testJourneyConfig)(Future.failed(new InternalServerException("")))
+
+      intercept[InternalServerException] {
+        await(Service.startIndividualJourney(testJourneyConfig))
       }
     }
   }
 
   "retrieveSoleTraderDetails" must {
-    "return transactor details" in new Setup{
+    "return sole trader details" in new Setup {
       mockRetrieveSoleTraderDetails(testJourneyUrl)(Future.successful((testTransactorDetails, testSoleTrader)))
 
       val res = await(Service.retrieveSoleTraderDetails(testJourneyUrl))
 
-      res mustBe (testTransactorDetails, testSoleTrader)
+      res mustBe(testTransactorDetails, testSoleTrader)
+    }
+  }
+
+  "retrieveIndividualDetails" must {
+    "return individual details" in new Setup {
+      mockRetrieveIndividualDetails(testJourneyUrl)(Future.successful(testTransactorDetails))
+
+      val res = await(Service.retrieveIndividualDetails(testJourneyUrl))
+
+      res mustBe testTransactorDetails
     }
   }
 
