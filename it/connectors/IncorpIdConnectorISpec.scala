@@ -100,7 +100,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
-        stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+        stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
         val res = await(connector.createJourney(testJourneyConfig, UkCompany))
 
