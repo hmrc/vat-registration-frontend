@@ -31,7 +31,8 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
-  val createJourneyUrl = "/sole-trader-identification/api/journey"
+  val createSoleTraderJourneyUrl = "/sole-trader-identification/api/sole-trader-journey"
+  val createIndividualJourneyUrl = "/sole-trader-identification/api/individual-journey"
   val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
   val connector: SoleTraderIdentificationConnector = app.injector.instanceOf[SoleTraderIdentificationConnector]
 
@@ -40,42 +41,102 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
-    accessibilityUrl = "/accessibility-url",
-    enableSautrCheck = false
+    accessibilityUrl = "/accessibility-url"
   )
 
-  "startJourney" when {
+  "startSoleTraderJourney" when {
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in {
-        stubPost(createJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createSoleTraderJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.startJourney(testJourneyConfig, Individual))
+        val res = await(connector.startSoleTraderJourney(testJourneyConfig, Individual))
 
         res mustBe testJourneyUrl
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in {
-        stubPost(createJourneyUrl, CREATED, "{}")
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createSoleTraderJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig, Individual))
+          await(connector.startSoleTraderJourney(testJourneyConfig, Individual))
         }
       }
     }
     "the API returns UNAUTHORISED" must {
       "throw an UnauthorizedException" in new Setup {
-        stubPost(createJourneyUrl, UNAUTHORIZED, "")
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createSoleTraderJourneyUrl, UNAUTHORIZED, "")
 
         intercept[UnauthorizedException] {
-          await(connector.startJourney(testJourneyConfig, Individual))
+          await(connector.startSoleTraderJourney(testJourneyConfig, Individual))
         }
       }
     }
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
-        stubPost(createJourneyUrl, IM_A_TEAPOT, "")
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createSoleTraderJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
-          await(connector.startJourney(testJourneyConfig, Individual))
+          await(connector.startSoleTraderJourney(testJourneyConfig, Individual))
+        }
+      }
+    }
+  }
+
+  "startIndividualJourney" when {
+    "the API returns CREATED" must {
+      "return the journey ID when the response JSON includes the journeyId" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createIndividualJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.startIndividualJourney(testJourneyConfig))
+
+        res mustBe testJourneyUrl
+      }
+      "throw an InternalServerException when the response JSON doesn't contain the journeyId" in {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createIndividualJourneyUrl, CREATED, "{}")
+
+        intercept[InternalServerException] {
+          await(connector.startIndividualJourney(testJourneyConfig))
+        }
+      }
+    }
+    "the API returns UNAUTHORISED" must {
+      "throw an UnauthorizedException" in new Setup {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createIndividualJourneyUrl, UNAUTHORIZED, "")
+
+        intercept[UnauthorizedException] {
+          await(connector.startIndividualJourney(testJourneyConfig))
+        }
+      }
+    }
+    "the API returns an unexpected status" must {
+      "throw an InternalServerException" in new Setup {
+        given()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+        stubPost(createIndividualJourneyUrl, IM_A_TEAPOT, "")
+
+        intercept[InternalServerException] {
+          await(connector.startIndividualJourney(testJourneyConfig))
         }
       }
     }
@@ -83,6 +144,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
   "retrieveSoleTraderDetails" must {
     "return transactor details when STI returns OK" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
           "firstName" -> testFirstName,
@@ -107,6 +172,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     }
 
     "return transactor details for NETP when STI returns OK" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
           "firstName" -> testFirstName,
@@ -132,6 +201,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     }
 
     "return transactor details for NETP when an overseas identifier is returned" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
           "firstName" -> testFirstName,
@@ -161,6 +234,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
       val invalidTransactorJson: JsObject = {
         Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
       }
@@ -172,6 +249,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     }
 
     "throw an InternalServerException for any other status" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
       stubGet(retrieveDetailsUrl, IM_A_TEAPOT, "")
 
       intercept[InternalServerException] {

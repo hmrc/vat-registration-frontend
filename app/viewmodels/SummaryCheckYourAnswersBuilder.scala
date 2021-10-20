@@ -64,9 +64,10 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val changeTransactorDetailsUrl: String = {
       partyType match {
-        case Individual | NETP | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
-        case Individual | NETP | Partnership => applicantRoutes.SoleTraderIdentificationController.startJourney().url
-        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case Individual | NETP => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case Partnership => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true).url //TODO change when partnership flow is revisited
+        case NonUkNonEstablished => applicantRoutes.IndividualIdentificationController.startJourney().url
+        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.IndividualIdentificationController.startJourney().url
         case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
       }
     }
@@ -107,15 +108,6 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       }
     )
 
-    val trn = optSummaryListRowString(
-      s"$sectionId.trn",
-      applicantDetails.entity.flatMap {
-        case soleTrader: SoleTraderIdEntity => soleTrader.trn
-        case _ => None
-      },
-      Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
-    )
-
     val overseasIdentifier = optSummaryListRowString(
       s"$sectionId.overseasIdentifier",
       applicantDetails.entity.flatMap {
@@ -126,7 +118,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       partyType match {
         case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
         case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
-      }    )
+      }
+    )
 
     def optCountryName(overseas: Option[OverseasIdentifierDetails]): Option[String] = for {
       countryCode <- overseas.map(_.country)
@@ -178,6 +171,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
       applicantDetails.transactor.flatMap(_.nino),
+      Some(changeTransactorDetailsUrl)
+    )
+
+    val trn = optSummaryListRowString(
+      s"$sectionId.trn",
+      applicantDetails.transactor.flatMap(_.trn),
       Some(changeTransactorDetailsUrl)
     )
 
@@ -255,13 +254,13 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       companyNumber,
       ctutr,
       sautr,
-      trn,
       overseasIdentifier,
       overseasCountry,
       chrn,
       firstName,
       lastName,
       nino,
+      trn,
       dob,
       roleInTheBusiness,
       formerName,

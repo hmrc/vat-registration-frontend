@@ -20,7 +20,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
 
-  val journeyUrl = "/sole-trader-identification/api/journey"
+  val soleTraderJourneyUrl = "/sole-trader-identification/api/sole-trader-journey"
   val retrieveDetailsUrl = s"/sole-trader-identification/api/journey/$testJourneyId"
 
   val testSTIResponse: JsObject = Json.obj(
@@ -47,10 +47,10 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme)
+          .vatScheme.contains(fullNetpVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        stubPost(journeyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-journey").get()
 
@@ -88,56 +88,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the RoleInTheBusiness page if the user is not a Sole Trader" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
-        )
-      )
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-callback?journeyId=$testJourneyId").get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
-      }
-    }
-
-    "redirect to the CaptureRoleInTheBusiness page when the model in S4l is full and the user is not a Sole Trader" in new Setup {
-      given()
-        .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
-        ))
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-callback?journeyId=$testJourneyId").get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
-      }
-    }
-
     "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
       given()
         .user.isAuthorised
@@ -162,6 +112,29 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show().url)
       }
     }
+
+    "throw an exception if the user is not a Sole Trader or NETP" in new Setup {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+        .vatScheme.contains(
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+        )
+      )
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
   "GET /start-sti-partner-journey" when {
@@ -174,7 +147,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
           .vatScheme.contains(fullVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        stubPost(journeyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-partner-journey?isLeadPartner=true").get()
 

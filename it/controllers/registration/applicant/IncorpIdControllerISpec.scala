@@ -140,7 +140,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney().url)
         }
       }
     }

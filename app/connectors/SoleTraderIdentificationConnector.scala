@@ -35,15 +35,12 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
                                                  (implicit executionContext: ExecutionContext) {
 
   private val journeyUrlKey = "journeyStartUrl"
-  private val personalDetailsKey = "personalDetails"
 
-  def startJourney(config: SoleTraderIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
-    val url = appConfig.soleTraderIdentificationJourneyUrl(partyType)
-
-    httpClient.POST(url, Json.toJson(config)) map { response =>
+  def startSoleTraderJourney(config: SoleTraderIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+    httpClient.POST(appConfig.soleTraderJourneyUrl(partyType), Json.toJson(config)) map { response =>
       Logger.info("url " + response.body)
       response.status match {
-        case CREATED => (response.json \  journeyUrlKey).validate[String] match {
+        case CREATED => (response.json \ journeyUrlKey).validate[String] match {
           case JsSuccess(journeyId, _) => journeyId
           case _ =>
             throw new InternalServerException(s"[SoleTraderIdentificationConnector] STI Response JSON did not include $journeyUrlKey key")
@@ -56,21 +53,51 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     }
   }
 
-
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
-    httpClient.GET(appConfig.getRetrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
+    httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
           (response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads),
-          response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
+            response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
             case (JsError(errors), _) =>
               throw new InternalServerException(s"Sole trader ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
           }
         case status =>
-          throw new InternalServerException(s"[SoleTraderIdentificationConnector] Unexpected status returned from STI when retrieving sole trader details: ${status}")
+          throw new InternalServerException(s"[SoleTraderIdentificationConnector] Unexpected status returned from STI when retrieving sole trader details: $status")
       }
     }
 
+  def startIndividualJourney(config: SoleTraderIdJourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    httpClient.POST(appConfig.individualJourneyUrl, Json.toJson(config)) map { response =>
+      Logger.info("url " + response.body)
+      response.status match {
+        case CREATED => (response.json \ journeyUrlKey).validate[String] match {
+          case JsSuccess(journeyId, _) => journeyId
+          case _ =>
+            throw new InternalServerException(s"[SoleTraderIdentificationConnector] STI Response JSON did not include $journeyUrlKey key")
+        }
+        case UNAUTHORIZED =>
+          throw new UnauthorizedException(s"[SoleTraderIdentificationConnector] Failed to create new journey as user was unauthorised")
+        case status =>
+          throw new InternalServerException(s"[SoleTraderIdentificationConnector] Sole trader identification returned an unexpected status: $status")
+      }
+    }
+  }
+
+  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+    httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
+      response.status match {
+        case OK =>
+          response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads) match {
+            case JsSuccess(individual, _) =>
+              individual
+            case JsError(errors) =>
+              throw new InternalServerException(s"Sole trader ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+          }
+        case status =>
+          throw new InternalServerException(s"[SoleTraderIdentificationConnector] Unexpected status returned from STI when retrieving individual details: $status")
+      }
+    }
 }

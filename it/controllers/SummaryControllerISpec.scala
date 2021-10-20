@@ -129,9 +129,9 @@ class SummaryControllerISpec extends ControllerISpec {
 
         val expectedCyaRows: List[(String, String)] = List(
           ("Unique Taxpayer Reference number", testSautr),
-          ("Temporary Reference number", testTrn),
           ("First Name", testFirstName),
           ("Last Name", testLastName),
+          ("Temporary Reference number", testTrn),
           ("Date of birth", "1 January 2020"),
           ("Role in the business", Director.toString),
           ("Former name", "New Name Cosmo"),

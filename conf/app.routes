@@ -171,6 +171,8 @@ GET         /personal-details-validation-callback                               
 ## Sole Trader Identification Journey
 GET         /start-sti-journey                                                                 controllers.registration.applicant.SoleTraderIdentificationController.startJourney
 GET         /sti-callback                                                                      controllers.registration.applicant.SoleTraderIdentificationController.callback(journeyId)
+GET         /start-sti-individual-journey                                                      controllers.registration.applicant.IndividualIdentificationController.startJourney
+GET         /sti-individual-callback                                                           controllers.registration.applicant.IndividualIdentificationController.callback(journeyId)
 GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney(isLeadPartner: Boolean)
 GET         /sti-partner-callback/:isLeadPartner                                               controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(isLeadPartner: Boolean, journeyId: String)
 

@@ -16,8 +16,9 @@
 
 package controllers.test
 
+import models.api.{Individual, NETP, Partnership, PartyType}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
-import models.external.{BusinessVerificationStatus, BvPass, BvUnchallenged}
+import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -28,64 +29,54 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  val ukCompanyJourney = "1"
-  val soleTraderJourney = "2"
-  val soleTraderNetpJourney = "3"
+  val soleTraderJourney = "1"
+  val netpJourney = "2"
+  val individualJourney = "3"
 
-  def createJourney(partyType: String): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
+  def createJourney(optPartyType: Option[String]): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
     def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
 
-    if (partyType.equals("Z1")) {
-      Created(json(soleTraderJourney))
-    } else if (partyType.equals("NETP")) {
-      Created(json(soleTraderNetpJourney))
-    } else {
-      Created(json(ukCompanyJourney))
+    optPartyType.map(PartyType.fromString) match {
+      case Some(Individual | Partnership) =>
+        Created(json(soleTraderJourney))
+      case Some(NETP) =>
+        Created(json(netpJourney))
+      case None =>
+        Created(json(individualJourney))
     }
+
   }
 
-  def retrieveValidationResult(journeyId: String): Action[AnyContent] = {
-    if (journeyId == soleTraderNetpJourney) {
-      Action(Ok(netpValidationResult(journeyId)))
-    } else {
-      Action(Ok(validationResult(journeyId)))
-    }
+  def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
+    Ok(
+      journeyId match {
+        case `soleTraderJourney` => soleTraderValidationResult
+        case `netpJourney` => netpValidationResult
+        case `individualJourney` => individualValidationResult
+      }
+    )
   }
 
-  def validationResult(journeyId: String): JsObject = {
+  val soleTraderValidationResult: JsObject = {
     Json.obj(
       "fullName" -> Json.obj(
         "firstName" -> "testFirstName",
         "lastName" -> "testLastName"
       ),
       "nino" -> "AA123456A",
-      "dateOfBirth" -> LocalDate.of(1990, 1, 1)
-    ) ++ (
-      if (journeyId == soleTraderJourney) {
-        Json.obj(
-          "sautr" -> "1234567890",
-          "businessVerification" -> Json.obj(
-            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
-          ),
-          "registration" -> Json.obj(
-            "registrationStatus" -> "REGISTERED",
-            "registeredBusinessPartnerId" -> "X00000123456789"
-          )
-        )
-      } else {
-        Json.obj(
-          "businessVerification" -> Json.obj(
-            "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvUnchallenged)
-          ),
-          "registration" -> Json.obj(
-            "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-          )
-        )
-      }
+      "dateOfBirth" -> LocalDate.of(1990, 1, 1),
+      "sautr" -> "1234567890",
+      "businessVerification" -> Json.obj(
+        "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
+      ),
+      "registration" -> Json.obj(
+        "registrationStatus" -> "REGISTERED",
+        "registeredBusinessPartnerId" -> "X00000123456789"
       )
+    )
   }
 
-  def netpValidationResult(journeyId: String): JsObject = {
+  val netpValidationResult: JsObject = {
     Json.obj(
       "fullName" -> Json.obj(
         "firstName" -> "testFirstName",
@@ -101,6 +92,17 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
         "registrationStatus" -> "REGISTERED",
         "registeredBusinessPartnerId" -> "X00000123456789"
       )
+    )
+  }
+
+  val individualValidationResult: JsObject = {
+    Json.obj(
+      "fullName" -> Json.obj(
+        "firstName" -> "testFirstName",
+        "lastName" -> "testLastName"
+      ),
+      "nino" -> "AA123456A",
+      "dateOfBirth" -> LocalDate.of(1990, 1, 1)
     )
   }
 }
