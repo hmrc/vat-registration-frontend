@@ -54,7 +54,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
 
-      stubPost("/incorporated-entity-identification/api/journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+      stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
       val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startJourney().url).get)
 
