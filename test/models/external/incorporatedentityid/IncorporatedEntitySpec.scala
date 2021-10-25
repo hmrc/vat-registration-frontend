@@ -16,8 +16,8 @@
 
 package models.external.incorporatedentityid
 
-import models.external.IncorporatedEntity
-import play.api.libs.json.Json
+import models.external.{BvPass, IncorporatedEntity}
+import play.api.libs.json.{JsObject, JsString, JsSuccess, Json}
 import testHelpers.VatRegSpec
 
 class IncorporatedEntitySpec extends VatRegSpec {
@@ -33,6 +33,46 @@ class IncorporatedEntitySpec extends VatRegSpec {
       val incorpDetails = testLimitedCompany
       val json = Json.toJson(incorpDetails)
       json.as[IncorporatedEntity] mustBe incorpDetails
+    }
+
+    "parse successfully with an empty dateOfIncorporation" in {
+      val testIncorpNoRegDate: JsObject =
+        Json.obj("companyProfile" ->
+          Json.obj(
+            "companyNumber" -> testCrn,
+            "companyName" -> testCompanyName
+          ),
+          "dateOfIncorporation" -> JsString(""),
+          "countryOfIncorporation" -> testCountry,
+          "identifiersMatch" -> true,
+          "registration" ->
+            Json.obj(
+              "registrationStatus" -> "REGISTERED",
+              "registeredBusinessPartnerId" -> testBpSafeId
+            ),
+          "businessVerification" ->
+            Json.obj(
+              "verificationStatus" -> "PASS"
+            )
+        )
+
+      val res = Json.fromJson[IncorporatedEntity](testIncorpNoRegDate)(IncorporatedEntity.apiFormat)
+
+      val expected: IncorporatedEntity = IncorporatedEntity(
+        companyNumber = testCrn,
+        companyName = testCompanyName,
+        ctutr = None,
+        chrn = None,
+        dateOfIncorporation = None,
+        countryOfIncorporation = "GB",
+        identifiersMatch = true,
+        registration = testRegistration,
+        businessVerification = BvPass,
+        bpSafeId = Some(testBpSafeId)
+      )
+
+      res mustBe JsSuccess(expected)
+
     }
   }
 

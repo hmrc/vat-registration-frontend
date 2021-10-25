@@ -49,7 +49,7 @@ case class IncorporatedEntity(companyNumber: String,
                               companyName: String,
                               ctutr: Option[String] = None,
                               chrn: Option[String] = None,
-                              dateOfIncorporation: LocalDate,
+                              dateOfIncorporation: Option[LocalDate],
                               countryOfIncorporation: String = "GB",
                               identifiersMatch: Boolean,
                               registration: String,
@@ -62,7 +62,11 @@ object IncorporatedEntity {
       (__ \ "companyProfile" \ "companyName").format[String] and
       (__ \ "ctutr").formatNullable[String] and
       (__ \ "chrn").formatNullable[String] and
-      (__ \ "companyProfile" \ "dateOfIncorporation").format[LocalDate] and
+      OFormat(
+        (__ \ "companyProfile" \ "dateOfIncorporation").readNullable[LocalDate]
+        .orElse(Reads.pure(None)),
+        (__ \ "companyProfile" \ "dateOfIncorporation").writeNullable[LocalDate]
+      ) and
       OFormat(Reads.pure("GB"), (__ \ "companyProfile" \ "countryOfIncorporation").write[String]) and
       (__ \ "identifiersMatch").format[Boolean] and
       (__ \ "registration" \ "registrationStatus").format[String] and

@@ -49,7 +49,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
         companyNumber = "12345678",
         ctutr = if (!journeyId.equals("3")) Some("123567890") else None,
         chrn = if (journeyId.equals("3")) Some("123567890") else None,
-        dateOfIncorporation = LocalDate.of(2020, 1, 1),
+        dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
         identifiersMatch = true,
         registration = "REGISTERED",
         businessVerification = BvPass,
