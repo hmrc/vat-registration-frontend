@@ -15,7 +15,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'claim refunds' in the backend" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -26,7 +26,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is a value for 'claim refunds' in the backend" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, Some(true), None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, Some(true), None, None, testApplicantIncorpDate))
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -41,7 +41,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       disable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
@@ -58,7 +58,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       disable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
@@ -75,7 +75,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       enable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
@@ -91,7 +91,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NETP" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
@@ -107,7 +107,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is Non UK Company" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))))

@@ -37,7 +37,7 @@ trait ApplicantDetailsFixture {
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"
   val testApplicantCtUtr = "testCtUtr"
-  val testApplicantIncorpDate = LocalDate.of(2020, 2, 3)
+  val testApplicantIncorpDate = Some(LocalDate.of(2020, 2, 3))
   val testBpSafeId = "testBpId"
 
   val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, testApplicantCompanyName, Some(testApplicantCtUtr), None, testApplicantIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))

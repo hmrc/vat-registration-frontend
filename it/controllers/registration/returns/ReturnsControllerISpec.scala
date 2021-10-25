@@ -18,7 +18,7 @@ class ReturnsControllerISpec extends ControllerISpec {
     "Return OK when the user is authenticated" in {
       given()
         .user.isAuthorised
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, Some(testApplicantIncorpDate)))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.contains(emptyUkCompanyVatScheme)

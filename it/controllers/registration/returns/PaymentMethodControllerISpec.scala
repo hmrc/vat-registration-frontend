@@ -28,7 +28,7 @@ import scala.concurrent.Future
 class PaymentMethodControllerISpec extends ControllerISpec {
 
   val url: String = routes.PaymentMethodController.show().url
-  val testFullReturns: Returns = Returns(Some(1000), Some(true), Some(Annual), Some(FebJanStagger), Some(testIncorpDate), Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
+  val testFullReturns: Returns = Returns(Some(1000), Some(true), Some(Annual), Some(FebJanStagger), testIncorpDate, Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
 
   s"GET $url" must {
     "return an OK with no prepop data" in new Setup {

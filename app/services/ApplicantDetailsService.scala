@@ -51,7 +51,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
     getApplicantDetails.map(_.entity.collect {
-      case incorpDetails: IncorporatedEntity => incorpDetails.dateOfIncorporation
+      case incorpDetails: IncorporatedEntity => incorpDetails.dateOfIncorporation.get
     })
 
   def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
