@@ -147,7 +147,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey?partyType=${PartyType.stati(CharitableOrg)}"
     } else {
-      s"$incorpIdHost/incorporated-entity-identification/api/charitable-organisation-journey"
+      s"$incorpIdHost/incorporated-entity-identification/api/charitable-incorporated-organisation-journey"
     }
 
   def getIncorpIdDetailsUrl(journeyId: String): String =
