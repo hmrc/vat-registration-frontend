@@ -32,7 +32,7 @@
 )(implicit messages: Messages)
 
 @labelClasses = @{
-    if(isPageHeading) "govuk-label--l"
+    if(isPageHeading) "govuk-label--xl"
     else if (hint.isDefined) "govuk-!-font-weight-bold"
     else if (isLabelHidden) "govuk-visually-hidden"
     else ""

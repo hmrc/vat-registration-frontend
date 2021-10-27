@@ -192,7 +192,7 @@ validation.startDate.missing                          = Enter a date
 pages.tradingName.heading                           = Does or will the business trade using a name that is different from {0}?
 pages.tradingName.tradingNameLabel                  = Enter the trading name
 pages.tradingName.panel.para1                       = What is a trading name?
-pages.tradingName.panel.para2                       = A business can trade using a name that’s different from its registered name. This is also known as a ’business name’.
+pages.tradingName.panel.para2                       = A business can trade using a name that’s different from its official or registered name. This is also known as a ’trading name’.
 pages.tradingName.panel.para3                       = Some businesses choose a different trading name to help with branding or getting a domain name for their website.
 pages.tradingdetails.input.hint-text                = You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’
 
@@ -344,6 +344,7 @@ cya.daytimePhone                                     = Daytime phone number
 cya.mobile                                           = Mobile number
 cya.telephone                                        = Telephone number
 cya.companyNumber                                    = Company registration number
+cya.businessName                                     = Official business name
 cya.ctutr                                            = Unique Taxpayer Reference number
 cya.chrn                                             = Charity registration number
 cya.sautr                                            = Unique Taxpayer Reference number
@@ -999,3 +1000,10 @@ validation.sellOrMoveNip.missing                         = Enter the value of th
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
 pages.EmailDocuments.para1                               = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
 pages.EmailDocuments.panel1                              = vrs.newregistrations@hmrc.gov.uk
+
+# BUSINESS NAME
+
+businessName.heading                                     = What is the official name of the business?
+validation.businessName.invalid                          = Enter a valid official business name
+validation.businessName.missing                          = Enter the official name of the business
+validation.businessName.maxlen                           = Enter an official business name using 105 characters or less

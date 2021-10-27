@@ -18,7 +18,7 @@ package services
 
 import connectors.MinorEntityIdConnector
 import models.api.PartyType
-import models.external.MinorEntityIdEntity
+import models.external.MinorEntity
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,7 +32,7 @@ class MinorEntityIdService @Inject()(minorEntityIdConnector: MinorEntityIdConnec
     minorEntityIdConnector.createJourney(journeyConfig, partyType)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntityIdEntity] = {
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntity] = {
     minorEntityIdConnector.getDetails(journeyId)
   }
 

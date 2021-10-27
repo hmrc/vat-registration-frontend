@@ -32,7 +32,7 @@ object BusinessEntity {
       case UkCompany | RegSociety | CharitableOrg => Json.fromJson(json)(IncorporatedEntity.format)
       case Individual | NETP => Json.fromJson(json)(SoleTraderIdEntity.format)
       case Partnership => Json.fromJson(json)(PartnershipIdEntity.format)
-      case UnincorpAssoc | Trust | NonUkNonEstablished => Json.fromJson(json)(MinorEntityIdEntity.format)
+      case UnincorpAssoc | Trust | NonUkNonEstablished => Json.fromJson(json)(MinorEntity.format)
       case _ => throw new InternalServerException("Tried to parse business entity for an unsupported party type")
     }
   }
@@ -41,12 +41,12 @@ object BusinessEntity {
     case incorporatedEntity: IncorporatedEntity => Json.toJson(incorporatedEntity)
     case soleTrader: SoleTraderIdEntity => Json.toJson(soleTrader)
     case partnershipIdEntity: PartnershipIdEntity => Json.toJson(partnershipIdEntity)
-    case minorEntityIdEntity: MinorEntityIdEntity => Json.toJson(minorEntityIdEntity)
+    case minorEntity: MinorEntity => Json.toJson(minorEntity)
   }
 }
 
 case class IncorporatedEntity(companyNumber: String,
-                              companyName: String,
+                              companyName: Option[String],
                               ctutr: Option[String] = None,
                               chrn: Option[String] = None,
                               dateOfIncorporation: Option[LocalDate],
@@ -59,12 +59,12 @@ case class IncorporatedEntity(companyNumber: String,
 object IncorporatedEntity {
   val apiFormat: Format[IncorporatedEntity] = (
     (__ \ "companyProfile" \ "companyNumber").format[String] and
-      (__ \ "companyProfile" \ "companyName").format[String] and
+      (__ \ "companyProfile" \ "companyName").formatNullable[String] and
       (__ \ "ctutr").formatNullable[String] and
       (__ \ "chrn").formatNullable[String] and
       OFormat(
         (__ \ "companyProfile" \ "dateOfIncorporation").readNullable[LocalDate]
-        .orElse(Reads.pure(None)),
+          .orElse(Reads.pure(None)),
         (__ \ "companyProfile" \ "dateOfIncorporation").writeNullable[LocalDate]
       ) and
       OFormat(Reads.pure("GB"), (__ \ "companyProfile" \ "countryOfIncorporation").write[String]) and
@@ -129,21 +129,23 @@ object PartnershipIdEntity {
 
 }
 
-case class MinorEntityIdEntity(sautr: Option[String] = None,
-                               ctutr: Option[String] = None,
-                               overseas: Option[OverseasIdentifierDetails] = None,
-                               postCode: Option[String] = None,
-                               chrn: Option[String] = None,
-                               casc: Option[String] = None,
-                               registration: String,
-                               businessVerification: BusinessVerificationStatus,
-                               bpSafeId: Option[String] = None,
-                               identifiersMatch: Boolean) extends BusinessEntity
+case class MinorEntity(companyName: Option[String] = None,
+                       sautr: Option[String] = None,
+                       ctutr: Option[String] = None,
+                       overseas: Option[OverseasIdentifierDetails] = None,
+                       postCode: Option[String] = None,
+                       chrn: Option[String] = None,
+                       casc: Option[String] = None,
+                       registration: String,
+                       businessVerification: BusinessVerificationStatus,
+                       bpSafeId: Option[String] = None,
+                       identifiersMatch: Boolean) extends BusinessEntity
 
-object MinorEntityIdEntity {
+object MinorEntity {
 
-  val apiFormat: Format[MinorEntityIdEntity] = (
-    (__ \ "sautr").formatNullable[String] and
+  val apiFormat: Format[MinorEntity] = (
+    (__ \ "companyName").formatNullable[String] and
+      (__ \ "sautr").formatNullable[String] and
       (__ \ "ctutr").formatNullable[String] and
       (__ \ "overseas").formatNullable[OverseasIdentifierDetails] and
       (__ \ "postcode").formatNullable[String] and
@@ -153,9 +155,9 @@ object MinorEntityIdEntity {
       (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
       (__ \ "identifiersMatch").format[Boolean]
-    ) (MinorEntityIdEntity.apply, unlift(MinorEntityIdEntity.unapply))
+    ) (MinorEntity.apply, unlift(MinorEntity.unapply))
 
-  implicit val format: Format[MinorEntityIdEntity] = Json.format[MinorEntityIdEntity]
+  implicit val format: Format[MinorEntity] = Json.format[MinorEntity]
 
 }
 

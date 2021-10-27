@@ -30,8 +30,8 @@ class TradingNameViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = s"Does or will the business trade using a name that is different from $testCompanyName?"
     val detailsSummary = "What is a trading name?"
-    val detailsContent = "A business can trade using a name that’s different from its registered name. " +
-      "This is also known as a ’business name’. " +
+    val detailsContent = "A business can trade using a name that’s different from its official or registered name. " +
+      "This is also known as a ’trading name’. " +
       "Some businesses choose a different trading name to help with branding or getting a domain name for their website."
     val hint = "You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’"
     val label = "Enter the trading name"

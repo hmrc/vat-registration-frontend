@@ -80,11 +80,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(applicantRoutes.IncorpIdController.startJourney().url)
     )
 
+    val businessName = optSummaryListRowString(
+      s"$sectionId.businessName",
+      applicantDetails.entity.flatMap {
+        case incorpIdEntity: IncorporatedEntity => incorpIdEntity.companyName
+        case minorEntity: MinorEntity => minorEntity.companyName
+        case _ => None
+      },
+      applicantDetails.entity.flatMap {
+        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney().url)
+        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case _ => None
+      }
+    )
+
     val ctutr = optSummaryListRowString(
       s"$sectionId.ctutr",
       applicantDetails.entity.flatMap {
         case incorpIdEntity: IncorporatedEntity => incorpIdEntity.ctutr
-        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.ctutr
+        case minorEntity: MinorEntity => minorEntity.ctutr
         case _ => None
       },
       partyType match {
@@ -97,7 +111,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.sautr",
       applicantDetails.entity.flatMap {
         case soleTrader: SoleTraderIdEntity => soleTrader.sautr
-        case business: MinorEntityIdEntity => business.sautr
+        case business: MinorEntity => business.sautr
         case partnership: PartnershipIdEntity => partnership.sautr
         case _ => None
       },
@@ -112,7 +126,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.overseasIdentifier",
       applicantDetails.entity.flatMap {
         case soleTraderIdEntity: SoleTraderIdEntity => soleTraderIdEntity.overseas.map(_.taxIdentifier)
-        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.overseas.map(_.taxIdentifier)
+        case minorEntity: MinorEntity => minorEntity.overseas.map(_.taxIdentifier)
         case _ => None
       },
       partyType match {
@@ -131,7 +145,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.overseasCountry",
       applicantDetails.entity.flatMap {
         case soleTraderEntity: SoleTraderIdEntity => optCountryName(soleTraderEntity.overseas)
-        case minorEntityIdEntity: MinorEntityIdEntity => optCountryName(minorEntityIdEntity.overseas)
+        case minorEntity: MinorEntity => optCountryName(minorEntity.overseas)
         case _ => None
       },
       partyType match {
@@ -144,7 +158,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.chrn",
       applicantDetails.entity.flatMap {
         case incorporatedEntity: IncorporatedEntity => incorporatedEntity.chrn
-        case minorEntityIdEntity: MinorEntityIdEntity => minorEntityIdEntity.chrn
+        case minorEntity: MinorEntity => minorEntity.chrn
         case _ => None
       },
       partyType match {
@@ -252,6 +266,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     Seq(
       companyNumber,
+      businessName,
       ctutr,
       sautr,
       overseasIdentifier,
@@ -527,7 +542,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
   def tradingDetailsSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
 
     val tradingDetails: TradingDetails = vatScheme.tradingDetails.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing trading details block"))
-    val tradingNameOptional: Boolean = Seq(UkCompany, RegSociety, CharitableOrg).contains(partyType)
+    val tradingNameOptional: Boolean = Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc).contains(partyType)
 
     val tradingNameRow = optSummaryListRowString(
       if (tradingNameOptional) {

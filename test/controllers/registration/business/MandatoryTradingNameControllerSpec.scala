@@ -59,8 +59,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     "return an Ok when there is trading details present" in new Setup {
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
-      when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(tradingName))
 
       callAuthorised(testController.show) {
         result => {
@@ -73,8 +71,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
   "return an Ok when there is no trading details present" in new Setup {
     when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
       .thenReturn(Future.successful(TradingDetails()))
-    when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-      .thenReturn(Future.successful(tradingName))
 
     callAuthorised(testController.show) {
       result => {
@@ -84,9 +80,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
   }
 
   "return an Ok when there is a company name present" in new Setup {
-    when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-      .thenReturn(Future.successful(tradingName))
-
     callAuthorised(testController.show) {
       result => {
         status(result) mustBe OK
@@ -98,8 +91,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     "return 303 with a provided trading name" in new Setup {
       when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(fullS4L))
-      when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(tradingName))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
@@ -114,9 +105,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 without a provided trading name" in new Setup {
-      when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(tradingName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "trading-name" -> ""
       )
@@ -127,9 +115,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 when trading name is empty" in new Setup {
-      when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(tradingName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
       submitAuthorised(testController.submit, request) { result =>
@@ -138,9 +123,6 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 when the trading name they have provided is invalid" in new Setup {
-      when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(tradingName))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "trading-name" -> "$0M3 T3$T"
       )

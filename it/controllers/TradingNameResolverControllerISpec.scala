@@ -27,12 +27,11 @@ import play.api.test.Helpers._
 class TradingNameResolverControllerISpec extends ControllerISpec {
 
   "Trading name page resolver" should {
-    List(Individual, Partnership, Trust, UnincorpAssoc, NETP, NonUkNonEstablished).foreach { partyType =>
+    List(Individual, Partnership, NETP).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show().url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
-          .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
           .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
@@ -59,7 +58,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
-          .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
           .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
@@ -77,6 +75,32 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show().url)
+        }
+      }
+    }
+
+    List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { partyType =>
+      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.BusinessNameController.show().url} for ${partyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .s4lContainer[TradingDetails].isEmpty
+          .vatScheme.contains(
+          VatScheme(id = currentProfile.registrationId,
+            status = VatRegStatus.draft,
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
+          )
+        )
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))(ApplicantDetails.writes))
+          .vatScheme.doesNotHave("trading-details")
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/resolve-party-type").get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessNameController.show().url)
         }
       }
     }

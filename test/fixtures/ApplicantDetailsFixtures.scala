@@ -59,7 +59,7 @@ trait ApplicantDetailsFixtures {
 
   val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
     testCrn,
-    testCompanyName,
+    Some(testCompanyName),
     Some(testCtUtr),
     None,
     Some(testIncorpDate),
@@ -138,7 +138,7 @@ trait ApplicantDetailsFixtures {
     identifiersMatch = true
   )
 
-  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testTrust: MinorEntity = MinorEntity(
     sautr = Some(testSautr),
     ctutr = None,
     postCode = None,
@@ -150,7 +150,7 @@ trait ApplicantDetailsFixtures {
     identifiersMatch = true
   )
 
-  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testUnincorpAssoc: MinorEntity = MinorEntity(
     sautr = Some(testSautr),
     ctutr = None,
     postCode = None,
@@ -164,7 +164,7 @@ trait ApplicantDetailsFixtures {
 
   val testRegisteredSociety: IncorporatedEntity = IncorporatedEntity(
     companyNumber = testCrn,
-    companyName = testCompanyName,
+    companyName = Some(testCompanyName),
     ctutr = Some(testCtUtr),
     chrn = None,
     dateOfIncorporation = Some(testIncorpDate),
@@ -177,7 +177,7 @@ trait ApplicantDetailsFixtures {
 
   val testCharitableOrganisation: IncorporatedEntity = IncorporatedEntity(
     companyNumber = testCrn,
-    companyName = testCompanyName,
+    companyName = Some(testCompanyName),
     ctutr = None,
     chrn = Some(testChrn),
     dateOfIncorporation = Some(testIncorpDate),

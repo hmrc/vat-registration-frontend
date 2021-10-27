@@ -21,7 +21,7 @@ import itutil.IntegrationSpecBase
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BusinessVerificationStatus, BvPass, MinorEntityIdEntity}
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -65,7 +65,8 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "identifiersMatch" -> true
   )
 
-  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testTrust: MinorEntity = MinorEntity(
+    None,
     Some(testSautr),
     None,
     None,
@@ -93,7 +94,8 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "identifiersMatch" -> true
   )
 
-  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testUnincorpAssoc: MinorEntity = MinorEntity(
+    None,
     Some(testSautr),
     None,
     None,
@@ -126,7 +128,8 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "identifiersMatch" -> true
   )
 
-  val testNonUkCompany: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testNonUkCompany: MinorEntity = MinorEntity(
+    None,
     None,
     Some(testCrn),
     Some(testOverseasIdentifierDetails),
@@ -212,7 +215,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(testTrustResponse))
-      val res: MinorEntityIdEntity = await(connector.getDetails(testTrustJourneyId))
+      val res: MinorEntity = await(connector.getDetails(testTrustJourneyId))
 
       res mustBe testTrust
     }
@@ -223,7 +226,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, Json.stringify(testUnincorpAssocResponse))
-      val res: MinorEntityIdEntity = await(connector.getDetails(testUnincorpAssocJourneyId))
+      val res: MinorEntity = await(connector.getDetails(testUnincorpAssocJourneyId))
 
       res mustBe testUnincorpAssoc
     }
@@ -234,7 +237,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, Json.stringify(testNonUkCompanyResponse))
-      val res: MinorEntityIdEntity = await(connector.getDetails(testNonUkCompanyJourneyId))
+      val res: MinorEntity = await(connector.getDetails(testNonUkCompanyJourneyId))
 
       res mustBe testNonUkCompany
     }
