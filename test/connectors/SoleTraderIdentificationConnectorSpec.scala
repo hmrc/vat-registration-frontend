@@ -105,7 +105,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
         mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
         val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-        res mustBe(testTransactorDetails, testSoleTrader)
+        res mustBe(testPersonalDetails, testSoleTrader)
       }
     }
     "overseas details are returned" must {
@@ -133,12 +133,12 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
         mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
         val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-        res mustBe(testTransactorDetails, testSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("1234", "ES"))))
+        res mustBe(testPersonalDetails, testSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("1234", "ES"))))
       }
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {
-        Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
+        Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
       }
       mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> invalidTransactorJson))))
 
@@ -206,12 +206,12 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
         mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
         val res = await(connector.retrieveIndividualDetails(testJourneyId))
-        res mustBe testTransactorDetails
+        res mustBe testPersonalDetails
       }
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {
-        Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
+        Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
       }
       mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> invalidTransactorJson))))
 

@@ -90,8 +90,8 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     List(Individual, NETP).foreach { partyType =>
       s"redirect to the former name page if the user is a $partyType" in new Setup {
         mockGetVatScheme(Future.successful(validSoleTraderVatScheme))
-        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testTransactorDetails, testSoleTrader)))
-        mockSaveApplicantDetails(testTransactorDetails)(emptyApplicantDetails.copy(transactor = Some(testTransactorDetails)))
+        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful((testPersonalDetails, testSoleTrader)))
+        mockSaveApplicantDetails(testPersonalDetails)(emptyApplicantDetails.copy(personalDetails = Some(testPersonalDetails)))
         mockSaveApplicantDetails(testSoleTrader)(emptyApplicantDetails.copy(entity = Some(testSoleTrader)))
         mockPartyType(Future.successful(partyType))
 

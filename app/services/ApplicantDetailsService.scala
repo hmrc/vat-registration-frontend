@@ -96,8 +96,8 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
     data match {
       case businessEntity: BusinessEntity =>
         before.copy(entity = Some(businessEntity))
-      case transactorDetails: TransactorDetails =>
-        before.copy(transactor = Some(transactorDetails))
+      case personalDetails: PersonalDetails =>
+        before.copy(personalDetails = Some(personalDetails))
       case currAddr: HomeAddressView =>
         before.copy(homeAddress = Some(currAddr))
       case emailAddress: EmailAddress =>

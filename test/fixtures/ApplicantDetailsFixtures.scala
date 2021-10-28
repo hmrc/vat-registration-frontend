@@ -19,7 +19,7 @@ package fixtures
 import models.api.Address
 import models.external._
 import models.view._
-import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
+import models.{ApplicantDetails, Director, TelephoneNumber, PersonalDetails}
 
 import java.time.LocalDate
 
@@ -41,7 +41,7 @@ trait ApplicantDetailsFixtures {
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
   val emptyApplicantDetails = ApplicantDetails(
-    transactor = None,
+    personalDetails = None,
     homeAddress = None,
     emailAddress = None,
     emailVerified = None,
@@ -55,7 +55,7 @@ trait ApplicantDetailsFixtures {
 
   val testBpSafeId = "testBpId"
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
+  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
 
   val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
     testCrn,
@@ -72,7 +72,7 @@ trait ApplicantDetailsFixtures {
 
   val completeApplicantDetails = ApplicantDetails(
     entity = Some(testLimitedCompany),
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
@@ -118,7 +118,7 @@ trait ApplicantDetailsFixtures {
 
   val soleTraderApplicantDetails: ApplicantDetails = ApplicantDetails(
     entity = Some(testSoleTrader),
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),

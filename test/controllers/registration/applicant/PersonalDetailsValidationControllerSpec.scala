@@ -85,8 +85,8 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec
         implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
         val testValidationId = "testValidationId"
 
-        mockRetrieveValidationResult(testValidationId)(Future.successful(testTransactorDetails))
-        mockSaveApplicantDetails(testTransactorDetails)(completeApplicantDetails)
+        mockRetrieveValidationResult(testValidationId)(Future.successful(testPersonalDetails))
+        mockSaveApplicantDetails(testPersonalDetails)(completeApplicantDetails)
 
         lazy val res: Future[Result] = testController.personalDetailsValidationCallback(testValidationId)(fakeRequest)
 

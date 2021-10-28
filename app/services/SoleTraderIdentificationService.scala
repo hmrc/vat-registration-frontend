@@ -17,7 +17,7 @@
 package services
 
 import connectors.SoleTraderIdentificationConnector
-import models.TransactorDetails
+import models.PersonalDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
@@ -35,13 +35,13 @@ class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnecto
                             (implicit hc: HeaderCarrier): Future[String] =
     soleTraderIdentificationConnector.startSoleTraderJourney(config, partyType)
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(PersonalDetails, SoleTraderIdEntity)] =
     soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId)
 
   def startIndividualJourney(config: SoleTraderIdJourneyConfig)
                             (implicit hc: HeaderCarrier): Future[String] =
     soleTraderIdentificationConnector.startIndividualJourney(config)
 
-  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] =
     soleTraderIdentificationConnector.retrieveIndividualDetails(journeyId)
 }

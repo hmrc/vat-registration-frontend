@@ -18,14 +18,14 @@ package services
 
 import connectors.PersonalDetailsValidationConnector
 import javax.inject.{Inject, Singleton}
-import models.TransactorDetails
+import models.PersonalDetails
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 @Singleton
 class PersonalDetailsValidationService @Inject()(personalDetailsValidationConnector: PersonalDetailsValidationConnector) {
-  def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] = {
+  def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] = {
     personalDetailsValidationConnector.retrieveValidationResult(validationId)
   }
 }

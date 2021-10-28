@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.TransactorDetails
+import models.PersonalDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
@@ -53,11 +53,11 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     }
   }
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(TransactorDetails, SoleTraderIdEntity)] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[(PersonalDetails, SoleTraderIdEntity)] =
     httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          (response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads),
+          (response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads),
             response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
@@ -86,11 +86,11 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     }
   }
 
-  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+  def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] =
     httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          response.json.validate[TransactorDetails](TransactorDetails.soleTraderIdentificationReads) match {
+          response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads) match {
             case JsSuccess(individual, _) =>
               individual
             case JsError(errors) =>
