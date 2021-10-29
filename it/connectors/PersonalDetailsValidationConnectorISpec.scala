@@ -18,7 +18,7 @@ package connectors
 
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import itutil.IntegrationSpecBase
-import models.TransactorDetails
+import models.PersonalDetails
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -54,7 +54,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
 
         val res = connector.retrieveValidationResult(testValidationId)
 
-        val expectedData = TransactorDetails(
+        val expectedData = PersonalDetails(
           testFirstName,
           testLastName,
           Some(testNino),
@@ -93,7 +93,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
 
         val res = connector.retrieveValidationResult(testValidationId)
 
-        val expectedData = TransactorDetails(
+        val expectedData = PersonalDetails(
           testFirstName,
           testLastName,
           Some(testNino),

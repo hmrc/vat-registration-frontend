@@ -16,12 +16,13 @@
 
 package models.view
 
-import java.time.LocalDate
-import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
 import models.api.{Address, NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified, Name}
+import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
+
+import java.time.LocalDate
 
 class ApplicantDetailsSpec extends VatRegSpec {
   val currentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
@@ -75,7 +76,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val json = Json.parse(
         s"""
            |{
-           |  "transactor": {
+           |  "personalDetails": {
            |    "name": {
            |      "first": "testFirstName",
            |      "last": "testLastName"
@@ -128,7 +129,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
       val applicantDetails = ApplicantDetails(
         entity = Some(testLimitedCompany),
-        transactor = Some(testTransactorDetails),
+        personalDetails = Some(testPersonalDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -145,7 +146,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val json = Json.parse(
         s"""
            |{
-           |  "transactor": {
+           |  "personalDetails": {
            |    "name": {
            |      "first": "testFirstName",
            |      "last": "testLastName"
@@ -198,7 +199,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
       val applicantDetails = ApplicantDetails(
         entity = Some(testNetpSoleTrader),
-        transactor = Some(testTransactorDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = true)),
+        personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = true)),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -216,7 +217,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val json = Json.parse(
         s"""
            |{
-           |  "transactor": {
+           |  "personalDetail": {
            |    "name": {
            |      "first": "First",
            |      "last": "Last"
@@ -263,7 +264,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
     "return a correct full JsValue with maximum data" in {
       val data = ApplicantDetails(
         entity = Some(testLimitedCompany),
-        transactor = Some(testTransactorDetails),
+        personalDetails = Some(testPersonalDetails),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -276,7 +277,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "transactor": {
+           |  "personalDetails": {
            |    "name": {
            |      "first": "testFirstName",
            |      "last": "testLastName"
@@ -329,7 +330,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
     "return a correct full JsValue with netp data" in {
       val data = ApplicantDetails(
         entity = Some(testNetpSoleTrader),
-        transactor = Some(testTransactorDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = false)),
+        personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = false)),
         homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
@@ -343,7 +344,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "transactor": {
+           |  "personalDetails": {
            |    "name": {
            |      "first": "testFirstName",
            |      "last": "testLastName"

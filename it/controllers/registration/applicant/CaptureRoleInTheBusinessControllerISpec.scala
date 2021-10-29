@@ -18,7 +18,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
     roleInTheBusiness = Some(Director)

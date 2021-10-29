@@ -24,6 +24,7 @@ import play.api.libs.json._
 
 case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
+                     transactorDetails: Option[TransactorDetails] = None,
                      tradingDetails: Option[TradingDetails] = None,
                      sicAndCompliance: Option[SicAndCompliance] = None,
                      businessContact: Option[BusinessContact] = None,
@@ -41,6 +42,7 @@ object VatScheme {
       case Some(partyType) => (
         (__ \ "registrationId").read[String] and
           (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
+          (__ \ "transactorDetails").readNullable[TransactorDetails] and
           (__ \ "tradingDetails").readNullable[TradingDetails](TradingDetails.apiFormat) and
           (__ \ "sicAndCompliance").readNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
           (__ \ "businessContact").readNullable[BusinessContact](BusinessContact.apiFormat) and
@@ -60,6 +62,7 @@ object VatScheme {
           Reads.pure(None) and
           Reads.pure(None) and
           Reads.pure(None) and
+          Reads.pure(None) and
           (__ \ "status").read[VatRegStatus.Value] and
           Reads.pure(None) and
           Reads.pure(None)
@@ -69,6 +72,7 @@ object VatScheme {
   val writes: Writes[VatScheme] = (
     (__ \ "registrationId").write[String] and
       (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
+      (__ \ "transactorDetails").writeNullable[TransactorDetails] and
       (__ \ "tradingDetails").writeNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "sicAndCompliance").writeNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
       (__ \ "businessContact").writeNullable[BusinessContact](BusinessContact.apiFormat) and

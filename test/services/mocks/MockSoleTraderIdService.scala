@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import models.TransactorDetails
+import models.PersonalDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
@@ -54,13 +54,13 @@ trait MockSoleTraderIdService extends MockitoSugar {
       )(any[HeaderCarrier])
     ) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(TransactorDetails, SoleTraderIdEntity)]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(PersonalDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(PersonalDetails, SoleTraderIdEntity)]] =
     when(
       mockSoleTraderIdService.retrieveSoleTraderDetails(journeyId = matches(journeyId))
       (any[HeaderCarrier])
     ) thenReturn response
 
-  def mockRetrieveIndividualDetails(journeyId: String)(response: Future[TransactorDetails]): OngoingStubbing[Future[TransactorDetails]] =
+  def mockRetrieveIndividualDetails(journeyId: String)(response: Future[PersonalDetails]): OngoingStubbing[Future[PersonalDetails]] =
     when(
       mockSoleTraderIdService.retrieveIndividualDetails(journeyId = matches(journeyId))
       (any[HeaderCarrier])

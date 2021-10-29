@@ -16,55 +16,17 @@
 
 package models
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import models.api.Address
+import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+case class TransactorDetails(personalDetails: Option[PersonalDetails] = None,
+                             isPartOfOrganisation: Option[Boolean] = None,
+                             organisationName: Option[String] = None,
+                             telephone: Option[String] = None,
+                             email: Option[String] = None,
+                             address: Option[Address] = None,
+                             declarationCapacity: Option[DeclarationCapacity] = None)
 
-case class TransactorDetails(firstName: String,
-                             lastName: String,
-                             nino: Option[String],
-                             trn: Option[String],
-                             identifiersMatch: Boolean,
-                             dateOfBirth: LocalDate)
-
-object TransactorDetails { //TODO remove all defaults here when PDV is removed
-  implicit val format: OFormat[TransactorDetails] = (
-    (__ \ "firstName").format[String] and
-    (__ \ "lastName").format[String] and
-    (__ \ "nino").formatNullable[String] and
-    (__ \ "trn").formatNullable[String] and
-    (__ \ "identifiersMatch").formatWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").format[LocalDate]
-    )(TransactorDetails.apply, unlift(TransactorDetails.unapply))
-
-  val soleTraderIdentificationReads: Reads[TransactorDetails] = (
-    (__ \ "fullName" \ "firstName").read[String] and
-    (__ \ "fullName" \ "lastName").read[String] and
-    (__ \ "nino").readNullable[String] and
-    (__ \ "trn").readNullable[String] and
-    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").read[LocalDate]
-  )(TransactorDetails.apply _)
-
-  val apiReads: Reads[TransactorDetails] = (
-    (__ \ "name" \ "first").read[String] orElse Reads.pure("") and
-    (__ \ "name" \ "last").read[String] and
-    (__ \ "nino").readNullable[String] and
-    (__ \ "trn").readNullable[String] and
-    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").read[LocalDate]
-  )(TransactorDetails.apply _)
-
-  val apiWrites: Writes[TransactorDetails] = (
-    (__ \ "name" \ "first").write[String] and
-    (__ \ "name" \ "last").write[String] and
-    (__ \ "nino").writeNullable[String] and
-    (__ \ "trn").writeNullable[String] and
-    (__ \ "identifiersMatch").write[Boolean] and
-    (__ \ "dateOfBirth").write[LocalDate]
-  )(unlift(TransactorDetails.unapply))
-
-  val apiFormat: Format[TransactorDetails] = Format(apiReads, apiWrites)
-
+object TransactorDetails {
+  implicit val format: Format[TransactorDetails] = Json.format[TransactorDetails]
 }

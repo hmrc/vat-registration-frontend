@@ -22,8 +22,6 @@ import models.api._
 import models.api.returns.{Monthly, Returns}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
-import play.api.mvc.Call
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -147,6 +145,23 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     supplyWorkers = None,
     workers = None,
     intermediarySupply = None
+  )
+
+  lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
+    personalDetails = Some(PersonalDetails(
+      firstName = "testFirstName",
+      lastName = "testLastName",
+      nino = Some("AB123456C"),
+      trn = None,
+      identifiersMatch = true,
+      dateOfBirth = LocalDate.of(2020, 1, 1)
+    )),
+    isPartOfOrganisation = Some(true),
+    organisationName = Some("testCompanyName"),
+    telephone = Some("1234"),
+    email = Some("test@t.test"),
+    address = Some(testAddress),
+    declarationCapacity = Some(AuthorisedEmployee)
   )
 
   //Api models

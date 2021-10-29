@@ -5,7 +5,7 @@ import java.time.LocalDate
 import models.api.Address
 import models.external.{Applicant, BvPass, EmailAddress, EmailVerified, IncorporatedEntity, Name}
 import models.view._
-import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber, TransactorDetails}
+import models.{ApplicantDetails, Director, RoleInTheBusiness, TelephoneNumber, PersonalDetails}
 
 trait ApplicantDetailsFixture {
 
@@ -31,8 +31,8 @@ trait ApplicantDetailsFixture {
   val testTrn = "0001234567"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
 
-  val testTransactorDetails = TransactorDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
-  val testNetpTransactorDetails = TransactorDetails(testFirstName, testLastName, None, Some(testTrn), identifiersMatch = false, testApplicantDob)
+  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
+  val testNetpPersonalDetails = PersonalDetails(testFirstName, testLastName, None, Some(testTrn), identifiersMatch = false, testApplicantDob)
 
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"
@@ -43,7 +43,7 @@ trait ApplicantDetailsFixture {
   val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, testApplicantCompanyName, Some(testApplicantCtUtr), None, testApplicantIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
 
   val validFullApplicantDetails = ApplicantDetails(
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),

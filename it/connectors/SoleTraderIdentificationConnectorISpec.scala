@@ -18,7 +18,7 @@ package connectors
 
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.TransactorDetails
+import models.PersonalDetails
 import models.api.Individual
 import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
@@ -166,9 +166,9 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+      val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testTransactorDetails, testSoleTrader)
+      res mustBe(testPersonalDetails, testSoleTrader)
     }
 
     "return transactor details for NETP when STI returns OK" in new Setup {
@@ -195,9 +195,9 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+      val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testNetpTransactorDetails, testNetpSoleTrader)
+      res mustBe(testNetpPersonalDetails, testNetpSoleTrader)
     }
 
     "return transactor details for NETP when an overseas identifier is returned" in new Setup {
@@ -228,9 +228,9 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
-      val res: (TransactorDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
+      val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testNetpTransactorDetails, testNetpSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("123456789", "FR"))))
+      res mustBe(testNetpPersonalDetails, testNetpSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("123456789", "FR"))))
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
@@ -239,7 +239,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         .audit.writesAuditMerged()
 
       val invalidTransactorJson: JsObject = {
-        Json.toJson(testTransactorDetails).as[JsObject] - "firstName"
+        Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
       }
       stubGet(retrieveDetailsUrl, OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
 

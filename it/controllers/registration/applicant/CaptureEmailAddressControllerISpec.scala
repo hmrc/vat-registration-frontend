@@ -34,7 +34,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     emailAddress = Some(EmailAddress(testEmail)),
     emailVerified = Some(EmailVerified(true))
   )

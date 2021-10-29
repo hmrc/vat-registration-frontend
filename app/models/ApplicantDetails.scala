@@ -25,7 +25,7 @@ import play.api.libs.json._
 import java.time.LocalDate
 
 case class ApplicantDetails(entity: Option[BusinessEntity] = None,
-                            transactor: Option[TransactorDetails] = None,
+                            personalDetails: Option[PersonalDetails] = None,
                             homeAddress: Option[HomeAddressView] = None,
                             emailAddress: Option[EmailAddress] = None,
                             emailVerified: Option[EmailVerified] = None,
@@ -40,7 +40,7 @@ object ApplicantDetails {
 
   def reads(partyType: PartyType): Reads[ApplicantDetails] = (
     (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
-      (__ \ "transactor").readNullable[TransactorDetails](TransactorDetails.apiFormat).orElse(Reads.pure(None)) and
+      (__ \ "personalDetails").readNullable[PersonalDetails](PersonalDetails.apiFormat).orElse(Reads.pure(None)) and
       (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
       (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
       (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
@@ -55,7 +55,7 @@ object ApplicantDetails {
 
   val writes: Writes[ApplicantDetails] = (
     (__ \ "entity").writeNullable[BusinessEntity](BusinessEntity.writes) and
-      (__ \ "transactor").writeNullable[TransactorDetails](TransactorDetails.apiFormat) and
+      (__ \ "personalDetails").writeNullable[PersonalDetails](PersonalDetails.apiFormat) and
       (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
       (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
       (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and

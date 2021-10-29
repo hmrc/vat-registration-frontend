@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import models.TransactorDetails
+import models.PersonalDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,7 +30,7 @@ trait PersonalDetailsValidationServiceMock {
 
   val mockPersonalDetailsValidationService: PersonalDetailsValidationService = mock[PersonalDetailsValidationService]
 
-  def mockRetrieveValidationResult(validationId: String)(response: Future[TransactorDetails]): Unit =
+  def mockRetrieveValidationResult(validationId: String)(response: Future[PersonalDetails]): Unit =
     when(mockPersonalDetailsValidationService.retrieveValidationResult(ArgumentMatchers.eq(validationId))(ArgumentMatchers.any[HeaderCarrier]))
       .thenReturn(response)
 }

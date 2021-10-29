@@ -158,31 +158,31 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val firstName = optSummaryListRowString(
       s"$sectionId.firstName",
-      applicantDetails.transactor.map(_.firstName),
+      applicantDetails.personalDetails.map(_.firstName),
       Some(changeTransactorDetailsUrl)
     )
 
     val lastName = optSummaryListRowString(
       s"$sectionId.lastName",
-      applicantDetails.transactor.map(_.lastName),
+      applicantDetails.personalDetails.map(_.lastName),
       Some(changeTransactorDetailsUrl)
     )
 
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
-      applicantDetails.transactor.flatMap(_.nino),
+      applicantDetails.personalDetails.flatMap(_.nino),
       Some(changeTransactorDetailsUrl)
     )
 
     val trn = optSummaryListRowString(
       s"$sectionId.trn",
-      applicantDetails.transactor.flatMap(_.trn),
+      applicantDetails.personalDetails.flatMap(_.trn),
       Some(changeTransactorDetailsUrl)
     )
 
     val dob = optSummaryListRowString(
       s"$sectionId.dob",
-      applicantDetails.transactor.map(_.dateOfBirth.format(presentationFormatter)),
+      applicantDetails.personalDetails.map(_.dateOfBirth.format(presentationFormatter)),
       Some(changeTransactorDetailsUrl)
     )
 

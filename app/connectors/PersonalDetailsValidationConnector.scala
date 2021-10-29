@@ -19,8 +19,8 @@ package connectors
 import config.FrontendAppConfig
 
 import javax.inject.{Inject, Singleton}
-import models.TransactorDetails
-import models.TransactorDetails._
+import models.PersonalDetails
+import models.PersonalDetails._
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
@@ -29,10 +29,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PersonalDetailsValidationConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
-  def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[TransactorDetails] =
+  def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] =
     httpClient.GET(config.getRetrievePersonalDetailsValidationResultUrl(validationId)).map {
       case response if response.status == OK =>
-        (response.json \ "personalDetails").as[TransactorDetails]
+        (response.json \ "personalDetails").as[PersonalDetails]
       case response =>
         throw new InternalServerException(s"Invalid response from personal details validation: Status: ${response.status} Body: ${response.body}")
     }

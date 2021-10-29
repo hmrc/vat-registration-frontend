@@ -36,7 +36,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
-    transactor = Some(testTransactorDetails),
+    personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),

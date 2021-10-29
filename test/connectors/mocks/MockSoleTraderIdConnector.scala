@@ -17,7 +17,7 @@
 package connectors.mocks
 
 import connectors.SoleTraderIdentificationConnector
-import models.TransactorDetails
+import models.PersonalDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
@@ -40,7 +40,7 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
       config = matches(config), matches(partyType)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(TransactorDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(TransactorDetails, SoleTraderIdEntity)]] =
+  def mockRetrieveSoleTraderDetails(journeyId: String)(response: Future[(PersonalDetails, SoleTraderIdEntity)]): OngoingStubbing[Future[(PersonalDetails, SoleTraderIdEntity)]] =
     when(mockSoleTraderIdConnector.retrieveSoleTraderDetails(
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response
@@ -50,7 +50,7 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
       config = matches(config)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockRetrieveIndividualDetails(journeyId: String)(response: Future[TransactorDetails]): OngoingStubbing[Future[TransactorDetails]] =
+  def mockRetrieveIndividualDetails(journeyId: String)(response: Future[PersonalDetails]): OngoingStubbing[Future[PersonalDetails]] =
     when(mockSoleTraderIdConnector.retrieveIndividualDetails(
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response

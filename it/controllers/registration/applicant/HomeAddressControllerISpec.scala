@@ -35,7 +35,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
   "GET redirectToAlf" should {
     val s4lData = ApplicantDetails(
       entity = Some(testIncorpDetails),
-      transactor = Some(testTransactorDetails),
+      personalDetails = Some(testPersonalDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
@@ -65,7 +65,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
   "GET Txm ALF callback for Home Address" should {
     val s4lData = ApplicantDetails(
       entity = Some(testIncorpDetails),
-      transactor = Some(testTransactorDetails),
+      personalDetails = Some(testPersonalDetails),
       homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
