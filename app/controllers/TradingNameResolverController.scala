@@ -20,17 +20,18 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreConnector,
                                               val authConnector: AuthConnector,
-                                              vatRegistrationService: VatRegistrationService
+                                              vatRegistrationService: VatRegistrationService,
+                                              applicantDetailsService: ApplicantDetailsService
                                              )(implicit val appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents)
@@ -39,9 +40,14 @@ class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreCon
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.partyType map {
-          case Individual | Partnership | Trust | UnincorpAssoc | NETP | NonUkNonEstablished => Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show())
-          case UkCompany | RegSociety | CharitableOrg => Redirect(controllers.registration.business.routes.TradingNameController.show())
+        vatRegistrationService.partyType.flatMap {
+          case Individual | Partnership | NETP =>
+            Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show()))
+          case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
+            applicantDetailsService.getCompanyName.map {
+              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show())
+              case None => Redirect(controllers.registration.business.routes.BusinessNameController.show())
+            }
           case pt => throw new InternalServerException(s"PartyType: $pt not supported")
         }
   }

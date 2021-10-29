@@ -17,13 +17,15 @@
 package controllers.registration.business
 
 import fixtures.VatRegistrationFixture
-import models.{TradingDetails, TradingNameView}
-import play.api.test.FakeRequest
-import testHelpers.{ControllerSpec, FutureAssertions}
+import models.api.{NonUkNonEstablished, UkCompany}
+import models.{CurrentProfile, TradingDetails, TradingNameView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
+import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.trading_name
 
 import scala.concurrent.Future
@@ -38,6 +40,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
       mockTradingDetailsService,
+      mockVatRegistrationService,
       view
     )
 
@@ -58,7 +61,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(companyName))
+        .thenReturn(Future.successful(Some(companyName)))
 
       callAuthorised(testController.show) {
         result => {
@@ -70,7 +73,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
       when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
         .thenReturn(Future.successful(TradingDetails()))
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(companyName))
+        .thenReturn(Future.successful(Some(companyName)))
 
       callAuthorised(testController.show) {
         result => {
@@ -80,7 +83,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
     }
     "return an Ok when there is a company name present" in new Setup {
       when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-        .thenReturn(Future.successful(companyName))
+        .thenReturn(Future.successful(Some(companyName)))
 
       callAuthorised(testController.show) {
         result => {
@@ -94,7 +97,9 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
         when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(fullS4L))
         when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-          .thenReturn(Future.successful(companyName))
+          .thenReturn(Future.successful(Some(companyName)))
+        when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+          .thenReturn(Future.successful(UkCompany))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
           "value" -> "false"
@@ -110,7 +115,9 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
         when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(fullS4L))
         when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-          .thenReturn(Future.successful(companyName))
+          .thenReturn(Future.successful(Some(companyName)))
+        when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+          .thenReturn(Future.successful(UkCompany))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
           "value" -> "true",
@@ -123,9 +130,28 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
         }
       }
 
+      "return 303 with a provided trading name and redirect to zero rated turnover for Non UK Company" in new Setup {
+        when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(fullS4L))
+        when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
+          .thenReturn(Future.successful(Some(companyName)))
+        when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+          .thenReturn(Future.successful(NonUkNonEstablished))
+
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          "value" -> "true",
+          "tradingName" -> testTradingName
+        )
+
+        submitAuthorised(testController.submit, request) { result =>
+          status(result) mustBe 303
+          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
+        }
+      }
+
       "return 400 without a provided trading name" in new Setup {
         when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-          .thenReturn(Future.successful(companyName))
+          .thenReturn(Future.successful(Some(companyName)))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
           "value" -> "true",
@@ -139,7 +165,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
       "return 400 when no option is selected" in new Setup {
         when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-          .thenReturn(Future.successful(companyName))
+          .thenReturn(Future.successful(Some(companyName)))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -150,7 +176,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
       "return 400 when the trading name they have provided is invalid" in new Setup {
         when(mockApplicantDetailsServiceOld.getCompanyName(any(), any()))
-          .thenReturn(Future.successful(companyName))
+          .thenReturn(Future.successful(Some(companyName)))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
           "value" -> "true",

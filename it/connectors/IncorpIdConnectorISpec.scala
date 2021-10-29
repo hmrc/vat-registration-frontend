@@ -152,7 +152,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", BvFail, None)
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", BvFail, None)
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -166,7 +166,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -180,7 +180,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        val validResponse = IncorporatedEntity(testCrn, testCompanyName, None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 

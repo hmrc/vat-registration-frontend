@@ -22,7 +22,7 @@ import models.{ApplicantDetails, _}
 import models.external._
 import models.view._
 import play.api.libs.json.{Reads, Writes}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -55,15 +55,16 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       case _ => None
     })
 
-  def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
+  def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
     for {
       applicant <- getApplicantDetails
-      companyName <- Future {
-        applicant.entity.collect {
-          case incorpDetails: IncorporatedEntity => incorpDetails.companyName
-        }.getOrElse(throw new Exception("Missing company name"))
+    } yield {
+      applicant.entity.flatMap {
+        case incorporatedEntity: IncorporatedEntity => incorporatedEntity.companyName
+        case minorEntity: MinorEntity => minorEntity.companyName
+        case _ => throw new InternalServerException("Attempted to get company name for a partyType without one")
       }
-    } yield companyName
+    }
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = {
     applicantDetails match {

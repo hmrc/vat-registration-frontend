@@ -39,6 +39,10 @@ POST        /mandatory-vat-start-date                                           
 GET         /trading-name                                                                      controllers.registration.business.TradingNameController.show
 POST        /trading-name                                                                      controllers.registration.business.TradingNameController.submit
 
+## BUSINESS NAME PAGE
+GET         /business-name                                                                     controllers.registration.business.BusinessNameController.show
+POST        /business-name                                                                     controllers.registration.business.BusinessNameController.submit
+
 ## EU GOODS PAGE
 GET         /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.show
 POST        /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.submit

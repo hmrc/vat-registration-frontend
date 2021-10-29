@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.api.{NonUkNonEstablished, PartyType, Trust, UnincorpAssoc}
-import models.external.MinorEntityIdEntity
+import models.external.MinorEntity
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
@@ -46,10 +46,10 @@ class MinorEntityIdConnector @Inject()(httpClient: HttpClient, config: FrontendA
     }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntityIdEntity] = {
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntity] = {
     httpClient.GET(config.getMinorEntityIdDetailsUrl(journeyId)).map { response =>
       response.status match {
-        case OK => response.json.validate[MinorEntityIdEntity](MinorEntityIdEntity.apiFormat) match {
+        case OK => response.json.validate[MinorEntity](MinorEntity.apiFormat) match {
           case JsSuccess(value, _) => value
           case JsError(errors) =>
             throw new InternalServerException(s"[MinorEntityIdConnector] Minor Entity ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")

@@ -23,7 +23,7 @@ import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc, VatScheme}
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BusinessVerificationStatus, BvPass, MinorEntityIdEntity}
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -59,7 +59,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testTrust: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testTrust: MinorEntity = MinorEntity(
+    None,
     Some(testSautr),
     None,
     None,
@@ -89,7 +90,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testUnincorpAssoc: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testUnincorpAssoc: MinorEntity = MinorEntity(
+    None,
     Some(testSautr),
     None,
     None,
@@ -124,7 +126,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testNonUkCompany: MinorEntityIdEntity = MinorEntityIdEntity(
+  val testNonUkCompany: MinorEntity = MinorEntity(
+    None,
     None,
     Some(testCrn),
     Some(testOverseasIdentifierDetails),

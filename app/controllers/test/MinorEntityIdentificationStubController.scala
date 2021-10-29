@@ -19,7 +19,7 @@ package controllers.test
 import models.api.{NonUkNonEstablished, PartyType, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BvPass, MinorEntityIdEntity}
+import models.external.{BvPass, MinorEntity}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -49,11 +49,11 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
           case "2" => trustEntity
           case "3" => nonUKCompanyEntity
         }
-      )(MinorEntityIdEntity.apiFormat))
+      )(MinorEntity.apiFormat))
     )
   }
 
-  val unincorpAssocEntity: MinorEntityIdEntity = MinorEntityIdEntity(
+  val unincorpAssocEntity: MinorEntity = MinorEntity(
     sautr = Some("1234567890"),
     ctutr = None,
     postCode = Some("AA11AA"),
@@ -65,7 +65,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     identifiersMatch = true
   )
 
-  val trustEntity: MinorEntityIdEntity = MinorEntityIdEntity(
+  val trustEntity: MinorEntity = MinorEntity(
     sautr = Some("1234567890"),
     ctutr = None,
     postCode = Some("AA11AA"),
@@ -77,7 +77,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     identifiersMatch = true
   )
 
-  val nonUKCompanyEntity: MinorEntityIdEntity = MinorEntityIdEntity(
+  val nonUKCompanyEntity: MinorEntity = MinorEntity(
     sautr = None,
     ctutr = Some("1234567890"),
     overseas = Some(OverseasIdentifierDetails("1234567890", "EE")),

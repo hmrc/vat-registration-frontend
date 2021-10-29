@@ -45,7 +45,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
   def getDetails(journeyId: String): Action[AnyContent] = Action.async { _ =>
     Future.successful(
       Ok(Json.toJson(IncorporatedEntity(
-        companyName = "Test company",
+        companyName = Some("Test company"),
         companyNumber = "12345678",
         ctutr = if (!journeyId.equals("3")) Some("123567890") else None,
         chrn = if (journeyId.equals("3")) Some("123567890") else None,

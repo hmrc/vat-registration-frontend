@@ -62,7 +62,7 @@ class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreCo
             tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) flatMap {
               _ =>
                 vatRegistrationService.partyType.map {
-                  case NETP | NonUkNonEstablished => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve())
+                  case NETP => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve())
                   case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
                 }
             }

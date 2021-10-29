@@ -60,7 +60,7 @@ class IncorporatedEntitySpec extends VatRegSpec {
 
       val expected: IncorporatedEntity = IncorporatedEntity(
         companyNumber = testCrn,
-        companyName = testCompanyName,
+        companyName = Some(testCompanyName),
         ctutr = None,
         chrn = None,
         dateOfIncorporation = None,

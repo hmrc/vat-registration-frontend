@@ -20,17 +20,20 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TradingNameForm
-import javax.inject.Inject
+import models.api.NonUkNonEstablished
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
+import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService, VatRegistrationService}
+import uk.gov.hmrc.http.InternalServerException
 import views.html.trading_name
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
                                       val authConnector: AuthClientConnector,
                                       val applicantDetailsService: ApplicantDetailsService,
                                       val tradingDetailsService: TradingDetailsService,
+                                      val vatRegistrationService: VatRegistrationService,
                                       view: trading_name)
                                      (implicit appConfig: FrontendAppConfig,
                                       val executionContext: ExecutionContext,
@@ -41,7 +44,7 @@ class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
     implicit request =>
       implicit profile =>
         for {
-          companyName <- applicantDetailsService.getCompanyName
+          companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
           tradingDetailsView <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
           form = TradingNameForm.fillWithPrePop(tradingDetailsView.tradingNameView)
         } yield Ok(view(form, companyName))
@@ -53,13 +56,16 @@ class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
         TradingNameForm.form.bindFromRequest.fold(
           errors =>
             for {
-              companyName <- applicantDetailsService.getCompanyName
+              companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
               _ <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
             } yield BadRequest(view(errors, companyName)),
           success => {
             val (hasName, name) = success
-            tradingDetailsService.saveTradingName(profile.registrationId, hasName, name) map {
-              _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
+            tradingDetailsService.saveTradingName(profile.registrationId, hasName, name).flatMap { _ =>
+              vatRegistrationService.partyType.map {
+                case NonUkNonEstablished => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve())
+                case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
+              }
             }
           }
         )

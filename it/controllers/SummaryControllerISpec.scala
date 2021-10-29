@@ -60,6 +60,7 @@ class SummaryControllerISpec extends ControllerISpec {
 
         val expectedCyaRows: List[(String, String)] = List(
           ("Company registration number", testCrn),
+          ("Official business name", testCompanyName),
           ("Unique Taxpayer Reference number", testCtUtr),
           ("First Name", testFirstName),
           ("Last Name", testLastName),
