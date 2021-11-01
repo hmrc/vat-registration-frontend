@@ -20,7 +20,7 @@ import connectors.VatRegistrationConnector
 import featureswitch.core.config.{AnnualAccountingScheme, FeatureSwitching}
 import models._
 import models.api.returns._
-import models.api.{EligibilitySubmissionData, NETP}
+import models.api._
 import play.api.Logger
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -62,7 +62,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[LocalDate] = {
     vatService.getVatScheme(profile, hc).map { scheme =>
       scheme.eligibilitySubmissionData match {
-        case Some(EligibilitySubmissionData(threshold, _, _, NETP)) =>
+        case Some(EligibilitySubmissionData(threshold, _, _, NETP | NonUkNonEstablished)) =>
           threshold.thresholdOverseas
             .getOrElse(throw new InternalServerException("[ReturnsService] Overseas user missing overseas threshold date"))
         case Some(EligibilitySubmissionData(threshold, _, _, _)) =>
