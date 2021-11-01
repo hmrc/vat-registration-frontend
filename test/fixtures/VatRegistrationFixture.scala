@@ -209,14 +209,16 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     validMandatoryRegistrationThirtyDays,
     validTurnoverEstimates,
     MTDfB,
-    UkCompany
+    UkCompany,
+    isTransactor = false
   )
 
   val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
     validTurnoverEstimates,
     MTDfB,
-    Individual
+    Individual,
+    isTransactor = false
   )
 
   val validVatScheme = VatScheme(
