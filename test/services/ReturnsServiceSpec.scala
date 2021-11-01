@@ -17,7 +17,7 @@
 package services
 
 import _root_.models._
-import _root_.models.api.{NETP, Threshold}
+import _root_.models.api._
 import models.api.returns._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -306,7 +306,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       await(service.retrieveCalculatedStartDate) mustBe nextThirtyDayDate
     }
 
-    "return a date when thresholdOverseas is present for an overseas user" in new Setup {
+    "return a date when thresholdOverseas is present for a NETP user" in new Setup {
       val thresholdSecondDateOnly: Threshold = Threshold(
         mandatoryRegistration = true,
         thresholdOverseas = Some(overseasDate)
@@ -314,6 +314,20 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       when(service.vatService.getVatScheme(any(), any())).thenReturn(
         Future.successful(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdSecondDateOnly, partyType = NETP))
+        ))
+      )
+
+      await(service.retrieveCalculatedStartDate) mustBe overseasDate
+    }
+
+    "return a date when thresholdOverseas is present for a NonUkNonEstablished user" in new Setup {
+      val thresholdSecondDateOnly: Threshold = Threshold(
+        mandatoryRegistration = true,
+        thresholdOverseas = Some(overseasDate)
+      )
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdSecondDateOnly, partyType = NonUkNonEstablished))
         ))
       )
 
@@ -331,11 +345,22 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
       intercept[InternalServerException](await(service.retrieveCalculatedStartDate)).message mustBe "[ReturnsService] Unable to calculate start date due to missing threshold data"
     }
 
-    "throw a InternalServerException when overseas date is missing for overseas user" in new Setup {
+    "throw a InternalServerException when overseas date is missing for a NETP user" in new Setup {
       val thresholdNoDates: Threshold = generateThreshold()
       when(service.vatService.getVatScheme(any(), any())).thenReturn(
         Future.successful(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdNoDates, partyType = NETP))
+        ))
+      )
+
+      intercept[InternalServerException](await(service.retrieveCalculatedStartDate)).message mustBe "[ReturnsService] Overseas user missing overseas threshold date"
+    }
+
+    "throw a InternalServerException when overseas date is missing for a NonUkNonEstablished user" in new Setup {
+      val thresholdNoDates: Threshold = generateThreshold()
+      when(service.vatService.getVatScheme(any(), any())).thenReturn(
+        Future.successful(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(threshold = thresholdNoDates, partyType = NonUkNonEstablished))
         ))
       )
 
