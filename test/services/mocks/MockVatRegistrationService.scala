@@ -63,4 +63,10 @@ trait MockVatRegistrationService extends MockitoSugar {
       any[CurrentProfile],
       any[HeaderCarrier]
     )) thenReturn response
+
+  def mockIsTransactor(response: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
+    when(vatRegistrationServiceMock.isTransactor(
+      any[CurrentProfile],
+      any[HeaderCarrier]
+    )) thenReturn response
 }

@@ -85,5 +85,12 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =
     getVatScheme.map(_.eligibilitySubmissionData
       .getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the back end for regId: ${profile.registrationId}"))
-      .partyType)
+      .partyType
+    )
+
+  def isTransactor(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] =
+    getVatScheme.map(_.eligibilitySubmissionData
+      .getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the back end for regId: ${profile.registrationId}"))
+      .isTransactor
+    ) // TODO rewrite .isTransactor and .partyType using the new registrations api
 }
