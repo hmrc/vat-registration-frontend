@@ -87,7 +87,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     threshold,
     turnOverEstimates,
     MTDfB,
-    UkCompany
+    UkCompany,
+    isTransactor = false
   )
 
   val validBusinessContactDetails = BusinessContact(
