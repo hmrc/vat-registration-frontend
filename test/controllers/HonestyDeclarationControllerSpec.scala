@@ -61,6 +61,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
       s"return a SEE_OTHER with a redirect to Applicant Former Name Page for ${partyType.toString}" in {
         mockPartyType(Future.successful(partyType))
+        mockIsTransactor(Future.successful(false))
         mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
 
         val res = TestController.submit(testPostRequest)
