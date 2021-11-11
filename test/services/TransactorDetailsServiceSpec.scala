@@ -41,7 +41,7 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
     telephone = Some(testTelephone),
     email = Some(testEmail),
     address = Some(testAddress),
-    declarationCapacity = Some(AuthorisedEmployee)
+    declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )
 
   val service = new TransactorDetailsService(
@@ -186,13 +186,13 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
     "return a TransactorDetails model if storing declarationCapacity" when {
       "the TransactorDetails model is incomplete" in {
-        val incompleteTransactorDetails = TransactorDetails(declarationCapacity = Some(AuthorisedEmployee))
+        val incompleteTransactorDetails = TransactorDetails(declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee)))
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(Some(TransactorDetails())))
         when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        service.saveTransactorDetails(AuthorisedEmployee) returns incompleteTransactorDetails
+        service.saveTransactorDetails(DeclarationCapacityAnswer(AuthorisedEmployee)) returns incompleteTransactorDetails
       }
 
       "the TransactorDetails model is complete" in {
@@ -201,7 +201,7 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        service.saveTransactorDetails(AuthorisedEmployee) returns testTransactorDetails
+        service.saveTransactorDetails(DeclarationCapacityAnswer(AuthorisedEmployee)) returns testTransactorDetails
       }
     }
   }

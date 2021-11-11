@@ -344,3 +344,7 @@ POST        /sell-or-move-nip                                                   
 
 ## Attachments Email Documents Page
 GET         /attachments/email-documents                                                       controllers.registration.attachments.EmailDocumentsController.show
+
+## Declaration Capacity
+GET         /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.show
+POST        /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.submit

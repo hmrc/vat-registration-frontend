@@ -75,7 +75,7 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService
         before.copy(email = Some(email.answer))
       case address: Address =>
         before.copy(address = Some(address))
-      case declarationCapacity: DeclarationCapacity =>
+      case declarationCapacity: DeclarationCapacityAnswer =>
         before.copy(declarationCapacity = Some(declarationCapacity))
     }
   }

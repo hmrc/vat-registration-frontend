@@ -1007,3 +1007,16 @@ businessName.heading                                     = What is the official 
 validation.businessName.invalid                          = Enter a valid official business name
 validation.businessName.missing                          = Enter the official name of the business
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
+
+## DECLARATION CAPACITY
+
+declarationCapacity.heading                              = What is your role with the business you are registering for VAT?
+declarationCapacity.accountant                           = Accountant
+declarationCapacity.representative                       = Appointed representative
+declarationCapacity.boardMember                          = Board member
+declarationCapacity.authorisedEmployee                   = Employee authorised to complete the application
+declarationCapacity.other                                = Other
+validation.declarationCapacity.missing                   = Select your role with the business you''re registering for VAT
+validation.declarationCapacity.other.missing             = Enter your role with the business you''re registering for VAT
+validation.declarationCapacity.other.invalid             = Enter your role without special characters
+validation.declarationCapacity.other.maxlen              = Enter your role using 100 characters or less

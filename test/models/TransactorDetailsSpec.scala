@@ -32,7 +32,7 @@ class TransactorDetailsSpec extends VatRegSpec with JsonFormatValidation with Va
         Some("1234"),
         Some("test@t.test"),
         Some(testAddress),
-        Some(AuthorisedEmployee)
+        Some(DeclarationCapacityAnswer(AuthorisedEmployee))
       )
 
       writeAndRead(transactorDetails) resultsIn validTransactorDetails

@@ -19,7 +19,6 @@ package models
 import play.api.libs.json._
 
 sealed trait RoleInTheBusiness
-
 sealed trait DeclarationCapacity
 
 case object OwnerProprietor extends DeclarationCapacity with RoleInTheBusiness
