@@ -25,10 +25,17 @@ case class TransactorDetails(personalDetails: Option[PersonalDetails] = None,
                              telephone: Option[String] = None,
                              email: Option[String] = None,
                              address: Option[Address] = None,
-                             declarationCapacity: Option[DeclarationCapacity] = None)
+                             declarationCapacity: Option[DeclarationCapacityAnswer] = None)
 
 object TransactorDetails {
   implicit val s4lKey: S4LKey[TransactorDetails] = S4LKey("TransactorDetails")
 
   implicit val format: Format[TransactorDetails] = Json.format[TransactorDetails]
+}
+
+case class DeclarationCapacityAnswer(role: DeclarationCapacity,
+                                     otherRole: Option[String] = None)
+
+object DeclarationCapacityAnswer {
+  implicit val format: Format[DeclarationCapacityAnswer] = Json.format[DeclarationCapacityAnswer]
 }

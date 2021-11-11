@@ -43,7 +43,7 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm.form)(RoleInTheBusinessForm.form.fill)
+          filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm())(RoleInTheBusinessForm().fill)
         } yield
           Ok(view(filledForm))
   }
@@ -51,7 +51,7 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        RoleInTheBusinessForm.form.bindFromRequest().fold(
+        RoleInTheBusinessForm().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           roleInTheBusiness =>
             applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>

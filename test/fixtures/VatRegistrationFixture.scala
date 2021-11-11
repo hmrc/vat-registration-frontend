@@ -161,7 +161,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     telephone = Some("1234"),
     email = Some("test@t.test"),
     address = Some(testAddress),
-    declarationCapacity = Some(AuthorisedEmployee)
+    declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )
 
   //Api models

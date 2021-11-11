@@ -55,12 +55,4 @@ object RoleInTheBusinessForm {
       Map(key -> stringValue)
     }
   }
-
-  def form: Form[RoleInTheBusiness] = Form(
-    single(
-      roleInTheBusiness -> of(formatter)
-    )
-  )
-
-
 }
