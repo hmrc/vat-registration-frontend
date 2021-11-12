@@ -348,3 +348,7 @@ GET         /attachments/email-documents                                        
 ## Declaration Capacity
 GET         /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.show
 POST        /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.submit
+
+## Organisation Name
+GET         /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.show
+POST        /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.submit

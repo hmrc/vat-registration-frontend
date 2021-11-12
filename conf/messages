@@ -1020,3 +1020,10 @@ validation.declarationCapacity.missing                   = Select your role with
 validation.declarationCapacity.other.missing             = Enter your role with the business you''re registering for VAT
 validation.declarationCapacity.other.invalid             = Enter your role without special characters
 validation.declarationCapacity.other.maxlen              = Enter your role using 100 characters or less
+
+## ORGANISATION NAME
+
+organisationName.heading                                 = What is the name of your organisation?
+validation.organisationName.missing                      = Enter the name of your organisation
+validation.organisationName.invalid                      = Enter a valid organisation name
+validation.organisationName.maxlen                       = Enter an organisation name that is less than 160 characters
