@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.registration.transactor.{routes => transactorRoutes}
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, RegSociety, UkCompany}
 import play.api.mvc.AnyContentAsEmpty
@@ -69,6 +70,15 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(applicantRoutes.IncorpIdController.startJourney().url)
       }
+    }
+    s"return a SEE_OTHER with a redirect to Part Of Organisation Page if user is transactor" in {
+      mockIsTransactor(Future.successful(true))
+      mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
+
+      val res = TestController.submit(testPostRequest)
+
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) mustBe Some(transactorRoutes.PartOfOrganisationController.show().url)
     }
   }
 }

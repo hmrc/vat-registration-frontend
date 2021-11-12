@@ -19,43 +19,48 @@ package controllers.registration.transactor
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import forms.OrganisationNameForm
+import forms.PartOfOrganisationForm
 import play.api.mvc.{Action, AnyContent}
+import services.TransactorDetailsService.PartOfOrganisation
 import services.{SessionProfile, TransactorDetailsService}
-import services.TransactorDetailsService._
-import views.html.transactor.OrganisationName
+import controllers.registration.transactor.{routes => transactorRoutes}
+import views.html.transactor.PartOfOrganisationView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OrganisationNameController @Inject()(val keystoreConnector: KeystoreConnector,
-                                           val authConnector: AuthClientConnector,
-                                           val transactorDetailsService: TransactorDetailsService,
-                                           view: OrganisationName)
-                                          (implicit appConfig: FrontendAppConfig,
-                                           val executionContext: ExecutionContext,
-                                           baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+class PartOfOrganisationController @Inject()(val keystoreConnector: KeystoreConnector,
+                                             val authConnector: AuthClientConnector,
+                                             val transactorDetailsService: TransactorDetailsService,
+                                             view: PartOfOrganisationView)
+                                            (implicit appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext,
+                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
           transactor <- transactorDetailsService.getTransactorDetails
-          filledForm = transactor.organisationName.fold(OrganisationNameForm())(OrganisationNameForm().fill)
+          filledForm = transactor.isPartOfOrganisation.fold(PartOfOrganisationForm.form)(PartOfOrganisationForm.form.fill)
         } yield Ok(view(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        OrganisationNameForm().bindFromRequest().fold(
+        PartOfOrganisationForm.form.bindFromRequest.fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          orgName =>
-            transactorDetailsService.saveTransactorDetails(OrganisationName(orgName)).map { _ =>
-              Redirect(routes.DeclarationCapacityController.show.url)
+          partOfOrganisation =>
+            transactorDetailsService.saveTransactorDetails(PartOfOrganisation(partOfOrganisation)).map { _ =>
+            if (!partOfOrganisation) {
+              Redirect(transactorRoutes.DeclarationCapacityController.show())
             }
+            else {
+              Redirect(transactorRoutes.OrganisationNameController.show())
+            }
+          }
         )
   }
 }

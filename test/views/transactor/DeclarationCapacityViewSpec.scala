@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package views
+package views.transactor
 
 import forms.DeclarationCapacityForm
 import forms.DeclarationCapacityForm._
 import org.jsoup.Jsoup
-import views.html.DeclarationCapacityView
+import views.VatRegViewSpec
+import views.html.transactor.DeclarationCapacityView
 
 class DeclarationCapacityViewSpec extends VatRegViewSpec {
   val form = DeclarationCapacityForm()

@@ -1008,6 +1008,11 @@ validation.businessName.invalid                          = Enter a valid officia
 validation.businessName.missing                          = Enter the official name of the business
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
 
+## PART OF ORGANISATION
+partOfOrganisation.heading                               = Are you a part of an organisation?
+partOfOrganisation.indentText                            = As you are registering on behalf of someone else we need to collect your details in order to know a bit more about you.
+validation.partOfOrganisation.missing                    = Select ''yes'' if you are part of an organisation
+
 ## DECLARATION CAPACITY
 
 declarationCapacity.heading                              = What is your role with the business you are registering for VAT?

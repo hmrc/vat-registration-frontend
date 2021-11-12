@@ -23,7 +23,7 @@ import forms.DeclarationCapacityForm
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.DeclarationCapacityView
+import views.html.transactor.DeclarationCapacityView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

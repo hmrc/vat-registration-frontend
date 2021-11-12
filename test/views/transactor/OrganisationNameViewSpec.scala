@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package views
+package views.transactor
 
 import forms.OrganisationNameForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.OrganisationName
+import views.VatRegViewSpec
+import views.html.transactor.OrganisationName
 
 class OrganisationNameViewSpec extends VatRegViewSpec {
   val view: OrganisationName = app.injector.instanceOf[OrganisationName]
