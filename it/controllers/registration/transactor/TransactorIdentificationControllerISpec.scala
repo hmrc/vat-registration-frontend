@@ -2,9 +2,8 @@
 package controllers.registration.transactor
 
 import config.FrontendAppConfig
-import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
+import models.TransactorDetails
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._

@@ -19,6 +19,7 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.registration.transactor.{routes => transactorRoutes}
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, VatRegistrationService}
@@ -48,17 +49,23 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
       implicit profile =>
         for {
           _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
+          isTransactor <- vatRegistrationService.isTransactor
           partyType <- vatRegistrationService.partyType
         } yield {
-          partyType match {
-            case Individual | NETP =>
-              Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
-            case UkCompany | RegSociety | CharitableOrg =>
-              Redirect(applicantRoutes.IncorpIdController.startJourney())
-            case Partnership =>
-              Redirect(applicantRoutes.PartnershipIdController.startJourney())
-            case UnincorpAssoc | Trust | NonUkNonEstablished =>
-              Redirect(applicantRoutes.MinorEntityIdController.startJourney())
+          if (isTransactor) {
+            Redirect(transactorRoutes.PartOfOrganisationController.show())
+          }
+          else {
+            partyType match {
+              case Individual | NETP =>
+                Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+              case UkCompany | RegSociety | CharitableOrg =>
+                Redirect(applicantRoutes.IncorpIdController.startJourney())
+              case Partnership =>
+                Redirect(applicantRoutes.PartnershipIdController.startJourney())
+              case UnincorpAssoc | Trust | NonUkNonEstablished =>
+                Redirect(applicantRoutes.MinorEntityIdController.startJourney())
+            }
           }
         }
   }

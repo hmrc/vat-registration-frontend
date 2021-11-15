@@ -19,7 +19,6 @@ package controllers.registration.transactor
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import controllers.registration.applicant.{routes => applicantRoutes}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services._
