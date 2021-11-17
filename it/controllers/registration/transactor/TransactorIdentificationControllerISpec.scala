@@ -4,6 +4,7 @@ package controllers.registration.transactor
 import config.FrontendAppConfig
 import itutil.ControllerISpec
 import models.TransactorDetails
+import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -51,7 +52,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
   }
 
   "GET /sti-transactor-callback" must {
-    "redirect to the IsPartOfOrganisation page" in new Setup {
+    "redirect to the HomeAddress page" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -67,7 +68,8 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
 
       whenReady(res) { result =>
-        result.status mustBe NOT_IMPLEMENTED
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorHomeAddressController.redirectToAlf().url)
       }
     }
   }

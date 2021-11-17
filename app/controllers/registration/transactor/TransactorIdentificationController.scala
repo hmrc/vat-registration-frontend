@@ -19,6 +19,7 @@ package controllers.registration.transactor
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import models.api.{NETP, NonUkNonEstablished}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -31,6 +32,7 @@ import scala.concurrent.ExecutionContext
 class TransactorIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
                                                    val authConnector: AuthConnector,
                                                    val transactorDetailsService: TransactorDetailsService,
+                                                   vatRegistrationService: VatRegistrationService,
                                                    soleTraderIdentificationService: SoleTraderIdentificationService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -43,7 +45,7 @@ class TransactorIdentificationController @Inject()(val keystoreConnector: Keysto
         implicit profile =>
           soleTraderIdentificationService.startIndividualJourney(
             SoleTraderIdJourneyConfig(
-              continueUrl = appConfig.individualCallbackUrl,
+              continueUrl = appConfig.transactorCallbackUrl,
               optServiceName = Some(request2Messages(request)("service.name")),
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
@@ -58,8 +60,14 @@ class TransactorIdentificationController @Inject()(val keystoreConnector: Keysto
         for {
           personalDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
           _ <- transactorDetailsService.saveTransactorDetails(personalDetails)
+          partyType <- vatRegistrationService.partyType
         } yield {
-          NotImplemented
+          partyType match {
+            case NETP | NonUkNonEstablished =>
+              Redirect(routes.TransactorInternationalAddressController.show())
+            case _ =>
+              Redirect(routes.TransactorHomeAddressController.redirectToAlf())
+          }
         }
     }
 }
