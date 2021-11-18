@@ -4,7 +4,7 @@ package controllers.registration.returns
 import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
 import models.api.returns.Returns
-import models.api.{NETP, NonUkNonEstablished, Threshold, UkCompany}
+import models.api._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -44,7 +44,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -61,7 +61,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -78,7 +78,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -94,7 +94,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -110,7 +110,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 

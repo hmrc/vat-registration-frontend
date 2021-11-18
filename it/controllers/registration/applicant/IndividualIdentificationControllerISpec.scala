@@ -1,12 +1,11 @@
 
 package controllers.registration.applicant
 
-import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{Individual, UkCompany, VatScheme}
+import models.api.EligibilitySubmissionData
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -38,7 +37,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(individualJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -61,7 +60,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-        .vatScheme.contains(fullVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -82,7 +81,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
-        .vatScheme.contains(fullVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)

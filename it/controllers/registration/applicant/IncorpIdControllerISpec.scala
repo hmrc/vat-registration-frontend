@@ -16,12 +16,11 @@
 
 package controllers.registration.applicant
 
-import common.enums.VatRegStatus
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{CharitableOrg, RegSociety, UkCompany, VatScheme}
+import models.api.{CharitableOrg, EligibilitySubmissionData, RegSociety}
 import models.external.IncorporatedEntity
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
@@ -43,11 +42,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(VatScheme(
-        currentProfile.registrationId,
-        status = VatRegStatus.draft,
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -71,11 +66,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(VatScheme(
-        currentProfile.registrationId,
-        status = VatRegStatus.draft,
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = RegSociety))
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -99,11 +90,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(VatScheme(
-        currentProfile.registrationId,
-        status = VatRegStatus.draft,
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg))
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -132,7 +119,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
@@ -157,7 +144,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 

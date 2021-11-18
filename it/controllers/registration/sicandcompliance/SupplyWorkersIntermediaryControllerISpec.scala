@@ -34,7 +34,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
         .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData)
           )
         )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))

@@ -129,7 +129,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val emptyUkCompanyVatScheme: VatScheme = VatScheme(
     testRegId,
     status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
 
   val emptyVatSchemeNetp: VatScheme = VatScheme(

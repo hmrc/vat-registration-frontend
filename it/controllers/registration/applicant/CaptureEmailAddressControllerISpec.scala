@@ -19,6 +19,7 @@ package controllers.registration.applicant
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.ApplicantDetails
+import models.api.EligibilitySubmissionData
 import models.external.{EmailAddress, EmailVerified}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
@@ -45,7 +46,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,7 +62,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,11 +83,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(
-            ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
-          )
+          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
+        )
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -105,11 +106,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].isUpdatedWith(
-            ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
-          )
+          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
+        )
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -132,7 +133,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].clearedByKey
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -17,6 +17,7 @@
 package controllers.registration.business
 
 import itutil.ControllerISpec
+import models.api.EligibilitySubmissionData
 import models.{ApplicantDetails, TradingDetails, TradingNameView}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -35,7 +36,7 @@ class TradingNameControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,7 +58,7 @@ class TradingNameControllerISpec extends ControllerISpec {
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .s4lContainer[TradingDetails].clearedByKey
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

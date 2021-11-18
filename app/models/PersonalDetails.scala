@@ -29,7 +29,7 @@ case class PersonalDetails(firstName: String,
                            dateOfBirth: LocalDate)
 
 object PersonalDetails { //TODO remove all defaults here when PDV is removed
-  implicit val format: OFormat[PersonalDetails] = (
+  val pdvFormat: OFormat[PersonalDetails] = (
     (__ \ "firstName").format[String] and
     (__ \ "lastName").format[String] and
     (__ \ "nino").formatNullable[String] and
@@ -65,6 +65,6 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "dateOfBirth").write[LocalDate]
   )(unlift(PersonalDetails.unapply))
 
-  val apiFormat: Format[PersonalDetails] = Format(apiReads, apiWrites)
+  implicit val apiFormat: Format[PersonalDetails] = Format(apiReads, apiWrites)
 
 }

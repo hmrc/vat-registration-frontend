@@ -3,7 +3,7 @@ package controllers.registration.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -18,9 +18,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("bank-account")
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -35,9 +33,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .vatScheme.doesNotExistForKey("bank-account")
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -52,9 +48,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .vatScheme.doesNotExistForKey("bank-account")
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -69,9 +63,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -87,9 +79,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(true, None, None, None)))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -104,9 +94,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -122,9 +110,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(false, None, None, None)))
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -144,7 +130,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isEmpty()
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .vatScheme.doesNotExistForKey("bank-account")
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -162,9 +148,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .vatScheme.doesNotExistForKey("bank-account")
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
-        ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -182,7 +166,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isEmpty()
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
         .vatScheme.doesNotExistForKey("bank-account")
-        .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

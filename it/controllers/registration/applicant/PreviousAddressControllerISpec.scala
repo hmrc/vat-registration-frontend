@@ -4,7 +4,7 @@ package controllers.registration.applicant
 import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Address, Country, EligibilitySubmissionData, NETP}
+import models.api.{Address, Country, EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, FormerNameView, HomeAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
@@ -79,7 +79,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lData)
-        .vatScheme.contains(emptyVatSchemeNetp)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -96,7 +96,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[ApplicantDetails].contains(s4lData)
-        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -117,7 +117,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -199,7 +199,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

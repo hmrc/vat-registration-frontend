@@ -25,6 +25,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -41,7 +42,8 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
           .vatScheme.contains(emptyUkCompanyVatScheme)
 
@@ -59,7 +61,8 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
           .vatScheme.contains(emptyUkCompanyVatScheme)
 

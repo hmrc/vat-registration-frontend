@@ -16,12 +16,11 @@
 
 package controllers.registration.applicant
 
-import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc, VatScheme}
+import models.api.{EligibilitySubmissionData, NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.soletraderid.OverseasIdentifierDetails
 import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsObject, Json}
@@ -149,7 +148,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createTrustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -167,7 +166,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createUnincorpAssocJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -185,7 +184,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -210,13 +209,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -237,12 +230,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(trustApplicantDetails)
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust))
-          ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -265,13 +253,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testUnincorpAssoc)))
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -292,12 +274,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(unincorpAssocApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(unincorpAssocApplicantDetails)
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc))
-          ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -320,13 +297,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testNonUkCompany)))
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
         stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -347,12 +318,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(nonUkCompanyApplicantDetails)
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
-          ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
         stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)

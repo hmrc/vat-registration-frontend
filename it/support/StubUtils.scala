@@ -21,10 +21,10 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
-import models.S4LKey
 import models.api.returns.Returns
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api.{Attachments, SicCode, VatScheme}
+import models.{ApiKey, S4LKey}
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -75,6 +75,8 @@ trait StubUtils {
     def s4l = S4L()
 
     def trafficManagement = TrafficManagementStub()
+
+    def registrationApi = RegistrationApiStub()
   }
 
   def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
@@ -768,6 +770,52 @@ trait StubUtils {
           aResponse()
             .withStatus(400)
         ))
+      builder
+    }
+  }
+
+  case class RegistrationApiStub()(implicit builder: PreconditionBuilder) {
+    def getSection[T: ApiKey](contains: Option[T], regId: String = "1", isComplete: Boolean = true)(implicit format: Format[T]): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+          .willReturn(
+            contains match {
+              case Some(section) => ok(
+                Json.obj(
+                  "isComplete" -> isComplete,
+                  "data" -> Json.toJson[T](section)
+                ).toString()
+              )
+              case None => notFound()
+            }))
+      builder
+    }
+
+    def getSectionFails[T: ApiKey](regId: String = "1")(implicit format: Format[T]): PreconditionBuilder = {
+      stubFor(
+        get(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+          .willReturn(badRequest())
+      )
+      builder
+    }
+
+    def replaceSection[T: ApiKey](data: T, regId: String = "1", isComplete: Boolean = true)(implicit format: Format[T]): PreconditionBuilder = {
+      stubFor(
+        put(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+          .willReturn(ok(
+            Json.obj(
+              "isComplete" -> isComplete,
+              "data" -> Json.toJson[T](data)
+            ).toString()
+          )))
+      builder
+    }
+
+    def replaceSectionFails[T: ApiKey](regId: String = "1")(implicit format: Format[T]): PreconditionBuilder = {
+      stubFor(
+        put(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+          .willReturn(badRequest())
+      )
       builder
     }
   }

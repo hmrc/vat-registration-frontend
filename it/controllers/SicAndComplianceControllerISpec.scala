@@ -139,7 +139,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
       .audit.writesAudit()
@@ -235,7 +235,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))

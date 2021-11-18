@@ -3,7 +3,7 @@ package controllers.registration.returns
 
 import fixtures.ApplicantDetailsFixture
 import itutil.{ControllerISpec, IntegrationSpecBase}
-import models.api.Threshold
+import models.api.{Threshold, UkCompany, EligibilitySubmissionData}
 import models.api.returns.Returns
 import models.{ApplicantDetails, DateSelection, Start}
 import org.joda.time.LocalDate
@@ -21,7 +21,7 @@ class ReturnsControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/vat-start-date").get()
 
@@ -54,7 +54,7 @@ class ReturnsControllerISpec extends ControllerISpec {
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .vatScheme.has("applicant-details", applicantJson)
         .vatScheme.patched("applicant-details", applicantJson)
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/vat-start-date").post(Json.obj(
         "value" -> DateSelection.specific_date,

@@ -17,8 +17,8 @@
 package controllers.registration.returns
 
 import itutil.ControllerISpec
-import models.api.Threshold
 import models.api.returns.Returns
+import models.api._
 import models.{ConditionalValue, NIPCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -71,7 +71,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.contains(emptyVatSchemeNetp)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -90,7 +90,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -109,7 +109,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

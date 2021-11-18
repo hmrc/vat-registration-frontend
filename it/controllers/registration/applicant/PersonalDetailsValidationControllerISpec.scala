@@ -19,7 +19,8 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.StubPersonalDetailsValidation
 import itutil.ControllerISpec
-import models.ApplicantDetails
+import models.api.EligibilitySubmissionData
+import models.{ApplicantDetails, PersonalDetails}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}
@@ -58,11 +59,11 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
         .vatScheme.patched("applicant-details", applicantJson)
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].cleared
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testPersonalDetails)).toString)
+      stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testPersonalDetails)(PersonalDetails.pdvFormat)).toString)
 
       val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
 
