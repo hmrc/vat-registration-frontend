@@ -246,7 +246,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubMinorEntityIdentification)) {
       s"$host/register-for-vat/test-only/minor-entity-identification?partyType=${PartyType.stati(Trust)}"
     } else {
-      s"$minorEntityIdHost/minor-entity-identification/api/trust-journey"
+      s"$minorEntityIdHost/minor-entity-identification/api/trusts-journey"
     }
 
   def startNonUKCompanyJourneyUrl: String =
