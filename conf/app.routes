@@ -356,3 +356,11 @@ POST        /your-role-in-the-business                                          
 ## Organisation Name
 GET         /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.show
 POST        /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.submit
+
+## Transactor Address
+GET         /your-address                                                                      controllers.registration.transactor.TransactorHomeAddressController.redirectToAlf
+GET         /your-address/callback                                                             controllers.registration.transactor.TransactorHomeAddressController.addressLookupCallback(id: String ?= "")
+
+## Transactor International Address
+GET         /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.show
+POST        /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.submit
