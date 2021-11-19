@@ -2,11 +2,10 @@
 package controllers.registration.transactor
 
 import itutil.ControllerISpec
-import models.api.{Address, Country}
+import models.api.{Address, Country, EligibilitySubmissionData}
 import models.external.{Applicant, Name}
 import models.{DeclarationCapacityAnswer, Director, TransactorDetails}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 import java.time.LocalDate
@@ -61,6 +60,16 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
   }
 
   "GET Txm ALF callback for Home Address" should {
+    val s4lData = TransactorDetails(
+      personalDetails = Some(testPersonalDetails),
+      isPartOfOrganisation = Some(true),
+      organisationName = Some(name),
+      telephone = Some(telephone),
+      email = Some(email),
+      address = Some(Address(addrLine1, Some(addrLine2), None, None, None, Some(postcode))),
+      declarationCapacity = Some(DeclarationCapacityAnswer(Director))
+    )
+
     "patch Transactor Details with ALF address in backend" in new Setup {
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
@@ -68,39 +77,17 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
       val addressCountry = "GB"
       val addressPostcode = "BN3 1JU"
 
-      val validJson = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "First",
-           |    "middle": "Middle",
-           |    "last": "Last"
-           |  },
-           |  "role": "Director",
-           |  "dob": "1998-07-12",
-           |  "nino": "AA112233Z",
-           |  "currentAddress": {
-           |    "line1": "$addressLine1",
-           |    "line2": "$addressLine2",
-           |    "postcode": "$addressPostcode"
-           |  },
-           |  "contact": {
-           |    "email": "$email",
-           |    "emailVerified": true,
-           |    "telephone": "1234"
-           |  }
-           |}""".stripMargin)
-
       given()
         .user.isAuthorised
-        .s4lContainer[TransactorDetails].isEmpty
+        .s4lContainer[TransactorDetails].contains(s4lData)
+        .s4lContainer[TransactorDetails].clearedByKey
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
-        .s4lContainer[TransactorDetails].isUpdatedWith(
+        .registrationApi.replaceSection(
         TransactorDetails(address = Some(Address(addressLine1, Some(addressLine2), None, None, None, Some(addressPostcode), Some(Country(Some("GB"), Some("United Kingdom"))))))
       )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -3,6 +3,7 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
+import models.api.EligibilitySubmissionData
 import models.external.{EmailAddress, EmailVerified}
 import models.{ApplicantDetails, Director}
 import org.jsoup.Jsoup
@@ -31,7 +32,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,7 +58,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy())
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,7 +80,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

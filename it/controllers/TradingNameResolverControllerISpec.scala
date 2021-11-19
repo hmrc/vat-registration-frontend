@@ -32,12 +32,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
-          .vatScheme.contains(
-          VatScheme(id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
@@ -58,12 +53,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
-          .vatScheme.contains(
-          VatScheme(id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
@@ -84,12 +74,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
-          .vatScheme.contains(
-          VatScheme(id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = partyType))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))(ApplicantDetails.writes))

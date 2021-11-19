@@ -18,6 +18,7 @@ package controllers.registration.business
 
 import itutil.ControllerISpec
 import models.ApplicantDetails
+import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -36,7 +37,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -62,7 +63,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         ))
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

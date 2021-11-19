@@ -17,6 +17,7 @@
 package services
 
 import config.Logging
+import connectors.RegistrationApiConnector
 import models._
 import models.api.Address
 import services.TransactorDetailsService._
@@ -26,13 +27,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TransactorDetailsService @Inject()(val s4LService: S4LService
+class TransactorDetailsService @Inject()(val s4LService: S4LService,
+                                         registrationsApiConnector: RegistrationApiConnector
                                         )(implicit ec: ExecutionContext) extends Logging {
 
   def getTransactorDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
     s4LService.fetchAndGet[TransactorDetails].flatMap {
       case None | Some(TransactorDetails(None, None, None, None, None, None, None)) =>
-        Future.successful(TransactorDetails()) //TODO integrate with new registration api on BE to get transactor details if they're not on S4L
+        registrationsApiConnector.getSection[TransactorDetails](cp.registrationId).map {
+          case Some(details) => details
+          case None => TransactorDetails()
+        }
       case Some(transactorDetails) => Future.successful(transactorDetails)
     }
   }
@@ -54,7 +59,7 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService
       isModelComplete(updateModel(data, transactorDetails)).fold(
         incomplete => s4LService.save[TransactorDetails](incomplete).map(_ => incomplete),
         complete => for {
-          // _ <- TODO store to backend using new api
+          _ <- registrationsApiConnector.replaceSection[TransactorDetails](cp.registrationId, complete)
           _ <- s4LService.clearKey[TransactorDetails]
         } yield complete
       )

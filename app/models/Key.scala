@@ -16,18 +16,25 @@
 
 package models
 
-trait S4LKey[T] {
-
+trait Key[T] {
   val key: String
-
+  override def toString: String = key
 }
+trait S4LKey[T] extends Key[T]
+trait ApiKey[T] extends Key[T]
 
 object S4LKey {
-
   def apply[T](implicit cacheKey: S4LKey[T]): S4LKey[T] = cacheKey
 
   def apply[T](k: String): S4LKey[T] = new S4LKey[T] {
     override val key = k
   }
+}
 
+object ApiKey {
+  def apply[T](implicit cacheKey: ApiKey[T]): ApiKey[T] = cacheKey
+
+  def apply[T](k: String): ApiKey[T] = new ApiKey[T] {
+    override val key = k
+  }
 }

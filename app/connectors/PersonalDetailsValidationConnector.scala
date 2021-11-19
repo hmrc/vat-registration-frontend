@@ -32,7 +32,7 @@ class PersonalDetailsValidationConnector @Inject()(httpClient: HttpClient, confi
   def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] =
     httpClient.GET(config.getRetrievePersonalDetailsValidationResultUrl(validationId)).map {
       case response if response.status == OK =>
-        (response.json \ "personalDetails").as[PersonalDetails]
+        (response.json \ "personalDetails").as[PersonalDetails](PersonalDetails.pdvFormat)
       case response =>
         throw new InternalServerException(s"Invalid response from personal details validation: Status: ${response.status} Body: ${response.body}")
     }

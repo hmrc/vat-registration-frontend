@@ -17,8 +17,8 @@
 package services
 
 import java.time.LocalDate
-
 import connectors._
+import connectors.mocks.MockRegistrationApiConnector
 import models.TaxableThreshold
 import org.mockito
 import org.mockito.ArgumentMatchers
@@ -34,7 +34,7 @@ import uk.gov.hmrc.http.HttpResponse
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
+class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockRegistrationApiConnector {
 
   val testHeaderKey = "testHeaderKey"
   val testHeaderValue = "testHeaderValue"
@@ -44,6 +44,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar {
     val service = new VatRegistrationService(
       mockS4LService,
       mockVatRegistrationConnector,
+      mockRegistrationApiConnector,
       mockKeystoreConnector
     )
   }

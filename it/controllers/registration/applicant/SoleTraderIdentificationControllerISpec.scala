@@ -5,7 +5,7 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Individual, Partnership, UkCompany, VatScheme}
+import models.api._
 import models.external.{BusinessVerificationStatus, BvPass}
 import models.{ApplicantDetails, PartnerEntity}
 import play.api.libs.json.{JsObject, Json}
@@ -47,7 +47,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullNetpVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -70,12 +70,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
-        )
-      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -96,11 +91,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
-        ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -123,7 +114,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
 
@@ -168,12 +159,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
-        )
-      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -195,11 +181,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
-        .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
-        ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)

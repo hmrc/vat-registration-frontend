@@ -1,17 +1,17 @@
 
 package controllers.registration.applicant
 
-import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
-import forms.RoleInTheBusinessForm.roleInTheBusiness
 import itutil.ControllerISpec
-import models.api.{Address, Country}
+import models.api.{Address, Country, EligibilitySubmissionData}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
+
+import java.time.LocalDate
 
 class HomeAddressControllerISpec extends ControllerISpec {
 
@@ -115,7 +115,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

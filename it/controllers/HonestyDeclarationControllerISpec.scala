@@ -57,11 +57,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(VatScheme(
-          currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = validPartyType))
-        ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -80,11 +76,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(VatScheme(
-          currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = validPartyType))
-        ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -103,11 +95,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(VatScheme(
-          currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = validPartyType))
-        ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -126,12 +114,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(
-        VatScheme(
-          id = currentProfile.registrationId,
-          status = VatRegStatus.draft,
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
-        ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
         .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

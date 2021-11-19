@@ -32,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatRegistrationService @Inject()(val s4LService: S4LService,
-                                       val vatRegConnector: VatRegistrationConnector,
+                                       vatRegConnector: VatRegistrationConnector,
+                                       registrationApiConnector: RegistrationApiConnector,
                                        val keystoreConnector: KeystoreConnector
                                       )(implicit ec: ExecutionContext) {
 
@@ -82,15 +83,14 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def storePartialVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] =
     vatRegConnector.upsertVatScheme(regId, partialVatScheme)
 
-  def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =
-    getVatScheme.map(_.eligibilitySubmissionData
-      .getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the back end for regId: ${profile.registrationId}"))
-      .partyType
+  def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[EligibilitySubmissionData] =
+    registrationApiConnector.getSection[EligibilitySubmissionData](profile.registrationId).map(optData =>
+      optData.getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the backend for regId: ${profile.registrationId}"))
     )
 
+  def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =
+    getEligibilitySubmissionData.map(_.partyType)
+
   def isTransactor(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] =
-    getVatScheme.map(_.eligibilitySubmissionData
-      .getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the back end for regId: ${profile.registrationId}"))
-      .isTransactor
-    ) // TODO rewrite .isTransactor and .partyType using the new registrations api
+    getEligibilitySubmissionData.map(_.isTransactor)
 }

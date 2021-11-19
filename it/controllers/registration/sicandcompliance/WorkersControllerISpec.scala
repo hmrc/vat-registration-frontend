@@ -19,7 +19,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
         .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = UkCompany))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData)
           )
         )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))

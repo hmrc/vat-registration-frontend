@@ -25,6 +25,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
         .audit.writesAuditMerged()
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
@@ -62,7 +63,8 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[TransactorDetails].contains(TransactorDetails())
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
         .vatScheme.contains(emptyUkCompanyVatScheme)
 

@@ -16,11 +16,10 @@
 
 package controllers.registration.applicant
 
-import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Partnership, VatScheme}
+import models.api.{EligibilitySubmissionData, Partnership}
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import models.{ApplicantDetails, Partner}
 import play.api.libs.json.{JsObject, Json}
@@ -71,7 +70,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(partnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -97,13 +96,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
-          )
-        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -124,12 +117,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(partnershipApplicantDetails)
-          .vatScheme.contains(
-          VatScheme(
-            id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
-          ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)

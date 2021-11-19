@@ -18,6 +18,7 @@ package controllers.registration.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import models.external.{EmailAddress, EmailVerified}
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import org.jsoup.Jsoup
@@ -50,7 +51,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -66,7 +67,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -90,7 +91,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -110,7 +111,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .vatScheme.contains(emptyVatSchemeNetp)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -129,7 +130,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -150,7 +151,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -169,7 +170,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.contains(emptyVatSchemeNetp)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

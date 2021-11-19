@@ -16,7 +16,7 @@
 
 package models.api
 
-import models.TurnoverEstimates
+import models.{ApiKey, TurnoverEstimates}
 import play.api.libs.json.{Format, Json}
 
 case class EligibilitySubmissionData(threshold: Threshold,
@@ -26,7 +26,7 @@ case class EligibilitySubmissionData(threshold: Threshold,
                                      isTransactor: Boolean)
 
 object EligibilitySubmissionData {
+  implicit val apiKey: ApiKey[EligibilitySubmissionData] = ApiKey("eligibility")
 
   implicit val format: Format[EligibilitySubmissionData] = Json.format[EligibilitySubmissionData]
-
 }

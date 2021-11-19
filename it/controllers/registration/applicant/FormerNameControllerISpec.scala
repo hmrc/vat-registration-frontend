@@ -3,7 +3,7 @@ package controllers.registration.applicant
 
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.Address
+import models.api.{Address, EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
@@ -54,7 +54,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .audit.writesAudit()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -69,7 +69,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -114,7 +114,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].clearedByKey
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -141,7 +141,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -164,7 +164,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.doesNotExistForKey("applicant-details")
-        .vatScheme.contains(emptyVatSchemeNetp)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -186,7 +186,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.doesNotExistForKey("applicant-details")
-        .vatScheme.contains(emptyVatSchemeNonUkCompany)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -209,7 +209,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].isUpdatedWith(updatedS4LData)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

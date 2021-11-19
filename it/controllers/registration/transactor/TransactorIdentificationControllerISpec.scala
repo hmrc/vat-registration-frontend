@@ -4,6 +4,7 @@ package controllers.registration.transactor
 import config.FrontendAppConfig
 import itutil.ControllerISpec
 import models.TransactorDetails
+import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -36,6 +37,8 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .audit.writesAudit()
           .audit.writesAuditMerged()
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
           .vatScheme.contains(fullVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,8 +62,9 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
         .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
-        .vatScheme.contains(fullVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)

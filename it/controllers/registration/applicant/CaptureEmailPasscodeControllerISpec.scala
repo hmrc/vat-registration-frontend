@@ -19,6 +19,7 @@ package controllers.registration.applicant
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.ApplicantDetails
+import models.api.EligibilitySubmissionData
 import models.external.{EmailAddress, EmailVerified}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -39,7 +40,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(s4lContents)
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,7 +61,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -80,7 +81,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -99,7 +100,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -117,7 +118,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(s4lContents)
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

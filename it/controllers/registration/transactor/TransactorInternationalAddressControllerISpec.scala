@@ -50,30 +50,30 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         doc.select("option[value=Norway]").hasAttr("selected") mustBe true
       }
     }
-//    "when reading from the backend" must {
-//      "return OK and pre-populate the page" in new Setup {
-//        val trDetails = TransactorDetails(address = Some(testForeignAddress))
-//        val vatScheme = emptyUkCompanyVatScheme.copy(transactorDetails = Some(trDetails))
-//        given
-//          .user.isAuthorised
-//          .s4lContainer[TransactorDetails].isEmpty
-//          .vatScheme.contains(vatScheme)
-//          .vatScheme.has("transactor-details", Json.toJson(trDetails))
-//          .audit.writesAudit()
-//          .audit.writesAuditMerged()
-//
-//        insertCurrentProfileIntoDb(currentProfile, sessionId)
-//
-//        val res = await(buildClient(url).get())
-//
-//        res.status mustBe OK
-//
-//        val doc = Jsoup.parse(res.body)
-//        doc.select("input[id=line1]").`val`() mustBe testLine1
-//        doc.select("input[id=line2]").`val`() mustBe testLine2
-//        doc.select("option[value=Norway]").hasAttr("selected") mustBe true
-//      }
-//    }
+
+    "when reading from the backend" must {
+      "return OK and pre-populate the page" in new Setup {
+        val trDetails = TransactorDetails(address = Some(testForeignAddress))
+
+        given
+          .user.isAuthorised
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(trDetails))
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get())
+
+        res.status mustBe OK
+
+        val doc = Jsoup.parse(res.body)
+        doc.select("input[id=line1]").`val`() mustBe testLine1
+        doc.select("input[id=line2]").`val`() mustBe testLine2
+        doc.select("option[value=Norway]").hasAttr("selected") mustBe true
+      }
+    }
   }
 
   "POST /your-address/international" must {
