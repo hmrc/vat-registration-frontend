@@ -93,8 +93,8 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
       val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
-        res.status mustBe NOT_IMPLEMENTED
-        //res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PreviousAddressController.show().url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
       }
     }
   }

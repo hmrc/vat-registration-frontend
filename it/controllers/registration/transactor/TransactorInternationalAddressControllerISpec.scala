@@ -5,6 +5,7 @@ import itutil.ControllerISpec
 import models.TransactorDetails
 import models.api.{Address, Country}
 import org.jsoup.Jsoup
+import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
 class TransactorInternationalAddressControllerISpec extends ControllerISpec {
@@ -94,8 +95,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         "country" -> "Norway"
       )))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //res.header(HeaderNames.LOCATION) mustBe (not yet implemented)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
     }
     "Store the address and redirect to the next page if a full address is provided" in new Setup {
       given
@@ -119,8 +120,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         "country" -> "Norway"
       )))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //res.header(HeaderNames.LOCATION) mustBe NotImplemented
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given

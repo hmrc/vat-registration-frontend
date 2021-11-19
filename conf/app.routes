@@ -364,3 +364,7 @@ GET         /your-address/callback                                              
 ## Transactor International Address
 GET         /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.show
 POST        /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.submit
+
+## Telephone Number
+GET         /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.show
+POST        /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.submit
