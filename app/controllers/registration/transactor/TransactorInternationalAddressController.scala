@@ -81,7 +81,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
               )))
             } else {
               transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>
-                NotImplemented
+                Redirect(routes.TelephoneNumberController.show().url)
               }
             }
           }

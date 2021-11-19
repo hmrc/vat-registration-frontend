@@ -25,7 +25,7 @@ import scala.util.matching.Regex
 
 object OrganisationNameForm {
   val organisationNameKey = "organisationName"
-  implicit val errorCode: ErrorCode =  organisationNameKey
+  implicit val errorCode: ErrorCode = organisationNameKey
   val regex: Regex = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]+$""".r
 
   def apply(): Form[String] = Form(

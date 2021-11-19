@@ -46,7 +46,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         val res = await(buildClient(url).get())
 
         res.status mustBe OK
-        println(res.body.toString)
         Jsoup.parse(res.body).select("input[id=post]").hasAttr("checked") mustBe true
         Jsoup.parse(res.body).select("input[id=email]").hasAttr("checked") mustBe false
       }

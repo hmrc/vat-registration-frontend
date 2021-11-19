@@ -93,6 +93,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
     }
   }
 
+  //scalastyle:off
   private def updateModel[T](data: T, before: ApplicantDetails): ApplicantDetails = {
     data match {
       case businessEntity: BusinessEntity =>

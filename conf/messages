@@ -1032,3 +1032,10 @@ organisationName.heading                                 = What is the name of y
 validation.organisationName.missing                      = Enter the name of your organisation
 validation.organisationName.invalid                      = Enter a valid organisation name
 validation.organisationName.maxlen                       = Enter an organisation name that is less than 160 characters
+
+## TELEPHONE NUMBER
+telephoneNumber.heading                                  = What is your telephone number?
+telephoneNumber.label                                    = Enter a telephone number
+telephoneNumber.error.incorrectFormat                    = Enter a telephone number that does not contain special characters
+telephoneNumber.error.nothingEntered                     = Enter your telephone number
+telephoneNumber.error.incorrectLength                    = Enter a telephone number that is between 1 and 24 characters

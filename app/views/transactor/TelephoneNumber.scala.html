@@ -14,32 +14,30 @@
  * limitations under the License.
  *@
 
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
 @import config.FrontendAppConfig
-@import views.html.layouts
 
-@this(
-        layout: layouts.layout,
+@this(layout: layouts.layout,
         errorSummary: components.errorSummary,
+        h1: components.h1,
         form: FormWithCSRF,
         inputText: components.inputText,
         button: components.button
 )
 
-@(orgNameForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(telephoneNumberForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(orgNameForm, messages("organisationName.heading"))), backLink = true) {
-    @errorSummary(orgNameForm.errors)
+@layout(pageTitle = Some(title(telephoneNumberForm, messages("telephoneNumber.heading"))), backLink = true) {
+    @errorSummary(telephoneNumberForm.errors)
 
-    @form(action = controllers.registration.transactor.routes.OrganisationNameController.submit()) {
+    @h1("telephoneNumber.heading")
+
+    @form(action = controllers.registration.transactor.routes.TelephoneNumberController.submit()) {
         @inputText(
-            orgNameForm,
-            id = "organisationName",
-            name  = "organisationName",
-            label = messages("organisationName.heading"),
-            isPageHeading = true
+            telephoneNumberForm,
+            id = "telephoneNumber",
+            name = "telephoneNumber",
+            label = messages("telephoneNumber.label"),
+            isPageHeading = false
         )
 
         @button("app.common.continue", showSaveProgressButton = true)
