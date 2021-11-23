@@ -30,7 +30,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
   val testPartnershipJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
-  val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
+  val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
 
   def retrieveDetailsUrl(journeyId: String) = s"/partnership-identification/api/journey/$journeyId"
 
