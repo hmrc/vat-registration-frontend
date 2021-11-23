@@ -219,7 +219,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubPartnershipIdentification)) {
       s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(Partnership)}"
     } else {
-      s"$partnershipIdHost/partnership-identification/api/general-partnership/journey"
+      s"$partnershipIdHost/partnership-identification/api/general-partnership-journey"
     }
 
   def getPartnershipIdDetailsUrl(journeyId: String): String =
