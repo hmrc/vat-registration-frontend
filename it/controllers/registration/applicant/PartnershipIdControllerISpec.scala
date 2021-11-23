@@ -34,7 +34,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
 
-  val partnershipJourneyUrl = "/partnership-identification/api/general-partnership/journey"
+  val partnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
   val testPostCode = "ZZ1 1ZZ"
