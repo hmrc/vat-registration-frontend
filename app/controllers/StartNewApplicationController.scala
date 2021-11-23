@@ -51,13 +51,13 @@ class StartNewApplicationController @Inject()(view: start_new_application,
         if (startNew) {
           trafficManagementService.clearTrafficManagement map {
             case TrafficManagementCleared =>
-              Redirect(routes.WelcomeController.startNewJourney())
+              Redirect(routes.WelcomeController.startNewJourney)
             case ClearTrafficManagementError(status) =>
               throw new InternalServerException(s"[StartNewApplicationCtrl] Clear Traffic management API returned status: $status")
           }
         }
         else {
-          Future.successful(Redirect(routes.WelcomeController.continueJourney()))
+          Future.successful(Redirect(routes.WelcomeController.continueJourney))
         }
     )
   }

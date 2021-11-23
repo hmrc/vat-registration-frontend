@@ -68,7 +68,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockCreateJourney(testJourneyConfig, UkCompany)(Future.successful(testJourneyStartUrl))
       mockPartyType(Future.successful(UkCompany))
 
-      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
+      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
@@ -79,7 +79,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockCreateJourney(testJourneyConfig, RegSociety)(Future.successful(testJourneyStartUrl))
       mockPartyType(Future.successful(RegSociety))
 
-      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
+      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
@@ -90,7 +90,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockCreateJourney(testJourneyConfig, CharitableOrg)(Future.successful(testJourneyStartUrl))
       mockPartyType(Future.successful(CharitableOrg))
 
-      lazy val res: Future[Result] = testController.startJourney()(fakeRequest)
+      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyStartUrl)
@@ -101,7 +101,7 @@ class IncorpIdControllerSpec extends ControllerSpec
     "the UseSoleTraderIdentification feature switch is enabled" should {
       "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
         enable(UseSoleTraderIdentification)
-        val onwardUrl = applicantRoutes.IndividualIdentificationController.startJourney().url
+        val onwardUrl = applicantRoutes.IndividualIdentificationController.startJourney.url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
         mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
 

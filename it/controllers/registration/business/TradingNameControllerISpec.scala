@@ -65,7 +65,7 @@ class TradingNameControllerISpec extends ControllerISpec {
       val response = buildClient("/trading-name").post(Map("value" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.ApplyForEoriController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.ApplyForEoriController.show.url)
       }
     }
   }

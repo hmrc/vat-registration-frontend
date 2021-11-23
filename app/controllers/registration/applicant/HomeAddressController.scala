@@ -50,7 +50,7 @@ class HomeAddressController @Inject()(val authConnector: AuthConnector,
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- applicantDetailsService.saveApplicantDetails(HomeAddressView(address.id, Some(address.normalise())))
-        } yield Redirect(applicantRoutes.PreviousAddressController.show())
+        } yield Redirect(applicantRoutes.PreviousAddressController.show)
   }
 
 }

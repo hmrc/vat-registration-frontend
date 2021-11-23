@@ -92,7 +92,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody()
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
       }
@@ -109,7 +109,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           "frsStartDate.year" -> "2017"
         )
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
       }
@@ -126,7 +126,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           "frsStartDateDate.year" -> "2017"
         )
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
       }
@@ -143,7 +143,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           "frsStartDateDate.year" -> "2017"
         )
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
       }
@@ -164,7 +164,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           "frsStartDateRadio" -> FRSDateChoice.VATDate
         )
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
         }
@@ -190,7 +190,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           "frsStartDate.year" -> "2017"
         )
 
-        submitAuthorised(controller.submit(), request) { result =>
+        submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
       }

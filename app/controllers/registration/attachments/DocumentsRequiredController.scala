@@ -43,9 +43,9 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
       implicit profile =>
         attachmentsService.getAttachmentList(profile.registrationId).map { attachmentsList =>
           if (attachmentsList.attachments.contains(IdentityEvidence)) {
-            Redirect(routes.DocumentsRequiredController.show())
+            Redirect(routes.DocumentsRequiredController.show)
           } else {
-            Redirect(controllers.routes.SummaryController.show())
+            Redirect(controllers.routes.SummaryController.show)
           }
         }
   }
@@ -58,10 +58,10 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
       if (isEnabled(EmailAttachments)) {
-        Future.successful(Redirect(routes.AttachmentMethodController.show()))
+        Future.successful(Redirect(routes.AttachmentMethodController.show))
       } else {
         attachmentsService.storeAttachmentDetails(profile.registrationId, Post).map { _ =>
-          Redirect(routes.DocumentsPostController.show())
+          Redirect(routes.DocumentsPostController.show)
         }
       }
   }

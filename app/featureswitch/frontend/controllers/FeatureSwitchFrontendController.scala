@@ -37,14 +37,14 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
   def show: Action[AnyContent] = Action.async {
     implicit req =>
       featureSwitchService.retrieveFeatureSwitches.map { featureSwitches =>
-        Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+        Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit))
       }
   }
 
   def submit: Action[Map[String, Seq[String]]] = Action.async(parse.formUrlEncoded) {
     implicit req =>
       featureSwitchService.updateFeatureSwitches(req.body.keys).map { featureSwitches =>
-        Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+        Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit))
       }
   }
 

@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.registration.applicant.routes.CaptureEmailAddressController.show().url
+  val url: String = controllers.registration.applicant.routes.CaptureEmailAddressController.show.url
   private val testEmail = "test@test.com"
 
   val s4lData = ApplicantDetails(
@@ -96,7 +96,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show.url)
       }
       "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new Setup {
         disable(StubEmailVerification)
@@ -119,7 +119,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show.url)
       }
     }
     "ApplicantDetails is complete" should {
@@ -142,7 +142,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show.url)
 
       }
     }

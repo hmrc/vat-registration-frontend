@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@this()
+@this(
+    govukRadios: GovukRadios
+)
 
 @(
         form: Form[_],
@@ -29,7 +31,7 @@
         fieldName: String = "value"
 )(implicit messages: Messages)
 
-@GovukRadios(Radios(
+@govukRadios(Radios(
     classes = if (inline) "govuk-radios--inline" else "",
     idPrefix = None,
     name = fieldName,

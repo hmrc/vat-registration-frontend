@@ -55,7 +55,7 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
         accountDetails =>
           bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
           if (accountDetailsValid) {
-            Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())
+            Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show)
           } else {
             val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
             BadRequest(view(invalidDetails))

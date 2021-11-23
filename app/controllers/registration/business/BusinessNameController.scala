@@ -63,7 +63,7 @@ class BusinessNameController @Inject()(val keystoreConnector: KeystoreConnector,
               }
               _ <- applicantDetailsService.saveApplicantDetails(updatedEntity)
             } yield {
-              Redirect(routes.TradingNameController.show())
+              Redirect(routes.TradingNameController.show)
             }
           }
         )

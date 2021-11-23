@@ -47,7 +47,7 @@
 
     @p {@messages("pages.businessContactDetails.para1")}
 
-    @formWithCSRF(action = controllers.registration.business.routes.BusinessContactDetailsController.submit(), Symbol("name") -> "businessContactDetails") {
+    @formWithCSRF(action = controllers.registration.business.routes.BusinessContactDetailsController.submit, Symbol("name") -> "businessContactDetails") {
 
         <div class="@if(doesFormHaveErrors(companyContactDetailsForm, "email")) {govuk-form-group--error}">
 

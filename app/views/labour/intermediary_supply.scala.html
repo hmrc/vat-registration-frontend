@@ -30,7 +30,7 @@
 
     @errorSummary(intermediarySupplyForm.errors)
 
-    @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit()) {
+    @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit) {
         @yesNoRadio(
             form = intermediarySupplyForm,
             headingKey = messages("pages.labourCompliance.intermediarySupply.heading"),

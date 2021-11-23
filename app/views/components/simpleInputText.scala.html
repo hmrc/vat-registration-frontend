@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@this()
+@this(
+    govukInput: GovukInput
+)
 
 @(
     form: Form[_],
@@ -28,7 +30,7 @@
     stripWhitespace: Boolean = false
 )(implicit messages: Messages)
 
-@GovukInput(Input(
+@govukInput(Input(
     id,
     name,
     classes = classes.fold("")(x => x),

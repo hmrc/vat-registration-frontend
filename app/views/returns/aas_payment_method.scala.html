@@ -40,7 +40,7 @@
 
     @p{ @messages("aas.paymentMethod.text") }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.PaymentMethodController.submit()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.PaymentMethodController.submit) {
         @inputRadio(
             form,
             legend = messages("aas.paymentMethod.heading"),

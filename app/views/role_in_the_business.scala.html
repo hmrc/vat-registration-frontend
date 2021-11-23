@@ -37,7 +37,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCSRF(action = applicantRoutes.CaptureRoleInTheBusinessController.submit(), 'autoComplete -> "off") {
+    @formWithCSRF(action = applicantRoutes.CaptureRoleInTheBusinessController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = form,
             legend = messages("pages.roleInTheBusiness.heading"),

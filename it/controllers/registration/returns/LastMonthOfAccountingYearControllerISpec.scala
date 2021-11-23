@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
 
-  val url: String = routes.LastMonthOfAccountingYearController.show().url
+  val url: String = routes.LastMonthOfAccountingYearController.show.url
   val testFullReturns: Returns = Returns(Some(1000), Some(true), Some(Annual), Some(FebJanStagger), testIncorpDate, Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
 
   s"GET $url" must {
@@ -79,7 +79,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PaymentFrequencyController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PaymentFrequencyController.show.url)
       }
     }
 
@@ -98,7 +98,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PaymentFrequencyController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PaymentFrequencyController.show.url)
       }
     }
 

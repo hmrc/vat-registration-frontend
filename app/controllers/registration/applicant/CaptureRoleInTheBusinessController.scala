@@ -55,7 +55,7 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           roleInTheBusiness =>
             applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>
-              Redirect(routes.FormerNameController.show())
+              Redirect(routes.FormerNameController.show)
             }
         )
   }

@@ -41,7 +41,7 @@
     @p{ @messages("pages.contactPreference.text1") }
     @p{ @messages("pages.contactPreference.text2") }
 
-    @formWithCSRF(action = controllers.routes.ContactPreferenceController.submitContactPreference()) {
+    @formWithCSRF(action = controllers.routes.ContactPreferenceController.submitContactPreference) {
         @inputRadio(
             form = form,
             legend = messages("pages.contactPreference.heading"),

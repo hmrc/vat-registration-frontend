@@ -47,7 +47,7 @@ class FormerNameControllerISpec extends ControllerISpec {
     roleInTheBusiness = Some(Director)
   )
 
-  val url: String = controllers.registration.applicant.routes.FormerNameController.show().url
+  val url: String = controllers.registration.applicant.routes.FormerNameController.show.url
 
   s"GET $url" must {
     "returns an OK" in new Setup {
@@ -121,7 +121,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
@@ -152,7 +152,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
       }
     }
 
@@ -174,7 +174,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
       }
     }
 
@@ -196,7 +196,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
       }
     }
 
@@ -219,7 +219,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       ))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
       }
     }
   }

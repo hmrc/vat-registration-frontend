@@ -37,7 +37,7 @@ class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAss
 
   "saveIclSicCodes" should {
     "redirect and save" when {
-      s"GET ${routes.ComplianceIntroductionController.show()}" should {
+      s"GET ${routes.ComplianceIntroductionController.show}" should {
         "display the introduction page to a set of compliance questions" in new Setup {
           callAuthorised(controller.show) {
             status(_) mustBe OK
@@ -45,11 +45,11 @@ class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAss
         }
       }
 
-      s"POST ${routes.ComplianceIntroductionController.submit()}" should {
+      s"POST ${routes.ComplianceIntroductionController.submit}" should {
         "redirect the user to the SIC code selection page" in new Setup {
           callAuthorised(controller.submit) {
             result =>
-              result redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersController.show().url
+              result redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersController.show.url
           }
         }
       }

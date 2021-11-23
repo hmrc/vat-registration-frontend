@@ -55,7 +55,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      callAuthorised(controller.show()) { result =>
+      callAuthorised(controller.show) { result =>
         status(result) mustBe OK
         val document = Jsoup.parse(contentAsString(result))
         document.getElementsByAttributeValue("checked", "checked").size mustBe 0
@@ -68,7 +68,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      callAuthorised(controller.show()) { result =>
+      callAuthorised(controller.show) { result =>
         status(result) mustBe OK
         val document = Jsoup.parse(contentAsString(result))
         val elements = document.getElementsByAttribute("checked")
@@ -80,14 +80,14 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
   }
 
   s"submit" should {
-    val fakeRequest = FakeRequest(routes.ChooseBusinessTypeController.submit())
+    val fakeRequest = FakeRequest(routes.ChooseBusinessTypeController.submit)
 
     "return BAD_REQUEST with Empty data" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      submitAuthorised(controller.submit(), request) { result =>
+      submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -99,7 +99,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
 
-      submitAuthorised(controller.submit(), request) { result =>
+      submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -114,9 +114,9 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
       when(mockFlatRateService.saveBusinessType(any())(any(), any()))
         .thenReturn(Future.successful(testFlatRate))
 
-      submitAuthorised(controller.submit(), request) { result =>
+      submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.yourFlatRatePage().url)
+        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.yourFlatRatePage.url)
       }
     }
   }

@@ -42,7 +42,7 @@ class ICLConnector @Inject()(val http: HttpClient, config: ServicesConfig)
       .map(_.json.as[JsObject])
       .recover {
         case ex =>
-          Logger.error(s"[ICLConnector] [ICLSetup] Threw an exception whilst Posting to initialise a new ICL journey with message: ${ex.getMessage}")
+          logger.error(s"[ICLConnector] [ICLSetup] Threw an exception whilst Posting to initialise a new ICL journey with message: ${ex.getMessage}")
           throw ex
       }
   }
@@ -52,7 +52,7 @@ class ICLConnector @Inject()(val http: HttpClient, config: ServicesConfig)
       .map(_.json.as[JsObject])
       .recover {
         case ex =>
-          Logger.error(s"[ICLConnector] [ICLGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}")
+          logger.error(s"[ICLConnector] [ICLGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}")
           throw ex
       }
   }

@@ -2,12 +2,12 @@
 
 package controllers.registration.applicant
 
-import controllers.Assets._
 import itutil.ControllerISpec
 import models.PartnerEntity
 import models.api.Individual
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.registration.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType().url
+  val url: String = controllers.registration.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
 
   s"GET $url" should {
     "display the page" in new Setup {

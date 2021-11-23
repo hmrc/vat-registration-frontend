@@ -55,10 +55,10 @@ class PartOfOrganisationController @Inject()(val keystoreConnector: KeystoreConn
           partOfOrganisation =>
             transactorDetailsService.saveTransactorDetails(PartOfOrganisation(partOfOrganisation)).map { _ =>
             if (!partOfOrganisation) {
-              Redirect(transactorRoutes.DeclarationCapacityController.show())
+              Redirect(transactorRoutes.DeclarationCapacityController.show)
             }
             else {
-              Redirect(transactorRoutes.OrganisationNameController.show())
+              Redirect(transactorRoutes.OrganisationNameController.show)
             }
           }
         )

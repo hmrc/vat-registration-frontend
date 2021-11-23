@@ -49,6 +49,6 @@ class TransactorHomeAddressController @Inject()(val authConnector: AuthConnector
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- transactorDetailsService.saveTransactorDetails(address)
-        } yield Redirect(routes.TelephoneNumberController.show().url)
+        } yield Redirect(routes.TelephoneNumberController.show.url)
   }
 }

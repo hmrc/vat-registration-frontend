@@ -49,7 +49,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
-      callAuthorised(controller.show()) { result =>
+      callAuthorised(controller.show) { result =>
         status(result) mustBe OK
       }
     }
@@ -58,7 +58,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.failed(new MissingResourceException(s"Missing Business Type for id: testId", "ConfigConnector", "id")))
 
-      callAuthorised(controller.show()) { result =>
+      callAuthorised(controller.show) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
       }
@@ -66,7 +66,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
   }
 
   s"submit" should {
-    val fakeRequest = FakeRequest(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.submit())
+    val fakeRequest = FakeRequest(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.submit)
 
     "works with Empty data" in new Setup {
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))

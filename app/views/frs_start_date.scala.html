@@ -19,7 +19,6 @@
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
-@import views.html.helpers.templates.vatInput
 @import java.time.LocalDate
 
 @this(
@@ -39,7 +38,7 @@
 
     @errorSummary(frsStartDateForm.errors)
 
-    @form(action = controllers.registration.flatratescheme.routes.StartDateController.submit()) {
+    @form(action = controllers.registration.flatratescheme.routes.StartDateController.submit) {
         @govukRadios(Radios(
             name = "frsStartDateRadio",
             items = Seq(

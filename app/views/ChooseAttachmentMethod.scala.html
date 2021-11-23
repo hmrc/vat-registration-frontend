@@ -28,7 +28,7 @@
 
 @layout(pageTitle = Some(title(attachmentMethodForm, messages("attachmentMethod.title")))) {
 
-    @form(action = controllers.registration.attachments.routes.AttachmentMethodController.submit()) {
+    @form(action = controllers.registration.attachments.routes.AttachmentMethodController.submit) {
         @inputRadio(
             form = attachmentMethodForm,
             legend = messages("attachmentMethod.title"),

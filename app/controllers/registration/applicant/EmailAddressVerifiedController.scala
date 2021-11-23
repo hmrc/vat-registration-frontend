@@ -37,12 +37,12 @@ class EmailAddressVerifiedController @Inject()(view: email_verified,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => _ =>
-        Future.successful(Ok(view(routes.EmailAddressVerifiedController.submit())))
+        Future.successful(Ok(view(routes.EmailAddressVerifiedController.submit)))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     _ => _ =>
-        Future.successful(Redirect(routes.CaptureTelephoneNumberController.show()))
+        Future.successful(Redirect(routes.CaptureTelephoneNumberController.show))
   }
 
 }

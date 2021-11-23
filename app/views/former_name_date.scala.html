@@ -37,7 +37,7 @@
 
     @errorSummary(formerNameDateForm.errors, Some("day"))
 
-    @formWithCSRF(action = applicantRoutes.FormerNameDateController.submit()) {
+    @formWithCSRF(action = applicantRoutes.FormerNameDateController.submit) {
         @inputDate(
             form = formerNameDateForm,
             id = "formerNameDate",

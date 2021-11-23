@@ -51,7 +51,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(routes.TransactorHomeAddressController.redirectToAlf().url).get()
+      val response = buildClient(routes.TransactorHomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -94,7 +94,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
       val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show.url)
       }
     }
   }

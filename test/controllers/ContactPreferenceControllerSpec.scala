@@ -71,7 +71,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
   }
 
   "submitting the contact preference page" should {
-    val fakeRequest = FakeRequest(routes.ContactPreferenceController.showContactPreference())
+    val fakeRequest = FakeRequest(routes.ContactPreferenceController.showContactPreference)
 
     "return a 400" when {
       "form is empty" in new SubmissionSetup {
@@ -92,7 +92,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     "return a 303" when {
       "user selects email and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {
-          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show().url
+          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
         }
       }
     }
@@ -100,7 +100,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     "return a 303" when {
       "user selects letter and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show().url
+          _ redirectsTo controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
         }
       }
     }

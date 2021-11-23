@@ -52,7 +52,7 @@ class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
         EstimateTotalSalesForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(estimateTotalSalesPage(badForm))),
           data => flatRateService.saveEstimateTotalSales(data) map {
-            _ => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage())
+            _ => Redirect(controllers.routes.FlatRateController.annualCostsLimitedPage)
           }
         )
   }

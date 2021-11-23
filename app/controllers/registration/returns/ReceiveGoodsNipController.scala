@@ -69,9 +69,9 @@ class ReceiveGoodsNipController @Inject()(val keystoreConnector: KeystoreConnect
               pt <- vatRegistrationService.partyType
             } yield {
               (v, pt) match {
-                case (_, NETP | NonUkNonEstablished) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage())
-                case (true, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage())
-                case (false, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage())
+                case (_, NETP | NonUkNonEstablished) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
+                case (true, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage)
+                case (false, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage)
               }
             }
           }

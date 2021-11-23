@@ -31,7 +31,7 @@
 
     @errorSummary(warehouseLocationForm.errors)
 
-    @formWithCSRF(controllers.registration.returns.routes.StoringGoodsController.submit()) {
+    @formWithCSRF(controllers.registration.returns.routes.StoringGoodsController.submit) {
         @inputRadio(
             form = warehouseLocationForm,
             legend = messages("pages.netp.warehouseLocation.heading"),

@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 class DeclarationCapacityControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.registration.transactor.routes.DeclarationCapacityController.show().url
+  val url: String = controllers.registration.transactor.routes.DeclarationCapacityController.show.url
 
   val testOtherRole = "testOtherRole"
   val testDetails = TransactorDetails(
@@ -78,7 +78,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         val res = await(buildClient(url).post(Map(declarationCapacity -> accountant)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(routes.TransactorIdentificationController.startJourney().url)
+        res.header("LOCATION") mustBe Some(routes.TransactorIdentificationController.startJourney.url)
       }
     }
   }

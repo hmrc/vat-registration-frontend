@@ -54,7 +54,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show())
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show)
   override val returns: Returns = Returns(Some(10000.5), Some(true), Some(Monthly), None, Some(LocalDate.of(2018, 1, 1)))
   val emptyReturns: Returns = Returns()
 
@@ -87,7 +87,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result.redirectsTo(controllers.routes.ApplicationSubmissionController.show().url)
+          result.redirectsTo(controllers.routes.ApplicationSubmissionController.show.url)
       }
     }
 
@@ -104,7 +104,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result redirectsTo controllers.routes.ErrorController.submissionRetryable().url
+          result redirectsTo controllers.routes.ErrorController.submissionRetryable.url
 
       }
     }
@@ -122,7 +122,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result redirectsTo controllers.routes.ErrorController.submissionFailed().url
+          result redirectsTo controllers.routes.ErrorController.submissionFailed.url
       }
     }
 

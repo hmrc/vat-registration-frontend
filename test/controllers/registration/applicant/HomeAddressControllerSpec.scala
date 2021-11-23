@@ -68,7 +68,7 @@ class HomeAddressControllerSpec extends ControllerSpec
       when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
-      callAuthorised(controller.redirectToAlf()) { res =>
+      callAuthorised(controller.redirectToAlf) { res =>
         status(res) mustBe SEE_OTHER
       }
     }
@@ -82,7 +82,7 @@ class HomeAddressControllerSpec extends ControllerSpec
 
       callAuthorised(controller.addressLookupCallback("addressId")) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.PreviousAddressController.show().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.PreviousAddressController.show.url)
       }
     }
   }

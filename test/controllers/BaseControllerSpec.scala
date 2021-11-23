@@ -18,7 +18,6 @@ package controllers
 
 import config.AuthClientConnector
 import connectors.KeystoreConnector
-import controllers.Assets.Redirect
 import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -174,7 +173,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
 
         val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.WelcomeController.show().url)
+        redirectLocation(result) mustBe Some(routes.WelcomeController.show.url)
       }
 
       "return 303 to GG login if user has No Active Session" in {

@@ -47,20 +47,20 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
-    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.LeadPartnerEntityController.showLeadPartnerEntityType())
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.LeadPartnerEntityController.showLeadPartnerEntityType)
   }
 
   "showLeadPartnerEntityType" should {
     "return OK without prepop" in new Setup {
       mockGetLeadPartner(regId)(None)
-      callAuthorised(controller.showLeadPartnerEntityType()) {
+      callAuthorised(controller.showLeadPartnerEntityType) {
         status(_) mustBe OK
       }
     }
 
     "return OK with prepop" in new Setup {
       mockGetLeadPartner(regId)(Some(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
-      callAuthorised(controller.showLeadPartnerEntityType()) {
+      callAuthorised(controller.showLeadPartnerEntityType) {
         status(_) mustBe OK
       }
     }

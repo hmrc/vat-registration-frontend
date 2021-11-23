@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 
 class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   val testAmount: BigDecimal = 1234.123
-  lazy val url: String = controllers.registration.returns.routes.ReceiveGoodsNipController.show().url
+  lazy val url: String = controllers.registration.returns.routes.ReceiveGoodsNipController.show.url
   val testNIPCompliance: NIPCompliance = NIPCompliance(None, Some(ConditionalValue(true, Some(testAmount))))
 
   "show Northern Ireland Receive page" should {
@@ -78,7 +78,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -97,7 +97,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage.url)
       }
     }
 
@@ -116,7 +116,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage.url)
       }
     }
   }

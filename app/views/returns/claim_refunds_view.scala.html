@@ -43,7 +43,7 @@
         }
     )
 
-    @form(action = controllers.registration.returns.routes.ClaimRefundsController.submit()) {
+    @form(action = controllers.registration.returns.routes.ClaimRefundsController.submit) {
         @yesNoRadio(
             form = chargeExpectancyForm,
             headingKey = messages("pages.vat.charge.expectancy.heading"),

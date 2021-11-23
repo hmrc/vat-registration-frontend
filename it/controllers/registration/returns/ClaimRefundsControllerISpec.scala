@@ -50,7 +50,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage.url)
       }
     }
 
@@ -67,7 +67,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage.url)
       }
     }
 
@@ -100,7 +100,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show.url)
       }
     }
 
@@ -116,7 +116,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show.url)
       }
     }
   }

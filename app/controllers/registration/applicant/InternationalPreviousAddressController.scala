@@ -41,7 +41,7 @@ class InternationalPreviousAddressController  @Inject()(val authConnector: AuthC
                                                         baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile{
 
   private val headingMessageKey = "internationalAddress.prev.heading"
-  private lazy val submitAction = routes.InternationalPreviousAddressController.submit()
+  private lazy val submitAction = routes.InternationalPreviousAddressController.submit
 
   private val postcodeRequiredCountry = "United Kingdom"
   private val postcodeField = "postcode"
@@ -80,7 +80,7 @@ class InternationalPreviousAddressController  @Inject()(val authConnector: AuthC
             )))
           } else {
             applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = true, Some(internationalAddress))) map { _ =>
-              Redirect(routes.CaptureEmailAddressController.show())
+              Redirect(routes.CaptureEmailAddressController.show)
             }
           }
         }

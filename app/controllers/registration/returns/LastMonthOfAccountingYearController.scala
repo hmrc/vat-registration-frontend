@@ -55,7 +55,7 @@ class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounti
         AnnualStaggerForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           annualStagger => returnsService.saveStaggerStart(annualStagger).map { _ =>
-            Redirect(routes.PaymentFrequencyController.show())
+            Redirect(routes.PaymentFrequencyController.show)
           }
         )
   }

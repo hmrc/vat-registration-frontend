@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class SupplyWorkersControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
-  val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show())
+  val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show)
   val view = app.injector.instanceOf[supply_workers]
 
   class Setup {
@@ -45,7 +45,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec with FutureAssertions w
     "return HTML where getSicAndCompliance returns the view models wih labour already entered" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
-      callAuthorised(Controller.show()) { result =>
+      callAuthorised(Controller.show) { result =>
         status(result) mustBe OK
       }
     }
@@ -60,23 +60,23 @@ class SupplyWorkersControllerSpec extends ControllerSpec with FutureAssertions w
 
   "submit" must {
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody())(result =>
+      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody())(result =>
         status(result) mustBe BAD_REQUEST
       )
     }
     "redirect with company provide workers Yes selected" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(supplyWorkers = Some(SupplyWorkers(true)))))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
-      ))(_ redirectsTo controllers.registration.sicandcompliance.routes.WorkersController.show().url)
+      ))(_ redirectsTo controllers.registration.sicandcompliance.routes.WorkersController.show.url)
     }
     "redirect with company provide workers No selected" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(supplyWorkers = Some(SupplyWorkers(false)))))
 
-      submitAuthorised(Controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
-      ))(_ redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show().url)
+      ))(_ redirectsTo controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show.url)
     }
   }
 

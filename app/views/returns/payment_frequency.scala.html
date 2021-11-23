@@ -42,7 +42,7 @@
 
     @p{ @messages("ass.paymentFrequency.para") }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.PaymentFrequencyController.submit()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.PaymentFrequencyController.submit) {
         @inputRadio(
             form = form,
             legend = messages("aas.paymentFrequency.heading"),

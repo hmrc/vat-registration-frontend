@@ -1,17 +1,17 @@
 
 package controllers.registration.transactor
 
-import controllers.Assets.{NOT_IMPLEMENTED, OK}
 import forms.TransactorTelephoneForm.telephoneNumberKey
 import itutil.ControllerISpec
 import models.TransactorDetails
 import org.jsoup.Jsoup
+import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
 class TelephoneNumberControllerISpec extends ControllerISpec {
-  val url = controllers.registration.transactor.routes.TelephoneNumberController.show().url
+  val url = controllers.registration.transactor.routes.TelephoneNumberController.show.url
 
   private val testPhoneNumber = "12345 123456"
   val testDetails = TransactorDetails(

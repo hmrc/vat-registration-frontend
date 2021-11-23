@@ -56,9 +56,9 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
           .map { _ =>
             attachmentMethod match {
               case Post =>
-                Redirect(routes.DocumentsPostController.show())
+                Redirect(routes.DocumentsPostController.show)
               case EmailMethod =>
-                Redirect(routes.EmailDocumentsController.show())
+                Redirect(routes.EmailDocumentsController.show)
               case _ =>
                 BadRequest(view(form().fill(attachmentMethod)))
             }

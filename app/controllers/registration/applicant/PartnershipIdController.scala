@@ -71,7 +71,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
           _ <- applicantDetailsService.saveApplicantDetails(Partner)
         } yield {
-          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType())
+          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
         }
   }
 

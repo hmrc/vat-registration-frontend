@@ -35,14 +35,14 @@ trait SessionProfile {
   def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
       currentProfile.fold(
-        Future.successful(Redirect(routes.WelcomeController.show()))
+        Future.successful(Redirect(routes.WelcomeController.show))
       ) {
         profile =>
           profile.vatRegistrationStatus match {
             case VatRegStatus.draft => f(profile)
-            case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable()))
+            case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable))
             case VatRegStatus.held | VatRegStatus.locked if !checkStatus => f(profile)
-            case _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn()))
+            case _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.postSignIn))
           }
       }
     }

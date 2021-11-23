@@ -20,7 +20,7 @@ class RetrieveVatSubmissionControllerISpec extends ControllerISpec {
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val messages: Messages = messagesApi.asScala.preferred(Seq(Lang("en")))
-  val url: String = routes.RetrieveVatSubmissionController.retrieveSubmissionJson().url
+  val url: String = routes.RetrieveVatSubmissionController.retrieveSubmissionJson.url
 
   val testJsonResponse: JsObject = Json.obj(
     "allWent" -> "well"

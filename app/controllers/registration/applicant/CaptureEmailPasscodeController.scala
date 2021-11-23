@@ -50,7 +50,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
     implicit request =>
       implicit profile =>
         getEmailAddress.map { email =>
-          Ok(view(email, routes.CaptureEmailPasscodeController.submit(), EmailPasscodeForm.form))
+          Ok(view(email, routes.CaptureEmailPasscodeController.submit, EmailPasscodeForm.form))
         }
   }
 
@@ -60,7 +60,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
         EmailPasscodeForm.form.bindFromRequest().fold(
           formWithErrors =>
             getEmailAddress map { email =>
-              BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), formWithErrors))
+              BadRequest(view(email, routes.CaptureEmailPasscodeController.submit, formWithErrors))
             },
           emailPasscode =>
             getEmailAddress flatMap { email =>
@@ -70,18 +70,18 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                     _ <- applicantDetailsService.saveApplicantDetails(EmailAddress(email))
                     _ <- applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true))
                   } yield {
-                    Redirect(routes.EmailAddressVerifiedController.show())
+                    Redirect(routes.EmailAddressVerifiedController.show)
                   }
                 case PasscodeMismatch =>
                   val incorrectPasscodeForm = EmailPasscodeForm.form.withError(
                     key = EmailPasscodeForm.passcodeKey,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
-                  Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit(), incorrectPasscodeForm)))
+                  Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit, incorrectPasscodeForm)))
                 case PasscodeNotFound =>
                   Future.successful(BadRequest(passcode_not_found()))
                 case MaxAttemptsExceeded =>
-                  Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show()))
+                  Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show))
               }
             }
         )

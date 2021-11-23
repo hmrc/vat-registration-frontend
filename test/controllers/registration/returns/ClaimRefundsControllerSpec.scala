@@ -53,7 +53,7 @@ class ClaimRefundsControllerSpec extends ControllerSpec
 
   val emptyReturns: Returns = Returns()
   val voluntary = true
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.registration.returns.routes.ClaimRefundsController.show())
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.registration.returns.routes.ClaimRefundsController.show)
 
   "show" should {
     "return OK when returns are found" in new Setup {

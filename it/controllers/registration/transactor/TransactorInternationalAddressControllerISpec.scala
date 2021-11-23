@@ -96,7 +96,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show.url)
     }
     "Store the address and redirect to the next page if a full address is provided" in new Setup {
       given
@@ -121,7 +121,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given

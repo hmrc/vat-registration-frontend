@@ -70,7 +70,7 @@
         @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1")).
     }
 
-    @form(action = controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit()) {
+    @form(action = controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit) {
         @yesNoRadio(
             form = joinFrsForm,
             headingKey = "pages.frs.join.heading",

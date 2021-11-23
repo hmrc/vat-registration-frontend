@@ -40,7 +40,7 @@
     messages("nip.sellOrMove.bullet2")
   )
 
-  @formWithCSRF(action = controllers.registration.returns.routes.SellOrMoveNipController.submit()) {
+  @formWithCSRF(action = controllers.registration.returns.routes.SellOrMoveNipController.submit) {
     @yesNoRadio(
       form = form,
       headingKey = messages("nip.sellOrMove.heading"),

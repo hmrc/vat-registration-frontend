@@ -38,6 +38,6 @@ class ComplianceIntroductionController @Inject() (val authConnector: AuthClientC
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ => Future.successful(Redirect(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show()))
+    _ => _ => Future.successful(Redirect(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show))
   }
 }

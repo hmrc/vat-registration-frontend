@@ -40,7 +40,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
                                                          baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   private val headingMessageKey = "internationalAddress.home.heading"
-  private lazy val submitAction = routes.TransactorInternationalAddressController.submit()
+  private lazy val submitAction = routes.TransactorInternationalAddressController.submit
 
   private val postcodeRequiredCountry = "United Kingdom"
   private val postcodeField = "postcode"
@@ -81,7 +81,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
               )))
             } else {
               transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>
-                Redirect(routes.TelephoneNumberController.show().url)
+                Redirect(routes.TelephoneNumberController.show.url)
               }
             }
           }

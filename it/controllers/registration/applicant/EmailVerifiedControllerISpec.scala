@@ -53,7 +53,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address-verified").post(""))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureTelephoneNumberController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureTelephoneNumberController.show.url)
       }
     }
 

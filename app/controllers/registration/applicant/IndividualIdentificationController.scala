@@ -60,7 +60,7 @@ class IndividualIdentificationController @Inject()(val keystoreConnector: Keysto
           individualDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(individualDetails)
         } yield {
-          Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show())
+          Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show)
         }
     }
 }

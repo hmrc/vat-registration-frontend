@@ -32,7 +32,7 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-      "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck().url,
+      "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.url,
       "minimumFileSize" -> 0,
       "maximumFileSize" -> 10485760,
       "expectedContentType" -> "image/jpeg"

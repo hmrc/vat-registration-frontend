@@ -56,7 +56,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.WorkersController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.WorkersController.show.url)
       }
     }
   }

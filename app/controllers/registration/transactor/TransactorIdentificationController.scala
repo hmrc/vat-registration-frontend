@@ -64,9 +64,9 @@ class TransactorIdentificationController @Inject()(val keystoreConnector: Keysto
         } yield {
           partyType match {
             case NETP | NonUkNonEstablished =>
-              Redirect(routes.TransactorInternationalAddressController.show())
+              Redirect(routes.TransactorInternationalAddressController.show)
             case _ =>
-              Redirect(routes.TransactorHomeAddressController.redirectToAlf())
+              Redirect(routes.TransactorHomeAddressController.redirectToAlf)
           }
         }
     }

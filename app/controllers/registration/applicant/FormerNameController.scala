@@ -58,14 +58,14 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
           badForm => Future.successful(BadRequest(formerNamePage(badForm))),
           data => applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
             if (data.yesNo) {
-              Future.successful(Redirect(applicantRoutes.FormerNameDateController.show()))
+              Future.successful(Redirect(applicantRoutes.FormerNameDateController.show))
             }
             else {
               vatRegistrationService.partyType map {
                 case NETP | NonUkNonEstablished =>
-                  Redirect(applicantRoutes.InternationalHomeAddressController.show())
+                  Redirect(applicantRoutes.InternationalHomeAddressController.show)
                 case _ =>
-                  Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
+                  Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
               }
             }
           }

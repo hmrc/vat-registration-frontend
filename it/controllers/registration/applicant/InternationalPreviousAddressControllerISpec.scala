@@ -99,7 +99,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show.url)
     }
     "Store the address and redirect to the email address page if a full address is provided" in new Setup {
       given
@@ -124,7 +124,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given

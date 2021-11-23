@@ -51,7 +51,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(routes.CaptureTelephoneNumberController.show())
+  val fakeRequest = FakeRequest(routes.CaptureTelephoneNumberController.show)
   val incompleteApplicantDetails = emptyApplicantDetails.copy(
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
@@ -62,7 +62,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
@@ -70,7 +70,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
@@ -78,7 +78,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
 
  "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()){
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()){
         result => status(result) mustBe BAD_REQUEST
       }
     }
@@ -88,9 +88,9 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
       mockPartyType(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
+        redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney.url)
       }
     }
    "return SEE_OTHER with valid Contact Details entered for a NETP" in new Setup {
@@ -99,9 +99,9 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
      mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
      mockPartyType(Future.successful(NETP))
 
-     submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
+     submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
          status(res) mustBe SEE_OTHER
-         redirectLocation(res) mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+         redirectLocation(res) mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show.url)
      }
    }
   }

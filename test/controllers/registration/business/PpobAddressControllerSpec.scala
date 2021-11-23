@@ -63,7 +63,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
           .thenReturn(Future(testAddress))
 
         callAuthorised(testController.callback(testAddress.id)) { res =>
-          redirectLocation(res) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show().url)
+          redirectLocation(res) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show.url)
         }
       }
     }

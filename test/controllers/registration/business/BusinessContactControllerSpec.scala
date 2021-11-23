@@ -83,7 +83,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
   }
 
   "submitting the company contact details page" should {
-    val fakeRequest = FakeRequest(controllers.registration.business.routes.BusinessContactDetailsController.show())
+    val fakeRequest = FakeRequest(controllers.registration.business.routes.BusinessContactDetailsController.show)
 
     "return a 400" when {
       "form is empty" in new SubmissionSetup {
@@ -99,7 +99,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
           .thenReturn(Future(validBusinessContactDetails.companyContactDetails.get))
 
         submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
-          _ redirectsTo controllers.routes.ContactPreferenceController.showContactPreference().url
+          _ redirectsTo controllers.routes.ContactPreferenceController.showContactPreference.url
         }
       }
     }

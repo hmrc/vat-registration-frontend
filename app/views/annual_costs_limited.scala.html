@@ -38,7 +38,7 @@
 
     @errorSummary(annualCostsLimitedForm.errors)
 
-    @formWithCSRF(action = controllers.routes.FlatRateController.submitAnnualCostsLimited()) {
+    @formWithCSRF(action = controllers.routes.FlatRateController.submitAnnualCostsLimited) {
         @inputRadio(
             form = annualCostsLimitedForm,
             legend = messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),

@@ -73,9 +73,9 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
               _ <- frsService.resetFRSForSAC(selected)
             } yield {
               if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
-                Redirect(routes.ComplianceIntroductionController.show())
+                Redirect(routes.ComplianceIntroductionController.show)
               } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve())
+                Redirect(controllers.routes.TradingNameResolverController.resolve)
               }
             })
           )
@@ -89,7 +89,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
     if (isEnabled(StubIcl)) {
-      Future.successful(Redirect(controllers.test.routes.SicStubController.show()))
+      Future.successful(Redirect(controllers.test.routes.SicStubController.show))
     } else {
       val customICLMessages: CustomICLMessages = CustomICLMessages(
         messages("pages.icl.heading"),
@@ -123,11 +123,11 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
         } yield {
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
-              routes.SicAndComplianceController.showMainBusinessActivity()
+              routes.SicAndComplianceController.showMainBusinessActivity
             case codes if sicAndCompService.needComplianceQuestions(codes) =>
-              controllers.routes.ComplianceIntroductionController.show()
+              controllers.routes.ComplianceIntroductionController.show
             case List(onlyOneCode) =>
-              controllers.routes.TradingNameResolverController.resolve()
+              controllers.routes.TradingNameResolverController.resolve
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
           })

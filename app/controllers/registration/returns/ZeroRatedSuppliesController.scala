@@ -47,12 +47,12 @@ class ZeroRatedSuppliesController @Inject()(val keystoreConnector: KeystoreConne
             (returns.zeroRatedSupplies, optEstimates) match {
               case (Some(zeroRatedSupplies), Some(estimates)) =>
                 Ok(zeroRatesSuppliesView(
-                  routes.ZeroRatedSuppliesController.submit(),
+                  routes.ZeroRatedSuppliesController.submit,
                   ZeroRatedSuppliesForm.form(estimates).fill(zeroRatedSupplies)
                 ))
               case (None, Some(estimates)) =>
                 Ok(zeroRatesSuppliesView(
-                  routes.ZeroRatedSuppliesController.submit(),
+                  routes.ZeroRatedSuppliesController.submit,
                   ZeroRatedSuppliesForm.form(estimates)
                 ))
               case (_, None) => throw new InternalServerException("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
@@ -68,11 +68,11 @@ class ZeroRatedSuppliesController @Inject()(val keystoreConnector: KeystoreConne
           case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest.fold(
             errors => Future.successful(
               BadRequest(zeroRatesSuppliesView(
-                routes.ZeroRatedSuppliesController.submit(),
+                routes.ZeroRatedSuppliesController.submit,
                 errors
               ))),
             success => returnsService.saveZeroRatesSupplies(success) map { _ =>
-              Redirect(controllers.registration.returns.routes.ClaimRefundsController.show())
+              Redirect(controllers.registration.returns.routes.ClaimRefundsController.show)
             }
           )
           case None => throw new InternalServerException("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates")

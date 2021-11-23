@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 class OverseasBankAccountControllerISpec extends ControllerISpec {
 
-  val url: String = routes.OverseasBankAccountController.show().url
+  val url: String = routes.OverseasBankAccountController.show.url
 
   s"GET $url" must {
     "return an OK" in new Setup {
@@ -72,7 +72,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }
   }

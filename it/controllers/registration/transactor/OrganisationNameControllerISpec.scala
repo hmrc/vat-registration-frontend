@@ -1,18 +1,18 @@
 
 package controllers.registration.transactor
 
-import controllers.Assets.{OK, SEE_OTHER}
 import forms.OrganisationNameForm.organisationNameKey
 import itutil.ControllerISpec
 import models.TransactorDetails
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
 class OrganisationNameControllerISpec extends ControllerISpec {
-  val url: String = controllers.registration.transactor.routes.OrganisationNameController.show().url
+  val url: String = controllers.registration.transactor.routes.OrganisationNameController.show.url
 
   val orgName = "testOrgName"
   val testDetails = TransactorDetails(
@@ -74,7 +74,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
 
       whenReady(res) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.DeclarationCapacityController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.DeclarationCapacityController.show.url)
       }
     }
   }

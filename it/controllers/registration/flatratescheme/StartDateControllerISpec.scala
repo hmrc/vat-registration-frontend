@@ -75,7 +75,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.show().url).get()
+      val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.show.url).get()
       whenReady(response) { res =>
         res.status mustBe OK
         val document = Jsoup.parse(res.body)
@@ -94,7 +94,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.show().url).get()
+      val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.show.url).get()
       whenReady(response) { res =>
         res.status mustBe OK
         val document = Jsoup.parse(res.body)
@@ -116,7 +116,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit().url)
+        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(edrDate))
 
         whenReady(response) { res =>
@@ -136,7 +136,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit().url)
+        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(edrDate))
 
         whenReady(response) { res =>
@@ -156,7 +156,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit().url)
+        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeEdrDate))
 
         whenReady(response) { res =>
@@ -181,12 +181,12 @@ class StartDateControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit().url)
+        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(vatStartDate))
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
         }
       }
       "return INTERNAL_SERVER_ERROR when no returns or threshold data exists" in new Setup {
@@ -200,7 +200,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit().url)
+        val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeVatStartDate))
 
         whenReady(response) { res =>

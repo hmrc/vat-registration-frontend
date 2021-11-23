@@ -23,8 +23,8 @@ import play.api.test.Helpers._
 
 class StartNewApplicationControllerISpec extends ControllerISpec {
 
-  val showUrl = routes.StartNewApplicationController.show().url
-  val submitUrl = routes.StartNewApplicationController.submit().url
+  val showUrl = routes.StartNewApplicationController.show.url
+  val submitUrl = routes.StartNewApplicationController.submit.url
 
   s"GET $showUrl" must {
     "return OK if the user is authorised" in new Setup {
@@ -48,7 +48,7 @@ class StartNewApplicationControllerISpec extends ControllerISpec {
       val res = await(buildClient(submitUrl).post(Json.obj("value" -> false)))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.continueJourney().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.continueJourney.url)
     }
 
     "redirect to start new journey url if the answer is Yes" in new Setup {
@@ -59,7 +59,7 @@ class StartNewApplicationControllerISpec extends ControllerISpec {
       val res = await(buildClient(submitUrl).post(Json.obj("value" -> true)))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.startNewJourney().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.startNewJourney.url)
     }
     "Throw an exception if the answer is Yes but the clear TM API call fails" in new Setup {
       given

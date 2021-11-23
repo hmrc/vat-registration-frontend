@@ -49,7 +49,7 @@
         )
     }
 
-    @form(action = controllers.registration.business.routes.ApplyForEoriController.submit()) {
+    @form(action = controllers.registration.business.routes.ApplyForEoriController.submit) {
         @yesNoRadio(
             form = applyForEoriForm,
             headingKey = messages("pages.applyForEori.heading"),

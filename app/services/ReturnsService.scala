@@ -53,7 +53,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
       case Some(returns) => Future.successful(returns)
     } recover {
       case e =>
-        Logger.warn("[ReturnsService] [getReturnsViewModel] " +
+        logger.warn("[ReturnsService] [getReturnsViewModel] " +
           "Exception encountered when fetching Returns model, default model used")
         Returns()
     }

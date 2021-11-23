@@ -54,12 +54,12 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.routes.FlatRateController.annualCostsInclusivePage()}" should {
+  s"GET ${controllers.routes.FlatRateController.annualCostsInclusivePage}" should {
     "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      callAuthorised(controller.annualCostsInclusivePage()) { result =>
+      callAuthorised(controller.annualCostsInclusivePage) { result =>
         status(result) mustBe 200
       }
     }
@@ -74,13 +74,13 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
   }
 
-  s"POST ${controllers.routes.FlatRateController.submitAnnualInclusiveCosts()}" should {
-    val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualInclusiveCosts())
+  s"POST ${controllers.routes.FlatRateController.submitAnnualInclusiveCosts}" should {
+    val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualInclusiveCosts)
 
     "return 400 with Empty data" in new Setup {
       val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), emptyRequest) { result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts, emptyRequest) { result =>
         status(result) mustBe 400
       }
     }
@@ -93,9 +93,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "true"
       )
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), request) { result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
       }
     }
 
@@ -107,21 +107,21 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "false"
       )
 
-      submitAuthorised(controller.submitAnnualInclusiveCosts(), request) { result =>
+      submitAuthorised(controller.submitAnnualInclusiveCosts, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage().url)
+        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage.url)
       }
     }
   }
 
   val estimateVatTurnover = TurnoverEstimates(1000000L)
 
-  s"GET ${controllers.routes.FlatRateController.annualCostsLimitedPage()}" should {
+  s"GET ${controllers.routes.FlatRateController.annualCostsLimitedPage}" should {
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
 
-      callAuthorised(controller.annualCostsLimitedPage()) { result =>
+      callAuthorised(controller.annualCostsLimitedPage) { result =>
         status(result) mustBe 200
       }
     }
@@ -130,14 +130,14 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
-      callAuthorised(controller.annualCostsLimitedPage()) { result =>
+      callAuthorised(controller.annualCostsLimitedPage) { result =>
         status(result) mustBe 200
       }
     }
   }
 
-  s"POST ${controllers.routes.FlatRateController.submitAnnualCostsLimited()}" should {
-    val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualCostsLimited())
+  s"POST ${controllers.routes.FlatRateController.submitAnnualCostsLimited}" should {
+    val fakeRequest = FakeRequest(controllers.routes.FlatRateController.submitAnnualCostsLimited)
 
     "return a 400 when the request is empty" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
@@ -145,7 +145,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
+      submitAuthorised(controller.submitAnnualCostsLimited, request) { result =>
         status(result) mustBe 400
       }
     }
@@ -161,9 +161,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "true"
       )
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
+      submitAuthorised(controller.submitAnnualCostsLimited, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show.url)
       }
     }
 
@@ -178,32 +178,32 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "false"
       )
 
-      submitAuthorised(controller.submitAnnualCostsLimited(), request) { result =>
+      submitAuthorised(controller.submitAnnualCostsLimited, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage().url)
+        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.registerForFrsPage.url)
       }
     }
   }
 
-  s"GET ${routes.FlatRateController.registerForFrsPage()}" should {
+  s"GET ${routes.FlatRateController.registerForFrsPage}" should {
     "return a 200 and render the page" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      callAuthorised(controller.registerForFrsPage()) { result =>
+      callAuthorised(controller.registerForFrsPage) { result =>
         status(result) mustBe 200
       }
     }
   }
 
-  s"POST ${routes.FlatRateController.submitRegisterForFrs()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitRegisterForFrs())
+  s"POST ${routes.FlatRateController.submitRegisterForFrs}" should {
+    val fakeRequest = FakeRequest(routes.FlatRateController.submitRegisterForFrs)
 
     "return 400 with Empty data" in new Setup {
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
+      submitAuthorised(controller.submitRegisterForFrs, request) { result =>
         status(result) mustBe 400
       }
     }
@@ -219,9 +219,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "true"
       )
 
-      submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
+      submitAuthorised(controller.submitRegisterForFrs, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show.url)
       }
     }
 
@@ -236,14 +236,14 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "false"
       )
 
-      submitAuthorised(controller.submitRegisterForFrs(), request) { result =>
+      submitAuthorised(controller.submitRegisterForFrs, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
       }
     }
   }
 
-  s"GET ${routes.FlatRateController.yourFlatRatePage()}" should {
+  s"GET ${routes.FlatRateController.yourFlatRatePage}" should {
     "return a 200 and render the page" in new Setup {
 
       when(mockFlatRateService.getFlatRate(any(), any()))
@@ -251,14 +251,14 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
         .thenReturn(Future.successful(testsector))
 
-      callAuthorised(controller.yourFlatRatePage()) { result =>
+      callAuthorised(controller.yourFlatRatePage) { result =>
         status(result) mustBe 200
       }
     }
   }
 
-  s"POST ${routes.FlatRateController.submitYourFlatRate()}" should {
-    val fakeRequest = FakeRequest(routes.FlatRateController.submitYourFlatRate())
+  s"POST ${routes.FlatRateController.submitYourFlatRate}" should {
+    val fakeRequest = FakeRequest(routes.FlatRateController.submitYourFlatRate)
 
     "return 400 with Empty data" in new Setup {
       when(mockFlatRateService.retrieveSectorPercent(any(), any()))
@@ -266,7 +266,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
+      submitAuthorised(controller.submitYourFlatRate, request) { result =>
         status(result) mustBe 400
       }
     }
@@ -282,9 +282,9 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "true"
       )
 
-      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
+      submitAuthorised(controller.submitYourFlatRate, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show().url)
+        redirectLocation(result) mustBe Some(controllers.registration.flatratescheme.routes.StartDateController.show.url)
       }
     }
 
@@ -299,7 +299,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         "value" -> "false"
       )
 
-      submitAuthorised(controller.submitYourFlatRate(), request) { result =>
+      submitAuthorised(controller.submitYourFlatRate, request) { result =>
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
       }

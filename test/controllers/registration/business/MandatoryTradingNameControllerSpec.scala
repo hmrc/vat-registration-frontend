@@ -31,7 +31,7 @@ import views.html.soletrader_name
 import scala.concurrent.Future
 
 class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
-  val fakeRequest = FakeRequest(controllers.registration.business.routes.MandatoryTradingNameController.show())
+  val fakeRequest = FakeRequest(controllers.registration.business.routes.MandatoryTradingNameController.show)
 
   class Setup {
     val view = app.injector.instanceOf[soletrader_name]

@@ -40,7 +40,7 @@
 
   @errorSummary(businessActivityDescriptionForm.errors)
 
-  @form(action = controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.submit()) {
+  @form(action = controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.submit) {
       @inputTextArea(
           form = businessActivityDescriptionForm,
           id = "description",

@@ -38,7 +38,7 @@
 
     @errorSummary(previousAddressQuestionForm.errors)
 
-    @formWithCSRF(action = applicantRoutes.PreviousAddressController.submit()) {
+    @formWithCSRF(action = applicantRoutes.PreviousAddressController.submit) {
         @yesNoRadio(
             form = previousAddressQuestionForm,
             headingKey = "pages.previousAddressQuestion.heading",

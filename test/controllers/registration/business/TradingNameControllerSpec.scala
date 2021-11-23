@@ -145,7 +145,7 @@ class TradingNameControllerSpec extends ControllerSpec with VatRegistrationFixtu
 
         submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe 303
-          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
+          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve.url)
         }
       }
 

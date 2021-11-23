@@ -28,7 +28,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
         val res = await(buildClient(url).get)
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ClaimRefundsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ClaimRefundsController.show.url)
       }
     }
     "the user has entered a non-zero value for their turnover estimate" must {
@@ -46,7 +46,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
         val res = await(buildClient(url).get)
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ZeroRatedSuppliesController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ZeroRatedSuppliesController.show.url)
       }
     }
     "the vat scheme doesn't contain eligibility data" must {

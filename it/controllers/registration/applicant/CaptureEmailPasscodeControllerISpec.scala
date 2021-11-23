@@ -70,7 +70,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show.url)
       }
 
       "return BAD_REQUEST for an incorrect passcode" in new Setup {
@@ -127,7 +127,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.errors.routes.EmailPasscodesMaxAttemptsExceededController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
 
       }
     }

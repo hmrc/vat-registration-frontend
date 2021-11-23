@@ -100,7 +100,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
       when(mockVatRegistrationConnector.submitRegistration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testRequest.headers.toSimpleMap))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Success))
 
-      await(service.submitRegistration()) mustBe Success
+      await(service.submitRegistration) mustBe Success
     }
   }
 

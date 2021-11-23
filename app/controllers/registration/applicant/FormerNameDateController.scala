@@ -67,9 +67,9 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
                   vatRegistrationService.partyType map {
                     case NETP | NonUkNonEstablished =>
-                      Redirect(applicantRoutes.InternationalHomeAddressController.show())
+                      Redirect(applicantRoutes.InternationalHomeAddressController.show)
                     case _ =>
-                      Redirect(applicantRoutes.HomeAddressController.redirectToAlf())
+                      Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
                   }
                 }
               }

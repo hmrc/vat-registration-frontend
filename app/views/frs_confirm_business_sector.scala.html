@@ -45,10 +45,10 @@
     @p { @sector }
 
     <div class="govuk-!-margin-bottom-7">
-        @link(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show().url, messages("pages.frs.confirmBusinessSector.changeLink"))
+        @link(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url, messages("pages.frs.confirmBusinessSector.changeLink"))
     </div>
 
-    @form(action = controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.submit()) {
+    @form(action = controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.submit) {
         @button(messages("app.common.confirmAndContinue"))
     }
 }

@@ -98,7 +98,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
         val res = Controller.callback(testJourneyId)(FakeRequest())
 
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show().url)
+        redirectLocation(res) must contain(controllers.registration.applicant.routes.FormerNameController.show.url)
       }
     }
   }

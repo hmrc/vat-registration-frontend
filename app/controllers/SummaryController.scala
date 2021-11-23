@@ -60,7 +60,7 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
         invalidSubmissionGuard() {
           for {
             _ <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-            response <- vrs.submitRegistration()
+            response <- vrs.submitRegistration
             result <- submissionRedirectLocation(response)
           } yield {
             result
@@ -71,10 +71,10 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
   private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
     response match {
       case Success => keystoreConnector.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
-        _ => Redirect(controllers.routes.ApplicationSubmissionController.show())
+        _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
       }
-      case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed()))
-      case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable()))
+      case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed))
+      case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable))
     }
   }
 

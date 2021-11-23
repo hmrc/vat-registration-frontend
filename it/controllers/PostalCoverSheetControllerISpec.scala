@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 
-  val url: String = controllers.registration.attachments.routes.PostalCoverSheetController.show().url
+  val url: String = controllers.registration.attachments.routes.PostalCoverSheetController.show.url
 
   val testAckRef = "VRN1234567"
 

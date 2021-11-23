@@ -36,7 +36,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCSRF(action = controllers.registration.applicant.routes.LeadPartnerEntityController.submitLeadPartnerEntity(), 'autoComplete -> "off") {
+    @formWithCSRF(action = controllers.registration.applicant.routes.LeadPartnerEntityController.submitLeadPartnerEntity, 'autoComplete -> "off") {
         @inputRadio(
             form = form,
             legend = messages("pages.leadPartnerEntityType.heading"),

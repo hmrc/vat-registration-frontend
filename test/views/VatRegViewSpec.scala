@@ -24,7 +24,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.govukfrontend.views.html.helpers.formWithCSRF
+import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 import views.html.components.{button, h1, p}
 import views.html.layouts.layout
 
@@ -43,7 +43,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
   val h1: h1 = app.injector.instanceOf[h1]
   val p: p = app.injector.instanceOf[p]
   val button: button = app.injector.instanceOf[button]
-  val formWithCSRF: formWithCSRF = app.injector.instanceOf[formWithCSRF]
+  val formWithCSRF: FormWithCSRF = app.injector.instanceOf[FormWithCSRF]
 
   class ViewSetup(implicit val doc: Document) {
     case class Link(text: String, href: String)

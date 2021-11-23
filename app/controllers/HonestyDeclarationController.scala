@@ -41,7 +41,7 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       _ =>
-        Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit())))
+        Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit)))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -53,18 +53,18 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
           partyType <- vatRegistrationService.partyType
         } yield {
           if (isTransactor) {
-            Redirect(transactorRoutes.PartOfOrganisationController.show())
+            Redirect(transactorRoutes.PartOfOrganisationController.show)
           }
           else {
             partyType match {
               case Individual | NETP =>
-                Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney())
+                Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney)
               case UkCompany | RegSociety | CharitableOrg =>
-                Redirect(applicantRoutes.IncorpIdController.startJourney())
+                Redirect(applicantRoutes.IncorpIdController.startJourney)
               case Partnership =>
-                Redirect(applicantRoutes.PartnershipIdController.startJourney())
+                Redirect(applicantRoutes.PartnershipIdController.startJourney)
               case UnincorpAssoc | Trust | NonUkNonEstablished =>
-                Redirect(applicantRoutes.MinorEntityIdController.startJourney())
+                Redirect(applicantRoutes.MinorEntityIdController.startJourney)
             }
           }
         }

@@ -181,7 +181,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       returns.startDate
     } recover {
       case e =>
-        Logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the Returns block with exception: ${e.getMessage}")
+        logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the Returns block with exception: ${e.getMessage}")
         throw e
     }
   }

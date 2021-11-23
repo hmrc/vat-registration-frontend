@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@this()
+@this(
+    govukDateInput: GovukDateInput
+)
 
 @(form: Form[_],
   legendContent: String,
@@ -27,7 +29,7 @@
   attributesMonth: Map[String, String] = Map.empty,
   attributesYear: Map[String, String] = Map.empty)(implicit messages: Messages)
 
-@GovukDateInput(DateInput(
+@govukDateInput(DateInput(
     fieldset = Some(Fieldset(
         legend = Some(
             Legend(
