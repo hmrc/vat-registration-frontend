@@ -36,7 +36,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
   val testTrustJourneyId = "2"
   val testNonUkCompanyJourneyId = "3"
   val testJourneyUrl = "/test-journey-url"
-  val createTrustJourneyUrl = "/minor-entity-identification/api/trust-journey"
+  val createTrustJourneyUrl = "/minor-entity-identification/api/trusts-journey"
   val createUnincorpAssocJourneyUrl = "/minor-entity-identification/api/unincorporated-association-journey"
   val createNonUkCompanyJourneyUrl = "/minor-entity-identification/api/overseas-company-journey"
 

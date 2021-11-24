@@ -22,6 +22,7 @@ import models.external.MinorEntity
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
+import play.filters.csrf.AddCSRFToken
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
@@ -29,7 +30,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MinorEntityIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class MinorEntityIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)
+                                      (implicit ec: ExecutionContext) {
 
   def createJourney(journeyConfig: MinorEntityIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
     val url = partyType match {
