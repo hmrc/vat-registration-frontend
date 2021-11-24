@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
 import play.api.http.Status.{CONFLICT, CREATED}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, Upstream4xxResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -36,7 +36,7 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
 
     val jsonBody = Json.obj("email" -> email, "serviceName" -> "VAT Registration", "lang" -> "en")
 
-    httpClient.POST(url, jsonBody).map {
+    httpClient.POST[JsValue, HttpResponse](url, jsonBody).map {
       case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
     }.recover {
       case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
