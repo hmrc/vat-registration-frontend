@@ -272,4 +272,22 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
   )
 
+  lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
+    personalDetails = Some(PersonalDetails(
+      firstName = "testFirstName",
+      lastName = "testLastName",
+      nino = Some("AB123456C"),
+      trn = None,
+      identifiersMatch = true,
+      dateOfBirth = LocalDate.of(2020, 1, 1)
+    )),
+    isPartOfOrganisation = Some(true),
+    organisationName = Some("testCompanyName"),
+    telephone = Some("1234"),
+    email = Some("test@test.com"),
+    emailVerified = Some(true),
+    address = Some(address),
+    declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
+  )
+
 }

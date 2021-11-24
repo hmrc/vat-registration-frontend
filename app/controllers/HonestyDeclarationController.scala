@@ -50,22 +50,12 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
         for {
           _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
           isTransactor <- vatRegistrationService.isTransactor
-          partyType <- vatRegistrationService.partyType
         } yield {
           if (isTransactor) {
             Redirect(transactorRoutes.PartOfOrganisationController.show)
           }
           else {
-            partyType match {
-              case Individual | NETP =>
-                Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney)
-              case UkCompany | RegSociety | CharitableOrg =>
-                Redirect(applicantRoutes.IncorpIdController.startJourney)
-              case Partnership =>
-                Redirect(applicantRoutes.PartnershipIdController.startJourney)
-              case UnincorpAssoc | Trust | NonUkNonEstablished =>
-                Redirect(applicantRoutes.MinorEntityIdController.startJourney)
-            }
+            Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
           }
         }
   }

@@ -54,7 +54,7 @@ class TelephoneNumberController @Inject()(val keystoreConnector: KeystoreConnect
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           phoneNumber =>
             transactorDetailsService.saveTransactorDetails(Telephone(phoneNumber)).map { _ =>
-              NotImplemented
+              Redirect(routes.TransactorCaptureEmailAddressController.show)
             }
         )
   }

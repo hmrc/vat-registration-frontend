@@ -40,6 +40,7 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
     organisationName = Some(testOrganisationName),
     telephone = Some(testTelephone),
     email = Some(testEmail),
+    emailVerified = Some(true),
     address = Some(testAddress),
     declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )

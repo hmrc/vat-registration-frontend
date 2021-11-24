@@ -1034,3 +1034,10 @@ telephoneNumber.label                                    = Enter a telephone num
 telephoneNumber.error.incorrectFormat                    = Enter a telephone number that does not contain special characters
 telephoneNumber.error.nothingEntered                     = Enter your telephone number
 telephoneNumber.error.incorrectLength                    = Enter a telephone number that is between 1 and 24 characters
+
+## TRANSACTOR CAPTURE EMAIL ADDRESS
+transactorEmail.heading                                  = What is your email address?
+transactorEmail.paragraph                                = We will send you a confirmation code
+transactorEmail.error.incorrect_format                   = Enter an email address in the correct format, like name@example.com
+transactorEmail.error.nothing_entered                    = Enter your email address
+transactorEmail.error.incorrect_length                   = Enter an email address that is between 3 and 132 characters

@@ -18,6 +18,7 @@ package forms.constraints
 
 import forms.constraints.utils.ValidationHelper.{validate, validateNot}
 import play.api.data.validation.Constraint
+import play.api.i18n.Messages
 
 object EmailAddressConstraints {
 
@@ -31,24 +32,24 @@ object EmailAddressConstraints {
 
   private val emailMaxLength = 132
 
-  def emailAddressFormat: Constraint[String] = Constraint("email_address.incorrect_format")(
+  def emailAddressFormat(message: String = "capture-email-address.error.incorrect_format"): Constraint[String] = Constraint("email_address.incorrect_format")(
     emailAddress => validateNot(
       constraint = emailAddress matches emailRegex,
-      errMsg = "capture-email-address.error.incorrect_format"
+      errMsg = message
     )
   )
 
-  def emailAddressEmpty: Constraint[String] = Constraint("email_address.nothing_entered")(
+  def emailAddressEmpty(message: String = "capture-email-address.error.nothing_entered"): Constraint[String] = Constraint("email_address.nothing_entered")(
     emailAddress => validate(
       constraint = emailAddress.isEmpty,
-      errMsg = "capture-email-address.error.nothing_entered"
+      errMsg = message
     )
   )
 
-  def emailAddressLength: Constraint[String] = Constraint("email_address.incorrect_length")(
+  def emailAddressLength(message: String = "capture-email-address.error.incorrect_length"): Constraint[String] = Constraint("email_address.incorrect_length")(
     emailAddress => validate(
       constraint = emailAddress.trim.length > emailMaxLength,
-      errMsg = "capture-email-address.error.incorrect_length"
+      errMsg = message
     )
   )
 

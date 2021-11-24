@@ -54,7 +54,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" should {
-    "Redirect to Email address page" in new Setup {
+    "Redirect to Transactor Email Address page" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -67,7 +67,8 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
       val res = buildClient(url).post(Map(telephoneNumberKey -> testPhoneNumber))
 
       whenReady(res) { res =>
-        res.status mustBe NOT_IMPLEMENTED
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url)
       }
     }
   }

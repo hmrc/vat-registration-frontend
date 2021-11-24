@@ -367,3 +367,19 @@ POST        /your-address/international                                         
 ## Telephone Number
 GET         /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.show
 POST        /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.submit
+
+
+## Transactor Capture Email Address
+GET         /your-email-address                                                                controllers.registration.transactor.TransactorCaptureEmailAddressController.show
+POST        /your-email-address                                                                controllers.registration.transactor.TransactorCaptureEmailAddressController.submit
+
+## Transactor Capture Email Passcode
+GET         /enter-the-verification-code                                                       controllers.registration.transactor.TransactorCaptureEmailPasscodeController.show
+POST        /enter-the-verification-code                                                       controllers.registration.transactor.TransactorCaptureEmailPasscodeController.submit
+
+## Transactor Email Verified
+GET         /your-email-address-verified                                                       controllers.registration.transactor.TransactorEmailAddressVerifiedController.show
+POST        /your-email-address-verified                                                       controllers.registration.transactor.TransactorEmailAddressVerifiedController.submit
+
+## Business Identification Resolver
+GET         /resolve-business-identification                                                   controllers.BusinessIdentificationResolverController.resolve

@@ -21,7 +21,7 @@ import forms.constraints.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 
-object EmailAddressForm {
+object TransactorEmailAddressForm {
 
   val emailKey = "email-address"
 
@@ -29,9 +29,9 @@ object EmailAddressForm {
     Form(
       single(
         emailKey -> text.verifying(
-          EmailAddressConstraints.emailAddressEmpty() andThen
-            EmailAddressConstraints.emailAddressLength() andThen
-            EmailAddressConstraints.emailAddressFormat()
+          EmailAddressConstraints.emailAddressEmpty("transactorEmail.error.nothing_entered") andThen
+            EmailAddressConstraints.emailAddressLength("transactorEmail.error.incorrect_length") andThen
+            EmailAddressConstraints.emailAddressFormat("transactorEmail.error.incorrect_format")
         )
       )
     )
