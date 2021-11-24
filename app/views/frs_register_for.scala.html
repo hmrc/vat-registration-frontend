@@ -50,7 +50,7 @@
 
     @h2(messages("pages.frs.registerFor.subheading"))
 
-    @formWithCSRF(action = controllers.routes.FlatRateController.submitRegisterForFrs()) {
+    @formWithCSRF(action = controllers.routes.FlatRateController.submitRegisterForFrs) {
         @yesNoRadio(
             form = registerForFrsForm,
             headingKey = messages("pages.frs.registerFor.subheading"),

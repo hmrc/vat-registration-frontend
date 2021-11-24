@@ -37,11 +37,11 @@ class WelcomeControllerISpec extends ControllerISpec {
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
 
-  val startUrl: String = routes.WelcomeController.show().url
-  val newJourneyUrl: String = routes.WelcomeController.startNewJourney().url
-  val continueJourneyUrl: String = routes.WelcomeController.continueJourney().url
+  val startUrl: String = routes.WelcomeController.show.url
+  val newJourneyUrl: String = routes.WelcomeController.startNewJourney.url
+  val continueJourneyUrl: String = routes.WelcomeController.continueJourney.url
 
-  val startNewApplicationPageUrl: String = routes.StartNewApplicationController.show().url
+  val startNewApplicationPageUrl: String = routes.StartNewApplicationController.show.url
 
   val vatSchemeJson: String = Json.toJson(fullVatScheme).toString()
 

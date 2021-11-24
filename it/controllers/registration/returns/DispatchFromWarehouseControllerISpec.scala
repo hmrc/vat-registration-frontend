@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 
 class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
-  val url: String = routes.DispatchFromWarehouseController.show().url
+  val url: String = routes.DispatchFromWarehouseController.show.url
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk))
 
   s"GET $url" must {
@@ -98,7 +98,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNumberController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNumberController.show.url)
       }
     }
 
@@ -117,7 +117,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -136,7 +136,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
       }
     }
 

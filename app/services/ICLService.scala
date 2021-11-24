@@ -50,7 +50,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
       }
     } recover {
       case e =>
-        Logger.warn(s"[ICLServiceImpl] [prepopulateSicCodes] Retrieving S4L/VR sic codes failed: ${e.getMessage}")
+        logger.warn(s"[ICLServiceImpl] [prepopulateSicCodes] Retrieving S4L/VR sic codes failed: ${e.getMessage}")
         Nil
     }
   }
@@ -58,7 +58,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
   def journeySetup(customICLMessages: CustomICLMessages)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
     def extractFromJsonSetup(jsonSetup: JsObject, item: String) = {
       (jsonSetup \ item).validate[String].getOrElse {
-        Logger.error(s"[ICLServiceImpl] [journeySetup] $item couldn't be parsed from Json object")
+        logger.error(s"[ICLServiceImpl] [journeySetup] $item couldn't be parsed from Json object")
         throw new Exception
       }
     }
@@ -92,7 +92,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
       list = Json.fromJson[List[SicCode]](js)(SicCode.readsList).get
     } yield {
       if (list.isEmpty) {
-        Logger.error(s"[ICLService] [getICLCodes] ICLGetResult returned no sicCodes for regId: ${cp.registrationId}")
+        logger.error(s"[ICLService] [getICLCodes] ICLGetResult returned no sicCodes for regId: ${cp.registrationId}")
         throw new Exception
       }
       list

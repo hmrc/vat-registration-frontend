@@ -33,7 +33,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
 
@@ -58,7 +58,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
   }

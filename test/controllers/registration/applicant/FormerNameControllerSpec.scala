@@ -49,7 +49,7 @@ class FormerNameControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(applicantRoutes.FormerNameController.show())
+  val fakeRequest = FakeRequest(applicantRoutes.FormerNameController.show)
 
   val incompleteApplicantDetails = emptyApplicantDetails.copy(formerName = Some(FormerNameView(true, Some("Old Name"))))
 
@@ -57,7 +57,7 @@ class FormerNameControllerSpec extends ControllerSpec
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
@@ -65,7 +65,7 @@ class FormerNameControllerSpec extends ControllerSpec
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
@@ -74,7 +74,7 @@ class FormerNameControllerSpec extends ControllerSpec
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -83,8 +83,8 @@ class FormerNameControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
       }
     }
 
@@ -92,19 +92,19 @@ class FormerNameControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(NETP))
       mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
       }
     }
 
     "Redirect to FormerNameDate with valid data with former name" in new Setup {
       mockSaveApplicantDetails(FormerNameView(true, Some("some name")))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "true",
         "formerName" -> "some name"
       )) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameDateController.show().url)
+        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
       }
     }
   }

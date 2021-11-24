@@ -69,7 +69,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
       }
     }
 
@@ -90,7 +90,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
       }
     }
   }

@@ -91,7 +91,7 @@ class PersonalDetailsValidationControllerSpec extends ControllerSpec
         lazy val res: Future[Result] = testController.personalDetailsValidationCallback(testValidationId)(fakeRequest)
 
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url)
+        redirectLocation(res) must contain(controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show.url)
       }
     }
   }

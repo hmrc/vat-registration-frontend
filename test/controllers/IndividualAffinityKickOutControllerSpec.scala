@@ -55,7 +55,7 @@ class IndividualAffinityKickOutControllerSpec extends ControllerSpec {
       val res = TestController.signOutAndRedirect(testGetRedirectRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(appConfig.individualKickoutUrl(routes.WelcomeController.show().url))
+      redirectLocation(res) mustBe Some(appConfig.individualKickoutUrl(routes.WelcomeController.show.url))
     }
   }
 

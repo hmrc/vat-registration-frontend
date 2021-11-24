@@ -85,7 +85,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
       }
     }
     "Email is selected" must {
@@ -103,7 +103,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.EmailDocumentsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.EmailDocumentsController.show.url)
       }
     }
     "nothing is selected" must {

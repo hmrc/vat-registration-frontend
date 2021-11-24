@@ -45,7 +45,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.emailAddress.fold(EmailAddressForm.form)(ea => EmailAddressForm.form.fill(ea.email))
         } yield
-          Ok(view(routes.CaptureEmailAddressController.submit(), filledForm))
+          Ok(view(routes.CaptureEmailAddressController.submit, filledForm))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -53,16 +53,16 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
       implicit profile =>
         EmailAddressForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit(), formWithErrors))),
+            Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit, formWithErrors))),
           email =>
             applicantDetailsService.saveApplicantDetails(EmailAddress(email)) flatMap { _ =>
               emailVerificationService.requestEmailVerificationPasscode(email) flatMap {
                 case AlreadyVerifiedEmailAddress =>
                   applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)) map { _ =>
-                    Redirect(routes.EmailAddressVerifiedController.show())
+                    Redirect(routes.EmailAddressVerifiedController.show)
                   }
                 case RequestEmailPasscodeSuccessful =>
-                  Future.successful(Redirect(routes.CaptureEmailPasscodeController.show()))
+                  Future.successful(Redirect(routes.CaptureEmailPasscodeController.show))
               }
             }
         )

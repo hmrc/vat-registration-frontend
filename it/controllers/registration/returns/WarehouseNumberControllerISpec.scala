@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 
 class WarehouseNumberControllerISpec extends ControllerISpec {
 
-  val url: String = routes.WarehouseNumberController.show().url
+  val url: String = routes.WarehouseNumberController.show.url
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk), Some(true))
 
   s"GET $url" must {
@@ -103,7 +103,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNameController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseNameController.show.url)
       }
     }
 

@@ -74,7 +74,7 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
           _ <- applicantDetailsService.saveApplicantDetails(soleTrader)
         } yield {
-          Redirect(applicantRoutes.FormerNameController.show())
+          Redirect(applicantRoutes.FormerNameController.show)
         }
     }
 
@@ -102,7 +102,7 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
           _ <- if (isLeadPartner) applicantDetailsService.saveApplicantDetails(transactorDetails) else Future.successful()
           _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, Individual, isLeadPartner)) //TODO Figure out indeces for non lead partners
         } yield {
-          Redirect(applicantRoutes.FormerNameController.show())
+          Redirect(applicantRoutes.FormerNameController.show)
         }
     }
 }

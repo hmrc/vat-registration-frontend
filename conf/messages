@@ -127,11 +127,6 @@ pages.timeout.heading                   = Your session has timed out due to inac
 pages.timeout.body.one                  = Your answers have been saved.
 pages.timeout.body.url                  = Sign in to <a href="{0}">continue registration</a>.
 
-#Timeoutiv page
-pages.timeoutiv.title                   = Your session has timed out
-pages.timeoutiv.heading                 = Your session has timed out due to inactivity
-pages.timeoutiv.body.url                = You need to <a href="{0}">restart the identity check</a>.
-
 ##Submission Timeout Page
 pages.retrySubmission.heading           = We couldn’t process your application
 pages.retrySubmission.p1                = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.

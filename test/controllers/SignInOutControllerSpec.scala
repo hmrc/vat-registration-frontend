@@ -20,18 +20,20 @@ import controllers.callbacks.SignInOutController
 import play.api.mvc.Session
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+import views.html.pages.error.TimeoutView
 
 class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
 
   val testController: SignInOutController = new SignInOutController(
     mockAuthClientConnector,
-    mockKeystoreConnector
+    mockKeystoreConnector,
+    app.injector.instanceOf[TimeoutView]
   )
 
   "Post-sign-in" should {
     "redirect to CT post sign in" in {
       callAuthorised(testController.postSignIn) { res =>
-        redirectLocation(res) mustBe Some(controllers.routes.WelcomeController.show().url)
+        redirectLocation(res) mustBe Some(controllers.routes.WelcomeController.show.url)
       }
     }
   }

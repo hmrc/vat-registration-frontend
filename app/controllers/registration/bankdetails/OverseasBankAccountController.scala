@@ -52,7 +52,7 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
         OverseasBankAccountForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(overseasBankAccountView(formWithErrors))),
           accountDetails => bankAccountDetailsService.saveEnteredOverseasBankAccountDetails(accountDetails).flatMap(_ =>
-            Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show())))
+            Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show)))
         )
   }
 

@@ -1,6 +1,5 @@
 # microservice specific routes
 
-->          /govuk-frontend                                                                    govuk.Routes
 ->          /hmrc-frontend                                                                     hmrcfrontend.Routes
 
 GET         /assets/*file                                                                      controllers.Assets.versioned(path="/public", file: Asset)
@@ -183,11 +182,11 @@ GET         /start-sti-transactor-journey                                       
 GET         /sti-transactor-callback                                                           controllers.registration.transactor.TransactorIdentificationController.callback(journeyId)
 
 ## Partnership ID Pages
-GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney()
+GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney
 GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
 
 ## Minor Entity ID Pages
-GET         /start-minor-entity-id-journey                                                     controllers.registration.applicant.MinorEntityIdController.startJourney()
+GET         /start-minor-entity-id-journey                                                     controllers.registration.applicant.MinorEntityIdController.startJourney
 GET         /minor-entity-id-callback                                                          controllers.registration.applicant.MinorEntityIdController.callback(journeyId)
 
 ## Email Verification Pages

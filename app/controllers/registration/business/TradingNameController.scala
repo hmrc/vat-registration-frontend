@@ -63,8 +63,8 @@ class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
             val (hasName, name) = success
             tradingDetailsService.saveTradingName(profile.registrationId, hasName, name).flatMap { _ =>
               vatRegistrationService.partyType.map {
-                case NonUkNonEstablished => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve())
-                case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show())
+                case NonUkNonEstablished => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve)
+                case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show)
               }
             }
           }

@@ -1,20 +1,17 @@
 
 GET         /s4l-teardown                                     controllers.test.TestCacheController.tearDownS4L
 
-GET         /test-setup-eligibility                           controllers.test.TestSetupController.showEligibility()
-POST        /test-setup-eligibility                           controllers.test.TestSetupController.submitEligibility()
-
 GET         /setup-traffic-management                         controllers.test.UpdateTrafficManagementController.show
 POST        /setup-traffic-management                         controllers.test.UpdateTrafficManagementController.submit
 
 GET         /clear-traffic-management                         controllers.test.UpdateTrafficManagementController.clear
 
-GET         /sic-stub                                         controllers.test.SicStubController.show()
-POST        /sic-stub                                         controllers.test.SicStubController.submit()
+GET         /sic-stub                                         controllers.test.SicStubController.show
+POST        /sic-stub                                         controllers.test.SicStubController.submit
 
-GET         /working-days                                     controllers.test.TestWorkingDaysValidationController.show()
+GET         /working-days                                     controllers.test.TestWorkingDaysValidationController.show
 
-GET         /ct-registration                                  controllers.test.TestCTController.show()
+GET         /ct-registration                                  controllers.test.TestCTController.show
 
 GET         /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
 POST        /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit

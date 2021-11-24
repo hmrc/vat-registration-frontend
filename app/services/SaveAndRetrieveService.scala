@@ -58,7 +58,7 @@ class SaveAndRetrieveService @Inject()(vatRegistrationService: VatRegistrationSe
     s4LConnector.fetchAndGet[JsValue](regId, vatSchemeKey).flatMap {
       case Some(scheme) => vatRegistrationService.storePartialVatScheme(regId, scheme).recoverWith {
         case ex: BadRequestException =>
-          Logger.warn("[SaveAndRetrieveService][retrievePartialVatScheme] VAT scheme from S4L did not pass backend validation, storing an empty scheme")
+          logger.warn("[SaveAndRetrieveService][retrievePartialVatScheme] VAT scheme from S4L did not pass backend validation, storing an empty scheme")
           storeEmptyVatScheme
       }
       case None => storeEmptyVatScheme

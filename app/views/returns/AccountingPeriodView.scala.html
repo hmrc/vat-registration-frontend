@@ -47,23 +47,23 @@
 
     @p{ @messages("pages.accounting.period.para1") }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitAccountPeriods()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitAccountPeriods) {
         @inputRadio(
             form = accountingPeriodForm,
             legend = messages("pages.accounting.period.heading"),
             items = Seq(
                 RadioItem(
-                    content = Text(Messages("pages.accounting.period.radio.january")),
+                    content = Text(messages("pages.accounting.period.radio.january")),
                     value = Some(janStaggerKey),
                     checked = accountingPeriodForm("value").value.contains(janStaggerKey)
                 ),
                 RadioItem(
-                    content = Text(Messages("pages.accounting.period.radio.february")),
+                    content = Text(messages("pages.accounting.period.radio.february")),
                     value = Some(febStaggerKey),
                     checked = accountingPeriodForm("value").value.contains(febStaggerKey)
                 ),
                 RadioItem(
-                    content = Text(Messages("pages.accounting.period.radio.march")),
+                    content = Text(messages("pages.accounting.period.radio.march")),
                     value = Some(marStaggerKey),
                     checked = accountingPeriodForm("value").value.contains(marStaggerKey)
                 )

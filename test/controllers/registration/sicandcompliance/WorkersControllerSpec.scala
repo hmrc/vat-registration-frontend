@@ -43,7 +43,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.registration.sicandcompliance.routes.WorkersController.show()}" should {
+  s"GET ${controllers.registration.sicandcompliance.routes.WorkersController.show}" should {
     "return OK when there's a Workers model in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
@@ -63,11 +63,11 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
   }
 
-  s"POST ${controllers.registration.sicandcompliance.routes.WorkersController.submit()}" should {
-    val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.WorkersController.show())
+  s"POST ${controllers.registration.sicandcompliance.routes.WorkersController.submit}" should {
+    val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.WorkersController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }
@@ -75,22 +75,22 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     "redirect to the Party type resolver for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.routes.TradingNameResolverController.resolve().url
+          result redirectsTo controllers.routes.TradingNameResolverController.resolve.url
       }
     }
 
     "redirect to the party type resolver for sole trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       )) {
         result =>
-          result redirectsTo controllers.routes.TradingNameResolverController.resolve().url
+          result redirectsTo controllers.routes.TradingNameResolverController.resolve.url
       }
     }
   }

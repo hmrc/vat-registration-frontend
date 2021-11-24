@@ -188,7 +188,7 @@ class SummaryControllerISpec extends ControllerISpec {
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)
         }
       }
     }

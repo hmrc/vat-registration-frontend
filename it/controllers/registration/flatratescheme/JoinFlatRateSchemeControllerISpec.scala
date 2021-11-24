@@ -83,7 +83,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.FlatRateController.annualCostsInclusivePage.url)
       }
     }
     "redirect to the next FRS page if the user answers No" in new Setup {
@@ -100,7 +100,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
   }

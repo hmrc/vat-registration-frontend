@@ -18,7 +18,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(controllers.registration.business.routes.PpobAddressController.startJourney().url).get()
+      val response = buildClient(controllers.registration.business.routes.PpobAddressController.startJourney.url).get()
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -30,7 +30,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      val response = buildClient(controllers.registration.business.routes.PpobAddressController.startJourney().url).get()
+      val response = buildClient(controllers.registration.business.routes.PpobAddressController.startJourney.url).get()
       whenReady(response) { res =>
         res.status mustBe INTERNAL_SERVER_ERROR
 
@@ -54,7 +54,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
       val response = buildClient(controllers.registration.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show.url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
         json mustBe validBusinessContactDetailsJson
@@ -77,7 +77,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
       val response = buildClient(controllers.registration.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessContactDetailsController.show.url)
       }
     }
   }

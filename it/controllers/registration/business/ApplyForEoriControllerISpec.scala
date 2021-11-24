@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class ApplyForEoriControllerISpec extends ControllerISpec {
 
-  s"GET ${routes.ApplyForEoriController.show().url}" must {
+  s"GET ${routes.ApplyForEoriController.show.url}" must {
     "return OK when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised
@@ -75,7 +75,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST ${routes.ApplyForEoriController.submit().url}" must {
+  s"POST ${routes.ApplyForEoriController.submit.url}" must {
     "redirect to the next page" in new Setup {
       given
         .user.isAuthorised
@@ -93,7 +93,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve.url)
       }
     }
   }

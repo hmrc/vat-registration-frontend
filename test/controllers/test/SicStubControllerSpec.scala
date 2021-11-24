@@ -24,6 +24,7 @@ import org.mockito.Mockito.when
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
+import views.html.test.SicStubPage
 
 import scala.concurrent.Future
 
@@ -36,14 +37,15 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockKeystoreConnector,
       mockS4LService,
       mockSicAndComplianceService,
-      mockAuthClientConnector
+      mockAuthClientConnector,
+      app.injector.instanceOf[SicStubPage]
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET test-only${routes.SicStubController.show()}" should {
+  s"GET test-only${routes.SicStubController.show}" should {
     "return OK for Sic Stub page with no data in the form" in new Setup {
       when(mockS4LService.fetchAndGet[SicStub](any(), any(), any(), any())).thenReturn(Future.successful(None))
 
@@ -53,8 +55,8 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
   }
 
-  s"POST test-only${routes.SicStubController.submit()} with Empty data" should {
-    val fakeRequest = FakeRequest(routes.SicStubController.show())
+  s"POST test-only${routes.SicStubController.submit} with Empty data" should {
+    val fakeRequest = FakeRequest(routes.SicStubController.show)
     val dummyCacheMap = CacheMap("", Map.empty)
     val dummySicCode = SicCode("tests", "tests", "tests")
 
@@ -63,8 +65,8 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
-        _ redirectsTo controllers.routes.SicAndComplianceController.showMainBusinessActivity().url
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
+        _ redirectsTo controllers.routes.SicAndComplianceController.showMainBusinessActivity.url
       }
     }
 
@@ -74,8 +76,8 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
-        _ redirectsTo controllers.routes.TradingNameResolverController.resolve().url
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
+        _ redirectsTo controllers.routes.TradingNameResolverController.resolve.url
       }
     }
 
@@ -85,8 +87,8 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
-        _ redirectsTo controllers.routes.ComplianceIntroductionController.show().url
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
+        _ redirectsTo controllers.routes.ComplianceIntroductionController.show.url
       }
     }
   }

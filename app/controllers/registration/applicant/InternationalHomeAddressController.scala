@@ -44,7 +44,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile{
 
   private val headingMessageKey = "internationalAddress.home.heading"
-  private lazy val submitAction = routes.InternationalHomeAddressController.submit()
+  private lazy val submitAction = routes.InternationalHomeAddressController.submit
 
   private val postcodeRequiredCountry = "United Kingdom"
   private val postcodeField = "postcode"
@@ -83,7 +83,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
             )))
           } else {
             applicantDetailsService.saveApplicantDetails(HomeAddressView(internationalAddress.id, Some(internationalAddress))) map { _ =>
-              Redirect(routes.PreviousAddressController.show())
+              Redirect(routes.PreviousAddressController.show)
             }
           }
         }

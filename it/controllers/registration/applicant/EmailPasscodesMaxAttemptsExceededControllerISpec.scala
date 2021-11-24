@@ -30,7 +30,7 @@ class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show().url).get())
+      val res = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show.url).get())
       res.status mustBe OK
     }
   }

@@ -41,7 +41,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
                                                         baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile{
 
   private val headingMessageKey = "internationalAddress.ppob.heading"
-  private lazy val submitAction = routes.InternationalPpobAddressController.submit()
+  private lazy val submitAction = routes.InternationalPpobAddressController.submit
   private val invalidCountries = Seq("United Kingdom")
 
   private def countries: Seq[String] = configConnector.countries.flatMap(_.name).diff(invalidCountries)
@@ -62,7 +62,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
         },
         internationalAddress => {
           businessContactService.updateBusinessContact(internationalAddress) map { _ =>
-            Redirect(routes.BusinessContactDetailsController.show())
+            Redirect(routes.BusinessContactDetailsController.show)
           }
         }
       )

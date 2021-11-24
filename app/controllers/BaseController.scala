@@ -67,7 +67,7 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
     implicit request =>
       authorised(authPredicate).retrieve(affinityGroup) {
         case Some(AffinityGroup.Individual) =>
-          Future.successful(Redirect(routes.IndividualAffinityKickOutController.show()))
+          Future.successful(Redirect(routes.IndividualAffinityKickOutController.show))
         case Some(AffinityGroup.Organisation | AffinityGroup.Agent) =>
           f(request)
         case _ => throw new InternalServerException("User has no affinity group on their credential")
@@ -83,8 +83,8 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
             bcc.trafficManagementService.passedTrafficManagement(profile.registrationId).flatMap {
               case true => f(request)(profile)
               case false =>
-                Logger.warn("[BaseController][isAuthenticatedWithProfile] User attempted to enter flow without passing TM")
-                Future.successful(Redirect(routes.WelcomeController.show()))
+                logger.warn("[BaseController][isAuthenticatedWithProfile] User attempted to enter flow without passing TM")
+                Future.successful(Redirect(routes.WelcomeController.show))
             }
           }
           else {

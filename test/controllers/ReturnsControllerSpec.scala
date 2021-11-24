@@ -89,7 +89,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "submitAccountsPeriod" should {
-    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitAccountPeriods())
+    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitAccountPeriods)
 
     "redirect to the bank account date page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
@@ -223,7 +223,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "submitReturnsFrequency" should {
-    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency())
+    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency)
 
     "redirect to the bank account page when they select the monthly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any()))
@@ -325,7 +325,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   }
 
   "submitMandatoryStart" should {
-    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitMandatoryStart())
+    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitMandatoryStart)
 
     "redirect to the accounts period page if the calculated date is selected" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -343,7 +343,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -367,7 +367,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -463,7 +463,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
     val date = LocalDate.of(2017, 1, 1)
     val returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(JanuaryStagger), Some(date))
-    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitVoluntaryStart())
+    val fakeRequest = FakeRequest(controllers.registration.returns.routes.ReturnsController.submitVoluntaryStart)
 
     "redirect to the returns frequency page if company registration date is selected" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -478,7 +478,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitVoluntaryStart, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -502,7 +502,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
         }
       }
 
@@ -524,7 +524,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+          redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
 
         }
       }

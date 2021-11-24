@@ -12,7 +12,7 @@ import play.api.test.Helpers._
 
 class PartOfOrganisationControllerISpec extends ControllerISpec {
 
-  val url: String = transactorRoutes.PartOfOrganisationController.show().url
+  val url: String = transactorRoutes.PartOfOrganisationController.show.url
 
   val testDetails = TransactorDetails(
     isPartOfOrganisation = Some(true)
@@ -53,7 +53,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.OrganisationNameController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.OrganisationNameController.show.url)
         }
       }
       "redirect to Declaration Capacity page when no is selected" in new Setup {
@@ -72,7 +72,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.DeclarationCapacityController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.DeclarationCapacityController.show.url)
         }
       }
     }

@@ -43,7 +43,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
         for {
           contactPreference <- businessContactService.getBusinessContact
           form = contactPreference.contactPreference.fold(ContactPreferenceForm())(ContactPreferenceForm().fill)
-        } yield Ok(view(form, routes.ContactPreferenceController.submitContactPreference()))
+        } yield Ok(view(form, routes.ContactPreferenceController.submitContactPreference))
 
   }
 
@@ -51,11 +51,11 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         ContactPreferenceForm().bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(view(badForm, routes.ContactPreferenceController.submitContactPreference()))),
+          badForm => Future.successful(BadRequest(view(badForm, routes.ContactPreferenceController.submitContactPreference))),
           contactPreference =>
             businessContactService.updateBusinessContact(contactPreference).flatMap {
               _ =>
-                Future.successful(Redirect(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show()))
+                Future.successful(Redirect(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show))
             }
         )
   }

@@ -74,7 +74,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
   }
 
   "submit" should {
-    val fakeRequest = FakeRequest(controllers.registration.business.routes.ApplyForEoriController.submit())
+    val fakeRequest = FakeRequest(controllers.registration.business.routes.ApplyForEoriController.submit)
 
     "return 303 when they trade eu goods and redirect to the zero rated supplies resolver" in new Setup {
       when(mockTradingDetailsService.saveEuGoods(any(), any())(any(), any()))
@@ -86,7 +86,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve.url)
       }
     }
 
@@ -100,7 +100,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve().url)
+        redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve.url)
       }
     }
 

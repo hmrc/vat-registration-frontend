@@ -55,7 +55,7 @@
         )
     }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency) {
         @inputRadio(
             form = form,
             legend = messages("pages.vat.return.frequency.heading"),
@@ -71,7 +71,7 @@
 
 @optMonthly = @{
     if(showMonthly) Seq(RadioItem(
-        content = Text(Messages("pages.vat.return.frequency.radio.monthly")),
+        content = Text(messages("pages.vat.return.frequency.radio.monthly")),
         value = Some(monthlyKey),
         checked = form("value").value.contains(monthlyKey)
     )) else Seq()
@@ -83,7 +83,7 @@
             divider = Some("or")
         ),
         RadioItem(
-            content = Text(Messages("pages.vat.return.frequency.radio.annually")),
+            content = Text(messages("pages.vat.return.frequency.radio.annually")),
             value = Some(annualKey),
             checked = form("value").value.contains(annualKey)
         )
@@ -92,7 +92,7 @@
 
 @radioItems = @{
     optMonthly ++ Seq(RadioItem(
-        content = Text(Messages("pages.vat.return.frequency.radio.quarterly")),
+        content = Text(messages("pages.vat.return.frequency.radio.quarterly")),
         value = Some(quarterlyKey),
         checked = form("value").value.contains(quarterlyKey)
     )) ++ optAnnual

@@ -34,7 +34,7 @@
 
     @p{ @message }
 
-    @formWithCSRF(action = controllers.routes.WelcomeController.show()) {
+    @formWithCSRF(action = controllers.routes.WelcomeController.show) {
         @button(messages("error.error_template.tryagain"), showSaveProgressButton = false)
     }
 

@@ -43,7 +43,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show()}" should {
+  s"GET ${controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show}" should {
     "return OK when there's a Temporary Contracts model in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
 
@@ -64,11 +64,11 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
   }
 
-  s"POST ${controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit()}" should {
-    val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show())
+  s"POST ${controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit}" should {
+    val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }
@@ -78,12 +78,12 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
       }
     }
 
@@ -91,12 +91,12 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
       }
     }
 
@@ -104,12 +104,12 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
       }
     }
 
@@ -117,12 +117,12 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve().url
+          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
       }
     }
   }

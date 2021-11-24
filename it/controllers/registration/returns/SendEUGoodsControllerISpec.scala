@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 
 class SendEUGoodsControllerISpec extends ControllerISpec {
 
-  lazy val url: String = routes.SendEUGoodsController.show().url
+  lazy val url: String = routes.SendEUGoodsController.show.url
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), None)
 
   s"GET $url" must {

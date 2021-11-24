@@ -62,7 +62,7 @@ class SellOrMoveNipController @Inject()(val keystoreConnector: KeystoreConnector
               )
               _  <- returnsService.submitReturns(updatedReturns)
             } yield
-              Redirect(controllers.registration.returns.routes.ReceiveGoodsNipController.show())
+              Redirect(controllers.registration.returns.routes.ReceiveGoodsNipController.show)
           }
         )
   }

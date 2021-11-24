@@ -33,7 +33,7 @@
         link: link,
         govukInsetText: GovukInsetText,
         button: button,
-        form: formWithCSRF
+        form: FormWithCSRF
 )
 
 @(acknowledgementReference: String, attachmentMethod: Option[AttachmentMethod], identityEvidence: Boolean )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -90,12 +90,12 @@
 
 @bulletPost = {
     @messages("pages.application.submission.confirmation.list.post")
-    @link(controllers.registration.attachments.routes.PostalCoverSheetController.show().url, messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
+    @link(controllers.registration.attachments.routes.PostalCoverSheetController.show.url, messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
 }
 
 @bulletEmail = {
     @messages("pages.application.submission.confirmation.list.email")
-    @link(controllers.registration.attachments.routes.EmailCoverSheetController.show().url, messages("pages.application.submission.confirmation.email.link"), Some("cover-letter-link"), true, false)
+    @link(controllers.registration.attachments.routes.EmailCoverSheetController.show.url, messages("pages.application.submission.confirmation.email.link"), Some("cover-letter-link"), true, false)
 }
 
 @bulletLetter = {

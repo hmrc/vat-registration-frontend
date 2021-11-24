@@ -30,14 +30,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SignInOutController @Inject()(val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector)
+                                    val keystoreConnector: KeystoreConnector,
+                                    timeutView: TimeoutView)
                                    (implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def postSignIn: Action[AnyContent] = Action.async {
-    _ => Future.successful(Redirect(controllers.routes.WelcomeController.show().url))
+    _ => Future.successful(Redirect(controllers.routes.WelcomeController.show.url))
   }
 
   def signOut: Action[AnyContent] = Action.async {
@@ -54,6 +55,6 @@ class SignInOutController @Inject()(val authConnector: AuthClientConnector,
 
   def timeoutShow: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(TimeoutView()))
+      Future.successful(Ok(timeutView()))
   }
 }

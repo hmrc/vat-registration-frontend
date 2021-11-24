@@ -40,7 +40,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
         vatRegistrationService.partyType.flatMap {
-          case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()))
+          case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show))
           case _ => for {
             bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
             filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
@@ -57,11 +57,11 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
           bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) flatMap { _ =>
             vatRegistrationService.partyType.map {
               case NETP | NonUkNonEstablished =>
-                Redirect(routes.OverseasBankAccountController.show())
+                Redirect(routes.OverseasBankAccountController.show)
               case _ if hasBankAccount =>
-                Redirect(routes.UkBankAccountDetailsController.show())
+                Redirect(routes.UkBankAccountDetailsController.show)
               case _ =>
-                Redirect(routes.NoUKBankAccountController.show())
+                Redirect(routes.NoUKBankAccountController.show)
             }
           }
       )

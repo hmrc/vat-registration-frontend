@@ -48,7 +48,7 @@
         timeout = Option(appConfig.timeout),
         countdown = Option(appConfig.countdown),
         keepAliveUrl = Some("/register-for-vat/renew-session"),
-        signOutUrl = Some(controllers.callbacks.routes.SignInOutController.signOut().url)
+        signOutUrl = Some(controllers.callbacks.routes.SignInOutController.signOut.url)
     ))
     }
 }

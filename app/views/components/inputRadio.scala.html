@@ -14,7 +14,10 @@
  * limitations under the License.
  *@
 
-@this(hmrcPageHeading: HmrcPageHeading)
+@this(
+        hmrcPageHeading: HmrcPageHeading,
+        govukRadios: GovukRadios
+)
 
 @(      form: Form[_],
         legend: String,
@@ -47,7 +50,7 @@
         }
     }
 
-@GovukRadios(Radios(
+@govukRadios(Radios(
     classes = s"${if(inline){"govuk-radios--inline"}}",
     name = fieldName,
     fieldset = Some(Fieldset(

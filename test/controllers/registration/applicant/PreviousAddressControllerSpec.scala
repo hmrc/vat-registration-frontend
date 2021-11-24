@@ -69,24 +69,24 @@ class PreviousAddressControllerSpec extends ControllerSpec
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
   }
 
   "submit" should {
-    val fakeRequest = FakeRequest(applicantRoutes.PreviousAddressController.show())
+    val fakeRequest = FakeRequest(applicantRoutes.PreviousAddressController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
         result => status(result) mustBe BAD_REQUEST
       }
     }
@@ -94,11 +94,11 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(PreviousAddressView(true, None))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "previousAddressQuestionRadio" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show().url)
+        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show.url)
       }
     }
     "redirect the user to TxM address capture page with No selected" in new Setup {
@@ -106,7 +106,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
 
-      submitAuthorised(controller.submit(),
+      submitAuthorised(controller.submit,
         fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
@@ -116,11 +116,11 @@ class PreviousAddressControllerSpec extends ControllerSpec
     "redirect to International address capture for NETP when No selected" in new Setup {
       mockPartyType(Future.successful(NETP))
 
-      submitAuthorised(controller.submit(),
+      submitAuthorised(controller.submit,
         fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(routes.InternationalPreviousAddressController.show().url)
+        redirectLocation(res) mustBe Some(routes.InternationalPreviousAddressController.show.url)
       }
     }
   }
@@ -133,7 +133,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
       callAuthorised(controller.addressLookupCallback("addressId")) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show().url)
+        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show.url)
       }
     }
   }

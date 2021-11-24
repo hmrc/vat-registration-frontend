@@ -42,11 +42,11 @@ class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreCon
       implicit profile =>
         vatRegistrationService.partyType.flatMap {
           case Individual | Partnership | NETP =>
-            Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show()))
+            Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show))
           case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
             applicantDetailsService.getCompanyName.map {
-              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show())
-              case None => Redirect(controllers.registration.business.routes.BusinessNameController.show())
+              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.registration.business.routes.BusinessNameController.show)
             }
           case pt => throw new InternalServerException(s"PartyType: $pt not supported")
         }

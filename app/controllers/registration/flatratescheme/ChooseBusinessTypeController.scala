@@ -67,7 +67,7 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
         ChooseBusinessTypeForm.form(businessTypeIds).bindFromRequest().fold(
           badForm => Future.successful(BadRequest(chooseBusinessTypeView(badForm, groupingBusinessTypesValues))),
           data => flatRateService.saveBusinessType(data) map {
-            _ => Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
+            _ => Redirect(controllers.routes.FlatRateController.yourFlatRatePage)
           }
         )
   }

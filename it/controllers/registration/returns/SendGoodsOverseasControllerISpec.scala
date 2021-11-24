@@ -10,7 +10,7 @@ import play.api.test.Helpers._
 
 class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
-  lazy val url: String = routes.SendGoodsOverseasController.show().url
+  lazy val url: String = routes.SendGoodsOverseasController.show.url
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(None, None, None, None, None)
 
   s"GET $url" must {
@@ -59,7 +59,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendEUGoodsController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SendEUGoodsController.show.url)
       }
     }
 
@@ -75,7 +75,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.StoringGoodsController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.StoringGoodsController.show.url)
       }
     }
   }

@@ -68,7 +68,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
         val res = TestController.submit(testPostRequest)
 
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.IncorpIdController.startJourney().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.IncorpIdController.startJourney.url)
       }
     }
     s"return a SEE_OTHER with a redirect to Part Of Organisation Page if user is transactor" in {
@@ -78,7 +78,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(transactorRoutes.PartOfOrganisationController.show().url)
+      redirectLocation(res) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
     }
   }
 }

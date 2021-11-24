@@ -41,7 +41,7 @@
     @p { @messages("pages.company.bank.account.para") }
 
 
-    @formWithCSRF(action = controllers.registration.bankdetails.routes.HasBankAccountController.submit()) {
+    @formWithCSRF(action = controllers.registration.bankdetails.routes.HasBankAccountController.submit) {
 
         @yesNoRadio(
             form = hasBankAccountForm,

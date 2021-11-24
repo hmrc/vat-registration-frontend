@@ -50,7 +50,7 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
         WorkersForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
           data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
-            Redirect(controllers.routes.TradingNameResolverController.resolve())
+            Redirect(controllers.routes.TradingNameResolverController.resolve)
           }
         )
   }

@@ -63,12 +63,12 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           data =>
             if (data.yesNo) {
               applicantDetailsService.saveApplicantDetails(data) map {
-                _ => Redirect(routes.CaptureEmailAddressController.show())
+                _ => Redirect(routes.CaptureEmailAddressController.show)
               }
             } else {
               vatRegistrationService.partyType flatMap {
                 case NETP | NonUkNonEstablished =>
-                  Future.successful(Redirect(routes.InternationalPreviousAddressController.show()))
+                  Future.successful(Redirect(routes.InternationalPreviousAddressController.show))
                 case _ =>
                   addressLookupService.getJourneyUrl(
                     addressThreeYearsOrLess,
@@ -86,7 +86,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
-        } yield Redirect(routes.CaptureEmailAddressController.show())
+        } yield Redirect(routes.CaptureEmailAddressController.show)
   }
 
   def change: Action[AnyContent] = isAuthenticatedWithProfile() {

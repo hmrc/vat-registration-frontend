@@ -39,7 +39,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCSRF(action = transactorRoutes.DeclarationCapacityController.submit(), 'autoComplete -> "off") {
+    @formWithCSRF(action = transactorRoutes.DeclarationCapacityController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = form,
             fieldName = declarationCapacity,

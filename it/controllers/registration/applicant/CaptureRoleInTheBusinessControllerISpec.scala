@@ -15,7 +15,7 @@ import scala.concurrent.Future
 
 class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show().url
+  val url: String = controllers.registration.applicant.routes.CaptureRoleInTheBusinessController.show.url
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
@@ -65,7 +65,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(routes.FormerNameController.show().url)
+        res.header("LOCATION") mustBe Some(routes.FormerNameController.show.url)
       }
     }
 
@@ -87,7 +87,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(routes.FormerNameController.show().url)
+        res.header("LOCATION") mustBe Some(routes.FormerNameController.show.url)
       }
     }
   }

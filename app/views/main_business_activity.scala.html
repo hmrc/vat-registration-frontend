@@ -40,7 +40,7 @@
 
     @errorSummary(mainBusinessActivityForm.errors)
 
-    @formWithCSRF(action = controllers.routes.SicAndComplianceController.submitMainBusinessActivity()) {
+    @formWithCSRF(action = controllers.routes.SicAndComplianceController.submitMainBusinessActivity) {
         @{
             defining {
                 sicCodeList.map { sicCode =>

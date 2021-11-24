@@ -54,7 +54,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf().url).get()
+      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -122,7 +122,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
       val response = buildClient(applicantRoutes.HomeAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PreviousAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PreviousAddressController.show.url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe addressLine1

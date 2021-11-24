@@ -16,15 +16,12 @@
 
 package services
 
-import java.time.{LocalDate => JavaLocalDate}
-
 import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
 import play.api.Environment
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+
+import java.time.{LocalDate => JavaLocalDate}
 
 class TimeServiceSpec extends VatRegSpec {
 

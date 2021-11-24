@@ -55,7 +55,7 @@ class PaymentFrequencyController @Inject()(view: payment_frequency,
         PaymentFrequencyForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           paymentFrequency => returnsService.savePaymentFrequency(paymentFrequency).map { _ =>
-            Redirect(routes.PaymentMethodController.show())
+            Redirect(routes.PaymentMethodController.show)
           }
         )
   }

@@ -91,7 +91,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show().url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
     "return BAD_REQUEST if Bank Account Reputation states the bank details are invalid" in new Setup {
       given

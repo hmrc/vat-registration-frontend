@@ -85,7 +85,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit().url)
+      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
         .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
@@ -102,7 +102,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit().url)
+      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
         .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
@@ -121,10 +121,10 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.PreviousAddressController.submit().url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
+      val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show.url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
@@ -206,7 +206,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       val response = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.CaptureEmailAddressController.show.url)
 
         val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
         (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1

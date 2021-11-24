@@ -33,7 +33,8 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val s4LService: S4LService,
                                   val sicAndCompService: SicAndComplianceService,
-                                  val authConnector: AuthClientConnector)
+                                  val authConnector: AuthClientConnector,
+                                  view: SicStubPage)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -42,14 +43,14 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
-        Future.successful(Ok(sic_stub(SicStubForm.form)))
+        Future.successful(Ok(view(SicStubForm.form)))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         SicStubForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(sic_stub(badForm))),
+          badForm => Future.successful(BadRequest(view(badForm))),
           data => for {
             sicCodesList <- Future {
               data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
@@ -59,12 +60,12 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
           } yield {
             if (sicCodesList.size == 1) {
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                Redirect(controllers.routes.ComplianceIntroductionController.show())
+                Redirect(controllers.routes.ComplianceIntroductionController.show)
               } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve())
+                Redirect(controllers.routes.TradingNameResolverController.resolve)
               }
             } else {
-              Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity())
+              Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity)
             }
           }
         )

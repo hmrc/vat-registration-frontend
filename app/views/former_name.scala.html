@@ -44,7 +44,7 @@
 
     @p{ @messages("pages.formerName.married") }
 
-    @formWithCSRF(action = applicantRoutes.FormerNameController.submit()) {
+    @formWithCSRF(action = applicantRoutes.FormerNameController.submit) {
         @yesNoRadio(
             form = formerNameForm,
             headingKey = messages("pages.formerName.heading"),

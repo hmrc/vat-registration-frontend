@@ -38,7 +38,7 @@
 ) {
     @errorSummary(companyProvideWorkersForm.errors)
 
-    @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersController.submit()) {
+    @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersController.submit) {
         @yesNoRadio(
             form = companyProvideWorkersForm,
             headingKey = messages("pages.labourCompliance.supplyWorkers.heading"),

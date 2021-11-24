@@ -16,7 +16,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
   implicit val s4lFrsKey: S4LKey[FlatRateScheme] = FlatRateScheme.s4lKey
 
-  val url: String = controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales().url
+  val url: String = controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url
 
   val testTotalSales = 123456
   val frsData: FlatRateScheme = FlatRateScheme(
@@ -111,7 +111,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.FlatRateController.annualCostsLimitedPage().url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.FlatRateController.annualCostsLimitedPage.url)
       }
     }
 

@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@this()
+@this(
+    govukCheckboxes: GovukCheckboxes
+)
 
 @(
         form: Form[_],
@@ -24,7 +26,7 @@
         hint: Option[Html] = None
 )(implicit messages: Messages)
 
-    @GovukCheckboxes(Checkboxes(
+    @govukCheckboxes(Checkboxes(
         name = "value",
         fieldset = Some(Fieldset(
             legend = Some(Legend(

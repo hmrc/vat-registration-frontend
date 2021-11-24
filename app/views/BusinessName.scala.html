@@ -34,7 +34,7 @@
 
     @errorSummary(businessNameForm.errors)
 
-    @form(action = controllers.registration.business.routes.BusinessNameController.submit()) {
+    @form(action = controllers.registration.business.routes.BusinessNameController.submit) {
         @inputText(
             businessNameForm,
             id = "businessName",

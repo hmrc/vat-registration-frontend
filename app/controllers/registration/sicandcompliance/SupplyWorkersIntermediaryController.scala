@@ -53,7 +53,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
             Future.successful(BadRequest(view(badForm))),
           data =>
             sicAndCompService.updateSicAndCompliance(data) map { _ =>
-              Redirect(controllers.routes.TradingNameResolverController.resolve())
+              Redirect(controllers.routes.TradingNameResolverController.resolve)
             }
         )
   }

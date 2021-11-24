@@ -79,7 +79,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
       }
     }
 
@@ -100,7 +100,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
       }
     }
 
@@ -168,7 +168,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
       }
     }
 
@@ -190,7 +190,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show().url)
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
       }
     }
   }

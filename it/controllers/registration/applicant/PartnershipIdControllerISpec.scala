@@ -105,7 +105,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType.url)
         }
       }
 
@@ -126,7 +126,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType().url)
+          result.headers(LOCATION) must contain(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType.url)
         }
       }
     }

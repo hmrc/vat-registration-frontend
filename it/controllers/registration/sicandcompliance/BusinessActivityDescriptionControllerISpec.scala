@@ -39,12 +39,12 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(sicRoutes.BusinessActivityDescriptionController.submit().url)
+      val response = buildClient(sicRoutes.BusinessActivityDescriptionController.submit.url)
         .post(Map("description" -> Seq("foo")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.submitSicHalt().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SicAndComplianceController.submitSicHalt.url)
       }
     }
   }

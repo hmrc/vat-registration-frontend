@@ -43,7 +43,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
 
 
-    val fakeRequest = FakeRequest(routes.CaptureRoleInTheBusinessController.show())
+    val fakeRequest = FakeRequest(routes.CaptureRoleInTheBusinessController.show)
 
     val incompleteApplicantDetails = emptyApplicantDetails.copy(roleInTheBusiness = Some(Director))
 
@@ -51,7 +51,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
       "return OK when there's data" in new Setup {
         mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-        callAuthorised(controller.show()) {
+        callAuthorised(controller.show) {
           status(_) mustBe OK
         }
       }
@@ -59,7 +59,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
       "return OK when there's no data" in new Setup {
         mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
-        callAuthorised(controller.show()) {
+        callAuthorised(controller.show) {
           status(_) mustBe OK
         }
       }
@@ -67,7 +67,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
 
     "submit" should {
       "return BAD_REQUEST with Empty data" in new Setup {
-        submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()) {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
           result => status(result) mustBe BAD_REQUEST
         }
       }
@@ -77,9 +77,9 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
 
         mockSaveApplicantDetails(Director)(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody("roleInTheBusiness" -> role)) {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("roleInTheBusiness" -> role)) {
           result =>
-            redirectLocation(result) mustBe Some(routes.FormerNameController.show())
+            redirectLocation(result) mustBe Some(routes.FormerNameController.show)
         }
       }
     }

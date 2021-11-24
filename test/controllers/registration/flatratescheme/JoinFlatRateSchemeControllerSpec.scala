@@ -46,7 +46,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show()}" should {
+  s"GET ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show}" should {
     "render the page" when {
       "visited for the first time" in new Setup {
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
@@ -61,7 +61,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
           .thenReturn(Future.successful(FlatRateScheme()))
 
-        callAuthorised(controller.show()) { result =>
+        callAuthorised(controller.show) { result =>
           status(result) mustBe 200
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
@@ -96,7 +96,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve().url)
+        redirectLocation(result) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
 
@@ -109,20 +109,20 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         .thenReturn(Future.successful(None))
 
       intercept[InternalServerException] {
-        await(controller.show()(FakeRequest()))
+        await(controller.show(FakeRequest()))
       }
     }
   }
 
-  s"POST ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit()}" should {
-    val fakeRequest = FakeRequest(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit())
+  s"POST ${controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit}" should {
+    val fakeRequest = FakeRequest(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit)
 
     "return 400 with Empty data" in new Setup {
 
       when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(("", "")))(result =>
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(("", "")))(result =>
         status(result) mustBe 400
       )
     }
@@ -138,9 +138,9 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
       )
-      submitAuthorised(controller.submit(), request) { result =>
+      submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
+        redirectLocation(result) mustBe Some(controllers.routes.FlatRateController.annualCostsInclusivePage.url)
       }
     }
 
@@ -155,7 +155,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         "value" -> "false"
       )
 
-      submitAuthorised(controller.submit(), request) { result =>
+      submitAuthorised(controller.submit, request) { result =>
         redirectLocation(result) mustBe Some(s"$contextRoot/attachments-resolve")
       }
     }

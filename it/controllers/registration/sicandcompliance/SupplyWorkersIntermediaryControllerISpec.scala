@@ -48,7 +48,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
 
@@ -73,7 +73,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
   }

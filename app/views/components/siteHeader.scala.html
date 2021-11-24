@@ -26,5 +26,5 @@
     serviceName = Some(messages("app.title")),
     serviceUrl = controllers.routes.WelcomeController.show.url,
     containerClasses = "govuk-width-container",
-    signOutHref = if (showSignOut) Some(controllers.callbacks.routes.SignInOutController.signOut().url) else None
+    signOutHref = if (showSignOut) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None
 ))

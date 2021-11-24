@@ -33,7 +33,7 @@
 @layout(pageTitle = Some(title(orgNameForm, messages("organisationName.heading"))), backLink = true) {
     @errorSummary(orgNameForm.errors)
 
-    @form(action = controllers.registration.transactor.routes.OrganisationNameController.submit()) {
+    @form(action = controllers.registration.transactor.routes.OrganisationNameController.submit) {
         @inputText(
             orgNameForm,
             id = "organisationName",

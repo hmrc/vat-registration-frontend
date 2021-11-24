@@ -55,7 +55,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
       val response = buildClient("/business-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference.url)
 
       }
     }
@@ -73,7 +73,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
       val response = buildClient("/business-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ContactPreferenceController.showContactPreference.url)
       }
     }
     "return NOT_FOUND when vat returns a 404" ignore new Setup {

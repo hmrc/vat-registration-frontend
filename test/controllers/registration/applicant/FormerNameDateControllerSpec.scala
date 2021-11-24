@@ -48,7 +48,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(applicantRoutes.FormerNameDateController.show())
+  val fakeRequest = FakeRequest(applicantRoutes.FormerNameDateController.show)
 
   val incompleteApplicantDetails = emptyApplicantDetails
     .copy(formerName = Some(FormerNameView(true, Some("Old Name"))),personalDetails = Some(testPersonalDetails))
@@ -63,14 +63,14 @@ class FormerNameDateControllerSpec extends ControllerSpec
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetailsDate)
 
-      callAuthorised(controller.show()) {
+      callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-      val res = controller.show()(fakeRequest)
+      val res = controller.show(fakeRequest)
 
       status(res) mustBe OK
     }
@@ -78,7 +78,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
       intercept[IllegalStateException] {
-        await(controller.show()(fakeRequest))
+        await(controller.show(fakeRequest))
       }
     }
   }
@@ -87,9 +87,9 @@ class FormerNameDateControllerSpec extends ControllerSpec
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
 
-      val res = controller.submit()(FakeRequest().withFormUrlEncodedBody("" -> ""))
+      val res = controller.submit(FakeRequest().withFormUrlEncodedBody("" -> ""))
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe BAD_REQUEST
       }
     }
@@ -98,13 +98,13 @@ class FormerNameDateControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "formerNameDate.day" -> "1",
         "formerNameDate.month" -> "2",
         "formerNameDate.year" -> "2020"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
       }
     }
     "Redirect to International home address as a NETP when Former name Date selected" in new Setup {
@@ -112,13 +112,13 @@ class FormerNameDateControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(NETP))
       mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-      submitAuthorised(controller.submit(), fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "formerNameDate.day" -> "1",
         "formerNameDate.month" -> "2",
         "formerNameDate.year" -> "2020"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(applicantRoutes.InternationalHomeAddressController.show().url)
+        redirectLocation(res) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
       }
     }
   }

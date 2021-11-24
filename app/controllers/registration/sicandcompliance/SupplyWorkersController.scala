@@ -53,9 +53,9 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
           view =>
             sicAndCompService.updateSicAndCompliance(view).map { _ =>
               if (view.yesNo) {
-                controllers.registration.sicandcompliance.routes.WorkersController.show()
+                controllers.registration.sicandcompliance.routes.WorkersController.show
               } else {
-                controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show()
+                controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show
               }
             } map Redirect
         )

@@ -47,10 +47,10 @@ class ZeroRatedSuppliesResolverController @Inject()(val keystoreConnector: Keyst
       } yield turnover match {
         case Some(NoTurnover) =>
           returnsService.saveZeroRatesSupplies(noZeroRatedSupplies).map{_ =>
-            Redirect(controllers.registration.returns.routes.ClaimRefundsController.show())
+            Redirect(controllers.registration.returns.routes.ClaimRefundsController.show)
           }
         case Some(_) =>
-          Future.successful(Redirect(routes.ZeroRatedSuppliesController.show()))
+          Future.successful(Redirect(routes.ZeroRatedSuppliesController.show))
         case _ =>
           Future.failed(throw new InternalServerException(s"$logPrefix Turnover estimate not present so unable to route user"))
       }).flatten

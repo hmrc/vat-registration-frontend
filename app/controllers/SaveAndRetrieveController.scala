@@ -35,7 +35,7 @@ class SaveAndRetrieveController @Inject()(val authConnector: AuthConnector,
 
   def save: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
     saveAndRetrieveService.savePartialVatScheme(profile.registrationId).map { _ =>
-      Redirect(controllers.routes.ApplicationProgressSavedController.show().url)
+      Redirect(controllers.routes.ApplicationProgressSavedController.show.url)
     }
   }
 

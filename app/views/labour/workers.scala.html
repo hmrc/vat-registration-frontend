@@ -36,7 +36,7 @@
 ) {
     @errorSummary(workersForm.errors)
 
-    @form(action = controllers.registration.sicandcompliance.routes.WorkersController.submit()) {
+    @form(action = controllers.registration.sicandcompliance.routes.WorkersController.submit) {
         @inputNumber(
             form = workersForm,
             id = "numberOfWorkers",

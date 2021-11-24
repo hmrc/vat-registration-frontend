@@ -42,12 +42,12 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
     if (isEnabled(SaveAndContinueLater)) {
       trafficManagementService.checkTrafficManagement.flatMap {
-        case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney()))
-        case _ => Future.successful(Redirect(routes.StartNewApplicationController.show()))
+        case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
+        case _ => Future.successful(Redirect(routes.StartNewApplicationController.show))
       }
     }
     else {
-      Future.successful(Redirect(routes.WelcomeController.startNewJourney()))
+      Future.successful(Redirect(routes.WelcomeController.startNewJourney))
     }
   }
 
@@ -57,7 +57,7 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
         .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
         .map(_ => Redirect(appConfig.eligibilityRouteUrl))
       case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
-      case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney()))
+      case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
     }
   }
 

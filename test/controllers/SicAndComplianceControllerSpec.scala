@@ -68,7 +68,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       callAuthorised(controller.submitSicHalt) {
         res =>
           status(res) mustBe 303
-          res redirectsTo controllers.test.routes.SicStubController.show().url
+          res redirectsTo controllers.test.routes.SicStubController.show.url
       }
     }
     "redirect to ICL if feature switch is false" in new Setup {
@@ -104,7 +104,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity().url
+            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity.url
         }
       }
 
@@ -120,7 +120,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity().url
+            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity.url
         }
       }
 
@@ -136,7 +136,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.TradingNameResolverController.resolve().url
+            res redirectsTo controllers.routes.TradingNameResolverController.resolve.url
         }
       }
 
@@ -153,18 +153,18 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.ComplianceIntroductionController.show().url
+            res redirectsTo controllers.routes.ComplianceIntroductionController.show.url
         }
       }
     }
   }
 
-  s"GET ${routes.SicAndComplianceController.showMainBusinessActivity()}" should {
+  s"GET ${routes.SicAndComplianceController.showMainBusinessActivity}" should {
     "return OK when view present in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
-      callAuthorised(controller.showMainBusinessActivity()) {
+      callAuthorised(controller.showMainBusinessActivity) {
         status(_) mustBe OK
       }
     }
@@ -179,13 +179,13 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     }
   }
 
-  s"POST ${routes.SicAndComplianceController.submitMainBusinessActivity()}" should {
-    val fakeRequest = FakeRequest(routes.SicAndComplianceController.showMainBusinessActivity())
+  s"POST ${routes.SicAndComplianceController.submitMainBusinessActivity}" should {
+    val fakeRequest = FakeRequest(routes.SicAndComplianceController.showMainBusinessActivity)
 
     "return 400" in new Setup {
       mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
-      submitAuthorised(controller.submitMainBusinessActivity(), fakeRequest.withFormUrlEncodedBody()
+      submitAuthorised(controller.submitMainBusinessActivity, fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
     }
 
@@ -193,7 +193,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
 
-      submitAuthorised(controller.submitMainBusinessActivity(),
+      submitAuthorised(controller.submitMainBusinessActivity,
         fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
       )(_ isA 400)
 
@@ -207,7 +207,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
 
-      submitAuthorised(controller.submitMainBusinessActivity(),
+      submitAuthorised(controller.submitMainBusinessActivity,
         fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-business")
 
@@ -220,10 +220,10 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
 
-      submitAuthorised(controller.submitMainBusinessActivity(),
+      submitAuthorised(controller.submitMainBusinessActivity,
 
         fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo controllers.routes.TradingNameResolverController.resolve().url)
+      )(_ redirectsTo controllers.routes.TradingNameResolverController.resolve.url)
     }
   }
 
@@ -234,7 +234,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.returnToICL) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.test.routes.SicStubController.show().url
+            res redirectsTo controllers.test.routes.SicStubController.show.url
         }
       }
     }

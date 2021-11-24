@@ -16,7 +16,10 @@
 
 @import views.html.components.pageHeading
 
-@this(pageHeading: pageHeading)
+@this(
+        pageHeading: pageHeading,
+        govukRadios: GovukRadios
+)
 
 @(
     form: Form[_],
@@ -28,7 +31,7 @@
     classes: String = "govuk-fieldset__legend--xl"
 )(implicit messages: Messages)
 
-@GovukRadios(Radios(
+@govukRadios(Radios(
     classes = "govuk-radios--inline",
     idPrefix = None,
     name = "value",

@@ -32,7 +32,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   private val testPhoneNumber = "12345 123456"
 
-  val url: String = controllers.registration.applicant.routes.CaptureTelephoneNumberController.show().url
+  val url: String = controllers.registration.applicant.routes.CaptureTelephoneNumberController.show.url
 
   val s4lData = ApplicantDetails(
     entity = Some(testIncorpDetails),
@@ -98,7 +98,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney.url)
       }
     }
 
@@ -118,7 +118,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
       res.status mustBe SEE_OTHER
-      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show.url)
     }
 
     "update S4L and redirect to International Address for a Non UK Company" in new Setup {
@@ -137,7 +137,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
       res.status mustBe SEE_OTHER
-      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+      res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show.url)
     }
 
     "the ApplicantDetails model is complete" should {
@@ -158,7 +158,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney.url)
       }
       "post to the backend and redirect to International Address for a NETP" in new Setup {
         disable(StubEmailVerification)
@@ -177,7 +177,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show().url)
+        res.header("LOCATION") mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show.url)
       }
     }
   }

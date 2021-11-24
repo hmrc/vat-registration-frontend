@@ -44,7 +44,7 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
           val (_, sector, _) = sectorPercentage
           Ok(view(sector))
         } recover {
-          case _: MissingResourceException => Redirect(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show())
+          case _: MissingResourceException => Redirect(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show)
         }
   }
 
@@ -52,7 +52,7 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         flatRateService.saveConfirmSector map { _ =>
-          Redirect(controllers.routes.FlatRateController.yourFlatRatePage())
+          Redirect(controllers.routes.FlatRateController.yourFlatRatePage)
         }
   }
 

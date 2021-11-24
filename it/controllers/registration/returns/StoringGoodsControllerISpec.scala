@@ -104,7 +104,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "UK")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.DispatchFromWarehouseController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.DispatchFromWarehouseController.show.url)
         }
       }
       "the user submits Storing Overseas" must {
@@ -122,7 +122,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
         }
         "redirect to the Northern Ireland page" in new Setup {
           enable(NorthernIrelandProtocol)
@@ -138,7 +138,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
         }
       }
       "the user submits an invalid answer" must {

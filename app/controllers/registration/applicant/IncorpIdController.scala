@@ -71,7 +71,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
         } yield {
           if (isEnabled(UseSoleTraderIdentification)) {
-            Redirect(applicantRoutes.IndividualIdentificationController.startJourney())
+            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
           }
           else {
             Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())

@@ -65,7 +65,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success => returnsService.saveStaggerStart(success) flatMap { _ =>
-            Future.successful(Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show()))
+            Future.successful(Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show))
           }
         )
   }
@@ -84,7 +84,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
               case None => Ok(returnFrequencyPage(ReturnFrequencyForm.form, showAAS, showMonthly))
             }
           } else {
-            Redirect(routes.ReturnsController.accountPeriodsPage())
+            Redirect(routes.ReturnsController.accountPeriodsPage)
           }
         }
   }
@@ -102,9 +102,9 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
           },
           success => returnsService.saveFrequency(success) map { _ =>
             success match {
-              case Monthly => Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show())
-              case Annual => Redirect(routes.LastMonthOfAccountingYearController.show())
-              case _ => Redirect(routes.ReturnsController.accountPeriodsPage())
+              case Monthly => Redirect(controllers.registration.bankdetails.routes.HasBankAccountController.show)
+              case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
+              case _ => Redirect(routes.ReturnsController.accountPeriodsPage)
             }
           }
         )
@@ -148,7 +148,7 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
               Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, dynamicDate)))
             },
             success => returnsService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
-              Redirect(routes.ReturnsController.returnsFrequencyPage())
+              Redirect(routes.ReturnsController.returnsFrequencyPage)
             )
           )
         }
@@ -179,11 +179,11 @@ class ReturnsController @Inject()(val keystoreConnector: KeystoreConnector,
               {
                 case (DateSelection.specific_date, Some(startDate)) =>
                   returnsService.saveVatStartDate(Some(startDate)).map(_ =>
-                    Redirect(routes.ReturnsController.returnsFrequencyPage())
+                    Redirect(routes.ReturnsController.returnsFrequencyPage)
                   )
                 case _ =>
                   returnsService.saveVatStartDate(None).map(_ =>
-                    Redirect(routes.ReturnsController.returnsFrequencyPage())
+                    Redirect(routes.ReturnsController.returnsFrequencyPage)
                   )
               }
             )

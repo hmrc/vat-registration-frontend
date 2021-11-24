@@ -64,11 +64,11 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val changeTransactorDetailsUrl: String = {
       partyType match {
-        case Individual | NETP => applicantRoutes.SoleTraderIdentificationController.startJourney().url
+        case Individual | NETP => applicantRoutes.SoleTraderIdentificationController.startJourney.url
         case Partnership => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true).url //TODO change when partnership flow is revisited
-        case NonUkNonEstablished => applicantRoutes.IndividualIdentificationController.startJourney().url
-        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.IndividualIdentificationController.startJourney().url
-        case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+        case NonUkNonEstablished => applicantRoutes.IndividualIdentificationController.startJourney.url
+        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.IndividualIdentificationController.startJourney.url
+        case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url
       }
     }
 
@@ -77,7 +77,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       applicantDetails.entity.collect {
         case incorpIdEntity: IncorporatedEntity => incorpIdEntity.companyNumber
       },
-      Some(applicantRoutes.IncorpIdController.startJourney().url)
+      Some(applicantRoutes.IncorpIdController.startJourney.url)
     )
 
     val businessName = optSummaryListRowString(
@@ -88,8 +88,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       applicantDetails.entity.flatMap {
-        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney().url)
-        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
+        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
         case _ => None
       }
     )
@@ -102,8 +102,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       partyType match {
-        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
-        case _ => Some(applicantRoutes.IncorpIdController.startJourney().url)
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(applicantRoutes.IncorpIdController.startJourney.url)
       }
     )
 
@@ -116,9 +116,9 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       partyType match {
-        case Partnership => Some(applicantRoutes.PartnershipIdController.startJourney().url)
-        case UnincorpAssoc | Trust | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        case Partnership => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case UnincorpAssoc | Trust | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
       }
     )
 
@@ -130,8 +130,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       partyType match {
-        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
       }
     )
 
@@ -149,8 +149,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       partyType match {
-        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
       }
     )
 
@@ -162,8 +162,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => None
       },
       partyType match {
-        case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney().url)
-        case Trust | UnincorpAssoc | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+        case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney.url)
+        case Trust | UnincorpAssoc | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
         case _ => None
       }
     )
@@ -206,7 +206,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case Director => "pages.roleInTheBusiness.radio1"
         case CompanySecretary => "pages.roleInTheBusiness.radio2"
       },
-      Some(applicantRoutes.CaptureRoleInTheBusinessController.show().url)
+      Some(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
     )
 
     val formerName = optSummaryListRowString(
@@ -215,25 +215,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case None => Some(s"$sectionId.noFormerName")
         case formerName => formerName
       },
-      Some(applicantRoutes.FormerNameController.show().url)
+      Some(applicantRoutes.FormerNameController.show.url)
     )
 
     val formerNameDate = optSummaryListRowString(
       s"$sectionId.formerNameDate",
       applicantDetails.formerNameDate.map(_.date.format(presentationFormatter)),
-      Some(applicantRoutes.FormerNameController.show().url)
+      Some(applicantRoutes.FormerNameController.show.url)
     )
 
     val email = optSummaryListRowString(
       s"$sectionId.email",
       applicantDetails.emailAddress.map(_.email),
-      Some(applicantRoutes.CaptureEmailAddressController.show().url)
+      Some(applicantRoutes.CaptureEmailAddressController.show.url)
     )
 
     val telephone = optSummaryListRowString(
       s"$sectionId.telephone",
       applicantDetails.telephoneNumber.map(_.telephone),
-      Some(applicantRoutes.CaptureTelephoneNumberController.show().url)
+      Some(applicantRoutes.CaptureTelephoneNumberController.show.url)
     )
 
     val homeAddress = optSummaryListRowSeq(
@@ -241,16 +241,16 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       applicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq),
       partyType match {
         case NETP =>
-          Some(applicantRoutes.InternationalHomeAddressController.show().url)
+          Some(applicantRoutes.InternationalHomeAddressController.show.url)
         case _ =>
-          Some(applicantRoutes.HomeAddressController.redirectToAlf().url)
+          Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
       }
     )
 
     val moreThanThreeYears = optSummaryListRowBoolean(
       s"$sectionId.moreThanThreeYears",
       applicantDetails.previousAddress.map(_.yesNo),
-      Some(applicantRoutes.PreviousAddressController.show().url)
+      Some(applicantRoutes.PreviousAddressController.show.url)
     )
 
     val previousAddress = optSummaryListRowSeq(
@@ -258,9 +258,9 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       applicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq),
       partyType match {
         case NETP =>
-          Some(applicantRoutes.InternationalPreviousAddressController.show().url)
+          Some(applicantRoutes.InternationalPreviousAddressController.show.url)
         case _ =>
-          Some(applicantRoutes.PreviousAddressController.show().url)
+          Some(applicantRoutes.PreviousAddressController.show.url)
       }
     )
 
@@ -295,25 +295,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val businessEmailRow = optSummaryListRowString(
       s"$sectionId.emailBusiness",
       businessContact.companyContactDetails.map(_.email),
-      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
     )
 
     val businessDaytimePhoneNumberRow = optSummaryListRowString(
       s"$sectionId.daytimePhoneBusiness",
       businessContact.companyContactDetails.flatMap(_.phoneNumber),
-      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
     )
 
     val businessMobilePhoneNumberRow = optSummaryListRowString(
       s"$sectionId.mobileBusiness",
       businessContact.companyContactDetails.flatMap(_.mobileNumber),
-      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
     )
 
     val businessWebsiteRow = optSummaryListRowString(
       s"$sectionId.website",
       businessContact.companyContactDetails.flatMap(_.websiteAddress),
-      Some(businessContactRoutes.BusinessContactDetailsController.show().url)
+      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
     )
 
     val ppobRow = optSummaryListRowSeq(
@@ -321,16 +321,16 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       businessContact.ppobAddress.map(Address.normalisedSeq),
       partyType match {
         case NETP =>
-          Some(businessContactRoutes.InternationalPpobAddressController.show().url)
+          Some(businessContactRoutes.InternationalPpobAddressController.show.url)
         case _ =>
-          Some(businessContactRoutes.PpobAddressController.startJourney().url)
+          Some(businessContactRoutes.PpobAddressController.startJourney.url)
       }
     )
 
     val contactPreferenceRow = optSummaryListRowString(
       s"$sectionId.contactPreference",
       businessContact.contactPreference.map(_.toString),
-      Some(controllers.routes.ContactPreferenceController.showContactPreference().url)
+      Some(controllers.routes.ContactPreferenceController.showContactPreference.url)
     )
 
     Seq(
@@ -350,19 +350,19 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val companyBusinessDescriptionRow = optSummaryListRowString(
       s"$sectionId.businessDescription",
       sicAndCompliance.description.map(_.description),
-      Some(sicAndCompRoutes.BusinessActivityDescriptionController.show().url)
+      Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)
     )
 
     val mainActivityRow = optSummaryListRowString(
       s"$sectionId.mainSicCode",
       sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description)),
-      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity().url)
+      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url)
     )
 
     val sicCodesRow = optSummaryListRowSeq(
       s"$sectionId.sicCodes",
       sicAndCompliance.businessActivities.map(_.sicCodes.map(_.description)),
-      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity().url)
+      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url)
     )
 
     val confirmIndustryClassificationCodesRow = optSummaryListRowSeq(
@@ -370,25 +370,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       sicAndCompliance.businessActivities.map(codes => codes.sicCodes.map(
         sicCode => sicCode.code + " - " + sicCode.description
       )),
-      Some(controllers.routes.SicAndComplianceController.returnToICL().url)
+      Some(controllers.routes.SicAndComplianceController.returnToICL.url)
     )
 
     val providingWorkersRow = optSummaryListRowBoolean(
       s"$sectionId.supplyWorkers",
       sicAndCompliance.supplyWorkers.map(_.yesNo),
-      Some(sicAndCompRoutes.SupplyWorkersController.show().url)
+      Some(sicAndCompRoutes.SupplyWorkersController.show.url)
     )
 
     val numberOfWorkersRow = optSummaryListRowString(
       s"$sectionId.numberOfWorkers",
       sicAndCompliance.workers.map(_.numberOfWorkers.toString),
-      Some(sicAndCompRoutes.WorkersController.show().url)
+      Some(sicAndCompRoutes.WorkersController.show.url)
     )
 
     val intermediarySupplyRow = optSummaryListRowBoolean(
       s"$sectionId.intermediarySupply",
       sicAndCompliance.intermediarySupply.map(_.yesNo),
-      Some(sicAndCompRoutes.SupplyWorkersIntermediaryController.show().url)
+      Some(sicAndCompRoutes.SupplyWorkersIntermediaryController.show.url)
     )
 
     Seq(
@@ -414,20 +414,20 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case None if partyType.equals(NETP) => None
         case None => Some(s"$sectionId.mandatoryStartDate")
       },
-      if (mandatoryRegistration) Some(returnsRoutes.ReturnsController.mandatoryStartPage().url)
-      else Some(returnsRoutes.ReturnsController.voluntaryStartPage().url)
+      if (mandatoryRegistration) Some(returnsRoutes.ReturnsController.mandatoryStartPage.url)
+      else Some(returnsRoutes.ReturnsController.voluntaryStartPage.url)
     )
 
     val zeroRatedRow = optSummaryListRowString(
       s"$sectionId.zeroRated",
       returns.zeroRatedSupplies.map(Formatters.currency),
-      Some(returnsRoutes.ZeroRatedSuppliesController.show().url)
+      Some(returnsRoutes.ZeroRatedSuppliesController.show.url)
     )
 
     val expectClaimRefundsRow = optSummaryListRowBoolean(
       s"$sectionId.claimRefunds",
       returns.reclaimVatOnMostReturns,
-      Some(returnsRoutes.ClaimRefundsController.show().url)
+      Some(returnsRoutes.ClaimRefundsController.show.url)
     )
 
     val accountingPeriodRow = optSummaryListRowString(
@@ -441,7 +441,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
           Some(s"$sectionId.accountingPeriod.annual")
         case _ => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Invalid accounting period")
       },
-      Some(returnsRoutes.ReturnsController.accountPeriodsPage().url)
+      Some(returnsRoutes.ReturnsController.accountPeriodsPage.url)
     )
 
     val lastMonthOfAccountingYearRow = optSummaryListRowString(
@@ -450,7 +450,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case Some(period: AnnualStagger) => Some(s"$sectionId.lastMonthOfAccountingYear.${period.toString}")
         case _ => None
       },
-      Some(returnsRoutes.LastMonthOfAccountingYearController.show().url)
+      Some(returnsRoutes.LastMonthOfAccountingYearController.show.url)
     )
 
     val paymentFrequencyRow = optSummaryListRowString(
@@ -458,7 +458,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       returns.annualAccountingDetails.flatMap(_.paymentFrequency).map { paymentFrequency =>
         s"$sectionId.paymentFrequency.${paymentFrequency.toString}"
       },
-      Some(returnsRoutes.PaymentFrequencyController.show().url)
+      Some(returnsRoutes.PaymentFrequencyController.show.url)
     )
 
     val paymentMethodRow = optSummaryListRowString(
@@ -466,19 +466,19 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       returns.annualAccountingDetails.flatMap(_.paymentMethod).map { paymentMethod =>
         s"$sectionId.paymentMethod.${paymentMethod.toString}"
       },
-      Some(returnsRoutes.PaymentMethodController.show().url)
+      Some(returnsRoutes.PaymentMethodController.show.url)
     )
 
     val sendGoodsOverseas = optSummaryListRowBoolean(
       s"$sectionId.sendGoodsOverseas",
       returns.overseasCompliance.flatMap(_.goodsToOverseas),
-      Some(returnsRoutes.SendGoodsOverseasController.show().url)
+      Some(returnsRoutes.SendGoodsOverseasController.show.url)
     )
 
     val sendGoodsToEu = optSummaryListRowBoolean(
       s"$sectionId.sendGoodsToEu",
       returns.overseasCompliance.flatMap(_.goodsToEu),
-      Some(returnsRoutes.SendEUGoodsController.show().url)
+      Some(returnsRoutes.SendEUGoodsController.show.url)
     )
 
     val storingGoods = optSummaryListRowString(
@@ -487,37 +487,37 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case StoringWithinUk => s"$sectionId.storingGoods.uk"
         case StoringOverseas => s"$sectionId.storingGoods.overseas"
       },
-      Some(returnsRoutes.StoringGoodsController.show().url)
+      Some(returnsRoutes.StoringGoodsController.show.url)
     )
 
     val dispatchFromWarehouse = optSummaryListRowBoolean(
       s"$sectionId.dispatchFromWarehouse",
       returns.overseasCompliance.flatMap(_.usingWarehouse),
-      Some(returnsRoutes.DispatchFromWarehouseController.show().url)
+      Some(returnsRoutes.DispatchFromWarehouseController.show.url)
     )
 
     val warehouseNumber = optSummaryListRowString(
       s"$sectionId.warehouseNumber",
       returns.overseasCompliance.flatMap(_.fulfilmentWarehouseNumber),
-      Some(returnsRoutes.WarehouseNumberController.show().url)
+      Some(returnsRoutes.WarehouseNumberController.show.url)
     )
 
     val warehouseName = optSummaryListRowString(
       s"$sectionId.warehouseName",
       returns.overseasCompliance.flatMap(_.fulfilmentWarehouseName),
-      Some(returnsRoutes.WarehouseNameController.show().url)
+      Some(returnsRoutes.WarehouseNameController.show.url)
     )
 
     val sellOrMoveNip = optSummaryListRowBoolean(
       s"$sectionId.sellOrMoveNip",
       returns.northernIrelandProtocol.flatMap(_.goodsToEU).map(_.answer),
-      Some(returnsRoutes.SellOrMoveNipController.show().url)
+      Some(returnsRoutes.SellOrMoveNipController.show.url)
     )
 
     val receiveGoodsNip = optSummaryListRowBoolean(
       s"$sectionId.receiveGoodsNip",
       returns.northernIrelandProtocol.flatMap(_.goodsFromEU).map(_.answer),
-      Some(returnsRoutes.ReceiveGoodsNipController.show().url)
+      Some(returnsRoutes.ReceiveGoodsNipController.show.url)
     )
 
     Seq(
@@ -555,16 +555,16 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case optTradingName => optTradingName
       },
       if (tradingNameOptional) {
-        Some(controllers.registration.business.routes.TradingNameController.show().url)
+        Some(controllers.registration.business.routes.TradingNameController.show.url)
       } else {
-        Some(controllers.registration.business.routes.MandatoryTradingNameController.show().url)
+        Some(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
       }
     )
 
     val applyForEoriRow = optSummaryListRowBoolean(
       s"$sectionId.applyForEori",
       tradingDetails.euGoods,
-      Some(controllers.registration.business.routes.ApplyForEoriController.show().url)
+      Some(controllers.registration.business.routes.ApplyForEoriController.show.url)
     )
 
     Seq(
@@ -580,7 +580,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
       bankAccount.map(_.isProvided),
-      Some(controllers.registration.bankdetails.routes.HasBankAccountController.show().url)
+      Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(
@@ -590,8 +590,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case _ => bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq))
       },
       partyType match {
-        case NETP => Some(controllers.registration.bankdetails.routes.OverseasBankAccountController.show().url)
-        case _ => Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show().url)
+        case NETP => Some(controllers.registration.bankdetails.routes.OverseasBankAccountController.show.url)
+        case _ => Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show.url)
       }
     )
 
@@ -602,7 +602,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
         case NameChange => "pages.noUKBankAccount.reason.nameChange"
       },
-      Some(controllers.registration.bankdetails.routes.NoUKBankAccountController.show().url)
+      Some(controllers.registration.bankdetails.routes.NoUKBankAccountController.show.url)
     )
 
     Seq(
@@ -620,25 +620,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val joinFrsRow = optSummaryListRowBoolean(
       s"$sectionId.joinFrs",
       optFlatRateScheme.flatMap(_.joinFrs),
-      Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show().url)
+      Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     )
 
     val costsInclusiveRow = optSummaryListRowBoolean(
       s"$sectionId.costsInclusive",
       optFlatRateScheme.flatMap(_.overBusinessGoods),
-      Some(controllers.routes.FlatRateController.annualCostsInclusivePage().url)
+      Some(controllers.routes.FlatRateController.annualCostsInclusivePage.url)
     )
 
     val estimateTotalSalesRow = optSummaryListRowString(
       s"$sectionId.estimateTotalSales",
       optFlatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).map(sales => s"£$sales"),
-      Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales().url)
+      Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
     )
 
     val costsLimitedRow = optSummaryListRowBoolean(
       s"$sectionId.costsLimited",
       optFlatRateScheme.flatMap(_.overBusinessGoodsPercent),
-      Some(controllers.routes.FlatRateController.annualCostsLimitedPage().url),
+      Some(controllers.routes.FlatRateController.annualCostsLimitedPage.url),
       Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))).map("%,d".format(_)).getOrElse("0"))
     )
 
@@ -646,8 +646,8 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       s"$sectionId.flatRate",
       optFlatRateScheme.flatMap(_.useThisRate),
       Some(
-        if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage().url
-        else controllers.routes.FlatRateController.yourFlatRatePage().url
+        if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage.url
+        else controllers.routes.FlatRateController.yourFlatRatePage.url
       ),
       Seq(
         if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString
@@ -658,7 +658,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val businessSectorRow = optSummaryListRowString(
       s"$sectionId.businessSector",
       optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-      Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show().url)
+      Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
     )
 
     Seq(

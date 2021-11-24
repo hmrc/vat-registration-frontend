@@ -41,7 +41,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     applicationSubmissionConfirmationView
   )
 
-  s"GET ${routes.ApplicationSubmissionController.show()}" should {
+  s"GET ${routes.ApplicationSubmissionController.show}" should {
     "display the submission confirmation page to the user" in {
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
@@ -132,7 +132,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
   }
 
-  s"POST ${routes.ApplicationSubmissionController.submit()}" should {
+  s"POST ${routes.ApplicationSubmissionController.submit}" should {
     "redirect to the feedback form page" in {
       mockAuthenticated()
 

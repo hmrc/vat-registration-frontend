@@ -49,7 +49,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.telephoneNumber.fold(TelephoneNumberForm.form)(tn => TelephoneNumberForm.form.fill(tn.telephone))
         } yield
-          Ok(view(routes.CaptureTelephoneNumberController.submit(), filledForm))
+          Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -57,14 +57,14 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
       implicit profile =>
         TelephoneNumberForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit(), formWithErrors))),
+            Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit, formWithErrors))),
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).flatMap { _ =>
               vatRegistrationService.partyType map {
                 case NETP | NonUkNonEstablished =>
-                  Redirect(controllers.registration.business.routes.InternationalPpobAddressController.show())
+                  Redirect(controllers.registration.business.routes.InternationalPpobAddressController.show)
                 case _ =>
-                  Redirect(controllers.registration.business.routes.PpobAddressController.startJourney())
+                  Redirect(controllers.registration.business.routes.PpobAddressController.startJourney)
               }
             }
         )

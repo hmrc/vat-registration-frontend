@@ -50,7 +50,7 @@
         @messages("pages.startDate.warning")
     }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitVoluntaryStart()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitVoluntaryStart) {
 
         @inputRadio(
             form = startDateForm,

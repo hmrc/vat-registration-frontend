@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 
-  val url: String = controllers.routes.HonestyDeclarationController.show().url
+  val url: String = controllers.routes.HonestyDeclarationController.show.url
 
   val userId = "user-id-12345"
 
@@ -65,7 +65,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         val response: Future[WSResponse] = buildClient(url).post(Json.obj())
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startJourney().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startJourney.url)
         }
       }
     }
@@ -84,7 +84,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         val response: Future[WSResponse] = buildClient(url).post(Json.obj())
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PartnershipIdController.startJourney().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PartnershipIdController.startJourney.url)
         }
       }
     }
@@ -103,7 +103,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         val response: Future[WSResponse] = buildClient(url).post(Json.obj())
         whenReady(response) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.MinorEntityIdController.startJourney().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.MinorEntityIdController.startJourney.url)
         }
       }
     }
@@ -122,7 +122,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       val response: Future[WSResponse] = buildClient(url).post(Json.obj())
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.SoleTraderIdentificationController.startJourney().url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
       }
       disable(UseSoleTraderIdentification)
     }

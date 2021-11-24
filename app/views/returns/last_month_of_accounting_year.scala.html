@@ -40,7 +40,7 @@
 
     @p{ @messages("last-month-of-accounting-year.para") }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.LastMonthOfAccountingYearController.submit()) {
+    @formWithCSRF(action = controllers.registration.returns.routes.LastMonthOfAccountingYearController.submit) {
         @inputRadio(
             form = form,
             legend = messages("last-month-of-accounting-year.heading"),

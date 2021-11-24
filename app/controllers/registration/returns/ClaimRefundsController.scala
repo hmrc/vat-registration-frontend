@@ -61,10 +61,10 @@ class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
               v <- returnsService.isVoluntary
               pt <- vatRegistrationService.partyType
             } yield (v, pt) match {
-              case (_, NETP | NonUkNonEstablished) => Redirect(routes.SendGoodsOverseasController.show())
+              case (_, NETP | NonUkNonEstablished) => Redirect(routes.SendGoodsOverseasController.show)
               case (_, _) if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
-              case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage())
-              case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage())
+              case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
+              case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage)
             }
           }
         )

@@ -61,7 +61,7 @@ class BusinessContactDetailsController @Inject()(val authConnector: AuthClientCo
             Future.successful(BadRequest(business_contact_details(CompanyContactDetailsForm.transformErrors(formError))))
           },
           contact => businessContactService.updateBusinessContact[CompanyContactDetails](contact) map {
-            _ => Redirect(controllers.routes.ContactPreferenceController.showContactPreference())
+            _ => Redirect(controllers.routes.ContactPreferenceController.showContactPreference)
           }
         )
   }

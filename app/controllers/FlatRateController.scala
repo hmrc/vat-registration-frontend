@@ -70,9 +70,9 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           badForm => Future.successful(BadRequest(annual_costs_inclusive(badForm))),
           view => flatRateService.saveOverBusinessGoods(view) map { _ =>
             if (!view) {
-              Redirect(controllers.routes.FlatRateController.registerForFrsPage())
+              Redirect(controllers.routes.FlatRateController.registerForFrsPage)
             } else {
-              Redirect(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales())
+              Redirect(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales)
             }
           }
         )
@@ -98,9 +98,9 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           },
             view => flatRateService.saveOverBusinessGoodsPercent(view) map { _ =>
               if (!view) {
-                Redirect(controllers.routes.FlatRateController.registerForFrsPage())
+                Redirect(controllers.routes.FlatRateController.registerForFrsPage)
               } else {
-                Redirect(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show())
+                Redirect(controllers.registration.flatratescheme.routes.ConfirmBusinessTypeController.show)
               }
             }
           )
@@ -126,9 +126,9 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           badForm => Future.successful(BadRequest(frs_register_for(badForm))),
           view => flatRateService.saveRegister(view.answer) map { _ =>
             if (view.answer) {
-              Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
+              Redirect(controllers.registration.flatratescheme.routes.StartDateController.show)
             } else {
-              Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
+              Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve)
             }
           }
         )
@@ -162,9 +162,9 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           view => for {
             _ <- flatRateService.saveUseFlatRate(view.answer)
           } yield if (view.answer) {
-            Redirect(controllers.registration.flatratescheme.routes.StartDateController.show())
+            Redirect(controllers.registration.flatratescheme.routes.StartDateController.show)
           } else {
-            Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve())
+            Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve)
           }
         )
   }

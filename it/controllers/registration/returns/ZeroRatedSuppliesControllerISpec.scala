@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.registration.returns.routes.ZeroRatedSuppliesController.show().url
+  val url: String = controllers.registration.returns.routes.ZeroRatedSuppliesController.show.url
 
   s"GET $url" must {
     "return an OK if turnoverEstimates are found" in new Setup {
@@ -99,7 +99,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ClaimRefundsController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ClaimRefundsController.show.url)
       }
     }
 

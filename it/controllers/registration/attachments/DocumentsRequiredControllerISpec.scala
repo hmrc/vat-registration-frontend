@@ -10,8 +10,8 @@ import play.api.test.Helpers._
 
 class DocumentsRequiredControllerISpec extends ControllerISpec {
 
-  val resolveUrl: String = routes.DocumentsRequiredController.resolve().url
-  val showUrl: String = routes.DocumentsRequiredController.show().url
+  val resolveUrl: String = routes.DocumentsRequiredController.resolve.url
+  val showUrl: String = routes.DocumentsRequiredController.show.url
 
   s"GET $resolveUrl" must {
     "return a redirect to documents required page when identity evidence is required and method is Other" in {
@@ -25,7 +25,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
       }
     }
 
@@ -40,7 +40,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
       }
     }
 
@@ -55,7 +55,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
       }
     }
 
@@ -70,7 +70,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show().url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
       }
     }
   }
@@ -103,7 +103,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show().url)
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
         }
       }
     }
@@ -120,7 +120,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show().url)
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
         }
       }
     }

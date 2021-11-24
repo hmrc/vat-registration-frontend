@@ -32,7 +32,7 @@ class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureA
     applicationProgressSavedView
   )
 
-  s"GET ${routes.ApplicationProgressSavedController.show()}" should {
+  s"GET ${routes.ApplicationProgressSavedController.show}" should {
     "display the submission progress saved page to the user" in {
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
