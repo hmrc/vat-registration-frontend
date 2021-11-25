@@ -23,6 +23,7 @@ import views.html.pages.error.passcode_not_found
 class PasscodeNotFoundViewSpec extends VatRegViewSpec {
 
   val view: passcode_not_found = app.injector.instanceOf[passcode_not_found]
+  val testUrl = "test"
 
   val heading = "You need to start again"
   val title = s"$heading - Register for VAT - GOV.UK"
@@ -30,7 +31,7 @@ class PasscodeNotFoundViewSpec extends VatRegViewSpec {
   val linkText = "get a new code"
   val p2 = s"You will need to get a new code to continue with the registration."
 
-  implicit val doc: Document = Jsoup.parse(view().body)
+  implicit val doc: Document = Jsoup.parse(view(testUrl).body)
 
   "The Join FRS page" must {
     "have the correct heading" in new ViewSetup {
@@ -50,7 +51,7 @@ class PasscodeNotFoundViewSpec extends VatRegViewSpec {
     }
 
     "have the correct link text" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(linkText, "/register-for-vat/email-address"))
+      doc.link(1) mustBe Some(Link(linkText, testUrl))
     }
 
   }

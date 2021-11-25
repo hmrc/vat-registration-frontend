@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.registration.applicant.errors
+package controllers.registration.errors
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile}
+import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.pages.error.maxPasscodeAttemptsExceeded
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailPasscodesMaxAttemptsExceededController @Inject()(view: maxPasscodeAttemptsExceeded,
@@ -35,10 +35,9 @@ class EmailPasscodesMaxAttemptsExceededController @Inject()(view: maxPasscodeAtt
                                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         Future.successful(Ok(view()))
-
   }
 }

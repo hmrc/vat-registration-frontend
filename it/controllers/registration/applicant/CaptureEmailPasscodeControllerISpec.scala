@@ -92,7 +92,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
 
-      "return BAD_REQUEST when passcode is not found" in new Setup {
+      "redirect to passcode not found error page if the passcode can't be found" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -108,8 +108,12 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
-        res.status mustBe BAD_REQUEST
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.errors.routes.EmailPasscodeNotFoundController.show(
+          controllers.registration.applicant.routes.CaptureEmailAddressController.show.url
+        ).url)
       }
+
       "redirect to error page for exceeding the maximum number of passcode attempts" in new Setup {
         disable(StubEmailVerification)
 
@@ -127,8 +131,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.registration.applicant.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
-
+        res.header("LOCATION") mustBe Some(controllers.registration.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
       }
     }
   }

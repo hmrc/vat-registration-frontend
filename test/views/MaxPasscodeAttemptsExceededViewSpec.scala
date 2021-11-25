@@ -22,6 +22,7 @@ import views.html.pages.error.maxPasscodeAttemptsExceeded
 class MaxPasscodeAttemptsExceededViewSpec extends VatRegViewSpec {
 
   val view = app.injector.instanceOf[maxPasscodeAttemptsExceeded]
+  val testUrl = controllers.callbacks.routes.SignInOutController.signOut.url
   implicit val doc = Jsoup.parse(view().body)
 
   object ExpectedContent {
@@ -46,7 +47,7 @@ class MaxPasscodeAttemptsExceededViewSpec extends VatRegViewSpec {
       doc.para(2) mustBe Some(ExpectedContent.p2)
     }
     "have the correct link text" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.link, "/register-for-vat/email-address"))
+      doc.link(1) mustBe Some(Link(ExpectedContent.link, testUrl))
     }
   }
 

@@ -19,29 +19,26 @@ package controllers.registration.transactor
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import controllers.registration.errors.{routes => errorRoutes}
 import forms.TransactorEmailPasscodeForm
-
-import javax.inject.Inject
 import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
+import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
 import services.{EmailVerificationService, SessionProfile, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import controllers.registration.applicant.errors.{routes => errorRoutes}
-import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
 import views.html.capture_email_passcode
-import views.html.pages.error.passcode_not_found
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                          val authConnector: AuthConnector,
                                                          val keystoreConnector: KeystoreConnector,
                                                          emailVerificationService: EmailVerificationService,
-                                                         transactorDetailsService: TransactorDetailsService,
-                                                         passcode_not_found: passcode_not_found)
+                                                         transactorDetailsService: TransactorDetailsService)
                                                         (implicit appConfig: FrontendAppConfig,
                                                          val executionContext: ExecutionContext,
                                                          baseControllerComponents: BaseControllerComponents)
@@ -76,13 +73,15 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
                 case PasscodeMismatch =>
                   val incorrectPasscodeForm = TransactorEmailPasscodeForm.form.withError(
                     key = TransactorEmailPasscodeForm.passcodeKey,
-                    message = Messages("transactorPasscode.error")
+                    message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
                   Future.successful(BadRequest(view(email, routes.TransactorCaptureEmailPasscodeController.submit, incorrectPasscodeForm)))
                 case PasscodeNotFound =>
-                  Future(NotImplemented)
+                  Future.successful(Redirect(errorRoutes.EmailPasscodeNotFoundController.show(
+                    controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url
+                  )))
                 case MaxAttemptsExceeded =>
-                  Future(NotImplemented)
+                  Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show))
               }
             }
         )

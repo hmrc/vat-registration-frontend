@@ -18,7 +18,7 @@ package controllers.registration.transactor
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.TransactorDetails
+import models.{ApplicantDetails, TransactorDetails}
 import models.api.EligibilitySubmissionData
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -91,11 +91,46 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
 
-      "return BAD_REQUEST when passcode is not found" in new Setup {
-        //TODO once error routing ticket is done
+      "redirect to passcode not found error page if the passcode can't be found" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[TransactorDetails].contains(s4lContents)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
+
+        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.errors.routes.EmailPasscodeNotFoundController.show(
+          controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url
+        ).url)
       }
+
       "redirect to error page for exceeding the maximum number of passcode attempts" in new Setup {
-        //TODO once error routing ticket is done
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[TransactorDetails].contains(s4lContents)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_PASSCODE_ATTEMPTS_EXCEEDED").toString)
+
+        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
       }
     }
   }
