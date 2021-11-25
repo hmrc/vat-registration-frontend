@@ -33,7 +33,7 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
 
   def getTransactorDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
     s4LService.fetchAndGet[TransactorDetails].flatMap {
-      case None | Some(TransactorDetails(None, None, None, None, None, None, None)) =>
+      case None | Some(TransactorDetails(None, None, None, None, None, None, None, None)) =>
         registrationsApiConnector.getSection[TransactorDetails](cp.registrationId).map {
           case Some(details) => details
           case None => TransactorDetails()
@@ -44,9 +44,9 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
 
   private def isModelComplete(transactorDetails: TransactorDetails): Completion[TransactorDetails] = {
     transactorDetails match {
-      case TransactorDetails(Some(_), Some(false), _, Some(_), Some(_), Some(_), Some(_)) =>
+      case TransactorDetails(Some(_), Some(false), _, Some(_), Some(_), Some(true), Some(_),  Some(_)) =>
         Complete(transactorDetails.copy(organisationName = None))
-      case TransactorDetails(Some(_), Some(true), Some(_), Some(_), Some(_), Some(_), Some(_)) =>
+      case TransactorDetails(Some(_), Some(true), Some(_), Some(_), Some(_), Some(true), Some(_), Some(_)) =>
         Complete(transactorDetails)
       case _ =>
         Incomplete(transactorDetails)
@@ -78,6 +78,8 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
         before.copy(telephone = Some(telephone.answer))
       case email: TransactorEmail =>
         before.copy(email = Some(email.answer))
+      case emailVerified: TransactorEmailVerified =>
+        before.copy(emailVerified = Some(emailVerified.answer))
       case address: Address =>
         before.copy(address = Some(address))
       case declarationCapacity: DeclarationCapacityAnswer =>
@@ -95,5 +97,7 @@ object TransactorDetailsService {
   case class Telephone(answer: String)
 
   case class TransactorEmail(answer: String)
+
+  case class TransactorEmailVerified(answer: Boolean)
 
 }

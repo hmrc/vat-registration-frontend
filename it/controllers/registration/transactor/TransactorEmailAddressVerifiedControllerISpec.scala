@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
-import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
-import fixtures.ITRegistrationFixtures
+package controllers.registration.transactor
+
+import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.api._
 import play.api.http.HeaderNames
-import play.api.http.Status.SEE_OTHER
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.Helpers._
 
-import scala.concurrent.Future
+class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
 
-class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
-
-  val url: String = controllers.routes.HonestyDeclarationController.show.url
-
-  val userId = "user-id-12345"
-
-  s"GET $url" must {
-    "return an OK" in new Setup {
+  "GET /transactor-details/email-address-verified" should {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -43,15 +33,15 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).get()
-      whenReady(response) { res =>
-        res.status mustBe 200
-      }
+      val res: WSResponse = await(buildClient("/your-email-address-verified").get)
+
+      res.status mustBe OK
     }
   }
 
-  s"POST $url" must {
+  "POST /transactor-details/email-address-verified" should {
     "redirect to Business Identification Resolver" in new Setup {
+      disable(StubEmailVerification)
 
       given()
         .user.isAuthorised
@@ -66,4 +56,5 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
     }
   }
+
 }

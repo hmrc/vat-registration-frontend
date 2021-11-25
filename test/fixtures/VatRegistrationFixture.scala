@@ -160,6 +160,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     organisationName = Some("testCompanyName"),
     telephone = Some("1234"),
     email = Some("test@t.test"),
+    emailVerified = Some(true),
     address = Some(testAddress),
     declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )

@@ -16,24 +16,18 @@
 
 package forms
 
-import forms.constraints.EmailAddressConstraints
-import forms.constraints.utils.ConstraintUtil.ConstraintUtil
+import forms.constraints.EmailPasscodeConstraints
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 
-object EmailAddressForm {
+object TransactorEmailPasscodeForm {
 
-  val emailKey = "email-address"
+  val passcodeKey = "email-passcode"
 
-  val form: Form[String] =
-    Form(
-      single(
-        emailKey -> text.verifying(
-          EmailAddressConstraints.emailAddressEmpty() andThen
-            EmailAddressConstraints.emailAddressLength() andThen
-            EmailAddressConstraints.emailAddressFormat()
-        )
-      )
+  val form: Form[String] = Form(
+    single(
+      passcodeKey -> text.verifying(EmailPasscodeConstraints.emailPasscodeLength)
     )
+  )
 
 }

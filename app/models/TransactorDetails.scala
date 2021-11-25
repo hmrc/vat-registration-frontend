@@ -24,6 +24,7 @@ case class TransactorDetails(personalDetails: Option[PersonalDetails] = None,
                              organisationName: Option[String] = None,
                              telephone: Option[String] = None,
                              email: Option[String] = None,
+                             emailVerified: Option[Boolean] = None,
                              address: Option[Address] = None,
                              declarationCapacity: Option[DeclarationCapacityAnswer] = None)
 
