@@ -31,8 +31,8 @@ class TrafficManagementConnector @Inject()(val httpClient: HttpClient,
                                            appConfig: FrontendAppConfig
                                           )(implicit executionContext: ExecutionContext) {
 
-  def getRegistrationInformation(implicit hc: HeaderCarrier): Future[Option[RegistrationInformation]] =
-    httpClient.GET[Option[RegistrationInformation]](appConfig.getRegistrationInformationUrl)
+  def getRegistrationInformation(regId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationInformation]] =
+    httpClient.GET[Option[RegistrationInformation]](appConfig.trafficManagementInfoApiUrl(regId))
 
   def clearTrafficManagement(implicit hc: HeaderCarrier): Future[ClearTrafficManagementResponse] =
     httpClient.DELETE(appConfig.clearTrafficManagementUrl) map {

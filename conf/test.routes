@@ -5,6 +5,7 @@ GET         /setup-traffic-management                         controllers.test.U
 POST        /setup-traffic-management                         controllers.test.UpdateTrafficManagementController.submit
 
 GET         /clear-traffic-management                         controllers.test.UpdateTrafficManagementController.clear
+GET         /delete-registrations                             controllers.test.DeleteAllRegistrationsController.deleteAllRegistrations
 
 GET         /sic-stub                                         controllers.test.SicStubController.show
 POST        /sic-stub                                         controllers.test.SicStubController.submit

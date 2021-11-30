@@ -17,15 +17,23 @@
 package connectors
 
 import common.enums.VatRegStatus
+import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.VatScheme
 import play.api.test.Helpers._
-import support.AppAndStubs
+import support.{APIStub, AppAndStubs, CanGet, RegistrationsApiStubs}
 import uk.gov.hmrc.http.Upstream5xxResponse
+import play.api.libs.json.Json
 
-class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs {
+class VatRegistrationConnectorISpec extends IntegrationSpecBase
+  with AppAndStubs
+  with ITRegistrationFixtures
+  with RegistrationsApiStubs {
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
+
+  val registrationsStub = new APIStub("/vatreg/registrations") with CanGet
+  val testRegistrationsResponse = Json.arr(Json.toJson(fullVatScheme), Json.toJson(fullVatScheme.copy(id = "2")))
 
   override def additionalConfig: Map[String, String] =
     Map(
@@ -72,6 +80,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
       await(res) mustBe testAckRef
     }
   }
+
   "submitHonestyDeclaration" should {
     "return an OK status code" in {
       val testHonestyDeclaration = "testHonestyDeclaration"
@@ -81,5 +90,14 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase with AppAndStubs
     }
   }
 
-}
+  "getAllRegistrations" should {
+    "return OK with a list of registrations" in {
+      registrationsStub.GET.respondsWith(OK, Some(testRegistrationsResponse))
 
+      val res = await(vatregConnector.getAllRegistrations)
+
+      res mustBe List(fullVatScheme, fullVatScheme.copy(id = "2"))
+    }
+  }
+
+}

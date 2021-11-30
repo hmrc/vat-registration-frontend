@@ -20,9 +20,13 @@ import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import featureswitch.core.config.SaveAndContinueLater
+import forms.StartNewApplicationForm
 import models.CurrentProfile
+import models.api.trafficmanagement.{ClearTrafficManagementError, TrafficManagementCleared}
 import play.api.mvc._
 import services._
+import uk.gov.hmrc.http.InternalServerException
+import views.html.pages.start_new_application
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +37,8 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
                                   val authConnector: AuthClientConnector,
                                   val keystoreConnector: KeystoreConnector,
                                   val trafficManagementService: TrafficManagementService,
-                                  val saveAndRetrieveService: SaveAndRetrieveService)
+                                  val saveAndRetrieveService: SaveAndRetrieveService,
+                                  view: start_new_application)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -41,9 +46,15 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
     if (isEnabled(SaveAndContinueLater)) {
-      trafficManagementService.checkTrafficManagement.flatMap {
-        case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
-        case _ => Future.successful(Redirect(routes.StartNewApplicationController.show))
+      vatRegistrationService.getAllRegistrations.map(_.headOption).flatMap {
+        case Some(scheme) if scheme.status == VatRegStatus.draft =>
+          currentProfileService.buildCurrentProfile(scheme.id).map { _ =>
+            Ok(view(StartNewApplicationForm.form))
+          }
+        case _ =>
+          currentProfileService.keystoreConnector.remove.map { _ =>
+            Redirect(routes.WelcomeController.startNewJourney)
+          }
       }
     }
     else {
@@ -51,14 +62,25 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
     }
   }
 
-  def continueJourney: Action[AnyContent] = isAuthenticated { implicit request =>
-    trafficManagementService.checkTrafficManagement.flatMap {
-      case PassedVatReg(regId) => saveAndRetrieveService.retrievePartialVatScheme(regId)
-        .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
-        .map(_ => Redirect(appConfig.eligibilityRouteUrl))
-      case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
-      case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
-    }
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+    StartNewApplicationForm.form.bindFromRequest().fold(
+      formWithErrors =>
+        Future.successful(BadRequest(view(formWithErrors))),
+      startNew =>
+        if (startNew) {
+          trafficManagementService.clearTrafficManagement.flatMap {
+            case TrafficManagementCleared =>
+              vatRegistrationService.deleteVatScheme.map { _ =>
+                Redirect(routes.WelcomeController.startNewJourney)
+              }
+            case ClearTrafficManagementError(status) =>
+              throw new InternalServerException(s"[StartNewApplicationCtrl] Clear Traffic management API returned status: $status")
+          }
+        }
+        else {
+          Future.successful(Redirect(routes.WelcomeController.continueJourney(Some(profile.registrationId))))
+        }
+    )
   }
 
   def startNewJourney: Action[AnyContent] = isAuthenticated { implicit request =>
@@ -69,4 +91,20 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
       case Some(_) => Future.successful(Redirect(appConfig.eligibilityUrl))
     }
   }
+
+  def continueJourney(journey: Option[String]): Action[AnyContent] = isAuthenticated { implicit request =>
+    journey match {
+      case Some(regId: String) =>
+        trafficManagementService.checkTrafficManagement(regId).flatMap {
+          case PassedVatReg(regId) => saveAndRetrieveService.retrievePartialVatScheme(regId)
+            .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
+            .map(_ => Redirect(appConfig.eligibilityRouteUrl))
+          case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
+          case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
+        }
+      case None =>
+        Future.successful(BadRequest("No journey ID was specified"))
+    }
+  }
+
 }

@@ -20,7 +20,6 @@ import common.enums.VatRegStatus
 import connectors._
 import models.api._
 import models.{TurnoverEstimates, _}
-import play.api.Logger
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -39,6 +38,9 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
+
+  def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatScheme]] =
+    vatRegConnector.getAllRegistrations
 
   def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =
     vatRegConnector.getRegistrationJson(regId)

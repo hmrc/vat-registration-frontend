@@ -20,16 +20,19 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import featureswitch.core.config.SaveAndContinueLater
 import itutil.ControllerISpec
+import models.api.VatScheme
 import models.api.trafficmanagement.{OTRS, VatReg}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import services.SaveAndRetrieveService.vatSchemeKey
+import support.RegistrationsApiStubs
+import uk.gov.hmrc.play.audit.model.EventTypes.Failed
 
 import java.time.LocalDate
 
-class WelcomeControllerISpec extends ControllerISpec {
+class WelcomeControllerISpec extends ControllerISpec
+  with RegistrationsApiStubs {
 
   lazy val controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
   lazy val appConfig: FrontendAppConfig = app.injector.instanceOf(classOf[FrontendAppConfig])
@@ -37,15 +40,17 @@ class WelcomeControllerISpec extends ControllerISpec {
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
 
-  val startUrl: String = routes.WelcomeController.show.url
+  val showUrl: String = routes.WelcomeController.show.url
+  val submitUrl: String = routes.WelcomeController.submit.url
   val newJourneyUrl: String = routes.WelcomeController.startNewJourney.url
-  val continueJourneyUrl: String = routes.WelcomeController.continueJourney.url
 
-  val startNewApplicationPageUrl: String = routes.StartNewApplicationController.show.url
+  def continueJourneyUrl(regId: String): String =
+    routes.WelcomeController.continueJourney(Some(regId)).url
 
-  val vatSchemeJson: String = Json.toJson(fullVatScheme).toString()
+  val vatSchemeJson = Json.toJson(fullVatScheme)
+  val vatSchemeJson2 = Json.toJson(fullVatScheme.copy(id = "2"))
 
-  s"GET $startUrl" when {
+  s"GET $showUrl" when {
     "SaveAndContinueLater FS is disabled" must {
       s"return a redirect to $newJourneyUrl" when {
         "user is authenticated and authorised to access the app without profile" in new Setup {
@@ -58,7 +63,7 @@ class WelcomeControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          val res: WSResponse = await(buildClient(startUrl).get())
+          val res: WSResponse = await(buildClient(showUrl).get())
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
@@ -74,7 +79,7 @@ class WelcomeControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res: WSResponse = await(buildClient(startUrl).get())
+          val res: WSResponse = await(buildClient(showUrl).get())
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
@@ -82,41 +87,88 @@ class WelcomeControllerISpec extends ControllerISpec {
       }
     }
 
-    "SaveAndContinueLater FS is enabled" must {
-      s"return a redirect to $newJourneyUrl" when {
-        "the traffic management check fails" in new Setup {
+    "SaveAndContinueLater FS is enabled" when {
+      "the registrations API returns no registrations" must {
+        s"redirect to $newJourneyUrl" in new Setup {
           enable(SaveAndContinueLater)
 
           given()
             .user.isAuthorised
             .audit.writesAudit()
             .audit.writesAuditMerged()
-            .trafficManagement.fails
 
-          val res: WSResponse = await(buildClient(startUrl).get())
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
+
+          val res: WSResponse = await(buildClient(showUrl).get())
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
         }
       }
 
-      s"return a redirect to $startNewApplicationPageUrl" when {
-        "the traffic management check passes" in new Setup {
+      "the registratsions API returns 1 in flight registration" must {
+        "return OK and display the select registration page" in new Setup {
           enable(SaveAndContinueLater)
 
           given()
             .user.isAuthorised
-            .vatRegistrationFootprint.exists()
+            .audit.writesAudit()
+            .audit.writesAuditMerged()
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
+
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson)))
+
+          val res: WSResponse = await(buildClient(showUrl).get())
+
+          res.status mustBe OK
+        }
+      }
+
+      "the registrations API returns more than 1 in flight registration" must {
+        "return OK and display the select registration page" in new Setup {
+          enable(SaveAndContinueLater)
+
+          given()
+            .user.isAuthorised
             .vatScheme.regStatus(VatRegStatus.draft.toString)
             .audit.writesAudit()
             .audit.writesAuditMerged()
-            .trafficManagement.passes()
 
-          val res: WSResponse = await(buildClient(startUrl).get())
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson, vatSchemeJson2)))
 
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(startNewApplicationPageUrl)
+          val res: WSResponse = await(buildClient(showUrl).get())
+
+          res.status mustBe OK
         }
+      }
+    }
+  }
+
+  s"POST $submitUrl" when {
+    "the user wants to start a new registration" must {
+      "redirect to the new journey url" in new Setup {
+        given()
+          .user.isAuthorised
+          .trafficManagement.isCleared
+          .vatScheme.deleted
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> true)))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.startNewJourney.url)
+      }
+    }
+    "the user wants to continue their existing registration" must {
+      "redirect to the continue journey url" in new Setup {
+        given()
+          .user.isAuthorised
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> false)))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.continueJourney(Some(testRegId)).url)
       }
     }
   }
@@ -140,6 +192,7 @@ class WelcomeControllerISpec extends ControllerISpec {
       "user is authenticated and authorised to access the app with profile" in new Setup {
         given()
           .user.isAuthorised
+          .vatScheme.regStatus(VatRegStatus.draft.toString)
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
@@ -153,69 +206,61 @@ class WelcomeControllerISpec extends ControllerISpec {
     }
   }
 
-  s"GET $continueJourneyUrl" must {
-    "return a redirect to eligiblity" when {
-      "user has a vatreg application in progress with a partial vat scheme" in new Setup {
+  s"GET ${continueJourneyUrl(testRegId)}" when {
+    "the channel for traffic management is VatReg" must {
+      "redirect to Eligibiilty" in new Setup {
         given()
           .user.isAuthorised
+          .s4l.contains("partialVatScheme", Json.stringify(vatSchemeJson))
+          .vatRegistration.insertScheme(Json.stringify(vatSchemeJson))
           .vatScheme.regStatus(VatRegStatus.draft.toString)
+          .trafficManagement.passes(VatReg)
+          .vatRegistrationFootprint.exists()
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .trafficManagement.passes(VatReg)
-          .s4l.contains(vatSchemeKey, vatSchemeJson)
-          .vatRegistration.insertScheme(vatSchemeJson)
 
-        val res: WSResponse = await(buildClient(continueJourneyUrl).get())
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityRouteUrl)
-      }
-
-      "user has a vatreg application in progress without a partial vat scheme" in new Setup {
-        given()
-          .user.isAuthorised
-          .vatScheme.regStatus(VatRegStatus.draft.toString)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .trafficManagement.passes(VatReg)
-          .s4l.isEmpty()
-          .vatRegistration.insertScheme(vatSchemeJson)
-
-        val res: WSResponse = await(buildClient(continueJourneyUrl).get())
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityRouteUrl)
       }
     }
-
-    "return a redirect to otrs" when {
-      "user has an otrs application in progress" in new Setup {
+    "the channel for traffic management is OTRS" must {
+      "redirect to OTRS" in new Setup {
         given()
           .user.isAuthorised
+          .vatRegistrationFootprint.exists()
+          .trafficManagement.passes(OTRS)
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .trafficManagement.passes(OTRS)
 
-        val res: WSResponse = await(buildClient(continueJourneyUrl).get())
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(appConfig.otrsRoute)
       }
     }
-
-    s"return a redirect to $newJourneyUrl" when {
-      "user doesn't pass traffic management" in new Setup {
+    "traffic management fails" must {
+      "start a new journey" in new Setup {
         given()
           .user.isAuthorised
+          .vatRegistrationFootprint.exists()
+          .trafficManagement.fails
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .trafficManagement.fails
 
-        val res: WSResponse = await(buildClient(continueJourneyUrl).get())
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
       }
     }
   }
+
 }

@@ -16,8 +16,9 @@ GET         /feedback                                                           
 
 ## WELCOME PAGE
 GET         /                                                                                  controllers.WelcomeController.show
+POST        /                                                                                  controllers.WelcomeController.submit
 GET         /journey-new                                                                       controllers.WelcomeController.startNewJourney
-GET         /journey-continue                                                                  controllers.WelcomeController.continueJourney
+GET         /journey-continue                                                                  controllers.WelcomeController.continueJourney(journey: Option[String] ?= None)
 
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
@@ -263,10 +264,6 @@ GET         /error/passcode-too-many-attempts                                   
 GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
 GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
 GET         /error/individual-affinity-signin                                                  controllers.IndividualAffinityKickOutController.businessSignInRedirect
-
-## Continue Application Page
-GET         /new-application                                                                   controllers.StartNewApplicationController.show
-POST        /new-application                                                                   controllers.StartNewApplicationController.submit
 
 ## LastMonthOfAccountingYearController
 GET         /last-month-of-accounting-year                                                     controllers.registration.returns.LastMonthOfAccountingYearController.show
