@@ -45,11 +45,12 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         val journeyConfig = MinorEntityIdJourneyConfig(
-          appConfig.minorEntityIdCallbackUrl,
-          Some(request2Messages(request)("service.name")),
-          appConfig.contactFormServiceIdentifier,
-          appConfig.feedbackUrl,
-          appConfig.accessibilityStatementUrl
+          continueUrl = appConfig.minorEntityIdCallbackUrl,
+          optServiceName = Some(request2Messages(request)("service.name")),
+          deskProServiceId = appConfig.contactFormServiceIdentifier,
+          signOutUrl = appConfig.feedbackUrl,
+          accessibilityUrl = appConfig.accessibilityStatementUrl,
+          regime = appConfig.regime
         )
 
         vatRegistrationService.partyType.flatMap {

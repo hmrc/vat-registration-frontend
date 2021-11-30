@@ -22,7 +22,8 @@ case class IncorpIdJourneyConfig(continueUrl: String,
                                  optServiceName: Option[String] = None,
                                  deskProServiceId: String,
                                  signOutUrl: String,
-                                 accessibilityUrl: String)
+                                 accessibilityUrl: String,
+                                 regime: String)
 
 object IncorpIdJourneyConfig {
   implicit val format: OFormat[IncorpIdJourneyConfig] = Json.format[IncorpIdJourneyConfig]

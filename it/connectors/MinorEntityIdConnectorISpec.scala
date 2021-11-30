@@ -46,7 +46,8 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
-    accessibilityUrl = "/accessibility-url"
+    accessibilityUrl = "/accessibility-url",
+    regime = "VATC"
   )
 
   val testPostCode = "ZZ1 1ZZ"

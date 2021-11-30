@@ -22,7 +22,8 @@ case class SoleTraderIdJourneyConfig(continueUrl: String,
                                      optServiceName: Option[String] = None,
                                      deskProServiceId: String,
                                      signOutUrl: String,
-                                     accessibilityUrl: String)
+                                     accessibilityUrl: String,
+                                     regime: String)
 
 object SoleTraderIdJourneyConfig {
   implicit val format: Format[SoleTraderIdJourneyConfig] = Json.format[SoleTraderIdJourneyConfig]

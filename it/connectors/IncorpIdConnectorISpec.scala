@@ -40,7 +40,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -58,7 +58,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -76,7 +76,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -96,7 +96,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -114,7 +114,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -132,7 +132,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 

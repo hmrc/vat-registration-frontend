@@ -55,11 +55,12 @@ class IncorpIdControllerSpec extends ControllerSpec
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   val testJourneyConfig: IncorpIdJourneyConfig = IncorpIdJourneyConfig(
-    appConfig.incorpIdCallbackUrl,
-    Some("Register for VAT"),
-    "vrs",
-    appConfig.feedbackUrl,
-    appConfig.accessibilityStatementUrl
+    continueUrl = appConfig.incorpIdCallbackUrl,
+    optServiceName = Some("Register for VAT"),
+    deskProServiceId = "vrs",
+    signOutUrl = appConfig.feedbackUrl,
+    accessibilityUrl = appConfig.accessibilityStatementUrl,
+    regime = appConfig.regime
   )
 
   "startJourney" should {
