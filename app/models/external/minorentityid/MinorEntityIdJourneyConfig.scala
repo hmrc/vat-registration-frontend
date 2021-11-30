@@ -22,7 +22,8 @@ case class MinorEntityIdJourneyConfig(continueUrl: String,
                                       optServiceName: Option[String] = None,
                                       deskProServiceId: String,
                                       signOutUrl: String,
-                                      accessibilityUrl: String)
+                                      accessibilityUrl: String,
+                                      regime: String)
 
 object MinorEntityIdJourneyConfig {
   implicit val format: OFormat[MinorEntityIdJourneyConfig] = Json.format[MinorEntityIdJourneyConfig]

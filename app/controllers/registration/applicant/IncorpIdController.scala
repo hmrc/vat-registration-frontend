@@ -46,11 +46,12 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         val journeyConfig = IncorpIdJourneyConfig(
-          appConfig.incorpIdCallbackUrl,
-          Some(request2Messages(request)("service.name")),
-          appConfig.contactFormServiceIdentifier,
-          appConfig.feedbackUrl,
-          appConfig.accessibilityStatementUrl
+          continueUrl = appConfig.incorpIdCallbackUrl,
+          optServiceName = Some(request2Messages(request)("service.name")),
+          deskProServiceId = appConfig.contactFormServiceIdentifier,
+          signOutUrl = appConfig.feedbackUrl,
+          accessibilityUrl = appConfig.accessibilityStatementUrl,
+          regime = appConfig.regime
         )
 
         vatRegistrationService.partyType.flatMap {

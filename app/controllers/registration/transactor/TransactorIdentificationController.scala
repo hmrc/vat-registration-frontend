@@ -49,7 +49,8 @@ class TransactorIdentificationController @Inject()(val keystoreConnector: Keysto
               optServiceName = Some(request2Messages(request)("service.name")),
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
-              accessibilityUrl = appConfig.accessibilityStatementUrl
+              accessibilityUrl = appConfig.accessibilityStatementUrl,
+              regime = appConfig.regime
             )
           ).map(url => Redirect(url))
     }

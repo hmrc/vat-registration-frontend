@@ -39,11 +39,12 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     val testJourneyUrl = "/test-journey-url"
 
     val soleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
-      appConfig.soleTraderCallbackUrl,
-      Some("Register for VAT"),
-      "vrs",
-      appConfig.feedbackUrl,
-      appConfig.accessibilityStatementUrl
+      continueUrl = appConfig.soleTraderCallbackUrl,
+      optServiceName = Some("Register for VAT"),
+      deskProServiceId = "vrs",
+      signOutUrl = appConfig.feedbackUrl,
+      accessibilityUrl = appConfig.accessibilityStatementUrl,
+      regime = appConfig.regime
     )
 
     object Controller extends SoleTraderIdentificationController(
