@@ -41,7 +41,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     SaveAndContinueLater,
     AnnualAccountingScheme,
     NorthernIrelandProtocol,
-    EmailAttachments
+    EmailAttachments,
+    ShortOrgName
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -134,4 +135,9 @@ case object NorthernIrelandProtocol extends FeatureSwitch {
 case object EmailAttachments extends FeatureSwitch {
   val configName: String = "feature-switch.email-attachments"
   val displayName: String = "Enable Email attachments"
+}
+
+case object ShortOrgName extends FeatureSwitch {
+  val configName: String = "feature-switch.short-org-name"
+  val displayName: String = "Enable Short Org Name page (use with BE FS)"
 }

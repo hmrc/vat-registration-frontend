@@ -42,6 +42,10 @@ POST        /trading-name                                                       
 GET         /business-name                                                                     controllers.registration.business.BusinessNameController.show
 POST        /business-name                                                                     controllers.registration.business.BusinessNameController.submit
 
+## FULL BUSINESS NAME PAGE
+GET         /short-organisation-name                                                           controllers.registration.business.ShortOrgNameController.show
+POST        /short-organisation-name                                                           controllers.registration.business.ShortOrgNameController.submit
+
 ## EU GOODS PAGE
 GET         /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.show
 POST        /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.submit

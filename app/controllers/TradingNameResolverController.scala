@@ -18,6 +18,7 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
+import featureswitch.core.config.ShortOrgName
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
@@ -45,6 +46,7 @@ class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreCon
             Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show))
           case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
             applicantDetailsService.getCompanyName.map {
+              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
               case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
               case None => Redirect(controllers.registration.business.routes.BusinessNameController.show)
             }
