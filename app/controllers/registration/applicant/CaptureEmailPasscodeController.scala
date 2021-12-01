@@ -19,9 +19,8 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
+import controllers.registration.errors.{routes => errorRoutes}
 import forms.EmailPasscodeForm
-
-import javax.inject.Inject
 import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
@@ -30,20 +29,19 @@ import services.{ApplicantDetailsService, EmailVerificationService, SessionProfi
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
-import controllers.registration.applicant.errors.{routes => errorRoutes}
 import views.html.pages.error.passcode_not_found
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                val authConnector: AuthConnector,
                                                val keystoreConnector: KeystoreConnector,
                                                emailVerificationService: EmailVerificationService,
-                                               applicantDetailsService: ApplicantDetailsService,
-                                               passcode_not_found: passcode_not_found)
+                                               applicantDetailsService: ApplicantDetailsService)
                                               (implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents)
+                                               val executionContext: ExecutionContext,
+                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -79,7 +77,9 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                   )
                   Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit, incorrectPasscodeForm)))
                 case PasscodeNotFound =>
-                  Future.successful(BadRequest(passcode_not_found()))
+                  Future.successful(Redirect(errorRoutes.EmailPasscodeNotFoundController.show(
+                    controllers.registration.applicant.routes.CaptureEmailAddressController.show.url
+                  )))
                 case MaxAttemptsExceeded =>
                   Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show))
               }

@@ -27,7 +27,7 @@
         link: link
 )
 
-@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(emailAddressUrl: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(Some(titleNoForm(messages("page.passcodeNotFound.heading"))), backLink = false) {
 
@@ -35,7 +35,7 @@
     @p{ @messages("page.passcodeNotFound.p1") }
     @p{
        @messages("page.passcodeNotFound.p2a")
-       @link(controllers.registration.applicant.routes.CaptureEmailAddressController.show.url, messages("page.passcodeNotFound.linkText"))
+       @link(emailAddressUrl, messages("page.passcodeNotFound.linkText"))
        @messages("page.passcodeNotFound.p2b")
     }
 

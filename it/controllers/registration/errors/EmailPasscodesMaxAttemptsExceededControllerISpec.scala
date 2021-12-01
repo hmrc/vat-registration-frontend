@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.registration.applicant.errors
+package controllers.registration.errors
 
 import itutil.ControllerISpec
+import models.api.EligibilitySubmissionData
 import play.api.test.Helpers._
 
 class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
@@ -31,6 +32,7 @@ class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show.url).get())
+
       res.status mustBe OK
     }
   }

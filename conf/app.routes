@@ -256,8 +256,11 @@ POST        /flat-rate-date                                                     
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
 
-##email max attempts error page
-GET         /error/passcode-too-many-attempts                                                   controllers.registration.applicant.errors.EmailPasscodesMaxAttemptsExceededController.show
+## Email max attempts error page
+GET         /error/passcode-too-many-attempts                                                  controllers.registration.errors.EmailPasscodesMaxAttemptsExceededController.show
+
+## Email passcode not found
+GET         /error/passcode-not-found                                                          controllers.registration.errors.EmailPasscodeNotFoundController.show(redirectUrl: String)
 
 ##individual affinity kick out
 GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
