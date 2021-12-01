@@ -16,7 +16,7 @@
 
 package controllers
 
-import common.enums.VatRegStatus
+import featureswitch.core.config.ShortOrgName
 import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, TradingDetails}
@@ -45,6 +45,31 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
         }
+      }
+    }
+
+    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.ShortOrgNameController.show.url} for a ${UkCompany.toString} with a company name longer than 105" in new Setup {
+      val longCompanyName: String = "1" * 106
+
+      enable(ShortOrgName)
+
+      given()
+        .user.isAuthorised
+        .s4lContainer[TradingDetails].isEmpty
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UkCompany)))
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity =
+        Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
+      ))(ApplicantDetails.writes))
+        .vatScheme.doesNotHave("trading-details")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/resolve-party-type").get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.ShortOrgNameController.show.url)
       }
     }
 

@@ -27,32 +27,23 @@ object TradingNameView {
 }
 
 case class TradingDetails(tradingNameView: Option[TradingNameView] = None,
-                          euGoods: Option[Boolean] = None)
+                          euGoods: Option[Boolean] = None,
+                          shortOrgName: Option[String] = None)
 
 object TradingDetails {
   implicit val s4lKey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
 
-  val reads: Reads[TradingDetails] = new Reads[TradingDetails] {
-    override def reads(json: JsValue): JsResult[TradingDetails] = {
-      val tradingName = (json \ "tradingName").asOpt[String]
-      val eoriRequested = (json \ "eoriRequested").asOpt[Boolean]
-
-      JsSuccess(TradingDetails(
-        Some(TradingNameView(tradingName.isDefined, tradingName)),
-        eoriRequested
-      ))
-    }
-  }
+  val reads: Reads[TradingDetails] = (
+    (__ \ "tradingName").readNullable[String].map[Option[TradingNameView]](tradingName => Some(TradingNameView(tradingName.isDefined, tradingName))) and
+      (__ \ "eoriRequested").readNullable[Boolean] and
+      (__ \ "shortOrgName").readNullable[String]
+    ) (TradingDetails.apply _)
 
   val writes: Writes[TradingDetails] = (
     (__ \ "tradingName").writeNullable[String].contramap[Option[TradingNameView]](_.flatMap(_.tradingName)) and
-      (__ \ "eoriRequested").writeNullable[Boolean]
+      (__ \ "eoriRequested").writeNullable[Boolean] and
+      (__ \ "shortOrgName").writeNullable[String]
   ) (unlift(TradingDetails.unapply))
-
-  val tradingNameApiPrePopReads: Reads[Option[String]] = (__ \ "tradingName").readNullable[String]
-  val tradingNameApiPrePopWrites: Writes[String] = new Writes[String] {
-    override def writes(tradingName: String): JsValue = Json.obj("tradingName" -> tradingName)
-  }
 
   val apiFormat = Format[TradingDetails](reads, writes)
   implicit val format = Json.format[TradingDetails]

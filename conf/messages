@@ -340,6 +340,7 @@ cya.mobile                                           = Mobile number
 cya.telephone                                        = Telephone number
 cya.companyNumber                                    = Company registration number
 cya.businessName                                     = Official business name
+cya.shortOrgName                                     = Shortened Name
 cya.ctutr                                            = Unique Taxpayer Reference number
 cya.chrn                                             = Charity registration number
 cya.sautr                                            = Unique Taxpayer Reference number
@@ -997,11 +998,16 @@ pages.EmailDocuments.para1                               = For us to be able to 
 pages.EmailDocuments.panel1                              = vrs.newregistrations@hmrc.gov.uk
 
 # BUSINESS NAME
-
 businessName.heading                                     = What is the official name of the business?
 validation.businessName.invalid                          = Enter a valid official business name
 validation.businessName.missing                          = Enter the official name of the business
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
+
+# SHORT ORG NAME
+shortOrgName.heading                                 = What is the official name of the business?
+validation.shortOrgName.invalid                      = Enter a valid official business name
+validation.shortOrgName.missing                      = Enter the official name of the business
+validation.shortOrgName.maxlen                       = Enter an official business name using 160 characters or less
 
 ## PART OF ORGANISATION
 partOfOrganisation.heading                               = Are you a part of an organisation?

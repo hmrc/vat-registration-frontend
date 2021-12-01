@@ -544,6 +544,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val tradingDetails: TradingDetails = vatScheme.tradingDetails.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing trading details block"))
     val tradingNameOptional: Boolean = Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc).contains(partyType)
 
+    val shortOrgNameRow = optSummaryListRowString(
+      s"$sectionId.shortOrgName",
+      tradingDetails.shortOrgName,
+      Some(controllers.registration.business.routes.ShortOrgNameController.show.url)
+    )
+
     val tradingNameRow = optSummaryListRowString(
       if (tradingNameOptional) {
         s"$sectionId.tradingName"
@@ -568,6 +574,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     )
 
     Seq(
+      shortOrgNameRow,
       tradingNameRow,
       applyForEoriRow
     ).flatten
