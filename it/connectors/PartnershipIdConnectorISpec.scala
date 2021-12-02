@@ -60,8 +60,9 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "identifiersMatch" -> true
   )
 
-  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
+  override val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
+    None,
     Some(testPostCode),
     testRegistration,
     BvPass,

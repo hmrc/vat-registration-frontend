@@ -1062,3 +1062,9 @@ pages.vat2Required.heading                               = You must complete a V
 pages.vat2Required.para.1                                = You must now
 pages.vat2Required.para.link                             = download the VAT 2 form
 pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership''s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC.
+
+## PARTNERSHIP NAME
+partnershipName.heading                                  = What is the name of the partnership?
+validation.partnershipName.missing                       = Enter the name of the partnership
+validation.partnershipName.maxlen                        = Enter a partnership name that is between 1 and 105 characters
+validation.partnershipName.invalid                       = Enter a partnership name that does not contain special characters

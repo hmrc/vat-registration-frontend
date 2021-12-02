@@ -49,12 +49,21 @@ class TradingNameResolverControllerSpec extends ControllerSpec
   }
 
   "resolve" must {
-    List(Individual, Partnership, NETP).foreach { partyType =>
+    List(Individual, NETP).foreach { partyType =>
       s"redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(partyType))
         val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
+      }
+    }
+
+    List(Partnership, ScotPartnership).foreach { partyType =>
+      s"redirects to ${controllers.registration.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
+        mockPartyType(Future.successful(Partnership))
+        val res = Controller.resolve()(FakeRequest())
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.business.routes.PartnershipNameController.show.url)
       }
     }
 

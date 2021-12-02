@@ -42,8 +42,10 @@ class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreCon
     implicit request =>
       implicit profile =>
         vatRegistrationService.partyType.flatMap {
-          case Individual | Partnership | NETP =>
+          case Individual | NETP =>
             Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show))
+          case Partnership | ScotPartnership =>
+            Future.successful(Redirect(controllers.registration.business.routes.PartnershipNameController.show))
           case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
             applicantDetailsService.getCompanyName.map {
               case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
