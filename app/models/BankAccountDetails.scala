@@ -16,6 +16,7 @@
 
 package models
 
+import models.api.BankAccountDetailsStatus
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import utils.JsonUtilities
@@ -27,7 +28,8 @@ case class BankAccount(isProvided: Boolean,
 
 case class BankAccountDetails(name: String,
                               number: String,
-                              sortCode: String)
+                              sortCode: String,
+                              status: Option[BankAccountDetailsStatus] = None)
 
 object BankAccountDetails {
   implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {
@@ -54,29 +56,10 @@ object BankAccountDetails {
 object BankAccount extends JsonUtilities {
   implicit val s4lKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")
 
-  val reads: Reads[BankAccount] = (
-    (__ \ "isProvided").read[Boolean] and
-    (__ \ "details").readNullable[BankAccountDetails](BankAccountDetails.format) and
-    (__ \ "overseasDetails").readNullable[OverseasBankDetails] and
-    (__ \ "reason").readNullable[NoUKBankAccount]
-  ) (apply _)
-
-  val writes: Writes[BankAccount] = Writes[BankAccount] { bankAccount =>
-    Json.obj(
-      "isProvided" -> bankAccount.isProvided,
-      "details" -> bankAccount.details.map(details =>
-        Json.obj(
-          "name" -> details.name,
-          "sortCode" -> details.sortCode,
-          "number" -> details.number
-        )
-      ),
-      "overseasDetails" -> bankAccount.overseasDetails.map(details => Json.toJson(details)),
-      "reason" -> bankAccount.reason
-    ).filterNullFields
-
-  }
-
-  implicit val format: Format[BankAccount] = Format[BankAccount](reads, writes)
-
+  implicit val format: Format[BankAccount] = (
+    (__ \ "isProvided").format[Boolean] and
+      (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
+      (__ \ "overseasDetails").formatNullable[OverseasBankDetails] and
+      (__ \ "reason").formatNullable[NoUKBankAccount]
+    )(BankAccount.apply, unlift(BankAccount.unapply))
 }

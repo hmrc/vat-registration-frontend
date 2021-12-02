@@ -18,6 +18,7 @@ package services
 
 import featureswitch.core.config.{FeatureSwitching, StubBars}
 import models.BankAccountDetails
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -41,7 +42,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
   "Calling validateBankDetails" should {
     val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
 
-    "return true when the json returns a true" in new Setup {
+    "return ValidStatus when the json returns a true" in new Setup {
       val testUserId = "testUserId"
 
       when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
@@ -54,13 +55,13 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
         "response" -> validBankCheckJsonResponse
       )
 
-      service.validateBankDetails(bankDetails) returns true
+      service.validateBankDetails(bankDetails) returns ValidStatus
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
     }
 
-    "return false when the json returns a false" in new Setup {
+    "return InvalidStatus when the json returns a false" in new Setup {
       val testUserId = "testUserId"
 
       when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
@@ -73,13 +74,13 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
         "response" -> invalidBankCheckJsonResponse
       )
 
-      service.validateBankDetails(bankDetails) returns false
+      service.validateBankDetails(bankDetails) returns InvalidStatus
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
     }
 
-    "return false when the json returns indeterminate" in new Setup {
+    "return IndeterminateStatus when the json returns indeterminate" in new Setup {
       val testUserId = "testUserId"
 
       when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
@@ -92,7 +93,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
         "response" -> indeterminateBankCheckJsonResponse
       )
 
-      service.validateBankDetails(bankDetails) returns false
+      service.validateBankDetails(bankDetails) returns IndeterminateStatus
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
@@ -104,7 +105,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
         .thenReturn(Future.successful(Json.obj("accountNumberWithSortCodeIsValid"-> "false")))
       mockAuthenticatedInternalId(Some(testUserId))
 
-      intercept[InternalServerException] {
+      intercept[NoSuchElementException] {
         await(service.validateBankDetails(bankDetails))
       }
     }

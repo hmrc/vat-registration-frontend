@@ -18,6 +18,7 @@ package forms
 
 import forms.FormValidation._
 import models.BankAccountDetails
+import models.api.{BankAccountDetailsStatus, IndeterminateStatus}
 import play.api.data.Forms._
 import play.api.data.{Form, Mapping}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
@@ -68,7 +69,13 @@ object EnterBankAccountDetailsForm {
         mandatory(sortCodeEmptyKey),
         matchesRegex(sortCodeRegex, sortCodeInvalidKey)
       ))
-    )(BankAccountDetails.apply)(BankAccountDetails.unapply)
+    )
+    ((accountName, accountNumber, sortCode) => BankAccountDetails.apply(accountName, accountNumber, sortCode, None))
+    (bankAccountDetails =>
+      BankAccountDetails.unapply(bankAccountDetails).map {
+        case (accountName, accountNumber, sortCode, _) => (accountName, accountNumber, sortCode)
+      }
+    )
   )
 
   val formWithInvalidAccountReputation: Form[BankAccountDetails] =
