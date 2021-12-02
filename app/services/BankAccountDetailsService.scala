@@ -17,6 +17,7 @@
 package services
 
 import connectors.VatRegistrationConnector
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.{BankAccount, BankAccountDetails, CurrentProfile, OverseasBankDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -51,12 +52,17 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
-    bankAccountRepService.validateBankDetails(accountDetails).flatMap { validDetails =>
-      if (validDetails) {
-        val bankAccount = BankAccount(isProvided = true, Some(accountDetails), None, None)
-        saveBankAccountDetails(bankAccount) map (_ => true)
-      } else {
-        Future.successful(false)
+    bankAccountRepService.validateBankDetails(accountDetails).flatMap { bankAccountDetailsStatus =>
+      bankAccountDetailsStatus match {
+        case status@(ValidStatus | IndeterminateStatus) =>
+          val bankAccount = BankAccount(
+            isProvided = true,
+            details = Some(accountDetails.copy(status = Some(status))),
+            overseasDetails = None,
+            reason = None
+          )
+          saveBankAccountDetails(bankAccount) map (_ => true)
+        case InvalidStatus => Future.successful(false)
       }
     }
   }

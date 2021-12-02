@@ -18,6 +18,7 @@ package services
 
 import connectors.BankAccountReputationConnector
 import models.BankAccountDetails
+import models.api.BankAccountDetailsStatus
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -33,7 +34,7 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
                                              auditConnector: AuditConnector
                                             )(implicit ec: ExecutionContext) extends AuthorisedFunctions {
 
-  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
     bankAccountReputationConnector.validateBankDetails(account).flatMap {
       bankAccountValidationResponse =>
         authorised().retrieve(Retrievals.internalId) {
@@ -47,15 +48,7 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
             auditConnector.sendExplicitAudit("BarsValidateCheck", auditEvent)
 
             Future.successful(
-              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[Boolean](
-                Reads { json =>
-                  json.validate[String] map {
-                    case "yes" => true
-                    case "no" | "indeterminate" => false
-                    case _ => throw new InternalServerException(s"Could not determine bank account validation status")
-                  }
-                }
-              )
+              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[BankAccountDetailsStatus]
             )
           case None =>
             throw new InternalServerException("Missing internal ID for BARS check auditing")
