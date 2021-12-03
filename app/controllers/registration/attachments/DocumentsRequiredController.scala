@@ -20,13 +20,13 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.BaseController
 import featureswitch.core.config.EmailAttachments
-import models.api.{IdentityEvidence, Post}
+import models.api.{IdentityEvidence, Post, VAT2}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile}
 import views.html.DocumentsRequired
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future, promise}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
@@ -42,7 +42,9 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
     implicit request =>
       implicit profile =>
         attachmentsService.getAttachmentList(profile.registrationId).map { attachmentsList =>
-          if (attachmentsList.attachments.contains(IdentityEvidence)) {
+          if(attachmentsList.attachments.contains(VAT2)){
+            Redirect(routes.Vat2RequiredController.show)
+          } else if (attachmentsList.attachments.contains(IdentityEvidence)) {
             Redirect(routes.DocumentsRequiredController.show)
           } else {
             Redirect(controllers.routes.SummaryController.show)

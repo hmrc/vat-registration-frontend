@@ -1047,3 +1047,9 @@ transactorEmail.paragraph                                = We will send you a co
 transactorEmail.error.incorrect_format                   = Enter an email address in the correct format, like name@example.com
 transactorEmail.error.nothing_entered                    = Enter your email address
 transactorEmail.error.incorrect_length                   = Enter an email address that is between 3 and 132 characters
+
+## VAT2 REQUIRED
+pages.vat2Required.heading                               = You must complete a VAT 2 form
+pages.vat2Required.para.1                                = You must now
+pages.vat2Required.para.link                             = download the VAT 2 form
+pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership''s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC.

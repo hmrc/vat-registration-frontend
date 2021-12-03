@@ -389,4 +389,8 @@ GET         /your-email-address-verified                                        
 POST        /your-email-address-verified                                                       controllers.registration.transactor.TransactorEmailAddressVerifiedController.submit
 
 ## Business Identification Resolver
-GET         /resolve-business-identification                                                   controllers.BusinessIdentificationResolverController.resolve
+GET         /resolve-business-identification                                                   controllers.BusinessIdentificationResolverController.resolvest
+
+## VAT 2 Required
+GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
+POST        /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.submit

@@ -3,7 +3,7 @@ package controllers.registration.attachments
 
 import featureswitch.core.config.EmailAttachments
 import itutil.ControllerISpec
-import models.api.{Attached, AttachmentType, Attachments, IdentityEvidence, Other, Post}
+import models.api.{Attached, AttachmentType, Attachments, IdentityEvidence, Other, Post, VAT2}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -56,6 +56,21 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+      }
+    }
+
+    "return a redirect to VAT2 required page when VAT2 is required and method is Post" in {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](VAT2))))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.Vat2RequiredController.show.url)
       }
     }
 
