@@ -10,7 +10,7 @@ import play.api.test.Helpers._
 class DocumentsRequiredControllerISpec extends ControllerISpec {
 
   val resolveUrl: String = routes.DocumentsRequiredController.resolve.url
-  val showUrl: String = routes.DocumentsRequiredController.show.url
+  val submitUrl: String = routes.DocumentsRequiredController.submit.url
 
   s"GET $resolveUrl" must {
     "return a redirect to documents required page when identity evidence is required and method is Other" in {
@@ -22,7 +22,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
@@ -35,7 +35,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
@@ -48,7 +48,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
@@ -81,25 +81,12 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     }
   }
 
-  s"GET $showUrl" must {
-    "return OK" in {
-      given()
-        .user.isAuthorised
-
-      val res = buildClient(showUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe OK
-      }
-    }
-  }
-
-  s"POST $showUrl" when {
+  s"POST $submitUrl" when {
     "redirect to the AttachmentMethod page" in {
       given()
         .user.isAuthorised
 
-      val res = buildClient(showUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post(Json.obj())
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

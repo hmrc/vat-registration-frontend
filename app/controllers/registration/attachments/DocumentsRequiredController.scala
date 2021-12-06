@@ -22,7 +22,6 @@ import controllers.BaseController
 import models.api.{IdentityEvidence, VAT2}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile}
-import views.html.DocumentsRequired
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
                                             val keystoreConnector: KeystoreConnector,
-                                            attachmentsService: AttachmentsService,
-                                            documentsRequiredPage: DocumentsRequired)
+                                            attachmentsService: AttachmentsService)
                                            (implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)
@@ -40,25 +38,18 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
   val resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentsList =>
-          if(attachmentsList.attachments.contains(VAT2)){
-            Redirect(routes.Vat2RequiredController.show)
-          } else if (attachmentsList.attachments.contains(IdentityEvidence)) {
-            Redirect(routes.DocumentsRequiredController.show)
-          } else {
-            Redirect(controllers.routes.SummaryController.show)
+        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentInfo =>
+          attachmentInfo.attachments match {
+            case list if list.size > 1 => Redirect(routes.MultipleDocumentsRequiredController.show)
+            case List(IdentityEvidence) => Redirect(routes.IdentityEvidenceRequiredController.show)
+            case List(VAT2) => Redirect(routes.Vat2RequiredController.show)
+            case Nil => Redirect(controllers.routes.SummaryController.show)
           }
         }
   }
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      _ =>
-        Future.successful(Ok(documentsRequiredPage()))
-  }
-
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>implicit profile =>
+    implicit request => implicit profile =>
       Future.successful(Redirect(routes.AttachmentMethodController.show))
   }
 
