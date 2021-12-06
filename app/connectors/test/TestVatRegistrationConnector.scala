@@ -64,6 +64,15 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
   }
 
-
+  def deleteAllRegistrations(implicit hc: HeaderCarrier): Future[Boolean] =
+    http.DELETE(s"$vatRegUrl/vatreg/test-only/registrations").map { response =>
+      response.status match {
+        case 204 => true
+        case _ => false
+      }
+    }.recoverWith {
+      case _: Exception =>
+        Future.successful(false)
+    }
 
 }

@@ -28,7 +28,7 @@ class TrafficManagementService @Inject()(trafficManagementConnector: TrafficMana
                                         )(implicit executionContext: ExecutionContext) {
 
   def passedTrafficManagement(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    trafficManagementConnector.getRegistrationInformation.map {
+    trafficManagementConnector.getRegistrationInformation(regId).map {
       case Some(RegistrationInformation(_, registrationId, Draft, Some(_), VatReg)) if regId == registrationId =>
         true
       case Some(RegistrationInformation(_, _, Draft, Some(_), VatReg)) =>
@@ -37,8 +37,10 @@ class TrafficManagementService @Inject()(trafficManagementConnector: TrafficMana
         false
     }
 
-  def checkTrafficManagement(implicit hc: HeaderCarrier): Future[TrafficManagementResponse] =
-    trafficManagementConnector.getRegistrationInformation.map {
+
+
+  def checkTrafficManagement(regId: String)(implicit hc: HeaderCarrier): Future[TrafficManagementResponse] =
+    trafficManagementConnector.getRegistrationInformation(regId).map {
       case Some(RegistrationInformation(_, registrationId, Draft, Some(_), VatReg)) =>
         PassedVatReg(registrationId)
       case Some(RegistrationInformation(_, registrationId, Draft, Some(_), OTRS)) =>

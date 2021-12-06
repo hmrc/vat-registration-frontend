@@ -33,7 +33,7 @@
 
     @errorSummary(continueApplicationForm.errors)
 
-    @formWithCSRF(action = controllers.routes.StartNewApplicationController.submit, 'autoComplete -> "off") {
+    @formWithCSRF(action = controllers.routes.WelcomeController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = continueApplicationForm,
             legend = messages("start-new-application.heading"),

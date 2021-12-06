@@ -735,7 +735,7 @@ trait StubUtils {
 
   case class TrafficManagementStub()(implicit builder: PreconditionBuilder) {
     def passes(channel: RegistrationChannel = VatReg): PreconditionBuilder = {
-      stubFor(get(urlMatching("/vatreg/traffic-management/reg-info"))
+      stubFor(get(urlMatching(s"/vatreg/traffic-management/1/reg-info"))
         .willReturn(
           aResponse()
             .withStatus(200)
@@ -747,7 +747,7 @@ trait StubUtils {
     }
 
     def fails: PreconditionBuilder = {
-      stubFor(get(urlMatching("/vatreg/traffic-management/reg-info"))
+      stubFor(get(urlMatching("/vatreg/traffic-management/1/reg-info"))
         .willReturn(
           aResponse()
             .withStatus(204)

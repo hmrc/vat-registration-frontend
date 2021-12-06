@@ -33,13 +33,13 @@ class TrafficManagementConnectorSpec extends VatRegSpec {
       val res = RegistrationInformation("testIntId", "testRegId", Draft, Some(LocalDate.now()), VatReg)
       mockHttpGET[Option[RegistrationInformation]](frontendAppConfig.getRegistrationInformationUrl, Some(res))
 
-      TestTrafficManagementConnector.getRegistrationInformation returns Some(res)
+      TestTrafficManagementConnector.getRegistrationInformation(testRegId) returns Some(res)
     }
 
     "return a None if a user did not go through TM" in {
       mockHttpGET[Option[RegistrationInformation]](frontendAppConfig.getRegistrationInformationUrl, None)
 
-      TestTrafficManagementConnector.getRegistrationInformation returns None
+      TestTrafficManagementConnector.getRegistrationInformation(testRegId) returns None
     }
   }
 }

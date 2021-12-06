@@ -36,7 +36,9 @@ class TrafficManagementServiceSpec extends VatRegSpec {
   "passedTrafficManagement" should {
     "return true if TM was passed and regId matches" in {
       val registrationInformation = RegistrationInformation("testIntId", testRegId, Draft, Some(LocalDate.now()), VatReg)
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(Some(registrationInformation)))
 
       val res = TestTrafficManagementService.passedTrafficManagement(testRegId)
@@ -46,7 +48,9 @@ class TrafficManagementServiceSpec extends VatRegSpec {
 
     "fail if TM was passed and regId does not match" in {
       val registrationInformation = RegistrationInformation("testIntId", "wrongRegId", Draft, Some(LocalDate.now()), VatReg)
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(Some(registrationInformation)))
 
       val res = TestTrafficManagementService.passedTrafficManagement(testRegId)
@@ -55,7 +59,9 @@ class TrafficManagementServiceSpec extends VatRegSpec {
     }
 
     "return false if TM was not passed" in {
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(None))
 
       val res = TestTrafficManagementService.passedTrafficManagement(testRegId)
@@ -67,29 +73,37 @@ class TrafficManagementServiceSpec extends VatRegSpec {
   "passedTrafficManagement" should {
     "return PassedVatReg if TM was passed with PassedVatReg" in {
       val registrationInformation = RegistrationInformation("testIntId", testRegId, Draft, Some(LocalDate.now()), VatReg)
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(Some(registrationInformation)))
 
-      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+      val res = TestTrafficManagementService.checkTrafficManagement(testRegId)(hc)
 
       await(res) mustBe PassedVatReg(testRegId)
     }
 
     "return PassedOTRS if checkTM was passed with PassedOTRS" in {
       val registrationInformation = RegistrationInformation("testIntId", testRegId, Draft, Some(LocalDate.now()), OTRS)
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(Some(registrationInformation)))
 
-      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+      val res = TestTrafficManagementService.checkTrafficManagement(testRegId)(hc)
 
       await(res) mustBe PassedOTRS
     }
 
     "return Failed if checkTM was not passed" in {
-      when(mockTrafficManagementConnector.getRegistrationInformation)
+      when(mockTrafficManagementConnector.getRegistrationInformation(
+        ArgumentMatchers.eq(testRegId)
+      )(ArgumentMatchers.any[HeaderCarrier]))
         .thenReturn(Future.successful(None))
 
-      val res = TestTrafficManagementService.checkTrafficManagement(hc)
+      val res = TestTrafficManagementService.checkTrafficManagement(testRegId)(hc)
 
       await(res) mustBe Failed
     }

@@ -44,6 +44,11 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
+  def getAllRegistrations(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[List[VatScheme]] =
+    http.GET[List[VatScheme]](s"$vatRegUrl/vatreg/registrations").recover {
+      case e => throw logResponse(e, "getRegistration")
+    }
+
   def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
     http.GET[VatScheme](s"$vatRegUrl/vatreg/$regId/get-scheme").recover {
       case e => throw logResponse(e, "getRegistration")
