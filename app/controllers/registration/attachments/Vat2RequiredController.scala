@@ -44,16 +44,4 @@ class Vat2RequiredController @Inject()(view: Vat2Required,
         Future.successful(Ok(view()))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        if (isEnabled(EmailAttachments)) {
-          Future.successful(Redirect(routes.AttachmentMethodController.show))
-        } else {
-          attachmentsService.storeAttachmentDetails(profile.registrationId, Post).map { _ =>
-            Redirect(routes.DocumentsPostController.show)
-          }
-        }
-  }
-
 }

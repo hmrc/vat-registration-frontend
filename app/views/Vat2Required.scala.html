@@ -35,7 +35,12 @@
 
     @p{
         @messages("pages.vat2Required.para.1")
-        @link("https://www.gov.uk/government/publications/vat-partnership-details-vat2",messages("pages.vat2Required.para.link"),None,true,false)
+        @link(
+            link = appConfig.vat2Link,
+            messageKey = messages("pages.vat2Required.para.link"),
+            isExternal = true,
+            isButton = false
+        )
         @messages("pages.vat2Required.para.2")
     }
 
