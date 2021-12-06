@@ -1,9 +1,8 @@
 
 package controllers.registration.attachments
 
-import featureswitch.core.config.EmailAttachments
 import itutil.ControllerISpec
-import models.api.{Attached, AttachmentType, Attachments, IdentityEvidence, Other, Post, VAT2}
+import models.api._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -96,33 +95,15 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
   }
 
   s"POST $showUrl" when {
-    "the EmailAttachments feature switch is enabled" must {
-      "redirect to the AttachmentMethod page" in {
-        enable(EmailAttachments)
-        given()
-          .user.isAuthorised
+    "redirect to the AttachmentMethod page" in {
+      given()
+        .user.isAuthorised
 
-        val res = buildClient(showUrl).post(Json.obj())
+      val res = buildClient(showUrl).post(Json.obj())
 
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
-        }
-      }
-    }
-    "the EmailAttachments feature switch is disabled" must {
-      "redirect to the Document Post page" in {
-        disable(EmailAttachments)
-        given()
-          .user.isAuthorised
-          .vatScheme.storesAttachments(Attachments(method = Some(Post), List()))
-
-        val res = buildClient(showUrl).post(Json.obj())
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
-        }
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
       }
     }
   }

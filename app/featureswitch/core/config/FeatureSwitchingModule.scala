@@ -41,7 +41,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     SaveAndContinueLater,
     AnnualAccountingScheme,
     NorthernIrelandProtocol,
-    EmailAttachments,
     ShortOrgName
   )
 
@@ -130,11 +129,6 @@ case object AnnualAccountingScheme extends FeatureSwitch {
 case object NorthernIrelandProtocol extends FeatureSwitch {
   val configName: String = "feature-switch.northern-ireland-protocol"
   val displayName: String = "Enable Northern Ireland protocol (NIP) flow"
-}
-
-case object EmailAttachments extends FeatureSwitch {
-  val configName: String = "feature-switch.email-attachments"
-  val displayName: String = "Enable Email attachments"
 }
 
 case object ShortOrgName extends FeatureSwitch {
