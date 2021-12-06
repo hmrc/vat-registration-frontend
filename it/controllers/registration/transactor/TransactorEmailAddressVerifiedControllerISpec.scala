@@ -28,8 +28,6 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -45,8 +43,6 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

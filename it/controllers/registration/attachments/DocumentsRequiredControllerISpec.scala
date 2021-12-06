@@ -17,8 +17,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to documents required page when identity evidence is required and method is Other" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
@@ -32,8 +30,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to documents required page when identity evidence is required and method is Attached" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
@@ -47,8 +43,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to documents required page when identity evidence is required and method is Post" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
@@ -77,8 +71,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to summary page when no attachments are given" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType]())))
 
       val res = buildClient(resolveUrl).get()
@@ -94,8 +86,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return OK" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val res = buildClient(showUrl).get()
 
@@ -111,8 +101,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         enable(EmailAttachments)
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         val res = buildClient(showUrl).post(Json.obj())
 
@@ -127,8 +115,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         disable(EmailAttachments)
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.storesAttachments(Attachments(method = Some(Post), List()))
 
         val res = buildClient(showUrl).post(Json.obj())

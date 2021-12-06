@@ -18,8 +18,6 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
     "return OK with pre-pop when is no value for 'goodsToEU' in the backend" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -33,8 +31,6 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
     "Return OK with pre-pop when there is a value for 'goodsToEU' in the backend" in {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
 
       val res = buildClient(url).get()
@@ -49,8 +45,6 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
       "return SEE_OTHER for receive goods" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAuditMerged()
-          .audit.writesAudit()
           .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
           .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
           .vatScheme.contains(emptyVatSchemeNetp)

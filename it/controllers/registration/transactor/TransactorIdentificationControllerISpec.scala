@@ -35,8 +35,6 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .vatScheme.contains(fullVatScheme)
@@ -58,8 +56,6 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
     "redirect to the HomeAddress page" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)

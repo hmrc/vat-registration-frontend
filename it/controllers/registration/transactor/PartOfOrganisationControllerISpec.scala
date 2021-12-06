@@ -22,8 +22,6 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
     "show the view" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
 
@@ -40,8 +38,6 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
       "redirect to Organisation Name page when yes is selected" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
@@ -59,8 +55,6 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
       "redirect to Declaration Capacity page when no is selected" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)

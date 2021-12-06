@@ -24,8 +24,6 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
         )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
         .s4lContainer[SicAndCompliance].clearedByKey
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,8 +47,6 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
       )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(workers = Some(Workers(OK))))
         .s4lContainer[SicAndCompliance].clearedByKey
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

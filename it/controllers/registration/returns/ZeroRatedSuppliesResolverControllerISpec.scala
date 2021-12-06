@@ -16,8 +16,6 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
       "store £0 as the zero rated estimate and bypass the zero-rated supplies page" in new Setup {
         given
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[Returns].isUpdatedWith(Returns(zeroRatedSupplies = Some(0)))
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(
             eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(estimates = TurnoverEstimates(0))
@@ -35,8 +33,6 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
       "redirect to the zero-rated supplies page" in new Setup {
         given
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(estimates = TurnoverEstimates(1))
           )))
@@ -53,8 +49,6 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
       "return INTERNAL_SERVER_ERROR" in new Setup {
         given
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = None))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

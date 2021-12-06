@@ -26,8 +26,6 @@ class EmailPasscodeNotFoundControllerISpec extends ControllerISpec {
     "return an OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -14,8 +14,6 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -27,8 +25,6 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
     "return INTERNAL_SERVER_ERROR if not authorised on show" in new Setup {
       given()
         .user.isNotAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val response = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
@@ -46,8 +42,6 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(incompleteModel)
         .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

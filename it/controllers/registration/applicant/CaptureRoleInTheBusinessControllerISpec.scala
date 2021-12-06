@@ -29,9 +29,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
     "show the view with prepopulated data" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -54,8 +52,6 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy())
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -75,8 +71,6 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey

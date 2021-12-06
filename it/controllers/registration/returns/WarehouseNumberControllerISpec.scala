@@ -32,8 +32,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'fulfilmentWarehouseNumber' saved" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -49,8 +47,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in the backend" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .vatScheme.has("returns", Json.toJson(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
       )))
@@ -69,8 +65,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in S4L" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
       ))
@@ -90,8 +84,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "redirect to the fulfilment warehouse name page when the answer is a valid number" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
@@ -110,8 +102,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "return a bad request when the answer is not formatted correctly" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -126,8 +116,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "return a bad request when the answer is empty" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -142,8 +130,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "return a bad request when the answer has invalid characters" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -22,8 +22,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       s"return a redirect to Incorp ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
@@ -41,8 +39,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       s"return a redirect to Partnership ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
@@ -60,8 +56,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       s"return a redirect to Minor Entity ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
           .vatRegistration.honestyDeclaration(testRegId, "true")
 
@@ -79,8 +73,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       enable(UseSoleTraderIdentification)
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
         .vatRegistration.honestyDeclaration(testRegId, "true")
 

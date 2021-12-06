@@ -44,8 +44,6 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,9 +57,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[ApplicantDetails].contains(s4lData)
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -85,8 +81,6 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
         )
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -108,8 +102,6 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
         )
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -131,8 +123,6 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))
           .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

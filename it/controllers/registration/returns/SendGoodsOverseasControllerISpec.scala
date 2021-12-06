@@ -17,8 +17,6 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'goodsToOverseas' in the backend" in {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
 
       val res = buildClient(url).get()
@@ -32,8 +30,6 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'goodsToOverseas' in the backend" in {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
 
       val res = buildClient(url).get()
@@ -49,8 +45,6 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "redirect to the send goods to EU page when the answer is yes" in {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
         .vatScheme.has("threshold-data", Json.toJson(threshold))
@@ -66,8 +60,6 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "redirect to the storing goods page when the answer is no" in {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
 

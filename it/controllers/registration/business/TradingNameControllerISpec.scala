@@ -32,8 +32,6 @@ class TradingNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -53,8 +51,6 @@ class TradingNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .s4lContainer[TradingDetails].clearedByKey

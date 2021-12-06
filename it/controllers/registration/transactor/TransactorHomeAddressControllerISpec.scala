@@ -86,8 +86,6 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
         TransactorDetails(address = Some(Address(addressLine1, Some(addressLine2), None, None, None, Some(addressPostcode), Some(Country(Some("GB"), Some("United Kingdom"))))))
       )
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

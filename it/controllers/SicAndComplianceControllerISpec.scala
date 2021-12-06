@@ -45,8 +45,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
+
 
     insertIntoDb(sessionId, sicCodeMapping)
 
@@ -71,8 +70,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.has("sicAndComp", Json.parse(simplifiedSicJson))
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -89,8 +86,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.doesNotHave("sicAndComp")
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -116,8 +111,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       )
       .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode)))))
       .s4lContainer.clearedByKey
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
@@ -142,8 +135,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
           eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1, sicCode2))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
@@ -168,8 +159,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
       )
     )
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1, sicCode2))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
@@ -193,8 +182,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
         )
       )
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
       .icl.fetchResults(List(sicCode1))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
@@ -210,8 +197,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertIntoDb(sessionId, sicCodeMapping)
 
@@ -240,8 +225,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       )
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
       .s4lContainer[SicAndCompliance].clearedByKey
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertIntoDb(sessionId, sicCodeMapping)
 
@@ -277,8 +260,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     )
       .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
       .s4lContainer[SicAndCompliance].clearedByKey
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertIntoDb(sessionId, sicCodeMapping)
 
@@ -299,8 +280,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicAndCompliance].contains(fullModel)
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -316,8 +295,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
   "ComplianceIntroduction should return OK on show" in new Setup {
     given()
       .user.isAuthorised
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -331,8 +308,6 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
-      .audit.writesAudit()
-      .audit.writesAuditMerged()
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 

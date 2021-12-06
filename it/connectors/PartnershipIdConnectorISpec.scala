@@ -73,8 +73,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId for a Partnership" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
@@ -85,8 +83,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
       "throw a JsResultException when the response JSON doesn't contain the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createPartnershipJourneyUrl, CREATED, "{}")
 
@@ -99,8 +95,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createPartnershipJourneyUrl, UNAUTHORIZED, "")
 
@@ -114,8 +108,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
   "getDetails" must {
     "return partnership when Partnership Id returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testPartnershipJourneyId), OK, Json.stringify(testPartnershipResponse))
       val res: PartnershipIdEntity = await(connector.getDetails(testPartnershipJourneyId))
@@ -125,8 +117,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val invalidTransactorJson: JsObject = testPartnershipResponse - "identifiersMatch"
       stubGet(retrieveDetailsUrl(testPartnershipJourneyId), OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
@@ -138,8 +128,6 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "throw an InternalServerException for any other status" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testPartnershipJourneyId), IM_A_TEAPOT, "")
 

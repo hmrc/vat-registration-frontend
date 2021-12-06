@@ -68,8 +68,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -90,8 +88,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       "S4L model is not full" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
@@ -112,8 +108,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       "the model in S4l is full" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(partnershipApplicantDetails)

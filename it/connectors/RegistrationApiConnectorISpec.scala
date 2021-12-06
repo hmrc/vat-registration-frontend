@@ -31,8 +31,6 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
   "getSection" should {
     "return the requested model if the backend returns OK" in {
         given()
-          .audit.writesAuditMerged()
-          .audit.writesAudit()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
 
         await(connector.getSection[EligibilitySubmissionData](testRegId)) mustBe Some(testEligibilitySubmissionData)
@@ -40,8 +38,6 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
     "return None if the backend returns NOT_FOUND" in {
       given()
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .registrationApi.getSection[EligibilitySubmissionData](None, testRegId)
 
       await(connector.getSection[EligibilitySubmissionData](testRegId)) mustBe None
@@ -49,8 +45,6 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
     "throw an exception on an unexpected response" in {
       given()
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .registrationApi.getSectionFails[EligibilitySubmissionData](testRegId)
 
       intercept[InternalServerException](await(connector.getSection[EligibilitySubmissionData](testRegId)))
@@ -60,8 +54,6 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
   "replaceSection" should {
     "return the stored model if the backend returns OK" in {
       given()
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .registrationApi.replaceSection[EligibilitySubmissionData](testEligibilitySubmissionData, testRegId)
 
       await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData)) mustBe testEligibilitySubmissionData
@@ -69,8 +61,6 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
 
     "throw an exception on an unexpected response" in {
       given()
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .registrationApi.replaceSectionFails[EligibilitySubmissionData](testRegId)
 
       intercept[InternalServerException](await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData)))

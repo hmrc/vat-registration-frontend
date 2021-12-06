@@ -20,14 +20,12 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import featureswitch.core.config.SaveAndContinueLater
 import itutil.ControllerISpec
-import models.api.VatScheme
 import models.api.trafficmanagement.{OTRS, VatReg}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.RegistrationsApiStubs
-import uk.gov.hmrc.play.audit.model.EventTypes.Failed
 
 import java.time.LocalDate
 
@@ -60,8 +58,6 @@ class WelcomeControllerISpec extends ControllerISpec
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft.toString)
-            .audit.writesAudit()
-            .audit.writesAuditMerged()
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -74,8 +70,6 @@ class WelcomeControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised
-            .audit.writesAudit()
-            .audit.writesAuditMerged()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -94,8 +88,6 @@ class WelcomeControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised
-            .audit.writesAudit()
-            .audit.writesAuditMerged()
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
 
@@ -131,8 +123,6 @@ class WelcomeControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised
             .vatScheme.regStatus(VatRegStatus.draft.toString)
-            .audit.writesAudit()
-            .audit.writesAuditMerged()
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson, vatSchemeJson2)))
 
@@ -180,8 +170,6 @@ class WelcomeControllerISpec extends ControllerISpec
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
           .vatScheme.regStatus(VatRegStatus.draft.toString)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
@@ -193,8 +181,6 @@ class WelcomeControllerISpec extends ControllerISpec
         given()
           .user.isAuthorised
           .vatScheme.regStatus(VatRegStatus.draft.toString)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -216,8 +202,6 @@ class WelcomeControllerISpec extends ControllerISpec
           .vatScheme.regStatus(VatRegStatus.draft.toString)
           .trafficManagement.passes(VatReg)
           .vatRegistrationFootprint.exists()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -233,8 +217,6 @@ class WelcomeControllerISpec extends ControllerISpec
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
           .trafficManagement.passes(OTRS)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -250,8 +232,6 @@ class WelcomeControllerISpec extends ControllerISpec
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
           .trafficManagement.fails
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

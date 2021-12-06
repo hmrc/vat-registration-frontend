@@ -33,8 +33,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .vatScheme.doesNotHave("trading-details")
 
@@ -57,8 +55,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UkCompany)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity =
         Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
       ))(ApplicantDetails.writes))
@@ -79,8 +75,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .vatScheme.doesNotHave("trading-details")
 
@@ -100,8 +94,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))(ApplicantDetails.writes))
           .vatScheme.doesNotHave("trading-details")
 

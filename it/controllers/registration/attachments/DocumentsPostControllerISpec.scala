@@ -12,8 +12,6 @@ class DocumentsPostControllerISpec extends ControllerISpec {
     "return an OK" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val res = buildClient(showUrl).get()
 

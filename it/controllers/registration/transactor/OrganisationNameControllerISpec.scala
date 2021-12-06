@@ -23,10 +23,8 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     "show the view" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
-        .audit.writesAuditMerged()
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -40,9 +38,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     "show the view with organisation name" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[TransactorDetails].contains(testDetails)
-        .audit.writesAuditMerged()
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -61,8 +57,6 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     "Redirect to Declaration Capacity" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)

@@ -13,8 +13,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .alfeJourney.initialisedSuccessfully()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -27,8 +25,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR when not authorised" in new Setup {
       given()
         .user.isNotAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val response = buildClient(controllers.registration.business.routes.PpobAddressController.startJourney.url).get()
       whenReady(response) { res =>
@@ -42,8 +38,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
     "return SEE_OTHER save to vat as model is complete" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
@@ -64,8 +58,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
     "returnFromTxm should return SEE_OTHER save to s4l as model is incomplete" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())

@@ -34,8 +34,6 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].isEmpty
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -52,8 +50,6 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(TradingDetails(shortOrgName = Some(testShortOrgName)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -74,8 +70,6 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.isUpdatedWith(tradingDetails.copy(shortOrgName = Some(testShortOrgName)))
         .s4lContainer[TradingDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

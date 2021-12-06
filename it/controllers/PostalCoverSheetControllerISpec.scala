@@ -34,8 +34,6 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
     "return an OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -35,8 +35,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -52,8 +50,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(Some(10000), None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,8 +64,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -88,8 +82,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
         .s4lContainer[Returns].isUpdatedWith(Returns(Some(10000.54), None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,8 +100,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -126,8 +116,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[Returns].contains(Returns())
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

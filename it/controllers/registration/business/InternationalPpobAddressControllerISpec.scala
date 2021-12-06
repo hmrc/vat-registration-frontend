@@ -25,8 +25,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .vatScheme.contains(emptyVatSchemeNetp)
           .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
           .s4lContainer[BusinessContact].contains(BusinessContact())
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,8 +37,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .vatScheme.contains(emptyVatSchemeNetp)
           .s4lContainer[BusinessContact].contains(BusinessContact(ppobAddress = Some(testForeignAddress)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -62,8 +58,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .s4lContainer[BusinessContact].isEmpty
           .vatScheme.contains(emptyVatSchemeNetp)
           .vatScheme.has("business-contact", Json.toJson(businessContact)(BusinessContact.apiFormat))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,8 +81,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testShortForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -107,8 +99,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -132,8 +122,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -155,8 +143,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("business-contact")
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -177,8 +163,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.doesNotExistForKey("business-contact")
         .s4lContainer[BusinessContact].contains(BusinessContact())
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

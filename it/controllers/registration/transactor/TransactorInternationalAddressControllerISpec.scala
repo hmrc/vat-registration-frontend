@@ -22,8 +22,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .vatScheme.contains(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -36,8 +34,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .vatScheme.contains(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails(address = Some(testShortForeignAddress)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,8 +56,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(trDetails))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -85,8 +79,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -105,8 +97,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -130,8 +120,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -153,8 +141,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -176,8 +162,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

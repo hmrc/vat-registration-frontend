@@ -45,8 +45,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -66,8 +64,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
@@ -86,8 +82,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
@@ -107,8 +101,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "throw an exception if the user is not a Sole Trader or NETP" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .vatScheme.contains(
@@ -133,8 +125,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatScheme.contains(fullVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -154,8 +144,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
@@ -175,8 +163,6 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
