@@ -390,3 +390,6 @@ POST        /your-email-address-verified                                        
 
 ## Business Identification Resolver
 GET         /resolve-business-identification                                                   controllers.BusinessIdentificationResolverController.resolve
+
+## VAT 2 Required
+GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
