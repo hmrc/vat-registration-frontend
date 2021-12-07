@@ -37,8 +37,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[TransactorDetails].contains(s4lContents)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -58,8 +56,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TransactorDetails].contains(s4lContents)
           .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -78,8 +74,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TransactorDetails].contains(s4lContents)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -97,8 +91,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TransactorDetails].contains(s4lContents)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -119,8 +111,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .s4lContainer[TransactorDetails].contains(s4lContents)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

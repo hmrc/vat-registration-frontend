@@ -33,8 +33,6 @@ class BusinessNameControllerISpec extends ControllerISpec {
     "return OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -52,8 +50,6 @@ class BusinessNameControllerISpec extends ControllerISpec {
     "return SEE_OTHER" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.isUpdatedWith(
         validFullApplicantDetails.copy(

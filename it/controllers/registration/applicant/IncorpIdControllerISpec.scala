@@ -40,8 +40,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -64,8 +62,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -88,8 +84,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -114,8 +108,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
@@ -139,8 +131,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))

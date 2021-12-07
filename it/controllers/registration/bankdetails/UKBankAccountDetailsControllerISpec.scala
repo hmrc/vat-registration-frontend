@@ -21,8 +21,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .vatScheme.doesNotExistForKey("bank-account")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -36,8 +34,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(bankAccount)))
         .vatScheme.doesNotExistForKey("bank-account")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -55,8 +51,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(bankAccount))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,8 +73,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .s4lContainer[BankAccount].cleared
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
         .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -98,8 +90,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised
         .bankAccountReputation.fails
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -116,8 +106,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised
         .bankAccountReputation.fails
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -28,25 +28,25 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("pages.attachments.documentsRequired.title")))) {
+@layout(pageTitle = Some(titleNoForm(messages("attachments.identityEvidenceRequired.title")))) {
 
-    @h1("pages.attachments.documentsRequired.title")
+    @h1("attachments.identityEvidenceRequired.title")
 
-    @p { @messages("pages.attachments.documentsRequired.evidence") }
+    @p { @messages("attachments.identityEvidenceRequired.evidence") }
     @bullets(
-        "pages.attachments.documentsRequired.bullet1",
-        "pages.attachments.documentsRequired.bullet2",
-        "pages.attachments.documentsRequired.bullet3"
+        "attachments.identityEvidenceRequired.bullet1",
+        "attachments.identityEvidenceRequired.bullet2",
+        "attachments.identityEvidenceRequired.bullet3"
     )
 
-    @p { @messages("pages.attachments.documentsRequired.additionalEvidence") }
+    @p { @messages("attachments.identityEvidenceRequired.additionalEvidence") }
     @bullets(
-        "pages.attachments.documentsRequired.additionalBullet1",
-        "pages.attachments.documentsRequired.additionalBullet2",
-        "pages.attachments.documentsRequired.additionalBullet3",
-        "pages.attachments.documentsRequired.additionalBullet4",
-        "pages.attachments.documentsRequired.additionalBullet5",
-        "pages.attachments.documentsRequired.additionalBullet6"
+        "attachments.identityEvidenceRequired.additionalBullet1",
+        "attachments.identityEvidenceRequired.additionalBullet2",
+        "attachments.identityEvidenceRequired.additionalBullet3",
+        "attachments.identityEvidenceRequired.additionalBullet4",
+        "attachments.identityEvidenceRequired.additionalBullet5",
+        "attachments.identityEvidenceRequired.additionalBullet6"
     )
 
     @form(controllers.registration.attachments.routes.DocumentsRequiredController.submit) {

@@ -22,9 +22,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
     "show the view" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[TransactorDetails].isEmpty
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -37,9 +35,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
     "show the view with organisation name" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[TransactorDetails].contains(testDetails)
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,8 +53,6 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
     "Redirect to Transactor Email Address page" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
 

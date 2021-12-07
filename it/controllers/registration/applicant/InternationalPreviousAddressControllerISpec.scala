@@ -24,8 +24,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -38,8 +36,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -63,8 +59,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
           .vatScheme.contains(vatScheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .vatScheme.has("applicant-details", Json.toJson(appDetails)(ApplicantDetails.writes))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -88,8 +82,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,8 +100,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -133,8 +123,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -156,8 +144,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -179,8 +165,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

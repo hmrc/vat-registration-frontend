@@ -81,6 +81,8 @@ trait StubUtils {
 
   def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
     new PreconditionBuilder()
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
   }
 
   case class VREFE()(implicit builder: PreconditionBuilder) {

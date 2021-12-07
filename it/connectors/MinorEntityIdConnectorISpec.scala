@@ -147,8 +147,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId for a Trust" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createTrustJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
@@ -159,8 +157,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
       "return the journey ID when the response JSON includes the journeyId for a Unincorporated Association" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createUnincorpAssocJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
@@ -171,8 +167,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
       "return the journey ID when the response JSON includes the journeyId for a Non UK Company" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
@@ -183,8 +177,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
       "throw a JsResultException when the response JSON doesn't contain the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createTrustJourneyUrl, CREATED, "{}")
 
@@ -197,8 +189,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         stubPost(createUnincorpAssocJourneyUrl, UNAUTHORIZED, "")
 
@@ -212,8 +202,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
   "getDetails" must {
     "return trust when Minor Entity Id returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(testTrustResponse))
       val res: MinorEntity = await(connector.getDetails(testTrustJourneyId))
@@ -223,8 +211,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "return unincorporated association when Minor Entity Id returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, Json.stringify(testUnincorpAssocResponse))
       val res: MinorEntity = await(connector.getDetails(testUnincorpAssocJourneyId))
@@ -234,8 +220,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "return Non UK Company when Minor Entity Id returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, Json.stringify(testNonUkCompanyResponse))
       val res: MinorEntity = await(connector.getDetails(testNonUkCompanyJourneyId))
@@ -245,8 +229,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val invalidTransactorJson: JsObject = testTrustResponse - "identifiersMatch"
       stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson)))
@@ -258,8 +240,6 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
     "throw an InternalServerException for any other status" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl(testTrustJourneyId), IM_A_TEAPOT, "")
 

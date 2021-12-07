@@ -22,8 +22,6 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,8 +37,6 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page with prepop" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("partners", Json.toJson(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -60,8 +56,6 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       "post to the backend and begin a STI journey" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -76,8 +70,6 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       "return a not implemented" in new Setup {
         given()
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

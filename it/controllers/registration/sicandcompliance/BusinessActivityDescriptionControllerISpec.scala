@@ -14,8 +14,6 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(sicAndCompliance)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -34,8 +32,6 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
         .s4lContainer[SicAndCompliance].contains(sicAndCompliance)
         .vatScheme.isUpdatedWith[SicAndCompliance](sicAndCompliance.copy(description = Some(BusinessActivityDescription("foo"))))
         .s4lContainer[SicAndCompliance].clearedByKey
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

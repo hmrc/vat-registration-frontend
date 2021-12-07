@@ -33,8 +33,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'usingWarehouse' in the backend" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -50,8 +48,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'usingWarehouse' in the backend" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .vatScheme.has("returns", Json.toJson(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
         .s4lContainer[Returns].isEmpty
 
@@ -68,8 +64,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'usingWarehouse' in S4L" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -87,8 +81,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "redirect to the fulfilment warehouse number page when the answer is yes" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
 
@@ -106,8 +98,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       disable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
 
@@ -125,8 +115,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       enable(NorthernIrelandProtocol)
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
 
@@ -143,8 +131,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "return a bad request when the answer is invalid" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

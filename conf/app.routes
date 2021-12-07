@@ -325,7 +325,8 @@ POST        /attachment-method                                                  
 
 ## Documents Required Page
 GET         /attachments-resolve                                                               controllers.registration.attachments.DocumentsRequiredController.resolve
-GET         /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.show
+GET         /identity-documents-required                                                       controllers.registration.attachments.IdentityEvidenceRequiredController.show
+GET         /multiple-documents-required                                                       controllers.registration.attachments.MultipleDocumentsRequiredController.show
 POST        /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.submit
 
 ## Documents Post Page

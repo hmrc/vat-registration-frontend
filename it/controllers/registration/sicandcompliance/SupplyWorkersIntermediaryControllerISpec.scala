@@ -16,8 +16,6 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       given()
         .user.isAuthorised
         .s4lContainer[SicAndCompliance].contains(fullModel)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,8 +37,6 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
         )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))
         .s4lContainer[SicAndCompliance].clearedByKey
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -64,8 +60,6 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))
         .s4lContainer[SicAndCompliance].clearedByKey
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

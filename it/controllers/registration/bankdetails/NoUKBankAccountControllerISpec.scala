@@ -32,7 +32,6 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "return an OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -47,7 +46,6 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "return an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, Some(BeingSetup)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -66,7 +64,6 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "return a redirect to flatrate scheme" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
         .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
         .s4lContainer[BankAccount].clearedByKey

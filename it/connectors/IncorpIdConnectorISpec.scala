@@ -35,8 +35,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     "the stub Incorp ID feature switch is enabled" should {
       "call the test only route to stub the journey for UkCompany" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         enable(StubIncorpIdJourney)
 
@@ -53,8 +51,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "call the test only route to stub the journey for RegSociety" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         enable(StubIncorpIdJourney)
 
@@ -71,8 +67,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "call the test only route to stub the journey for CharitableOrg" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         enable(StubIncorpIdJourney)
 
@@ -91,8 +85,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     "the stub Incorp ID feature switch is disabled" should {
       "call the create Incorp ID journey API for UkCompany" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         disable(StubIncorpIdJourney)
 
@@ -109,8 +101,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "call the create Incorp ID journey API for RegSociety" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         disable(StubIncorpIdJourney)
 
@@ -127,8 +117,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "call the create Incorp ID journey API for CharitableOrg" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         disable(StubIncorpIdJourney)
 
@@ -149,8 +137,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     "incorp ID returns valid incorporation details" should {
       "return the incorporation details without optional data" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", BvFail, None)
         disable(StubIncorpIdJourney)
@@ -163,8 +149,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "return the incorporation details with optional data" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
@@ -177,8 +161,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
       "return the incorporation details for a charitable organisation" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
         disable(StubIncorpIdJourney)
@@ -192,8 +174,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     "incorp ID returns invalid incorporation details" should {
       "throw and exception" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")

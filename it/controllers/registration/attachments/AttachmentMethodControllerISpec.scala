@@ -21,8 +21,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised
           .vatScheme.has("attachments", Json.toJson(emptyAttachmentList))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -38,8 +36,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised
           .vatScheme.has("attachments", Json.toJson(fullAttachmentList))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -55,8 +51,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised
           .vatScheme.has("attachments", Json.toJson(fullAttachmentList.copy(method = Some(EmailMethod))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -75,8 +69,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised
           .vatScheme.storesAttachments(Attachments(Some(Post), List()))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -93,8 +85,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised
           .vatScheme.storesAttachments(Attachments(Some(Post), List()))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -110,8 +100,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return BAD_REQUEST" in new Setup {
         given
           .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

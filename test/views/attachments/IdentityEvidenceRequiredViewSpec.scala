@@ -17,15 +17,12 @@
 package views.attachments
 
 import org.jsoup.Jsoup
-import play.api.data.Form
-import play.api.data.Forms.{boolean, single}
 import views.VatRegViewSpec
-import views.html.DocumentsRequired
-import views.html.returns.claim_refunds_view
+import views.html.IdentityEvidenceRequired
 
-class DocumentsRequiredViewSpec extends VatRegViewSpec {
+class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[DocumentsRequired]
+  val view = app.injector.instanceOf[IdentityEvidenceRequired]
   implicit val doc = Jsoup.parse(view().body)
 
   object ExpectedContent {

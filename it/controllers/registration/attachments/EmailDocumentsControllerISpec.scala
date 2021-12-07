@@ -34,8 +34,6 @@ class EmailDocumentsControllerISpec extends ControllerISpec with ITRegistrationF
     "return an OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

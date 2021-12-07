@@ -35,8 +35,6 @@ class SummaryControllerISpec extends ControllerISpec {
         .vatScheme.contains(fullVatScheme)
         .s4lContainer[SicAndCompliance].cleared
         .vatRegistration.storesNrsPayload(testRegId)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -105,8 +103,6 @@ class SummaryControllerISpec extends ControllerISpec {
         .vatScheme.contains(fullNetpVatScheme)
         .s4lContainer[SicAndCompliance].cleared
         .vatRegistration.storesNrsPayload(testRegId)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -178,8 +174,6 @@ class SummaryControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised
           .vatScheme.contains(vatReg)
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
 

@@ -47,8 +47,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -62,9 +60,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .s4lContainer[TransactorDetails].contains(s4lData)
-        .audit.writesAuditMerged()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -88,8 +84,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isUpdatedWith(
           TransactorDetails().copy(email = Some(testEmail))
         )
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -111,8 +105,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isUpdatedWith(
           TransactorDetails().copy(email = Some(testEmail), emailVerified = Some(true))
         )
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -133,8 +125,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .s4lContainer[TransactorDetails].contains(validTransactorDetails.copy(email = None))
           .s4lContainer[TransactorDetails].clearedByKey
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection[TransactorDetails](validTransactorDetails)
 

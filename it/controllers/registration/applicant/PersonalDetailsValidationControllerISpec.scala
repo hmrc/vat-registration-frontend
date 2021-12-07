@@ -32,7 +32,6 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -54,7 +53,6 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
         .vatScheme.has("applicant-details", applicantJson)
         .vatScheme.patched("applicant-details", applicantJson)
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)

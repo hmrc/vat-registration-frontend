@@ -20,8 +20,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("bank-account")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -35,8 +33,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .vatScheme.doesNotExistForKey("bank-account")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,8 +46,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .vatScheme.doesNotExistForKey("bank-account")
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -64,8 +58,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -80,8 +72,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(true, None, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,8 +85,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -111,8 +99,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(false, None, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -131,8 +117,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .vatScheme.doesNotExistForKey("bank-account")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -149,8 +133,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .vatScheme.doesNotExistForKey("bank-account")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -167,8 +149,6 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
         .vatScheme.doesNotExistForKey("bank-account")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

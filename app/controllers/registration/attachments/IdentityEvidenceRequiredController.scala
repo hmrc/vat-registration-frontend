@@ -21,24 +21,23 @@ import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.SessionProfile
-import views.html.Vat2Required
+import views.html.IdentityEvidenceRequired
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Vat2RequiredController @Inject()(view: Vat2Required,
-                                       val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnector)
-                                      (implicit appConfig: FrontendAppConfig,
-                                       val executionContext: ExecutionContext,
-                                       baseControllerComponents: BaseControllerComponents)
+class IdentityEvidenceRequiredController @Inject()(val authConnector: AuthClientConnector,
+                                                   val keystoreConnector: KeystoreConnector,
+                                                   identityEvidenceRequiredPage: IdentityEvidenceRequired)
+                                                  (implicit appConfig: FrontendAppConfig,
+                                                   val executionContext: ExecutionContext,
+                                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Ok(view()))
+  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>_ =>
+      Future.successful(Ok(identityEvidenceRequiredPage()))
   }
 
 }

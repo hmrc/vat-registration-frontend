@@ -49,8 +49,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createSoleTraderJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
         val res = await(connector.startSoleTraderJourney(testJourneyConfig, Individual))
@@ -59,8 +57,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createSoleTraderJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
@@ -71,8 +67,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns UNAUTHORISED" must {
       "throw an UnauthorizedException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createSoleTraderJourneyUrl, UNAUTHORIZED, "")
 
         intercept[UnauthorizedException] {
@@ -83,8 +77,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createSoleTraderJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
@@ -98,8 +90,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns CREATED" must {
       "return the journey ID when the response JSON includes the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createIndividualJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
         val res = await(connector.startIndividualJourney(testJourneyConfig))
@@ -108,8 +98,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       }
       "throw an InternalServerException when the response JSON doesn't contain the journeyId" in {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createIndividualJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
@@ -120,8 +108,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns UNAUTHORISED" must {
       "throw an UnauthorizedException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createIndividualJourneyUrl, UNAUTHORIZED, "")
 
         intercept[UnauthorizedException] {
@@ -132,8 +118,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     "the API returns an unexpected status" must {
       "throw an InternalServerException" in new Setup {
         given()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         stubPost(createIndividualJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
@@ -146,8 +130,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
   "retrieveSoleTraderDetails" must {
     "return transactor details when STI returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
@@ -174,8 +156,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
     "return transactor details for NETP when STI returns OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
@@ -203,8 +183,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
     "return transactor details for NETP when an overseas identifier is returned" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val testSTIResponse: JsObject = Json.obj(
         "fullName" -> Json.obj(
@@ -236,8 +214,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       val invalidTransactorJson: JsObject = {
         Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
@@ -251,8 +227,6 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
     "throw an InternalServerException for any other status" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       stubGet(retrieveDetailsUrl, IM_A_TEAPOT, "")
 

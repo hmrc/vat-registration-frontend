@@ -4,14 +4,16 @@ package controllers.registration.attachments
 import itutil.ControllerISpec
 import play.api.test.Helpers._
 
-class DocumentsPostControllerISpec extends ControllerISpec {
+class IdentityEvidenceRequiredControllerISpec extends ControllerISpec {
 
-  val showUrl: String = routes.DocumentsPostController.show.url
+  val showUrl: String = routes.IdentityEvidenceRequiredController.show.url
 
   s"GET $showUrl" must {
-    "return an OK" in {
+    "return OK" in {
       given()
         .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
 
       val res = buildClient(showUrl).get()
 
@@ -20,4 +22,5 @@ class DocumentsPostControllerISpec extends ControllerISpec {
       }
     }
   }
+
 }

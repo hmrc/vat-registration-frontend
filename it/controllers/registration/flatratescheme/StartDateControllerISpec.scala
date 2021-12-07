@@ -70,8 +70,6 @@ class StartDateControllerISpec extends ControllerISpec {
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
         .vatScheme.has("returns", returnsData)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -89,8 +87,6 @@ class StartDateControllerISpec extends ControllerISpec {
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
         .vatScheme.has("returns", returnsDataWithStartDate)
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -112,8 +108,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
@@ -132,8 +126,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsData)
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
@@ -152,8 +144,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
@@ -177,8 +167,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = voluntaryThreshold))))
           .vatScheme.has("returns", returnsDataWithStartDate)
           .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(oneDayBeforeEdrDate)))))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)
@@ -196,8 +184,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.contains(emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = voluntaryThreshold))))
           .vatScheme.doesNotHave("returns")
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.registration.flatratescheme.routes.StartDateController.submit.url)

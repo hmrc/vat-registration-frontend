@@ -885,35 +885,44 @@ internationalAddress.error.country.invalid               = Select a country
 
 ## ATTACHMENT METHOD
 
-attachmentMethod.title                                   = How would you like to send the additional documents?
-attachmentMethod.options.email                           = Email copies to HMRC
-attachmentMethod.options.post                            = Post copies to HMRC
-attachmentMethod.error.missing                           = Select how you want to send copies of the documents to HMRC
+attachmentMethod.title                                    = How would you like to send the additional documents?
+attachmentMethod.options.email                            = Email copies to HMRC
+attachmentMethod.options.post                             = Post copies to HMRC
+attachmentMethod.error.missing                            = Select how you want to send copies of the documents to HMRC
 
-## DOCUMENTS REQUIRED
+## MULTIPLE DOCUMENTS REQUIRED
 
-pages.attachments.documentsRequired.title                = We require three pieces of additional information from you so we can prove your identity
-pages.attachments.documentsRequired.evidence             = We need one piece of primary evidence which consists of a copy of government issued photo which could include:
-pages.attachments.documentsRequired.bullet1              = a passport
-pages.attachments.documentsRequired.bullet2              = a photo drivers licence
-pages.attachments.documentsRequired.bullet3              = a national identity card
-pages.attachments.documentsRequired.additionalEvidence   = We need two additional pieces of evidence which can be copies of:
-pages.attachments.documentsRequired.additionalBullet1    = a mortgage statement
-pages.attachments.documentsRequired.additionalBullet2    = a lease or rental agreement
-pages.attachments.documentsRequired.additionalBullet3    = a work permit or Visa
-pages.attachments.documentsRequired.additionalBullet4    = any correspondence from the Department for Work and Pensions confirming entitlement to benefits
-pages.attachments.documentsRequired.additionalBullet5    = a recent utility bill
-pages.attachments.documentsRequired.additionalBullet6    = a birth certificate
+attachments.multipleDocumentsRequired.title               = We require some additional information from you
+attachments.multipleDocumentsRequired.para                = To enable us to progress your application further, we need the following information and documents from you:
+attachments.multipleDocumentsRequired.identityDetails     = What identity documents can I provide?
+attachments.multipleDocumentsRequired.identityEvidence    = identity documents of you
+attachments.multipleDocumentsRequired.VAT2                = a completed
+attachments.multipleDocumentsRequired.VAT2.link           = VAT2 form
+
+## IDENTITY EVIDENCE REQUIRED
+
+attachments.identityEvidenceRequired.title                = We require three pieces of additional information from you so we can prove your identity
+attachments.identityEvidenceRequired.evidence             = We need one piece of primary evidence which consists of a copy of government issued photo which could include:
+attachments.identityEvidenceRequired.bullet1              = a passport
+attachments.identityEvidenceRequired.bullet2              = a photo drivers licence
+attachments.identityEvidenceRequired.bullet3              = a national identity card
+attachments.identityEvidenceRequired.additionalEvidence   = We need two additional pieces of evidence which can be copies of:
+attachments.identityEvidenceRequired.additionalBullet1    = a mortgage statement
+attachments.identityEvidenceRequired.additionalBullet2    = a lease or rental agreement
+attachments.identityEvidenceRequired.additionalBullet3    = a work permit or Visa
+attachments.identityEvidenceRequired.additionalBullet4    = any correspondence from the Department for Work and Pensions confirming entitlement to benefits
+attachments.identityEvidenceRequired.additionalBullet5    = a recent utility bill
+attachments.identityEvidenceRequired.additionalBullet6    = a birth certificate
 
 ## DOCUMENTS POST
 
-pages.attachments.documentsPost.title                    = We need you to send the documents to the following HMRC address
-pages.attachments.documentsPost.para                     = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
-pages.attachments.documentsPost.line1                    = VAT Registration Applications
-pages.attachments.documentsPost.line2                    = BT VAT
-pages.attachments.documentsPost.line3                    = HM Revenue and Customs
-pages.attachments.documentsPost.postCode                 = BX9 1WR
-pages.attachments.documentsPost.country                  = United Kingdom
+attachments.documentsPost.title                    = We need you to send the documents to the following HMRC address
+attachments.documentsPost.para                     = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
+attachments.documentsPost.line1                    = VAT Registration Applications
+attachments.documentsPost.line2                    = BT VAT
+attachments.documentsPost.line3                    = HM Revenue and Customs
+attachments.documentsPost.postCode                 = BX9 1WR
+attachments.documentsPost.country                  = United Kingdom
 
 
 pages.PostalCoverSheet.heading                           = Print cover letter for documents

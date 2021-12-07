@@ -34,8 +34,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return an OK with no prepop data" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[Returns].contains(Returns(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -50,8 +48,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return an OK when there is data to prepop" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[Returns].contains(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -68,8 +64,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return a redirect to next page and update S4L" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[Returns].contains(Returns(returnsFrequency = Some(Annual)))
         .s4lContainer[Returns].isUpdatedWith(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
 
@@ -86,8 +80,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return a redirect to next page and update backend with full model" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[Returns].contains(testFullReturns)
         .s4lContainer[Returns].clearedByKey
         .vatRegistration.storesReturns(testRegId, testFullReturns)
@@ -105,8 +97,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return a bad request and update page with errors on an invalid submission" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[Returns].contains(Returns(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

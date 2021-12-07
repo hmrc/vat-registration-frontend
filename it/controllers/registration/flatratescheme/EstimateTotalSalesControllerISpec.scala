@@ -44,8 +44,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "return OK with prepop when the details are in s4l" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[FlatRateScheme].contains(frsData)
         .vatScheme.doesNotHave("flat-rate-scheme")
 
@@ -62,8 +60,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "return OK with prepop when the details are in the backend" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(fullFrsData)(FlatRateScheme.apiFormat))
 
@@ -80,8 +76,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "return OK without prepop" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsData.copy(estimateTotalSales = None)))
 
@@ -100,8 +94,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "redirect to the next FRS page when the user submits a valid estimate" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[FlatRateScheme].contains(frsData.copy(estimateTotalSales = None))
         .s4lContainer[FlatRateScheme].isUpdatedWith(frsData)
 
@@ -118,8 +110,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "update the page with errors when the user submits an invalid estimate" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAuditMerged()
-        .audit.writesAudit()
         .s4lContainer[FlatRateScheme].contains(frsData.copy(estimateTotalSales = None))
         .s4lContainer[FlatRateScheme].isUpdatedWith(frsData)
 

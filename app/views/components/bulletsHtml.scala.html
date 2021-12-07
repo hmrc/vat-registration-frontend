@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,27 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package controllers.registration.errors
+@this()
 
-import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
-import play.api.test.Helpers._
+@(itemHtml: Html*)(implicit messages: Messages)
 
-class EmailPasscodeNotFoundControllerISpec extends ControllerISpec {
-
-  "show" must {
-    "return an OK" in new Setup {
-      given()
-        .user.isAuthorised
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = await(buildClient(routes.EmailPasscodeNotFoundController.show("test").url).get())
-
-      res.status mustBe OK
+<ul class="govuk-list govuk-list--bullet">
+    @itemHtml.map { html =>
+    <li>@html</li>
     }
-  }
-
-}
+</ul>

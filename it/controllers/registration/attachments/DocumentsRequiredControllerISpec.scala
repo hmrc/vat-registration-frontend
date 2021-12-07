@@ -1,9 +1,8 @@
 
 package controllers.registration.attachments
 
-import featureswitch.core.config.EmailAttachments
 import itutil.ControllerISpec
-import models.api.{Attached, AttachmentType, Attachments, IdentityEvidence, Other, Post, VAT2}
+import models.api._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -11,51 +10,45 @@ import play.api.test.Helpers._
 class DocumentsRequiredControllerISpec extends ControllerISpec {
 
   val resolveUrl: String = routes.DocumentsRequiredController.resolve.url
-  val showUrl: String = routes.DocumentsRequiredController.show.url
+  val submitUrl: String = routes.DocumentsRequiredController.submit.url
 
   s"GET $resolveUrl" must {
     "return a redirect to documents required page when identity evidence is required and method is Other" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
     "return a redirect to documents required page when identity evidence is required and method is Attached" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
     "return a redirect to documents required page when identity evidence is required and method is Post" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence))))
 
       val res = buildClient(resolveUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.IdentityEvidenceRequiredController.show.url)
       }
     }
 
@@ -77,8 +70,6 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to summary page when no attachments are given" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType]())))
 
       val res = buildClient(resolveUrl).get()
@@ -90,53 +81,16 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     }
   }
 
-  s"GET $showUrl" must {
-    "return OK" in {
+  s"POST $submitUrl" when {
+    "redirect to the AttachmentMethod page" in {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
-      val res = buildClient(showUrl).get()
+      val res = buildClient(submitUrl).post(Json.obj())
 
       whenReady(res) { result =>
-        result.status mustBe OK
-      }
-    }
-  }
-
-  s"POST $showUrl" when {
-    "the EmailAttachments feature switch is enabled" must {
-      "redirect to the AttachmentMethod page" in {
-        enable(EmailAttachments)
-        given()
-          .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-
-        val res = buildClient(showUrl).post(Json.obj())
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
-        }
-      }
-    }
-    "the EmailAttachments feature switch is disabled" must {
-      "redirect to the Document Post page" in {
-        disable(EmailAttachments)
-        given()
-          .user.isAuthorised
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .vatScheme.storesAttachments(Attachments(method = Some(Post), List()))
-
-        val res = buildClient(showUrl).post(Json.obj())
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
-        }
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
       }
     }
   }

@@ -38,8 +38,6 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
     "return an OK" in new Setup {
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -55,8 +53,6 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
 
       given()
         .user.isAuthorised
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
