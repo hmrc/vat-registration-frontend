@@ -19,7 +19,7 @@ package connectors
 import common.enums.VatRegStatus
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.VatScheme
+import models.api.{VatScheme, VatSchemeHeader}
 import play.api.test.Helpers._
 import support.{APIStub, AppAndStubs, CanGet, RegistrationsApiStubs}
 import uk.gov.hmrc.http.Upstream5xxResponse
@@ -96,7 +96,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
 
       val res = await(vatregConnector.getAllRegistrations)
 
-      res mustBe List(fullVatScheme, fullVatScheme.copy(id = "2"))
+      res mustBe List(VatSchemeHeader(testRegId, VatRegStatus.draft), VatSchemeHeader("2", VatRegStatus.draft))
     }
   }
 

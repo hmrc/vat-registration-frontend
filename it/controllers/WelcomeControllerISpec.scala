@@ -124,7 +124,7 @@ class WelcomeControllerISpec extends ControllerISpec
             .user.isAuthorised
             .vatScheme.regStatus(VatRegStatus.draft.toString)
 
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson, vatSchemeJson2)))
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -170,19 +170,6 @@ class WelcomeControllerISpec extends ControllerISpec
           .user.isAuthorised
           .vatRegistrationFootprint.exists()
           .vatScheme.regStatus(VatRegStatus.draft.toString)
-
-        val res: WSResponse = await(buildClient(newJourneyUrl).get())
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityUrl)
-      }
-
-      "user is authenticated and authorised to access the app with profile" in new Setup {
-        given()
-          .user.isAuthorised
-          .vatScheme.regStatus(VatRegStatus.draft.toString)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
