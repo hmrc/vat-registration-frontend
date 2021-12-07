@@ -39,7 +39,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
 
-  def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatScheme]] =
+  def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations
 
   def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =

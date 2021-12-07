@@ -18,10 +18,11 @@ package connectors
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import models.{ApplicantDetails, _}
 import models.api._
 import models.api.returns.Returns
+import models.{ApplicantDetails, _}
 import play.api.http.Status._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import uk.gov.hmrc.http._
 
@@ -44,9 +45,18 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getAllRegistrations(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[List[VatScheme]] =
-    http.GET[List[VatScheme]](s"$vatRegUrl/vatreg/registrations").recover {
+  def getAllRegistrations(implicit hc: HeaderCarrier, rds: HttpReads[VatSchemeHeader]): Future[List[VatSchemeHeader]] =
+    http.GET[List[JsValue]](s"$vatRegUrl/vatreg/registrations").recover {
       case e => throw logResponse(e, "getRegistration")
+    }.map { list =>
+      list.flatMap { json =>
+        json.validate[VatSchemeHeader] match {
+          case JsSuccess(header, _) => Some(header)
+          case JsError(_) =>
+            logger.error(s"[getAllRegistrations] Failed to parse VatSchemeHeader out of VatScheme for user")
+            None
+        }
+      }
     }
 
   def getRegistration(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
@@ -118,7 +128,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session")  //Doesn't actually exist on VRS-EL-FE
+    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session") //Doesn't actually exist on VRS-EL-FE
   }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
