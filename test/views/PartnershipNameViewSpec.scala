@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package views.transactor
+package views
 
-import forms.TransactorTelephoneForm
+import forms.PartnershipNameForm
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import views.VatRegViewSpec
-import views.html.transactor.TelephoneNumber
+import views.html.PartnershipName
 
-class TelephoneNumberViewSpec extends VatRegViewSpec {
-  val view: TelephoneNumber = app.injector.instanceOf[TelephoneNumber]
-  implicit val doc: Document = Jsoup.parse(view(TransactorTelephoneForm.form).body)
+class PartnershipNameViewSpec extends VatRegViewSpec {
+
+  val testPartnershipName = "testPartnershipName"
+  val form = PartnershipNameForm
+  val view = app.injector.instanceOf[PartnershipName]
+  implicit val doc = Jsoup.parse(view(form()).body)
 
   object ExpectedContent {
-    val heading = "What is your telephone number?"
-    val title = s"$heading - Register for VAT - GOV.UK"
+    val heading = "What is the name of the partnership?"
     val continue = "Save and continue"
   }
 
-  "Transactor telephone number page" should {
-    "have back link" in new ViewSetup {
+  "The Partnership name view" must {
+    "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
 
@@ -41,12 +41,9 @@ class TelephoneNumberViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
-    "have the correct page title" in new ViewSetup {
-      doc.title mustBe ExpectedContent.title
-    }
-
     "have a primary action" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
+
 }

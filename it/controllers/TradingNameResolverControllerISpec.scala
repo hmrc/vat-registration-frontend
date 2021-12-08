@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 class TradingNameResolverControllerISpec extends ControllerISpec {
 
   "Trading name page resolver" should {
-    List(Individual, Partnership, NETP).foreach { partyType =>
+    List(Individual, NETP).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised
@@ -42,6 +42,27 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
+        }
+      }
+    }
+
+    List(Partnership, ScotPartnership).foreach { partyType =>
+      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.PartnershipNameController.show.url} for ${partyType.toString}" in new Setup {
+        given()
+          .user.isAuthorised
+          .s4lContainer[TradingDetails].isEmpty
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .vatScheme.doesNotHave("trading-details")
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/resolve-party-type").get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.PartnershipNameController.show.url)
         }
       }
     }

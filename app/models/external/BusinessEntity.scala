@@ -108,6 +108,7 @@ object SoleTraderIdEntity {
 }
 
 case class PartnershipIdEntity(sautr: Option[String],
+                               companyName: Option[String] = None,
                                postCode: Option[String],
                                registration: String,
                                businessVerification: BusinessVerificationStatus,
@@ -118,6 +119,7 @@ object PartnershipIdEntity {
 
   val apiFormat: Format[PartnershipIdEntity] = (
     (__ \ "sautr").formatNullable[String] and
+      (__ \ "companyName").formatNullable[String] and
       (__ \ "postcode").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
       (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and

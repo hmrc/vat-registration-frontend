@@ -52,8 +52,9 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
+  override val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
+    Some(testCompanyName),
     Some(testPostCode),
     testRegistration,
     BvPass,

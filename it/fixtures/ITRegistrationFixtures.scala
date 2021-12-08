@@ -91,6 +91,14 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     isTransactor = false
   )
 
+  val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
+    threshold,
+    turnOverEstimates,
+    MTDfB,
+    Partnership,
+    isTransactor = false
+  )
+
   val validBusinessContactDetails = BusinessContact(
     companyContactDetails = Some(CompanyContactDetails(
       email = "test@foo.com",
