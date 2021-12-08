@@ -47,6 +47,9 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
         case Some(header) if header.status == VatRegStatus.draft =>
           currentProfileService.buildCurrentProfile(header.registrationId).map { _ =>
             Ok(view(StartNewApplicationForm.form))
+          }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme
+            case exception =>
+              Redirect(routes.WelcomeController.startNewJourney)
           }
         case _ =>
           currentProfileService.keystoreConnector.remove.map { _ =>

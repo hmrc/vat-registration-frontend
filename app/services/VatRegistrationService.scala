@@ -53,8 +53,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
     }
   }
 
-  def deleteVatScheme(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] =
-    vatRegConnector.deleteVatScheme(profile.registrationId)
+  def deleteVatScheme(registrationId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    vatRegConnector.deleteVatScheme(registrationId)
 
   def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[VatScheme] = {
     logger.info("[createRegistrationFootprint] Creating registration footprint")
