@@ -88,10 +88,9 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
   "Calling deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
-      mockKeystoreCache[String]("RegistrationId", CacheMap("", Map.empty))
       when(mockVatRegistrationConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
 
-      await(service.deleteVatScheme) mustBe true
+      await(service.deleteVatScheme(testRegId)) mustBe true
     }
   }
 

@@ -124,7 +124,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def deleteVatScheme(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[Boolean] = {
-    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/delete-scheme").map(_.status == OK)
+    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/registrations/$regId").map(_.status == OK)
   }
 
   def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
