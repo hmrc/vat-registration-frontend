@@ -30,7 +30,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
   class Setup {
     val testController = new PpobAddressController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockBusinessContactService,
       mockAddressLookupService
     )

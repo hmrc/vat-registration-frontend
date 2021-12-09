@@ -17,7 +17,7 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import play.api.data.Form
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FlatRateController @Inject()(val flatRateService: FlatRateService,
                                    val vatRegistrationService: VatRegistrationService,
                                    val authConnector: AuthClientConnector,
-                                   val keystoreConnector: KeystoreConnector,
+                                   val sessionService: SessionService,
                                    val configConnector: ConfigConnector,
                                    val timeService: TimeService,
                                    val sicAndComplianceService: SicAndComplianceService,

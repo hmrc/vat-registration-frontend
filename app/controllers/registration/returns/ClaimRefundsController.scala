@@ -17,19 +17,18 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import featureswitch.core.config.NorthernIrelandProtocol
 import forms.ChargeExpectancyForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile, VatRegistrationService}
+import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.returns.claim_refunds_view
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimRefundsController @Inject()(val keystoreConnector: KeystoreConnector,
+class ClaimRefundsController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val returnsService: ReturnsService,
                                        val vatRegistrationService: VatRegistrationService,

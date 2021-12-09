@@ -27,7 +27,7 @@ class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAss
   class Setup {
     val controller = new ComplianceIntroductionController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockComplianceIntroductionView
     )
 

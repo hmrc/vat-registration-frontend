@@ -17,13 +17,12 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.FormerNameDateForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.former_name_date
 
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
-                                         val keystoreConnector: KeystoreConnector,
+                                         val sessionService: SessionService,
                                          val applicantDetailsService: ApplicantDetailsService,
                                          vatRegistrationService: VatRegistrationService,
                                          formerNameDatePage: former_name_date

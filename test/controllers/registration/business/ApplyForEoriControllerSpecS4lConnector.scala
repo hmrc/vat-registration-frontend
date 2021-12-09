@@ -31,7 +31,7 @@ class ApplyForEoriControllerSpecS4lConnector extends ControllerSpec with VatRegi
 
   class Setup {
     val testController = new ApplyForEoriController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
       mockTradingDetailsService,

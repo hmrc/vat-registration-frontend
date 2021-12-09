@@ -17,11 +17,11 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import forms.ContactPreferenceForm
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.{BusinessContactService, SessionProfile}
+import services.{BusinessContactService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.contact_preference
 
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
-                                            val keystoreConnector: KeystoreConnector,
+                                            val sessionService: SessionService,
                                             val businessContactService: BusinessContactService,
                                             view: contact_preference)
                                            (implicit val appConfig: FrontendAppConfig,

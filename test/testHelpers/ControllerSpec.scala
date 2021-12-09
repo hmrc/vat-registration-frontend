@@ -61,7 +61,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
     withAuthorisedOrgUser(a)(test)
 
   def mockWithCurrentProfile(currentProfile: Option[CurrentProfile]): OngoingStubbing[Future[Option[CurrentProfile]]] = {
-    when(mockKeystoreConnector.fetchAndGet[CurrentProfile](any())(any(), any()))
+    when(mockSessionService.fetchAndGet[CurrentProfile](any())(any(), any()))
       .thenReturn(Future.successful(currentProfile))
   }
 

@@ -48,7 +48,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
     val startDateIncorpView: start_date_incorp_view = app.injector.instanceOf[start_date_incorp_view]
     val accountingPeriodView: AccountingPeriodView = app.injector.instanceOf[AccountingPeriodView]
     val testController = new ReturnsController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockReturnsService,
       mockApplicantDetailsServiceOld,

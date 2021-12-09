@@ -17,18 +17,17 @@
 package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.WorkersForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SicAndComplianceService}
+import services.{SessionProfile, SessionService, SicAndComplianceService}
 import views.html.labour.workers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WorkersController @Inject()(val authConnector: AuthClientConnector,
-                                  val keystoreConnector: KeystoreConnector,
+                                  val sessionService: SessionService,
                                   val sicAndCompService: SicAndComplianceService,
                                   view: workers)
                                  (implicit val appConfig: FrontendAppConfig,

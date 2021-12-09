@@ -42,7 +42,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
       view,
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockApplicantDetailsService,
       vatRegistrationServiceMock
     )

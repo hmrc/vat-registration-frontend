@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{ICLConnector, KeystoreConnector}
+import connectors.ICLConnector
 import models.api.SicCode
 import models.{BusinessActivities, SicAndCompliance}
 import org.mockito.ArgumentMatchers._
@@ -39,7 +39,7 @@ class ICLServiceSpec extends VatRegSpec {
     val testService: ICLService = new ICLService(
       mockICLConnector,
       mockServicesConfig,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       mockVatRegistrationConnector
     ) {
@@ -55,7 +55,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(SicAndCompliance()))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
-      when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
+      when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
       val res = await(testService.journeySetup(customICLMessages))
       res mustBe "example.url"
@@ -67,7 +67,7 @@ class ICLServiceSpec extends VatRegSpec {
         ))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
-      when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
+      when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
       val res = await(testService.journeySetup(customICLMessages))
       res mustBe "example.url"
@@ -77,7 +77,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.failed(new InternalServerException("VR call failed")))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
-      when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
+      when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
       val res = await(testService.journeySetup(customICLMessages))
       res mustBe "example.url"
@@ -93,7 +93,7 @@ class ICLServiceSpec extends VatRegSpec {
       intercept[Exception](await(testService.journeySetup(customICLMessages)))
     }
     "return an exception when keystore cache is not successful" in new Setup {
-      when(mockKeystoreConnector.cache[String](any(), any())(any(), any()))
+      when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.failed(new Exception))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
@@ -108,7 +108,7 @@ class ICLServiceSpec extends VatRegSpec {
 
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclMultipleResults))
-      when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
+      when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
       when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
@@ -122,7 +122,7 @@ class ICLServiceSpec extends VatRegSpec {
       val sicAndComplianceUpdated = s4lVatSicAndComplianceWithoutLabour.copy(businessActivities = Some(BusinessActivities(listOf1SicCode)))
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclSingleResult))
-      when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
+      when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
       when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
@@ -132,7 +132,7 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe listOf1SicCode
     }
     "return an Exception when the provided key cannot be found in keystore" in new Setup {
-      when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any()))
+      when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](await(testService.getICLSICCodes()))
     }

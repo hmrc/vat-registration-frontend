@@ -17,19 +17,18 @@
 package controllers.feedback
 
 import java.net.URLEncoder
-
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FeedbackController @Inject()(val authConnector: AuthClientConnector,
-                                   val keystoreConnector: KeystoreConnector)
+                                   val sessionService: SessionService)
                                   (implicit appConfig: FrontendAppConfig,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents)

@@ -17,10 +17,9 @@
 package controllers.test
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent, Session}
-import services.{SessionProfile, UpscanService}
+import services.{SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.fileUpload.{callback_check, file_upload}
 
@@ -32,7 +31,7 @@ class FileUploadController @Inject()(fileUploadView: file_upload,
                                      callbackCheck: callback_check,
                                      upscanService: UpscanService,
                                      val authConnector: AuthConnector,
-                                     val keystoreConnector: KeystoreConnector
+                                     val sessionService: SessionService
                                     )(implicit appConfig: FrontendAppConfig,
                                       val executionContext: ExecutionContext,
                                       baseControllerComponents: BaseControllerComponents)

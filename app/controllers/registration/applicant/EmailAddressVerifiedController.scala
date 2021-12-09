@@ -17,11 +17,11 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.email_verified
 
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmailAddressVerifiedController @Inject()(view: email_verified,
                                                val authConnector: AuthConnector,
-                                               val keystoreConnector: KeystoreConnector
+                                               val sessionService: SessionService
                                               )(implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents)

@@ -17,9 +17,8 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.pages.error.IndividualAffinityKickOut
 
@@ -28,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class IndividualAffinityKickOutController @Inject()(view: IndividualAffinityKickOut,
                                                     val authConnector: AuthConnector,
-                                                    val keystoreConnector: KeystoreConnector
+                                                    val sessionService: SessionService
                                                    )(implicit appConfig: FrontendAppConfig,
                                                      val executionContext: ExecutionContext,
                                                      baseControllerComponents: BaseControllerComponents)

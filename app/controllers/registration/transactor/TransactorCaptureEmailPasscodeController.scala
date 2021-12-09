@@ -17,7 +17,6 @@
 package controllers.registration.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.errors.{routes => errorRoutes}
 import forms.TransactorEmailPasscodeForm
@@ -26,7 +25,7 @@ import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
-import services.{EmailVerificationService, SessionProfile, TransactorDetailsService}
+import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
@@ -36,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                          val authConnector: AuthConnector,
-                                                         val keystoreConnector: KeystoreConnector,
+                                                         val sessionService: SessionService,
                                                          emailVerificationService: EmailVerificationService,
                                                          transactorDetailsService: TransactorDetailsService)
                                                         (implicit appConfig: FrontendAppConfig,

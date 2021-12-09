@@ -31,7 +31,7 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
     val view = app.injector.instanceOf[business_activity_description]
     val controller = new BusinessActivityDescriptionController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       view
     )

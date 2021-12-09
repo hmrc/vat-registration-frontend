@@ -17,12 +17,11 @@
 package controllers.test
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import connectors.test.TestUpscanCallbackConnector
 import controllers.BaseController
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class UpscanStubController @Inject()(val authConnector: AuthConnector,
-                                     val keystoreConnector: KeystoreConnector,
+                                     val sessionService: SessionService,
                                      upscanCallbackConnector: TestUpscanCallbackConnector)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
@@ -46,8 +45,8 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
     val successUrl = (request.body \ "successRedirect").as[String]
 
     for {
-      _ <- keystoreConnector.cache(testOnlyUpscanCallbackUrl, callbackUrl)
-      _ <- keystoreConnector.cache(testOnlyUpscanSuccessUrl, successUrl)
+      _ <- sessionService.cache(testOnlyUpscanCallbackUrl, callbackUrl)
+      _ <- sessionService.cache(testOnlyUpscanSuccessUrl, successUrl)
     } yield Ok(Json.obj(
       "reference" -> "testFile",
       "uploadRequest" -> Json.obj(
@@ -59,8 +58,8 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
 
   def uploadResponse: Action[AnyContent] = Action.async { implicit request =>
     for {
-      optCallbackUrl <- keystoreConnector.fetchAndGet[String](testOnlyUpscanCallbackUrl)
-      optSuccessUrl <- keystoreConnector.fetchAndGet[String](testOnlyUpscanSuccessUrl)
+      optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
+      optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
       callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved form session"))
       successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("success URL couldn't be retrieved form session"))
       _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl)

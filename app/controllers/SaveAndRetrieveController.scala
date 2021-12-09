@@ -17,9 +17,8 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent}
-import services.SaveAndRetrieveService
+import services.{SaveAndRetrieveService, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -27,7 +26,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class SaveAndRetrieveController @Inject()(val authConnector: AuthConnector,
-                                          val keystoreConnector: KeystoreConnector,
+                                          val sessionService: SessionService,
                                           saveAndRetrieveService: SaveAndRetrieveService)
                                          (implicit val executionContext: ExecutionContext,
                                           bcc: BaseControllerComponents,

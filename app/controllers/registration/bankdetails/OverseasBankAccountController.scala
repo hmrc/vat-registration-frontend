@@ -17,11 +17,10 @@
 package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.OverseasBankAccountForm
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile}
+import services.{BankAccountDetailsService, SessionProfile, SessionService}
 import views.html.overseas_bank_account
 
 import javax.inject.Inject
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_bank_account,
                                               val authConnector: AuthClientConnector,
-                                              val keystoreConnector: KeystoreConnector,
+                                              val sessionService: SessionService,
                                               val bankAccountDetailsService: BankAccountDetailsService)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,

@@ -17,13 +17,13 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
 import models.view.{HomeAddressView, PreviousAddressView}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
@@ -31,7 +31,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class InternationalPreviousAddressController  @Inject()(val authConnector: AuthConnector,
-                                                        val keystoreConnector: KeystoreConnector,
+                                                        val sessionService: SessionService,
                                                         applicantDetailsService: ApplicantDetailsService,
                                                         configConnector: ConfigConnector,
                                                         view: CaptureInternationalAddress,

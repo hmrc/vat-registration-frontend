@@ -17,19 +17,18 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.ReceiveGoodsNipForm
 import models.api.{NETP, NonUkNonEstablished}
 import models.{ConditionalValue, NIPCompliance}
 import play.api.mvc.{Action, AnyContent}
-import services._
+import services.{SessionService, _}
 import views.html.returns.ReceiveGoodsNip
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReceiveGoodsNipController @Inject()(val keystoreConnector: KeystoreConnector,
+class ReceiveGoodsNipController @Inject()(val sessionService: SessionService,
                                           val authConnector: AuthClientConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val returnsService: ReturnsService,

@@ -38,7 +38,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
       mockFlatRateService,
       mockVatRegistrationService,
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       view
     )
 
@@ -55,7 +55,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         when(mockFlatRateService.getFlatRate(any(), any()))
           .thenReturn(Future.successful(validFlatRate))
 
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
         when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
@@ -70,7 +70,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
       "user has already answered this question" in new Setup {
 
-        when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Some(currentProfile)))
 
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
@@ -88,7 +88,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "redirect user to Summary if Turnover Estimates is more than £150K" in new Setup {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
@@ -102,7 +102,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
     "return an error if Turnover Estimates is empty" in new Setup {
       mockAuthenticated()
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
@@ -119,7 +119,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
     "return 400 with Empty data" in new Setup {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(("", "")))(result =>
@@ -129,7 +129,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
     "return 303 with Join Flat Rate Scheme selected Yes" in new Setup {
 
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))
@@ -145,7 +145,7 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "return 303 with Join Flat Rate Scheme selected No" in new Setup {
-      when(mockKeystoreConnector.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
       when(mockFlatRateService.saveJoiningFRS(any())(any(), any()))

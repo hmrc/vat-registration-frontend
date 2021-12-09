@@ -17,20 +17,19 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import featureswitch.core.config.NorthernIrelandProtocol
 import forms.StoringGoodsForm
 import models.api.returns.{StoringOverseas, StoringWithinUk}
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import views.html.StoringGoods
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StoringGoodsController @Inject()(val keystoreConnector: KeystoreConnector,
+class StoringGoodsController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val returnsService: ReturnsService,
                                        formProvider: StoringGoodsForm,

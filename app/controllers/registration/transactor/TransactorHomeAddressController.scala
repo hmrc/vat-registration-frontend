@@ -18,10 +18,9 @@ package controllers.registration.transactor
 
 import common.enums.AddressLookupJourneyIdentifier.homeAddress
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, SessionProfile, TransactorDetailsService}
+import services.{AddressLookupService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class TransactorHomeAddressController @Inject()(val authConnector: AuthConnector,
-                                                val keystoreConnector: KeystoreConnector,
+                                                val sessionService: SessionService,
                                                 val transactorDetailsService: TransactorDetailsService,
                                                 val addressLookupService: AddressLookupService)
                                                (implicit appConfig: FrontendAppConfig,

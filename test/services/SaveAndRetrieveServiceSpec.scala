@@ -76,7 +76,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
 
   "retrievePartialVatScheme" must {
     "retrieve no VatScheme from S4L" in {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, None)
       mockAuthenticatedInternalId(Some(testInternalId))
 
@@ -88,7 +88,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
     }
 
     "retrieve a full VatScheme from S4L" in {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, Some(validVatSchemeJson))
 
       mockSaveVatScheme(testRegId, validVatSchemeJson)(Future.successful(validVatSchemeJson))
@@ -99,7 +99,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
     }
 
     "store an empty vat scheme if the backend returns a bad request for the full vat scheme store" in {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, Some(validVatSchemeJson))
       mockAuthenticatedInternalId(Some(testInternalId))
 
@@ -112,7 +112,7 @@ class SaveAndRetrieveServiceSpec extends VatRegSpec with MockS4lConnector with M
     }
 
     "throw an internal server exception if we fail to retrieve the Vat Scheme from s4l" in {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(s4lKey, Some(emptyVatSchemeJson))
 
       mockSaveVatScheme(testRegId, emptyVatSchemeJson)(Future.failed(new InternalServerException("")))

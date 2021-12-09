@@ -30,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
+class SummaryController @Inject()(val sessionService: SessionService,
                                   val authConnector: AuthClientConnector,
                                   val vrs: VatRegistrationService,
                                   val s4LService: S4LService,
@@ -59,7 +59,7 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
       implicit profile =>
         invalidSubmissionGuard() {
           for {
-            _ <- keystoreConnector.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+            _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
             response <- vrs.submitRegistration
             result <- submissionRedirectLocation(response)
           } yield {
@@ -70,7 +70,7 @@ class SummaryController @Inject()(val keystoreConnector: KeystoreConnector,
 
   private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
     response match {
-      case Success => keystoreConnector.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
+      case Success => sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
         _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
       }
       case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed))

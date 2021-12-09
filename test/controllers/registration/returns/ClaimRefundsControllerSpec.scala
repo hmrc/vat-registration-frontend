@@ -40,7 +40,7 @@ class ClaimRefundsControllerSpec extends ControllerSpec
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController = new ClaimRefundsController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockReturnsService,
       mockVatRegistrationService,

@@ -17,13 +17,12 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, MinorEntityIdService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, MinorEntityIdService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
-                                        val keystoreConnector: KeystoreConnector,
+                                        val sessionService: SessionService,
                                         minorEntityIdService: MinorEntityIdService,
                                         applicantDetailsService: ApplicantDetailsService,
                                         vatRegistrationService: VatRegistrationService

@@ -17,12 +17,11 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
 import controllers.registration.transactor.{routes => transactorRoutes}
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{SessionProfile, SessionService, VatRegistrationService}
 import views.html.honesty_declaration
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_declaration,
                                              val authConnector: AuthClientConnector,
-                                             val keystoreConnector: KeystoreConnector,
+                                             val sessionService: SessionService,
                                              val vatRegistrationService: VatRegistrationService
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,

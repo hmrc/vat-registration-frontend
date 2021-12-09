@@ -17,13 +17,13 @@
 package controllers.registration.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+
 import javax.inject.Inject
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile, VatRegistrationService}
+import services.{FlatRateService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.frs_join
 
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateService,
                                              val vatRegistrationService: VatRegistrationService,
                                              val authConnector: AuthClientConnector,
-                                             val keystoreConnector: KeystoreConnector,
+                                             val sessionService: SessionService,
                                              view: frs_join)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,

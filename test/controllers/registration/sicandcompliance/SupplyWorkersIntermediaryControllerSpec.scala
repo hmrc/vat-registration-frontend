@@ -34,7 +34,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     val view = app.injector.instanceOf[intermediary_supply]
     val controller: SupplyWorkersIntermediaryController = new SupplyWorkersIntermediaryController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       view
     )

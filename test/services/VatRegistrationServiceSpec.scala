@@ -45,7 +45,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
       mockS4LService,
       mockVatRegistrationConnector,
       mockRegistrationApiConnector,
-      mockKeystoreConnector
+      mockSessionService
     )
   }
 

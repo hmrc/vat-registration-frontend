@@ -17,11 +17,10 @@
 package controllers.registration.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EstimateTotalSalesForm
 import play.api.mvc.{Action, AnyContent}
-import services._
+import services.{SessionService, _}
 import views.html.estimate_total_sales
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
                                              val authConnector: AuthClientConnector,
-                                             val keystoreConnector: KeystoreConnector,
+                                             val sessionService: SessionService,
                                              estimateTotalSalesPage: estimate_total_sales
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,

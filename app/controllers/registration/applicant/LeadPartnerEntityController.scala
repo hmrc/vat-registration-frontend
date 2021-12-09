@@ -17,13 +17,13 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
+import services.SessionService.leadPartnerEntityKey
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.LeadPartnerForm
-import models.api.Individual
+import models.api.{CharitableOrg, Individual, PartyType, RegSociety, UkCompany}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnersService, SessionProfile}
+import services.{ApplicantDetailsService, PartnersService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.lead_partner_entity_type
 
@@ -31,7 +31,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
-                                            val keystoreConnector: KeystoreConnector,
+                                            val sessionService: SessionService,
                                             val applicantDetailsService: ApplicantDetailsService,
                                             partnersService: PartnersService,
                                             leadPartnerEntityPage: lead_partner_entity_type
@@ -55,10 +55,14 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         LeadPartnerForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(leadPartnerEntityPage(formWithErrors))),
-          {
-            case Individual => Future.successful(Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true)))
-            case _ => Future.successful(NotImplemented)
-          }
+          partyType =>
+            for {
+              _ <- sessionService.cache[PartyType](leadPartnerEntityKey, partyType)
+            } yield partyType match {
+              case Individual => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true))
+              case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
+              case _ => NotImplemented
+            }
         )
   }
 

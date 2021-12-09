@@ -35,7 +35,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
     val view = app.injector.instanceOf[frs_confirm_business_sector]
     val controller: ConfirmBusinessTypeController = new ConfirmBusinessTypeController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockFlatRateService,
       view
     )

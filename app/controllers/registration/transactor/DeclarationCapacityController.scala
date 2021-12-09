@@ -17,11 +17,10 @@
 package controllers.registration.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.DeclarationCapacityForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, TransactorDetailsService}
+import services.{SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.transactor.DeclarationCapacityView
 
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeclarationCapacityController @Inject()(view: DeclarationCapacityView,
                                               val authConnector: AuthConnector,
-                                              val keystoreConnector: KeystoreConnector,
+                                              val sessionService: SessionService,
                                               val transactorDetailsService: TransactorDetailsService)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,

@@ -17,18 +17,18 @@
 package controllers.test
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile}
+import services.{S4LService, SessionProfile, SessionService}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class TestCacheController @Inject()(val s4LService: S4LService,
                                     val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector)
+                                    val sessionService: SessionService)
                                    (implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)

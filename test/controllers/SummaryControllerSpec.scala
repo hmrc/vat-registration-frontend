@@ -41,7 +41,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
 
   trait Setup {
     val testSummaryController = new SummaryController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockVatRegistrationService,
       mockS4LService,
@@ -81,7 +81,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(Success))
 
-      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
@@ -98,7 +98,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
 
-      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {
@@ -116,7 +116,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailed))
 
-      when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody()) {

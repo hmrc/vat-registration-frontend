@@ -17,21 +17,20 @@
 package controllers.test
 
 import java.time.format.DateTimeFormatter
-
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
-import services.{PrePopulationService, SessionProfile}
+import services.{PrePopulationService, SessionProfile, SessionService}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class TestCTController @Inject()(val prePopService: PrePopulationService,
                                  val authConnector: AuthClientConnector,
-                                 val keystoreConnector: KeystoreConnector)
+                                 val sessionService: SessionService)
                                 (implicit val appConfig: FrontendAppConfig,
                                  val executionContext: ExecutionContext,
                                  baseControllerComponents: BaseControllerComponents)

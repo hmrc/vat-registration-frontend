@@ -17,18 +17,18 @@
 package controllers.test
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, SicAndComplianceService}
+import services.{S4LService, SessionProfile, SessionService, SicAndComplianceService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AddressLookupStubController @Inject()(val configConnect: ConfigConnector,
-                                            val keystoreConnector: KeystoreConnector,
+                                            val sessionService: SessionService,
                                             val s4LService: S4LService,
                                             val sicAndCompService: SicAndComplianceService,
                                             val authConnector: AuthClientConnector)

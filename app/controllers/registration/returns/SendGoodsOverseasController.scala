@@ -17,12 +17,11 @@
 package controllers.registration.returns
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.SendGoodsOverseasForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.returns.SendGoodsOverseasView
 
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SendGoodsOverseasController @Inject()(val authConnector: AuthConnector,
-                                            val keystoreConnector: KeystoreConnector,
+                                            val sessionService: SessionService,
                                             val returnsService: ReturnsService,
                                             val view: SendGoodsOverseasView)
                                            (implicit appConfig: FrontendAppConfig,

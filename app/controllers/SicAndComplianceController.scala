@@ -17,7 +17,6 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import forms.MainBusinessActivityForm
 import models.ModelKeys.SIC_CODES_KEY
@@ -25,7 +24,7 @@ import models.api.SicCode
 import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Result}
-import services._
+import services.{SessionService, _}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html._
 
@@ -34,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SicAndComplianceController @Inject()(val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector,
+                                           val sessionService: SessionService,
                                            val sicAndCompService: SicAndComplianceService,
                                            val frsService: FlatRateService,
                                            val iclService: ICLService,
@@ -48,7 +47,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
 
   private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
-    keystoreConnector.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
+    sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
 
   def showMainBusinessActivity: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -118,7 +117,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
       implicit profile =>
         for {
           iclCodes <- iclService.getICLSICCodes()
-          _ <- keystoreConnector.cache(SIC_CODES_KEY, iclCodes)
+          _ <- sessionService.cache(SIC_CODES_KEY, iclCodes)
           _ <- sicAndCompService.submitSicCodes(iclCodes)
         } yield {
           Redirect(iclCodes match {

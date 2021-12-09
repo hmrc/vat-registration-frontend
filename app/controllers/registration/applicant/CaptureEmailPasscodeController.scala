@@ -17,7 +17,6 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.errors.{routes => errorRoutes}
 import forms.EmailPasscodeForm
@@ -25,7 +24,7 @@ import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile}
+import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.capture_email_passcode
@@ -36,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                val authConnector: AuthConnector,
-                                               val keystoreConnector: KeystoreConnector,
+                                               val sessionService: SessionService,
                                                emailVerificationService: EmailVerificationService,
                                                applicantDetailsService: ApplicantDetailsService)
                                               (implicit appConfig: FrontendAppConfig,

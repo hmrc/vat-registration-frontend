@@ -17,12 +17,11 @@
 package controllers.registration.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.SoleTraderNameForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, TradingDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.soletrader_name
 
@@ -30,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class MandatoryTradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class MandatoryTradingNameController @Inject()(val sessionService: SessionService,
                                                val authConnector: AuthConnector,
                                                val applicantDetailsService: ApplicantDetailsService,
                                                val tradingDetailsService: TradingDetailsService,

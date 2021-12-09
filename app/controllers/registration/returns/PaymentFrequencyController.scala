@@ -17,12 +17,11 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.PaymentFrequencyForm
 import models.api.returns.AASDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import views.html.returns.payment_frequency
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class PaymentFrequencyController @Inject()(view: payment_frequency,
                                            val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector,
+                                           val sessionService: SessionService,
                                            returnsService: ReturnsService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,

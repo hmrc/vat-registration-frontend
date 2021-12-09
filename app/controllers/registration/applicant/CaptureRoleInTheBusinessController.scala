@@ -17,12 +17,12 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.RoleInTheBusinessForm
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.role_in_the_business
 
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
                                                    val authConnector: AuthConnector,
-                                                   val keystoreConnector: KeystoreConnector,
+                                                   val sessionService: SessionService,
                                                    val applicantDetailsService: ApplicantDetailsService)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,

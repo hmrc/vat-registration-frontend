@@ -17,18 +17,18 @@
 package controllers.registration.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.ApplyForEoriForm
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, TradingDetailsService}
 import views.html.{apply_for_eori => ApplyForEoriView}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplyForEoriController @Inject()(val keystoreConnector: KeystoreConnector,
+class ApplyForEoriController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val applicantDetailsService: ApplicantDetailsService,
                                        val tradingDetailsService: TradingDetailsService,

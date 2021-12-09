@@ -17,22 +17,23 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
+import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services._
+import services.{SessionService, _}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class IndividualIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
+class IndividualIdentificationController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthConnector,
                                                    val applicantDetailsService: ApplicantDetailsService,
-                                                   soleTraderIdentificationService: SoleTraderIdentificationService
+                                                   soleTraderIdentificationService: SoleTraderIdentificationService,
+                                                   vatRegistrationService: VatRegistrationService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
@@ -61,8 +62,10 @@ class IndividualIdentificationController @Inject()(val keystoreConnector: Keysto
         for {
           individualDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(individualDetails)
-        } yield {
-          Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show)
+          partyType <- vatRegistrationService.partyType
+        } yield partyType match {
+          case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership => Redirect(applicantRoutes.FormerNameController.show)
+          case _ => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show)
         }
     }
 }

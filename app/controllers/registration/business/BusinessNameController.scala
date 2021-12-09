@@ -17,19 +17,18 @@
 package controllers.registration.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.BusinessNameForm
 import models.external.{IncorporatedEntity, MinorEntity}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.BusinessName
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class BusinessNameController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val applicantDetailsService: ApplicantDetailsService,
                                        view: BusinessName)

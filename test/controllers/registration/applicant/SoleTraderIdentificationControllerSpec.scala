@@ -49,7 +49,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     )
 
     object Controller extends SoleTraderIdentificationController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsService,
       mockSoleTraderIdService,

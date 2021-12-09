@@ -17,7 +17,6 @@
 package controllers.registration.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TransactorEmailAddressForm
 
@@ -25,7 +24,7 @@ import javax.inject.Inject
 import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
-import services.{EmailVerificationService, SessionProfile, TransactorDetailsService}
+import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
 
@@ -33,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TransactorCaptureEmailAddressController @Inject()(view: capture_email_address,
                                                         val authConnector: AuthConnector,
-                                                        val keystoreConnector: KeystoreConnector,
+                                                        val sessionService: SessionService,
                                                         transactorDetailsService: TransactorDetailsService,
                                                         emailVerificationService: EmailVerificationService
                                                      )(implicit appConfig: FrontendAppConfig,

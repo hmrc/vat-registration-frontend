@@ -17,11 +17,10 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 
 @Singleton
-class BusinessIdentificationResolverController @Inject()(val keystoreConnector: KeystoreConnector,
+class BusinessIdentificationResolverController @Inject()(val sessionService: SessionService,
                                                          val authConnector: AuthConnector,
                                                          vatRegistrationService: VatRegistrationService
                                                         )(implicit val appConfig: FrontendAppConfig,

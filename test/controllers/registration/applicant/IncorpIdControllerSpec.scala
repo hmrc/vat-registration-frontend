@@ -24,7 +24,7 @@ import models.api.{CharitableOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService, TimeServiceMock}
+import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockVatRegistrationService, TimeServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
@@ -35,17 +35,19 @@ class IncorpIdControllerSpec extends ControllerSpec
   with FutureAssertions
   with MockApplicantDetailsService
   with MockVatRegistrationService
-  with FeatureSwitching {
+  with FeatureSwitching
+  with MockPartnersService {
 
   val testJourneyId = "testJourneyId"
 
   class Setup(cp: Option[CurrentProfile] = Some(currentProfile)) {
     val testController: IncorpIdController = new IncorpIdController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockIncorpIdService,
       mockApplicantDetailsService,
-      vatRegistrationServiceMock
+      vatRegistrationServiceMock,
+      mockPartnersService
     )
 
     mockAuthenticated()

@@ -32,7 +32,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec with FutureAssertions w
   class Setup {
     object Controller extends SupplyWorkersController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       view
     )

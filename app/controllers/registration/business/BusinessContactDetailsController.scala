@@ -17,20 +17,20 @@
 package controllers.registration.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.CompanyContactDetailsForm
+
 import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile}
+import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile, SessionService}
 import views.html.business_contact_details
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BusinessContactDetailsController @Inject()(val authConnector: AuthClientConnector,
-                                                 val keystoreConnector: KeystoreConnector,
+                                                 val sessionService: SessionService,
                                                  val businessContactService: BusinessContactService,
                                                  val prepopService: PrePopulationService,
                                                  val addressLookupService: AddressLookupService,

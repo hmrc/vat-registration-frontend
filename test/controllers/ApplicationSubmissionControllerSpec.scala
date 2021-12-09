@@ -37,7 +37,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     vatRegistrationServiceMock,
     mockAttachmentsService,
     mockAuthClientConnector,
-    mockKeystoreConnector,
+    mockSessionService,
     applicationSubmissionConfirmationView
   )
 

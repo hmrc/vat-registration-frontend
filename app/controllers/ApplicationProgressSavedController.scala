@@ -17,9 +17,8 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import views.html.pages.application_progress_saved
 
 import javax.inject.{Inject, Singleton}
@@ -28,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ApplicationProgressSavedController @Inject()(val returnsService: ReturnsService,
                                                    val authConnector: AuthClientConnector,
-                                                   val keystoreConnector: KeystoreConnector,
+                                                   val sessionService: SessionService,
                                                    val applicationProgressSavedView: application_progress_saved)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,

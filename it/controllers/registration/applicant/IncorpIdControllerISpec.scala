@@ -19,14 +19,15 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, UseSoleTraderIdentification}
 import itutil.ControllerISpec
-import models.ApplicantDetails
-import models.api.{CharitableOrg, EligibilitySubmissionData, RegSociety}
+import models.api._
 import models.external.IncorporatedEntity
+import models.{ApplicantDetails, PartnerEntity}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{CREATED, await, _}
+import services.SessionService.leadPartnerEntityKey
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
@@ -144,6 +145,108 @@ class IncorpIdControllerISpec extends ControllerISpec {
           result.status mustBe SEE_OTHER
           result.headers(LOCATION) must contain(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
         }
+      }
+    }
+  }
+
+  "GET /start-incorp-id-partnership-journey" should {
+    "redirect to the returned journey url for UkCompany" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](UkCompany),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
+
+      stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startPartnerJourney.url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+
+    "redirect to the returned journey url for RegSociety" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
+
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](RegSociety),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+      val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
+
+      stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startPartnerJourney.url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+
+    "redirect to the returned journey url for CharitableOrg" in new Setup {
+      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
+
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](CharitableOrg),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val testJourneyStartUrl = "/test"
+      val testDeskProServiceId = "vrs"
+
+      stubPost("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+      val res: WSResponse = await(buildClient(applicantRoutes.IncorpIdController.startPartnerJourney.url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(testJourneyStartUrl)
+    }
+  }
+
+  "GET /incorp-id-partner-callback" when {
+    "redirect to STI" in new Setup {
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](UkCompany),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val res = buildClient(routes.IncorpIdController.partnerCallback("1").url).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
       }
     }
   }

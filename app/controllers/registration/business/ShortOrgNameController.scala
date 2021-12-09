@@ -17,17 +17,16 @@
 package controllers.registration.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.ShortOrgNameForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, TradingDetailsService}
+import services.{SessionProfile, SessionService, TradingDetailsService}
 import views.html.ShortOrgName
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ShortOrgNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class ShortOrgNameController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val tradingDetailsService: TradingDetailsService,
                                        view: ShortOrgName)

@@ -40,7 +40,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       mockFlatRateService,
       mockVatRegistrationService,
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockConfigConnector,
       mockTimeService,
       mockSicAndComplianceService,

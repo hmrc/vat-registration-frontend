@@ -17,18 +17,17 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.SellOrMoveNipForm
 import models.{ConditionalValue, NIPCompliance}
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import views.html.returns.SellOrMoveNip
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SellOrMoveNipController @Inject()(val keystoreConnector: KeystoreConnector,
+class SellOrMoveNipController @Inject()(val sessionService: SessionService,
                                         val authConnector: AuthClientConnector,
                                         val returnsService: ReturnsService,
                                         view: SellOrMoveNip)
