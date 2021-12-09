@@ -22,6 +22,8 @@ import models.{ApplicantDetails, _}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+import java.time.LocalDate
+
 case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
                      transactorDetails: Option[TransactorDetails] = None,
@@ -33,7 +35,8 @@ case class VatScheme(id: String,
                      flatRateScheme: Option[FlatRateScheme] = None,
                      status: VatRegStatus.Value,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
-                     partners: Option[List[PartnerEntity]] = None)
+                     partners: Option[List[PartnerEntity]] = None,
+                     createdDate: Option[LocalDate] = None)
 
 object VatScheme {
 
@@ -51,7 +54,8 @@ object VatScheme {
           (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
           (__ \ "status").read[VatRegStatus.Value] and
           (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
-          (__ \ "partners").readNullable[List[PartnerEntity]]
+          (__ \ "partners").readNullable[List[PartnerEntity]] and
+          (__ \ "createdDate").readNullable[LocalDate]
         ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
@@ -65,7 +69,8 @@ object VatScheme {
           Reads.pure(None) and
           (__ \ "status").read[VatRegStatus.Value] and
           Reads.pure(None) and
-          Reads.pure(None)
+          Reads.pure(None) and
+          (__ \ "createdDate").readNullable[LocalDate]
         ) (VatScheme.apply _)
     }
 
@@ -81,7 +86,8 @@ object VatScheme {
       (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
       (__ \ "status").write[VatRegStatus.Value] and
       (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
-      (__ \ "partners").writeNullable[List[PartnerEntity]]
+      (__ \ "partners").writeNullable[List[PartnerEntity]] and
+      (__ \ "createdDate").writeNullable[LocalDate]
     ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)

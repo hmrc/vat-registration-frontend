@@ -80,6 +80,10 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
       mockHttpGET[VatScheme]("tst-url", validVatScheme)
       connector.getRegistration("tstID") returns validVatScheme
     }
+    "return the correct VatResponse when the microservice returns a Vat Registration model with a created date" in new Setup {
+      mockHttpGET[VatScheme]("tst-url", vatSchemeWithDate)
+      connector.getRegistration("tstID") returns vatSchemeWithDate
+    }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[VatScheme]("tst-url", forbidden)
       connector.getRegistration("tstID") failedWith forbidden
@@ -98,6 +102,10 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
       mockHttpGET[JsValue]("tst-url", Json.toJson(validVatScheme))
       connector.getRegistrationJson("tstID") returns Json.toJson(validVatScheme)
+    }
+    "return the correct VatResponse when the microservice returns a Vat Registration model with a created date" in new Setup {
+      mockHttpGET[JsValue]("tst-url", Json.toJson(vatSchemeWithDate))
+      connector.getRegistrationJson("tstID") returns Json.toJson(vatSchemeWithDate)
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[JsValue]("tst-url", forbidden)
