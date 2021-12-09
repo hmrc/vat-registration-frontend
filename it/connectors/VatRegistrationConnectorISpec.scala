@@ -41,13 +41,18 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
     )
 
   "creating new Vat Registration" should {
-
     "work without problems" when {
       "a registration is already present in the backend" in {
         given()
           .vatRegistrationFootprint.exists()
 
         await(vatregConnector.createNewRegistration) mustBe VatScheme(id = "1", status = VatRegStatus.draft)
+      }
+      "a registration with a createdDate is already present in the backend" in {
+        given()
+          .vatRegistrationFootprint.exists(withDate = true)
+
+        await(vatregConnector.createNewRegistration) mustBe VatScheme(id = "1", status = VatRegStatus.draft, createdDate = Some(testCreatedDate))
       }
     }
 

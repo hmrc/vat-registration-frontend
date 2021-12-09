@@ -30,6 +30,7 @@ import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
+import utils.JsonUtilities
 
 import java.time.LocalDate
 
@@ -563,14 +564,17 @@ trait StubUtils {
 
   }
 
-  case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) {
+  case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) extends JsonUtilities {
 
-    def exists(): PreconditionBuilder = {
+    def exists(withDate: Boolean = false): PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
-            s"""{ "registrationId" : "1" , "status" : "draft"}"""
-          )))
+            Json.stringify(Json.obj(
+              "registrationId" -> "1",
+              "status" -> VatRegStatus.draft.toString
+            ) ++ {if (withDate) Json.obj("createdDate" -> "2021-01-01") else Json.obj()}
+          ))))
 
       builder
     }

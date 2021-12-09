@@ -235,6 +235,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
+  val vatSchemeWithDate = validVatScheme.copy(createdDate = Some(testDate))
+
   val validSoleTraderVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
