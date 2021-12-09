@@ -43,7 +43,8 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       deskProServiceId = "MTDSUR",
       signOutUrl = "/test-sign-out",
       accessibilityUrl = "/accessibility-url",
-      regime = "VATC"
+      regime = "VATC",
+      businessVerificationCheck = true
     )
   }
 

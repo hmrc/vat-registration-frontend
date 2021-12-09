@@ -66,7 +66,7 @@ trait ApplicantDetailsFixtures {
     "GB",
     identifiersMatch = true,
     "REGISTERED",
-    BvPass,
+    Some(BvPass),
     Some(testBpSafeId)
   )
 
@@ -98,7 +98,7 @@ trait ApplicantDetailsFixtures {
     sautr = Some(testSautr),
     trn = None,
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -111,7 +111,7 @@ trait ApplicantDetailsFixtures {
     sautr = Some(testSautr),
     trn = Some(testTrn),
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -133,7 +133,7 @@ trait ApplicantDetailsFixtures {
     sautr = Some(testSautr),
     postCode = Some(testPostcode),
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -145,7 +145,7 @@ trait ApplicantDetailsFixtures {
     chrn = Some(testChrn),
     casc = None,
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -157,7 +157,7 @@ trait ApplicantDetailsFixtures {
     chrn = Some(testChrn),
     casc = Some(testCasc),
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = true
   )
@@ -171,7 +171,7 @@ trait ApplicantDetailsFixtures {
     countryOfIncorporation = testIncorpCountry,
     identifiersMatch = true,
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId)
   )
 
@@ -184,7 +184,7 @@ trait ApplicantDetailsFixtures {
     countryOfIncorporation = testIncorpCountry,
     identifiersMatch = true,
     registration = testRegistration,
-    businessVerification = BvPass,
+    businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId)
   )
 }

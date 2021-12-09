@@ -60,7 +60,8 @@ class IncorpIdControllerSpec extends ControllerSpec
     deskProServiceId = "vrs",
     signOutUrl = appConfig.feedbackUrl,
     accessibilityUrl = appConfig.accessibilityStatementUrl,
-    regime = appConfig.regime
+    regime = appConfig.regime,
+    businessVerificationCheck = true
   )
 
   "startJourney" should {
@@ -100,7 +101,7 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   "incorpIdCallback" when {
     "the UseSoleTraderIdentification feature switch is enabled" should {
-      "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
+      "store the incorporation details and redirect to PersonalDetailsVerification when the response is valid" in new Setup {
         enable(UseSoleTraderIdentification)
         val onwardUrl = applicantRoutes.IndividualIdentificationController.startJourney.url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
@@ -113,7 +114,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       }
     }
     "the UseSoleTraderIdentification feature switch is disabled" should {
-      "store the incorporation details and redirect to PDV when the response is valid" in new Setup {
+      "store the incorporation details and redirect to PersonalDetailsVerification when the response is valid" in new Setup {
         disable(UseSoleTraderIdentification)
         val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))

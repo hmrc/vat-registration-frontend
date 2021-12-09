@@ -57,7 +57,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     Some(testCompanyName),
     Some(testPostCode),
     testRegistration,
-    BvPass,
+    Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )

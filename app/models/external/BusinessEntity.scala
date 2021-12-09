@@ -53,7 +53,7 @@ case class IncorporatedEntity(companyNumber: String,
                               countryOfIncorporation: String = "GB",
                               identifiersMatch: Boolean,
                               registration: String,
-                              businessVerification: BusinessVerificationStatus,
+                              businessVerification: Option[BusinessVerificationStatus],
                               bpSafeId: Option[String]) extends BusinessEntity
 
 object IncorporatedEntity {
@@ -70,7 +70,7 @@ object IncorporatedEntity {
       OFormat(Reads.pure("GB"), (__ \ "companyProfile" \ "countryOfIncorporation").write[String]) and
       (__ \ "identifiersMatch").format[Boolean] and
       (__ \ "registration" \ "registrationStatus").format[String] and
-      (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
+      (__ \ "businessVerification" \ "verificationStatus").formatNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String]
     ) (IncorporatedEntity.apply, unlift(IncorporatedEntity.unapply))
 
@@ -84,7 +84,7 @@ case class SoleTraderIdEntity(firstName: String,
                               sautr: Option[String],
                               trn: Option[String],
                               registration: String,
-                              businessVerification: BusinessVerificationStatus,
+                              businessVerification: Option[BusinessVerificationStatus],
                               bpSafeId: Option[String] = None,
                               overseas: Option[OverseasIdentifierDetails] = None,
                               identifiersMatch: Boolean = true) extends BusinessEntity
@@ -98,7 +98,7 @@ object SoleTraderIdEntity {
       (__ \ "sautr").formatNullable[String] and
       (__ \ "trn").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
-      (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
+      (__ \ "businessVerification" \ "verificationStatus").formatNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
       (__ \ "overseas").formatNullable[OverseasIdentifierDetails] and
       OFormat((__ \ "identifiersMatch").read[Boolean].orElse(Reads.pure(true)), (__ \ "identifiersMatch").write[Boolean])
@@ -111,7 +111,7 @@ case class PartnershipIdEntity(sautr: Option[String],
                                companyName: Option[String] = None,
                                postCode: Option[String],
                                registration: String,
-                               businessVerification: BusinessVerificationStatus,
+                               businessVerification: Option[BusinessVerificationStatus],
                                bpSafeId: Option[String] = None,
                                identifiersMatch: Boolean) extends BusinessEntity
 
@@ -122,7 +122,7 @@ object PartnershipIdEntity {
       (__ \ "companyName").formatNullable[String] and
       (__ \ "postcode").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
-      (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
+      (__ \ "businessVerification" \ "verificationStatus").formatNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
       (__ \ "identifiersMatch").format[Boolean]
     ) (PartnershipIdEntity.apply, unlift(PartnershipIdEntity.unapply))
@@ -139,7 +139,7 @@ case class MinorEntity(companyName: Option[String] = None,
                        chrn: Option[String] = None,
                        casc: Option[String] = None,
                        registration: String,
-                       businessVerification: BusinessVerificationStatus,
+                       businessVerification: Option[BusinessVerificationStatus],
                        bpSafeId: Option[String] = None,
                        identifiersMatch: Boolean) extends BusinessEntity
 
@@ -154,7 +154,7 @@ object MinorEntity {
       (__ \ "chrn").formatNullable[String] and
       (__ \ "casc").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
-      (__ \ "businessVerification" \ "verificationStatus").format[BusinessVerificationStatus] and
+      (__ \ "businessVerification" \ "verificationStatus").formatNullable[BusinessVerificationStatus] and
       (__ \ "registration" \ "registeredBusinessPartnerId").formatNullable[String] and
       (__ \ "identifiersMatch").format[Boolean]
     ) (MinorEntity.apply, unlift(MinorEntity.unapply))

@@ -44,7 +44,8 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       deskProServiceId = "vrs",
       signOutUrl = appConfig.feedbackUrl,
       accessibilityUrl = appConfig.accessibilityStatementUrl,
-      regime = appConfig.regime
+      regime = appConfig.regime,
+      businessVerificationCheck = true
     )
 
     object Controller extends SoleTraderIdentificationController(

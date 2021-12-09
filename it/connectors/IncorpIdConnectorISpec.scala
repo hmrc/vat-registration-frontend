@@ -38,7 +38,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -54,7 +54,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -70,7 +70,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -88,7 +88,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -104,7 +104,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -120,7 +120,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC")
+        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -138,7 +138,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "return the incorporation details without optional data" in {
         given()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", BvFail, None)
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", Some(BvFail), None)
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -150,7 +150,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "return the incorporation details with optional data" in {
         given()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
@@ -162,7 +162,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       "return the incorporation details for a charitable organisation" in {
         given()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
         disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 

@@ -27,9 +27,9 @@ class BankAccountReputationStubController @Inject()(mcc: MessagesControllerCompo
                                                    (implicit ec: ExecutionContext) extends FrontendController(mcc) {
 
   def validateBankDetails(): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    val accountNumber = (request.body \\ "sortCode").head.as[String]
+    val sortCode = (request.body \\ "sortCode").head.as[String]
 
-    val status = accountNumber.take(2) match {
+    val status = sortCode.take(2) match {
       case "11" => "no"
       case "22" => "indeterminate"
       case _ => "yes"

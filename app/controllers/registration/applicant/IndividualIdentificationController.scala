@@ -49,7 +49,8 @@ class IndividualIdentificationController @Inject()(val keystoreConnector: Keysto
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
-              regime = appConfig.regime
+              regime = appConfig.regime,
+              businessVerificationCheck = true
             )
           ).map(url => Redirect(url))
     }

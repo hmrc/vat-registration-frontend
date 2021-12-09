@@ -40,9 +40,9 @@ trait ApplicantDetailsFixture {
   val testApplicantIncorpDate = Some(LocalDate.of(2020, 2, 3))
   val testBpSafeId = "testBpId"
 
-  val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, Some(testApplicantCompanyName), Some(testApplicantCtUtr), None, testApplicantIncorpDate, "GB", identifiersMatch = true, "REGISTERED", BvPass, Some(testBpSafeId))
-  val testMinorEntity = MinorEntity(None, None, Some(testApplicantCtUtr), None, None, None, None, "REGISTERED", BvPass, Some(testBpSafeId), identifiersMatch = true)
-  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(None, None, None, "REGISTERED", BvPass, None, identifiersMatch = true)
+  val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, Some(testApplicantCompanyName), Some(testApplicantCtUtr), None, testApplicantIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
+  val testMinorEntity = MinorEntity(None, None, Some(testApplicantCtUtr), None, None, None, None, "REGISTERED", Some(BvPass), Some(testBpSafeId), identifiersMatch = true)
+  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(None, None, None, "REGISTERED", Some(BvPass), None, identifiersMatch = true)
   val validFullApplicantDetails = ApplicantDetails(
     personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),

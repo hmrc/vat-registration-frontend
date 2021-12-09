@@ -67,7 +67,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     Some(testChrn),
     None,
     testRegistration,
-    BvPass,
+    Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )
@@ -98,7 +98,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     Some(testChrn),
     Some(testCasc),
     testRegistration,
-    BvPass,
+    Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )
@@ -134,7 +134,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     None,
     None,
     testRegistration,
-    BvPass,
+    Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )

@@ -56,7 +56,8 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
                   deskProServiceId = appConfig.contactFormServiceIdentifier,
                   signOutUrl = appConfig.feedbackUrl,
                   accessibilityUrl = appConfig.accessibilityStatementUrl,
-                  regime = appConfig.regime
+                  regime = appConfig.regime,
+                  businessVerificationCheck = true
                 ),
                 partyType
               ).map(url => Redirect(url))
@@ -90,7 +91,8 @@ class SoleTraderIdentificationController @Inject()(val keystoreConnector: Keysto
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
-              regime = appConfig.regime
+              regime = appConfig.regime,
+              businessVerificationCheck = false
             ),
             Partnership
           ).map(url => Redirect(url))
