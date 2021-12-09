@@ -43,7 +43,8 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
       deskProServiceId = "MTDSUR",
       signOutUrl = "/test-sign-out",
       accessibilityUrl = "/test-accessiblity-url",
-      regime = "VATC"
+      regime = "VATC",
+      businessVerificationCheck = true
     )
   }
 

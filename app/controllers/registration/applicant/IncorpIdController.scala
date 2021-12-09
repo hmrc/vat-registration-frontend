@@ -51,7 +51,8 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           deskProServiceId = appConfig.contactFormServiceIdentifier,
           signOutUrl = appConfig.feedbackUrl,
           accessibilityUrl = appConfig.accessibilityStatementUrl,
-          regime = appConfig.regime
+          regime = appConfig.regime,
+          businessVerificationCheck = true
         )
 
         vatRegistrationService.partyType.flatMap {

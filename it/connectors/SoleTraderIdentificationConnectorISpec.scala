@@ -42,7 +42,8 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
     accessibilityUrl = "/accessibility-url",
-    regime = "VATC"
+    regime = "VATC",
+    businessVerificationCheck = true
   )
 
   "startSoleTraderJourney" when {

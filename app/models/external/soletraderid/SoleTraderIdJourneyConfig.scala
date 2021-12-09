@@ -23,7 +23,8 @@ case class SoleTraderIdJourneyConfig(continueUrl: String,
                                      deskProServiceId: String,
                                      signOutUrl: String,
                                      accessibilityUrl: String,
-                                     regime: String)
+                                     regime: String,
+                                     businessVerificationCheck: Boolean)
 
 object SoleTraderIdJourneyConfig {
   implicit val format: Format[SoleTraderIdJourneyConfig] = Json.format[SoleTraderIdJourneyConfig]

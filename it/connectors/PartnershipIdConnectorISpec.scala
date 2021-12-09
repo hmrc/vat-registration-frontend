@@ -42,7 +42,8 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
     accessibilityUrl = "/accessibility-url",
-    regime = "VATC"
+    regime = "VATC",
+    businessVerificationCheck = true
   )
 
   val testPostCode = "ZZ1 1ZZ"
@@ -65,7 +66,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     None,
     Some(testPostCode),
     testRegistration,
-    BvPass,
+    Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )

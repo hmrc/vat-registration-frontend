@@ -19,7 +19,7 @@ package controllers.test
 import models.api.{NonUkNonEstablished, PartyType, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BvPass, MinorEntity}
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -30,12 +30,22 @@ import scala.concurrent.Future
 @Singleton
 class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
+  final val unincorpAssoc = "UNINCORP_ASSOC"
+  final val unincorpAssocExcludeBv = "UNINCORP_ASSOC_EXCLUDE_BV"
+  final val trust = "TRUST"
+  final val trustExcludeBv = "TRUST_EXCLUDE_BV"
+  final val nonUkNonEstablished = "NON_UK_NON_ESTABLISHED"
+  final val nonUkNonEstablishedExcludeBv = "NON_UK_NON_ESTABLISHED_EXCLUDE_BV"
+
   def createJourney(partyType: String): Action[MinorEntityIdJourneyConfig] = Action(parse.json[MinorEntityIdJourneyConfig]) {
     journeyConfig =>
       val journeyId = PartyType.fromString(partyType) match {
-        case UnincorpAssoc => "1"
-        case Trust => "2"
-        case NonUkNonEstablished => "3"
+        case UnincorpAssoc if !journeyConfig.body.businessVerificationCheck => unincorpAssocExcludeBv
+        case UnincorpAssoc => unincorpAssoc
+        case Trust if !journeyConfig.body.businessVerificationCheck => trustExcludeBv
+        case Trust => trust
+        case NonUkNonEstablished if !journeyConfig.body.businessVerificationCheck => nonUkNonEstablishedExcludeBv
+        case NonUkNonEstablished => nonUkNonEstablished
       }
 
       Created(Json.obj("journeyStartUrl" -> JsString(journeyConfig.body.continueUrl + s"?journeyId=$journeyId")))
@@ -45,39 +55,42 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     Future.successful(
       Ok(Json.toJson(
         journeyId match {
-          case "1" => unincorpAssocEntity
-          case "2" => trustEntity
-          case "3" => nonUKCompanyEntity
+          case `unincorpAssocExcludeBv` => unincorpAssocEntity(businessVerification = None)
+          case `unincorpAssoc` => unincorpAssocEntity(businessVerification = Some(BvPass))
+          case `trustExcludeBv` => trustEntity(businessVerification = None)
+          case `trust` => trustEntity(businessVerification = Some(BvPass))
+          case `nonUkNonEstablishedExcludeBv` => nonUKCompanyEntity(businessVerification = None)
+          case `nonUkNonEstablished` => nonUKCompanyEntity(businessVerification = Some(BvPass))
         }
       )(MinorEntity.apiFormat))
     )
   }
 
-  val unincorpAssocEntity: MinorEntity = MinorEntity(
+  def unincorpAssocEntity(businessVerification: Option[BusinessVerificationStatus]): MinorEntity = MinorEntity(
     sautr = Some("1234567890"),
     ctutr = None,
     postCode = Some("AA11AA"),
     chrn = Some("1234567890"),
     casc = Some("1234567890"),
     registration = "REGISTERED",
-    businessVerification = BvPass,
+    businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true
   )
 
-  val trustEntity: MinorEntity = MinorEntity(
+  def trustEntity(businessVerification: Option[BusinessVerificationStatus]): MinorEntity = MinorEntity(
     sautr = Some("1234567890"),
     ctutr = None,
     postCode = Some("AA11AA"),
     chrn = Some("1234567890"),
     casc = None,
     registration = "REGISTERED",
-    businessVerification = BvPass,
+    businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true
   )
 
-  val nonUKCompanyEntity: MinorEntity = MinorEntity(
+  def nonUKCompanyEntity(businessVerification: Option[BusinessVerificationStatus]): MinorEntity = MinorEntity(
     sautr = None,
     ctutr = Some("1234567890"),
     overseas = Some(OverseasIdentifierDetails("1234567890", "EE")),
@@ -85,7 +98,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     chrn = None,
     casc = None,
     registration = "REGISTERED",
-    businessVerification = BvPass,
+    businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true
   )

@@ -23,7 +23,8 @@ case class PartnershipIdJourneyConfig(continueUrl: String,
                                       deskProServiceId: String,
                                       signOutUrl: String,
                                       accessibilityUrl: String,
-                                      regime: String)
+                                      regime: String,
+                                      businessVerificationCheck: Boolean)
 
 object PartnershipIdJourneyConfig {
   implicit val format: OFormat[PartnershipIdJourneyConfig] = Json.format[PartnershipIdJourneyConfig]

@@ -35,8 +35,16 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val testAccessibilityUrl = "/test-accessibility-url"
     val testJourneyUrl = "/testJourneyUrl"
     val regime = "VATC"
+    val businessVerificationStatus = true
     val partyType = Individual
-    val testJourneyConfig = SoleTraderIdJourneyConfig(testContinueUrl, Some(testServiceName), testDeskproId, testSignOutUrl, testAccessibilityUrl, regime)
+    val testJourneyConfig = SoleTraderIdJourneyConfig(
+      continueUrl = testContinueUrl,
+      optServiceName = Some(testServiceName),
+      deskProServiceId = testDeskproId,
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl,
+      regime = regime,
+      businessVerificationCheck = businessVerificationStatus)
 
     object Service extends SoleTraderIdentificationService(mockSoleTraderIdConnector)
 

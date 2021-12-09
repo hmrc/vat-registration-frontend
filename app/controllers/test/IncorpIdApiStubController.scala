@@ -18,7 +18,7 @@ package controllers.test
 
 import models.api._
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
-import models.external.{BvPass, IncorporatedEntity}
+import models.external.{BusinessVerificationStatus, BvPass, IncorporatedEntity}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -31,12 +31,22 @@ import scala.concurrent.Future
 class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
   extends FrontendController(mcc) {
 
+  final val ukCompany = "UK_COMPANY"
+  final val ukCompanyExcludeBv = "UK_COMPANY_EXCLUDE_BV"
+  final val regSociety = "REG_SOCIETY"
+  final val regSocietyExcludeBv = "REG_SOCIETY_EXCLUDE_BV"
+  final val charitableOrg = "CHARITABLE_ORG"
+  final val charitableOrgExcludeBv = "CHARITABLE_ORG_EXCLUDE_BV"
+
   def createJourney(partyType: String): Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) {
     request =>
       val journeyId = PartyType.fromString(partyType) match {
-        case UkCompany => "1"
-        case RegSociety => "2"
-        case CharitableOrg => "3"
+        case UkCompany if !request.body.businessVerificationCheck => ukCompanyExcludeBv
+        case UkCompany => ukCompany
+        case RegSociety if !request.body.businessVerificationCheck => regSocietyExcludeBv
+        case RegSociety => regSociety
+        case CharitableOrg if !request.body.businessVerificationCheck => charitableOrgExcludeBv
+        case CharitableOrg => charitableOrg
       }
 
       Created(Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$journeyId")))
@@ -47,14 +57,21 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
       Ok(Json.toJson(IncorporatedEntity(
         companyName = Some("Test company"),
         companyNumber = "12345678",
-        ctutr = if (!journeyId.equals("3")) Some("123567890") else None,
-        chrn = if (journeyId.equals("3")) Some("123567890") else None,
+        ctutr = if (!journeyId.equals(charitableOrg)) Some("123567890") else None,
+        chrn = if (journeyId.equals(charitableOrg)) Some("123567890") else None,
         dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
         identifiersMatch = true,
         registration = "REGISTERED",
-        businessVerification = BvPass,
+        businessVerification = businessVerificationStatus(journeyId),
         bpSafeId = Some("testBpId")
       ))(IncorporatedEntity.apiFormat))
     )
+  }
+
+  private def businessVerificationStatus(journeyId: String): Option[BusinessVerificationStatus] = {
+    journeyId match {
+      case `ukCompanyExcludeBv` | `regSocietyExcludeBv` | `charitableOrgExcludeBv` => None
+      case _ => Some(BvPass)
+    }
   }
 }

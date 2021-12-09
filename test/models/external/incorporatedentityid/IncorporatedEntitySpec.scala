@@ -67,7 +67,7 @@ class IncorporatedEntitySpec extends VatRegSpec {
         countryOfIncorporation = "GB",
         identifiersMatch = true,
         registration = testRegistration,
-        businessVerification = BvPass,
+        businessVerification = Some(BvPass),
         bpSafeId = Some(testBpSafeId)
       )
 
