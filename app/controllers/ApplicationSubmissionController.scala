@@ -17,10 +17,9 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import models.api.IdentityEvidence
 import play.api.mvc._
-import services.{AttachmentsService, SessionProfile, VatRegistrationService}
+import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.pages.application_submission_confirmation
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatRegistrationService,
                                                 val attachmentsService: AttachmentsService,
                                                 val authConnector: AuthClientConnector,
-                                                val keystoreConnector: KeystoreConnector,
+                                                val sessionService: SessionService,
                                                 val applicationSubmissionConfirmationView: application_submission_confirmation)
                                                (implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,

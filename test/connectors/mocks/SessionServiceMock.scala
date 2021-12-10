@@ -16,36 +16,36 @@
 
 package connectors.mocks
 
-import connectors._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Format
+import services.SessionService
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-trait KeystoreMock {
+trait SessionServiceMock {
   this: MockitoSugar =>
 
-  lazy val mockKeystoreConnector = mock[KeystoreConnector]
+  lazy val mockSessionService = mock[SessionService]
 
   import cats.syntax.applicative._
 
-  def mockKeystoreFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
-    when(mockKeystoreConnector.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
+  def mockSessionFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
+    when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
 
-  def mockKeystoreCache[T](key: String, cacheMap: CacheMap): OngoingStubbing[Future[CacheMap]] =
-    when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any[Format[T]]())).thenReturn(Future.successful(cacheMap.pure))
+  def mockSessionCache[T](key: String, data: T): OngoingStubbing[Future[CacheMap]] =
+    when(mockSessionService.cache(ArgumentMatchers.contains(key), ArgumentMatchers.eq[T](data))(any(), any[Format[T]]())).thenReturn(Future.successful(CacheMap("", Map())))
 
-  def mockKeystoreCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
-    when(mockKeystoreConnector.cache(ArgumentMatchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
+  def mockSessionCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
+    when(mockSessionService.cache(ArgumentMatchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
 
-  def mockKeystoreClear(): OngoingStubbing[Future[Boolean]] = when(mockKeystoreConnector.remove(any())) thenReturn Future.successful(true)
+  def mockSessionClear(): OngoingStubbing[Future[Boolean]] = when(mockSessionService.remove(any())) thenReturn Future.successful(true)
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =
-    when(mockKeystoreConnector.fetchAndGet[String](any())(any(), any())).thenReturn(Future.successful(Some(regID).pure))
+    when(mockSessionService.fetchAndGet[String](any())(any(), any())).thenReturn(Future.successful(Some(regID).pure))
 
 }

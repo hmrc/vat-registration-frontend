@@ -17,19 +17,18 @@
 package controllers.registration.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TradingNameForm
 import models.api.NonUkNonEstablished
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, TradingDetailsService, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, TradingDetailsService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.trading_name
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class TradingNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class TradingNameController @Inject()(val sessionService: SessionService,
                                       val authConnector: AuthClientConnector,
                                       val applicantDetailsService: ApplicantDetailsService,
                                       val tradingDetailsService: TradingDetailsService,

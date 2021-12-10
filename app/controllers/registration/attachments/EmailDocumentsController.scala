@@ -17,10 +17,9 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{SessionProfile, SessionService, VatRegistrationService}
 import views.html.EmailDocuments
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EmailDocumentsController @Inject()(view: EmailDocuments,
                                          val authConnector: AuthClientConnector,
-                                         val keystoreConnector: KeystoreConnector)
+                                         val sessionService: SessionService)
                                         (implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

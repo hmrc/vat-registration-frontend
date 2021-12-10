@@ -17,12 +17,12 @@
 package controllers.registration.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import forms.ChooseBusinessTypeForm
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile, SicAndComplianceService, VatRegistrationService}
+import services.{FlatRateService, SessionProfile, SessionService, SicAndComplianceService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.choose_business_type
 
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
-                                             val keystoreConnector: KeystoreConnector,
+                                             val sessionService: SessionService,
                                              configConnector: ConfigConnector,
                                              flatRateService: FlatRateService,
                                              chooseBusinessTypeView: choose_business_type)

@@ -17,14 +17,13 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.Partner
 import models.api.Partnership
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -33,7 +32,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class PartnershipIdController @Inject()(val authConnector: AuthConnector,
-                                        val keystoreConnector: KeystoreConnector,
+                                        val sessionService: SessionService,
                                         partnershipIdService: PartnershipIdService,
                                         applicantDetailsService: ApplicantDetailsService,
                                         vatRegistrationService: VatRegistrationService

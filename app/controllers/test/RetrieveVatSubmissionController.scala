@@ -17,12 +17,11 @@
 package controllers.test
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import connectors.test.TestVatRegistrationConnector
 import controllers.BaseController
 import play.api.libs.json.Json
 import play.api.mvc._
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import views.html.test.vat_submission_json
 
@@ -30,7 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class RetrieveVatSubmissionController @Inject()(val authConnector: AuthConnector,
-                                                val keystoreConnector: KeystoreConnector,
+                                                val sessionService: SessionService,
                                                 testVatRegistrationConnector: TestVatRegistrationConnector,
                                                 view: vat_submission_json)
                                                (implicit val executionContext: ExecutionContext,

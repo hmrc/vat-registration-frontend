@@ -67,11 +67,7 @@ trait StubUtils {
 
     def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
 
-    def s4lContainerInScenario[C: S4LKey]: ViewModelScenarioStub[C] = new ViewModelScenarioStub[C]()
-
     def audit = AuditStub()
-
-    def vrefe = VREFE()
 
     def s4l = S4L()
 
@@ -84,47 +80,6 @@ trait StubUtils {
     new PreconditionBuilder()
       .audit.writesAudit()
       .audit.writesAuditMerged()
-  }
-
-  case class VREFE()(implicit builder: PreconditionBuilder) {
-    def deleteVREFESession(): PreconditionBuilder = {
-      stubFor(delete(urlMatching("/internal/1/delete-session")).willReturn(ok))
-      builder
-    }
-  }
-
-  trait KeystoreStub {
-    def stubKeystorePut(key: String, data: String): MappingBuilder = {
-      put(urlPathMatching(s"/keystore/vat-registration-frontend/session-[a-z0-9-]+/data/$key"))
-        .willReturn(ok(
-          s"""
-             |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
-             |    "data": { "$key": $data },
-             |    "id": "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
-             |    "modifiedDetails": {
-             |      "createdAt": { "$$date": 1502265526026 },
-             |      "lastUpdated": { "$$date": 1502265526026 }}}
-          """.stripMargin
-        ))
-    }
-
-    def stubKeystoreGet(key: String, data: String): MappingBuilder =
-      get(urlPathMatching("/keystore/vat-registration-frontend/session-[a-z0-9-]+"))
-        .willReturn(ok(
-          s"""
-             |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
-             |    "data": { "$key": $data },
-             |    "id": "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
-             |    "modifiedDetails": {
-             |      "createdAt": { "$$date": 1502265526026 },
-             |      "lastUpdated": { "$$date": 1502265526026 }}}
-          """.stripMargin
-        ))
-
-    def deleteKeystore(): MappingBuilder = {
-      delete(urlMatching("/keystore/vat-registration-frontend/session-[a-z0-9-]+"))
-        .willReturn(ok)
-    }
   }
 
   object S4LStub extends IntegrationSpecBase {
@@ -279,44 +234,6 @@ trait StubUtils {
 
     def clearedByKey(implicit key: S4LKey[C]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LPut(key.key, Json.obj().toString()))
-      builder
-    }
-  }
-
-  class ViewModelScenarioStub[C](scenario: String = "S4L Scenario")
-                                (implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) extends ViewModelStub {
-
-    def contains[T](t: T, currentState: Option[String] = None, nextState: Option[String] = None)
-                   (implicit fmt: Format[T]): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = S4LStub.stubS4LGet[C, T](t).inScenario(scenario)
-      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
-      builder
-    }
-
-    def isUpdatedWith[T](t: T, currentState: Option[String] = None, nextState: Option[String] = None)
-                        (implicit key: S4LKey[C], fmt: Format[T]): PreconditionBuilder = {
-      val mappingBuilderScenarioPUT = S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()).inScenario(scenario)
-      val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
-      builder
-    }
-
-    def isEmpty(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNothing().inScenario(scenario)
-      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
-      builder
-    }
-
-    def cleared(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioDELETE = S4LStub.stubS4LClear().inScenario(scenario)
-      val mappingBuilderDELETE = currentState.fold(mappingBuilderScenarioDELETE)(mappingBuilderScenarioDELETE.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderDELETE)(mappingBuilderDELETE.willSetStateTo))
       builder
     }
   }

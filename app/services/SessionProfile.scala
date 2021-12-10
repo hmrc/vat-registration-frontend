@@ -17,7 +17,6 @@
 package services
 
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
 import controllers.routes
 import models.CurrentProfile
 import play.api.mvc.Result
@@ -29,11 +28,11 @@ import scala.concurrent.{ExecutionContext, Future}
 trait SessionProfile {
 
   implicit val executionContext: ExecutionContext
-  val keystoreConnector: KeystoreConnector
+  val sessionService: SessionService
   private val CURRENT_PROFILE_KEY = "CurrentProfile"
 
   def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
-    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
+    sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
       currentProfile.fold(
         Future.successful(Redirect(routes.WelcomeController.show))
       ) {
@@ -49,6 +48,6 @@ trait SessionProfile {
   }
 
   def getProfile(implicit hc: HeaderCarrier): Future[Option[CurrentProfile]] = {
-    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY)
+    sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY)
   }
 }

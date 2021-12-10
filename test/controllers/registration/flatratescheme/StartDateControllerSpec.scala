@@ -35,7 +35,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
     val view = app.injector.instanceOf[frs_start_date]
     val controller: StartDateController = new StartDateController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockFlatRateService,
       mockReturnsService,
       mockTimeService,

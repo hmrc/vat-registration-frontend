@@ -28,7 +28,7 @@ class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureA
   val testController = new ApplicationProgressSavedController(
     mockReturnsService,
     mockAuthClientConnector,
-    mockKeystoreConnector,
+    mockSessionService,
     applicationProgressSavedView
   )
 

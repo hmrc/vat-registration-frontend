@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{ICLConnector, KeystoreConnector, VatRegistrationConnector}
+import connectors.{ICLConnector, VatRegistrationConnector}
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import models.api.SicCode
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ICLService @Inject()(val iclConnector: ICLConnector,
                            config: ServicesConfig,
-                           val keystore: KeystoreConnector,
+                           val keystore: SessionService,
                            val sicAndCompliance: SicAndComplianceService,
                            val registrationConnector: VatRegistrationConnector
                           )(implicit ec: ExecutionContext) {

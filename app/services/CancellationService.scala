@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CancellationService @Inject()(val keystoreConnector: KeystoreConnector,
+class CancellationService @Inject()(val sessionService: SessionService,
                                     val currentProfileService: CurrentProfileService,
                                     val save4LaterConnector: S4LConnector,
                                     val vatRegistrationConnector: VatRegistrationConnector
@@ -43,7 +43,7 @@ class CancellationService @Inject()(val keystoreConnector: KeystoreConnector,
         for {
           _ <- vatRegistrationConnector.deleteVREFESession(regId)
           _ <- save4LaterConnector.clear(regId)
-          _ <- keystoreConnector.remove
+          _ <- sessionService.remove
           _ <- vatRegistrationConnector.deleteVatScheme(regId)
         } yield {
           logger.warn(s"[deleteVatRegistration] - deleted vat scheme for $regId")
@@ -56,7 +56,7 @@ class CancellationService @Inject()(val keystoreConnector: KeystoreConnector,
   }
 
   private def getCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
-    keystoreConnector.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
+    sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap {
       _.fold(buildNewProfile(regId))(profile => Future.successful(profile))
     }
   }

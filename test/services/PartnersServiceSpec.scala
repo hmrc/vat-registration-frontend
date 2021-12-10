@@ -28,7 +28,7 @@ class PartnersServiceSpec extends VatRegSpec with MockPartnersConnector {
   val service = new PartnersService(
     mockS4LService,
     mockPartnersConnector,
-    mockKeystoreConnector
+    mockSessionService
   )
 
   val testLeadPartner: PartnerEntity = PartnerEntity(

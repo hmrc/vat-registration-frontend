@@ -17,10 +17,9 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, VatRegistrationService}
+import services.{SessionProfile, SessionService, VatRegistrationService}
 import views.html.PostalCoverSheet
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
                                            val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector,
+                                           val sessionService: SessionService,
                                            val vatRegistrationService: VatRegistrationService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,

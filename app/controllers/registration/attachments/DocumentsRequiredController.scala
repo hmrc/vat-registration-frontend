@@ -17,18 +17,17 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import models.api.{IdentityEvidence, VAT2}
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile}
+import services.{AttachmentsService, SessionProfile, SessionService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
-                                            val keystoreConnector: KeystoreConnector,
+                                            val sessionService: SessionService,
                                             attachmentsService: AttachmentsService)
                                            (implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,

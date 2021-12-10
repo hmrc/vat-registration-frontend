@@ -17,9 +17,8 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import play.api.mvc._
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import views.html.pages.error.{SubmissionRetryableView, submissionFailed}
 
 import javax.inject.{Inject, Singleton}
@@ -27,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorController @Inject()(val authConnector: AuthClientConnector,
-                                val keystoreConnector: KeystoreConnector,
+                                val sessionService: SessionService,
                                 submissionFailedView: submissionFailed,
                                 submissionRetryableView: SubmissionRetryableView)
                                (implicit appConfig: FrontendAppConfig,

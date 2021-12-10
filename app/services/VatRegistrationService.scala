@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
                                        registrationApiConnector: RegistrationApiConnector,
-                                       val keystoreConnector: KeystoreConnector
+                                       val sessionService: SessionService
                                       )(implicit ec: ExecutionContext) {
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =

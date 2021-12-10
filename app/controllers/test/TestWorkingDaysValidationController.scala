@@ -17,14 +17,13 @@
 package controllers.test
 
 import java.time.LocalDate
-
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, Request}
 import play.twirl.api.Html
-import services.{DateService, SessionProfile}
+import services.{DateService, SessionProfile, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
@@ -33,7 +32,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class TestWorkingDaysValidationController @Inject()(val dateService: DateService,
                                                     val authConnector: AuthClientConnector,
-                                                    val keystoreConnector: KeystoreConnector
+                                                    val sessionService: SessionService
                                                    )(implicit appConfig: FrontendAppConfig,
                                                      val executionContext: ExecutionContext,
                                                      baseControllerComponents: BaseControllerComponents)

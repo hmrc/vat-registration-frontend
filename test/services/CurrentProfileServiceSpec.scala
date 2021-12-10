@@ -36,7 +36,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
   class Setup {
     val service = new CurrentProfileService(
       mockVatRegistrationService,
-      mockKeystoreConnector,
+      mockSessionService,
       frontendAppConfig
     )
   }
@@ -56,7 +56,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
         when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier]()))
           .thenReturn(Future.successful(VatRegStatus.draft))
 
-        when(mockKeystoreConnector.cache[CurrentProfile](any(), any())(any(), any()))
+        when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         val result = await(service.buildCurrentProfile("testRegId"))
@@ -69,7 +69,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
     "return some registration id" when {
       "current profile successfully updated with flag" in new Setup {
-        when(mockKeystoreConnector.addRejectionFlag(any())(any()))
+        when(mockSessionService.addRejectionFlag(any())(any()))
           .thenReturn(Future.successful(Some("RegId")))
 
         await(service.addRejectionFlag("transactionID")) mustBe Some("RegId")
@@ -78,7 +78,7 @@ class CurrentProfileServiceSpec extends VatRegSpec {
 
     "return none" when {
       "there is no current profile" in new Setup {
-        when(mockKeystoreConnector.addRejectionFlag(any())(any()))
+        when(mockSessionService.addRejectionFlag(any())(any()))
           .thenReturn(Future.successful(None))
 
         await(service.addRejectionFlag("transactionID")) mustBe None

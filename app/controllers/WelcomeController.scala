@@ -18,11 +18,10 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import featureswitch.core.config.SaveAndContinueLater
 import forms.StartNewApplicationForm
 import play.api.mvc._
-import services._
+import services.{SessionService, _}
 import views.html.pages.start_new_application
 
 import javax.inject.{Inject, Singleton}
@@ -32,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
                                   val currentProfileService: CurrentProfileService,
                                   val authConnector: AuthClientConnector,
-                                  val keystoreConnector: KeystoreConnector,
+                                  val sessionService: SessionService,
                                   val trafficManagementService: TrafficManagementService,
                                   val saveAndRetrieveService: SaveAndRetrieveService,
                                   view: start_new_application)
@@ -52,7 +51,7 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
               Redirect(routes.WelcomeController.startNewJourney)
           }
         case _ =>
-          currentProfileService.keystoreConnector.remove.map { _ =>
+          currentProfileService.sessionService.remove.map { _ =>
             Redirect(routes.WelcomeController.startNewJourney)
           }
       }

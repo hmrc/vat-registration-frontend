@@ -17,7 +17,6 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TelephoneNumberForm
 
@@ -25,7 +24,7 @@ import javax.inject.{Inject, Singleton}
 import models.TelephoneNumber
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_telephone_number
 
@@ -34,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                  val authConnector: AuthConnector,
-                                                 val keystoreConnector: KeystoreConnector,
+                                                 val sessionService: SessionService,
                                                  applicantDetailsService: ApplicantDetailsService,
                                                  vatRegistrationService: VatRegistrationService
                                                 )(implicit appConfig: FrontendAppConfig,

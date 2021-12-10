@@ -31,7 +31,7 @@ class S4LServiceSpec extends VatRegSpec {
 
   "S4L Service" should {
     "save a form with the correct key" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
       mockS4LSaveForm[ApplicantDetails](cacheMap)
       implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
@@ -39,14 +39,14 @@ class S4LServiceSpec extends VatRegSpec {
     }
 
     "fetch a form with the correct key" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LFetchAndGet(S4LKey[ApplicantDetails].key, Some(emptyApplicantDetails))
       implicit val reads: Reads[ApplicantDetails]= ApplicantDetails.s4LReads(UkCompany)
       service.fetchAndGet[ApplicantDetails] returns Some(emptyApplicantDetails)
     }
 
     "clear down S4L data" in new Setup {
-      mockKeystoreFetchAndGet[String]("RegistrationId", Some(testRegId))
+      mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       mockS4LClear()
       service.clear.map(_.status) returns 200
     }

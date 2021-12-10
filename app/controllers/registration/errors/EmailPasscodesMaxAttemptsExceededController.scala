@@ -17,10 +17,9 @@
 package controllers.registration.errors
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.pages.error.maxPasscodeAttemptsExceeded
 
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmailPasscodesMaxAttemptsExceededController @Inject()(view: maxPasscodeAttemptsExceeded,
                                                             val authConnector: AuthConnector,
-                                                            val keystoreConnector: KeystoreConnector
+                                                            val sessionService: SessionService
                                                            )(implicit appConfig: FrontendAppConfig,
                                                              val executionContext: ExecutionContext,
                                                              baseControllerComponents: BaseControllerComponents)

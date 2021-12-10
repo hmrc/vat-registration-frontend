@@ -28,7 +28,7 @@ class IndividualAffinityKickOutControllerSpec extends ControllerSpec {
   val TestController = new IndividualAffinityKickOutController(
     app.injector.instanceOf[IndividualAffinityKickOut],
     mockAuthClientConnector,
-    mockKeystoreConnector
+    mockSessionService
   )
 
   override def beforeEach(): Unit = {

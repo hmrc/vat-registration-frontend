@@ -38,7 +38,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     val testBusinessName = "testBusinessName"
 
     object Controller extends TradingNameResolverController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       vatRegistrationServiceMock,
       mockApplicantDetailsService

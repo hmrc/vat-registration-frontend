@@ -17,10 +17,10 @@
 package controllers.registration.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile}
+import services.{FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.frs_confirm_business_sector
 
@@ -30,9 +30,9 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
-                                              val keystoreConnector: KeystoreConnector,
+                                              val sessionService: SessionService,
                                               flatRateService: FlatRateService,
-                                             view: frs_confirm_business_sector)
+                                              view: frs_confirm_business_sector)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController {

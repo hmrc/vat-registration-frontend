@@ -17,11 +17,10 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.ZeroRatedSuppliesForm
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile, VatRegistrationService}
+import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.returns.zero_rated_supplies
 
@@ -29,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ZeroRatedSuppliesController @Inject()(val keystoreConnector: KeystoreConnector,
+class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                                             val authConnector: AuthClientConnector,
                                             returnsService: ReturnsService,
                                             vatRegistrationService: VatRegistrationService,

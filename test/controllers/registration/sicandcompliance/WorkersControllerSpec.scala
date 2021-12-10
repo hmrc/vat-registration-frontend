@@ -34,7 +34,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     val view = app.injector.instanceOf[workers]
     val controller: WorkersController = new WorkersController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       view
     )

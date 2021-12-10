@@ -16,7 +16,7 @@
 
 package testHelpers
 
-import connectors.mocks.{AuthMock, HttpClientMock, KeystoreMock, MockS4lConnector}
+import connectors.mocks.{AuthMock, HttpClientMock, SessionServiceMock, MockS4lConnector}
 import connectors._
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,7 +33,7 @@ import utils.CascadeUpsert
 trait VatMocks
   extends MockS4lConnector
     with AuthMock
-    with KeystoreMock
+    with SessionServiceMock
     with HttpClientMock
     with SicAndComplianceServiceMock
     with IncorpIdServiceMock
@@ -80,7 +80,7 @@ trait VatMocks
       mockHttpClient,
       mockS4LConnector,
       mockS4LService,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSessionCache,
       mockSessionRepository,
       mockCascadeUpsert,

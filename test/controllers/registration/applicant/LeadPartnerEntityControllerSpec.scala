@@ -18,9 +18,10 @@ package controllers.registration.applicant
 
 import fixtures.ApplicantDetailsFixtures
 import models.PartnerEntity
-import models.api.Individual
+import models.api.{Individual, PartyType}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.SessionService.leadPartnerEntityKey
 import services.mocks.{MockApplicantDetailsService, MockPartnersService}
 import testHelpers.ControllerSpec
 import views.html.lead_partner_entity_type
@@ -38,7 +39,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
     val view: lead_partner_entity_type = app.injector.instanceOf[lead_partner_entity_type]
     val controller: LeadPartnerEntityController = new LeadPartnerEntityController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockApplicantDetailsService,
       mockPartnersService,
       view
@@ -69,6 +70,8 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
   "submitLeadPartnerEntity" should {
     "return a redirect for a Sole Trader" in new Setup {
       val soleTrader = "Z1"
+      mockSessionCache[PartyType](leadPartnerEntityKey, Individual)
+
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)

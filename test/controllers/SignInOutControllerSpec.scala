@@ -26,7 +26,7 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
 
   val testController: SignInOutController = new SignInOutController(
     mockAuthClientConnector,
-    mockKeystoreConnector,
+    mockSessionService,
     app.injector.instanceOf[TimeoutView]
   )
 

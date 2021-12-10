@@ -17,19 +17,18 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.AttachmentMethodForm
 import models.api.{Attachments, EmailMethod, Post}
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile}
+import services.{AttachmentsService, SessionProfile, SessionService}
 import views.html.ChooseAttachmentMethod
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AttachmentMethodController @Inject()(val authConnector: AuthClientConnector,
-                                           val keystoreConnector: KeystoreConnector,
+                                           val sessionService: SessionService,
                                            attachmentsService: AttachmentsService,
                                            form: AttachmentMethodForm,
                                            view: ChooseAttachmentMethod)

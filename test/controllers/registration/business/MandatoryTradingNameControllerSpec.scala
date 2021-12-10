@@ -36,7 +36,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
   class Setup {
     val view = app.injector.instanceOf[soletrader_name]
     val testController = new MandatoryTradingNameController(
-      mockKeystoreConnector,
+      mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
       mockTradingDetailsService,

@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package connectors
+package services
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Format
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.CascadeUpsert
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class KeystoreConnector @Inject()(val sessionCache: SessionCache,
-                                  val sessionRepository: SessionRepository,
-                                  val cascadeUpsert: CascadeUpsert)
-                                 (implicit ec: ExecutionContext) {
+class SessionService @Inject()(sessionRepository: SessionRepository,
+                               cascadeUpsert: CascadeUpsert)
+                              (implicit ec: ExecutionContext) {
 
   def sessionID(implicit hc: HeaderCarrier): String = hc.sessionId.getOrElse(throw new RuntimeException("Active User had no Session ID")).value
 
@@ -64,4 +63,8 @@ class KeystoreConnector @Inject()(val sessionCache: SessionCache,
       regId <- sessionRepository.getRegistrationID(txId)
     } yield regId
   }
+}
+
+object SessionService {
+  val leadPartnerEntityKey = "leadPartnerEntity"
 }

@@ -160,7 +160,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
-
+  def incorpIdPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-partner-callback"
   // Personal Details Validation Section
 
   lazy val personalDetailsValidationHost: String = servicesConfig.baseUrl("personal-details-validation")

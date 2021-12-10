@@ -57,8 +57,8 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
       Ok(Json.toJson(IncorporatedEntity(
         companyName = Some("Test company"),
         companyNumber = "12345678",
-        ctutr = if (!journeyId.equals(charitableOrg)) Some("123567890") else None,
-        chrn = if (journeyId.equals(charitableOrg)) Some("123567890") else None,
+        ctutr = if (!journeyId.contains(charitableOrg)) Some("123567890") else None,
+        chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
         dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
         identifiersMatch = true,
         registration = "REGISTERED",

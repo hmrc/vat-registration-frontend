@@ -17,13 +17,12 @@
 package controllers
 
 import config.AuthClientConnector
-import connectors.KeystoreConnector
 import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import testHelpers.ControllerSpec
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +33,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
 
   object TestController extends BaseController with SessionProfile {
     override implicit val executionContext: ExecutionContext = ec
-    override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+    override val sessionService: SessionService = mockSessionService
 
     val authConnector: AuthClientConnector = mockAuthClientConnector
 

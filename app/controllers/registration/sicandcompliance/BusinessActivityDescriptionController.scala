@@ -17,18 +17,18 @@
 package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.{BaseController, routes => baseRoutes}
 import forms.BusinessActivityDescriptionForm
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SicAndComplianceService}
+import services.{SessionProfile, SessionService, SicAndComplianceService}
 import views.html.business_activity_description
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessActivityDescriptionController @Inject()(val authConnector: AuthClientConnector,
-                                                      val keystoreConnector: KeystoreConnector,
+                                                      val sessionService: SessionService,
                                                       val sicAndCompService: SicAndComplianceService,
                                                       view: business_activity_description)
                                                      (implicit appConfig: FrontendAppConfig,

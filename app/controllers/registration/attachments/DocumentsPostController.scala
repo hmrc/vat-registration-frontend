@@ -17,10 +17,9 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import views.html.DocumentsPost
 
 import javax.inject.{Inject, Singleton}
@@ -28,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DocumentsPostController @Inject()(val authConnector: AuthClientConnector,
-                                        val keystoreConnector: KeystoreConnector,
+                                        val sessionService: SessionService,
                                         documentsPostPage: DocumentsPost)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,

@@ -17,12 +17,11 @@
 package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, VatRegistrationService}
+import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
 import views.html.has_company_bank_account
 
 import javax.inject.Inject
@@ -30,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
                                          val bankAccountDetailsService: BankAccountDetailsService,
-                                         val keystoreConnector: KeystoreConnector,
+                                         val sessionService: SessionService,
                                          val vatRegistrationService: VatRegistrationService,
                                          view: has_company_bank_account)
                                         (implicit appConfig: FrontendAppConfig,

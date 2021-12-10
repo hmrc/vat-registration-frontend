@@ -171,6 +171,8 @@ GET         /current-address/acceptFromTxm                                      
 ## Incorp ID Pages
 GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startJourney
 GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
+GET         /start-incorp-id-partner-journey                                                   controllers.registration.applicant.IncorpIdController.startPartnerJourney
+GET         /incorp-id-partner-callback                                                        controllers.registration.applicant.IncorpIdController.partnerCallback(journeyId)
 
 ## Personal Details Validation Pages
 GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()

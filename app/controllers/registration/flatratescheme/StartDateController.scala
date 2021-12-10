@@ -17,12 +17,11 @@
 package controllers.registration.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.FRSStartDateForm
 import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, ReturnsService, TimeService}
+import services.{FlatRateService, ReturnsService, SessionService, TimeService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -34,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class StartDateController @Inject()(val authConnector: AuthConnector,
-                                    val keystoreConnector: KeystoreConnector,
+                                    val sessionService: SessionService,
                                     flatRateService: FlatRateService,
                                     returnsService: ReturnsService,
                                     timeService: TimeService,

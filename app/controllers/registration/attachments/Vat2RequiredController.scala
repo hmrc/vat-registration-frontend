@@ -17,10 +17,9 @@
 package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import views.html.Vat2Required
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class Vat2RequiredController @Inject()(view: Vat2Required,
                                        val authConnector: AuthClientConnector,
-                                       val keystoreConnector: KeystoreConnector)
+                                       val sessionService: SessionService)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)

@@ -17,9 +17,8 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import views.html.compliance_introduction
 
 import javax.inject.{Inject, Singleton}
@@ -27,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ComplianceIntroductionController @Inject() (val authConnector: AuthClientConnector,
-                                                  val keystoreConnector: KeystoreConnector,
+                                                  val sessionService: SessionService,
                                                   view: compliance_introduction
                                                  )(implicit appConfig: FrontendAppConfig,
                                                   val executionContext: ExecutionContext,

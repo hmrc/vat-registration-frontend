@@ -17,14 +17,15 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.UseSoleTraderIdentification
-import models.api.{CharitableOrg, RegSociety, UkCompany}
+import models.PartnerEntity
+import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, IncorpIdService, SessionProfile, VatRegistrationService}
+import services.SessionService.leadPartnerEntityKey
+import services.{SessionService, _}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -33,10 +34,11 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class IncorpIdController @Inject()(val authConnector: AuthConnector,
-                                   val keystoreConnector: KeystoreConnector,
+                                   val sessionService: SessionService,
                                    incorpIdService: IncorpIdService,
                                    applicantDetailsService: ApplicantDetailsService,
-                                   vatRegistrationService: VatRegistrationService
+                                   vatRegistrationService: VatRegistrationService,
+                                   partnersService: PartnersService
                                   )(implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)
@@ -81,5 +83,40 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
         }
   }
 
+  def startPartnerJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        val journeyConfig = IncorpIdJourneyConfig(
+          continueUrl = appConfig.incorpIdPartnerCallbackUrl,
+          optServiceName = Some(request2Messages(request)("service.name")),
+          deskProServiceId = appConfig.contactFormServiceIdentifier,
+          signOutUrl = appConfig.feedbackUrl,
+          accessibilityUrl = appConfig.accessibilityStatementUrl,
+          regime = appConfig.regime,
+          businessVerificationCheck = false
+        )
 
+        for {
+          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+            _.getOrElse(throw new InternalServerException("[IncorpIdController][startPartnerJourney] no lead partner party type in session during journey start"))
+          )
+          journeyStartUrl <- incorpIdService.createJourney(journeyConfig, partyType)
+        } yield {
+          SeeOther(journeyStartUrl)
+        }
+  }
+
+  def partnerCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        for {
+          incorpDetails <- incorpIdService.getDetails(journeyId)
+          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+            _.getOrElse(throw new InternalServerException("[IncorpIdController][partnerCallback] no lead partner party type in session during callback"))
+          )
+          _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(incorpDetails, partyType, isLeadPartner = true))
+        } yield {
+          Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+        }
+  }
 }

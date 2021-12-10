@@ -17,24 +17,23 @@
 package controllers.registration.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
 import models.{BankAccount, BankAccountDetails}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, VatRegistrationService}
+import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
 import views.html.enter_company_bank_account_details
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
-                                                val bankAccountDetailsService: BankAccountDetailsService,
-                                                val keystoreConnector: KeystoreConnector,
-                                                val vatRegistrationService: VatRegistrationService,
-                                                view: enter_company_bank_account_details)
+                                               val bankAccountDetailsService: BankAccountDetailsService,
+                                               val sessionService: SessionService,
+                                               val vatRegistrationService: VatRegistrationService,
+                                               view: enter_company_bank_account_details)
                                                (implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents) extends BaseController {

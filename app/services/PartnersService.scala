@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.{KeystoreConnector, PartnersConnector}
+import connectors.PartnersConnector
 import models.PartnerEntity
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PartnersService @Inject()(val s4LService: S4LService,
                                 val partnersConnector: PartnersConnector,
-                                val keystoreConnector: KeystoreConnector
+                                val sessionService: SessionService
                                )(implicit ec: ExecutionContext) {
 
   def getAllPartners(regId: String)(implicit hc: HeaderCarrier): Future[List[PartnerEntity]] =

@@ -17,11 +17,10 @@
 package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.IntermediarySupplyForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SicAndComplianceService}
+import services.{SessionProfile, SessionService, SicAndComplianceService}
 import views.html.labour.intermediary_supply
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClientConnector,
-                                                    val keystoreConnector: KeystoreConnector,
+                                                    val sessionService: SessionService,
                                                     val sicAndCompService: SicAndComplianceService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,

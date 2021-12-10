@@ -32,7 +32,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     val view = app.injector.instanceOf[business_contact_details]
     val controller: BusinessContactDetailsController = new BusinessContactDetailsController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockBusinessContactService,
       mockPrePopulationService,
       mockAddressLookupService,

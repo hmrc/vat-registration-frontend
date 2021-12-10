@@ -17,7 +17,7 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
 import models.api.{Address, Country}
@@ -25,7 +25,7 @@ import models.view.HomeAddressView
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile}
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class InternationalHomeAddressController @Inject()(val authConnector: AuthConnector,
-                                                   val keystoreConnector: KeystoreConnector,
+                                                   val sessionService: SessionService,
                                                    applicantDetailsService: ApplicantDetailsService,
                                                    configConnector: ConfigConnector,
                                                    view: CaptureInternationalAddress,

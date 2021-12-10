@@ -17,19 +17,18 @@
 package controllers.registration.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import models.api.{NETP, NonUkNonEstablished}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services._
+import services.{SessionService, _}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TransactorIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
+class TransactorIdentificationController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthConnector,
                                                    val transactorDetailsService: TransactorDetailsService,
                                                    vatRegistrationService: VatRegistrationService,

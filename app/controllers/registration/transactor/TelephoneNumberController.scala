@@ -17,19 +17,18 @@
 package controllers.registration.transactor
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.TransactorTelephoneForm
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.Telephone
-import services.{SessionProfile, TransactorDetailsService}
+import services.{SessionProfile, SessionService, TransactorDetailsService}
 import views.html.transactor.TelephoneNumber
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TelephoneNumberController @Inject()(val keystoreConnector: KeystoreConnector,
+class TelephoneNumberController @Inject()(val sessionService: SessionService,
                                           val authConnector: AuthClientConnector,
                                           val transactorDetailsService: TransactorDetailsService,
                                           view: TelephoneNumber)

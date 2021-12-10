@@ -17,7 +17,6 @@
 package repositories
 
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
 import itutil.IntegrationSpecBase
 import models.CurrentProfile._
 import play.api.libs.json.{JsObject, Json, OWrites}
@@ -26,6 +25,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 
 import java.util.UUID
 import play.api.test.Helpers._
+import services.SessionService
 import support.AppAndStubs
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,7 +39,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
   class Setup {
     val repository = app.injector.instanceOf[SessionRepository]
 
-    val connector = app.injector.instanceOf[KeystoreConnector]
+    val connector = app.injector.instanceOf[SessionService]
     await(repository.drop)
     await(repository.ensureIndexes)
 

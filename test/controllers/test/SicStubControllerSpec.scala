@@ -34,7 +34,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
   trait Setup {
     val controller: SicStubController = new SicStubController(
       mockConfigConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockS4LService,
       mockSicAndComplianceService,
       mockAuthClientConnector,
@@ -63,7 +63,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
     "return 303 and correct redirection with many sic code selected" in new Setup {
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
-      when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
+      when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
         _ redirectsTo controllers.routes.SicAndComplianceController.showMainBusinessActivity.url
@@ -73,7 +73,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
     "return 303 and correct redirection with only one sic code selected" in new Setup {
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
-      when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
+      when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
@@ -84,7 +84,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
     "return 303 and correct redirection with only one labour sic code selected" in new Setup {
       when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
-      when(mockKeystoreConnector.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
+      when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {

@@ -38,7 +38,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     val view = app.injector.instanceOf[choose_business_type]
     val controller: ChooseBusinessTypeController = new ChooseBusinessTypeController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockConfigConnector,
       mockFlatRateService,
       view

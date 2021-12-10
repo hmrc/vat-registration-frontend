@@ -17,16 +17,15 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile, VatRegistrationService}
+import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ZeroRatedSuppliesResolverController @Inject()(val keystoreConnector: KeystoreConnector,
+class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionService,
                                                     val authConnector: AuthClientConnector,
                                                     returnsService: ReturnsService,
                                                     vatRegistrationService: VatRegistrationService)

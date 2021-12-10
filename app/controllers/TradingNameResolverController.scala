@@ -17,11 +17,10 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import featureswitch.core.config.ShortOrgName
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -29,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TradingNameResolverController @Inject()(val keystoreConnector: KeystoreConnector,
+class TradingNameResolverController @Inject()(val sessionService: SessionService,
                                               val authConnector: AuthConnector,
                                               vatRegistrationService: VatRegistrationService,
                                               applicantDetailsService: ApplicantDetailsService

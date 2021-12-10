@@ -17,14 +17,13 @@
 package controllers.registration.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import models.PartnerEntity
 import models.api._
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
-import services._
+import services.{SessionService, _}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -32,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SoleTraderIdentificationController @Inject()(val keystoreConnector: KeystoreConnector,
+class SoleTraderIdentificationController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthConnector,
                                                    val applicantDetailsService: ApplicantDetailsService,
                                                    soleTraderIdentificationService: SoleTraderIdentificationService,

@@ -17,19 +17,18 @@
 package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.WarehouseNumberForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile}
+import services.{ReturnsService, SessionProfile, SessionService}
 import views.html.returns.WarehouseNumberView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class WarehouseNumberController @Inject()(val keystoreConnector: KeystoreConnector,
+class WarehouseNumberController @Inject()(val sessionService: SessionService,
                                           val authConnector: AuthClientConnector,
                                           val returnsService: ReturnsService,
                                           val warehouseNumberView: WarehouseNumberView)

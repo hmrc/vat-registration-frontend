@@ -17,12 +17,12 @@
 package controllers.test
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, SicAndComplianceService}
+import services.{S4LService, SessionProfile, SessionService, SicAndComplianceService}
 import views.html.test._
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SicStubController @Inject()(val configConnect: ConfigConnector,
-                                  val keystoreConnector: KeystoreConnector,
+                                  val sessionService: SessionService,
                                   val s4LService: S4LService,
                                   val sicAndCompService: SicAndComplianceService,
                                   val authConnector: AuthClientConnector,
@@ -55,7 +55,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
             sicCodesList <- Future {
               data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
             }
-            _ <- keystoreConnector.cache(SIC_CODES_KEY, sicCodesList)
+            _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
             _ <- sicAndCompService.submitSicCodes(sicCodesList)
           } yield {
             if (sicCodesList.size == 1) {

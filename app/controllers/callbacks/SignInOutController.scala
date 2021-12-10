@@ -17,20 +17,19 @@
 package controllers.callbacks
 
 import java.io.File
-
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import views.html.pages.error.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SignInOutController @Inject()(val authConnector: AuthClientConnector,
-                                    val keystoreConnector: KeystoreConnector,
+                                    val sessionService: SessionService,
                                     timeutView: TimeoutView)
                                    (implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,

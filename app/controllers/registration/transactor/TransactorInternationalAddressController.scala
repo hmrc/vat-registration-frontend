@@ -17,11 +17,11 @@
 package controllers.registration.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.{ConfigConnector, KeystoreConnector}
+import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, TransactorDetailsService}
+import services.{SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TransactorInternationalAddressController @Inject()(val authConnector: AuthConnector,
-                                                         val keystoreConnector: KeystoreConnector,
+                                                         val sessionService: SessionService,
                                                          transactorDetailsService: TransactorDetailsService,
                                                          configConnector: ConfigConnector,
                                                          view: CaptureInternationalAddress,

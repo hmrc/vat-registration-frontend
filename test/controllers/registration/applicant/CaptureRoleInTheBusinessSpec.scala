@@ -35,7 +35,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
     val controller: CaptureRoleInTheBusinessController = new CaptureRoleInTheBusinessController(
       view,
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockApplicantDetailsService
     )
 

@@ -17,11 +17,10 @@
 package controllers.registration.transactor
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
 import forms.OrganisationNameForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, TransactorDetailsService}
+import services.{SessionProfile, SessionService, TransactorDetailsService}
 import services.TransactorDetailsService._
 import views.html.transactor.OrganisationName
 
@@ -29,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OrganisationNameController @Inject()(val keystoreConnector: KeystoreConnector,
+class OrganisationNameController @Inject()(val sessionService: SessionService,
                                            val authConnector: AuthClientConnector,
                                            val transactorDetailsService: TransactorDetailsService,
                                            view: OrganisationName)

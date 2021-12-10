@@ -35,7 +35,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
   val TestController = new HonestyDeclarationController(
     app.injector.instanceOf[honesty_declaration],
     mockAuthClientConnector,
-    mockKeystoreConnector,
+    mockSessionService,
     vatRegistrationServiceMock
   )
 

@@ -39,7 +39,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
   class Setup {
     val controller: SicAndComplianceController = new SicAndComplianceController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockSicAndComplianceService,
       mockFlatRateService,
       mockICLService,
@@ -98,7 +98,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
         when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+        when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
 
         callAuthorised(controller.saveIclCodes) {
@@ -114,7 +114,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
         when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+        when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
 
         callAuthorised(controller.saveIclCodes) {
@@ -130,7 +130,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
         when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
-        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+        when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
 
         callAuthorised(controller.saveIclCodes) {
@@ -147,7 +147,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         when(mockSicAndComplianceService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
         when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
-        when(mockKeystoreConnector.cache(any(), any())(any(), any()))
+        when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
 
         callAuthorised(controller.saveIclCodes) {
@@ -162,7 +162,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
   s"GET ${routes.SicAndComplianceController.showMainBusinessActivity}" should {
     "return OK when view present in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
-      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
       callAuthorised(controller.showMainBusinessActivity) {
         status(_) mustBe OK
@@ -171,7 +171,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
     "return HTML where getSicAndCompliance returns empty viewModels for labour" in new Setup {
       mockGetSicAndCompliance(Future.successful(SicAndCompliance()))
-      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
       callAuthorised(controller.showMainBusinessActivity) { result =>
         status(result) mustBe OK
@@ -183,7 +183,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     val fakeRequest = FakeRequest(routes.SicAndComplianceController.showMainBusinessActivity)
 
     "return 400" in new Setup {
-      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
       submitAuthorised(controller.submitMainBusinessActivity, fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
@@ -191,7 +191,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
     "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
-      mockKeystoreFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
+      mockSessionFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
 
       submitAuthorised(controller.submitMainBusinessActivity,
         fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
@@ -200,7 +200,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     }
 
     "return 303 with selected sicCode" in new Setup {
-      mockKeystoreFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
 
       when(mockSicAndComplianceService.updateSicAndCompliance(any())(any(), any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
@@ -213,7 +213,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
     }
     "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
-      mockKeystoreFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
+      mockSessionFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
 
       when(mockSicAndComplianceService.updateSicAndCompliance(any())(any(), any()))
         .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))

@@ -39,7 +39,7 @@ class FormerNameControllerSpec extends ControllerSpec
   trait Setup {
     val controller: FormerNameController = new FormerNameController(
       mockAuthClientConnector,
-      mockKeystoreConnector,
+      mockSessionService,
       mockApplicantDetailsService,
       vatRegistrationServiceMock,
       app.injector.instanceOf[former_name]

@@ -18,18 +18,18 @@ package controllers.registration.business
 
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.KeystoreConnector
 import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import models.api.Address
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, BusinessContactService, SessionProfile}
+import services.{AddressLookupService, BusinessContactService, SessionProfile, SessionService}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
-                                      val keystoreConnector: KeystoreConnector,
+                                      val sessionService: SessionService,
                                       val businessContactService: BusinessContactService,
                                       val addressLookupService: AddressLookupService)
                                      (implicit appConfig: FrontendAppConfig,

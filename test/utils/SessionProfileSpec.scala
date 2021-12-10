@@ -17,13 +17,12 @@
 package utils
 
 import common.enums.VatRegStatus
-import connectors.KeystoreConnector
 import models.CurrentProfile
 import play.api.mvc.Result
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionProfile
+import services.{SessionProfile, SessionService}
 import testHelpers.VatRegSpec
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +33,7 @@ class SessionProfileSpec extends VatRegSpec {
   class Setup {
     val sessionProfile: SessionProfile = new SessionProfile {
       override implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
-      override val keystoreConnector: KeystoreConnector = mockKeystoreConnector
+      override val sessionService: SessionService = mockSessionService
     }
   }
 
@@ -46,36 +45,36 @@ class SessionProfileSpec extends VatRegSpec {
 
   "calling withCurrentProfile" should {
     "redirect to the welcome show if the current profile was not fetched from keystore" in new Setup {
-      mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", None)
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", None)
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat")
     }
     "perform the passed in function" when {
       "the ct status is not present in the current profile" in new Setup {
-        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
+        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
         val result = sessionProfile.withCurrentProfile() { _ => testFunc }
         status(result) mustBe OK
       }
       "the ct status does not equal a status 06" in new Setup {
-        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
+        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
         val result = sessionProfile.withCurrentProfile() { _ => testFunc }
         status(result) mustBe OK
       }
       "the vat status is held but checkStatus is set to false" in new Setup {
-        mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
+        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
         val result = sessionProfile.withCurrentProfile(checkStatus = false) { _ => testFunc }
         status(result) mustBe OK
       }
     }
     "redirect to post sign in if the status is held" in new Setup {
-      mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
     }
     "redirect to the retry submission page if the status is locked" in new Setup {
-      mockKeystoreFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.locked)))
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.locked)))
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat/submission-failure")
