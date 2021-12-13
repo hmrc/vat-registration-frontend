@@ -21,7 +21,7 @@ import services.SessionService.leadPartnerEntityKey
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.LeadPartnerForm
-import models.api.{CharitableOrg, Individual, PartyType, RegSociety, UkCompany}
+import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, PartnersService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -59,7 +59,7 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             for {
               _ <- sessionService.cache[PartyType](leadPartnerEntityKey, partyType)
             } yield partyType match {
-              case Individual => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true))
+              case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true))
               case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
               case _ => NotImplemented
             }

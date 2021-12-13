@@ -62,7 +62,7 @@ class LeadPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching
     }
 
     "have the correct button2" in new ViewSetup() {
-      doc.radio("55") mustBe Some(ExpectedContent.button2)
+      doc.radio("NETP") mustBe Some(ExpectedContent.button2)
     }
 
     "have the correct button3" in new ViewSetup() {
