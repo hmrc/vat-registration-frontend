@@ -34,7 +34,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    "display the page with prepop" in new Setup {
+    "display the page with pre-pop" in new Setup {
       given()
         .user.isAuthorised
         .vatScheme.has("partners", Json.toJson(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))))
@@ -52,17 +52,19 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
-    "the user selects Sole Trader" should {
-      "post to the backend and begin a STI journey" in new Setup {
-        given()
-          .user.isAuthorised
+    List(Individual, NETP).foreach { partyType =>
+      s"the user selects $partyType" should {
+        "post to the backend and begin a STI journey" in new Setup {
+          given()
+            .user.isAuthorised
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "Z1")))
+          val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+        }
       }
     }
 

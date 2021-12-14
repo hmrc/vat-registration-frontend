@@ -48,8 +48,8 @@
                 ),
                 RadioItem(
                     content = Text(messages("pages.leadPartnerEntityType.netp")),
-                    value = Some(PartyType.stati(NonUkNonEstablished)),
-                    checked = form("value").value.contains(PartyType.stati(NonUkNonEstablished))
+                    value = Some(PartyType.stati(NETP)),
+                    checked = form("value").value.contains(PartyType.stati(NETP))
                 ),
                 RadioItem(
                     content = Text(messages("pages.leadPartnerEntityType.ukCompany")),

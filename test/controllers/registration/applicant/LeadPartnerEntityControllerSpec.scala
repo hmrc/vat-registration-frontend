@@ -18,7 +18,7 @@ package controllers.registration.applicant
 
 import fixtures.ApplicantDetailsFixtures
 import models.PartnerEntity
-import models.api.{Individual, PartyType}
+import models.api._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.SessionService.leadPartnerEntityKey
@@ -73,6 +73,16 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
       mockSessionCache[PartyType](leadPartnerEntityKey, Individual)
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+      }
+    }
+
+    "return a redirect for NETP" in new Setup {
+      val netp = "NETP"
+      mockSessionCache[PartyType](leadPartnerEntityKey, NETP)
+
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> netp)) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
       }
