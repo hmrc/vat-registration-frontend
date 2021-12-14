@@ -18,7 +18,7 @@ package connectors
 
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.Partnership
+import models.api.{LtdLiabilityPartnership, LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership}
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
@@ -31,6 +31,10 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
   val testPartnershipJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
   val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
+  val createLtdPartnershipJourneyUrl = "/partnership-identification/api/limited-partnership-journey"
+  val createScotPartnershipJourneyUrl = "/partnership-identification/api/scottish-partnership-journey"
+  val createScotLtdPartnershipJourneyUrl = "/partnership-identification/api/scottish-limited-partnership-journey"
+  val createLtdLiabilityPartnershipJourneyUrl = "/partnership-identification/api/limited-liability-partnership-journey"
 
   def retrieveDetailsUrl(journeyId: String) = s"/partnership-identification/api/journey/$journeyId"
 
@@ -71,9 +75,9 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     identifiersMatch = true
   )
 
-  "createJourney" when {
-    "the API returns CREATED" must {
-      "return the journey ID when the response JSON includes the journeyId for a Partnership" in {
+  "createJourney API" when {
+    "for General Partnership" must {
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup {
         given()
 
         stubPost(createPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
@@ -83,7 +87,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
         res mustBe testJourneyUrl
       }
 
-      "throw a JsResultException when the response JSON doesn't contain the journeyId" in {
+      "throw a JsResultException when the response JSON doesn't contain the journeyId" in new Setup {
         given()
 
         stubPost(createPartnershipJourneyUrl, CREATED, "{}")
@@ -92,16 +96,142 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
           await(connector.createJourney(testJourneyConfig, Partnership))
         }
       }
-    }
 
-    "the API returns an unexpected status" must {
-      "throw an InternalServerException" in new Setup {
+      "throw an InternalServerException when the response contains unexpected status" in new Setup {
         given()
 
         stubPost(createPartnershipJourneyUrl, UNAUTHORIZED, "")
 
         intercept[InternalServerException] {
           await(connector.createJourney(testJourneyConfig, Partnership))
+        }
+      }
+    }
+
+    "for Limited Partnership" must {
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup{
+        given()
+
+        stubPost(createLtdPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, LtdPartnership))
+
+        res mustBe testJourneyUrl
+      }
+
+      "throw a JsResultException when the response JSON doesn't contain the journeyId" in new Setup {
+        given()
+
+        stubPost(createLtdPartnershipJourneyUrl, CREATED, "{}")
+
+        intercept[JsResultException] {
+          await(connector.createJourney(testJourneyConfig, LtdPartnership))
+        }
+      }
+
+      "throw an InternalServerException when the response contains unexpected status" in new Setup {
+        given()
+
+        stubPost(createLtdPartnershipJourneyUrl, UNAUTHORIZED, "")
+
+        intercept[InternalServerException] {
+          await(connector.createJourney(testJourneyConfig, LtdPartnership))
+        }
+      }
+    }
+
+    "for Scottish Partnership" must {
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup {
+        given()
+
+        stubPost(createScotPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, ScotPartnership))
+
+        res mustBe testJourneyUrl
+      }
+
+      "throw a JsResultException when the response JSON doesn't contain the journeyId" in new Setup {
+        given()
+
+        stubPost(createScotPartnershipJourneyUrl, CREATED, "{}")
+
+        intercept[JsResultException] {
+          await(connector.createJourney(testJourneyConfig, ScotPartnership))
+        }
+      }
+
+      "throw an InternalServerException when the response contains unexpected status" in new Setup {
+        given()
+
+        stubPost(createScotPartnershipJourneyUrl, UNAUTHORIZED, "")
+
+        intercept[InternalServerException] {
+          await(connector.createJourney(testJourneyConfig, ScotPartnership))
+        }
+      }
+    }
+
+    "for Scottish Limited Partnership" must {
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup {
+        given()
+
+        stubPost(createScotLtdPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, ScotLtdPartnership))
+
+        res mustBe testJourneyUrl
+      }
+
+      "throw a JsResultException when the response JSON doesn't contain the journeyId" in new Setup {
+        given()
+
+        stubPost(createScotLtdPartnershipJourneyUrl, CREATED, "{}")
+
+        intercept[JsResultException] {
+          await(connector.createJourney(testJourneyConfig, ScotLtdPartnership))
+        }
+      }
+
+      "throw an InternalServerException when the response contains unexpected status" in new Setup {
+        given()
+
+        stubPost(createScotLtdPartnershipJourneyUrl, UNAUTHORIZED, "")
+
+        intercept[InternalServerException] {
+          await(connector.createJourney(testJourneyConfig, ScotLtdPartnership))
+        }
+      }
+    }
+
+    "for Limited Liability Partnership" must {
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in {
+        given()
+
+        stubPost(createLtdLiabilityPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
+
+        val res = await(connector.createJourney(testJourneyConfig, LtdLiabilityPartnership))
+
+        res mustBe testJourneyUrl
+      }
+
+      "throw a JsResultException when the response JSON doesn't contain the journeyId" in {
+        given()
+
+        stubPost(createLtdLiabilityPartnershipJourneyUrl, CREATED, "{}")
+
+        intercept[JsResultException] {
+          await(connector.createJourney(testJourneyConfig, LtdLiabilityPartnership))
+        }
+      }
+
+      "throw an InternalServerException when the response contains unexpected status" in new Setup {
+        given()
+
+        stubPost(createLtdLiabilityPartnershipJourneyUrl, UNAUTHORIZED, "")
+
+        intercept[InternalServerException] {
+          await(connector.createJourney(testJourneyConfig, LtdLiabilityPartnership))
         }
       }
     }

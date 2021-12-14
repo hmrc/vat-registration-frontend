@@ -88,11 +88,11 @@ class MandatoryDateFormSpec extends VatRegSpec {
     "Bind successfully if the specified date is on the calculated date" in {
       val data = Map(
         "value" -> DateSelection.specific_date.toString,
-        "date.day" -> "12",
-        "date.month" -> "12",
-        "date.year" -> "2018"
+        "date.day" -> calculatedDate.getDayOfMonth.toString,
+        "date.month" -> calculatedDate.getMonthValue.toString,
+        "date.year" -> calculatedDate.getYear.toString
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2018, 12, 12)))
+      form.bind(data).get mustBe(specific_date, Some(calculatedDate))
     }
 
     "Fail to bind if the date specified is before the incorp date" in {

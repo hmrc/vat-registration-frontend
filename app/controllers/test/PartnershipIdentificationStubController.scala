@@ -16,7 +16,6 @@
 
 package controllers.test
 
-import models.api.{Partnership, PartyType}
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsString, Json}
@@ -29,15 +28,11 @@ import scala.concurrent.Future
 @Singleton
 class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  final val partnership = "PARTNERSHIP"
-  final val partnershipExcludeBv = "PARTNERSHIP_EXCLUDE_BV"
+  final val excludeBv = "EXCLUDE_BV"
 
   def createJourney(partyType: String): Action[PartnershipIdJourneyConfig] = Action(parse.json[PartnershipIdJourneyConfig]) {
     journeyConfig =>
-      val journeyId = PartyType.fromString(partyType) match {
-        case Partnership if !journeyConfig.body.businessVerificationCheck => partnershipExcludeBv
-        case Partnership => partnership
-      }
+      val journeyId = if (journeyConfig.body.businessVerificationCheck) partyType + excludeBv else partyType
 
       Created(Json.obj("journeyStartUrl" -> JsString(journeyConfig.body.continueUrl + s"?journeyId=$journeyId")))
   }
@@ -48,7 +43,7 @@ class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerC
         sautr = Some("1234567890"),
         postCode = if (journeyId.equals("1")) Some("AA11AA") else None,
         registration = "REGISTERED",
-        businessVerification = if (journeyId.equals(partnershipExcludeBv)) None else Some(BvPass),
+        businessVerification = if (journeyId.contains(excludeBv)) None else Some(BvPass),
         bpSafeId = Some("testBpId"),
         identifiersMatch = true
       ))(PartnershipIdEntity.apiFormat))
