@@ -11,6 +11,7 @@ import models.{ApplicantDetails, PartnerEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import services.SessionService.leadPartnerEntityKey
 
 import scala.concurrent.Future
 
@@ -122,15 +123,36 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
   "GET /start-sti-partner-journey" when {
     "STI returns a journey ID" must {
-      "redirect to the journey using the ID provided" in new Setup {
+      "redirect to the journey using the ID provided when the applicant is a Sole Trader" in new Setup {
         given()
           .user.isAuthorised
           .vatScheme.contains(fullVatScheme)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey?isLeadPartner=true").get()
+        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+      "redirect to the journey using the ID provided when the applicant is a NETP" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.contains(fullVatScheme)
+
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
+        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -150,9 +172,33 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback/true?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+      }
+    }
+    "redirect to the FormerName page if the user is a NETP" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+
+      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -170,9 +216,34 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback/true?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+      }
+    }
+    "redirect to the FormerName page when the model in S4l is full and the user is a NETP" in new Setup {
+      given()
+        .user.isAuthorised
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+
+      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

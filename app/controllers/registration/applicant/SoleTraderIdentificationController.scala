@@ -23,6 +23,7 @@ import models.PartnerEntity
 import models.api._
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
+import services.SessionService.leadPartnerEntityKey
 import services.{SessionService, _}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
@@ -79,33 +80,46 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
         }
     }
 
-  def startPartnerJourney(isLeadPartner: Boolean): Action[AnyContent] =
+  def startPartnerJourney: Action[AnyContent] =
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          soleTraderIdentificationService.startSoleTraderJourney(
-            SoleTraderIdJourneyConfig(
-              continueUrl = appConfig.leadPartnerCallbackUrl(isLeadPartner),
-              optServiceName = Some(request2Messages(request)("service.name")),
-              deskProServiceId = appConfig.contactFormServiceIdentifier,
-              signOutUrl = appConfig.feedbackUrl,
-              accessibilityUrl = appConfig.accessibilityStatementUrl,
-              regime = appConfig.regime,
-              businessVerificationCheck = false
-            ),
-            Partnership
-          ).map(url => Redirect(url))
+          val journeyConfig = SoleTraderIdJourneyConfig(
+            continueUrl = appConfig.leadPartnerCallbackUrl,
+            optServiceName = Some(request2Messages(request)("service.name")),
+            deskProServiceId = appConfig.contactFormServiceIdentifier,
+            signOutUrl = appConfig.feedbackUrl,
+            accessibilityUrl = appConfig.accessibilityStatementUrl,
+            regime = appConfig.regime,
+            businessVerificationCheck = false
+          )
+
+          for {
+            partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+              _.getOrElse(throw new InternalServerException("[SoleTraderIdentificationController][startPartnerJourney] no lead partner party type in session during journey start"))
+            )
+            journeyStartUrl <- soleTraderIdentificationService.startSoleTraderJourney(
+              journeyConfig,
+              partyType
+            )
+          } yield {
+            SeeOther(journeyStartUrl)
+          }
     }
 
-  def partnerCallback(isLeadPartner: Boolean, journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() { implicit request =>
-      implicit profile =>
-        for {
-          (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-          _ <- if (isLeadPartner) applicantDetailsService.saveApplicantDetails(transactorDetails) else Future.successful()
-          _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, Individual, isLeadPartner)) //TODO Figure out indeces for non lead partners
-        } yield {
-          Redirect(applicantRoutes.FormerNameController.show)
-        }
+  def partnerCallback(journeyId: String): Action[AnyContent] =
+    isAuthenticatedWithProfile() {
+      implicit request =>
+        implicit profile =>
+          for {
+            partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+              _.getOrElse(throw new InternalServerException("[SoleTraderIdentificationController][partnerCallback] no lead partner party type in session during journey start"))
+            )
+            (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+            _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
+            _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, partyType, isLeadPartner = true))
+          } yield {
+            Redirect(applicantRoutes.FormerNameController.show)
+          }
     }
 }

@@ -28,7 +28,7 @@ class ScottishPartnershipNameViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view(form()).body)
 
   object ExpectedContent {
-    val heading = "What is your partnership name?"
+    val heading = "What is the name of the partnership?"
     val continue = "Save and continue"
   }
 

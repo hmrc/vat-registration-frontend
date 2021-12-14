@@ -65,7 +65,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     val changeTransactorDetailsUrl: String = {
       partyType match {
         case Individual | NETP => applicantRoutes.SoleTraderIdentificationController.startJourney.url
-        case Partnership => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true).url //TODO change when partnership flow is revisited
+        case Partnership => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url //TODO change when partnership flow is revisited
         case NonUkNonEstablished => applicantRoutes.IndividualIdentificationController.startJourney.url
         case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.IndividualIdentificationController.startJourney.url
         case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url

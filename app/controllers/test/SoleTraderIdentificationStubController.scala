@@ -40,9 +40,9 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
     def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
 
     optPartyType.map(PartyType.fromString) match {
-      case Some(Individual | Partnership) if !request.body.businessVerificationCheck =>
+      case Some(Individual) if !request.body.businessVerificationCheck =>
         Created(json(soleTraderExcludeBv))
-      case Some(Individual | Partnership) =>
+      case Some(Individual) =>
         Created(json(soleTrader))
       case Some(PartyTypeNETP) if !request.body.businessVerificationCheck =>
         Created(json(netpExcludeBv))

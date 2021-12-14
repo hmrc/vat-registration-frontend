@@ -59,7 +59,7 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             for {
               _ <- sessionService.cache[PartyType](leadPartnerEntityKey, partyType)
             } yield partyType match {
-              case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney(true))
+              case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney)
               case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
               case _ => NotImplemented
             }
