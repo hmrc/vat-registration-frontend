@@ -1068,3 +1068,9 @@ partnershipName.heading                                  = What is the name of t
 validation.partnershipName.missing                       = Enter the name of the partnership
 validation.partnershipName.maxlen                        = Enter a partnership name that is between 1 and 105 characters
 validation.partnershipName.invalid                       = Enter a partnership name that does not contain special characters
+
+## SCOTTISH PARTNERSHIP NAME
+scottishPartnershipName.heading                          = What is the name of the partnership?
+validation.scottishPartnershipName.missing               = Enter the name of the partnership
+validation.scottishPartnershipName.maxlen                = Enter a partnership name that is between 1 and 105 characters
+validation.scottishPartnershipName.invalid               = Enter a partnership name that does not contain special characters
