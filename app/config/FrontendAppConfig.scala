@@ -217,12 +217,20 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
 
-  def startGeneralPartnershipJourneyUrl: String =
+  def startPartnershipJourneyUrl(partyType: PartyType): String = {
     if (isEnabled(StubPartnershipIdentification)) {
-      s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(Partnership)}"
+      s"$host/register-for-vat/test-only/partnership-identification?partyType=${PartyType.stati(partyType)}"
     } else {
-      s"$partnershipIdHost/partnership-identification/api/general-partnership-journey"
+      val url = partyType match {
+        case Partnership => "general-partnership-journey"
+        case LtdPartnership => "limited-partnership-journey"
+        case ScotPartnership => "scottish-partnership-journey"
+        case ScotLtdPartnership => "scottish-limited-partnership-journey"
+        case LtdLiabilityPartnership => "limited-liability-partnership-journey"
+      }
+      s"$partnershipIdHost/partnership-identification/api/$url"
     }
+  }
 
   def getPartnershipIdDetailsUrl(journeyId: String): String =
     if (isEnabled(StubPartnershipIdentification)) {
