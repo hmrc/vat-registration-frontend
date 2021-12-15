@@ -211,7 +211,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   def soleTraderCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
   def individualCallbackUrl: String = s"$hostUrl/register-for-vat/sti-individual-callback"
   def transactorCallbackUrl: String = s"$hostUrl/register-for-vat/sti-transactor-callback"
-  def leadPartnerCallbackUrl(isLeadPartner: Boolean): String = s"$hostUrl/register-for-vat/sti-partner-callback/$isLeadPartner"
+  def leadPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/sti-partner-callback"
 
   // Partnership Identification Section
 

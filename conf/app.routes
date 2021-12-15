@@ -183,8 +183,8 @@ GET         /start-sti-journey                                                  
 GET         /sti-callback                                                                      controllers.registration.applicant.SoleTraderIdentificationController.callback(journeyId)
 GET         /start-sti-individual-journey                                                      controllers.registration.applicant.IndividualIdentificationController.startJourney
 GET         /sti-individual-callback                                                           controllers.registration.applicant.IndividualIdentificationController.callback(journeyId)
-GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney(isLeadPartner: Boolean)
-GET         /sti-partner-callback/:isLeadPartner                                               controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(isLeadPartner: Boolean, journeyId: String)
+GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney
+GET         /sti-partner-callback                                                              controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(journeyId: String)
 GET         /start-sti-transactor-journey                                                      controllers.registration.transactor.TransactorIdentificationController.startJourney
 GET         /sti-transactor-callback                                                           controllers.registration.transactor.TransactorIdentificationController.callback(journeyId)
 

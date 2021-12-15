@@ -74,7 +74,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney.url)
       }
     }
 
@@ -84,7 +84,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> netp)) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney(true).url)
+        redirectLocation(result) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney.url)
       }
     }
 
