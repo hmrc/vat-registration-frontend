@@ -191,6 +191,8 @@ GET         /sti-transactor-callback                                            
 ## Partnership ID Pages
 GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney
 GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
+GET         /start-partnership-id-partner-journey                                              controllers.registration.applicant.PartnershipIdController.startPartnerJourney
+GET         /partnership-id-partner-callback                                                   controllers.registration.applicant.PartnershipIdController.partnerCallback(journeyId)
 
 ## Minor Entity ID Pages
 GET         /start-minor-entity-id-journey                                                     controllers.registration.applicant.MinorEntityIdController.startJourney

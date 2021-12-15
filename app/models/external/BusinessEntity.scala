@@ -29,10 +29,14 @@ sealed trait BusinessEntity
 object BusinessEntity {
   def reads(partyType: PartyType): Reads[BusinessEntity] = Reads { json =>
     partyType match {
-      case UkCompany | RegSociety | CharitableOrg => Json.fromJson(json)(IncorporatedEntity.format)
-      case Individual | NETP => Json.fromJson(json)(SoleTraderIdEntity.format)
-      case Partnership => Json.fromJson(json)(PartnershipIdEntity.format)
-      case UnincorpAssoc | Trust | NonUkNonEstablished => Json.fromJson(json)(MinorEntity.format)
+      case UkCompany | RegSociety | CharitableOrg =>
+        Json.fromJson(json)(IncorporatedEntity.format)
+      case Individual | NETP =>
+        Json.fromJson(json)(SoleTraderIdEntity.format)
+      case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership | LtdLiabilityPartnership =>
+        Json.fromJson(json)(PartnershipIdEntity.format)
+      case UnincorpAssoc | Trust | NonUkNonEstablished =>
+        Json.fromJson(json)(MinorEntity.format)
       case _ => throw new InternalServerException("Tried to parse business entity for an unsupported party type")
     }
   }
@@ -108,7 +112,9 @@ object SoleTraderIdEntity {
 }
 
 case class PartnershipIdEntity(sautr: Option[String],
+                               companyNumber: Option[String] = None,
                                companyName: Option[String] = None,
+                               dateOfIncorporation: Option[LocalDate] = None,
                                postCode: Option[String],
                                registration: String,
                                businessVerification: Option[BusinessVerificationStatus],
@@ -119,7 +125,13 @@ object PartnershipIdEntity {
 
   val apiFormat: Format[PartnershipIdEntity] = (
     (__ \ "sautr").formatNullable[String] and
-      (__ \ "companyName").formatNullable[String] and
+      (__ \ "companyProfile" \ "companyNumber").formatNullable[String] and
+      (__ \ "companyProfile" \ "companyName").formatNullable[String] and
+      OFormat(
+        (__ \ "companyProfile" \ "dateOfIncorporation").readNullable[LocalDate]
+          .orElse(Reads.pure(None)),
+        (__ \ "companyProfile" \ "dateOfIncorporation").writeNullable[LocalDate]
+      ) and
       (__ \ "postcode").formatNullable[String] and
       (__ \ "registration" \ "registrationStatus").format[String] and
       (__ \ "businessVerification" \ "verificationStatus").formatNullable[BusinessVerificationStatus] and

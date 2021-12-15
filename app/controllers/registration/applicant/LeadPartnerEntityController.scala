@@ -19,12 +19,14 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import services.SessionService.leadPartnerEntityKey
 import controllers.BaseController
+import controllers.registration.business.{routes => businessRoutes}
 import controllers.registration.applicant.{routes => applicantRoutes}
 import forms.LeadPartnerForm
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, PartnersService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 import views.html.lead_partner_entity_type
 
 import javax.inject.Inject
@@ -61,7 +63,9 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             } yield partyType match {
               case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney)
               case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
-              case _ => NotImplemented
+              case ScotPartnership => Redirect(businessRoutes.ScottishPartnershipNameController.show)
+              case ScotLtdPartnership | LtdLiabilityPartnership => Redirect(applicantRoutes.PartnershipIdController.startPartnerJourney)
+              case partyType => throw new InternalServerException(s"[LeadPartnerEntityController][submitLeadPartnerEntity] Submitted invalid lead partner: $partyType")
             }
         )
   }
