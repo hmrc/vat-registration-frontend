@@ -5,7 +5,8 @@ import forms.ScottishPartnershipNameForm
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.EligibilitySubmissionData
-import play.api.http.Status.{NOT_IMPLEMENTED, OK}
+import play.api.http.HeaderNames
+import play.api.http.Status.{NOT_IMPLEMENTED, OK, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -40,7 +41,8 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient("/scottish-partnership-name").post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> testCompanyName)))
 
-      res.status mustBe NOT_IMPLEMENTED
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.applicant.routes.PartnershipIdController.startPartnerJourney.url)
     }
   }
 }

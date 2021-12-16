@@ -19,23 +19,25 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.Partner
-import models.api.Partnership
+import models.api.{Partnership, PartyType, ScotPartnership}
 import models.external.partnershipid.PartnershipIdJourneyConfig
+import models.{Partner, PartnerEntity}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnershipIdService, SessionProfile, SessionService, VatRegistrationService}
+import services.SessionService.{leadPartnerEntityKey, scottishPartnershipNameKey}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PartnershipIdController @Inject()(val authConnector: AuthConnector,
                                         val sessionService: SessionService,
                                         partnershipIdService: PartnershipIdService,
                                         applicantDetailsService: ApplicantDetailsService,
-                                        vatRegistrationService: VatRegistrationService
+                                        vatRegistrationService: VatRegistrationService,
+                                        partnersService: PartnersService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
@@ -76,4 +78,48 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
         }
   }
 
+  def startPartnerJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        val journeyConfig = PartnershipIdJourneyConfig(
+          continueUrl = appConfig.partnershipIdPartnerCallbackUrl,
+          optServiceName = Some(request2Messages(request)("service.name")),
+          deskProServiceId = appConfig.contactFormServiceIdentifier,
+          signOutUrl = appConfig.feedbackUrl,
+          accessibilityUrl = appConfig.accessibilityStatementUrl,
+          regime = appConfig.regime,
+          businessVerificationCheck = false
+        )
+
+        for {
+          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+            _.getOrElse(throw new InternalServerException("[PartnershipIdController][startPartnerJourney] no lead partner party type in session during journey start"))
+          )
+          journeyStartUrl <- partnershipIdService.createJourney(journeyConfig, partyType)
+        } yield {
+          SeeOther(journeyStartUrl)
+        }
+  }
+
+  def partnerCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        for {
+          partnerDetails <- partnershipIdService.getDetails(journeyId)
+          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
+            _.getOrElse(throw new InternalServerException("[PartnershipIdController][partnerCallback] no lead partner party type in session during callback"))
+          )
+          optScottishPartnershipName <- sessionService.fetchAndGet[String](scottishPartnershipNameKey)
+          updatedPartnerDetails <- Future.successful(
+            if (partyType.equals(ScotPartnership)) {
+              partnerDetails.copy(companyName = optScottishPartnershipName)
+            } else {
+              partnerDetails
+            }
+          )
+          _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(updatedPartnerDetails, partyType, isLeadPartner = true))
+        } yield {
+          Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+        }
+  }
 }

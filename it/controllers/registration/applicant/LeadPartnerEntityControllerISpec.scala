@@ -11,6 +11,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.Future
 
@@ -54,7 +55,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
   s"POST $url" when {
     List(Individual, NETP).foreach { partyType =>
       s"the user selects $partyType" should {
-        "post to the backend and begin a STI journey" in new Setup {
+        "store the partyType in session repo and begin a STI journey" in new Setup {
           given()
             .user.isAuthorised
 
@@ -70,7 +71,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
       s"the user selects $partyType" should {
-        "post to the backend and begin an IncorpId journey" in new Setup {
+        "store the partyType in session repo and begin an IncorpId journey" in new Setup {
           given()
             .user.isAuthorised
 
@@ -84,8 +85,38 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    "the user selects Anything else" should {
-      "return a not implemented" in new Setup {
+    List(ScotLtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
+      s"the user selects $partyType" should {
+        "store the partyType in session repo and begin an PartnershipId journey" in new Setup {
+          given()
+            .user.isAuthorised
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnershipIdController.startPartnerJourney.url)
+        }
+      }
+    }
+
+    s"the user selects $ScotPartnership" should {
+      "store the partyType in session repo and go to ScottishPartnershipName page" in new Setup {
+        given()
+          .user.isAuthorised
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(ScotPartnership))))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.ScottishPartnershipNameController.show.url)
+      }
+    }
+
+    "the user submits an invalid lead partner" should {
+      "throw an exception" in new Setup {
         given()
           .user.isAuthorised
 
@@ -93,7 +124,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "55")))
 
-        res.status mustBe NOT_IMPLEMENTED
+        res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

@@ -19,12 +19,13 @@ package controllers.registration.applicant
 import config.FrontendAppConfig
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, Partnership}
+import models.api.{EligibilitySubmissionData, Partnership, PartyType, ScotLtdPartnership, ScotPartnership, UkCompany}
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
-import models.{ApplicantDetails, Partner}
-import play.api.libs.json.{JsObject, Json}
+import models.{ApplicantDetails, Partner, PartnerEntity}
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import services.SessionService.{leadPartnerEntityKey, scottishPartnershipNameKey}
 
 import scala.concurrent.Future
 
@@ -35,6 +36,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testJourneyUrl = "/test-journey-url"
 
   val partnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
+  val scottishPartnershipJourneyUrl = "/partnership-identification/api/scottish-partnership-journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
   val testPostCode = "ZZ1 1ZZ"
@@ -54,13 +56,17 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
   override val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
+    None,
     Some(testCompanyName),
+    None,
     Some(testPostCode),
     testRegistration,
     Some(BvPass),
     Some(testSafeId),
     identifiersMatch = true
   )
+
+  val testOtherCompanyName = "testOtherCompanyName"
 
   val partnershipApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
 
@@ -127,4 +133,66 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     }
   }
 
+  "GET /start-partnership-id-partner-journey" when {
+    "STI returns a journey ID" must {
+      "redirect to the journey using the ID provided for Partnership" in new Setup {
+        given()
+          .user.isAuthorised
+
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
+        stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+    }
+  }
+
+  "GET /partnership-id-partner-callback" must {
+    "redirect to the individual identification for Scottish Partnership" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
+
+      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
+        scottishPartnershipNameKey -> JsString(testOtherCompanyName),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+      }
+    }
+
+    "redirect to the individual identification for Scottish Limited Partnership" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
+
+      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+      insertIntoDb(sessionId, Map(
+        leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
+        "CurrentProfile" -> Json.toJson(currentProfile)
+      ))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+      }
+    }
+  }
 }

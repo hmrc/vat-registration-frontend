@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PartnershipIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
   def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
-    val url =  config.startPartnershipJourneyUrl(partyType)
+    val url = config.startPartnershipJourneyUrl(partyType)
 
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>

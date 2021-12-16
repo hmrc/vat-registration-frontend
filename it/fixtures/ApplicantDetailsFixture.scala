@@ -1,11 +1,12 @@
 
 package fixtures
 
-import java.time.LocalDate
 import models.api.Address
-import models.external.{Applicant, BvPass, EmailAddress, EmailVerified, IncorporatedEntity, MinorEntity, Name, PartnershipIdEntity}
+import models.external._
 import models.view._
-import models.{ApplicantDetails, Director, PersonalDetails, RoleInTheBusiness, TelephoneNumber}
+import models._
+
+import java.time.LocalDate
 
 trait ApplicantDetailsFixture {
 
@@ -17,7 +18,7 @@ trait ApplicantDetailsFixture {
 
   val applicantDob = LocalDate.of(1998, 7, 12)
 
-  val testRole:RoleInTheBusiness = Director
+  val testRole: RoleInTheBusiness = Director
   val applicantNino = "ZZ987654A"
   val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
   val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
@@ -42,7 +43,7 @@ trait ApplicantDetailsFixture {
 
   val testApplicantIncorpDetails = IncorporatedEntity(testApplicantCrn, Some(testApplicantCompanyName), Some(testApplicantCtUtr), None, testApplicantIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
   val testMinorEntity = MinorEntity(None, None, Some(testApplicantCtUtr), None, None, None, None, "REGISTERED", Some(BvPass), Some(testBpSafeId), identifiersMatch = true)
-  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(None, None, None, "REGISTERED", Some(BvPass), None, identifiersMatch = true)
+  val testPartnership: PartnershipIdEntity = PartnershipIdEntity(None, None, None, None, None, "REGISTERED", Some(BvPass), None, identifiersMatch = true)
   val validFullApplicantDetails = ApplicantDetails(
     personalDetails = Some(testPersonalDetails),
     homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),

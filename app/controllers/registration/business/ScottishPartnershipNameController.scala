@@ -19,8 +19,8 @@ package controllers.registration.business
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ScottishPartnershipNameForm
-import forms.ScottishPartnershipNameForm.scottishPartnershipNameKey
 import play.api.mvc.{Action, AnyContent}
+import services.SessionService.scottishPartnershipNameKey
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import views.html.ScottishPartnershipName
 
@@ -49,10 +49,12 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        ScottishPartnershipNameForm.apply.bindFromRequest().fold(
+        ScottishPartnershipNameForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           companyName => {
-            sessionService.cache[String](scottishPartnershipNameKey, companyName).map(_ => NotImplemented)
+            sessionService.cache[String](scottishPartnershipNameKey, companyName).map(_ =>
+              Redirect(controllers.registration.applicant.routes.PartnershipIdController.startPartnerJourney)
+            )
           }
         )
   }
