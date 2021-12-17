@@ -264,6 +264,8 @@ POST        /flat-rate-date                                                     
 ## Errors
 GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
 GET         /something-went-wrong                                                              controllers.ErrorController.submissionFailed
+GET         /already-submitted                                                                 controllers.ErrorController.alreadySubmitted
+POST        /already-submitted                                                                 controllers.ErrorController.alreadySubmittedSignOut
 
 ## Email max attempts error page
 GET         /error/passcode-too-many-attempts                                                  controllers.registration.errors.EmailPasscodesMaxAttemptsExceededController.show

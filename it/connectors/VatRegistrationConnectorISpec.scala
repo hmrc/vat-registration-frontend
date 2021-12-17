@@ -71,7 +71,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
   "submitRegistration" should {
 
     "return success response and not submit to the backend for an allowed regId" in {
-      given().vatRegistration.submit("/vatreg/99/submit-registration")
+      given().vatRegistration.submit("/vatreg/99/submit-registration", OK)
       val res = vatregConnector.submitRegistration("99", Map("testHeaderKey" -> "testHeaderValue"))(hc)
       await(res) mustBe Success
     }

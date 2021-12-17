@@ -18,19 +18,21 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.error.{submissionFailed, SubmissionRetryableView}
+import views.html.pages.error.{AlreadySubmittedKickout, SubmissionRetryableView, submissionFailed}
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val mockSubmissionFailedView = app.injector.instanceOf[submissionFailed]
   val mockSubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
+  val mockAlreadySubmittedView = app.injector.instanceOf[AlreadySubmittedKickout]
 
   trait Setup {
     val testErrorController: ErrorController = new ErrorController(
       mockAuthClientConnector,
       mockSessionService,
       mockSubmissionFailedView,
-      mockSubmissionRetryableView
+      mockSubmissionRetryableView,
+      mockAlreadySubmittedView
     )
 
     mockAuthenticated()
@@ -47,6 +49,14 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the SubmissionRetryable view" in new Setup {
+      callAuthorised(testErrorController.submissionRetryable) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+      }
+    }
+    "return the AlreadySubmitted view" in new Setup {
       callAuthorised(testErrorController.submissionRetryable) {
         result =>
           status(result) mustBe OK

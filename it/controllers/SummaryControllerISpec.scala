@@ -175,7 +175,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .user.isAuthorised
           .vatScheme.contains(vatReg)
           .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration")
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -183,6 +183,24 @@ class SummaryControllerISpec extends ControllerISpec {
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)
+        }
+      }
+    }
+
+    "redirect to the already submitted kickout page" when {
+      "the user is in draft with an already submitted submission" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.contains(vatReg)
+          .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", CONFLICT)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ErrorController.alreadySubmitted.url)
         }
       }
     }

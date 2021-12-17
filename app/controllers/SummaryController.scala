@@ -73,6 +73,7 @@ class SummaryController @Inject()(val sessionService: SessionService,
       case Success => sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
         _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
       }
+      case AlreadySubmitted => Future.successful(Redirect(controllers.routes.ErrorController.alreadySubmitted))
       case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed))
       case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable))
     }

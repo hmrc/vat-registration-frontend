@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SignInOutController @Inject()(val authConnector: AuthClientConnector,
                                     val sessionService: SessionService,
-                                    timeutView: TimeoutView)
+                                    timeoutView: TimeoutView)
                                    (implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)
@@ -54,6 +54,6 @@ class SignInOutController @Inject()(val authConnector: AuthClientConnector,
 
   def timeoutShow: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(timeutView()))
+      Future.successful(Ok(timeoutView()))
   }
 }

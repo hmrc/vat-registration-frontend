@@ -268,10 +268,10 @@ trait StubUtils {
       builder
     }
 
-    def submit(url: String): PreconditionBuilder = {
+    def submit(url: String, status: Int): PreconditionBuilder = {
       stubFor(
         put(urlPathEqualTo(url))
-          .willReturn(ok())
+          .willReturn(aResponse.withStatus(status))
       )
       builder
     }
