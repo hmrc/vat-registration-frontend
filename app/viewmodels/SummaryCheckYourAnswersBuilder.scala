@@ -62,22 +62,36 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val applicantDetails = vatScheme.applicantDetails.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing applicant details block"))
 
-    val changeTransactorDetailsUrl: String = {
+    val changePersonalDetailsUrl: String = {
       partyType match {
-        case Individual | NETP => applicantRoutes.SoleTraderIdentificationController.startJourney.url
-        case Partnership => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url //TODO change when partnership flow is revisited
-        case NonUkNonEstablished => applicantRoutes.IndividualIdentificationController.startJourney.url
-        case _ if isEnabled(UseSoleTraderIdentification) => applicantRoutes.IndividualIdentificationController.startJourney.url
-        case _ => applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url
+        case Individual | NETP =>
+          applicantRoutes.SoleTraderIdentificationController.startJourney.url
+        case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership =>
+          vatScheme.partners.flatMap(_.headOption.map(_.partyType)) match {
+            case Some(Individual | NETP) => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url
+            case _ => applicantRoutes.IndividualIdentificationController.startJourney.url
+          }
+        case Trust | UnincorpAssoc | NonUkNonEstablished | LtdLiabilityPartnership =>
+          applicantRoutes.IndividualIdentificationController.startJourney.url
+        case _ if isEnabled(UseSoleTraderIdentification) => //The low volume entities are already set up to use individual flow, incorp id entities are still switched to PDV in prod
+          applicantRoutes.IndividualIdentificationController.startJourney.url
+        case _ =>
+          applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url
       }
     }
 
     val companyNumber = optSummaryListRowString(
       s"$sectionId.companyNumber",
-      applicantDetails.entity.collect {
-        case incorpIdEntity: IncorporatedEntity => incorpIdEntity.companyNumber
+      applicantDetails.entity.flatMap {
+        case incorpIdEntity: IncorporatedEntity => Some(incorpIdEntity.companyNumber)
+        case partnerEntity: PartnershipIdEntity => partnerEntity.companyNumber
+        case _ => None
       },
-      Some(applicantRoutes.IncorpIdController.startJourney.url)
+      applicantDetails.entity.flatMap {
+        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
+        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case _ => None
+      }
     )
 
     val businessName = optSummaryListRowString(
@@ -85,11 +99,15 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       applicantDetails.entity.flatMap {
         case incorpIdEntity: IncorporatedEntity => incorpIdEntity.companyName
         case minorEntity: MinorEntity => minorEntity.companyName
+        case partnerEntity: PartnershipIdEntity => partnerEntity.companyName
         case _ => None
       },
       applicantDetails.entity.flatMap {
         case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
         case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _: PartnershipIdEntity if List(Partnership, ScotPartnership).contains(partyType) =>
+          Some(controllers.registration.business.routes.PartnershipNameController.show.url)
+        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
         case _ => None
       }
     )
@@ -115,11 +133,25 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case partnership: PartnershipIdEntity => partnership.sautr
         case _ => None
       },
-      partyType match {
-        case Partnership => Some(applicantRoutes.PartnershipIdController.startJourney.url)
-        case UnincorpAssoc | Trust | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
+      applicantDetails.entity.flatMap {
+        case _: SoleTraderIdEntity => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
+        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case _ => None
       }
+    )
+
+    val partnershipPostcode = optSummaryListRowString(
+      partyType match {
+        case Partnership | ScotPartnership => s"$sectionId.regPostcode"
+        case LtdLiabilityPartnership | LtdPartnership | ScotLtdPartnership => s"$sectionId.saPostcode"
+        case _ => ""
+      },
+      applicantDetails.entity.flatMap {
+        case partnership: PartnershipIdEntity => partnership.postCode
+        case _ => None
+      },
+      Some(applicantRoutes.PartnershipIdController.startJourney.url)
     )
 
     val overseasIdentifier = optSummaryListRowString(
@@ -168,36 +200,34 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       }
     )
 
-    //TODO add Partnership lead partner identifiers
-
     val firstName = optSummaryListRowString(
       s"$sectionId.firstName",
       applicantDetails.personalDetails.map(_.firstName),
-      Some(changeTransactorDetailsUrl)
+      Some(changePersonalDetailsUrl)
     )
 
     val lastName = optSummaryListRowString(
       s"$sectionId.lastName",
       applicantDetails.personalDetails.map(_.lastName),
-      Some(changeTransactorDetailsUrl)
+      Some(changePersonalDetailsUrl)
     )
 
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
       applicantDetails.personalDetails.flatMap(_.nino),
-      Some(changeTransactorDetailsUrl)
+      Some(changePersonalDetailsUrl)
     )
 
     val trn = optSummaryListRowString(
       s"$sectionId.trn",
       applicantDetails.personalDetails.flatMap(_.trn),
-      Some(changeTransactorDetailsUrl)
+      Some(changePersonalDetailsUrl)
     )
 
     val dob = optSummaryListRowString(
       s"$sectionId.dob",
       applicantDetails.personalDetails.map(_.dateOfBirth.format(presentationFormatter)),
-      Some(changeTransactorDetailsUrl)
+      Some(changePersonalDetailsUrl)
     )
 
     val roleInTheBusiness = optSummaryListRowString(
@@ -269,6 +299,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       businessName,
       ctutr,
       sautr,
+      partnershipPostcode,
       overseasIdentifier,
       overseasCountry,
       chrn,
