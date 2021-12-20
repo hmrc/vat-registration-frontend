@@ -1076,3 +1076,7 @@ scottishPartnershipName.heading                          = What is the name of t
 validation.scottishPartnershipName.missing               = Enter the name of the partnership
 validation.scottishPartnershipName.maxlen                = Enter a partnership name that is between 1 and 105 characters
 validation.scottishPartnershipName.invalid               = Enter a partnership name that does not contain special characters
+
+## ALREADY SUBMITTED KICKOUT PAGE
+alreadySubmitted.heading                                 = We have already received a VAT registration application for this business
+alreadySubmitted.para                                    = Applications can take up to 30 days to process, you should wait for this period of time before contacting us.

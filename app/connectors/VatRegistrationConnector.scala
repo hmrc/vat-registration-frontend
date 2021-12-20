@@ -22,7 +22,6 @@ import models.api._
 import models.api.returns.Returns
 import models.{ApplicantDetails, _}
 import play.api.http.Status._
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import uk.gov.hmrc.http._
 
@@ -156,6 +155,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       }
     } recover {
       case e: Upstream5xxResponse => SubmissionFailedRetryable
+      case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadySubmitted
       case _ => SubmissionFailed
     }
   }
@@ -273,3 +273,5 @@ object Success extends DESResponse
 object SubmissionFailed extends DESResponse
 
 object SubmissionFailedRetryable extends DESResponse
+
+object AlreadySubmitted extends DESResponse
