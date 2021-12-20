@@ -60,6 +60,9 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           case partyType@Partnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
             journeyStartUrl => SeeOther(journeyStartUrl)
           )
+          case partyType@ScotPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
+            journeyStartUrl => SeeOther(journeyStartUrl)
+          )
           case partyType => throw new InternalServerException(
             s"[PartnershipIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
           )
