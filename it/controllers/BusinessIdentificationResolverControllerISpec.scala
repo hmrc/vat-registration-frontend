@@ -6,9 +6,8 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.{CharitableOrg, EligibilitySubmissionData, Individual, NonUkNonEstablished, Partnership, RegSociety, Trust, UkCompany, UnincorpAssoc}
+import models.api.{CharitableOrg, EligibilitySubmissionData, Individual, NonUkNonEstablished, Partnership, RegSociety, ScotPartnership, Trust, UkCompany, UnincorpAssoc}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
@@ -35,7 +34,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       }
     }
 
-    List(Partnership).foreach { validPartyType =>
+    List(Partnership, ScotPartnership).foreach { validPartyType =>
       s"return a redirect to Partnership ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
