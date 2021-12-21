@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class Vat2RequiredViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = "You must complete a VAT 2 form"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "You must now download the VAT 2 form (opens in new tab) to provide additional details of the partners included in this partnership's VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC."
+    val para = "You must now download the VAT 2 form (opens in new tab) to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC."
     val link = "download the VAT 2 form (opens in new tab)"
     val continue = "Save and continue"
     val url = "https://www.gov.uk/government/publications/vat-partnership-details-vat2"

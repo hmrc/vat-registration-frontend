@@ -319,6 +319,23 @@ cya.voluntaryRegistrationReason                      = Voluntary registration re
 cya.startDate                                        = VAT start date
 cya.mandatoryStartDate                               = The date the company is registered with Companies House
 
+## Summary Page Lead partner
+cya.leadPartner.firstName                            = Lead partner’s first name
+cya.leadPartner.lastName                             = Lead partner’s last name
+cya.leadPartner.dateOfBirth                          = Lead partner’s date of birth
+cya.leadPartner.nationalInsuranceNumber              = Lead partner’s National Insurance number
+cya.leadPartner.uniqueTaxpayerReference              = Lead partner’s Unique Taxpayer Reference
+cya.leadPartner.companyUniqueTaxpayerReference       = Lead partner’s company Unique Taxpayer Reference
+cya.leadPartner.homeAddress                          = Lead partner’s home address
+cya.leadPartner.companyNumber                        = Lead partner’s company number
+cya.leadPartner.companyRegistrationNumber            = Lead partner’s company registration number
+cya.leadPartner.companyName                          = Lead partner’s company name
+cya.leadPartner.partnershipName                      = Lead partner’s partnership name
+cya.leadPartner.registeredPostcode                   = Lead partner’s registered postcode
+cya.leadPartner.partnershipName                      = Lead partner’s Partnership name
+cya.leadPartner.postcodeForSelfAssessment            = Lead partner’s registered postcode for self assessment
+cya.leadPartner.charityHMRCReferenceNumber           = Charity’s HMRC reference number
+
 ## Summary Page Director details
 cya.sectionHeading                                   = Applicant details
 cya.whoIsRegistering                                 = Who is registering the company for VAT
@@ -344,8 +361,8 @@ cya.shortOrgName                                     = Shortened Name
 cya.ctutr                                            = Unique Taxpayer Reference number
 cya.chrn                                             = Charity registration number
 cya.sautr                                            = Unique Taxpayer Reference number
-cya.regPostcode                                      = Partnership''s registered postcode
-cya.saPostcode                                       = Partnership''s registered postcode for self assessment
+cya.regPostcode                                      = Partnership’s registered postcode
+cya.saPostcode                                       = Partnership’s registered postcode for self assessment
 cya.trn                                              = Temporary Reference number
 cya.overseasIdentifier                               = Overseas tax identifier
 cya.overseasCountry                                  = Overseas country
@@ -990,7 +1007,7 @@ pages.EmailCoverSheet.panel2                            = vrs.newregistrations@h
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
 pages.northernIrelandReceiveGoods.hint                   = What is the value of these goods?
-nip.receiveGoods.missing                                 = Select ''yes'' if the business expects to receive goods in Northern Ireland from an EU country
+nip.receiveGoods.missing                                 = Select ’yes’ if the business expects to receive goods in Northern Ireland from an EU country
 validation.northernIrelandReceiveGoods.missing           = Enter the value of these goods
 validation.northernIrelandReceiveGoods.invalid           = Enter the value of these goods using characters 0 to 9
 
@@ -1001,7 +1018,7 @@ nip.sellOrMove.para                                      = Tell us if the busine
 nip.sellOrMove.bullet1                                   = sell goods located in Northern Ireland to any country
 nip.sellOrMove.bullet2                                   = sell or move goods from Northern Ireland to an EU country
 nip.sellOrMove.hint                                      = What is the value of these goods?
-nip.error.missing                                        = Select ''yes'' if the business will do any of the activities in the next 12 months
+nip.error.missing                                        = Select ’yes’ if the business will do any of the activities in the next 12 months
 validation.sellOrMoveNip.missing                         = Enter the value of these goods
 
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
@@ -1023,7 +1040,7 @@ validation.shortOrgName.maxlen                       = Enter an official busines
 ## PART OF ORGANISATION
 partOfOrganisation.heading                               = Are you a part of an organisation?
 partOfOrganisation.indentText                            = As you are registering on behalf of someone else we need to collect your details in order to know a bit more about you.
-validation.partOfOrganisation.missing                    = Select ''yes'' if you are part of an organisation
+validation.partOfOrganisation.missing                    = Select ’yes’ if you are part of an organisation
 
 ## DECLARATION CAPACITY
 
@@ -1033,8 +1050,8 @@ declarationCapacity.representative                       = Appointed representat
 declarationCapacity.boardMember                          = Board member
 declarationCapacity.authorisedEmployee                   = Employee authorised to complete the application
 declarationCapacity.other                                = Other
-validation.declarationCapacity.missing                   = Select your role with the business you''re registering for VAT
-validation.declarationCapacity.other.missing             = Enter your role with the business you''re registering for VAT
+validation.declarationCapacity.missing                   = Select your role with the business you’re registering for VAT
+validation.declarationCapacity.other.missing             = Enter your role with the business you’re registering for VAT
 validation.declarationCapacity.other.invalid             = Enter your role without special characters
 validation.declarationCapacity.other.maxlen              = Enter your role using 100 characters or less
 
@@ -1063,7 +1080,7 @@ transactorEmail.error.incorrect_length                   = Enter an email addres
 pages.vat2Required.heading                               = You must complete a VAT 2 form
 pages.vat2Required.para.1                                = You must now
 pages.vat2Required.para.link                             = download the VAT 2 form
-pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership''s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC.
+pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC.
 
 ## PARTNERSHIP NAME
 partnershipName.heading                                  = What is the name of the partnership?
