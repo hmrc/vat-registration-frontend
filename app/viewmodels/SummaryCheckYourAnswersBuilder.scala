@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,138 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     implicit val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
 
     SummaryList(
+      leadPartnershipSection ++
       applicantDetailsSection ++
-        businessContactSection ++
-        sicAndComplianceSection ++
-        returnsSection ++
-        tradingDetailsSection ++
-        bankAccountSection ++
-        flatRateSchemeSection
+      businessContactSection ++
+      sicAndComplianceSection ++
+      returnsSection ++
+      tradingDetailsSection ++
+      bankAccountSection ++
+      flatRateSchemeSection
     )
+  }
+
+  def leadPartnershipSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+
+    val leadPartner: Option[PartnerEntity] = for {
+      partners <- vatScheme.partners
+      leadPartner <- partners.headOption
+    } yield leadPartner
+
+    leadPartner.map{ partner =>
+      val url = partner.partyType match {
+        case Individual | NETP => Some(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url)
+        case UkCompany | RegSociety | CharitableOrg => Some(applicantRoutes.IncorpIdController.startPartnerJourney.url)
+        case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(applicantRoutes.PartnershipIdController.startPartnerJourney.url)
+      }
+      val firstName = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.firstName",
+        optAnswer = partner.details match {
+          case soleTrader:SoleTraderIdEntity => Some(soleTrader.firstName)
+          case _ => None
+        },
+        optUrl = url)
+      val lastName = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.lastName",
+        optAnswer = partner.details match {
+          case soleTrader: SoleTraderIdEntity => Some(soleTrader.lastName)
+          case _ => None
+        },
+        optUrl = url)
+      val dateOfBirth = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.dateOfBirth",
+        optAnswer = partner.details match {
+          case soleTrader: SoleTraderIdEntity => Some(soleTrader.dateOfBirth.format(presentationFormatter))
+          case _ => None
+        },
+        optUrl = url)
+      val nationalInsuranceNumber = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.nationalInsuranceNumber",
+        optAnswer = partner.details match {
+          case soleTrader: SoleTraderIdEntity => soleTrader.nino
+          case _ => None
+        },
+        optUrl = url)
+      val uniqueTaxpayerReference = partner.details match {
+        case soleTrader: SoleTraderIdEntity => optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
+            optAnswer = soleTrader.sautr,
+            optUrl = url)
+        case partnership: PartnershipIdEntity => optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
+            optAnswer = partnership.sautr,
+            optUrl = url)
+        case incorporated: IncorporatedEntity => optSummaryListRowString(
+            questionId = partner.partyType match {
+              case RegSociety => s"$sectionId.leadPartner.uniqueTaxpayerReference"
+              case _ => s"$sectionId.leadPartner.companyUniqueTaxpayerReference"
+            },
+            optAnswer = incorporated.ctutr,
+            optUrl = url)
+        case _ => None
+      }
+      /*    TODO: uncomment it once homeAddress is available
+      val homeAddress = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.homeAddress",
+        optAnswer = partner.details match {
+          case soleTrader: SoleTraderIdEntity => soleTrader.homeAddress
+          case _ => None
+        },
+        optUrl = url)
+      */
+      val companyRegistrationNumber = partner.details match {
+        case partnership: PartnershipIdEntity => optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.companyNumber",
+            optAnswer = partnership.companyNumber,
+            optUrl = url)
+        case incorporated: IncorporatedEntity => optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.companyRegistrationNumber",
+            optAnswer = Some(incorporated.companyNumber),
+            optUrl = url)
+        case _ => None
+      }
+      val companyName = partner.details match {
+        case partnership: PartnershipIdEntity
+          if partner.partyType.equals(ScotLtdPartnership) || partner.partyType.equals(LtdLiabilityPartnership) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.partnershipName",
+            optAnswer = partnership.companyName,
+            optUrl = url)
+        case incorporated: IncorporatedEntity => optSummaryListRowString(
+          questionId = s"$sectionId.leadPartner.companyName",
+          optAnswer = incorporated.companyName,
+          optUrl = url)
+        case _ => None
+      }
+      val registeredPostcode = partner.details match {
+        case partnership: PartnershipIdEntity =>
+          val questionId = partner.partyType match {
+            case ScotLtdPartnership | LtdLiabilityPartnership => s"$sectionId.leadPartner.postcodeForSelfAssessment"
+            case _ => s"$sectionId.leadPartner.registeredPostcode"
+          }
+          optSummaryListRowString(questionId = questionId, optAnswer =  partnership.postCode, optUrl = url)
+        case _ => None
+      }
+      val charityHMRCReferenceNumber = optSummaryListRowString(
+        questionId = s"$sectionId.leadPartner.charityHMRCReferenceNumber",
+        optAnswer = partner.details match {
+          case incorporated: IncorporatedEntity => incorporated.chrn
+          case _ => None
+        },
+        optUrl = url)
+
+      Seq(
+        firstName,
+        lastName,
+        dateOfBirth,
+        nationalInsuranceNumber,
+        uniqueTaxpayerReference,
+        companyRegistrationNumber,
+        companyName,
+        registeredPostcode,
+        charityHMRCReferenceNumber
+      ).flatten
+    }.getOrElse(Nil)
   }
 
   def applicantDetailsSection(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
