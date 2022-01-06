@@ -37,6 +37,7 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
                                                baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  //scalastyle:off
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
@@ -50,6 +51,12 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
               case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
               case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
               case None => Redirect(controllers.registration.business.routes.BusinessNameController.show)
+            }
+          case ScotLtdPartnership | LtdPartnership =>
+            applicantDetailsService.getCompanyName.map {
+              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
+              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.registration.business.routes.PartnershipNameController.show)
             }
           case pt => throw new InternalServerException(s"PartyType: $pt not supported")
         }

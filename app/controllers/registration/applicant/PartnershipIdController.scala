@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.api.{Partnership, PartyType, ScotPartnership}
+import models.api._
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.{Partner, PartnerEntity}
 import play.api.mvc.{Action, AnyContent}
@@ -63,6 +63,13 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           case partyType@ScotPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
             journeyStartUrl => SeeOther(journeyStartUrl)
           )
+          case partyType@ScotLtdPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
+            journeyStartUrl => SeeOther(journeyStartUrl)
+          )
+          case partyType@LtdPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
+            journeyStartUrl => SeeOther(journeyStartUrl)
+          )
+
           case partyType => throw new InternalServerException(
             s"[PartnershipIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
           )

@@ -6,7 +6,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.{CharitableOrg, EligibilitySubmissionData, Individual, NonUkNonEstablished, Partnership, RegSociety, ScotPartnership, Trust, UkCompany, UnincorpAssoc}
+import models.api._
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 
@@ -34,7 +34,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       }
     }
 
-    List(Partnership, ScotPartnership).foreach { validPartyType =>
+    List(Partnership, ScotPartnership, ScotLtdPartnership, LtdPartnership).foreach { validPartyType =>
       s"return a redirect to Partnership ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
