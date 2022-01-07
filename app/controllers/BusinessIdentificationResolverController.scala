@@ -47,7 +47,7 @@ class BusinessIdentificationResolverController @Inject()(val sessionService: Ses
               Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney)
             case UkCompany | RegSociety | CharitableOrg =>
               Redirect(applicantRoutes.IncorpIdController.startJourney)
-            case Partnership | ScotPartnership =>
+            case Partnership | ScotPartnership | ScotLtdPartnership | LtdPartnership =>
               Redirect(applicantRoutes.PartnershipIdController.startJourney)
             case UnincorpAssoc | Trust | NonUkNonEstablished =>
               Redirect(applicantRoutes.MinorEntityIdController.startJourney)

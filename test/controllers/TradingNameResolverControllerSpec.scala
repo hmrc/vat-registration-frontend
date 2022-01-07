@@ -67,7 +67,16 @@ class TradingNameResolverControllerSpec extends ControllerSpec
       }
     }
 
-    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+    List(ScotLtdPartnership, LtdPartnership).foreach { partyType =>
+      s"redirects to ${controllers.registration.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
+        mockPartyType(Future.successful(Partnership))
+        val res = Controller.resolve()(FakeRequest())
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) must contain(controllers.registration.business.routes.PartnershipNameController.show.url)
+      }
+    }
+
+    List(UkCompany, RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership).foreach { partyType =>
       s"redirects to ${controllers.registration.business.routes.TradingNameController.show.url} for partyType ${partyType.toString} when business name is present" in new Setup {
         when(mockApplicantDetailsService.getCompanyName(any(), any()))
           .thenReturn(Future.successful(Some(testBusinessName)))
