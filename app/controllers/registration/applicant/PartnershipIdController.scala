@@ -57,19 +57,10 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
         )
 
         vatRegistrationService.partyType.flatMap {
-          case partyType@Partnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
-            journeyStartUrl => SeeOther(journeyStartUrl)
-          )
-          case partyType@ScotPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
-            journeyStartUrl => SeeOther(journeyStartUrl)
-          )
-          case partyType@ScotLtdPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
-            journeyStartUrl => SeeOther(journeyStartUrl)
-          )
-          case partyType@LtdPartnership => partnershipIdService.createJourney(journeyConfig, partyType).map(
-            journeyStartUrl => SeeOther(journeyStartUrl)
-          )
-
+          case partyType@(Partnership | ScotPartnership | ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership) =>
+            partnershipIdService.createJourney(journeyConfig, partyType).map(
+              journeyStartUrl => SeeOther(journeyStartUrl)
+            )
           case partyType => throw new InternalServerException(
             s"[PartnershipIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
           )
@@ -83,8 +74,12 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           partnershipDetails <- partnershipIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
           _ <- applicantDetailsService.saveApplicantDetails(Partner)
+          partyType <- vatRegistrationService.partyType
         } yield {
-          Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
+          partyType match {
+            case LtdLiabilityPartnership => Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+            case _ => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
+          }
         }
   }
 

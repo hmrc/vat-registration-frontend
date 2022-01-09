@@ -34,7 +34,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       }
     }
 
-    List(Partnership, ScotPartnership, ScotLtdPartnership, LtdPartnership).foreach { validPartyType =>
+    List(Partnership, ScotPartnership, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).foreach { validPartyType =>
       s"return a redirect to Partnership ID for ${validPartyType.toString}" in new Setup {
         given()
           .user.isAuthorised
