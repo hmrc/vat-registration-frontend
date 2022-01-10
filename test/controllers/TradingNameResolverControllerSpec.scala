@@ -76,7 +76,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
       }
     }
 
-    List(UkCompany, RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership).foreach { partyType =>
+    List(UkCompany, RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
       s"redirects to ${controllers.registration.business.routes.TradingNameController.show.url} for partyType ${partyType.toString} when business name is present" in new Setup {
         when(mockApplicantDetailsService.getCompanyName(any(), any()))
           .thenReturn(Future.successful(Some(testBusinessName)))

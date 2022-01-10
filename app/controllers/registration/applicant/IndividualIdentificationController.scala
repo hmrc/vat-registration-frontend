@@ -19,7 +19,7 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
-import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership}
+import models.api.{LtdLiabilityPartnership, LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, _}
@@ -64,7 +64,8 @@ class IndividualIdentificationController @Inject()(val sessionService: SessionSe
           _ <- applicantDetailsService.saveApplicantDetails(individualDetails)
           partyType <- vatRegistrationService.partyType
         } yield partyType match {
-          case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership => Redirect(applicantRoutes.FormerNameController.show)
+          case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership | LtdLiabilityPartnership =>
+            Redirect(applicantRoutes.FormerNameController.show)
           case _ => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show)
         }
     }

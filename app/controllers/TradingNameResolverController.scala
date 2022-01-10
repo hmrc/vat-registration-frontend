@@ -52,7 +52,7 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
               case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
               case None => Redirect(controllers.registration.business.routes.BusinessNameController.show)
             }
-          case ScotLtdPartnership | LtdPartnership =>
+          case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
             applicantDetailsService.getCompanyName.map {
               case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
               case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
