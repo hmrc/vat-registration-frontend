@@ -78,7 +78,7 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
     for {
       scheme <- vatRegistrationService.createRegistrationFootprint
       _ <- currentProfileService.buildCurrentProfile(scheme.id)
-    } yield Redirect(appConfig.eligibilityUrl)
+    } yield Redirect(appConfig.eligibilityStartUrl(scheme.id))
   }
 
   def continueJourney(journey: Option[String]): Action[AnyContent] = isAuthenticated { implicit request =>
@@ -87,13 +87,22 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
         trafficManagementService.checkTrafficManagement(regId).flatMap {
           case PassedVatReg(regId) => saveAndRetrieveService.retrievePartialVatScheme(regId)
             .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
-            .map(_ => Redirect(appConfig.eligibilityRouteUrl))
+            .map(_ => Redirect(appConfig.eligibilityStartUrl(regId)))
           case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
           case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
         }
       case None =>
         Future.successful(BadRequest("No journey ID was specified"))
     }
+  }
+
+  def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+    vatRegistrationService.getEligibilitySubmissionData
+      .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
+      .map(_ => Redirect(routes.HonestyDeclarationController.show))
+      .recover {
+        case e: IllegalStateException => Redirect(routes.WelcomeController.show)
+      }
   }
 
 }

@@ -19,6 +19,7 @@ GET         /                                                                   
 POST        /                                                                                  controllers.WelcomeController.submit
 GET         /journey-new                                                                       controllers.WelcomeController.startNewJourney
 GET         /journey-continue                                                                  controllers.WelcomeController.continueJourney(journey: Option[String] ?= None)
+GET         /journey/:regId                                                                    controllers.WelcomeController.initJourney(regId: String)
 
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
