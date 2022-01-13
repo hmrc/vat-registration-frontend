@@ -17,7 +17,6 @@
 package controllers.registration.errors
 
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
 import play.api.test.Helpers._
 
 class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {

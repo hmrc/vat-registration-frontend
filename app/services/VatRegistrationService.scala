@@ -23,7 +23,7 @@ import models.{TurnoverEstimates, _}
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{ConflictException, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}

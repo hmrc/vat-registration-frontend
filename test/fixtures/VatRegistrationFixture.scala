@@ -211,7 +211,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     validTurnoverEstimates,
     MTDfB,
     UkCompany,
-    isTransactor = false
+    isTransactor = false,
+    registrationReason = ForwardLook
   )
 
   val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
@@ -219,7 +220,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     validTurnoverEstimates,
     MTDfB,
     Individual,
-    isTransactor = false
+    isTransactor = false,
+    registrationReason = ForwardLook
   )
 
   val validVatScheme = VatScheme(

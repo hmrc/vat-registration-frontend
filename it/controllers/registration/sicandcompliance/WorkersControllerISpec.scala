@@ -4,7 +4,7 @@ package controllers.registration.sicandcompliance
 import common.enums.VatRegStatus
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
-import models.api.{Individual, UkCompany, VatScheme}
+import models.api.{Individual, VatScheme}
 import models.{SicAndCompliance, Workers}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
