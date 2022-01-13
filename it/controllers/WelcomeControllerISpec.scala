@@ -20,6 +20,7 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import featureswitch.core.config.SaveAndContinueLater
 import itutil.ControllerISpec
+import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -44,6 +45,9 @@ class WelcomeControllerISpec extends ControllerISpec
 
   def continueJourneyUrl(regId: String): String =
     routes.WelcomeController.continueJourney(Some(regId)).url
+
+  def initJourneyUrl(regId: String): String =
+    routes.WelcomeController.initJourney(regId).url
 
   val vatSchemeJson = Json.toJson(fullVatScheme)
   val vatSchemeJson2 = Json.toJson(fullVatScheme.copy(id = "2"))
@@ -174,7 +178,7 @@ class WelcomeControllerISpec extends ControllerISpec
         val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityUrl)
+        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
       }
     }
   }
@@ -195,7 +199,7 @@ class WelcomeControllerISpec extends ControllerISpec
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityRouteUrl)
+        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
       }
     }
     "the channel for traffic management is OTRS" must {
@@ -226,6 +230,45 @@ class WelcomeControllerISpec extends ControllerISpec
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
+      }
+    }
+  }
+
+  s"GET ${routes.WelcomeController.initJourney(testRegId)}" when {
+    "eligibility data exists for the user" when {
+      "the current profile has been set up successfully" must {
+        "redirect to the Honesty Declaration page" in new Setup {
+          given()
+            .user.isAuthorised
+            .trafficManagement.passes()
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+
+          sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+            .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData))))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+        }
+      }
+    }
+    "eligibility data doesn't exist for the user" must {
+      "redirect to the start of the journey" in new Setup {
+        given()
+          .user.isAuthorised
+          .trafficManagement.passes()
+
+        sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+          .GET.respondsWith(NOT_FOUND, None)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.show.url)
       }
     }
   }

@@ -10,8 +10,8 @@ trait RegistrationsApiStubs {
       with CanPost
       with CanDelete
 
-  val sectionsApi = (sectionId: String) =>
-    new APIStub(s"$apiBaseUri/sections/$sectionId")
+  val sectionsApi = (regId: String, sectionId: String) =>
+    new APIStub(s"$apiBaseUri/$regId/sections/$sectionId")
       with CanGet
       with CanPut
       with CanPatch

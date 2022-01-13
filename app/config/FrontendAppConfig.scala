@@ -53,6 +53,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
 
+  def eligibilityStartUrl(regId: String): String = s"$eligibilityUrl/journey/$regId"
+
   def trafficManagementInfoApiUrl(regId: String): String = s"$backendHost/vatreg/traffic-management/$regId/reg-info"
 
   def partnersApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/partners"
