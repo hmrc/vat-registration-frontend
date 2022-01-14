@@ -88,7 +88,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     turnOverEstimates,
     MTDfB,
     UkCompany,
-    isTransactor = false
+    isTransactor = false,
+    registrationReason = ForwardLook
   )
 
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
@@ -96,7 +97,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     turnOverEstimates,
     MTDfB,
     Partnership,
-    isTransactor = false
+    isTransactor = false,
+    registrationReason = ForwardLook
   )
 
   val validBusinessContactDetails = BusinessContact(

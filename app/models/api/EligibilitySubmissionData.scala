@@ -16,14 +16,15 @@
 
 package models.api
 
-import models.{ApiKey, TurnoverEstimates}
+import models.{ApiKey, RegistrationReason, TurnoverEstimates}
 import play.api.libs.json.{Format, Json}
 
 case class EligibilitySubmissionData(threshold: Threshold,
                                      estimates: TurnoverEstimates,
                                      customerStatus: CustomerStatus,
                                      partyType: PartyType,
-                                     isTransactor: Boolean)
+                                     isTransactor: Boolean,
+                                     registrationReason: RegistrationReason)
 
 object EligibilitySubmissionData {
   implicit val apiKey: ApiKey[EligibilitySubmissionData] = ApiKey("eligibility")

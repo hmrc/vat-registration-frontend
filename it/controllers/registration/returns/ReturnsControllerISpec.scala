@@ -1,16 +1,13 @@
 
 package controllers.registration.returns
 
-import fixtures.ApplicantDetailsFixture
-import itutil.{ControllerISpec, IntegrationSpecBase}
-import models.api.{Threshold, UkCompany, EligibilitySubmissionData}
+import itutil.ControllerISpec
+import models.api.{Threshold, EligibilitySubmissionData}
 import models.api.returns.Returns
-import models.{ApplicantDetails, DateSelection, Start}
+import models.{ApplicantDetails, DateSelection}
 import org.joda.time.LocalDate
-import org.scalatest.concurrent.IntegrationPatience
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import support.AppAndStubs
 
 class ReturnsControllerISpec extends ControllerISpec {
 
