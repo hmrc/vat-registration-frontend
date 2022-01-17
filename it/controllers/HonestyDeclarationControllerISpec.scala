@@ -15,23 +15,23 @@
  */
 
 package controllers
-import controllers.registration.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import config.FrontendAppConfig
+import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api._
+import play.api.Application
 import play.api.http.HeaderNames
 import play.api.http.Status.SEE_OTHER
-import play.api.libs.json.Json
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
 class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 
   val url: String = controllers.routes.HonestyDeclarationController.show.url
-
+  val appConfig = app.injector.instanceOf[FrontendAppConfig]
   val userId = "user-id-12345"
 
   s"GET $url" must {
@@ -43,23 +43,23 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
-        res.status mustBe 200
+        res.status mustBe OK
       }
     }
   }
 
   s"POST $url" must {
-    "redirect to Business Identification Resolver" in new Setup {
-
+    "redirect to Eligibility" in new Setup {
       given()
         .user.isAuthorised
+        .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/your-email-address-verified").post(""))
+      val res: WSResponse = await(buildClient(url).post(""))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
     }
   }
 }

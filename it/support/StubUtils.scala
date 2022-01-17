@@ -386,12 +386,11 @@ trait StubUtils {
     }
   }
 
-
   case class VatSchemeStub()(implicit builder: PreconditionBuilder) {
 
     def isBlank: PreconditionBuilder = {
       stubFor(
-        get(urlPathEqualTo("/vatreg/1/get-scheme"))
+        get(urlPathEqualTo("/vatreg/registrations/1"))
           .willReturn(ok(
             s"""{ "registrationId" : "1" , "status" : "draft"}"""
           )))

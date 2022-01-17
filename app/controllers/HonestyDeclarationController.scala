@@ -17,9 +17,6 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import controllers.registration.applicant.{routes => applicantRoutes}
-import controllers.registration.transactor.{routes => transactorRoutes}
-import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
 import views.html.honesty_declaration
@@ -37,25 +34,19 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       _ =>
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit)))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
         for {
           _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
-          isTransactor <- vatRegistrationService.isTransactor
         } yield {
-          if (isTransactor) {
-            Redirect(transactorRoutes.PartOfOrganisationController.show)
-          }
-          else {
-            Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
-          }
+          Redirect(appConfig.eligibilityStartUrl(profile.registrationId))
         }
   }
 }

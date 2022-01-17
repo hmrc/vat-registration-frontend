@@ -98,6 +98,17 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "Calling upsertRegistration" should {
+    "store a valid VatScheme and return the updated scheme" in new Setup {
+      mockHttpPUT[VatScheme, VatScheme]("tst-url", validVatScheme)
+      connector.upsertRegistration( "tstID", validVatScheme) returns validVatScheme
+    }
+    "return NOT_FOUND if the registration doesn't exist" in new Setup {
+      mockHttpFailedPUT[VatScheme, VatScheme]("tst-url", notFound)
+      connector.upsertRegistration("not_found_tstID", validVatScheme) failedWith notFound
+    }
+  }
+
   "Calling getRegistrationJson" should {
     "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
       mockHttpGET[JsValue]("tst-url", Json.toJson(validVatScheme))

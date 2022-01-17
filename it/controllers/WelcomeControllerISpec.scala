@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import featureswitch.core.config.SaveAndContinueLater
+import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater}
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
@@ -27,6 +27,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.RegistrationsApiStubs
+import controllers.registration.transactor.{routes => transactorRoutes}
 
 import java.time.LocalDate
 
@@ -167,18 +168,39 @@ class WelcomeControllerISpec extends ControllerISpec
     }
   }
 
-  s"GET $newJourneyUrl" must {
-    "return a redirect to start of eligibility" when {
-      "user is authenticated and authorised to access the app without profile" in new Setup {
-        given()
-          .user.isAuthorised
-          .vatRegistrationFootprint.exists()
-          .vatScheme.regStatus(VatRegStatus.draft.toString)
+  s"GET $newJourneyUrl" when {
+    "the MultipleRegistrations feature switch is disabled" when {
+      "redirect to the Honesty Declaration page" when {
+        "user is authenticated and authorised to access the app without profile" in new Setup {
+          disable(MultipleRegistrations)
 
-        val res: WSResponse = await(buildClient(newJourneyUrl).get())
+          given()
+            .user.isAuthorised
+            .vatRegistrationFootprint.exists()
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
+          val res: WSResponse = await(buildClient(newJourneyUrl).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+        }
+      }
+    }
+    "the MultipleRegistrations feature switch is enabled" when {
+      "redirect to the Application Reference page" when {
+        "user is authenticated and authorised to access the app without profile" in new Setup {
+          enable(MultipleRegistrations)
+
+          given()
+            .user.isAuthorised
+            .vatRegistrationFootprint.exists()
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
+
+          val res: WSResponse = await(buildClient(newJourneyUrl).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
+        }
       }
     }
   }
@@ -236,22 +258,42 @@ class WelcomeControllerISpec extends ControllerISpec
 
   s"GET ${routes.WelcomeController.initJourney(testRegId)}" when {
     "eligibility data exists for the user" when {
-      "the current profile has been set up successfully" must {
-        "redirect to the Honesty Declaration page" in new Setup {
-          given()
-            .user.isAuthorised
-            .trafficManagement.passes()
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
-            .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+      "the current profile has been set up successfully" when {
+        "the user isn't a transactor" must {
+          "redirect to the business identification resolver" in new Setup {
+            given()
+              .user.isAuthorised
+              .trafficManagement.passes()
+              .vatScheme.regStatus(VatRegStatus.draft.toString)
+              .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
-          sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-            .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData))))
+            sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+              .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData))))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+            insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+            val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
+          }
+        }
+        "the user is a transactor" must {
+          "redirect to the Part of An Organisation page" in new Setup {
+            given()
+              .user.isAuthorised
+              .trafficManagement.passes()
+              .vatScheme.regStatus(VatRegStatus.draft.toString)
+              .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+
+            sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+              .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+
+            insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+            val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+            res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
+          }
         }
       }
     }

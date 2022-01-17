@@ -24,6 +24,10 @@ GET         /journey/:regId                                                     
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
 
+# APPLICATION REFERENCE PAGE
+GET         /application-reference                                                             controllers.ApplicationReferenceController.show
+POST        /application-reference                                                             controllers.ApplicationReferenceController.submit
+
 ## HONESTY DECLARATION PAGE
 GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show
 POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit

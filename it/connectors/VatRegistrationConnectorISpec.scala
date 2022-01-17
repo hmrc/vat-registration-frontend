@@ -103,6 +103,18 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
 
       res mustBe List(VatSchemeHeader(testRegId, VatRegStatus.draft), VatSchemeHeader("2", VatRegStatus.draft))
     }
+    "return OK with a registration that has an application reference and start date" in {
+      val testAppRef = "testAppRef"
+
+      registrationsStub.GET.respondsWith(OK, Some(Json.arr(Json.toJson(fullVatScheme.copy(
+        applicationReference = Some(testAppRef),
+        createdDate = Some(testCreatedDate)
+      )))))
+
+      val res = await(vatregConnector.getAllRegistrations)
+
+      res mustBe List(VatSchemeHeader(testRegId, VatRegStatus.draft, Some(testAppRef), Some(testCreatedDate)))
+    }
   }
 
 }

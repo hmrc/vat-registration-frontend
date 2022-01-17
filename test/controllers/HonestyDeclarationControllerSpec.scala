@@ -59,26 +59,13 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
   }
 
   "submit" must {
-    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
-      s"return a SEE_OTHER with a redirect to Business Identification Resolver for ${partyType.toString}" in {
-        mockPartyType(Future.successful(partyType))
-        mockIsTransactor(Future.successful(false))
-        mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
-
-        val res = TestController.submit(testPostRequest)
-
-        status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
-      }
-    }
-    s"return a SEE_OTHER with a redirect to Part Of Organisation Page if user is transactor" in {
-      mockIsTransactor(Future.successful(true))
+    s"redirect to Part Of Organisation Page if user is transactor" in {
       mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
 
       val res = TestController.submit(testPostRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
+      redirectLocation(res) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
     }
   }
 }
