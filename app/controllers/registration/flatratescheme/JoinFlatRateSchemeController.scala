@@ -19,14 +19,14 @@ package controllers.registration.flatratescheme
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
-
-import javax.inject.Inject
+import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.frs_join
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateService,
@@ -43,16 +43,20 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.fetchTurnoverEstimates flatMap { res =>
-          val turnoverEstimates = res.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates"))
-          if (turnoverEstimates.turnoverEstimate > 150000L) {
-            Future.successful(Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve))
-          } else {
-            flatRateService.getFlatRate map { flatRateScheme =>
-              val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
-              Ok(view(form))
+        for {
+          turnoverEstimates <- vatRegistrationService.fetchTurnoverEstimates.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
+          isGroupRegistration <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
+          redirect <-
+            if (turnoverEstimates.turnoverEstimate > 150000L || isGroupRegistration) {
+              Future.successful(Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve))
+            } else {
+              flatRateService.getFlatRate.map { flatRateScheme =>
+                val form = flatRateScheme.joinFrs.fold(joinFrsForm)(v => joinFrsForm.fill(YesOrNoAnswer(v)))
+                Ok(view(form))
+              }
             }
-          }
+        } yield {
+          redirect
         }
   }
 

@@ -17,6 +17,7 @@
 package controllers.registration.flatratescheme
 
 import fixtures.VatRegistrationFixture
+import models.api.EligibilitySubmissionData
 import models.{CurrentProfile, FlatRateScheme, TurnoverEstimates}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -52,6 +53,9 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         when(mockFlatRateService.getFlatRate(any(), any()))
           .thenReturn(Future.successful(validFlatRate))
 
@@ -76,6 +80,9 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
         when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
           .thenReturn(Future.successful(Some(TurnoverEstimates(150000L))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         when(mockFlatRateService.getFlatRate(any(), any()))
           .thenReturn(Future.successful(validFlatRate))
 
@@ -90,6 +97,9 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
     "redirect user to Summary if Turnover Estimates is more than £150K" in new Setup {
       when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
+
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
         .thenReturn(Future.successful(Some(TurnoverEstimates(150001L))))
@@ -107,6 +117,9 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
         .thenReturn(Future.successful(None))
+
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       intercept[InternalServerException] {
         await(controller.show(FakeRequest()))

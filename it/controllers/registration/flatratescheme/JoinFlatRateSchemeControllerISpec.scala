@@ -2,8 +2,9 @@
 package controllers.registration.flatratescheme
 
 import itutil.ControllerISpec
-import models.FlatRateScheme
+import models.api.EligibilitySubmissionData
 import models.api.returns.Returns
+import models.{FlatRateScheme, GroupRegistration}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -32,6 +33,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   ))
 
   val lowTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 1000L)
+  val highTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 150001L)
 
   "GET /join-flat-rate" must {
     "return OK when the details are in s4l" in new Setup {
@@ -41,6 +43,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,6 +60,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
         .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -64,6 +68,44 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
+      }
+    }
+    "redirect to the Attachments Resolver when the turnover is too high" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.has("turnover-estimates-data", Json.toJson(highTurnoverEstimate))
+        .s4lContainer[FlatRateScheme].isEmpty
+        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient("/join-flat-rate").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
+      }
+    }
+    "redirect to the Attachments Resolver for a Group Registration" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
+        .s4lContainer[FlatRateScheme].isEmpty
+        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        registrationReason = GroupRegistration
+      )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient("/join-flat-rate").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
   }

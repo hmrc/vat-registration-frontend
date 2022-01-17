@@ -191,7 +191,13 @@ class ReturnsController @Inject()(val sessionService: SessionService,
   }
 
   private def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {
-    dateOfIncorporationOption <- applicantDetailsService.getDateOfIncorporation
+    isGroupRegistration <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
+    dateOfIncorporationOption <-
+      if (isGroupRegistration) {
+        Future.successful(None)
+      } else {
+        applicantDetailsService.getDateOfIncorporation
+      }
   } yield {
     val fourYearsAgo = timeService.minusYears(4)
     val dateOfIncorporation = dateOfIncorporationOption.getOrElse(fourYearsAgo)
