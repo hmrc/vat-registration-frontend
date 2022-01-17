@@ -317,6 +317,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.of(2017, 1, 1))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         callAuthorised(testController.mandatoryStartPage) { result =>
           status(result) mustBe OK
         }
@@ -341,6 +344,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
         .thenReturn(Future.successful(Some(LocalDate.now.minusYears(3))))
 
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
+
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
@@ -364,6 +370,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
         .thenReturn(Future.successful(Some(LocalDate.now.minusYears(3))))
+
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       submitAuthorised(testController.submitMandatoryStart, request) { result =>
         status(result) mustBe SEE_OTHER
@@ -391,6 +400,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.now.minusYears(3))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         submitAuthorised(testController.submitMandatoryStart, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
@@ -414,6 +426,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.now.minusYears(5))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         submitAuthorised(testController.submitMandatoryStart, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
@@ -436,6 +451,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.now.minusYears(2))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         submitAuthorised(testController.submitMandatoryStart, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
@@ -451,6 +469,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
         when(mockReturnsService.getReturns(any(), any()))
           .thenReturn(Future.successful(returns))
+
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         callAuthorised(testController.voluntaryStartPage) { result =>
           status(result) mustBe OK
@@ -476,6 +497,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
         .thenReturn(Future.successful(Some(LocalDate.of(2016, 1, 1))))
 
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
+
       submitAuthorised(testController.submitVoluntaryStart, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
@@ -500,6 +524,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.of(2016, 1, 1))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
@@ -522,6 +549,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
           .thenReturn(Future.successful(Some(LocalDate.of(2016, 1, 1))))
 
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         submitAuthorised(testController.submitVoluntaryStart, request) { result =>
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
@@ -543,6 +573,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
           when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
             .thenReturn(Future.successful(Some(LocalDate.of(2016, 1, 1))))
 
+          when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+            .thenReturn(Future.successful(validEligibilitySubmissionData))
+
           submitAuthorised(testController.submitVoluntaryStart, request) { result =>
             status(result) mustBe BAD_REQUEST
           }
@@ -560,6 +593,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
           when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
             .thenReturn(Future.successful(Some(LocalDate.of(2011, 1, 1))))
 
+          when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+            .thenReturn(Future.successful(validEligibilitySubmissionData))
+
           submitAuthorised(testController.submitVoluntaryStart, request) { result =>
             status(result) mustBe BAD_REQUEST
           }
@@ -576,6 +612,9 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
           when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
             .thenReturn(Future.successful(Some(LocalDate.of(2011, 1, 1))))
+
+          when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+            .thenReturn(Future.successful(validEligibilitySubmissionData))
 
           submitAuthorised(testController.submitVoluntaryStart, request) { result =>
             status(result) mustBe BAD_REQUEST

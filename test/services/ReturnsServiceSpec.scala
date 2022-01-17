@@ -18,10 +18,10 @@ package services
 
 import _root_.models._
 import _root_.models.api._
+import featureswitch.core.config.{AnnualAccountingScheme, FeatureSwitching}
 import models.api.returns._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.MustMatchers
 import play.api.libs.json.JsString
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.{HttpResponse, InternalServerException, NotFoundExceptio
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
+class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
 
   class Setup {
     val service = new ReturnsService(
@@ -54,7 +54,7 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
 
   val emptyReturns: Returns = Returns(None, None, None, None, None, None)
   val incomplete: Returns = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
-  val incompleteNIP: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date), None, None ,Some(NIPCompliance(Some(ConditionalValue(false, None)),None)))
+  val incompleteNIP: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date), None, None, Some(NIPCompliance(Some(ConditionalValue(false, None)), None)))
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
@@ -515,6 +515,57 @@ class ReturnsServiceSpec extends VatRegSpec with MustMatchers {
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.savePaymentMethod(BankGIRO)) mustBe expected
+    }
+  }
+
+  "isEligibleForAAS" should {
+    val validTurnover = 1350000L
+    val invalidTurnover = 1350001L
+
+    "return false for a turnover that is above 1350000" in new Setup {
+      enable(AnnualAccountingScheme)
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
+
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(TurnoverEstimates(invalidTurnover))))
+
+      await(service.isEligibleForAAS) mustBe false
+      disable(AnnualAccountingScheme)
+    }
+
+    "return false for a Groups Registration" in new Setup {
+      enable(AnnualAccountingScheme)
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)))
+
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
+
+      await(service.isEligibleForAAS) mustBe false
+      disable(AnnualAccountingScheme)
+    }
+
+    "return false when the AAS FS is disabled" in new Setup {
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
+
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
+
+      await(service.isEligibleForAAS) mustBe false
+    }
+
+    "return true otherwise" in new Setup {
+      enable(AnnualAccountingScheme)
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
+
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
+
+      await(service.isEligibleForAAS) mustBe true
+      disable(AnnualAccountingScheme)
     }
   }
 }
