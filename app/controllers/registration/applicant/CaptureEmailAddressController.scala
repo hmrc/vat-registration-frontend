@@ -19,21 +19,21 @@ package controllers.registration.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EmailAddressForm
-
-import javax.inject.Inject
 import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CaptureEmailAddressController @Inject()(view: capture_email_address,
                                               val authConnector: AuthConnector,
                                               val sessionService: SessionService,
                                               applicantDetailsService: ApplicantDetailsService,
-                                              emailVerificationService: EmailVerificationService
+                                              emailVerificationService: EmailVerificationService,
+                                              vatRegistrationService: VatRegistrationService
                                              )(implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -55,15 +55,26 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
           formWithErrors =>
             Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit, formWithErrors))),
           email =>
-            applicantDetailsService.saveApplicantDetails(EmailAddress(email)) flatMap { _ =>
-              emailVerificationService.requestEmailVerificationPasscode(email) flatMap {
-                case AlreadyVerifiedEmailAddress =>
-                  applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)) map { _ =>
-                    Redirect(routes.EmailAddressVerifiedController.show)
+            for {
+              _ <- applicantDetailsService.saveApplicantDetails(EmailAddress(email))
+              isTransactor <- vatRegistrationService.isTransactor
+              redirect <-
+                if (isTransactor) {
+                  applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = false)).map { _ =>
+                    Redirect(routes.CaptureTelephoneNumberController.show)
                   }
-                case RequestEmailPasscodeSuccessful =>
-                  Future.successful(Redirect(routes.CaptureEmailPasscodeController.show))
-              }
+                } else {
+                  emailVerificationService.requestEmailVerificationPasscode(email).flatMap {
+                    case AlreadyVerifiedEmailAddress =>
+                      applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)).map { _ =>
+                        Redirect(routes.EmailAddressVerifiedController.show)
+                      }
+                    case RequestEmailPasscodeSuccessful =>
+                      Future.successful(Redirect(routes.CaptureEmailPasscodeController.show))
+                  }
+                }
+            } yield {
+              redirect
             }
         )
   }

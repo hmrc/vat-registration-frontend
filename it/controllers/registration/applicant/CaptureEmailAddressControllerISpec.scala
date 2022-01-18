@@ -92,6 +92,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureEmailPasscodeController.show.url)
       }
+
       "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new Setup {
         disable(StubEmailVerification)
 
@@ -112,6 +113,32 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.EmailAddressVerifiedController.show.url)
+      }
+
+      "Update S4L redirect to Capture Telephone Number page when the user is a transactor" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(
+          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
+        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(
+          testEligibilitySubmissionData.copy(
+            isTransactor = true
+          )
+        ))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
+
+        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.registration.applicant.routes.CaptureTelephoneNumberController.show.url)
       }
     }
     "ApplicantDetails is complete" should {
