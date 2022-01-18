@@ -39,7 +39,7 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map(_.copy(attachments = List(IdentityEvidence, VAT2))).map { attachmentInfo =>
+        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentInfo =>
           Ok(multipleDocumentsRequiredPage(attachmentInfo.attachments))
         }
   }

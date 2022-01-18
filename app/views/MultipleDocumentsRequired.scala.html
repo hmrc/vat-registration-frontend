@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.{AttachmentType, IdentityEvidence, VAT2}
+@import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
 
 @this(
         layout: layouts.layout,
@@ -40,6 +40,7 @@
     @bulletsHtml(
         attachments.map {
             case VAT2 => vat2Block
+            case VAT51 => vat51Block
             case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
         }: _*
     )
@@ -76,4 +77,15 @@
 @vat2Block = {
     @messages("attachments.multipleDocumentsRequired.VAT2")
     @link(appConfig.vat2Link, "attachments.multipleDocumentsRequired.VAT2.link", isExternal = true)
+}
+
+@vat51Block = {
+    @messages("attachments.multipleDocumentsRequired.VAT51.para1")
+    @link(
+        link = appConfig.vat51Link,
+        messageKey = messages("attachments.multipleDocumentsRequired.VAT51.link"),
+        isExternal = true,
+        isButton = false
+    )
+    @messages("attachments.multipleDocumentsRequired.VAT51.para2")
 }

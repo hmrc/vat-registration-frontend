@@ -917,6 +917,9 @@ attachments.multipleDocumentsRequired.identityDetails     = What identity docume
 attachments.multipleDocumentsRequired.identityEvidence    = identity documents of you
 attachments.multipleDocumentsRequired.VAT2                = a completed
 attachments.multipleDocumentsRequired.VAT2.link           = VAT2 form
+attachments.multipleDocumentsRequired.VAT51.para1         = a completed
+attachments.multipleDocumentsRequired.VAT51.link          = VAT 50/51 form
+attachments.multipleDocumentsRequired.VAT51.para2         = to provide us with details of the VAT group, including details of each subsidiary.
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1097,3 +1100,9 @@ validation.scottishPartnershipName.invalid               = Enter a partnership n
 ## ALREADY SUBMITTED KICKOUT PAGE
 alreadySubmitted.heading                                 = We have already received a VAT registration application for this business
 alreadySubmitted.para                                    = Applications can take up to 30 days to process, you should wait for this period of time before contacting us.
+
+## VAT51 REQUIRED
+pages.vat51Required.heading                              = You must send us a completed VAT 50/51 form in order for us to process this application
+pages.vat51Required.para1                                = We need a completed
+pages.vat51Required.link                                 = VAT 50/51 form
+pages.vat51Required.para2                                = to provide us with details of the VAT group, including details of each subsidiary.

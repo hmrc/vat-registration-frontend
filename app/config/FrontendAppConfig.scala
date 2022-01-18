@@ -324,5 +324,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val fhddsRegisteredBusinessesListUrl = "https://www.gov.uk/government/publications/fulfilment-house-due-diligence-scheme-registered-businesses-list"
   lazy val regime: String = "VATC"
   lazy val vat2Link: String = "https://www.gov.uk/government/publications/vat-partnership-details-vat2"
+  lazy val vat51Link: String = "https://www.gov.uk/government/publications/apply-for-vat-group-registration-or-amend-your-details"
 
 }
