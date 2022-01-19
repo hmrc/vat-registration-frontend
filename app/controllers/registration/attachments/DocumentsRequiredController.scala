@@ -18,7 +18,7 @@ package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.api.{IdentityEvidence, VAT2}
+import models.api.{IdentityEvidence, VAT2, VAT51}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService}
 
@@ -42,6 +42,7 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
             case list if list.size > 1 => Redirect(routes.MultipleDocumentsRequiredController.show)
             case List(IdentityEvidence) => Redirect(routes.IdentityEvidenceRequiredController.show)
             case List(VAT2) => Redirect(routes.Vat2RequiredController.show)
+            case List(VAT51) => Redirect(routes.Vat51RequiredController.show)
             case Nil => Redirect(controllers.routes.SummaryController.show)
           }
         }

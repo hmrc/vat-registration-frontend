@@ -403,6 +403,9 @@ POST        /partnership-official-name                                          
 ## VAT 2 Required
 GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
 
+## VAT 51 Required
+GET         /vat51-required                                                                    controllers.registration.attachments.Vat51RequiredController.show
+
 ## Scottish Partnership Name
 GET         /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.show
 POST        /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.submit
