@@ -948,32 +948,13 @@ attachments.documentsPost.country                  = United Kingdom
 
 
 pages.PostalCoverSheet.heading                           = Print cover letter for documents
-pages.PostalCoverSheet.title                             = Print cover letter for documents
 pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your supporting documents.
 pages.PostalCoverSheet.warningText                       = Do not post the original documents to HMRC as we are unable to return them to you.
 pages.PostalCoverSheet.panel1                            = Register for VAT reference number:
-pages.PostalCoverSheet.heading2                          = What you must post to us
-pages.PostalCoverSheet.para2                             = Include a copy of
-pages.PostalCoverSheet.para2Bold                         = one
-pages.PostalCoverSheet.para2Finish                       = piece of evidence that includes a government issued photo. This could be a:
-pages.PostalCoverSheet.heading3                          = And
-pages.PostalCoverSheet.para3                             = Also include
-pages.PostalCoverSheet.para3Bold                         = two
-pages.PostalCoverSheet.para3Finish                       = additional pieces of evidence which can be copies of a:
-pages.PostalCoverSheet.heading4                          = And
+pages.PostalCoverSheet.whatYouMustSend                   = What you must post to us
 pages.PostalCoverSheet.para4                             = Include this cover letter.
 pages.PostalCoverSheet.heading5                          = Postal address
 pages.PostalCoverSheet.para5                             = Send the supporting documents and covering letter to:
-pages.PostalCoverSheet.bullet1                           = passport
-pages.PostalCoverSheet.bullet2                           = driving licence photocard
-pages.PostalCoverSheet.bullet3                           = national identity card
-pages.PostalCoverSheet.bullet4                           = mortgage statement
-pages.PostalCoverSheet.bullet5                           = lease or rental agreement
-pages.PostalCoverSheet.bullet6                           = work permit or visa
-pages.PostalCoverSheet.bullet7                           = letter from the Department of Work and Pensions for confirming entitlement to benefits
-pages.PostalCoverSheet.bullet8                           = utility bill
-pages.PostalCoverSheet.bullet9                           = birth certificate
-
 pages.PostalCoverSheet.panel2                            = VAT Registration Applications
 pages.PostalCoverSheet.panel3                            = BT VAT
 pages.PostalCoverSheet.panel4                            = HM Revenue and Customs
@@ -985,26 +966,35 @@ pages.PostalCoverSheet.panel6                            = United Kingdom
 pages.EmailCoverSheet.heading                           = How to email documents to HMRC
 pages.EmailCoverSheet.para                              = The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your supporting documents.
 pages.EmailCoverSheet.panel1                            = Register for VAT reference number:
-pages.EmailCoverSheet.heading2                          = What you must attach to the email
-pages.EmailCoverSheet.para2                             = Include a copy of
-pages.EmailCoverSheet.para2Bold                         = one
-pages.EmailCoverSheet.para2Finish                       = piece of evidence that includes a government issued photo. This could be a:
-pages.EmailCoverSheet.bullet1                           = passport
-pages.EmailCoverSheet.bullet2                           = driving licence photocard
-pages.EmailCoverSheet.bullet3                           = national identity card
-pages.EmailCoverSheet.heading3                          = And
-pages.EmailCoverSheet.para3                             = Also include
-pages.EmailCoverSheet.para3Bold                         = two
-pages.EmailCoverSheet.para3Finish                       = additional pieces of evidence which can be copies of a:
-pages.EmailCoverSheet.bullet4                           = mortgage statement
-pages.EmailCoverSheet.bullet5                           = lease or rental agreement
-pages.EmailCoverSheet.bullet6                           = work permit or visa
-pages.EmailCoverSheet.bullet7                           = letter from the Department for Work and Pensions for confirming entitlement to benefits
-pages.EmailCoverSheet.bullet8                           = utility bill
-pages.EmailCoverSheet.bullet9                           = birth certificate
-pages.EmailCoverSheet.heading4                          = Email address
-pages.EmailCoverSheet.para4                             = Send the supporting documents to:
-pages.EmailCoverSheet.panel2                            = vrs.newregistrations@hmrc.gov.uk
+pages.EmailCoverSheet.whatYouMustSend.heading           = What you must attach to the email
+pages.EmailCoverSheet.sendHeading                       = Email address
+pages.EmailCoverSheet.sendDocsTo                        = Send the supporting documents to:
+pages.EmailCoverSheet.attachmentsEmail                  = vrs.newregistrations@hmrc.gov.uk
+
+## COMMON COVER SHEET MESSAGES
+
+pages.CoverSheet.whatYouMustSend.para              = You must send us additional documents in order for us to process this VAT application:
+pages.CoverSheet.vat2Start                         = a completed 
+pages.CoverSheet.vat2Link                          = VAT2 form (opens in a new tab)
+pages.CoverSheet.vat2End                           = to capture the details of all the partners
+pages.CoverSheet.identityEvidence                  = three documents to confirm your identity
+pages.CoverSheet.idEvidence.details                = What identity documents can I provide?
+pages.CoverSheet.idEvidence.para1                  = Include a copy of
+pages.CoverSheet.idEvidence.para1Bold              = one
+pages.CoverSheet.idEvidence.para1Finish            = piece of evidence that includes a government issued photo. This could be a:
+pages.CoverSheet.idEvidence.passport               = passport
+pages.CoverSheet.idEvidence.drivingLicence         = driving licence photocard
+pages.CoverSheet.idEvidence.ninoCard               = national identity card
+pages.CoverSheet.idEvidence.heading2               = And
+pages.CoverSheet.idEvidence.para2                  = Also include
+pages.CoverSheet.idEvidence.para2Bold              = two
+pages.CoverSheet.idEvidence.para2Finish            = additional pieces of evidence which can be copies of a:
+pages.CoverSheet.idEvidence.mortgageStatement      = mortgage statement
+pages.CoverSheet.idEvidence.leaseAgreement         = lease or rental agreement
+pages.CoverSheet.idEvidence.workPermit             = work permit or visa
+pages.CoverSheet.idEvidence.dwpLetter              = letter from the Department for Work and Pensions for confirming entitlement to benefits
+pages.CoverSheet.idEvidence.utilityBill            = utility bill
+pages.CoverSheet.idEvidence.birthCert              = birth certificate
 
 
 ## Northern Ireland Protocol

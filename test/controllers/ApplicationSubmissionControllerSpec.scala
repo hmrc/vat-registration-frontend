@@ -17,11 +17,13 @@
 package controllers
 
 import fixtures.VatRegistrationFixture
-import models.api.{Attached, Attachments, EmailMethod, IdentityEvidence, Other, Post}
+import models.api.{Attached, Attachments, EmailMethod, IdentityEvidence, Other, Post, VAT51}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Session
+import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.pages.application_submission_confirmation
@@ -128,6 +130,22 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
+      }
+    }
+
+    "display the submission confirmation page to the user when VAT51 is available" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any()))
+        .thenReturn(Future.successful(Attachments(Some(Post), List(VAT51))))
+
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+        .thenReturn(Future.successful("123412341234"))
+
+      callAuthorised(testController.show) { res =>
+        status(res) mustBe OK
+        contentAsString(res) must include("You can print the cover letter here (opens in new tab)")
       }
     }
   }

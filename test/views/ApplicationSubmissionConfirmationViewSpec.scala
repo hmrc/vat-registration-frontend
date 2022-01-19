@@ -98,7 +98,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
   }
 
-  "Application submission confirmation page with IdentityEvidence and Post attachment method" should {
+  "Application submission confirmation page with Post attachment method" should {
     lazy val view = viewInstance(refNum, postMethod, true)
     lazy val doc = Jsoup.parse(view.body)
 
@@ -113,7 +113,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
   }
 
-  "Application submission confirmation page with IdentityEvidence and Email attachment method" should {
+  "Application submission confirmation page with Email attachment method" should {
     lazy val view = viewInstance(refNum, emailMethod, true)
     lazy val doc = Jsoup.parse(view.body)
 
@@ -125,6 +125,20 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
     "have the correct paragraph" in {
       doc.select(Selectors.p(1)).text mustBe ExpectedContent.paragraphEmail
+    }
+  }
+
+  "Application submission confirmation page with no attachment method" should {
+    lazy val view = viewInstance(refNum, postMethod, false)
+    lazy val doc = Jsoup.parse(view.body)
+
+    "have the correct list" in {
+      doc.select(Selectors.orderedList(1)).text mustBe ExpectedContent.listItem1
+      doc.select(Selectors.orderedList(2)).text mustBe ExpectedContent.listItem2
+    }
+
+    "have the correct paragraph" in {
+      doc.select(Selectors.p(1)).text mustBe ExpectedContent.paragraph
     }
   }
 }
