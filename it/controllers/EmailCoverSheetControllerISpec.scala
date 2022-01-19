@@ -19,7 +19,8 @@ package controllers
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import play.api.libs.json.JsString
+import models.api.{AttachmentType, Attachments, IdentityEvidence, EmailMethod, VAT2}
+import play.api.libs.json.{JsString, Json}
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
@@ -35,6 +36,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
       given()
         .user.isAuthorised
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(EmailMethod), List[AttachmentType](IdentityEvidence, VAT2))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

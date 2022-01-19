@@ -17,6 +17,12 @@
 @import config.FrontendAppConfig
 @import views.html.components._
 @import views.html.layouts.layout
+@import models.api.AttachmentMethod
+@import models.api.Post
+@import models.api.EmailMethod
+@import models.api.AttachmentType
+@import models.api.VAT2
+@import models.api.IdentityEvidence
 
 @this(
         layout: layout,
@@ -27,12 +33,15 @@
         formWithCSRF: FormWithCSRF,
         panelIndent: panelIndent,
         bullets: bullets,
+        bulletsHtml: bulletsHtml,
+        details: details,
+        link: link,
         subheading: subheadingP,
         strong: strong,
         print: print
 )
 
-@(ackRef: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(ackRef: String, attachments: List[AttachmentType])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.EmailCoverSheet.heading"))), backLink = true) {
 
@@ -44,44 +53,62 @@
         @messages(ackRef)
     }
 
-    @h2(messages("pages.EmailCoverSheet.heading2"))
+    @h2(messages("pages.EmailCoverSheet.whatYouMustSend.heading"))
+    @p { @messages("pages.CoverSheet.whatYouMustSend.para")}
 
-    @p{
-        @messages("pages.EmailCoverSheet.para2")
-        @strong { @messages(s"pages.EmailCoverSheet.para2Bold") }
-        @messages("pages.EmailCoverSheet.para2Finish")
-    }
-
-    @bullets(
-        messages("pages.EmailCoverSheet.bullet1"),
-        messages("pages.EmailCoverSheet.bullet2"),
-        messages("pages.EmailCoverSheet.bullet3")
+    @bulletsHtml(
+        attachments.map {
+            case VAT2 => vat2Block
+            case IdentityEvidence => Html(messages("pages.CoverSheet.identityEvidence"))
+        }: _*
     )
 
-    @h2(messages("pages.EmailCoverSheet.heading3"))
-
-    @p{
-        @messages("pages.EmailCoverSheet.para3")
-        @strong { @messages(s"pages.EmailCoverSheet.para3Bold") }
-        @messages("pages.EmailCoverSheet.para3Finish")
+    @if(attachments.contains(IdentityEvidence)) {
+        @details(messages("pages.CoverSheet.idEvidence.details"), identityEvidenceBlock)
     }
 
-    @bullets(
-        messages("pages.EmailCoverSheet.bullet4"),
-        messages("pages.EmailCoverSheet.bullet5"),
-        messages("pages.EmailCoverSheet.bullet6"),
-        messages("pages.EmailCoverSheet.bullet7"),
-        messages("pages.EmailCoverSheet.bullet8"),
-        messages("pages.EmailCoverSheet.bullet9")
-    )
-
-    @h2(messages("pages.EmailCoverSheet.heading4"))
-
-    @p{ @messages("pages.EmailCoverSheet.para4") }
-
+    @h2(messages("pages.EmailCoverSheet.sendHeading"))
+    @p{ @messages("pages.EmailCoverSheet.sendDocsTo") }
     @panelIndent{
-        @messages("pages.EmailCoverSheet.panel2")
+        @messages("pages.EmailCoverSheet.attachmentsEmail")
     }
 
     @print("app.common.print")
+}
+
+@identityEvidenceBlock = {
+    @p{
+        @messages("pages.CoverSheet.idEvidence.para1")
+        @strong { @messages(s"pages.CoverSheet.idEvidence.para1Bold") }
+        @messages("pages.CoverSheet.idEvidence.para1Finish")
+    }
+
+    @bullets(
+        messages("pages.CoverSheet.idEvidence.passport"),
+        messages("pages.CoverSheet.idEvidence.drivingLicence"),
+        messages("pages.CoverSheet.idEvidence.ninoCard")
+    )
+
+    @h2(messages("pages.CoverSheet.idEvidence.heading2"))
+
+    @p{
+        @messages("pages.CoverSheet.idEvidence.para2")
+        @strong { @messages(s"pages.CoverSheet.idEvidence.para2Bold") }
+        @messages("pages.CoverSheet.idEvidence.para2Finish")
+    }
+
+    @bullets(
+        messages("pages.CoverSheet.idEvidence.mortgageStatement"),
+        messages("pages.CoverSheet.idEvidence.leaseAgreement"),
+        messages("pages.CoverSheet.idEvidence.workPermit"),
+        messages("pages.CoverSheet.idEvidence.dwpLetter"),
+        messages("pages.CoverSheet.idEvidence.utilityBill"),
+        messages("pages.CoverSheet.idEvidence.birthCert")
+    )
+}
+
+@vat2Block = {
+    @messages("pages.CoverSheet.vat2Start")
+    @link(appConfig.vat2Link, "pages.CoverSheet.vat2Link")
+    @messages("pages.CoverSheet.vat2End")
 }

@@ -49,7 +49,7 @@ class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatR
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
           formattedRef = prefix +: groups mkString separator
-        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentsList.method, attachmentsList.attachments.contains(IdentityEvidence)))
+        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentsList.method, attachmentsList.attachments.nonEmpty))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

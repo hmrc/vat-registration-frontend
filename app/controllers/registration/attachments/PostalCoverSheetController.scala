@@ -19,7 +19,7 @@ package controllers.registration.attachments
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, VatRegistrationService}
+import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.PostalCoverSheet
 
 import javax.inject.{Inject, Singleton}
@@ -29,17 +29,26 @@ import scala.concurrent.ExecutionContext
 class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
                                            val authConnector: AuthClientConnector,
                                            val sessionService: SessionService,
+                                           val attachmentsService: AttachmentsService,
                                            val vatRegistrationService: VatRegistrationService
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  private val prefixLength = 3
+  private val groupSize = 4
+  private val separator = " "
+
   val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.getAckRef(profile.registrationId).map(ackRef =>
-          Ok(view(ackRef))
-        )
+        for {
+          attachmentsList <- attachmentsService.getAttachmentList(profile.registrationId)
+          acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
+          prefix = acknowledgementRef.take(prefixLength)
+          groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
+          formattedRef = prefix +: groups mkString separator
+        } yield Ok(view(formattedRef, attachmentsList.attachments))
   }
 }

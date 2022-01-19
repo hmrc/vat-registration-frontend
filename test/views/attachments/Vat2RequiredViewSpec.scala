@@ -38,7 +38,7 @@ class Vat2RequiredViewSpec extends VatRegViewSpec {
     val url = "https://www.gov.uk/government/publications/vat-partnership-details-vat2"
   }
 
-  "The Email Documents page" must {
+  "The VAT 2 Required page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
