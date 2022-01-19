@@ -18,11 +18,12 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.SaveAndContinueLater
+import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater}
 import forms.StartNewApplicationForm
 import play.api.mvc._
 import services.{SessionService, _}
 import views.html.pages.start_new_application
+import controllers.registration.transactor.{routes => transactorRoutes}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -55,6 +56,7 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
             Redirect(routes.WelcomeController.startNewJourney)
           }
       }
+
     }
     else {
       Future.successful(Redirect(routes.WelcomeController.startNewJourney))
@@ -78,7 +80,11 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
     for {
       scheme <- vatRegistrationService.createRegistrationFootprint
       _ <- currentProfileService.buildCurrentProfile(scheme.id)
-    } yield Redirect(appConfig.eligibilityStartUrl(scheme.id))
+    } yield if (isEnabled(MultipleRegistrations)) {
+      Redirect(routes.ApplicationReferenceController.show)
+    } else {
+      Redirect(routes.HonestyDeclarationController.show)
+    }
   }
 
   def continueJourney(journey: Option[String]): Action[AnyContent] = isAuthenticated { implicit request =>
@@ -97,9 +103,16 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
   }
 
   def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    vatRegistrationService.getEligibilitySubmissionData
-      .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
-      .map(_ => Redirect(routes.HonestyDeclarationController.show))
+    vatRegistrationService.isTransactor
+      .flatMap { isTransactor =>
+        currentProfileService.buildCurrentProfile(regId).map { _ =>
+          if (isTransactor) {
+            Redirect(transactorRoutes.PartOfOrganisationController.show)
+          } else {
+            Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
+          }
+        }
+      }
       .recover {
         case e: IllegalStateException => Redirect(routes.WelcomeController.show)
       }

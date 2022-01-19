@@ -36,7 +36,8 @@ case class VatScheme(id: String,
                      status: VatRegStatus.Value,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      partners: Option[List[PartnerEntity]] = None,
-                     createdDate: Option[LocalDate] = None)
+                     createdDate: Option[LocalDate] = None,
+                     applicationReference: Option[String] = None)
 
 object VatScheme {
 
@@ -55,7 +56,8 @@ object VatScheme {
           (__ \ "status").read[VatRegStatus.Value] and
           (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
           (__ \ "partners").readNullable[List[PartnerEntity]] and
-          (__ \ "createdDate").readNullable[LocalDate]
+          (__ \ "createdDate").readNullable[LocalDate] and
+          (__ \ "applicationReference").readNullable[String]
         ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
@@ -70,7 +72,8 @@ object VatScheme {
           (__ \ "status").read[VatRegStatus.Value] and
           Reads.pure(None) and
           Reads.pure(None) and
-          (__ \ "createdDate").readNullable[LocalDate]
+          (__ \ "createdDate").readNullable[LocalDate] and
+          (__ \ "applicationReference").readNullable[String]
         ) (VatScheme.apply _)
     }
 
@@ -87,7 +90,8 @@ object VatScheme {
       (__ \ "status").write[VatRegStatus.Value] and
       (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
       (__ \ "partners").writeNullable[List[PartnerEntity]] and
-      (__ \ "createdDate").writeNullable[LocalDate]
+      (__ \ "createdDate").writeNullable[LocalDate] and
+      (__ \ "applicationReference").writeNullable[String]
     ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)

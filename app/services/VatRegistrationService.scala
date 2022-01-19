@@ -39,6 +39,10 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
 
+  // TODO update structure of VatScheme so that all header information (IDs, creation date, status) can be accessed using the Sections API
+  def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
+    vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
+
   def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations
 

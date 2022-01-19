@@ -22,20 +22,23 @@ import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import support.RegistrationsApiStubs
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
+import play.api.libs.json.Json
 
-class SummaryControllerISpec extends ControllerISpec {
+class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs {
 
   "GET Summary page" should {
     "display the summary page correctly" in new Setup {
       given()
         .user.isAuthorised
-        .vatScheme.contains(fullVatScheme)
         .s4lContainer[SicAndCompliance].cleared
         .vatRegistration.storesNrsPayload(testRegId)
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
+
+      specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(fullVatScheme)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -100,12 +103,13 @@ class SummaryControllerISpec extends ControllerISpec {
     "display the summary page correctly for a NETP" in new Setup {
       given()
         .user.isAuthorised
-        .vatScheme.contains(fullNetpVatScheme)
         .s4lContainer[SicAndCompliance].cleared
         .vatRegistration.storesNrsPayload(testRegId)
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(fullNetpVatScheme)))
 
       val response: Future[WSResponse] = buildClient("/check-confirm-answers").get()
       whenReady(response) { res =>

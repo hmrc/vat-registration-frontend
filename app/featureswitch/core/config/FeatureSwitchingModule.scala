@@ -41,7 +41,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     SaveAndContinueLater,
     AnnualAccountingScheme,
     NorthernIrelandProtocol,
-    ShortOrgName
+    ShortOrgName,
+    MultipleRegistrations
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -134,4 +135,9 @@ case object NorthernIrelandProtocol extends FeatureSwitch {
 case object ShortOrgName extends FeatureSwitch {
   val configName: String = "feature-switch.short-org-name"
   val displayName: String = "Enable Short Org Name page (use with BE FS)"
+}
+
+case object MultipleRegistrations extends FeatureSwitch {
+  val configName: String = "feature-switch.multiple-registrations"
+  val displayName: String = "Enable multiple registrations"
 }

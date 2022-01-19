@@ -330,7 +330,6 @@ cya.leadPartner.homeAddress                          = Lead partner’s home add
 cya.leadPartner.companyNumber                        = Lead partner’s company number
 cya.leadPartner.companyRegistrationNumber            = Lead partner’s company registration number
 cya.leadPartner.companyName                          = Lead partner’s company name
-cya.leadPartner.partnershipName                      = Lead partner’s partnership name
 cya.leadPartner.registeredPostcode                   = Lead partner’s registered postcode
 cya.leadPartner.partnershipName                      = Lead partner’s Partnership name
 cya.leadPartner.postcodeForSelfAssessment            = Lead partner’s registered postcode for self assessment
@@ -1096,3 +1095,12 @@ pages.vat51Required.heading                              = You must send us a co
 pages.vat51Required.para1                                = We need a completed
 pages.vat51Required.link                                 = VAT 50/51 form
 pages.vat51Required.para2                                = to provide us with details of the VAT group, including details of each subsidiary.
+
+
+# APPLICATION REFERENCE PAGE
+applicationReference.heading                             = Choose an application reference
+applicationReference.para                                = You can add a memorable word, phrase or number to every application. This could be a business name or a unique number to help you manage ongoing applications.
+applicationReference.label                               = Enter your chosen application reference
+applicationReference.error.missing                       = Enter an application reference
+applicationReference.error.invalid                       = Enter an application reference that does not contain special characters
+applicationReference.error.length                        = Enter an application reference that is 100 characters or less

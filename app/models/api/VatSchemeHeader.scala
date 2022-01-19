@@ -19,7 +19,12 @@ package models.api
 import common.enums.VatRegStatus
 import play.api.libs.json.{Format, Json}
 
-case class VatSchemeHeader(registrationId: String, status: VatRegStatus.Value)
+import java.time.LocalDate
+
+case class VatSchemeHeader(registrationId: String,
+                           status: VatRegStatus.Value,
+                           applicationReference: Option[String] = None,
+                           createdDate: Option[LocalDate] = None)
 
 case object VatSchemeHeader {
   implicit val format: Format[VatSchemeHeader] = Json.format[VatSchemeHeader]
