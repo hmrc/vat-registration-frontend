@@ -16,7 +16,7 @@
 
 package views
 
-import models.api.{AttachmentType, IdentityEvidence, VAT2}
+import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
@@ -27,7 +27,7 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
   val emailCoverSheetPage: EmailCoverSheet = app.injector.instanceOf[EmailCoverSheet]
 
   val testRef = "VRN12345689"
-  val testAttachments = List[AttachmentType](VAT2, IdentityEvidence)
+  val testAttachments = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
   val testVat2 = List[AttachmentType](VAT2)
 
   lazy val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testAttachments)
@@ -42,6 +42,7 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     val para2 = "You must send us additional documents in order for us to process this VAT application:"
     val heading3 = "Email address"
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
+    val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val idEvidence = "three documents to confirm your identity"
     val para3 = "Send the supporting documents to:"
     val panel2 = "vrs.newregistrations@hmrc.gov.uk"
@@ -98,16 +99,24 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
       doc.para(3) mustBe Some(ExpectedContent.para3)
     }
 
-    "not show the identity documents dropdown when attachment list does not contain IdentityEvidence" in new ViewSetup {
+    "not show the identity documents bullet point when attachment list does not contain IdentityEvidence" in new ViewSetup {
       val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testVat2)
       override val doc: Document = Jsoup.parse(view.body)
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.idEvidence)
     }
 
+    "not show the vat51 bullet point when attachment list does not contain VAT51" in new ViewSetup {
+      val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testVat2)
+      override val doc: Document = Jsoup.parse(view.body)
+      doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
+      doc.unorderedList(1) mustNot contain(ExpectedContent.vat51Bullet)
+    }
+
     "have the correct first bullet list" in new ViewSetup {
       doc.unorderedList(1) mustBe List(
         ExpectedContent.vat2Bullet,
+        ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence
       )
     }
