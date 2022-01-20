@@ -206,20 +206,41 @@ class WelcomeControllerISpec extends ControllerISpec
   }
 
   s"GET ${continueJourneyUrl(testRegId)}" when {
-    "the channel for traffic management is VatReg" must {
-      "redirect to Eligibiilty" in new Setup {
-        given()
-          .user.isAuthorised
-          .vatScheme.regStatus(VatRegStatus.draft.toString)
-          .trafficManagement.passes(VatReg)
-          .vatRegistrationFootprint.exists()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+    "the channel for traffic management is VatReg" when {
+      "the multiple registrations feature switch is enabled" must {
+        "redirect to the Application Reference page" in new Setup {
+          enable(MultipleRegistrations)
+          given()
+            .user.isAuthorised
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .trafficManagement.passes(VatReg)
+            .vatRegistrationFootprint.exists()
 
-        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
+          val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
+        }
+      }
+      "the multiple registrations feature switch is disabled" must {
+        "redirect to the Honesty Declaration page" in new Setup {
+          disable(MultipleRegistrations)
+          given()
+            .user.isAuthorised
+            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .trafficManagement.passes(VatReg)
+            .vatRegistrationFootprint.exists()
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+        }
       }
     }
     "the channel for traffic management is OTRS" must {
