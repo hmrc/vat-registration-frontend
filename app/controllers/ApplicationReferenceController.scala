@@ -43,7 +43,6 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
 
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
-    Future.successful(Ok(""))
     vatRegistrationService.getVatScheme
       .map(_.applicationReference)
       .map {

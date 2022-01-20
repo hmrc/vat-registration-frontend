@@ -24,6 +24,8 @@ GET         /journey/:regId                                                     
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
 
+GET         /manage-registrations                                                              controllers.ManageRegistrationsController.show
+
 # APPLICATION REFERENCE PAGE
 GET         /application-reference                                                             controllers.ApplicationReferenceController.show
 POST        /application-reference                                                             controllers.ApplicationReferenceController.submit
