@@ -91,9 +91,8 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
     journey match {
       case Some(regId: String) =>
         trafficManagementService.checkTrafficManagement(regId).flatMap {
-          case PassedVatReg(regId) => saveAndRetrieveService.retrievePartialVatScheme(regId)
-            .flatMap(_ => currentProfileService.buildCurrentProfile(regId))
-            .map(_ => Redirect(appConfig.eligibilityStartUrl(regId)))
+          case PassedVatReg(regId) => currentProfileService.buildCurrentProfile(regId)
+            .map(_ => Redirect(routes.ApplicationReferenceController.show))
           case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
           case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
         }
