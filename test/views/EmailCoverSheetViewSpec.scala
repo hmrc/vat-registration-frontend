@@ -41,7 +41,7 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     val heading2 = "What you must attach to the email"
     val para2 = "You must send us additional documents in order for us to process this VAT application:"
     val heading3 = "Email address"
-    val vat2Bullet = "a completed VAT2 form (opens in a new tab) to capture the details of all the partners"
+    val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val idEvidence = "three documents to confirm your identity"
     val para3 = "Send the supporting documents to:"
     val panel2 = "vrs.newregistrations@hmrc.gov.uk"
