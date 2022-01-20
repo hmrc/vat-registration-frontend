@@ -45,7 +45,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val heading3 = "Postal address"
     val para4 = "Send the supporting documents and covering letter to:"
     val panel2 = "VAT Registration Applications BT VAT HM Revenue and Customs BX9 1WR United Kingdom"
-    val vat2Bullet = "a completed VAT2 form (opens in a new tab) to capture the details of all the partners"
+    val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val idEvidence = "three documents to confirm your identity"
     val print = "Print this page"
   }

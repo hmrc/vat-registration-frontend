@@ -974,7 +974,7 @@ pages.EmailCoverSheet.attachmentsEmail                  = vrs.newregistrations@h
 
 pages.CoverSheet.whatYouMustSend.para              = You must send us additional documents in order for us to process this VAT application:
 pages.CoverSheet.vat2Start                         = a completed 
-pages.CoverSheet.vat2Link                          = VAT2 form (opens in a new tab)
+pages.CoverSheet.vat2Link                          = VAT2 form
 pages.CoverSheet.vat2End                           = to capture the details of all the partners
 pages.CoverSheet.identityEvidence                  = three documents to confirm your identity
 pages.CoverSheet.idEvidence.details                = What identity documents can I provide?
