@@ -92,7 +92,13 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
       case Some(regId: String) =>
         trafficManagementService.checkTrafficManagement(regId).flatMap {
           case PassedVatReg(regId) => currentProfileService.buildCurrentProfile(regId)
-            .map(_ => Redirect(routes.ApplicationReferenceController.show))
+            .map { _ =>
+              if (isEnabled(MultipleRegistrations)) {
+                Redirect(routes.ApplicationReferenceController.show)
+              } else {
+                Redirect(routes.HonestyDeclarationController.show)
+              }
+            }
           case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
           case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
         }
