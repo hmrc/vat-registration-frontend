@@ -99,9 +99,40 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       service.getApplicantDetails returns completeApplicantDetails
     }
 
-    "return a full ApplicantDetails view model from f4l" in new Setup(Some(completeApplicantDetails), None) {
+    "return a full ApplicantDetails view model from s4l" in new Setup(Some(completeApplicantDetails), None) {
       mockPartyType(Future.successful(UkCompany))
       service.getApplicantDetails returns completeApplicantDetails
+    }
+  }
+
+  "Calling getApplicantName" should {
+    "return firstName from the backend" in new Setup(None, Some(completeApplicantDetails)) {
+      service.getApplicantName returns testFirstName
+    }
+    "return firstName from s4l" in new Setup(Some(completeApplicantDetails), None) {
+      service.getApplicantName returns testFirstName
+    }
+  }
+
+  "Calling getCompanyName" should {
+    "return company name from the backend" in new Setup(None, Some(completeApplicantDetails)) {
+      mockPartyType(Future.successful(UkCompany))
+      service.getCompanyName returns Some(testCompanyName)
+    }
+    "return company name from s4l" in new Setup(Some(completeApplicantDetails), None) {
+      mockPartyType(Future.successful(UkCompany))
+      service.getCompanyName returns Some(testCompanyName)
+    }
+  }
+
+  "Calling getDateOfIncorporation" should {
+    "return date of incorp from the backend" in new Setup(None, Some(completeApplicantDetails)) {
+      mockPartyType(Future.successful(UkCompany))
+      service.getDateOfIncorporation returns Some(testIncorpDate)
+    }
+    "return date of incorp from s4l" in new Setup(Some(completeApplicantDetails), None) {
+      mockPartyType(Future.successful(UkCompany))
+      service.getDateOfIncorporation returns Some(testIncorpDate)
     }
   }
 
