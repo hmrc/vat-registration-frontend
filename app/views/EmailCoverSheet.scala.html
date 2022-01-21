@@ -17,11 +17,9 @@
 @import config.FrontendAppConfig
 @import views.html.components._
 @import views.html.layouts.layout
-@import models.api.AttachmentMethod
-@import models.api.Post
-@import models.api.EmailMethod
 @import models.api.AttachmentType
 @import models.api.VAT2
+@import models.api.VAT51
 @import models.api.IdentityEvidence
 
 @this(
@@ -59,6 +57,7 @@
     @bulletsHtml(
         attachments.map {
             case VAT2 => vat2Block
+            case VAT51 => vat51Block
             case IdentityEvidence => Html(messages("pages.CoverSheet.identityEvidence"))
         }: _*
     )
@@ -111,4 +110,10 @@
     @messages("pages.CoverSheet.vat2Start")
     @link(appConfig.vat2Link, "pages.CoverSheet.vat2Link", isExternal = true)
     @messages("pages.CoverSheet.vat2End")
+}
+
+@vat51Block = {
+    @messages("pages.CoverSheet.vat51Start")
+    @link(appConfig.vat51Link, "pages.CoverSheet.vat51Link")
+    @messages("pages.CoverSheet.vat51End")
 }

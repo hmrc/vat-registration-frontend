@@ -16,7 +16,7 @@
 
 package views
 
-import models.api.{AttachmentType, IdentityEvidence, VAT2}
+import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
@@ -27,7 +27,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
   val postalCoverSheetPage: PostalCoverSheet = app.injector.instanceOf[PostalCoverSheet]
 
   val testRef = "VRN12345689"
-  val testAttachments = List[AttachmentType](VAT2, IdentityEvidence)
+  val testAttachments = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
   val testVat2 = List[AttachmentType](VAT2)
 
   lazy val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testAttachments)
@@ -46,6 +46,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val para4 = "Send the supporting documents and covering letter to:"
     val panel2 = "VAT Registration Applications BT VAT HM Revenue and Customs BX9 1WR United Kingdom"
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
+    val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val idEvidence = "three documents to confirm your identity"
     val print = "Print this page"
   }
@@ -106,16 +107,24 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
       doc.para(3) mustBe Some(ExpectedContent.para3)
     }
 
-    "not show the identity documents dropdown when attachment list does not contain IdentityEvidence" in new ViewSetup {
+    "not show the identity documents bullet point when attachment list does not contain IdentityEvidence" in new ViewSetup {
       val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testVat2)
       override val doc: Document = Jsoup.parse(view.body)
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.idEvidence)
     }
 
+    "not show the VAT51 bullet point when attachment list does not contain VAT51" in new ViewSetup {
+      val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testVat2)
+      override val doc: Document = Jsoup.parse(view.body)
+      doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
+      doc.unorderedList(1) mustNot contain(ExpectedContent.vat51Bullet)
+    }
+
     "have the correct first bullet list" in new ViewSetup {
       doc.unorderedList(1) mustBe List(
         ExpectedContent.vat2Bullet,
+        ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence
       )
     }
