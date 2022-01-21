@@ -210,8 +210,6 @@ class WelcomeControllerISpec extends ControllerISpec
       "redirect to Eligibiilty" in new Setup {
         given()
           .user.isAuthorised
-          .s4l.contains("partialVatScheme", Json.stringify(vatSchemeJson))
-          .vatRegistration.insertScheme(Json.stringify(vatSchemeJson))
           .vatScheme.regStatus(VatRegStatus.draft.toString)
           .trafficManagement.passes(VatReg)
           .vatRegistrationFootprint.exists()
@@ -221,7 +219,7 @@ class WelcomeControllerISpec extends ControllerISpec
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.eligibilityStartUrl(testRegId))
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
       }
     }
     "the channel for traffic management is OTRS" must {
