@@ -1099,7 +1099,6 @@ pages.vat51Required.para1                                = We need a completed
 pages.vat51Required.link                                 = VAT 50/51 form
 pages.vat51Required.para2                                = to provide us with details of the VAT group, including details of each subsidiary.
 
-
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Choose an application reference
 applicationReference.para                                = You can add a memorable word, phrase or number to every application. This could be a business name or a unique number to help you manage ongoing applications.
@@ -1107,3 +1106,8 @@ applicationReference.label                               = Enter your chosen app
 applicationReference.error.missing                       = Enter an application reference
 applicationReference.error.invalid                       = Enter an application reference that does not contain special characters
 applicationReference.error.length                        = Enter an application reference that is 100 characters or less
+
+## SUBMISSION IN PROGRESS
+pages.submissionInProgress.heading                       = Your application is being processed
+pages.submissionInProgress.para1                         = It may take a moment before you get the confirmation of the application being submitted.
+pages.submissionInProgress.retry                         = Retry

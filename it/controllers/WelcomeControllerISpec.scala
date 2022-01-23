@@ -62,7 +62,7 @@ class WelcomeControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -111,7 +111,7 @@ class WelcomeControllerISpec extends ControllerISpec
             .user.isAuthorised
             .audit.writesAudit()
             .audit.writesAuditMerged()
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson)))
 
@@ -127,7 +127,7 @@ class WelcomeControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
 
@@ -177,7 +177,7 @@ class WelcomeControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
@@ -194,7 +194,7 @@ class WelcomeControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
@@ -213,7 +213,7 @@ class WelcomeControllerISpec extends ControllerISpec
           enable(MultipleRegistrations)
           given()
             .user.isAuthorised
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
             .trafficManagement.passes(VatReg)
             .vatRegistrationFootprint.exists()
 
@@ -230,7 +230,7 @@ class WelcomeControllerISpec extends ControllerISpec
           disable(MultipleRegistrations)
           given()
             .user.isAuthorised
-            .vatScheme.regStatus(VatRegStatus.draft.toString)
+            .vatScheme.regStatus(VatRegStatus.draft)
             .trafficManagement.passes(VatReg)
             .vatRegistrationFootprint.exists()
 
@@ -283,7 +283,7 @@ class WelcomeControllerISpec extends ControllerISpec
             given()
               .user.isAuthorised
               .trafficManagement.passes()
-              .vatScheme.regStatus(VatRegStatus.draft.toString)
+              .vatScheme.regStatus(VatRegStatus.draft)
               .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
             sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
@@ -301,7 +301,7 @@ class WelcomeControllerISpec extends ControllerISpec
             given()
               .user.isAuthorised
               .trafficManagement.passes()
-              .vatScheme.regStatus(VatRegStatus.draft.toString)
+              .vatScheme.regStatus(VatRegStatus.draft)
               .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
             sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)

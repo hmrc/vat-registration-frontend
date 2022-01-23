@@ -57,32 +57,37 @@ class SummaryController @Inject()(val sessionService: SessionService,
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        invalidSubmissionGuard() {
-          for {
-            _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-            response <- vrs.submitRegistration
-            result <- submissionRedirectLocation(response)
-          } yield {
-            result
-          }
+        for {
+          _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+          response <- vrs.submitRegistration
+          result <- submissionRedirectLocation(response)
+        } yield {
+          result
         }
   }
 
   private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
     response match {
-      case Success => sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.held)) map {
-        _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
-      }
-      case AlreadySubmitted => Future.successful(Redirect(controllers.routes.ErrorController.alreadySubmitted))
-      case SubmissionFailed => Future.successful(Redirect(controllers.routes.ErrorController.submissionFailed))
-      case SubmissionFailedRetryable => Future.successful(Redirect(controllers.routes.ErrorController.submissionRetryable))
-    }
-  }
-
-  private[controllers] def invalidSubmissionGuard()(f: => Future[Result])(implicit hc: HeaderCarrier, profile: CurrentProfile) = {
-    vrs.getStatus(profile.registrationId) flatMap {
-      case VatRegStatus.draft | VatRegStatus.locked => f
-      case _ => Future.successful(InternalServerError)
+      case Success =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)).map {
+          _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
+        }
+      case SubmissionInProgress =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.locked)).map {
+          _ => Redirect(controllers.routes.SubmissionInProgressController.show)
+        }
+      case AlreadySubmitted =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.duplicateSubmission)).map {
+          _ => Redirect(controllers.routes.ErrorController.alreadySubmitted)
+        }
+      case SubmissionFailed =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failed)).map {
+          _ => Redirect(controllers.routes.ErrorController.submissionFailed)
+        }
+      case SubmissionFailedRetryable =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)).map {
+          _ => Redirect(controllers.routes.ErrorController.submissionRetryable)
+        }
     }
   }
 }
