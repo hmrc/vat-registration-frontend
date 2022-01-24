@@ -122,6 +122,31 @@ addressLookup.businessActivities.confirmPage.heading                = Confirm th
 addressLookup.businessActivities.confirmPage.submitLabel            = Continue
 addressLookup.businessActivities.confirmPage.changeLinkText         = Edit this address
 
+addressLookup.transactorAddress.lookupPage.title                   = Find your address
+addressLookup.transactorAddress.lookupPage.heading                 = Find your address
+addressLookup.transactorAddress.lookupPage.filterLabel             = Property name or number
+addressLookup.transactorAddress.lookupPage.submitLabel             = Continue
+addressLookup.transactorAddress.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
+
+addressLookup.transactorAddress.selectPage.title                   = Choose the address
+addressLookup.transactorAddress.selectPage.heading                 = Choose the address
+addressLookup.transactorAddress.selectPage.editAddressLinkText     = Enter address manually
+addressLookup.transactorAddress.selectPage.submitLabel             = Continue
+
+addressLookup.transactorAddress.editPage.title                     = Enter your home address
+addressLookup.transactorAddress.editPage.heading                   = Enter your home address
+addressLookup.transactorAddress.editPage.line1Label                = Address line 1
+addressLookup.transactorAddress.editPage.line2Label                = Address line 2
+addressLookup.transactorAddress.editPage.line3Label                = Address line 3
+addressLookup.transactorAddress.editPage.postcodeLabel             = Postcode
+addressLookup.transactorAddress.editPage.countryLabel              = Country
+addressLookup.transactorAddress.editPage.submitLabel               = Continue
+
+addressLookup.transactorAddress.confirmPage.title                  = Confirm your address
+addressLookup.transactorAddress.confirmPage.heading                = Confirm your address
+addressLookup.transactorAddress.confirmPage.changeLinkText         = Edit this address
+addressLookup.transactorAddress.confirmPage.submitLabel            = Continue
+
 #Timeout Page
 pages.timeout.heading                   = Your session has timed out due to inactivity
 pages.timeout.body.one                  = Your answers have been saved.
@@ -1052,7 +1077,7 @@ validation.declarationCapacity.other.maxlen              = Enter your role using
 
 ## ORGANISATION NAME
 
-organisationName.heading                                 = What is the name of your organisation?
+organisationName.heading                                 = What is the name of the organisation you are a part of?
 validation.organisationName.missing                      = Enter the name of your organisation
 validation.organisationName.invalid                      = Enter a valid organisation name
 validation.organisationName.maxlen                       = Enter an organisation name that is less than 160 characters

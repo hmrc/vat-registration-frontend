@@ -26,7 +26,7 @@ class OrganisationNameViewSpec extends VatRegViewSpec {
   val view: OrganisationName = app.injector.instanceOf[OrganisationName]
 
   object ExpectedContent {
-    val heading = "What is the name of your organisation?"
+    val heading = "What is the name of the organisation you are a part of?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val label = "Enter the name of your organisation"
     val continue = "Save and continue"
