@@ -33,7 +33,7 @@ class EmailDocumentsViewSpec extends VatRegViewSpec {
     val heading = "We need you to send the documents to the following HMRC email address"
     val title = s"$heading - Register for VAT - GOV.UK"
     val para1 = "For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form."
-    val panel1 = "vrs.newregistrations@hmrc.gov.uk"
+    val panel1 = "VATREGBETA@hmrc.gov.uk"
     val continue = "Save and continue"
   }
 
