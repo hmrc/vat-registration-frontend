@@ -413,3 +413,7 @@ GET         /vat51-required                                                     
 ## Scottish Partnership Name
 GET         /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.show
 POST        /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.submit
+
+## Submission In Progress
+GET         /submission-in-progress                                                            controllers.SubmissionInProgressController.show
+POST        /submission-in-progress                                                            controllers.SubmissionInProgressController.submit

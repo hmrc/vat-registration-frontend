@@ -137,9 +137,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   }
 
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
-    http.GET[JsObject](s"$vatRegUrl/vatreg/$regId/status") map { json =>
-      (json \ "status").as[VatRegStatus.Value]
-    } recover {
+    http.GET[VatRegStatus.Value](s"$vatRegUrl/vatreg/$regId/status") recover {
       case e: Exception => throw logResponse(e, "getStatus")
     }
   }
@@ -162,6 +160,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     } recover {
       case e: Upstream5xxResponse => SubmissionFailedRetryable
       case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadySubmitted
+      case Upstream4xxResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
       case _ => SubmissionFailed
     }
   }
@@ -273,11 +272,8 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
 }
 
 sealed trait DESResponse
-
 object Success extends DESResponse
-
 object SubmissionFailed extends DESResponse
-
 object SubmissionFailedRetryable extends DESResponse
-
 object AlreadySubmitted extends DESResponse
+object SubmissionInProgress extends DESResponse

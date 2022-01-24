@@ -467,11 +467,11 @@ trait StubUtils {
       builder
     }
 
-    def regStatus(status: String): PreconditionBuilder = {
+    def regStatus(status: VatRegStatus.Value): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo("/vatreg/1/status"))
           .willReturn(ok(
-            s"""{"status": "${status}"}"""
+            Json.toJson(status).toString()
           ))
       )
 

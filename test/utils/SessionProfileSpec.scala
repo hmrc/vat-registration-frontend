@@ -62,22 +62,40 @@ class SessionProfileSpec extends VatRegSpec {
         status(result) mustBe OK
       }
       "the vat status is held but checkStatus is set to false" in new Setup {
-        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
+        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)))
         val result = sessionProfile.withCurrentProfile(checkStatus = false) { _ => testFunc }
         status(result) mustBe OK
       }
     }
-    "redirect to post sign in if the status is held" in new Setup {
-      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.held)))
+    "redirect to the application submitted page if the status is submitted" in new Setup {
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)))
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some("/register-for-vat/post-sign-in")
+      redirectLocation(result) mustBe Some("/register-for-vat/application-submitted")
     }
-    "redirect to the retry submission page if the status is locked" in new Setup {
+    "redirect to the submission in progress page if the status is locked" in new Setup {
       mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.locked)))
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/register-for-vat/submission-in-progress")
+    }
+    "redirect to the submission failed page if the status is failed" in new Setup {
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.failed)))
+      val result = sessionProfile.withCurrentProfile() { _ => testFunc }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/register-for-vat/something-went-wrong")
+    }
+    "redirect to the retry submission page if the status is failedRetryable" in new Setup {
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)))
+      val result = sessionProfile.withCurrentProfile() { _ => testFunc }
+      status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat/submission-failure")
+    }
+    "redirect to the already submitted page if the status is duplicateSubmission" in new Setup {
+      mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.duplicateSubmission)))
+      val result = sessionProfile.withCurrentProfile() { _ => testFunc }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some("/register-for-vat/already-submitted")
     }
   }
 }

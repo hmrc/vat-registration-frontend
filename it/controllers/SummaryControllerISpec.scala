@@ -174,11 +174,10 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
 
   "POST Summary Page" should {
     "redirect to the confirmation page" when {
-      "the user is in draft with a vat ready submission" in new Setup {
+      "the submission succeeds" in new Setup {
         given()
           .user.isAuthorised
           .vatScheme.contains(vatReg)
-          .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -192,11 +191,10 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
     }
 
     "redirect to the already submitted kickout page" when {
-      "the user is in draft with an already submitted submission" in new Setup {
+      "the submission is already submitted" in new Setup {
         given()
           .user.isAuthorised
           .vatScheme.contains(vatReg)
-          .vatRegistration.status(s"/vatreg/${vatReg.id}/status", "draft")
           .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", CONFLICT)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -205,6 +203,57 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ErrorController.alreadySubmitted.url)
+        }
+      }
+    }
+
+    "redirect to the submission in progress page" when {
+      "the submission is already in progress" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.contains(vatReg)
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", TOO_MANY_REQUESTS)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SubmissionInProgressController.show.url)
+        }
+      }
+    }
+
+    "redirect to the submission failed page" when {
+      "the submission failed with a bad request" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.contains(vatReg)
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", BAD_REQUEST)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ErrorController.submissionFailed.url)
+        }
+      }
+    }
+
+    "redirect to the submission failed retryable page" when {
+      "the submission fails with a 500 series status" in new Setup {
+        given()
+          .user.isAuthorised
+          .vatScheme.contains(vatReg)
+          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", INTERNAL_SERVER_ERROR)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ErrorController.submissionRetryable.url)
         }
       }
     }
