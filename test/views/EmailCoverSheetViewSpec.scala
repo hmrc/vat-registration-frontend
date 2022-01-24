@@ -45,7 +45,7 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val idEvidence = "three documents to confirm your identity"
     val para3 = "Send the supporting documents to:"
-    val panel2 = "vrs.newregistrations@hmrc.gov.uk"
+    val panel2 = "VATREGBETA@hmrc.gov.uk"
     val print = "Print this page"
 
   }

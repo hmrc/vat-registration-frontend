@@ -968,7 +968,7 @@ pages.EmailCoverSheet.panel1                            = Register for VAT refer
 pages.EmailCoverSheet.whatYouMustSend.heading           = What you must attach to the email
 pages.EmailCoverSheet.sendHeading                       = Email address
 pages.EmailCoverSheet.sendDocsTo                        = Send the supporting documents to:
-pages.EmailCoverSheet.attachmentsEmail                  = vrs.newregistrations@hmrc.gov.uk
+pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 
 ## COMMON COVER SHEET MESSAGES
 
@@ -1018,7 +1018,7 @@ validation.sellOrMoveNip.missing                         = Enter the value of th
 
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
 pages.EmailDocuments.para1                               = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
-pages.EmailDocuments.panel1                              = vrs.newregistrations@hmrc.gov.uk
+pages.EmailDocuments.panel1                              = VATREGBETA@hmrc.gov.uk
 
 # BUSINESS NAME
 businessName.heading                                     = What is the official name of the business?
