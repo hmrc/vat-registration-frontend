@@ -25,7 +25,7 @@ import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services.SessionService.leadPartnerEntityKey
-import services.{SessionService, _}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -72,9 +72,10 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           incorpDetails <- incorpIdService.getDetails(journeyId)
+          isTransactor <- vatRegistrationService.isTransactor
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
         } yield {
-          if (isEnabled(UseSoleTraderIdentification)) {
+          if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
             Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
           }
           else {

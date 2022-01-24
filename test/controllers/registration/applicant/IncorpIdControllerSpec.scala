@@ -103,11 +103,12 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   "incorpIdCallback" when {
     "the UseSoleTraderIdentification feature switch is enabled" should {
-      "store the incorporation details and redirect to PersonalDetailsVerification when the response is valid" in new Setup {
+      "store the incorporation details and redirect to IndividualIdentification when the response is valid" in new Setup {
         enable(UseSoleTraderIdentification)
         val onwardUrl = applicantRoutes.IndividualIdentificationController.startJourney.url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
         mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
+        mockIsTransactor(Future(true))
 
         val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
@@ -121,6 +122,7 @@ class IncorpIdControllerSpec extends ControllerSpec
         val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
         mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
+        mockIsTransactor(Future(false))
 
         val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 

@@ -20,6 +20,7 @@ import play.api.libs.json.{Format, Json}
 
 case class SoleTraderIdJourneyConfig(continueUrl: String,
                                      optServiceName: Option[String] = None,
+                                     optFullNamePageLabel: Option[String] = None,
                                      deskProServiceId: String,
                                      signOutUrl: String,
                                      accessibilityUrl: String,
