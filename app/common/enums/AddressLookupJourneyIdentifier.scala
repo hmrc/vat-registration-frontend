@@ -20,4 +20,5 @@ object AddressLookupJourneyIdentifier extends Enumeration {
   val homeAddress             = Value
   val addressThreeYearsOrLess = Value
   val businessActivities      = Value
+  val transactorAddress       = Value
 }

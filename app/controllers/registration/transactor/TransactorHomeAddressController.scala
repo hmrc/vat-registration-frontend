@@ -16,7 +16,7 @@
 
 package controllers.registration.transactor
 
-import common.enums.AddressLookupJourneyIdentifier.homeAddress
+import common.enums.AddressLookupJourneyIdentifier.{homeAddress, transactorAddress}
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
@@ -39,7 +39,7 @@ class TransactorHomeAddressController @Inject()(val authConnector: AuthConnector
   def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       _ =>
-        addressLookupService.getJourneyUrl(homeAddress, routes.TransactorHomeAddressController.addressLookupCallback()) map Redirect
+        addressLookupService.getJourneyUrl(transactorAddress, routes.TransactorHomeAddressController.addressLookupCallback()) map Redirect
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
