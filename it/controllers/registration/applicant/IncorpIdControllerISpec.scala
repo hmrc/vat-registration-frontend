@@ -102,7 +102,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
   }
 
   "GET /incorp-id-callback" when {
-    "when the UseSoleTraderIdentification feature switch is enabled" should {
+    "when the UseSoleTraderIdentification feature switch is enabled and user is not transactor" should {
       "redirect to STI" in {
         enable(UseSoleTraderIdentification)
         disable(StubIncorpIdJourney)
@@ -125,7 +125,30 @@ class IncorpIdControllerISpec extends ControllerISpec {
       }
     }
 
-    "when the UseSoleTraderIdentification feature switch is disabled" should {
+    "when the UseSoleTraderIdentification feature switch is disabled and user is transactor" should {
+      "redirect to STI" in {
+        disable(UseSoleTraderIdentification)
+        disable(StubIncorpIdJourney)
+
+        given()
+          .user.isAuthorised
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
+          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+
+        val res = buildClient("/incorp-id-callback?journeyId=1").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+        }
+      }
+    }
+
+    "when the UseSoleTraderIdentification feature switch is disabled and user is not transactor" should {
       "redirect to PDV" in {
         disable(UseSoleTraderIdentification)
         disable(StubIncorpIdJourney)
