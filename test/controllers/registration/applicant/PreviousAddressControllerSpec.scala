@@ -16,12 +16,14 @@
 
 package controllers.registration.applicant
 
+import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, applicantAddressThreeYearsOrLess, homeAddress}
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.api.{Address, NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
 import models.view.{FormerNameView, HomeAddressView, PreviousAddressView}
 import models.{ApplicantDetails, TelephoneNumber}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
@@ -105,12 +107,13 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(UkCompany))
       when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
+      when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
       submitAuthorised(controller.submit,
         fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some("TxM")
+        redirectLocation(res) mustBe Some("/register-for-vat/current-address/changePreviousAddress")
       }
     }
     "redirect to International address capture for NETP when No selected" in new Setup {
@@ -138,14 +141,29 @@ class PreviousAddressControllerSpec extends ControllerSpec
     }
   }
 
-  "change" should {
-    "save an address and redirect to next page" in new Setup {
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
-        .thenReturn(Future.successful(Call("GET", "TxM")))
+  "previousAddress" when {
+    "non transactor journey" should {
+      "redirect to ALF with default journeyId" in new Setup {
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(addressThreeYearsOrLess), any())(any()))
+          .thenReturn(Future.successful(Call("GET", "TxM")))
+        when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
-      callAuthorised(controller.change()) { res =>
-        status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some("TxM")
+        callAuthorised(controller.previousAddress()) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some("TxM")
+        }
+      }
+    }
+    "transactor journey" should {
+      "redirect to ALF with applicant journeyId" in new Setup {
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddressThreeYearsOrLess), any())(any()))
+          .thenReturn(Future.successful(Call("GET", "TxM")))
+        when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(true))
+
+        callAuthorised(controller.previousAddress()) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some("TxM")
+        }
       }
     }
   }

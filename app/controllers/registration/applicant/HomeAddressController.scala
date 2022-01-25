@@ -16,7 +16,7 @@
 
 package controllers.registration.applicant
 
-import common.enums.AddressLookupJourneyIdentifier.homeAddress
+import common.enums.AddressLookupJourneyIdentifier.{applicantAddress, homeAddress}
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
@@ -24,7 +24,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import javax.inject.{Inject, Singleton}
 import models.view.HomeAddressView
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, SessionService}
+import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import scala.concurrent.ExecutionContext
@@ -33,15 +33,24 @@ import scala.concurrent.ExecutionContext
 class HomeAddressController @Inject()(val authConnector: AuthConnector,
                                       val sessionService: SessionService,
                                       val applicantDetailsService: ApplicantDetailsService,
-                                      val addressLookupService: AddressLookupService)
+                                      val addressLookupService: AddressLookupService,
+                                      val vatRegistrationService: VatRegistrationService)
                                      (implicit appConfig: FrontendAppConfig,
                                       val executionContext: ExecutionContext,
                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-      addressLookupService.getJourneyUrl(homeAddress, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
+    implicit request =>
+      implicit profile =>
+        vatRegistrationService.isTransactor.flatMap{ isTransactor =>
+          val journeyId = if(isTransactor) {
+            applicantAddress
+          } else {
+            homeAddress
+          }
+          addressLookupService.getJourneyUrl(journeyId, applicantRoutes.HomeAddressController.addressLookupCallback()) map Redirect
+        }
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {

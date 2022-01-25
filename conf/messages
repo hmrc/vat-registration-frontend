@@ -43,6 +43,7 @@ addressLookup.common.navTitle                               = Register for VAT
 addressLookup.common.phaseBannerHtml                        = This is a new service. Help us improve it - send your <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">feedback</a>.
 addressLookup.common.deskProServiceName                     = SCRS
 
+## homeAddress
 addressLookup.homeAddress.lookupPage.title                   = Find your home address
 addressLookup.homeAddress.lookupPage.heading                 = Find your home address
 addressLookup.homeAddress.lookupPage.filterLabel             = Property name or number
@@ -68,6 +69,33 @@ addressLookup.homeAddress.confirmPage.heading                = Confirm your home
 addressLookup.homeAddress.confirmPage.changeLinkText         = Edit this address
 addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 
+## applicantAddress
+addressLookup.applicantAddress.lookupPage.title                   = Find their address
+addressLookup.applicantAddress.lookupPage.heading                 = Find their address
+addressLookup.applicantAddress.lookupPage.filterLabel             = Property name or number
+addressLookup.applicantAddress.lookupPage.submitLabel             = Continue
+addressLookup.applicantAddress.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
+
+addressLookup.applicantAddress.selectPage.title                   = Choose the address
+addressLookup.applicantAddress.selectPage.heading                 = Choose the address
+addressLookup.applicantAddress.selectPage.editAddressLinkText     = Enter address manually
+addressLookup.applicantAddress.selectPage.submitLabel             = Continue
+
+addressLookup.applicantAddress.editPage.title                     = Enter your home address
+addressLookup.applicantAddress.editPage.heading                   = Enter your home address
+addressLookup.applicantAddress.editPage.line1Label                = Address line 1
+addressLookup.applicantAddress.editPage.line2Label                = Address line 2
+addressLookup.applicantAddress.editPage.line3Label                = Address line 3
+addressLookup.applicantAddress.editPage.postcodeLabel             = Postcode
+addressLookup.applicantAddress.editPage.countryLabel              = Country
+addressLookup.applicantAddress.editPage.submitLabel               = Continue
+
+addressLookup.applicantAddress.confirmPage.title                  = Confirm the address
+addressLookup.applicantAddress.confirmPage.heading                = Confirm the address
+addressLookup.applicantAddress.confirmPage.changeLinkText         = Edit this address
+addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
+
+## addressThreeYearsOrLess
 addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Find your previous home address
 addressLookup.addressThreeYearsOrLess.lookupPage.heading                 = Find your previous home address
 addressLookup.addressThreeYearsOrLess.lookupPage.filterLabel             = Property name or number (optional)
@@ -95,6 +123,35 @@ addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Confi
 addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
+## applicantAddressThreeYearsOrLess
+addressLookup.applicantAddressThreeYearsOrLess.lookupPage.title                   = Find their previous address
+addressLookup.applicantAddressThreeYearsOrLess.lookupPage.heading                 = Find their previous address
+addressLookup.applicantAddressThreeYearsOrLess.lookupPage.filterLabel             = Property name or number (optional)
+addressLookup.applicantAddressThreeYearsOrLess.lookupPage.submitLabel             = Continue
+addressLookup.applicantAddressThreeYearsOrLess.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
+
+addressLookup.applicantAddressThreeYearsOrLess.selectPage.title                   = Choose the address
+addressLookup.applicantAddressThreeYearsOrLess.selectPage.heading                 = Choose the address
+addressLookup.applicantAddressThreeYearsOrLess.selectPage.searchAgainLinkText     = Search again
+addressLookup.applicantAddressThreeYearsOrLess.selectPage.editAddressLinkText     = Enter address
+addressLookup.applicantAddressThreeYearsOrLess.selectPage.submitLabel             = Continue
+
+addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter your previous home address
+addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Enter your previous home address
+addressLookup.applicantAddressThreeYearsOrLess.editPage.line1Label                = Address line 1
+addressLookup.applicantAddressThreeYearsOrLess.editPage.line2Label                = Address line 2
+addressLookup.applicantAddressThreeYearsOrLess.editPage.line3Label                = Address line 3
+addressLookup.applicantAddressThreeYearsOrLess.editPage.postcodeLabel             = Postcode
+addressLookup.applicantAddressThreeYearsOrLess.editPage.countryLabel              = Country
+addressLookup.applicantAddressThreeYearsOrLess.editPage.submitLabel               = Continue
+addressLookup.applicantAddressThreeYearsOrLess.editPage.searchAgainLinkText       = Search again
+
+addressLookup.applicantAddressThreeYearsOrLess.confirmPage.title                  = Confirm the previous address
+addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading                = Confirm the previous address
+addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Continue
+addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
+
+## businessActivities
 addressLookup.businessActivities.lookupPage.title                   = What is the business address?
 addressLookup.businessActivities.lookupPage.heading                 = What is the business address?
 addressLookup.businessActivities.lookupPage.filterLabel             = Property name or number
@@ -122,6 +179,7 @@ addressLookup.businessActivities.confirmPage.heading                = Confirm th
 addressLookup.businessActivities.confirmPage.submitLabel            = Continue
 addressLookup.businessActivities.confirmPage.changeLinkText         = Edit this address
 
+## transactorAddress
 addressLookup.transactorAddress.lookupPage.title                   = Find your address
 addressLookup.transactorAddress.lookupPage.heading                 = Find your address
 addressLookup.transactorAddress.lookupPage.filterLabel             = Property name or number
