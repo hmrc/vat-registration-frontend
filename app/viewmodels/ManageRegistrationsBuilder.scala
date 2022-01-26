@@ -69,7 +69,7 @@ class ManageRegistrationsBuilder @Inject()(appConfig: FrontendAppConfig,
           )
         )),
         TableRow(content = Text(registration.createdDate.getOrElse(LocalDate.now).format(presentationFormatter))),
-        TableRow(content = HtmlContent(statusTag(registration))),
+        TableRow(content = HtmlContent(statusTag(registration)))
       )
     )
 
