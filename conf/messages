@@ -1194,3 +1194,13 @@ applicationReference.error.length                        = Enter an application 
 pages.submissionInProgress.heading                       = Your application is being processed
 pages.submissionInProgress.para1                         = It may take a moment before you get the confirmation of the application being submitted.
 pages.submissionInProgress.retry                         = Retry
+
+# MANAGE REGISTRATIONS PAGE
+manageRegistrations.heading                              = Manage your VAT registration applications
+manageRegistrations.table.reference                      = Reference
+manageRegistrations.table.dateCreated                    = Date created
+manageRegistrations.table.status                         = Status
+manageRegistrations.noReference                          = No reference
+manageRegistrations.attachmentsRequired                  = Attachments required
+manageRegistrations.panel                                = In progress registrations will only be available for completion 7 days from the day you last saved the application.
+manageRegistrations.startNew                             = Create a new application

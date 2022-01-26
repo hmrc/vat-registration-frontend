@@ -437,6 +437,10 @@ trait StubUtils {
       builder
     }
 
+    def contains(json: JsValue): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo("/vatreg/1/get-scheme")).willReturn(ok(json.toString())))
+      builder
+    }
 
     def has(key: String, data: JsValue): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/1/$key")).willReturn(ok(data.toString())))
@@ -482,13 +486,13 @@ trait StubUtils {
 
   case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) extends JsonUtilities {
 
-    def exists(withDate: Boolean = false): PreconditionBuilder = {
+    def exists(status: VatRegStatus.Value = VatRegStatus.draft, withDate: Boolean = false): PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
             Json.stringify(Json.obj(
               "registrationId" -> "1",
-              "status" -> VatRegStatus.draft.toString
+              "status" -> status.toString
             ) ++ {if (withDate) Json.obj("createdDate" -> "2021-01-01") else Json.obj()}
           ))))
 

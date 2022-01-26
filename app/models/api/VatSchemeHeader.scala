@@ -17,15 +17,28 @@
 package models.api
 
 import common.enums.VatRegStatus
-import play.api.libs.json.{Format, Json}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 import java.time.LocalDate
 
 case class VatSchemeHeader(registrationId: String,
                            status: VatRegStatus.Value,
                            applicationReference: Option[String] = None,
-                           createdDate: Option[LocalDate] = None)
+                           createdDate: Option[LocalDate] = None,
+                           requiresAttachments: Boolean)
 
 case object VatSchemeHeader {
-  implicit val format: Format[VatSchemeHeader] = Json.format[VatSchemeHeader]
+
+  val reads: Reads[VatSchemeHeader] = (
+    (__ \ "registrationId").read[String] and
+    (__ \ "status").read[VatRegStatus.Value] and
+    (__ \ "applicationReference").readNullable[String] and
+    (__ \ "createdDate").readNullable[LocalDate] and
+    (__ \ "attachments").readNullable[JsValue].fmap(block => block.isDefined)
+  )(VatSchemeHeader.apply _)
+
+  val writes = Json.format[VatSchemeHeader]
+
+  implicit val format: Format[VatSchemeHeader] = Format[VatSchemeHeader](reads, writes)
 }

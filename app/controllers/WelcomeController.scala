@@ -18,12 +18,14 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater}
+import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater, TrafficManagementPredicate}
 import forms.StartNewApplicationForm
 import play.api.mvc._
 import services.{SessionService, _}
 import views.html.pages.start_new_application
 import controllers.registration.transactor.{routes => transactorRoutes}
+import models.api.VatSchemeHeader
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,18 +45,25 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
     if (isEnabled(SaveAndContinueLater)) {
-      vatRegistrationService.getAllRegistrations.map(_.lastOption).flatMap {
-        case Some(header) if header.status == VatRegStatus.draft =>
-          currentProfileService.buildCurrentProfile(header.registrationId).map { _ =>
-            Ok(view(StartNewApplicationForm.form))
-          }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme
-            case exception =>
+      if (isEnabled(MultipleRegistrations)) {
+        vatRegistrationService.getAllRegistrations.map {
+          case head :: tail => Redirect(routes.ManageRegistrationsController.show)
+          case Nil => Redirect(routes.WelcomeController.startNewJourney)
+        }
+      } else {
+        vatRegistrationService.getAllRegistrations.map(_.lastOption).flatMap {
+          case Some(header) if header.status == VatRegStatus.draft =>
+            currentProfileService.buildCurrentProfile(header.registrationId).map { _ =>
+              Ok(view(StartNewApplicationForm.form))
+            }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme
+              case exception =>
+                Redirect(routes.WelcomeController.startNewJourney)
+            }
+          case _ =>
+            currentProfileService.sessionService.remove.map { _ =>
               Redirect(routes.WelcomeController.startNewJourney)
-          }
-        case _ =>
-          currentProfileService.sessionService.remove.map { _ =>
-            Redirect(routes.WelcomeController.startNewJourney)
-          }
+            }
+        }
       }
 
     }
@@ -90,17 +99,17 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
   def continueJourney(journey: Option[String]): Action[AnyContent] = isAuthenticated { implicit request =>
     journey match {
       case Some(regId: String) =>
-        trafficManagementService.checkTrafficManagement(regId).flatMap {
-          case PassedVatReg(regId) => currentProfileService.buildCurrentProfile(regId)
-            .map { _ =>
-              if (isEnabled(MultipleRegistrations)) {
-                Redirect(routes.ApplicationReferenceController.show)
-              } else {
-                Redirect(routes.HonestyDeclarationController.show)
-              }
-            }
-          case PassedOTRS => Future.successful(Redirect(appConfig.otrsRoute))
-          case Failed => Future.successful(Redirect(routes.WelcomeController.startNewJourney))
+        for {
+          _ <- currentProfileService.buildCurrentProfile(regId)
+          optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader].asOpt)
+          header = optHeader.getOrElse(throw new InternalServerException(s"[continueJourney] couldn't parse vat scheme header for regId: $regId"))
+          trafficManagementResponse <- trafficManagementService.checkTrafficManagement(regId) // Used to check if user is OTRS so should always be enabled
+        } yield (header.status, trafficManagementResponse) match {
+          case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
+          case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
+          case _ if header.requiresAttachments => Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve)
+          case _ if isEnabled(MultipleRegistrations) => Redirect(routes.ApplicationReferenceController.show)
+          case _ => Redirect(routes.HonestyDeclarationController.show)
         }
       case None =>
         Future.successful(BadRequest("No journey ID was specified"))
