@@ -16,7 +16,7 @@
 
 package controllers.registration.applicant
 
-import common.enums.AddressLookupJourneyIdentifier.addressThreeYearsOrLess
+import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, applicantAddressThreeYearsOrLess}
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.registration.applicant.{routes => applicantRoutes}
@@ -69,10 +69,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                 case NETP | NonUkNonEstablished =>
                   Future.successful(Redirect(routes.InternationalPreviousAddressController.show))
                 case _ =>
-                  addressLookupService.getJourneyUrl(
-                    addressThreeYearsOrLess,
-                    applicantRoutes.PreviousAddressController.addressLookupCallback()
-                  ) map Redirect
+                  Future.successful(Redirect(routes.PreviousAddressController.previousAddress))
               }
 
             }
@@ -88,10 +85,17 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         } yield Redirect(routes.CaptureEmailAddressController.show)
   }
 
-  def change: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def previousAddress: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      _ =>
-        addressLookupService.getJourneyUrl(addressThreeYearsOrLess, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
+      implicit profile =>
+        vatRegistrationService.isTransactor.flatMap{ isTransactor =>
+          val journeyId = if (isTransactor) {
+            applicantAddressThreeYearsOrLess
+          } else {
+            addressThreeYearsOrLess
+          }
+          addressLookupService.getJourneyUrl(journeyId, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
+        }
   }
 
 }

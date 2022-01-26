@@ -170,7 +170,7 @@ POST        /when-change                                                        
 ## PREVIOUS ADDRESS QUESTION
 GET         /current-address                                                                   controllers.registration.applicant.PreviousAddressController.show
 POST        /current-address                                                                   controllers.registration.applicant.PreviousAddressController.submit
-GET         /current-address/changePreviousAddress                                             controllers.registration.applicant.PreviousAddressController.change
+GET         /current-address/changePreviousAddress                                             controllers.registration.applicant.PreviousAddressController.previousAddress
 GET         /current-address/acceptFromTxm                                                     controllers.registration.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
 
 ## Incorp ID Pages

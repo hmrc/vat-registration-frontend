@@ -16,6 +16,7 @@
 
 package controllers.registration.applicant
 
+import common.enums.AddressLookupJourneyIdentifier.{applicantAddress, homeAddress}
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.{ApplicantDetails, TelephoneNumber}
@@ -28,6 +29,7 @@ import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
+import org.mockito.ArgumentMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,7 +45,8 @@ class HomeAddressControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockSessionService,
       mockApplicantDetailsService,
-      mockAddressLookupService
+      mockAddressLookupService,
+      mockVatRegistrationService
     )
 
     mockAuthenticated()
@@ -62,14 +65,29 @@ class HomeAddressControllerSpec extends ControllerSpec
     previousAddress = None
   )
 
-  "redirectToAlf" should {
-    "redirect to ALF" in new Setup {
-      mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
-        .thenReturn(Future.successful(Call("GET", "TxM")))
+  "redirectToAlf" when {
+    "non transactor journey" should {
+      "redirect to ALF with default journeyId" in new Setup {
+        mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(homeAddress), any())(any()))
+          .thenReturn(Future.successful(Call("GET", "TxM")))
+        when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
-      callAuthorised(controller.redirectToAlf) { res =>
-        status(res) mustBe SEE_OTHER
+        callAuthorised(controller.redirectToAlf) { res =>
+          status(res) mustBe SEE_OTHER
+        }
+      }
+    }
+    "transactor journey" should {
+      "redirect to ALF with applicant journeyId" in new Setup {
+        mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddress), any())(any()))
+          .thenReturn(Future.successful(Call("GET", "TxM")))
+        when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(true))
+
+        callAuthorised(controller.redirectToAlf) { res =>
+          status(res) mustBe SEE_OTHER
+        }
       }
     }
   }
