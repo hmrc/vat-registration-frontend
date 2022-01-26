@@ -18,7 +18,7 @@ package views.attachments
 
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.DocumentsPost
+import views.html.attachments.DocumentsPost
 
 class DocumentsPostViewSpec extends VatRegViewSpec {
 

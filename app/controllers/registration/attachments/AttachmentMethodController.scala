@@ -22,7 +22,7 @@ import forms.AttachmentMethodForm
 import models.api.{Attachments, EmailMethod, Post}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService}
-import views.html.ChooseAttachmentMethod
+import views.html.attachments.ChooseAttachmentMethod
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

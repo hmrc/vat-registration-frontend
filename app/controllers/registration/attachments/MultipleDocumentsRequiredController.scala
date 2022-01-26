@@ -21,7 +21,7 @@ import controllers.BaseController
 import models.api.{IdentityEvidence, VAT2}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService}
-import views.html.MultipleDocumentsRequired
+import views.html.attachments.MultipleDocumentsRequired
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext

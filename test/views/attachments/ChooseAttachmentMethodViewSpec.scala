@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package views
+package views.attachments
 
 import forms.AttachmentMethodForm
 import org.jsoup.Jsoup
-import views.html.ChooseAttachmentMethod
+import views.VatRegViewSpec
+import views.html.attachments.ChooseAttachmentMethod
 
 class ChooseAttachmentMethodViewSpec extends VatRegViewSpec {
 

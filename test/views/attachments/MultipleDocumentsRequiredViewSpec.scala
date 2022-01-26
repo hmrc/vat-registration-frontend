@@ -20,7 +20,7 @@ import models.api.{IdentityEvidence, VAT2}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.MultipleDocumentsRequired
+import views.html.attachments.MultipleDocumentsRequired
 import scala.collection.JavaConverters._
 
 class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {

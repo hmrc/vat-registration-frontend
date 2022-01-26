@@ -336,9 +336,12 @@ POST        /warehouse-name                                                     
 GET         /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.show
 POST        /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.submit
 
-## Documents Required Page
+## Documents Required Pages
 GET         /attachments-resolve                                                               controllers.registration.attachments.DocumentsRequiredController.resolve
 GET         /identity-documents-required                                                       controllers.registration.attachments.IdentityEvidenceRequiredController.show
+GET         /your-identity-documents-required                                                  controllers.registration.attachments.TransactorIdentityEvidenceRequiredController.show
+GET         /vat51-required                                                                    controllers.registration.attachments.Vat51RequiredController.show
+GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
 GET         /multiple-documents-required                                                       controllers.registration.attachments.MultipleDocumentsRequiredController.show
 POST        /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.submit
 
@@ -405,12 +408,6 @@ GET         /resolve-business-identification                                    
 ## Partnership Name
 GET         /partnership-official-name                                                         controllers.registration.business.PartnershipNameController.show
 POST        /partnership-official-name                                                         controllers.registration.business.PartnershipNameController.submit
-
-## VAT 2 Required
-GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
-
-## VAT 51 Required
-GET         /vat51-required                                                                    controllers.registration.attachments.Vat51RequiredController.show
 
 ## Scottish Partnership Name
 GET         /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.show

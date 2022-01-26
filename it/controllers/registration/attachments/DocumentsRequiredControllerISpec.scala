@@ -17,6 +17,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other), List[AttachmentType](IdentityEvidence))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
 
@@ -30,6 +31,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached), List[AttachmentType](IdentityEvidence))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
 
@@ -43,6 +45,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
 
@@ -58,6 +61,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](VAT2))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
 
@@ -67,10 +71,77 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       }
     }
 
+    "return a redirect to VAT51 required page when VAT2 is required" in {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](VAT51))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.Vat51RequiredController.show.url)
+      }
+    }
+
+    "return a redirect to Transactor Identity Evidence Required" when {
+      "the user is a Transactor and transactor details are unverified" in {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](TransactorIdentityEvidence))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+        val res = buildClient(resolveUrl).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
+        }
+      }
+
+      "the user is a Transactor and applicant details are unverified" in {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](IdentityEvidence))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+        val res = buildClient(resolveUrl).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
+        }
+      }
+
+      "the user is a Transactor and transactor with applicant details are unverified" in {
+        given()
+          .user.isAuthorised
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](TransactorIdentityEvidence, IdentityEvidence))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+        val res = buildClient(resolveUrl).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
+        }
+      }
+    }
+
     "return a redirect to summary page when no attachments are given" in {
       given()
         .user.isAuthorised
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType]())))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
 
