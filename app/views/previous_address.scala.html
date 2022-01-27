@@ -32,16 +32,16 @@
         button: button
 )
 
-@(previousAddressQuestionForm: Form[PreviousAddressView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(previousAddressQuestionForm: Form[PreviousAddressView], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(previousAddressQuestionForm, messages("pages.previousAddressQuestion.heading")))) {
+@layout(pageTitle = Some(title(previousAddressQuestionForm, name.fold(messages("pages.previousAddressQuestion.yourHeading"))(name => messages("pages.previousAddressQuestion.namedHeading", name))))) {
 
     @errorSummary(previousAddressQuestionForm.errors)
 
     @formWithCSRF(action = applicantRoutes.PreviousAddressController.submit) {
         @yesNoRadio(
             form = previousAddressQuestionForm,
-            headingKey = "pages.previousAddressQuestion.heading",
+            headingKey = name.fold(messages("pages.previousAddressQuestion.yourHeading"))(name => messages("pages.previousAddressQuestion.namedHeading", name)),
             isPageHeading = true,
             inline = true,
             fieldName = PreviousAddressForm.RADIO_YES_NO

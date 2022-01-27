@@ -25,15 +25,19 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
 
   val title = "What is your telephone number?"
   val heading = "What is your telephone number?"
+  val namedHeading = "What is testFirstName’s telephone number?"
   val paragraph = "We may need to contact you about the application."
   val buttonText = "Save and continue"
+  val name = "testFirstName"
 
   disable(SaveAndContinueLater)
 
   "Capture Telephone Number Page" should {
     lazy val form = TelephoneNumberForm.form
-    lazy val view = app.injector.instanceOf[capture_telephone_number].apply(testCall, form)
+    lazy val view = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, None)
     lazy val doc = Jsoup.parse(view.body)
+    lazy val transactorView = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, Some(name))
+    lazy val transactorDoc = Jsoup.parse(transactorView.body)
 
     "have the correct title" in {
       doc.title must include(title) // TODO review titles as they seem to be missing a message key 'site.govuk'
@@ -41,6 +45,10 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
 
     "have the correct heading" in {
       doc.select(Selectors.h1).text mustBe heading
+    }
+
+    "have the correct heading when the user is a transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
     "have the correct paragraph" in {

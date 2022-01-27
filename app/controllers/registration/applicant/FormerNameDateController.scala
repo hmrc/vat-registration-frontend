@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.former_name_date
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
@@ -48,7 +48,8 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
           dob = applicant.personalDetails.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
           formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
           filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
-        } yield Ok(formerNameDatePage(filledForm, formerName))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(formerNameDatePage(filledForm, formerName, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -61,7 +62,8 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
               badForm => for {
                 applicant <- applicantDetailsService.getApplicantDetails
                 formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
-              } yield BadRequest(formerNameDatePage(badForm, formerName)),
+                name <- applicantDetailsService.getTransactorApplicantName
+              } yield BadRequest(formerNameDatePage(badForm, formerName, name)),
               data => {
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
                   vatRegistrationService.partyType map {

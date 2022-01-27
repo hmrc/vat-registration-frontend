@@ -62,6 +62,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
   "show" should {
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetailsDate)
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -69,11 +70,33 @@ class FormerNameDateControllerSpec extends ControllerSpec
     }
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
       val res = controller.show(fakeRequest)
 
       status(res) mustBe OK
     }
+
+    "return OK when there's data and the user is a transactor" in new Setup {
+      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetailsDate)
+      mockIsTransactor(Future.successful(true))
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+
+      callAuthorised(controller.show) {
+        status(_) mustBe OK
+      }
+    }
+
+    "return OK when there's no data and the user is a transactor" in new Setup {
+      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockIsTransactor(Future.successful(true))
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+
+      val res = controller.show(fakeRequest)
+
+      status(res) mustBe OK
+    }
+
     "throw an IllegalStateException when the former name is missing" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
@@ -86,8 +109,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
-
-      val res = controller.submit(FakeRequest().withFormUrlEncodedBody("" -> ""))
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
         status(_) mustBe BAD_REQUEST

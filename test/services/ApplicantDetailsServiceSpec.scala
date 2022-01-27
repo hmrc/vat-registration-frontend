@@ -28,7 +28,7 @@ import play.api.libs.json.Json
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -105,12 +105,14 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     }
   }
 
-  "Calling getApplicantName" should {
+  "Calling getTransactorApplicantName" should {
     "return firstName from the backend" in new Setup(None, Some(completeApplicantDetails)) {
-      service.getApplicantName returns testFirstName
+      mockIsTransactor(Future.successful(true))
+      service.getTransactorApplicantName returns Some(testFirstName)
     }
     "return firstName from s4l" in new Setup(Some(completeApplicantDetails), None) {
-      service.getApplicantName returns testFirstName
+      mockIsTransactor(Future.successful(true))
+      service.getTransactorApplicantName returns Some(testFirstName)
     }
   }
 

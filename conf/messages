@@ -658,13 +658,15 @@ pages.completionCapacity.panel.p3.link                   = register for VAT with
 validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
 
 ## Role In The Business
-pages.roleInTheBusiness.heading                          = What is your role in the business?
+pages.roleInTheBusiness.yourHeading                      = What is your role in the business?
+pages.roleInTheBusiness.namedHeading                     = What is {0}’s role in the business?
 pages.roleInTheBusiness.radio1                           = Director
 pages.roleInTheBusiness.radio2                           = Company secretary
 pages.roleInTheBusiness.error.message                    = Select your role within the business
 
 ## Former Name
-pages.formerName.heading                                 = Have you ever changed your name?
+pages.formerName.yourHeading                             = Have you ever changed your name?
+pages.formerName.namedHeading                            = Has {0} ever changed their name?
 pages.formerName.married                                 = This could be if you got married or changed your name by deed poll.
 pages.formerName.fullName.label                          = Enter your former name
 pages.formerName.fullName.hint                           = First name and last name
@@ -674,7 +676,8 @@ validation.formerName.invalid                            = Enter a valid former 
 validation.formerName.maxlen                             = Enter a former name that has 70 characters or less
 
 ## Former Name Date
-pages.formerNameDate.heading                             = When did you change your name?
+pages.formerNameDate.yourHeading                         = When did you change your name?
+pages.formerNameDate.namedHeading                        = When did {0} change their name?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 validation.formerNameDate.invalid                        = Enter a valid date
 validation.formerNameDate.missing                        = Tell us when the name changed
@@ -682,7 +685,8 @@ validation.formerNameDate.range.below                    = Enter a date which is
 validation.formerNameDate.range.above                    = Enter a date that is in the past
 
 ## Previous Address Question
-pages.previousAddressQuestion.heading                    = Have you lived at your current address for 3 years or more?
+pages.previousAddressQuestion.yourHeading                = Have you lived at your current address for 3 years or more?
+pages.previousAddressQuestion.namedHeading               = Has {0} lived at their current address for 3 years or more?
 validation.previousAddressQuestion.missing               = Select yes if you have lived at your current address for 3 years or more
 
 ## PPOB
@@ -815,7 +819,8 @@ pages.honesty-declaration.paragraph                     = By submitting this app
 pages.honesty-declaration.button                        = Accept and continue
 
 ## CAPTURE EMAIL ADDRESS MESSAGES
-capture-email-address.heading                           = What is your email address?
+capture-email-address.yourHeading                       = What is your email address?
+capture-email-address.namedHeading                      = What is {0}’s email address?
 capture-email-address.paragraph                         = We use this to send you communications and updates about your VAT
 capture-email-address.privacyInformation                = Full details of how we use your information are in the <a href="{0}" target="_blank">HMRC Privacy Notice (opens in new tab)</a>.
 capture-email-address.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
@@ -835,7 +840,8 @@ capture-email-passcode.error.incorrect_length           = Enter the 6 digit conf
 email-verified.heading                                   = Email address confirmed
 
 ## CAPTURE TELEPHONE NUMBER MESSAGES
-capture-telephone-number.heading                         = What is your telephone number?
+capture-telephone-number.yourHeading                     = What is your telephone number?
+capture-telephone-number.namedHeading                    = What is {0}’s telephone number?
 capture-telephone-number.paragraph                       = We may need to contact you about the application.
 capture-telephone-number.label                           = UK telephone number
 capture-telephone-number.error.incorrect_format          = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192

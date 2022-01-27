@@ -34,13 +34,13 @@
         button: button
 )
 
-@(formerNameForm: Form[FormerNameView])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(formerNameForm: Form[FormerNameView], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(formerNameForm, messages("pages.formerName.heading")))) {
+@layout(pageTitle = Some(title(formerNameForm, name.fold(messages("pages.formerName.yourHeading"))(name => messages("pages.formerName.namedHeading", name))))) {
 
     @errorSummary(formerNameForm.errors)
 
-    @h1("pages.formerName.heading")
+    @h1(name.fold(messages("pages.formerName.yourHeading"))(name => messages("pages.formerName.namedHeading", name)))
 
     @p{ @messages("pages.formerName.married") }
 

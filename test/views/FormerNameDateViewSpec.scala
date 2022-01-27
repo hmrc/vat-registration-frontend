@@ -33,13 +33,16 @@ import java.time.LocalDate
 
 class FormerNameDateViewSpec extends VatRegViewSpec {
 
+  val name = "testFirstName"
   lazy val view: former_name_date = app.injector.instanceOf[former_name_date]
   val testApplicantDob: LocalDate = LocalDate.of(2020, 1, 1)
   val testName = "testName"
   lazy val form: Form[FormerNameDateView] = FormerNameDateForm.form(testApplicantDob)
-  implicit val doc: Document = Jsoup.parse(view(form, testName).body)
+  implicit val doc: Document = Jsoup.parse(view(form, testName, None).body)
+  val transactorDoc: Document = Jsoup.parse(view(form, testName, Some(name)).body)
 
   val heading = "When did you change your name?"
+  val namedHeading = "When did testFirstName change their name?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para = "This could be if you got married or changed your name by deed poll."
   val hint = "For example, 31 3 2006."
@@ -52,6 +55,10 @@ class FormerNameDateViewSpec extends VatRegViewSpec {
 
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(heading)
+    }
+
+    "have the correct heading when the user is a transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
     "have the correct page title" in new ViewSetup {

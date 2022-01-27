@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
-import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
+import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.capture_email_address
 
@@ -46,7 +46,7 @@ class TransactorCaptureEmailAddressController @Inject()(view: capture_email_addr
           transactor <- transactorDetailsService.getTransactorDetails
           filledForm = transactor.email.fold(TransactorEmailAddressForm.form)(transactorEmail => TransactorEmailAddressForm.form.fill(transactorEmail))
         } yield
-          Ok(view(routes.TransactorCaptureEmailAddressController.submit, filledForm))
+          Ok(view(routes.TransactorCaptureEmailAddressController.submit, filledForm, None))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -54,7 +54,7 @@ class TransactorCaptureEmailAddressController @Inject()(view: capture_email_addr
       implicit profile =>
         TransactorEmailAddressForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(routes.TransactorCaptureEmailAddressController.submit, formWithErrors))),
+            Future.successful(BadRequest(view(routes.TransactorCaptureEmailAddressController.submit, formWithErrors, None))),
           email =>
             transactorDetailsService.saveTransactorDetails(TransactorEmail(email)) flatMap { _ =>
               emailVerificationService.requestEmailVerificationPasscode(email) flatMap {

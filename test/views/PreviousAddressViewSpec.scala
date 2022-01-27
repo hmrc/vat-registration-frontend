@@ -28,11 +28,15 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
 
   val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
 
+  val name = "testFirstName"
   lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form
-  lazy val view: Html = previousAddressPage(form)
-  implicit val doc: Document = Jsoup.parse(view.body)
+  lazy val nonTransactorView: Html = previousAddressPage(form, None)
+  implicit val nonTransactorDoc: Document = Jsoup.parse(nonTransactorView.body)
+  lazy val transactorView: Html = previousAddressPage(form, Some(name))
+  val transactorDoc: Document = Jsoup.parse(transactorView.body)
 
   val heading = "Have you lived at your current address for 3 years or more?"
+  val namedHeading = "Has testFirstName lived at their current address for 3 years or more?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val yes = "Yes"
   val no = "No"
@@ -40,14 +44,14 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
 
   "Previous Address Page" should {
     "display the page without pre populated data" in {
-      doc.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
-      doc.getElementsByAttribute("checked").size mustBe 0
+      nonTransactorDoc.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      nonTransactorDoc.getElementsByAttribute("checked").size mustBe 0
     }
 
     "display the page with form pre populated" in {
       val validPreviousAddress = PreviousAddressView(yesNo = true, None)
 
-      lazy val view = previousAddressPage(form.fill(validPreviousAddress))
+      lazy val view = previousAddressPage(form.fill(validPreviousAddress), None)
       lazy val document = Jsoup.parse(view.body)
 
       document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
@@ -55,24 +59,28 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
     }
 
     "have a back link" in new ViewSetup {
-      doc.hasBackLink mustBe true
+      nonTransactorDoc.hasBackLink mustBe true
     }
 
     "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(heading)
+      nonTransactorDoc.heading mustBe Some(heading)
+    }
+
+    "have the correct heading when the user is a transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
     "have the correct page title" in new ViewSetup {
-      doc.title mustBe title
+      nonTransactorDoc.title mustBe title
     }
 
     "have yes/no radio options" in new ViewSetup {
-      doc.radio("true") mustBe Some(yes)
-      doc.radio("false") mustBe Some(no)
+      nonTransactorDoc.radio("true") mustBe Some(yes)
+      nonTransactorDoc.radio("false") mustBe Some(no)
     }
 
     "have a save and continue button" in new ViewSetup {
-      doc.submitButton mustBe Some(continue)
+      nonTransactorDoc.submitButton mustBe Some(continue)
     }
   }
 }

@@ -46,15 +46,18 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.formerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
-        } yield
-          Ok(formerNamePage(filledForm))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(formerNamePage(filledForm, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         FormerNameForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(formerNamePage(badForm))),
+          badForm =>
+            applicantDetailsService.getTransactorApplicantName.map { name =>
+              BadRequest(formerNamePage(badForm, name))
+            },
           data => applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
             if (data.yesNo) {
               Future.successful(Redirect(applicantRoutes.FormerNameDateController.show))

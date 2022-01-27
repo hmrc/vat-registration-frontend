@@ -25,11 +25,14 @@ import views.html.former_name
 
 class FormerNameViewSpec extends VatRegViewSpec {
 
+  val name = "testFirstName"
   lazy val view: former_name = app.injector.instanceOf[former_name]
   lazy val form: Form[FormerNameView] = FormerNameForm.form
-  implicit val doc: Document = Jsoup.parse(view(form).body)
+  implicit val nonTransactorDoc: Document = Jsoup.parse(view(form, None).body)
+  val transactorDoc: Document = Jsoup.parse(view(form, Some(name)).body)
 
   val heading = "Have you ever changed your name?"
+  val namedHeading = "Has testFirstName ever changed their name?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para = "This could be if you got married or changed your name by deed poll."
   val label = "Enter your former name"
@@ -40,36 +43,40 @@ class FormerNameViewSpec extends VatRegViewSpec {
 
   "Former Name Page" should {
     "have a back link" in new ViewSetup {
-      doc.hasBackLink mustBe true
+      nonTransactorDoc.hasBackLink mustBe true
     }
 
     "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(heading)
+      nonTransactorDoc.heading mustBe Some(heading)
+    }
+
+    "have the correct heading when the user is a transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
     "have the correct page title" in new ViewSetup {
-      doc.title mustBe title
+      nonTransactorDoc.title mustBe title
     }
 
     "have correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(para)
+      nonTransactorDoc.para(1) mustBe Some(para)
     }
 
     "have a textbox label" in new ViewSetup {
-      doc.textBox("formerName") mustBe Some(label)
+      nonTransactorDoc.textBox("formerName") mustBe Some(label)
     }
 
     "have a hint" in new ViewSetup {
-      doc.hintText mustBe Some(hint)
+      nonTransactorDoc.hintText mustBe Some(hint)
     }
 
     "have yes/no radio options" in new ViewSetup {
-      doc.radio("true") mustBe Some(yes)
-      doc.radio("false") mustBe Some(no)
+      nonTransactorDoc.radio("true") mustBe Some(yes)
+      nonTransactorDoc.radio("false") mustBe Some(no)
     }
 
     "have a save and continue button" in new ViewSetup {
-      doc.submitButton mustBe Some(continue)
+      nonTransactorDoc.submitButton mustBe Some(continue)
     }
   }
 }
