@@ -30,6 +30,7 @@ case object Attachment1614h extends AttachmentType
 case object VAT5L extends AttachmentType
 case object LandPropertyOtherDocs extends AttachmentType
 case object IdentityEvidence extends AttachmentType
+case object TransactorIdentityEvidence extends AttachmentType
 case object TaxRepresentativeAuthorisation extends AttachmentType
 case object TaxAgentAuthorisation extends AttachmentType
 case object OtherAttachments extends AttachmentType
@@ -44,6 +45,7 @@ object AttachmentType {
     VAT5L -> "VAT5L",
     LandPropertyOtherDocs -> "landPropertyOtherDocs",
     IdentityEvidence -> "identityEvidence",
+    TransactorIdentityEvidence -> "transactorIdentityEvidence",
     TaxRepresentativeAuthorisation -> "taxRepresentativeAuthorisation",
     TaxAgentAuthorisation -> "taxAgentAuthorisation",
     OtherAttachments -> "otherAttachments"

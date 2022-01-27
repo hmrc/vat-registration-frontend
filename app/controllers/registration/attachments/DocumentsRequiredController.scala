@@ -18,9 +18,9 @@ package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.api.{IdentityEvidence, VAT2, VAT51}
+import models.api.{IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51}
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile, SessionService}
+import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
                                             val sessionService: SessionService,
-                                            attachmentsService: AttachmentsService)
+                                            attachmentsService: AttachmentsService,
+                                            vatRegistrationService: VatRegistrationService)
                                            (implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)
@@ -37,15 +38,24 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
   val resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentInfo =>
-          attachmentInfo.attachments match {
-            case list if list.size > 1 => Redirect(routes.MultipleDocumentsRequiredController.show)
-            case List(IdentityEvidence) => Redirect(routes.IdentityEvidenceRequiredController.show)
-            case List(VAT2) => Redirect(routes.Vat2RequiredController.show)
-            case List(VAT51) => Redirect(routes.Vat51RequiredController.show)
-            case Nil => Redirect(controllers.routes.SummaryController.show)
+        for {
+          attachmentInfo <- attachmentsService.getAttachmentList(profile.registrationId)
+          isTransactor <- vatRegistrationService.isTransactor
+          redirect = attachmentInfo.attachments match {
+            case Nil =>
+              Redirect(controllers.routes.SummaryController.show)
+            case list if isTransactor && list.forall(List(IdentityEvidence, TransactorIdentityEvidence).contains(_)) =>
+              Redirect(routes.TransactorIdentityEvidenceRequiredController.show)
+            case list if list.size > 1 =>
+              Redirect(routes.MultipleDocumentsRequiredController.show)
+            case List(IdentityEvidence) =>
+              Redirect(routes.IdentityEvidenceRequiredController.show)
+            case List(VAT2) =>
+              Redirect(routes.Vat2RequiredController.show)
+            case List(VAT51) =>
+              Redirect(routes.Vat51RequiredController.show)
           }
-        }
+        } yield redirect
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package views
+package views.attachments
 
 import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
-import views.html.PostalCoverSheet
+import views.VatRegViewSpec
+import views.html.attachments.PostalCoverSheet
 
 class PostalCoverSheetViewSpec extends VatRegViewSpec {
 

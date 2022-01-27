@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
-import views.html.Vat2Required
+import views.html.attachments.Vat2Required
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

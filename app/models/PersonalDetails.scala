@@ -26,7 +26,9 @@ case class PersonalDetails(firstName: String,
                            nino: Option[String],
                            trn: Option[String],
                            identifiersMatch: Boolean,
-                           dateOfBirth: LocalDate)
+                           dateOfBirth: LocalDate) {
+  def fullName: String = firstName + " " + lastName
+}
 
 object PersonalDetails { //TODO remove all defaults here when PDV is removed
   val pdvFormat: OFormat[PersonalDetails] = (

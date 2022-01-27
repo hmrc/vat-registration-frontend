@@ -19,7 +19,7 @@ package views.attachments
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.Vat2Required
+import views.html.attachments.Vat2Required
 
 class Vat2RequiredViewSpec extends VatRegViewSpec {
 

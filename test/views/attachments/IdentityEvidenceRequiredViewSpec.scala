@@ -18,7 +18,7 @@ package views.attachments
 
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.IdentityEvidenceRequired
+import views.html.attachments.IdentityEvidenceRequired
 
 class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
 
@@ -42,7 +42,7 @@ class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
     val continue = "Save and continue"
   }
 
-  "The charge expectancy (regularly claim refunds) page" must {
+  "The identity evidence required page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }

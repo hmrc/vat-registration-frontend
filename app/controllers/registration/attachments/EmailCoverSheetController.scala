@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
-import views.html.EmailCoverSheet
+import views.html.attachments.EmailCoverSheet
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext

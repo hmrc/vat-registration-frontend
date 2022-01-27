@@ -19,7 +19,7 @@ package views.attachments
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.EmailDocuments
+import views.html.attachments.EmailDocuments
 
 class EmailDocumentsViewSpec extends VatRegViewSpec {
 

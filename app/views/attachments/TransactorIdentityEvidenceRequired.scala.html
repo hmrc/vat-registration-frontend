@@ -1,0 +1,64 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        bullets: components.bullets,
+        form: FormWithCSRF,
+        button: components.button,
+        strong: components.strong
+)
+
+@(names: List[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages(s"attachments.transactorIdentityEvidenceRequired.title.${names.size}", names:_*)))) {
+
+    @h1(messages(s"attachments.transactorIdentityEvidenceRequired.title.${names.size}", names:_*))
+
+    @p {
+        @messages("attachments.transactorIdentityEvidenceRequired.evidence.start")
+        @strong{ @messages("attachments.transactorIdentityEvidenceRequired.evidence.bold") }
+        @messages(s"attachments.transactorIdentityEvidenceRequired.evidence.end.${names.size}", names:_*)
+    }
+    @bullets(
+        "attachments.transactorIdentityEvidenceRequired.bullet1",
+        "attachments.transactorIdentityEvidenceRequired.bullet2",
+        "attachments.transactorIdentityEvidenceRequired.bullet3"
+    )
+
+    @p {
+        @messages("attachments.transactorIdentityEvidenceRequired.additionalEvidence.start")
+        @strong { @messages("attachments.transactorIdentityEvidenceRequired.additionalEvidence.bold") }
+        @messages("attachments.transactorIdentityEvidenceRequired.additionalEvidence.end")
+    }
+    @bullets(
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet1",
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet2",
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet3",
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet4",
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet5",
+        "attachments.transactorIdentityEvidenceRequired.additionalBullet6"
+    )
+
+    @form(controllers.registration.attachments.routes.DocumentsRequiredController.submit) {
+        @button(messages("app.common.continue"), showSaveProgressButton = true)
+    }
+
+}
