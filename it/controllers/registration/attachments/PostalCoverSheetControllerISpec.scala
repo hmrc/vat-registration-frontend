@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.attachments
 
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.{AttachmentType, Attachments, IdentityEvidence, Post, VAT2}
+import models.{ApplicantDetails, TransactorDetails}
+import models.api._
 import play.api.libs.json.{JsString, Json}
 import play.api.libs.ws.WSResponse
 
@@ -37,6 +38,24 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
         .user.isAuthorised
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+      whenReady(response) { res =>
+        res.status mustBe 200
+      }
+    }
+
+    "return an OK for a transactor" in new Setup {
+      given()
+        .user.isAuthorised
+        .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
+        .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

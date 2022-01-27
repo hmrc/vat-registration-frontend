@@ -18,9 +18,7 @@
 @import views.html.components._
 @import views.html.layouts.layout
 @import models.api.AttachmentType
-@import models.api.VAT2
-@import models.api.VAT51
-@import models.api.IdentityEvidence
+@import models.api.{VAT2, VAT51, IdentityEvidence, TransactorIdentityEvidence}
 
 @this(
         layout: layout,
@@ -39,7 +37,7 @@
         print: print
 )
 
-@(ackRef: String, attachments: List[AttachmentType])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(ackRef: String, attachments: List[AttachmentType], applicantName: Option[String], transactorName: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.EmailCoverSheet.heading"))), backLink = true) {
 
@@ -58,7 +56,8 @@
         attachments.map {
             case VAT2 => vat2Block
             case VAT51 => vat51Block
-            case IdentityEvidence => Html(messages("pages.CoverSheet.identityEvidence"))
+            case IdentityEvidence => Html(applicantName.fold(messages("pages.CoverSheet.identityEvidence"))(name => messages("pages.CoverSheet.identityEvidence.name", name)))
+            case TransactorIdentityEvidence => Html(transactorName.map(name => messages("pages.CoverSheet.identityEvidence.name", name)))
         }: _*
     )
 

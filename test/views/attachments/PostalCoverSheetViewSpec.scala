@@ -16,23 +16,19 @@
 
 package views.attachments
 
-import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
+import models.api.{AttachmentType, IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.attachments.PostalCoverSheet
 
 class PostalCoverSheetViewSpec extends VatRegViewSpec {
 
-  val postalCoverSheetPage: PostalCoverSheet = app.injector.instanceOf[PostalCoverSheet]
-
   val testRef = "VRN12345689"
-  val testAttachments = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
-  val testVat2 = List[AttachmentType](VAT2)
+  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
+  val testVat2: List[AttachmentType] = List[AttachmentType](VAT2)
 
-  lazy val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testAttachments)
-  implicit val doc: Document = Jsoup.parse(view.body)
+  lazy val view: PostalCoverSheet = app.injector.instanceOf[PostalCoverSheet]
 
   object ExpectedContent {
     val heading = "Print cover letter for documents"
@@ -49,27 +45,32 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val idEvidence = "three documents to confirm your identity"
+    def idEvidenceNamed(name: String) = s"three documents to confirm $name’s identity"
     val print = "Print this page"
+    val transactorName = "Transactor Name"
+    val applicantName = "Applicant Name"
   }
 
   object IdentityEvidenceBlock {
     val summary = "What identity documents can I provide?"
-    val content = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
-    "passport " +
-    "driving licence photocard " +
-    "national identity card " +
-    "And " +
-    "Also include two additional pieces of evidence which can be copies of a: " +
-    "mortgage statement " +
-    "lease or rental agreement " +
-    "work permit or visa " +
-    "letter from the Department for Work and Pensions for confirming entitlement to benefits " +
-    "utility bill " +
-    "birth certificate"
+    val content: String = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
+      "passport " +
+      "driving licence photocard " +
+      "national identity card " +
+      "And " +
+      "Also include two additional pieces of evidence which can be copies of a: " +
+      "mortgage statement " +
+      "lease or rental agreement " +
+      "work permit or visa " +
+      "letter from the Department for Work and Pensions for confirming entitlement to benefits " +
+      "utility bill " +
+      "birth certificate"
   }
 
 
   "The Postal Cover Sheet page" must {
+    implicit val doc: Document = Jsoup.parse(view(testRef, testAttachments, None, None).body)
+
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
@@ -109,15 +110,15 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     }
 
     "not show the identity documents bullet point when attachment list does not contain IdentityEvidence" in new ViewSetup {
-      val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testVat2)
-      override val doc: Document = Jsoup.parse(view.body)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat2, None, None).body)
+
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.idEvidence)
     }
 
     "not show the VAT51 bullet point when attachment list does not contain VAT51" in new ViewSetup {
-      val view: Html = postalCoverSheetPage(ackRef = testRef, attachments = testVat2)
-      override val doc: Document = Jsoup.parse(view.body)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat2, None, None).body)
+
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.vat51Bullet)
     }
@@ -128,6 +129,33 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
         ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence
       )
+    }
+
+    "have the correct first bullet list for the transactor flow" when {
+      "transactor is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(TransactorIdentityEvidence), None, Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.transactorName)
+        )
+      }
+
+      "applicant is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(IdentityEvidence), Some(ExpectedContent.applicantName), None).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.applicantName)
+        )
+      }
+
+      "both are unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(IdentityEvidence, TransactorIdentityEvidence), Some(ExpectedContent.applicantName), Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.applicantName),
+          ExpectedContent.idEvidenceNamed(ExpectedContent.transactorName)
+        )
+      }
     }
 
     "have a details block" in new ViewSetup {

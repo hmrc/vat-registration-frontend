@@ -42,18 +42,14 @@ class TransactorIdentityEvidenceRequiredController @Inject()(val authConnector: 
         for {
           applicantName <- applicantDetailsService.getApplicantDetails.map(data =>
             if (data.personalDetails.exists(!_.identifiersMatch)) {
-              data.personalDetails.map(details =>
-                details.fullName
-              )
+              data.personalDetails.map(_.fullName)
             } else {
               None
             }
           )
           transactorName <- transactorDetailsService.getTransactorDetails.map(data =>
             if (data.personalDetails.exists(!_.identifiersMatch)) {
-              data.personalDetails.map(details =>
-                details.fullName
-              )
+              data.personalDetails.map(_.fullName)
             } else {
               None
             }

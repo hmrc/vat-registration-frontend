@@ -16,23 +16,19 @@
 
 package views.attachments
 
-import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51}
+import models.api.{AttachmentType, IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.attachments.EmailCoverSheet
 
 class EmailCoverSheetViewSpec extends VatRegViewSpec {
 
-  val emailCoverSheetPage: EmailCoverSheet = app.injector.instanceOf[EmailCoverSheet]
-
   val testRef = "VRN12345689"
-  val testAttachments = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
-  val testVat2 = List[AttachmentType](VAT2)
+  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
+  val testVat2: List[AttachmentType] = List[AttachmentType](VAT2)
 
-  lazy val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testAttachments)
-  implicit val doc: Document = Jsoup.parse(view.body)
+  lazy val view: EmailCoverSheet = app.injector.instanceOf[EmailCoverSheet]
 
   object ExpectedContent {
     val heading = "How to email documents to HMRC"
@@ -45,15 +41,17 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val idEvidence = "three documents to confirm your identity"
+    def idEvidenceNamed(name: String) = s"three documents to confirm $name’s identity"
     val para3 = "Send the supporting documents to:"
     val panel2 = "VATREGBETA@hmrc.gov.uk"
     val print = "Print this page"
-
+    val transactorName = "Transactor Name"
+    val applicantName = "Applicant Name"
   }
 
   object IdentityEvidenceBlock {
     val summary = "What identity documents can I provide?"
-    val content = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
+    val content: String = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
       "passport " +
       "driving licence photocard " +
       "national identity card " +
@@ -68,6 +66,8 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
   }
 
   "The Email Cover Sheet page" must {
+    implicit val doc: Document = Jsoup.parse(view(testRef, testAttachments, None, None).body)
+
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
@@ -101,15 +101,15 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     }
 
     "not show the identity documents bullet point when attachment list does not contain IdentityEvidence" in new ViewSetup {
-      val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testVat2)
-      override val doc: Document = Jsoup.parse(view.body)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat2, None, None).body)
+
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.idEvidence)
     }
 
     "not show the vat51 bullet point when attachment list does not contain VAT51" in new ViewSetup {
-      val view: Html = emailCoverSheetPage(ackRef = testRef, attachments = testVat2)
-      override val doc: Document = Jsoup.parse(view.body)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat2, None, None).body)
+
       doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
       doc.unorderedList(1) mustNot contain(ExpectedContent.vat51Bullet)
     }
@@ -120,6 +120,33 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
         ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence
       )
+    }
+
+    "have the correct first bullet list for the transactor flow" when {
+      "transactor is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(TransactorIdentityEvidence), None, Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.transactorName)
+        )
+      }
+
+      "applicant is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(IdentityEvidence), Some(ExpectedContent.applicantName), None).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.applicantName)
+        )
+      }
+
+      "both are unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(testRef, List(IdentityEvidence, TransactorIdentityEvidence), Some(ExpectedContent.applicantName), Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.idEvidenceNamed(ExpectedContent.applicantName),
+          ExpectedContent.idEvidenceNamed(ExpectedContent.transactorName)
+        )
+      }
     }
 
     "have a details block" in new ViewSetup {
