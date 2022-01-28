@@ -23,10 +23,12 @@
 @this(
         layout: layout,
         h1: h1,
+        subheading: subheading,
         h2: h2,
         p: p,
         button: button,
         bullets: bullets,
+        link: link,
         inputRadio: inputRadio,
         formWithCSRF: FormWithCSRF,
         errorSummary: errorSummary
@@ -40,11 +42,12 @@
         annualCostsInclusiveForm.errors
     )
 
+    @subheading(messages("pages.frs.costsInclusive.subheading"))
+
     @h1("pages.frs.costsInclusive.heading")
 
-    @p{ @messages(("pages.frs.costsInclusive.p1")) }
-    @h2(messages("pages.frs.costsInclusive.list.heading"))
-    @p{ @messages("pages.frs.costsInclusive.list.head") }
+    @p{ @messages(("pages.frs.costsInclusive.para1")) }
+    @h2(messages("pages.frs.costsInclusive.list.head"))
 
 
     @bullets(messages("pages.frs.costsInclusive.list.bullet1"),
@@ -57,6 +60,13 @@
              messages("pages.frs.costsInclusive.list.bullet8"),
              messages("pages.frs.costsInclusive.list.bullet9"),
              messages("pages.frs.costsInclusive.list.bullet10"))
+
+    @p { @messages("pages.frs.costsInclusive.para2") }
+
+    @p {
+        @messages("pages.frs.costsInclusive.para3")
+        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.costsInclusive.para3.1"), isExternal = true).
+    }
 
     @formWithCSRF(action = controllers.routes.FlatRateController.submitAnnualInclusiveCosts) {
         @inputRadio(

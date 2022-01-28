@@ -26,7 +26,9 @@
         yesNoRadio: yesNoRadio,
         button: button,
         link: link,
-        h1: h1
+        h1: h1,
+        subheading: subheading,
+        bullets: bullets
 )
 
 @(applyForEoriForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -35,11 +37,16 @@
 
     @errorSummary(applyForEoriForm.errors)
 
+    @subheading(messages("pages.applyForEori.subheading"))
     @h1(messages("pages.applyForEori.heading"))
-
     @p{ @messages("pages.applyForEori.p1") }
+    @bullets(
+        messages("pages.applyForEori.bullet1"),
+        messages("pages.applyForEori.bullet2"),
+        messages("pages.applyForEori.bullet3"),
+        messages("pages.applyForEori.bullet4")
+    )
     @p{ @messages("pages.applyForEori.p2") }
-    @p{ @messages("pages.applyForEori.p3") }
 
     @p{
         @link(

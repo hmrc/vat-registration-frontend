@@ -25,22 +25,24 @@ import views.html.annual_costs_inclusive
 class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
 
   val view: annual_costs_inclusive = app.injector.instanceOf[annual_costs_inclusive]
-
-  val heading = "Will the business spend more than £250 over the next 3 months on ’relevant goods’?"
+  val subheading = "VAT registration"
+  val heading = "Will the business spend more than £250 over the next 3 months on ‘relevant goods’?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para1 = "’Relevant goods’ are movable items or materials used exclusively to run a business. They include gas and electricity."
-  val listHeading = "What you cannot include"
+  val para1 = "‘Relevant goods’ are moveable items or materials used exclusively to run the company. They include gas and electricity."
   val listHead = "Do not include:"
   val bullet1 = "travel and accommodation expenses"
-  val bullet2 = "food and drink consumed by you or your staff"
-  val bullet3 = "vehicle costs including fuel, unless you are in the transport business and using your own or a leased vehicle"
+  val bullet2 = "food and drink consumed by directors or staff"
+  val bullet3 = "vehicle costs including fuel, unless the company is in the transport business and staff are using their own or a leased vehicle"
   val bullet4 = "rent, internet, phone bill"
   val bullet5 = "accountancy fees"
   val bullet6 = "gifts, promotional items and donations"
-  val bullet7 = "goods you will resell or hire out unless this is your main business activity"
+  val bullet7 = "goods the company will resell or hire out unless this is its main business activity"
   val bullet8 = "training and memberships"
   val bullet9 = "capital items, for example office equipment, laptops, mobile phones and tablets"
-  val bullet10 = "services - that is, anything not classified as ’goods’"
+  val bullet10 = "services - that is, anything not classified as ‘goods’"
+  val para2 = "If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date."
+  val link = "VAT Flat Rate Scheme (opens in new tab)"
+  val para3 = s"Find out more about $link."
   val continue = "Save and continue"
 
   implicit val doc: Document = Jsoup.parse(view(OverBusinessGoodsForm.form).body)
@@ -48,6 +50,10 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
   "The Relevant Goods Spend page" must {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
+    }
+
+    "have the correct subheading" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(subheading)
     }
 
     "have the correct heading" in new ViewSetup {
@@ -59,12 +65,11 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
     }
 
     "have the correct h2" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(listHeading)
+      doc.headingLevel2(2) mustBe Some(listHead)
     }
 
     "have correct text" in new ViewSetup {
       doc.para(1) mustBe Some(para1)
-      doc.para(2) mustBe Some(listHead)
     }
 
     "have correct bullets" in new ViewSetup {
@@ -80,6 +85,11 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
         bullet9,
         bullet10
       )
+    }
+    "have a final paragraph with a help link" in new ViewSetup {
+      doc.para(2) mustBe Some(para2)
+      doc.para(3) mustBe Some(para3)
+      doc.link(1) mustBe Some(Link(link, "https://www.gov.uk/vat-flat-rate-scheme"))
     }
 
     "have a save and continue button" in new ViewSetup {

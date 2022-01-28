@@ -26,6 +26,7 @@
     button: button,
     formWithCSRF: FormWithCSRF,
     h1: h1,
+    subheading: subheading,
     p: p,
     inputRadio: inputRadio,
     errorSummary: errorSummary
@@ -37,6 +38,7 @@
 
     @errorSummary(form.errors)
 
+    @subheading(messages("pages.contactPreference.subheading"))
     @h1(messages("pages.contactPreference.heading"))
     @p{ @messages("pages.contactPreference.text1") }
     @p{ @messages("pages.contactPreference.text2") }

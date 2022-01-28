@@ -28,6 +28,7 @@
         button: button,
         formWithCSRF: FormWithCSRF,
         h1: h1,
+        subheading: subheading,
         p: p,
         details: details,
         bullets: bullets,
@@ -41,6 +42,8 @@
 @layout(pageTitle = Some(title(form, messages("pages.vat.return.frequency.heading"))), backLink = true) {
 
     @errorSummary(form.errors)
+
+    @subheading(messages("pages.vat.return.frequency.subheading"))
 
     @h1(messages("pages.vat.return.frequency.heading"))
 

@@ -27,11 +27,15 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view(ApplyForEoriForm.form).body)
 
   object ExpectedContent {
-    val p1 = "You need an Economic Operators Registration and Identification (EORI) number to move goods between the UK and non-EU countries."
-    val p2 = "From 1 January 2021 you need an EORI number to move goods between Great Britain (England, Scotland and Wales) and the EU. You may also need one if you move goods to or from Northern Ireland."
-    val p3 = "If you do not have an EORI number, you may have increased costs and delays. For example, if HM Revenue and Customs (HMRC) cannot clear your goods you may have to pay storage fees."
+    val p1 = "The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:"
+    val bullet1 = "between the Isle of Man and any other country (including the EU)"
+    val bullet2 = "between Great Britain and Northern Ireland"
+    val bullet3 = "between Great Britain and the Channel Islands"
+    val bullet4 = "between Northern Ireland and countries outside the EU"
+    val p2 = "The business does not need an EORI number if it only moves goods on the island of Ireland or between an EU country and Northern Ireland."
     val linkText = "Find out more about EORI (opens in new tab)"
     val title = "Do you need an EORI number? - Register for VAT - GOV.UK"
+    val subheading = "Company details"
     val heading = "Do you need an EORI number?"
     val yes = "Yes"
     val no = "No"
@@ -42,7 +46,16 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
     "have the correct paragraphs" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.p1)
       doc.para(2) mustBe Some(ExpectedContent.p2)
-      doc.para(3) mustBe Some(ExpectedContent.p3)
+    }
+
+    "have the correct bullets" in new ViewSetup {
+      doc.unorderedList(1) mustBe
+        List(
+          ExpectedContent.bullet1,
+          ExpectedContent.bullet2,
+          ExpectedContent.bullet3,
+          ExpectedContent.bullet4
+        )
     }
 
     "have the correct link text" in new ViewSetup {
@@ -51,6 +64,10 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
 
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
+    }
+
+    "have the correct subheading" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
     }
 
     "have the correct heading" in new ViewSetup {
