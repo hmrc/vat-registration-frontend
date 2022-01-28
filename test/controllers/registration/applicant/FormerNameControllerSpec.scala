@@ -56,6 +56,7 @@ class FormerNameControllerSpec extends ControllerSpec
   "show" should {
     "return OK when there's data" in new Setup {
       mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -64,6 +65,27 @@ class FormerNameControllerSpec extends ControllerSpec
 
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
+
+      callAuthorised(controller.show) {
+        status(_) mustBe OK
+      }
+    }
+
+    "return OK when there's data and the user is a transactor" in new Setup {
+      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockIsTransactor(Future.successful(true))
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+
+      callAuthorised(controller.show) {
+        status(_) mustBe OK
+      }
+    }
+
+    "return OK when there's no data and the user is a transactor" in new Setup {
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockIsTransactor(Future.successful(true))
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -73,7 +95,7 @@ class FormerNameControllerSpec extends ControllerSpec
 
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
-
+      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
         status(result) mustBe BAD_REQUEST
       }

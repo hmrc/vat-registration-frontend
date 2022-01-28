@@ -44,8 +44,8 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.emailAddress.fold(EmailAddressForm.form)(ea => EmailAddressForm.form.fill(ea.email))
-        } yield
-          Ok(view(routes.CaptureEmailAddressController.submit, filledForm))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(view(routes.CaptureEmailAddressController.submit, filledForm, name))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -53,7 +53,9 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
       implicit profile =>
         EmailAddressForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(routes.CaptureEmailAddressController.submit, formWithErrors))),
+            applicantDetailsService.getTransactorApplicantName.map { name =>
+              BadRequest(view(routes.CaptureEmailAddressController.submit, formWithErrors, name))
+            },
           email =>
             for {
               _ <- applicantDetailsService.saveApplicantDetails(EmailAddress(email))

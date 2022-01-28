@@ -47,8 +47,8 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.telephoneNumber.fold(TelephoneNumberForm.form)(tn => TelephoneNumberForm.form.fill(tn.telephone))
-        } yield
-          Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -56,7 +56,9 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
       implicit profile =>
         TelephoneNumberForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(routes.CaptureTelephoneNumberController.submit, formWithErrors))),
+            applicantDetailsService.getTransactorApplicantName.map { name =>
+              BadRequest(view(routes.CaptureTelephoneNumberController.submit, formWithErrors, name))
+            },
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).flatMap { _ =>
               vatRegistrationService.partyType map {

@@ -31,9 +31,9 @@
         inputDate: inputDate
 )
 
-@(formerNameDateForm: Form[FormerNameDateView], formerName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(formerNameDateForm: Form[FormerNameDateView], formerName: String, name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(formerNameDateForm, messages("pages.formerNameDate.heading")))) {
+@layout(pageTitle = Some(title(formerNameDateForm, name.fold(messages("pages.formerNameDate.yourHeading"))(name => messages("pages.formerNameDate.namedHeading", name))))) {
 
     @errorSummary(formerNameDateForm.errors, Some("day"))
 
@@ -41,7 +41,7 @@
         @inputDate(
             form = formerNameDateForm,
             id = "formerNameDate",
-            legendContent = "pages.formerNameDate.heading",
+            legendContent = name.fold(messages("pages.formerNameDate.yourHeading"))(name => messages("pages.formerNameDate.namedHeading", name)),
             hintText = Some("pages.formerNameDate.hint1"),
             legendAsPageHeading = true
         )

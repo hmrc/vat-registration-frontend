@@ -24,34 +24,42 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
 
   val title = "What is your email address?"
   val heading = "What is your email address?"
+  val namedHeading = "What is testFirstName’s email address?"
   val paragraph = "We use this to send you communications and updates about your VAT"
   val privacyInformation = "Full details of how we use your information are in the HMRC Privacy Notice (opens in new tab)."
   val buttonText = "Save and continue"
 
   "Capture Email Address Page" should {
     val form = EmailAddressForm.form
-    val view = app.injector.instanceOf[capture_email_address].apply(testCall, form)
+    val name = "testFirstName"
+    val nonTransactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, None)
+    val transactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, Some(name))
 
-    val doc = Jsoup.parse(view.body)
+    val nonTransactorDoc = Jsoup.parse(nonTransactorView.body)
+    val transactorDoc = Jsoup.parse(transactorView.body)
 
     "have the correct title" in {
-      doc.title must include(title)
+      nonTransactorDoc.title must include(title)
     }
 
     "have the correct heading" in {
-      doc.select(Selectors.h1).text mustBe heading
+      nonTransactorDoc.select(Selectors.h1).text mustBe heading
+    }
+
+    "have the correct heading when the user is a transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
     "have the correct paragraph" in {
-      doc.getElementById("use-of-email").text mustBe paragraph
+      nonTransactorDoc.getElementById("use-of-email").text mustBe paragraph
     }
 
     "have the correct privacy information" in {
-      doc.getElementById("privacy-information").text mustBe privacyInformation
+      nonTransactorDoc.getElementById("privacy-information").text mustBe privacyInformation
     }
 
     "have the correct continue button" in {
-      doc.select(Selectors.button).text mustBe buttonText
+      nonTransactorDoc.select(Selectors.button).text mustBe buttonText
     }
 
   }

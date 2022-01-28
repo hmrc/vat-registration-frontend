@@ -22,7 +22,7 @@ import forms.RoleInTheBusinessForm
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SessionService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.role_in_the_business
 
@@ -32,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
                                                    val authConnector: AuthConnector,
                                                    val sessionService: SessionService,
-                                                   val applicantDetailsService: ApplicantDetailsService)
+                                                   val applicantDetailsService: ApplicantDetailsService,
+                                                   val vatRegistrationService: VatRegistrationService)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
                                                    baseControllerComponents: BaseControllerComponents)
@@ -44,15 +45,18 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm())(RoleInTheBusinessForm().fill)
-        } yield
-          Ok(view(filledForm))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(view(filledForm, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         RoleInTheBusinessForm().bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          formWithErrors =>
+            applicantDetailsService.getTransactorApplicantName.map { name =>
+              BadRequest(view(formWithErrors, name))
+            },
           roleInTheBusiness =>
             applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>
               Redirect(routes.FormerNameController.show)

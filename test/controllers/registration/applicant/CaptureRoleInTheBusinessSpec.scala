@@ -20,15 +20,18 @@ import akka.actor.TypedActor.dispatcher
 import fixtures.ApplicantDetailsFixtures
 import models.Director
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.MockApplicantDetailsService
+import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.role_in_the_business
+
+import scala.concurrent.Future
 
 class CaptureRoleInTheBusinessSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with ApplicantDetailsFixtures {
+  with ApplicantDetailsFixtures
+  with MockVatRegistrationService {
 
   trait Setup {
     val view: role_in_the_business = app.injector.instanceOf[role_in_the_business]
@@ -36,7 +39,8 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
       view,
       mockAuthClientConnector,
       mockSessionService,
-      mockApplicantDetailsService
+      mockApplicantDetailsService,
+      mockVatRegistrationService
     )
 
     mockAuthenticated()
@@ -63,10 +67,31 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
           status(_) mustBe OK
         }
       }
+
+      "return OK when there's data and the user is a transactor" in new Setup {
+        mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+        mockIsTransactor(Future.successful(true))
+        mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+
+        callAuthorised(controller.show) {
+          status(_) mustBe OK
+        }
+      }
+
+      "return OK when there's no data and the user is a transactor" in new Setup {
+        mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+        mockIsTransactor(Future.successful(true))
+        mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+
+        callAuthorised(controller.show) {
+          status(_) mustBe OK
+        }
+      }
     }
 
     "submit" should {
       "return BAD_REQUEST with Empty data" in new Setup {
+        mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
         submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
           result => status(result) mustBe BAD_REQUEST
         }

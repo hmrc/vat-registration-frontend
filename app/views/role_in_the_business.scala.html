@@ -31,16 +31,16 @@
         errorSummary: errorSummary
 )
 
-@(form: Form[RoleInTheBusiness])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(form: Form[RoleInTheBusiness], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.roleInTheBusiness.heading")))){
+@layout(pageTitle = Some(title(form, name.fold(messages("pages.roleInTheBusiness.yourHeading"))(name => messages("pages.roleInTheBusiness.namedHeading", name))))){
 
     @errorSummary(form.errors)
 
     @formWithCSRF(action = applicantRoutes.CaptureRoleInTheBusinessController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = form,
-            legend = messages("pages.roleInTheBusiness.heading"),
+            legend = name.fold(messages("pages.roleInTheBusiness.yourHeading"))(name => messages("pages.roleInTheBusiness.namedHeading", name)),
             items = Seq(
                 RadioItem(
                     content = Text(messages("pages.roleInTheBusiness.radio1")),

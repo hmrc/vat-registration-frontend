@@ -27,13 +27,13 @@
         errorSummary: errorSummary
 )
 
-@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(formAction: Call, form: Form[String], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(title(form, "capture-email-address.heading")), backLink = true) {
+@layout(Some(title(form, name.fold(messages("capture-email-address.yourHeading"))(name => messages("capture-email-address.namedHeading", name)))), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("capture-email-address.heading")
+    @h1(name.fold(messages("capture-email-address.yourHeading"))(name => messages("capture-email-address.namedHeading", name)))
 
     <div class="govuk-body">
         <p id="use-of-email">@messages("capture-email-address.paragraph")</p>
@@ -44,7 +44,7 @@
             form = form,
             id = "email-address",
             name = "email-address",
-            label = messages("capture-email-address.heading"),
+            label = name.fold(messages("capture-email-address.yourHeading"))(name => messages("capture-email-address.namedHeading", name)),
             isLabelHidden = true,
             isPageHeading = false,
             hint = None,

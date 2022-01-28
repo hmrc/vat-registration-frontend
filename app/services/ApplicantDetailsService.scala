@@ -68,12 +68,12 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       }
     }
 
-  def getApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[String] =
+  def getTransactorApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
     for {
       applicant <- getApplicantDetails
-      personalDetails <- Future.successful(applicant.personalDetails)
-    } yield personalDetails.map(_.firstName).getOrElse(throw new InternalServerException("Attempted to retrieve firstName from an applicant without one"))
-
+      personalDetails = applicant.personalDetails
+      isTransactor <- vatRegistrationService.isTransactor
+    } yield if (isTransactor) personalDetails.map(_.firstName) else None
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = {
     applicantDetails match {

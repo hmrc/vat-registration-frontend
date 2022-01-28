@@ -49,8 +49,8 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
-        } yield
-          Ok(previousAddressPage(filledForm))
+          name <- applicantDetailsService.getTransactorApplicantName
+        } yield Ok(previousAddressPage(filledForm, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -58,7 +58,9 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         PreviousAddressForm.form.bindFromRequest.fold(
           badForm =>
-            Future.successful(BadRequest(previousAddressPage(badForm))),
+            applicantDetailsService.getTransactorApplicantName.map { name =>
+              BadRequest(previousAddressPage(badForm, name))
+            },
           data =>
             if (data.yesNo) {
               applicantDetailsService.saveApplicantDetails(data) map {
@@ -88,7 +90,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
   def previousAddress: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.isTransactor.flatMap{ isTransactor =>
+        vatRegistrationService.isTransactor.flatMap { isTransactor =>
           val journeyId = if (isTransactor) {
             applicantAddressThreeYearsOrLess
           } else {
