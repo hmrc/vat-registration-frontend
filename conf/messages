@@ -1162,6 +1162,9 @@ transactorEmail.error.incorrect_format                   = Enter an email addres
 transactorEmail.error.nothing_entered                    = Enter your email address
 transactorEmail.error.incorrect_length                   = Enter an email address that is between 3 and 132 characters
 
+## TRANSACTOR FULL NAME PAGE
+transactorName.optFullNamePageLabel                      = Who are you registering on behalf of?
+
 ## VAT2 REQUIRED
 pages.vat2Required.heading                               = You must complete a VAT 2 form
 pages.vat2Required.para.1                                = You must now

@@ -31,11 +31,28 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
   )
 
   "GET /start-sti-individual-journey" when {
-    "STI returns a journey ID" must {
+    "STI returns a journey ID and user is not Transactor" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(individualJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-sti-individual-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+    }
+    "STI returns a journey ID and user is transactor" must {
+      "redirect to the journey using the ID provided" in new Setup {
+        given()
+          .user.isAuthorised
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(individualJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())

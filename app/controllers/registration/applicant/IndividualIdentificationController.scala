@@ -43,17 +43,26 @@ class IndividualIdentificationController @Inject()(val sessionService: SessionSe
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          soleTraderIdentificationService.startIndividualJourney(
-            SoleTraderIdJourneyConfig(
+          for {
+            isTransactor <- vatRegistrationService.isTransactor
+            fullNamePageLabel = isTransactor match {
+              case true => Some(request2Messages(request)("transactorName.optFullNamePageLabel"))
+              case _ => None
+            }
+            config = SoleTraderIdJourneyConfig(
               continueUrl = appConfig.individualCallbackUrl,
               optServiceName = Some(request2Messages(request)("service.name")),
+              optFullNamePageLabel = fullNamePageLabel,
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
               businessVerificationCheck = true
             )
-          ).map(url => Redirect(url))
+            url <- soleTraderIdentificationService.startIndividualJourney(config)
+          } yield {
+            Redirect(url)
+          }
     }
 
   def callback(journeyId: String): Action[AnyContent] =
