@@ -23,6 +23,7 @@
         errorSummary: components.errorSummary,
         h1: components.h1,
         h2: components.h2,
+        subheading: components.subheading,
         p: components.p,
         bullets: components.bullets,
         link: components.link,
@@ -37,6 +38,7 @@
 @layout(pageTitle = Some(title(joinFrsForm, messages("pages.frs.join.heading"))), backLink = true) {
 
     @errorSummary(joinFrsForm.errors)
+    @subheading(messages("pages.frs.join.subheading"))
     @h1(messages("pages.frs.join.heading"))
 
     @p { @messages("pages.frs.join.listHead") }
@@ -67,7 +69,7 @@
 
     @p {
         @messages("pages.frs.join.para2")
-        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1")).
+        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1"), isExternal = true).
     }
 
     @form(action = controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.submit) {

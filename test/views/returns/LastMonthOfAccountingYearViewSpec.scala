@@ -24,8 +24,8 @@ import views.html.returns.last_month_of_accounting_year
 class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
 
   lazy val title = s"$header - Register for VAT - GOV.UK"
-  lazy val header = "What will be the last month of your accounting year?"
-  lazy val text = "As part of the Annual Accounting Scheme your VAT Return will be due two months after the last month of your accounting year."
+  lazy val header = "What will be the last month of the business’s accounting year?"
+  lazy val text = "As part of the Annual Accounting Scheme the VAT Return will be due two months after the last month of the business’s accounting year."
   lazy val radio1 = "January"
   lazy val radio2 = "February"
   lazy val radio3 = "March"

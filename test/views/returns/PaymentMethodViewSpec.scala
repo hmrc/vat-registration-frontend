@@ -28,9 +28,10 @@ import views.html.returns.aas_payment_method
 class PaymentMethodViewSpec extends VatRegViewSpec {
 
   object ExpectedMessages {
-    val title = "How do you want to pay VAT?"
-    val heading = "How do you want to pay VAT?"
-    val paragraph = "HMRC will contact you if you change your payment method or bank details during your accounting year. This is to protect your VAT account from fraud."
+    val title = "How does the business want to pay VAT?"
+    val subheading = "VAT registration"
+    val heading = "How does the business want to pay VAT?"
+    val paragraph = "HMRC will contact the business if payment method or bank details are changed during the accounting year. This is to protect the VAT account from fraud."
     val bacs = "BACS (internet banking) or Direct Debit"
     val giro = "Bank Giro Transfer"
     val chaps = "Clearing House Automated Payment System (CHAPS)"
@@ -39,7 +40,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     val saveAndComeBackLater = "Save and come back later"
     val error = "Tell us how you want to pay VAT bills"
     val linkText = "print off and fill in a Direct debit mandate (opens in new tab)"
-    val hiddenText = s"To pay by Direct Debit, complete your VAT registration to get your VAT Registration Number. You can then $linkText"
+    val hiddenText = s"To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then $linkText"
   }
 
   val view = app.injector.instanceOf[aas_payment_method]
@@ -49,6 +50,9 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
   "the AAS Payment Method view" must {
     "have the right page title" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       doc.title must include(ExpectedMessages.title)
+    }
+    "have the right subheading" in new ViewSetup()(asDocument(PaymentMethodForm())) {
+      doc.headingLevel2(1) mustBe Some(ExpectedMessages.subheading)
     }
     "have the right heading" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       doc.heading mustBe Some(ExpectedMessages.heading)

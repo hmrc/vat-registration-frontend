@@ -26,8 +26,9 @@ class JoinFrsViewSpec extends VatRegViewSpec {
   val view = app.injector.instanceOf[frs_join]
 
   object ExpectedContent {
-    val heading = "Do you want to register the business for the Flat Rate Scheme?"
-    val title = "Do you want to register the business for the Flat Rate Scheme?"
+    val subheading = "VAT registration"
+    val heading = "Does the business want to register for the Flat Rate Scheme?"
+    val title = "Does the business want to register for the Flat Rate Scheme?"
 
     object List1 {
       val summary = "Businesses on the Flat Rate Scheme:"
@@ -49,13 +50,13 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     val heading2 = "Before you decide"
 
     object List2 {
-      val summary = "You’ll need to have an idea how much the business will:"
-      val bullet1 = "spend on goods to run the business over the next 3 months"
+      val summary = "You will need to have an idea how much the business will:"
+      val bullet1 = "spend on goods to run the company over the next 3 months"
       val bullet2 = "earn in sales, including VAT, over the next 3 months"
     }
 
-    val para2 = "If you can’t decide right now, answer ’no’. You can register the business for the Flat Rate Scheme at a later date."
-    val link = "VAT Flat Rate Scheme"
+    val para2 = "If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date."
+    val link = "VAT Flat Rate Scheme (opens in new tab)"
     val para3 = s"Find out more about $link."
     val label = "Tell us if you want to register the business for the Flat Rate Scheme"
     val yes = "Yes"
@@ -68,6 +69,10 @@ class JoinFrsViewSpec extends VatRegViewSpec {
   "The Join FRS page" must {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
+    }
+
+    "have the correct subheading" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
     }
 
     "have the correct heading" in new ViewSetup {
@@ -90,7 +95,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     }
 
     "have a second heading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
+      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
     }
 
     "have a second list" in new ViewSetup {

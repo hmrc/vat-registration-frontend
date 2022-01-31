@@ -23,9 +23,10 @@ import views.html.contact_preference
 class ContactPreferenceViewSpec extends VatRegViewSpec {
 
   val title = "How should we contact the business about VAT?"
+  val subheading = "About the business"
   val heading = "How should we contact the business about VAT?"
-  val paragraph = "We can send you an email when you have a new message about VAT."
-  val paragraph2 = "We may still need to send you letters if this is the only service available or if the law requires us to do so."
+  val paragraph = "We can send an email when there is a new message about VAT."
+  val paragraph2 = "We may still need to send the business letters if this is the only service available or if the law requires us to do so."
   val email = "email"
   val letter = "letter"
   val buttonText = "Save and continue"
@@ -38,6 +39,10 @@ class ContactPreferenceViewSpec extends VatRegViewSpec {
 
     "have the correct title" in {
       doc.title must include(title)
+    }
+
+    "have the correct subheading" in {
+      doc.select(Selectors.h2(1)).text mustBe subheading
     }
 
     "have the correct heading" in {
