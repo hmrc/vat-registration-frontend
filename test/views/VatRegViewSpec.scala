@@ -78,7 +78,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def unorderedList(n: Int): List[String] = doc.select(s"main ul:nth-of-type($n)").first.children().eachText().asScala.toList
 
-      def link(n: Int): Option[Link] = doc.select(a(n)).headOption.map(l =>Link(l.text, l.attr("href")))
+      def link(n: Int): Option[Link] = doc.select(a).toList.map(l => Link(l.text, l.attr("href"))).lift(n - 1)
 
       def submitButton: Option[String] = doc.select(button).headOption.map(_.text)
 

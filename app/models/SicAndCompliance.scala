@@ -25,7 +25,8 @@ case class SicAndCompliance(description: Option[BusinessActivityDescription] = N
                             businessActivities: Option[BusinessActivities] = None,
                             supplyWorkers: Option[SupplyWorkers] = None,
                             workers: Option[Workers] = None,
-                            intermediarySupply: Option[IntermediarySupply] = None)
+                            intermediarySupply: Option[IntermediarySupply] = None,
+                            hasLandAndProperty: Option[Boolean] = None)
 
 object SicAndCompliance extends OptionalJsonFields {
   val NUMBER_OF_WORKERS_THRESHOLD: Int = 8
@@ -38,6 +39,7 @@ object SicAndCompliance extends OptionalJsonFields {
     val supplyWorkers = (json \ "labourCompliance" \ "supplyWorkers").validateOpt[Boolean].getOrElse(None)
     val numOfWorkers = (json \ "labourCompliance" \ "numOfWorkersSupplied").validateOpt[Int].getOrElse(None)
     val intermediarySupply = (json \ "labourCompliance" \ "intermediaryArrangement").validateOpt[Boolean].getOrElse(None)
+    val hasLandAndProperty = (json \ "hasLandAndProperty").validateOpt[Boolean].getOrElse(None)
 
     SicAndCompliance(
       description = Some(BusinessActivityDescription((json \ "businessDescription").as[String])),
@@ -45,7 +47,8 @@ object SicAndCompliance extends OptionalJsonFields {
       businessActivities = Some(BusinessActivities(businessActivities)),
       supplyWorkers = supplyWorkers.map(SupplyWorkers.apply),
       workers = numOfWorkers.map(Workers.apply),
-      intermediarySupply = intermediarySupply.map(IntermediarySupply.apply)
+      intermediarySupply = intermediarySupply.map(IntermediarySupply.apply),
+      hasLandAndProperty = hasLandAndProperty
     )
   }
 
@@ -83,7 +86,9 @@ object SicAndCompliance extends OptionalJsonFields {
           .getOrElse(throw new IllegalStateException("Missing SIC Code to convert to API model"))
       )
 
-      Seq(Some(busDesc), Some(businessActivities), labour, Some(mainBus)).flatten.reduceLeft(_ ++ _)
+      val hasLandAndProperty = optional("hasLandAndProperty" -> sac.hasLandAndProperty)
+
+      Seq(Some(busDesc), Some(businessActivities), labour, Some(mainBus), Some(hasLandAndProperty)).flatten.reduceLeft(_ ++ _)
     }
   }
 
