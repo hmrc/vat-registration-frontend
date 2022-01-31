@@ -16,7 +16,7 @@
 
 package views.attachments
 
-import models.api.{AttachmentType, IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51}
+import models.api.{AttachmentType, IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -25,8 +25,9 @@ import views.html.attachments.PostalCoverSheet
 class PostalCoverSheetViewSpec extends VatRegViewSpec {
 
   val testRef = "VRN12345689"
-  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence)
+  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L)
   val testVat2: List[AttachmentType] = List[AttachmentType](VAT2)
+  val testVat5L: List[AttachmentType] = List[AttachmentType](VAT5L)
 
   lazy val view: PostalCoverSheet = app.injector.instanceOf[PostalCoverSheet]
 
@@ -44,6 +45,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val panel2 = "VAT Registration Applications BT VAT HM Revenue and Customs BX9 1WR United Kingdom"
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
+    val vat5LBullet = "a completed VAT5L form (opens in new tab)"
     val idEvidence = "three documents to confirm your identity"
     def idEvidenceNamed(name: String) = s"three documents to confirm $name’s identity"
     val print = "Print this page"
@@ -123,11 +125,18 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
       doc.unorderedList(1) mustNot contain(ExpectedContent.vat51Bullet)
     }
 
+    "not show the vat5L bullet point when attachment list does not contain VAT5L" in new ViewSetup {
+      override val doc: Document = Jsoup.parse(view(testRef, testVat2, None, None).body)
+      doc.unorderedList(1) mustBe List(ExpectedContent.vat2Bullet)
+      doc.unorderedList(1) mustNot contain(ExpectedContent.vat5LBullet)
+    }
+
     "have the correct first bullet list" in new ViewSetup {
       doc.unorderedList(1) mustBe List(
         ExpectedContent.vat2Bullet,
         ExpectedContent.vat51Bullet,
-        ExpectedContent.idEvidence
+        ExpectedContent.idEvidence,
+        ExpectedContent.vat5LBullet
       )
     }
 
