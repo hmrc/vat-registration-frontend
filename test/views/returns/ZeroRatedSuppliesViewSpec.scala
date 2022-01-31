@@ -29,14 +29,14 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
   val text = "Enter a value for all of the taxable goods which are zero-rated. For example £12,000."
   val summary = "What are zero-rated taxable goods?"
   val details = "Zero-rated are goods which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return."
-  val link = "Find out about VAT rates on different goods and services"
+  val link = "Find out about VAT rates on different goods and services (opens in new tab)"
   val label = "Zero rated turnover estimate"
   val buttonText = "Save and continue"
 
   "Zero Rated Supplies Page" must {
     val form = ZeroRatedSuppliesForm.form(TurnoverEstimates(10000))
     val view = app.injector.instanceOf[zero_rated_supplies].apply(testCall, form)
-    val doc = Jsoup.parse(view.body)
+    implicit val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {
       doc.title must include(title)
@@ -55,8 +55,8 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
       doc.select(Selectors.detailsContent).text must include(details)
     }
 
-    "have the correct link" in {
-      doc.select(Selectors.a(1)).text must include(link)
+    "have the correct link" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(link, "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"))
     }
 
     "have the correct label" in {

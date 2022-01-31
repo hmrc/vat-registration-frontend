@@ -461,6 +461,7 @@ cya.mobileBusiness                                   = Business mobile number
 cya.website                                          = Business website address
 cya.ppob                                             = Business address
 cya.contactPreference                                = Contact preference
+cya.landAndProperty                                  = Does the business’s activities include the buying, selling or letting of land or property?
 cya.businessDescription                              = What does the business do?
 cya.sicCodes                                         = SIC codes
 cya.mainSicCode                                      = Main business activity
@@ -1233,3 +1234,11 @@ attachments.transactorIdentityEvidenceRequired.additionalBullet3            = a 
 attachments.transactorIdentityEvidenceRequired.additionalBullet4            = any correspondence from the Department for Work and Pensions confirming entitlement to benefits
 attachments.transactorIdentityEvidenceRequired.additionalBullet5            = a recent utility bill
 attachments.transactorIdentityEvidenceRequired.additionalBullet6            = a birth certificate
+
+## LAND AND PROPERTY
+landAndProperty.heading                  = Does the business’s activities include the buying, selling or letting of land or property?
+landAndProperty.p1                       = If the business’s activities include the buying, selling or letting of land or property you must inform HMRC about this by completing a
+landAndProperty.link1                    = VAT5L form
+landAndProperty.p2                       = Some transactions involving land building are exempt from VAT. You can
+landAndProperty.link2                    = read the guidance on land and property
+landAndProperty.error.missing            = Select yes if the business’s activities include the buying, selling or letting of land or property

@@ -502,6 +502,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val sicAndCompliance: SicAndCompliance = vatScheme.sicAndCompliance.getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing sic and compliance block"))
 
+    val landAndPropertyRow = optSummaryListRowBoolean(
+      s"$sectionId.landAndProperty",
+      sicAndCompliance.hasLandAndProperty,
+      Some(sicAndCompRoutes.LandAndPropertyController.show.url)
+    )
+
     val companyBusinessDescriptionRow = optSummaryListRowString(
       s"$sectionId.businessDescription",
       sicAndCompliance.description.map(_.description),
@@ -547,6 +553,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
     )
 
     Seq(
+      landAndPropertyRow,
       companyBusinessDescriptionRow,
       mainActivityRow,
       sicCodesRow,

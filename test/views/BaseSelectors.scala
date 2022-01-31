@@ -25,7 +25,7 @@ trait BaseSelectors {
   def h2ConfirmationPage(n: Int) = s"#main-content > div > div > h2:nth-of-type($n)"
   val p: Int => String = i => s"main p:nth-of-type($i)"
   val legend: Int => String = i => s"main div div div:nth-of-type($i) fieldset legend"
-  val a: Int => String = i => s"main a:nth-of-type($i)"
+  val a: String = s"main a"
   val indent = "div.govuk-inset-text"
   val hint = "div.govuk-hint"
   val multipleHints: Int => String = i => s"div.govuk-hint:nth-of-type($i)"

@@ -77,16 +77,10 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
       doc.select(Selectors.orderedList(2)).text mustBe ExpectedContent.listItem2
     }
 
-    "have the correct Link texts" in {
-      doc.select(Selectors.a(1)).get(0).text mustBe ExpectedContent.linkText1
-      doc.select(Selectors.a(1)).get(1).text mustBe ExpectedContent.linkText2
-      doc.select(Selectors.a(1)).get(2).text mustBe ExpectedContent.linkText3
-    }
-
-    "have the correct Link urls" in {
-      doc.select(Selectors.a(1)).get(0).attr("href") mustBe ExpectedContent.url1
-      doc.select(Selectors.a(1)).get(1).attr("href") mustBe ExpectedContent.url2
-      doc.select(Selectors.a(1)).get(2).attr("href") mustBe ExpectedContent.url3
+    "have the correct Links" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.linkText1, ExpectedContent.url1))
+      doc.link(2) mustBe Some(Link(ExpectedContent.linkText2, ExpectedContent.url2))
+      doc.link(3) mustBe Some(Link(ExpectedContent.linkText3, ExpectedContent.url3))
     }
 
     "have the correct inset text" in {

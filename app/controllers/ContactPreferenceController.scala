@@ -17,14 +17,14 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
+import featureswitch.core.config.LandAndProperty
 import forms.ContactPreferenceForm
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessContactService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.contact_preference
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -55,7 +55,11 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
           contactPreference =>
             businessContactService.updateBusinessContact(contactPreference).flatMap {
               _ =>
-                Future.successful(Redirect(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show))
+                if (isEnabled(LandAndProperty)) {
+                  Future.successful(Redirect(controllers.registration.sicandcompliance.routes.LandAndPropertyController.show))
+                } else {
+                  Future.successful(Redirect(controllers.registration.sicandcompliance.routes.BusinessActivityDescriptionController.show))
+                }
             }
         )
   }

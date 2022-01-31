@@ -416,3 +416,7 @@ POST        /scottish-partnership-name                                          
 ## Submission In Progress
 GET         /submission-in-progress                                                            controllers.SubmissionInProgressController.show
 POST        /submission-in-progress                                                            controllers.SubmissionInProgressController.submit
+
+## Land And Property
+GET         /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.show
+POST        /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.submit
