@@ -19,21 +19,23 @@ package controllers.registration.attachments
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
+import services._
 import views.html.attachments.EmailCoverSheet
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EmailCoverSheetController @Inject()(view: EmailCoverSheet,
                                           val authConnector: AuthClientConnector,
                                           val sessionService: SessionService,
-                                          val attachmentsService: AttachmentsService,
-                                          val vatRegistrationService: VatRegistrationService
-                                          )(implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
+                                          attachmentsService: AttachmentsService,
+                                          vatRegistrationService: VatRegistrationService,
+                                          applicantDetailsService: ApplicantDetailsService,
+                                          transactorDetailsService: TransactorDetailsService
+                                         )(implicit appConfig: FrontendAppConfig,
+                                           val executionContext: ExecutionContext,
+                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   private val prefixLength = 3
@@ -49,6 +51,17 @@ class EmailCoverSheetController @Inject()(view: EmailCoverSheet,
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
           formattedRef = prefix +: groups mkString separator
-        } yield Ok(view(formattedRef, attachmentsList.attachments))
+          isTransactor <- vatRegistrationService.isTransactor
+          applicantName <- if (isTransactor) {
+            applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
+          } else {
+            Future.successful(None)
+          }
+          transactorName <- if (isTransactor) {
+            transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
+          } else {
+            Future.successful(None)
+          }
+        } yield Ok(view(formattedRef, attachmentsList.attachments, applicantName, transactorName))
   }
 }

@@ -999,15 +999,16 @@ attachmentMethod.error.missing                            = Select how you want 
 
 ## MULTIPLE DOCUMENTS REQUIRED
 
-attachments.multipleDocumentsRequired.title               = We require some additional information from you
-attachments.multipleDocumentsRequired.para                = To enable us to progress your application further, we need the following information and documents from you:
-attachments.multipleDocumentsRequired.identityDetails     = What identity documents can I provide?
-attachments.multipleDocumentsRequired.identityEvidence    = identity documents of you
-attachments.multipleDocumentsRequired.VAT2                = a completed
-attachments.multipleDocumentsRequired.VAT2.link           = VAT2 form
-attachments.multipleDocumentsRequired.VAT51.para1         = a completed
-attachments.multipleDocumentsRequired.VAT51.link          = VAT 50/51 form
-attachments.multipleDocumentsRequired.VAT51.para2         = to provide us with details of the VAT group, including details of each subsidiary.
+attachments.multipleDocumentsRequired.title                         = We require some additional information from you
+attachments.multipleDocumentsRequired.para                          = To enable us to progress your application further, we need the following information and documents from you:
+attachments.multipleDocumentsRequired.identityDetails               = What identity documents can I provide?
+attachments.multipleDocumentsRequired.identityEvidence              = identity documents of you
+attachments.multipleDocumentsRequired.identityEvidence.name         = three documents to confirm {0}’s identity
+attachments.multipleDocumentsRequired.VAT2                          = a completed
+attachments.multipleDocumentsRequired.VAT2.link                     = VAT2 form
+attachments.multipleDocumentsRequired.VAT51.para1                   = a completed
+attachments.multipleDocumentsRequired.VAT51.link                    = VAT 50/51 form
+attachments.multipleDocumentsRequired.VAT51.para2                   = to provide us with details of the VAT group, including details of each subsidiary.
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1069,6 +1070,7 @@ pages.CoverSheet.vat51Start                        = a completed
 pages.CoverSheet.vat51Link                         = VAT 50/51 form (opens in new tab)
 pages.CoverSheet.vat51End                          = to provide us with details of the VAT group, including details of each subsidiary
 pages.CoverSheet.identityEvidence                  = three documents to confirm your identity
+pages.CoverSheet.identityEvidence.name             = three documents to confirm {0}’s identity
 pages.CoverSheet.idEvidence.details                = What identity documents can I provide?
 pages.CoverSheet.idEvidence.para1                  = Include a copy of
 pages.CoverSheet.idEvidence.para1Bold              = one
@@ -1217,8 +1219,8 @@ attachments.transactorIdentityEvidenceRequired.title.1                      = Yo
 attachments.transactorIdentityEvidenceRequired.title.2                      = You must send us three identity documents for {0} and {1} in order for us to process this VAT application
 attachments.transactorIdentityEvidenceRequired.evidence.start               = We need
 attachments.transactorIdentityEvidenceRequired.evidence.bold                = one
-attachments.transactorIdentityEvidenceRequired.evidence.end.1               = document to verify {0} identity, this must include a government issued photo for example:
-attachments.transactorIdentityEvidenceRequired.evidence.end.2               = document to verify both {0} and {1} identity, this must include a government issued photo for example:
+attachments.transactorIdentityEvidenceRequired.evidence.end.1               = document to verify {0}’s identity, this must include a government issued photo for example:
+attachments.transactorIdentityEvidenceRequired.evidence.end.2               = document to verify both {0} and {1}’s identity, this must include a government issued photo for example:
 attachments.transactorIdentityEvidenceRequired.bullet1                      = a passport
 attachments.transactorIdentityEvidenceRequired.bullet2                      = a photo drivers licence
 attachments.transactorIdentityEvidenceRequired.bullet3                      = a national identity card

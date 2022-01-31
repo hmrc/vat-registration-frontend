@@ -18,18 +18,20 @@ package controllers.registration.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.api.{IdentityEvidence, VAT2}
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile, SessionService}
+import services._
 import views.html.attachments.MultipleDocumentsRequired
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
                                                     val sessionService: SessionService,
                                                     attachmentsService: AttachmentsService,
+                                                    vatRegistrationService: VatRegistrationService,
+                                                    applicantDetailsService: ApplicantDetailsService,
+                                                    transactorDetailsService: TransactorDetailsService,
                                                     multipleDocumentsRequiredPage: MultipleDocumentsRequired)
                                                    (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -39,9 +41,20 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        attachmentsService.getAttachmentList(profile.registrationId).map { attachmentInfo =>
-          Ok(multipleDocumentsRequiredPage(attachmentInfo.attachments))
-        }
+        for {
+          attachmentInfo <- attachmentsService.getAttachmentList(profile.registrationId)
+          isTransactor <- vatRegistrationService.isTransactor
+          applicantName <- if (isTransactor) {
+            applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
+          } else {
+            Future.successful(None)
+          }
+          transactorName <- if (isTransactor) {
+            transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
+          } else {
+            Future.successful(None)
+          }
+        } yield Ok(multipleDocumentsRequiredPage(attachmentInfo.attachments, applicantName, transactorName))
   }
 
 }

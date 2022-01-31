@@ -16,31 +16,32 @@
 
 package views.attachments
 
-import models.api.{IdentityEvidence, VAT2}
+import models.api.{IdentityEvidence, TransactorIdentityEvidence, VAT2}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.MultipleDocumentsRequired
-import scala.collection.JavaConverters._
 
 class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[MultipleDocumentsRequired]
-  implicit val doc = Jsoup.parse(view(List(IdentityEvidence, VAT2)).body)
+  val view: MultipleDocumentsRequired = app.injector.instanceOf[MultipleDocumentsRequired]
 
   object ExpectedContent {
     val heading = "We require some additional information from you"
     val title = s"$heading - Register for VAT - GOV.UK"
     val para = "To enable us to progress your application further, we need the following information and documents from you:"
     val bullet1 = "identity documents of you"
+    def bullet1Named(name: String) = s"three documents to confirm $name’s identity"
     val linkText = "VAT2 form (opens in new tab)"
     val bullet2 = s"a completed $linkText"
     val continue = "Save and continue"
+    val transactorName = "Transactor Name"
+    val applicantName = "Applicant Name"
   }
 
   object IdentityDetails {
     val summary = "What identity documents can I provide?"
-    val content = "We need one piece of primary evidence which consists of a copy of government issued photo which could include: " +
+    val content: String = "We need one piece of primary evidence which consists of a copy of government issued photo which could include: " +
       "a passport " +
       "a photo drivers licence " +
       "a national identity card " +
@@ -53,7 +54,9 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
       "a birth certificate"
   }
 
-  "The charge expectancy (regularly claim refunds) page" must {
+  "The Multiple Documents Required page" must {
+    implicit val doc: Document = Jsoup.parse(view(List(IdentityEvidence, VAT2), None, None).body)
+
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
@@ -75,6 +78,33 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
         ExpectedContent.bullet1,
         ExpectedContent.bullet2
       )
+    }
+
+    "have the correct bullet list for the transactor flow" when {
+      "transactor is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(List(TransactorIdentityEvidence), None, Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.bullet1Named(ExpectedContent.transactorName)
+        )
+      }
+
+      "applicant is unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(List(IdentityEvidence), Some(ExpectedContent.applicantName), None).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.bullet1Named(ExpectedContent.applicantName)
+        )
+      }
+
+      "both are unverified" in new ViewSetup {
+        override val doc: Document = Jsoup.parse(view(List(IdentityEvidence, TransactorIdentityEvidence), Some(ExpectedContent.applicantName), Some(ExpectedContent.transactorName)).body)
+
+        doc.unorderedList(1) mustBe List(
+          ExpectedContent.bullet1Named(ExpectedContent.applicantName),
+          ExpectedContent.bullet1Named(ExpectedContent.transactorName)
+        )
+      }
     }
 
     "have the correct link" in new ViewSetup {
