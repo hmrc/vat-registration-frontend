@@ -1010,6 +1010,8 @@ attachments.multipleDocumentsRequired.VAT2.link                     = VAT2 form
 attachments.multipleDocumentsRequired.VAT51.para1                   = a completed
 attachments.multipleDocumentsRequired.VAT51.link                    = VAT 50/51 form
 attachments.multipleDocumentsRequired.VAT51.para2                   = to provide us with details of the VAT group, including details of each subsidiary.
+attachments.multipleDocumentsRequired.VAT5L.para1                   = a completed
+attachments.multipleDocumentsRequired.VAT5L.link                    = VAT5L form
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1068,8 +1070,10 @@ pages.CoverSheet.vat2Start                         = a completed
 pages.CoverSheet.vat2Link                          = VAT2 form
 pages.CoverSheet.vat2End                           = to capture the details of all the partners
 pages.CoverSheet.vat51Start                        = a completed
-pages.CoverSheet.vat51Link                         = VAT 50/51 form (opens in new tab)
+pages.CoverSheet.vat51Link                         = VAT 50/51 form
 pages.CoverSheet.vat51End                          = to provide us with details of the VAT group, including details of each subsidiary
+pages.CoverSheet.vat5LStart                        = a completed
+pages.CoverSheet.vat5LLink                         = VAT5L form
 pages.CoverSheet.identityEvidence                  = three documents to confirm your identity
 pages.CoverSheet.identityEvidence.name             = three documents to confirm {0}’s identity
 pages.CoverSheet.idEvidence.details                = What identity documents can I provide?

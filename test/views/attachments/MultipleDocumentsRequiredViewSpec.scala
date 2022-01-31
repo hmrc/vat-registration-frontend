@@ -16,7 +16,7 @@
 
 package views.attachments
 
-import models.api.{IdentityEvidence, TransactorIdentityEvidence, VAT2}
+import models.api.{IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT5L}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -34,6 +34,7 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
     def bullet1Named(name: String) = s"three documents to confirm $name’s identity"
     val linkText = "VAT2 form (opens in new tab)"
     val bullet2 = s"a completed $linkText"
+    val vat5LBullet = "a completed VAT5L form (opens in new tab)"
     val continue = "Save and continue"
     val transactorName = "Transactor Name"
     val applicantName = "Applicant Name"
@@ -78,6 +79,18 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
         ExpectedContent.bullet1,
         ExpectedContent.bullet2
       )
+    }
+
+    "not show the vat5L bullet point when attachment list does not contain VAT5L" in new ViewSetup {
+      override val doc: Document = Jsoup.parse(view(List(IdentityEvidence), None, None).body)
+
+      doc.unorderedList(1) mustNot contain(ExpectedContent.vat5LBullet)
+    }
+
+    "show the vat5L bullet point when attachment list does contain VAT5L" in new ViewSetup {
+      override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
+
+      doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
     }
 
     "have the correct bullet list for the transactor flow" when {
