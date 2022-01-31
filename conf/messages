@@ -1212,6 +1212,12 @@ pages.vat51Required.para1                                = We need a completed
 pages.vat51Required.link                                 = VAT 50/51 form
 pages.vat51Required.para2                                = to provide us with details of the VAT group, including details of each subsidiary.
 
+## VAT5L REQUIRED
+pages.vat5LRequired.heading                              = You must send us a completed VAT5L form in order for us to process this application
+pages.vat5LRequired.para1                                = We need a completed
+pages.vat5LRequired.link                                 = VAT5L form
+pages.vat5LRequired.para2                                = to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to HRMC.
+
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Choose an application reference
 applicationReference.para                                = You can add a memorable word, phrase or number to every application. This could be a business name or a unique number to help you manage ongoing applications.
