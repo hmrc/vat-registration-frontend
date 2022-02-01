@@ -341,6 +341,7 @@ GET         /attachments-resolve                                                
 GET         /identity-documents-required                                                       controllers.registration.attachments.IdentityEvidenceRequiredController.show
 GET         /your-identity-documents-required                                                  controllers.registration.attachments.TransactorIdentityEvidenceRequiredController.show
 GET         /vat51-required                                                                    controllers.registration.attachments.Vat51RequiredController.show
+GET         /vat5L-required                                                                    controllers.registration.attachments.Vat5LRequiredController.show
 GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
 GET         /multiple-documents-required                                                       controllers.registration.attachments.MultipleDocumentsRequiredController.show
 POST        /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.submit

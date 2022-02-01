@@ -71,7 +71,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       }
     }
 
-    "return a redirect to VAT51 required page when VAT2 is required" in {
+    "return a redirect to VAT51 required page when VAT51 is required" in {
       given()
         .user.isAuthorised
         .audit.writesAudit()
@@ -84,6 +84,22 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.Vat51RequiredController.show.url)
+      }
+    }
+
+    "return a redirect to VAT5L required page when VAT5L is required" in {
+      given()
+        .user.isAuthorised
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](VAT5L))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.Vat5LRequiredController.show.url)
       }
     }
 
