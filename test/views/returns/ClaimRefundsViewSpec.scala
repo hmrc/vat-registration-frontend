@@ -29,7 +29,6 @@ class ClaimRefundsViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
-    val subheading = "About the business"
     val heading = "Does the business expect to regularly claim VAT refunds from HMRC?"
     val title = "Does the business expect to regularly claim VAT refunds from HMRC?"
     val para1 = "Most businesses do not claim VAT refunds. It is only possible when the VAT a business pays on " +
@@ -46,10 +45,6 @@ class ClaimRefundsViewSpec extends VatRegViewSpec {
   "The charge expectancy (regularly claim refunds) page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
-    }
-
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
     }
 
     "have the correct heading" in new ViewSetup {

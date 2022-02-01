@@ -29,7 +29,6 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
 
   object ExpectedMessages {
     val title = "How does the business want to pay VAT?"
-    val subheading = "VAT registration"
     val heading = "How does the business want to pay VAT?"
     val paragraph = "HMRC will contact the business if payment method or bank details are changed during the accounting year. This is to protect the VAT account from fraud."
     val bacs = "BACS (internet banking) or Direct Debit"
@@ -50,9 +49,6 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
   "the AAS Payment Method view" must {
     "have the right page title" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       doc.title must include(ExpectedMessages.title)
-    }
-    "have the right subheading" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      doc.headingLevel2(1) mustBe Some(ExpectedMessages.subheading)
     }
     "have the right heading" in new ViewSetup()(asDocument(PaymentMethodForm())) {
       doc.heading mustBe Some(ExpectedMessages.heading)

@@ -310,7 +310,6 @@ validation.zeroRatedSupplies.range.above                    = The value of taxab
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
 ## Vat Charge Expectancy Page
-pages.vat.charge.expectancy.subheading                      = About the business
 pages.vat.charge.expectancy.heading                         = Does the business expect to regularly claim VAT refunds from HMRC?
 pages.vat.charge.expectancy.para1                           = Most businesses do not claim VAT refunds. It is only possible when the VAT a business pays on business-related purchases is more than the VAT it charges customers.
 pages.pages.vat.charge.expectancy.example                   = Show me an example
@@ -318,7 +317,6 @@ pages.pages.vat.charge.expectancy.example.para1             = If a business sell
 validation.vat.charge.expectancy.missing                    = Select yes if you expect the business to regularly claim VAT refunds from HMRC
 
 ## Vat Return Frequency
-pages.vat.return.frequency.subheading                      = VAT registration
 pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
 pages.vat.return.frequency.para                            = Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year.
 pages.vat.return.frequency.radio.monthly                   = Monthly
@@ -344,7 +342,6 @@ validation.accounting.period.missing                        = Tell us when you w
 
 ##Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
-pages.contactPreference.subheading                     = About the business
 pages.contactPreference.heading                        = How should we contact the business about VAT?
 pages.contactPreference.text1                          = We can send an email when there is a new message about VAT.
 pages.contactPreference.text2                          = We may still need to send the business letters if this is the only service available or if the law requires us to do so.
@@ -616,7 +613,6 @@ pages.labourCompliance.intermediarySupply.heading                = Are you an in
 validation.labourCompliance.intermediarySupply.missing           = Select yes if you an intermediary arranging the supply of workers
 
 ## Apply For Eori
-pages.applyForEori.subheading               = Company details
 pages.applyForEori.heading                  = Do you need an EORI number?
 pages.applyForEori.p1                       = The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:
 pages.applyForEori.bullet1                  = between the Isle of Man and any other country (including the EU)
@@ -718,7 +714,6 @@ pages.ppobdropout.p2                                    = Please
 pages.ppobdropout.url                                   = register with another service
 
 ## Are you interested in FRS Page
-pages.frs.join.subheading                       = VAT registration
 pages.frs.join.heading                          = Does the business want to register for the Flat Rate Scheme?
 pages.frs.join.p1                               = Companies on the Flat Rate Scheme pay a fixed rate of VAT depending on their business type.
 pages.frs.join.listHead                         = Businesses on the Flat Rate Scheme:
@@ -740,7 +735,6 @@ pages.frs.join.para2.1                          = VAT Flat Rate Scheme
 validation.frs.join.missing                     = Tell us if you want to register the business for the Flat Rate Scheme
 
 ## Do you spend less than £1000 Page
-pages.frs.costsInclusive.subheading                       = VAT registration
 pages.frs.costsInclusive.heading                          = Will the business spend more than £250 over the next 3 months on ‘relevant goods’?
 pages.frs.costsInclusive.para1                            = ‘Relevant goods’ are moveable items or materials used exclusively to run the company. They include gas and electricity.
 pages.frs.costsInclusive.list.head                        = Do not include:
@@ -867,7 +861,6 @@ start-new-application.radio-no                           = No - I already starte
 start-new-application.error.required                     = Tell us if you are starting a new application or have already started one
 
 ## LAST MONTH OF ACCOUNTING YEAR
-last-month-of-accounting-year.subheading                 = VAT registration
 last-month-of-accounting-year.heading                    = What will be the last month of the business’s accounting year?
 last-month-of-accounting-year.para                       = As part of the Annual Accounting Scheme the VAT Return will be due two months after the last month of the business’s accounting year.
 last-month-of-accounting-year.jan                        = January
@@ -885,7 +878,6 @@ last-month-of-accounting-year.dec                        = December
 last-month-of-accounting-year.error.required             = Tell us when you want your accounting year to end
 
 ## AAS HOW OFTEN MAKE PAYMENTS
-aas.paymentFrequency.subheading                          = VAT registration
 aas.paymentFrequency.heading                             = How often does the business want to make payments?
 ass.paymentFrequency.para                                = As part of the Annual Accounting Scheme each payment is either 10% of the estimated VAT bill for monthly payers or 25% for quarterly payers. The amount the business will pay is based on previous VAT Returns or if they have not yet submitted a VAT Return it will be estimated.
 aas.paymentFrequency.quarterly                           = Quarterly
@@ -893,7 +885,6 @@ aas.paymentFrequency.monthly                             = Monthly
 aas.paymentFrequency.notProvided                         = Tell us how often you want to make payments
 
 ## AAS HOW WOULD YOU LIKE TO PAY
-aas.paymentMethod.subheading                             = VAT registration
 aas.paymentMethod.heading                                = How does the business want to pay VAT?
 aas.paymentMethod.text                                   = HMRC will contact the business if payment method or bank details are changed during the accounting year. This is to protect the VAT account from fraud.
 aas.paymentMethod.bacs                                   = BACS (internet banking) or Direct Debit

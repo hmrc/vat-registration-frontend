@@ -35,7 +35,6 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
     val p2 = "The business does not need an EORI number if it only moves goods on the island of Ireland or between an EU country and Northern Ireland."
     val linkText = "Find out more about EORI (opens in new tab)"
     val title = "Do you need an EORI number? - Register for VAT - GOV.UK"
-    val subheading = "Company details"
     val heading = "Do you need an EORI number?"
     val yes = "Yes"
     val no = "No"
@@ -64,10 +63,6 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
 
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
-    }
-
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
     }
 
     "have the correct heading" in new ViewSetup {
