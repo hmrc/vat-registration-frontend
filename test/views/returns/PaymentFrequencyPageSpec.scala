@@ -29,7 +29,6 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
 
   object ExpectedMessages {
     val title = "How often does the business want to make payments?"
-    val subheading = "VAT registration"
     val heading = "How often does the business want to make payments?"
     val paragraph = "As part of the Annual Accounting Scheme each payment is either 10% of the estimated VAT bill for monthly payers or 25% for quarterly payers. The amount the business will pay is based on previous VAT Returns or if they have not yet submitted a VAT Return it will be estimated."
     val quarterly = "Quarterly"
@@ -46,10 +45,6 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
   "the how_often_pay_aas view" must {
     "have the right page title" in new ViewSetup()(asDocument(PaymentFrequencyForm())) {
       doc.title must include(ExpectedMessages.title)
-    }
-
-    "have teh right subheading" in new ViewSetup()(asDocument(PaymentFrequencyForm())) {
-      doc.headingLevel2(1) mustBe Some(ExpectedMessages.subheading)
     }
 
     "have the right heading" in new ViewSetup()(asDocument(PaymentFrequencyForm())) {

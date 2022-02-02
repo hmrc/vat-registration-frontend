@@ -26,7 +26,6 @@ class JoinFrsViewSpec extends VatRegViewSpec {
   val view = app.injector.instanceOf[frs_join]
 
   object ExpectedContent {
-    val subheading = "VAT registration"
     val heading = "Does the business want to register for the Flat Rate Scheme?"
     val title = "Does the business want to register for the Flat Rate Scheme?"
 
@@ -71,10 +70,6 @@ class JoinFrsViewSpec extends VatRegViewSpec {
       doc.hasBackLink mustBe true
     }
 
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
-    }
-
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
@@ -95,7 +90,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     }
 
     "have a second heading" in new ViewSetup {
-      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
     }
 
     "have a second list" in new ViewSetup {

@@ -25,7 +25,6 @@ import views.html.annual_costs_inclusive
 class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
 
   val view: annual_costs_inclusive = app.injector.instanceOf[annual_costs_inclusive]
-  val subheading = "VAT registration"
   val heading = "Will the business spend more than £250 over the next 3 months on ‘relevant goods’?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para1 = "‘Relevant goods’ are moveable items or materials used exclusively to run the company. They include gas and electricity."
@@ -52,10 +51,6 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
       doc.hasBackLink mustBe true
     }
 
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(subheading)
-    }
-
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(heading)
     }
@@ -65,7 +60,7 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
     }
 
     "have the correct h2" in new ViewSetup {
-      doc.headingLevel2(2) mustBe Some(listHead)
+      doc.headingLevel2(1) mustBe Some(listHead)
     }
 
     "have correct text" in new ViewSetup {

@@ -27,7 +27,6 @@ class ReturnFrequencyViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view(form = ReturnFrequencyForm.form, showAAS = true, showMonthly = false).body)
 
   object ExpectedContent {
-    val subheading = "VAT registration"
     val heading = "When will the business do its VAT Returns?"
     val title = "When will the business do its VAT Returns?"
     val para = "Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year."
@@ -48,10 +47,6 @@ class ReturnFrequencyViewSpec extends VatRegViewSpec {
   "The return frequency page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
-    }
-
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
     }
 
     "have the correct heading" in new ViewSetup {

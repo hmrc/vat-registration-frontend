@@ -21,7 +21,6 @@
         layout: layouts.layout,
         errorSummary: components.errorSummary,
         h1: components.h1,
-        subheading: components.subheading,
         p: components.p,
         details: components.details,
         form: FormWithCSRF,
@@ -34,7 +33,6 @@
 @layout(pageTitle = Some(title(chargeExpectancyForm, messages("pages.vat.charge.expectancy.heading"))), backLink = true) {
 
     @errorSummary(chargeExpectancyForm.errors)
-    @subheading(messages("pages.vat.charge.expectancy.subheading"))
     @h1(messages("pages.vat.charge.expectancy.heading"))
     @p{ @messages("pages.vat.charge.expectancy.para1") }
 

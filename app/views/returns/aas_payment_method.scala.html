@@ -20,7 +20,6 @@
 
 @this(
         h1: components.h1,
-        subheading: components.subheading,
         p: components.p,
         errorSummary: components.errorSummary,
         layout: layouts.layout,
@@ -36,8 +35,6 @@
 @layout(pageTitle = Some(title(form, messages("aas.paymentMethod.heading"))), backLink = true) {
 
     @errorSummary(form.errors)
-
-    @subheading(messages("aas.paymentMethod.subheading"))
 
     @h1(messages("aas.paymentMethod.heading"))
 
