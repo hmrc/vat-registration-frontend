@@ -67,7 +67,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
     "return OK and text based on no vat start date provided" in new Setup {
       val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold)))
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns", returnsData)
@@ -86,7 +86,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
     "return OK and text based on the vat start date already provided by the user" in new Setup {
       val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold)))
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns", returnsDataWithStartDate)
@@ -110,7 +110,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
         val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold)))
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
@@ -132,7 +132,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
         val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold)))
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsData)
@@ -153,7 +153,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "return BAD_REQUEST when an invalid form is posted when the date provided is before the EDR" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold)))
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
@@ -180,7 +180,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
         )
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.has("returns", returnsDataWithStartDate)
@@ -200,7 +200,7 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "return INTERNAL_SERVER_ERROR when no returns or threshold data exists" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = voluntaryThreshold)))
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
           .vatScheme.doesNotHave("returns")

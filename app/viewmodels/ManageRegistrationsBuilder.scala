@@ -56,7 +56,7 @@ class ManageRegistrationsBuilder @Inject()(appConfig: FrontendAppConfig,
   }
 
   def link(registration: VatSchemeHeader): String =
-    controllers.routes.WelcomeController.continueJourney(Some(registration.registrationId)).url
+    controllers.routes.JourneyController.continueJourney(Some(registration.registrationId)).url
 
   def tableRows(registrations: List[VatSchemeHeader])(implicit messages: Messages): Seq[Seq[TableRow]] =
     registrations.map(registration =>

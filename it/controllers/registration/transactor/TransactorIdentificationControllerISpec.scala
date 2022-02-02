@@ -34,7 +34,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .vatScheme.contains(fullVatScheme)
@@ -55,7 +55,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
   "GET /sti-transactor-callback" must {
     "redirect to the HomeAddress page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)

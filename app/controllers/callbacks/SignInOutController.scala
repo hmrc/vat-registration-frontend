@@ -37,7 +37,7 @@ class SignInOutController @Inject()(val authConnector: AuthClientConnector,
   extends BaseController with SessionProfile {
 
   def postSignIn: Action[AnyContent] = Action.async {
-    _ => Future.successful(Redirect(controllers.routes.WelcomeController.show.url))
+    _ => Future.successful(Redirect(controllers.routes.JourneyController.show.url))
   }
 
   def signOut: Action[AnyContent] = Action.async {

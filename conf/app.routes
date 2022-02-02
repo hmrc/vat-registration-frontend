@@ -15,11 +15,11 @@ GET         /schemes/save-for-later                                             
 GET         /feedback                                                                          controllers.feedback.FeedbackController.feedbackShow
 
 ## WELCOME PAGE
-GET         /                                                                                  controllers.WelcomeController.show
-POST        /                                                                                  controllers.WelcomeController.submit
-GET         /journey-new                                                                       controllers.WelcomeController.startNewJourney
-GET         /journey-continue                                                                  controllers.WelcomeController.continueJourney(journey: Option[String] ?= None)
-GET         /journey/:regId                                                                    controllers.WelcomeController.initJourney(regId: String)
+GET         /                                                                                  controllers.JourneyController.show
+POST        /                                                                                  controllers.JourneyController.submit
+GET         /journey-new                                                                       controllers.JourneyController.startNewJourney
+GET         /journey-continue                                                                  controllers.JourneyController.continueJourney(journey: Option[String] ?= None)
+GET         /journey/:regId                                                                    controllers.JourneyController.initJourney(regId: String)
 
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
@@ -373,6 +373,10 @@ POST        /part-of-organisation                                               
 ## Declaration Capacity
 GET         /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.show
 POST        /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.submit
+
+## Agent Name
+GET         /agent-name                                                                        controllers.registration.transactor.AgentNameController.show
+POST        /agent-name                                                                        controllers.registration.transactor.AgentNameController.submit
 
 ## Organisation Name
 GET         /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.show

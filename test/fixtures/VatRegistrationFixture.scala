@@ -154,7 +154,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       nino = Some("AB123456C"),
       trn = None,
       identifiersMatch = true,
-      dateOfBirth = LocalDate.of(2020, 1, 1)
+      dateOfBirth = Some(LocalDate.of(2020, 1, 1))
     )),
     isPartOfOrganisation = Some(true),
     organisationName = Some("testCompanyName"),

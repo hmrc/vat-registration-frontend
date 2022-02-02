@@ -21,7 +21,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with Regi
         ))
 
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[Returns].isUpdatedWith(Returns(zeroRatedSupplies = Some(0)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -39,7 +39,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with Regi
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(estimates = TurnoverEstimates(1))
           ))
 
-        given.user.isAuthorised
+        given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(scheme)))
 
@@ -53,7 +53,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with Regi
       "return INTERNAL_SERVER_ERROR" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = None)
 
-        given.user.isAuthorised
+        given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(scheme)))
 

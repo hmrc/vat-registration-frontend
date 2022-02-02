@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater, TrafficManagementPredicate}
+import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TrafficManagementPredicate}
 import forms.StartNewApplicationForm
 import play.api.mvc._
 import services.{SessionService, _}
@@ -31,8 +31,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationService,
-                                  val currentProfileService: CurrentProfileService,
+class JourneyController @Inject()(val vatRegistrationService: VatRegistrationService,
+                                  val journeyService: JourneyService,
                                   val authConnector: AuthClientConnector,
                                   val sessionService: SessionService,
                                   val trafficManagementService: TrafficManagementService,
@@ -48,27 +48,27 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
       if (isEnabled(MultipleRegistrations)) {
         vatRegistrationService.getAllRegistrations.map {
           case head :: tail => Redirect(routes.ManageRegistrationsController.show)
-          case Nil => Redirect(routes.WelcomeController.startNewJourney)
+          case Nil => Redirect(routes.JourneyController.startNewJourney)
         }
       } else {
         vatRegistrationService.getAllRegistrations.map(_.lastOption).flatMap {
           case Some(header) if header.status == VatRegStatus.draft =>
-            currentProfileService.buildCurrentProfile(header.registrationId).map { _ =>
+            journeyService.buildCurrentProfile(header.registrationId).map { _ =>
               Ok(view(StartNewApplicationForm.form))
             }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme
               case exception =>
-                Redirect(routes.WelcomeController.startNewJourney)
+                Redirect(routes.JourneyController.startNewJourney)
             }
           case _ =>
-            currentProfileService.sessionService.remove.map { _ =>
-              Redirect(routes.WelcomeController.startNewJourney)
+            journeyService.sessionService.remove.map { _ =>
+              Redirect(routes.JourneyController.startNewJourney)
             }
         }
       }
 
     }
     else {
-      Future.successful(Redirect(routes.WelcomeController.startNewJourney))
+      Future.successful(Redirect(routes.JourneyController.startNewJourney))
     }
   }
 
@@ -78,9 +78,9 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
         Future.successful(BadRequest(view(formWithErrors))),
       startNew =>
         if (startNew) {
-          Future.successful(Redirect(routes.WelcomeController.startNewJourney))
+          Future.successful(Redirect(routes.JourneyController.startNewJourney))
         } else {
-          Future.successful(Redirect(routes.WelcomeController.continueJourney(Some(profile.registrationId))))
+          Future.successful(Redirect(routes.JourneyController.continueJourney(Some(profile.registrationId))))
         }
     )
   }
@@ -88,7 +88,7 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
   def startNewJourney: Action[AnyContent] = isAuthenticated { implicit request =>
     for {
       scheme <- vatRegistrationService.createRegistrationFootprint
-      _ <- currentProfileService.buildCurrentProfile(scheme.id)
+      _ <- journeyService.buildCurrentProfile(scheme.id)
     } yield if (isEnabled(MultipleRegistrations)) {
       Redirect(routes.ApplicationReferenceController.show)
     } else {
@@ -96,11 +96,12 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
     }
   }
 
+  // scalastyle:off
   def continueJourney(journey: Option[String]): Action[AnyContent] = isAuthenticated { implicit request =>
     journey match {
       case Some(regId: String) =>
         for {
-          _ <- currentProfileService.buildCurrentProfile(regId)
+          _ <- journeyService.buildCurrentProfile(regId)
           optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader].asOpt)
           header = optHeader.getOrElse(throw new InternalServerException(s"[continueJourney] couldn't parse vat scheme header for regId: $regId"))
           trafficManagementResponse <- trafficManagementService.checkTrafficManagement(regId) // Used to check if user is OTRS so should always be enabled
@@ -117,19 +118,20 @@ class WelcomeController @Inject()(val vatRegistrationService: VatRegistrationSer
   }
 
   def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    vatRegistrationService.isTransactor
-      .flatMap { isTransactor =>
-        currentProfileService.buildCurrentProfile(regId).map { _ =>
-          if (isTransactor) {
-            Redirect(transactorRoutes.PartOfOrganisationController.show)
-          } else {
-            Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
-          }
-        }
-      }
-      .recover {
-        case e: IllegalStateException => Redirect(routes.WelcomeController.show)
-      }
+    (for {
+      isTransactor <- vatRegistrationService.isTransactor
+      isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
+      _ <- journeyService.buildCurrentProfile(regId)
+    } yield {
+      if (isTransactor && !isAgent)
+        Redirect(transactorRoutes.PartOfOrganisationController.show)
+      else if (isAgent && isEnabled(FullAgentJourney))
+        Redirect(transactorRoutes.AgentNameController.show)
+      else
+        Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
+    }).recover {
+      case e: IllegalStateException => Redirect(routes.JourneyController.show)
+    }
   }
 
 }

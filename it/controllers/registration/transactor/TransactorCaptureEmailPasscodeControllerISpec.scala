@@ -35,7 +35,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
   "GET /transactor-details/enter-the-verification-code" should {
     "show the view correctly" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(s4lContents)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -53,7 +53,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(s4lContents)
           .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -72,7 +72,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(s4lContents)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -89,7 +89,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(s4lContents)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -109,7 +109,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(s4lContents)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

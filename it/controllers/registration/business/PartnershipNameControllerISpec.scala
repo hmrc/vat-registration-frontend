@@ -32,7 +32,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
   "show Partnership Name page" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
@@ -51,7 +51,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
   "submit Partnership Name page" should {
     "return SEE_OTHER" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))

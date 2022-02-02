@@ -27,7 +27,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
   "GET /email-address-verified" should {
     "show the view correctly" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -42,7 +42,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

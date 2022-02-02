@@ -350,7 +350,10 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
 
     val dob = optSummaryListRowString(
       s"$sectionId.dob",
-      applicantDetails.personalDetails.map(_.dateOfBirth.format(presentationFormatter)),
+      for {
+        personalDetails <- applicantDetails.personalDetails
+        dob <- personalDetails.dateOfBirth
+      } yield dob.format(presentationFormatter),
       Some(changePersonalDetailsUrl)
     )
 

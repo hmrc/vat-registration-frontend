@@ -25,7 +25,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
       "the VAT scheme is stored successfully in Save 4 Later" must {
         "return SEE_OTHER" in new Setup {
           given
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatScheme.contains(fullVatScheme)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -42,7 +42,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
       "the VAT scheme is empty" must {
         "return SEE_OTHER" in new Setup {
           given
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,7 +59,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
       "the VAT scheme is cannot be stored in Save 4 Later" must {
         "return INTERNAL_SERVER_ERROR" in new Setup {
           given
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatScheme.contains(fullVatScheme)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -44,7 +44,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
     "redirect to ALF" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(s4lData)
         .alfeJourney.initialisedSuccessfully()
         .vatScheme.contains(emptyUkCompanyVatScheme)
@@ -78,7 +78,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
       val addressPostcode = "BN3 1JU"
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(s4lData)
         .s4lContainer[TransactorDetails].clearedByKey
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound

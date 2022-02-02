@@ -30,7 +30,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
   s"GET ${routes.ApplyForEoriController.show.url}" must {
     "return OK when trading details aren't stored" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .vatScheme.doesNotHave("trading-details")
 
@@ -44,7 +44,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
     "return OK when trading details are stored in S4L" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(TradingDetails(euGoods = Some(true)))
         .vatScheme.doesNotHave("trading-details")
 
@@ -58,7 +58,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
     "return OK when trading details are stored in the backend" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .vatScheme.has(
         "trading-details",
@@ -78,7 +78,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
   s"POST ${routes.ApplyForEoriController.submit.url}" must {
     "redirect to the next page" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None))))
         .s4lContainer[TradingDetails].clearedByKey
         .vatScheme.doesNotHave("trading-details")

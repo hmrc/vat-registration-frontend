@@ -26,7 +26,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
   "show" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -41,7 +41,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
   "submitCompanyContactDetails" should {
     "return SEE_OTHER and submit to s4l because the model is incomplete" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .vatScheme.doesNotHave("business-contact")
@@ -57,7 +57,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
     }
     "return SEE_OTHER and submit to vat reg because the model is complete" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(companyContactDetails = None))
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
         .s4lContainer[BusinessContact].clearedByKey
@@ -72,7 +72,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
     }
     "return NOT_FOUND when vat returns a 404" ignore new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BusinessContact].isEmpty
         .vatScheme.doesNotExistForKey("business-contact")
 
@@ -85,7 +85,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
     }
     "return INTERNAL_SERVER_ERROR when update to vat reg returns an error (s4l is not cleared)" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
 

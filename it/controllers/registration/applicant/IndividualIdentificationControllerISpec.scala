@@ -34,7 +34,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
     "STI returns a journey ID and user is not Transactor" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -51,7 +51,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
     "STI returns a journey ID and user is transactor" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -70,7 +70,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
   "GET /sti-individual-callback" must {
     "redirect to the RoleInTheBusiness page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -88,7 +88,7 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
 
     "redirect to the RoleInTheBusiness page when the model in S4l" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)

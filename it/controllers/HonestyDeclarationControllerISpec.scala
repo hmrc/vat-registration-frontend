@@ -37,7 +37,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -51,7 +51,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
   s"POST $url" must {
     "redirect to Eligibility" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

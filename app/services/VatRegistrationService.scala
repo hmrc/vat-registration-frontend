@@ -20,7 +20,7 @@ import common.enums.VatRegStatus
 import connectors._
 import models.api._
 import models.{TurnoverEstimates, _}
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{Format, JsObject, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -36,6 +36,8 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val sessionService: SessionService
                                       )(implicit ec: ExecutionContext) {
 
+  // -- New Registrations API methods --
+
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
 
@@ -45,6 +47,14 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations
+
+  def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKet: ApiKey[T]): Future[Option[T]] =
+    registrationApiConnector.getSection[T](regId)
+
+  def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKet: ApiKey[T]): Future[T] =
+    registrationApiConnector.replaceSection[T](regId, data)
+
+  // -- End new Registrations API methods --
 
   def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =
     vatRegConnector.getRegistrationJson(regId)

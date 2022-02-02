@@ -12,7 +12,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
   "supply workers controllers" should {
     "return OK on Show AND users answer is pre-popped on page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -39,7 +39,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
         supplyWorkers = Some(SupplyWorkers(true)))
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(incompleteModel)
         .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
 

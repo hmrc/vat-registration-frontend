@@ -14,7 +14,7 @@ class ReturnsControllerISpec extends ControllerISpec {
   "GET /vat-start-date" must {
     "Return OK when the user is authenticated" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
@@ -45,7 +45,7 @@ class ReturnsControllerISpec extends ControllerISpec {
       val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, Some(java.time.LocalDate.parse(today.toString))))
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))

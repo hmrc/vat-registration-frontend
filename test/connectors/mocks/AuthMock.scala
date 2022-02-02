@@ -22,7 +22,9 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
-import uk.gov.hmrc.auth.core.{AffinityGroup, InsufficientConfidenceLevel, InvalidBearerToken}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, InsufficientConfidenceLevel, InvalidBearerToken}
 
 import scala.concurrent.Future
 
@@ -30,11 +32,17 @@ trait AuthMock {
   this: MockitoSugar =>
 
   lazy val mockAuthClientConnector: AuthClientConnector = mock[AuthClientConnector]
+  def agentEnrolment(arn: String) = Enrolment("HMRC-AS-AGENT").withIdentifier("AgentReferenceNumber", arn)
 
-  def mockAuthenticated(): OngoingStubbing[Future[Unit]] = {
+  def mockAuthenticatedBasic: OngoingStubbing[Future[Unit]] =
+    when(mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful({}))
+
+  def mockAuthenticated(arn: Option[String] = None): OngoingStubbing[Future[Enrolments]] = {
+    val enrolments = arn.map(ref => Set(agentEnrolment(ref))).getOrElse(Set())
     when(
-      mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
-    ) thenReturn Future.successful({})
+      mockAuthClientConnector.authorise(ArgumentMatchers.any(), ArgumentMatchers.eq(Retrievals.allEnrolments))(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ).thenReturn(Future.successful(Enrolments(enrolments)))
   }
 
   def mockNotAuthenticated(): OngoingStubbing[Future[Unit]] = {

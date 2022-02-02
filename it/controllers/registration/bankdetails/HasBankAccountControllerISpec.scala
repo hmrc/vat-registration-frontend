@@ -16,7 +16,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
   "GET /companys-bank-account" must {
     "return OK with a blank form if the vat scheme doesn't contain bank details" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -29,7 +29,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return SEE_OTHER when the party type is NETP" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -42,7 +42,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return SEE_OTHER when the party type is Non UK Company" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -55,7 +55,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return OK with 'Yes' pre-populated from S4L" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -68,7 +68,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return OK with 'Yes' pre-populated from the backend" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(true, None, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -82,7 +82,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return OK with 'No' pre-populated from S4L" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -95,7 +95,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "return OK with 'No' pre-populated from the backend" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(BankAccount(false, None, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -112,7 +112,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
   "POST /companys-bank-account" must {
     "redirect to the UK bank page if the user has a bank account" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.isEmpty()
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -127,7 +127,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "redirect to the Overseas bank page if the user is a NETP" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4l.isEmpty()
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
@@ -143,7 +143,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     }
     "redirect to the reason for no bank account page if the user doesn't have a bank account" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.isEmpty()
         .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))

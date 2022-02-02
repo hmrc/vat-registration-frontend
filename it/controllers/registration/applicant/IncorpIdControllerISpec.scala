@@ -40,7 +40,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -62,7 +62,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -84,7 +84,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -108,7 +108,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         disable(StubIncorpIdJourney)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
@@ -131,7 +131,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         disable(StubIncorpIdJourney)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
@@ -154,7 +154,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         disable(StubIncorpIdJourney)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
@@ -179,7 +179,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertIntoDb(sessionId, Map(
@@ -204,7 +204,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
       insertIntoDb(sessionId, Map(
@@ -228,7 +228,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
       insertIntoDb(sessionId, Map(
@@ -253,7 +253,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
       disable(StubIncorpIdJourney)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

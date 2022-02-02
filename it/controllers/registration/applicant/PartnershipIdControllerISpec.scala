@@ -74,7 +74,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -94,7 +94,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "redirect to the lead partner entity type page for Partnership" when {
       "S4L model is not full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
@@ -114,7 +114,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
       "the model in S4l is full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(partnershipApplicantDetails)
@@ -134,7 +134,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
@@ -157,7 +157,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertIntoDb(sessionId, Map(
           leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
@@ -178,7 +178,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   "GET /partnership-id-partner-callback" must {
     "redirect to the individual identification for Scottish Partnership" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
@@ -198,7 +198,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to the individual identification for Scottish Limited Partnership" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
@@ -217,7 +217,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)

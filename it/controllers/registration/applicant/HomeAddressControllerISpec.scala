@@ -47,7 +47,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
     "redirect to ALF" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .alfeJourney.initialisedSuccessfully()
         .vatScheme.contains(emptyUkCompanyVatScheme)
@@ -109,7 +109,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
            |}""".stripMargin)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .vatScheme.patched(keyBlock, validJson)

@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CancellationService @Inject()(val sessionService: SessionService,
-                                    val currentProfileService: CurrentProfileService,
+                                    val currentProfileService: JourneyService,
                                     val save4LaterConnector: S4LConnector,
                                     val vatRegistrationConnector: VatRegistrationConnector
                                    )(implicit ec: ExecutionContext) {

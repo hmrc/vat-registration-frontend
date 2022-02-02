@@ -41,7 +41,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
 
   "ErrorController" should {
     "return the SubmissionFailed view" in new Setup {
-      callAuthorised(testErrorController.submissionFailed) {
+      callAuthorised(testErrorController.submissionFailed, useBasicAuth = true) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -49,7 +49,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the SubmissionRetryable view" in new Setup {
-      callAuthorised(testErrorController.submissionRetryable) {
+      callAuthorised(testErrorController.submissionRetryable, useBasicAuth = true) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -57,7 +57,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the AlreadySubmitted view" in new Setup {
-      callAuthorised(testErrorController.submissionRetryable) {
+      callAuthorised(testErrorController.submissionRetryable, useBasicAuth = true) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

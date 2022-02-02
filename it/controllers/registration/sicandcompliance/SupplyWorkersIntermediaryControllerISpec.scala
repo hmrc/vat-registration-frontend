@@ -14,7 +14,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
   "intermediary workers controller" should {
     "return OK on show and users answer is pre-popped on page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -27,7 +27,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
     }
     "return SEE_OTHER on submit redirecting to party type resolver for UkCompany" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
@@ -50,7 +50,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
 
     "return SEE_OTHER on submit redirecting to party  type resolver for sole trader" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,

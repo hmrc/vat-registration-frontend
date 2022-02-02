@@ -52,7 +52,7 @@ class FormerNameControllerISpec extends ControllerISpec {
   s"GET $url" must {
     "returns an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -65,7 +65,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
     "returns an OK with prepopulated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -106,7 +106,7 @@ class FormerNameControllerISpec extends ControllerISpec {
            |}""".stripMargin)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[ApplicantDetails].clearedByKey
@@ -132,7 +132,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
     "Update S4L with formerName and redirect to the Former Name Date page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(yesNo = false, None)), formerNameDate = None))
         .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -152,7 +152,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
     "Update S4L with no formerName and redirect to the International Home Address page for NETP" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
         .vatScheme.doesNotExistForKey("applicant-details")
@@ -172,7 +172,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
     "Update S4L with no formerName and redirect to the International Home Address page for Non UK Company" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
         .vatScheme.doesNotExistForKey("applicant-details")
@@ -194,7 +194,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       val updatedS4LData = s4lData.copy(formerNameDate = None)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(true, None)), formerNameDate = None))
         .s4lContainer[ApplicantDetails].isUpdatedWith(updatedS4LData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

@@ -48,6 +48,8 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
         Complete(transactorDetails.copy(organisationName = None))
       case TransactorDetails(Some(_), Some(true), Some(_), Some(_), Some(_), Some(true), Some(_), Some(_)) =>
         Complete(transactorDetails)
+      case TransactorDetails(Some(personalDetails), None, None, Some(_), Some(_), Some(true), None, Some(_)) if personalDetails.arn.isDefined =>
+        Complete(transactorDetails)
       case _ =>
         Incomplete(transactorDetails)
 

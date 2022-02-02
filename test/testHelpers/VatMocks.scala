@@ -55,7 +55,7 @@ trait VatMocks
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
-  implicit lazy val mockCurrentProfileService = mock[CurrentProfileService]
+  implicit lazy val mockCurrentProfileService = mock[JourneyService]
   implicit lazy val mockCancellationService = mock[CancellationService]
   implicit lazy val mockAddressLookupService = mock[AddressLookupService]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]

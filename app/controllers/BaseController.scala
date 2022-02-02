@@ -19,7 +19,6 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig, Logging}
 import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate}
 import models.CurrentProfile
-import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.SessionProfile
@@ -42,6 +41,8 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
     with AuthorisedFunctions
     with SessionProfile
     with FeatureSwitching {
+
+  import utils.EnrolmentUtil._
 
   implicit class HandleResult(res: Future[Result])(implicit hc: HeaderCarrier) {
     def handleErrorResult: Future[Result] = {
@@ -71,27 +72,28 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
         case Some(AffinityGroup.Organisation | AffinityGroup.Agent) =>
           f(request)
         case _ => throw new InternalServerException("User has no affinity group on their credential")
-      } handleErrorResult
+      }.handleErrorResult
   }
 
   def isAuthenticatedWithProfile(checkTrafficManagement: Boolean = true)
                                 (f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised(authPredicate) {
+      authorised(authPredicate).retrieve(allEnrolments) { enrolments =>
         withCurrentProfile() { profile =>
           if (isEnabled(TrafficManagementPredicate) && checkTrafficManagement) {
             bcc.trafficManagementService.passedTrafficManagement(profile.registrationId).flatMap {
-              case true => f(request)(profile)
+              case true =>
+                f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
               case false =>
                 logger.warn("[BaseController][isAuthenticatedWithProfile] User attempted to enter flow without passing TM")
-                Future.successful(Redirect(routes.WelcomeController.show))
+                Future.successful(Redirect(routes.JourneyController.show))
             }
           }
           else {
-            f(request)(profile)
+            f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
           }
         }
-      } handleErrorResult
+      }.handleErrorResult
   }
 
   def isAuthenticatedWithProfileNoStatusCheck(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
@@ -100,6 +102,6 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
         withCurrentProfile(checkStatus = false) { profile =>
           f(request)(profile)
         }
-      } handleErrorResult
+      }.handleErrorResult
   }
 }

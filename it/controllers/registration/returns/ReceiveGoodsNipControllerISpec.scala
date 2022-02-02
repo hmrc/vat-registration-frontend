@@ -33,7 +33,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   "show Northern Ireland Receive page" should {
     "return OK with no prepop when there is no value for 'receiveGoods' in the backend" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -46,7 +46,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
 
     "Return OK with prepop when there is a value for 'receiveGoods' in the backend" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
 
       val res = buildClient(url).get()
@@ -61,7 +61,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   "submit Receive Goods page" should {
     "return SEE_OTHER when NETP" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
@@ -78,7 +78,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
 
     "return SEE_OTHER when Non NETP and voluntary registration" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
@@ -95,7 +95,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
 
     "return SEE_OTHER when Non NETP and mandatory registration" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))

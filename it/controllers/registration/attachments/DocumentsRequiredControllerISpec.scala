@@ -15,7 +15,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
   s"GET $resolveUrl" must {
     "return a redirect to documents required page when identity evidence is required and method is Other" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Other), List[AttachmentType](IdentityEvidence))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -29,7 +29,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to documents required page when identity evidence is required and method is Attached" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Attached), List[AttachmentType](IdentityEvidence))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -43,7 +43,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to documents required page when identity evidence is required and method is Post" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -57,7 +57,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to VAT2 required page when VAT2 is required and method is Post" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](VAT2))))
@@ -73,7 +73,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to VAT51 required page when VAT51 is required" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](VAT51))))
@@ -89,7 +89,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to VAT5L required page when VAT5L is required" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](VAT5L))))
@@ -106,7 +106,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to Transactor Identity Evidence Required" when {
       "the user is a Transactor and transactor details are unverified" in {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](TransactorIdentityEvidence))))
@@ -122,7 +122,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       "the user is a Transactor and applicant details are unverified" in {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](IdentityEvidence))))
@@ -138,7 +138,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
       "the user is a Transactor and transactor with applicant details are unverified" in {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
           .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](TransactorIdentityEvidence, IdentityEvidence))))
@@ -155,7 +155,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
 
     "return a redirect to summary page when no attachments are given" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType]())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -171,7 +171,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
   s"POST $submitUrl" when {
     "redirect to the AttachmentMethod page" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       val res = buildClient(submitUrl).post(Json.obj())
 

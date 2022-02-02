@@ -21,18 +21,20 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class CurrentProfile(registrationId: String,
-                          vatRegistrationStatus: VatRegStatus.Value
-                         )
+                          vatRegistrationStatus: VatRegStatus.Value,
+                          agentReferenceNumber: Option[String] = None)
 
 object CurrentProfile {
   val reads: Reads[CurrentProfile] = (
     (__ \ "registrationID").read[String] and
-      (__ \ "vatRegistrationStatus").read[VatRegStatus.Value]
+      (__ \ "vatRegistrationStatus").read[VatRegStatus.Value] and
+      (__ \ "agentReferenceNumber").readNullable[String]
     ) (CurrentProfile.apply _)
 
   val writes: Writes[CurrentProfile] = (
     (__ \ "registrationID").write[String] and
-      (__ \ "vatRegistrationStatus").write[VatRegStatus.Value]
+      (__ \ "vatRegistrationStatus").write[VatRegStatus.Value] and
+      (__ \ "agentReferenceNumber").writeNullable[String]
     ) (unlift(CurrentProfile.unapply))
 
   implicit val format: Format[CurrentProfile] = Format(reads, writes)

@@ -29,7 +29,7 @@ class TradingNameControllerISpec extends ControllerISpec {
   "show Trading Name page" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
@@ -48,7 +48,7 @@ class TradingNameControllerISpec extends ControllerISpec {
   "submit Trading Name page" should {
     "return SEE_OTHER" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))

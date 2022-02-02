@@ -45,7 +45,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          dob = applicant.personalDetails.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
+          dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
           formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
           filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
           name <- applicantDetailsService.getTransactorApplicantName
@@ -57,7 +57,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         applicantDetailsService.getApplicantDetails flatMap {
           applicantDetails =>
-            val dob = applicantDetails.personalDetails.map(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
+            val dob = applicantDetails.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
             FormerNameDateForm.form(dob).bindFromRequest().fold(
               badForm => for {
                 applicant <- applicantDetailsService.getApplicantDetails

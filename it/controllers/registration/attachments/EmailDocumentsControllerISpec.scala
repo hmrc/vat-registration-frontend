@@ -33,7 +33,7 @@ class EmailDocumentsControllerISpec extends ControllerISpec with ITRegistrationF
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

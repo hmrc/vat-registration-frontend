@@ -38,7 +38,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   "GET /join-flat-rate" must {
     "return OK when the details are in s4l" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
@@ -55,7 +55,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     }
     "return OK when the details are in the backend" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
@@ -72,7 +72,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     }
     "redirect to the Attachments Resolver when the turnover is too high" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("turnover-estimates-data", Json.toJson(highTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
@@ -90,7 +90,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     }
     "redirect to the Attachments Resolver for a Group Registration" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
@@ -113,7 +113,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   "POST /join-flat-rate" must {
     "redirect to the next FRS page if the user answers Yes" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
         .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData)
         .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(true))))
@@ -130,7 +130,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     }
     "redirect to the next FRS page if the user answers No" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.doesNotHave("flat-rate-scheme")
         .s4lContainer[FlatRateScheme].clearedByKey
         .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(false))))

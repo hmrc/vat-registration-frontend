@@ -25,7 +25,7 @@ class EmailPasscodeNotFoundControllerISpec extends ControllerISpec {
   "show" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

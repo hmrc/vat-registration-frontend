@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import featureswitch.core.config.{MultipleRegistrations, SaveAndContinueLater}
+import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater}
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
@@ -31,24 +31,24 @@ import controllers.registration.transactor.{routes => transactorRoutes}
 
 import java.time.LocalDate
 
-class WelcomeControllerISpec extends ControllerISpec
+class JourneyControllerISpec extends ControllerISpec
   with RegistrationsApiStubs {
 
-  lazy val controller: WelcomeController = app.injector.instanceOf(classOf[WelcomeController])
+  lazy val controller: JourneyController = app.injector.instanceOf(classOf[JourneyController])
   lazy val appConfig: FrontendAppConfig = app.injector.instanceOf(classOf[FrontendAppConfig])
 
   val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
   val currentThreshold = "50000"
 
-  val showUrl: String = routes.WelcomeController.show.url
-  val submitUrl: String = routes.WelcomeController.submit.url
-  val newJourneyUrl: String = routes.WelcomeController.startNewJourney.url
+  val showUrl: String = routes.JourneyController.show.url
+  val submitUrl: String = routes.JourneyController.submit.url
+  val newJourneyUrl: String = routes.JourneyController.startNewJourney.url
 
   def continueJourneyUrl(regId: String): String =
-    routes.WelcomeController.continueJourney(Some(regId)).url
+    routes.JourneyController.continueJourney(Some(regId)).url
 
   def initJourneyUrl(regId: String): String =
-    routes.WelcomeController.initJourney(regId).url
+    routes.JourneyController.initJourney(regId).url
 
   val vatSchemeJson = Json.toJson(fullVatScheme)
   val vatSchemeJson2 = Json.toJson(fullVatScheme.copy(id = "2"))
@@ -60,7 +60,7 @@ class WelcomeControllerISpec extends ControllerISpec
           disable(SaveAndContinueLater)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft)
 
@@ -74,7 +74,7 @@ class WelcomeControllerISpec extends ControllerISpec
           disable(SaveAndContinueLater)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -92,7 +92,7 @@ class WelcomeControllerISpec extends ControllerISpec
           enable(SaveAndContinueLater)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
 
@@ -108,7 +108,7 @@ class WelcomeControllerISpec extends ControllerISpec
           enable(SaveAndContinueLater)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .audit.writesAudit()
             .audit.writesAuditMerged()
             .vatScheme.regStatus(VatRegStatus.draft)
@@ -126,7 +126,7 @@ class WelcomeControllerISpec extends ControllerISpec
           enable(SaveAndContinueLater)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatScheme.regStatus(VatRegStatus.draft)
 
           registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
@@ -143,7 +143,7 @@ class WelcomeControllerISpec extends ControllerISpec
     "the user wants to start a new registration" must {
       "redirect to the new journey url" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .trafficManagement.isCleared
           .vatScheme.deleted
 
@@ -151,19 +151,19 @@ class WelcomeControllerISpec extends ControllerISpec
         val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> true)))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.startNewJourney.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.startNewJourney.url)
       }
     }
     "the user wants to continue their existing registration" must {
       "redirect to the continue journey url" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> false)))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.continueJourney(Some(testRegId)).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.continueJourney(Some(testRegId)).url)
       }
     }
   }
@@ -175,7 +175,7 @@ class WelcomeControllerISpec extends ControllerISpec
           disable(MultipleRegistrations)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft)
 
@@ -192,7 +192,7 @@ class WelcomeControllerISpec extends ControllerISpec
           enable(MultipleRegistrations)
 
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .vatRegistrationFootprint.exists()
             .vatScheme.regStatus(VatRegStatus.draft)
 
@@ -210,7 +210,7 @@ class WelcomeControllerISpec extends ControllerISpec
       "redirect to the application submission page" in new Setup {
         enable(MultipleRegistrations)
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.regStatus(VatRegStatus.submitted)
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
           .trafficManagement.passes(VatReg)
@@ -227,7 +227,7 @@ class WelcomeControllerISpec extends ControllerISpec
       "redirect to the documents required page" in new Setup {
         enable(MultipleRegistrations)
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.regStatus(VatRegStatus.draft)
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
           .trafficManagement.passes(VatReg)
@@ -246,7 +246,7 @@ class WelcomeControllerISpec extends ControllerISpec
           "redirect to the Application Reference page" in new Setup {
             enable(MultipleRegistrations)
             given()
-              .user.isAuthorised
+              .user.isAuthorised()
               .vatScheme.regStatus(VatRegStatus.draft)
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
@@ -264,7 +264,7 @@ class WelcomeControllerISpec extends ControllerISpec
           "redirect to the Application Reference page" in new Setup {
             enable(MultipleRegistrations)
             given()
-              .user.isAuthorised
+              .user.isAuthorised()
               .vatScheme.regStatus(VatRegStatus.draft)
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
@@ -283,7 +283,7 @@ class WelcomeControllerISpec extends ControllerISpec
           "redirect to the Honesty Declaration page" in new Setup {
             disable(MultipleRegistrations)
             given()
-              .user.isAuthorised
+              .user.isAuthorised()
               .vatScheme.regStatus(VatRegStatus.draft)
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
@@ -300,7 +300,7 @@ class WelcomeControllerISpec extends ControllerISpec
           "redirect to the Honesty Declaration page" in new Setup {
             disable(MultipleRegistrations)
             given()
-              .user.isAuthorised
+              .user.isAuthorised()
               .vatScheme.regStatus(VatRegStatus.draft)
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
@@ -318,7 +318,7 @@ class WelcomeControllerISpec extends ControllerISpec
     "the channel for traffic management is OTRS" must {
       "redirect to OTRS" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.regStatus(VatRegStatus.draft)
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
           .trafficManagement.passes(OTRS)
@@ -333,13 +333,13 @@ class WelcomeControllerISpec extends ControllerISpec
     }
   }
 
-  s"GET ${routes.WelcomeController.initJourney(testRegId)}" when {
+  s"GET ${routes.JourneyController.initJourney(testRegId)}" when {
     "eligibility data exists for the user" when {
       "the current profile has been set up successfully" when {
         "the user isn't a transactor" must {
           "redirect to the business identification resolver" in new Setup {
             given()
-              .user.isAuthorised
+              .user.isAuthorised()
               .trafficManagement.passes()
               .vatScheme.regStatus(VatRegStatus.draft)
               .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
@@ -354,22 +354,60 @@ class WelcomeControllerISpec extends ControllerISpec
             res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
           }
         }
-        "the user is a transactor" must {
-          "redirect to the Part of An Organisation page" in new Setup {
-            given()
-              .user.isAuthorised
-              .trafficManagement.passes()
-              .vatScheme.regStatus(VatRegStatus.draft)
-              .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+        "the user is a transactor" when {
+          "the user is not an agent" must {
+            "redirect to the Part of An Organisation page" in new Setup {
+              given()
+                .user.isAuthorised()
+                .trafficManagement.passes()
+                .vatScheme.regStatus(VatRegStatus.draft)
+                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
-            sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-              .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
 
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
+              insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-            val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
-            res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
+            }
+          }
+          "the user is an agent" must {
+            "redirect to the Agent Name page when the FullAgentJourney FS is enabled" in new Setup {
+              enable(FullAgentJourney)
+              given()
+                .user.isAuthorised(arn = Some(testArn))
+                .trafficManagement.passes()
+                .vatScheme.regStatus(VatRegStatus.draft)
+                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+
+              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+
+              insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+              res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.transactor.routes.AgentNameController.show.url)
+            }
+            "redirect to the Business Identification resolver when the FullAgentJourney FS is disnabled" in new Setup {
+              disable(FullAgentJourney)
+              given()
+                .user.isAuthorised(arn = Some(testArn))
+                .trafficManagement.passes()
+                .vatScheme.regStatus(VatRegStatus.draft)
+                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+
+              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+
+              insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+              res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
+            }
           }
         }
       }
@@ -377,7 +415,7 @@ class WelcomeControllerISpec extends ControllerISpec
     "eligibility data doesn't exist for the user" must {
       "redirect to the start of the journey" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .trafficManagement.passes()
 
         sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
@@ -387,7 +425,7 @@ class WelcomeControllerISpec extends ControllerISpec
 
         val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.WelcomeController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.show.url)
       }
     }
   }

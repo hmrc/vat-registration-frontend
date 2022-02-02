@@ -20,6 +20,7 @@ import java.time.LocalDate
 import connectors._
 import connectors.mocks.MockRegistrationApiConnector
 import models.TaxableThreshold
+import models.api.EligibilitySubmissionData
 import org.mockito
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -71,7 +72,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
        |}
         """.stripMargin)
 
-  "Calling getAckRef" should {
+  "getAckRef" should {
     "retrieve Acknowledgement Reference (id) from the backend" in new Setup {
       when(mockVatRegistrationConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
         .thenReturn(Future.successful("testRefNo"))
@@ -86,7 +87,35 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
     }
   }
 
-  "Calling deleteVatScheme" should {
+  "getSection" must {
+    "return a section if it exists" in new Setup {
+      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId))(any(), any(), any()))
+        .thenReturn(Future.successful(Some(validEligibilitySubmissionData)))
+
+      await(service.getSection[EligibilitySubmissionData](testRegId)) mustBe Some(validEligibilitySubmissionData)
+    }
+    "return None for a section that doesn't exist" in new Setup {
+      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId))(any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      await(service.getSection[EligibilitySubmissionData](testRegId)) mustBe None
+    }
+  }
+
+  "upsertSection" must {
+    "return the updated section data" in new Setup {
+      when(
+        mockRegistrationApiConnector.replaceSection[EligibilitySubmissionData](
+          ArgumentMatchers.eq(testRegId),
+          ArgumentMatchers.eq(validEligibilitySubmissionData)
+        )(any(), any(), any())
+      ).thenReturn(Future.successful(validEligibilitySubmissionData))
+
+      await(service.upsertSection[EligibilitySubmissionData](testRegId, validEligibilitySubmissionData)) mustBe validEligibilitySubmissionData
+    }
+  }
+
+  "deleteVatScheme" should {
     "return a success response when the delete VatScheme is successful" in new Setup {
       when(mockVatRegistrationConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
 
@@ -94,7 +123,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
     }
   }
 
-  "Calling submitRegistration" should {
+  "submitRegistration" should {
     "return a Success DES response" in new Setup {
       when(mockVatRegistrationConnector.submitRegistration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testRequest.headers.toSimpleMap))(any[HeaderCarrier]))
         .thenReturn(Future.successful(Success))
@@ -103,7 +132,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
     }
   }
 
-  "Calling getTaxableThreshold" must {
+  "getTaxableThreshold" must {
     val taxableThreshold = TaxableThreshold("50000", LocalDate.of(2018, 1, 1).toString)
 
     "return a taxable threshold" in new Setup {
@@ -125,7 +154,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
       intercept[Exception](await(service.getEligibilityData))
     }
   }
-  "Calling submitHonestyDeclaration" should {
+  "submitHonestyDeclaration" should {
     "return a HttpResponse" in new Setup {
       val httpResponse = Json.obj("honestyDeclartion" -> true)
       val successfulResponse = HttpResponse(200, "{}")

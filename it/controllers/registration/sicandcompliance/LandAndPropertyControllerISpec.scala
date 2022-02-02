@@ -32,7 +32,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
   s"GET $url" must {
     "return OK" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].isEmpty
         .vatScheme.doesNotHave("sicAndComp")
 
@@ -48,7 +48,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
 
     "return OK when there is an answer to prepop" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(SicAndCompliance(hasLandAndProperty = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -65,7 +65,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
   s"POST $url" must {
     "redirect to the next page" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].isEmpty
         .s4lContainer[SicAndCompliance].isUpdatedWith(SicAndCompliance(hasLandAndProperty = Some(true)))
         .vatScheme.doesNotHave("sicAndComp")

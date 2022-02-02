@@ -43,7 +43,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -56,7 +56,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
     "returns an OK with prepopulated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -76,7 +76,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
@@ -97,7 +97,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].isUpdatedWith(
@@ -119,7 +119,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].isUpdatedWith(
@@ -146,7 +146,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))
           .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey

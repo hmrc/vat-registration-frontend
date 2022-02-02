@@ -60,7 +60,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           Some(testNino),
           None,
           identifiersMatch = true,
-          testDateOfBirth
+          Some(testDateOfBirth)
         )
 
         await(res) mustBe expectedData
@@ -99,7 +99,7 @@ class PersonalDetailsValidationConnectorISpec extends IntegrationSpecBase with A
           Some(testNino),
           None,
           identifiersMatch = true,
-          testDateOfBirth
+          Some(testDateOfBirth)
         )
 
         await(res) mustBe expectedData

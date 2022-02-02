@@ -34,7 +34,7 @@ trait SessionProfile {
   def withCurrentProfile(checkStatus: Boolean = true)(f: CurrentProfile => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
       currentProfile.fold(
-        Future.successful(Redirect(routes.WelcomeController.show))
+        Future.successful(Redirect(routes.JourneyController.show))
       ) {
         profile =>
           profile.vatRegistrationStatus match {

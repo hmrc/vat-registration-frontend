@@ -43,7 +43,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "SicHalt on show returns OK" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
 
 
@@ -67,7 +67,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
          |}""".stripMargin
 
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.has("sicAndComp", Json.parse(simplifiedSicJson))
       .icl.setup()
@@ -83,7 +83,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.doesNotHave("sicAndComp")
       .icl.setup()
@@ -101,7 +101,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val sicCode = SicCode("23456", "This is a fake description", "")
 
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
@@ -126,7 +126,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val sicCode2 = SicCode("12345", "This is another code", "")
 
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
       .vatScheme.contains(
@@ -150,7 +150,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val sicCode2 = SicCode("12345", "This is another code", "")
 
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
       .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
       .vatScheme.contains(
@@ -173,7 +173,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val sicCode1 = SicCode("01610", "This is a compliance activity", "")
 
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
       .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(BusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
       .vatScheme.contains(
@@ -195,7 +195,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "MainBusinessActivity on show returns OK" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -215,7 +215,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       intermediarySupply = None
     )
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
@@ -250,7 +250,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
       intermediarySupply = None
     )
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
       .vatScheme.contains(
       VatScheme(id = currentProfile.registrationId,
@@ -278,7 +278,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "Workers should return OK on show and users answer is pre-popped on page" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -294,7 +294,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "ComplianceIntroduction should return OK on show" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -306,7 +306,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
   "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
     given()
-      .user.isAuthorised
+      .user.isAuthorised()
       .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
