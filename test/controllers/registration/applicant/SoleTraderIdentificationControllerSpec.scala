@@ -41,6 +41,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
     val soleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = appConfig.soleTraderCallbackUrl,
       optServiceName = Some("Register for VAT"),
+      optFullNamePageLabel = Some("Who are you registering on behalf of?"),
       deskProServiceId = "vrs",
       signOutUrl = appConfig.feedbackUrl,
       accessibilityUrl = appConfig.accessibilityStatementUrl,
@@ -64,6 +65,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
   "startJourney" must {
     "redirect to the STI journey url for Sole Traders" in new Setup {
       mockPartyType(Future.successful(Individual))
+      mockIsTransactor(Future.successful(true))
       mockStartSoleTraderJourney(
         soleTraderIdJourneyConfig,
         partyType = Individual
@@ -77,6 +79,7 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
 
     "throw an exception if the call to STI fails" in new Setup {
       mockPartyType(Future.successful(UkCompany))
+      mockIsTransactor(Future.successful(true))
       mockStartSoleTraderJourney(
         soleTraderIdJourneyConfig,
         partyType = UkCompany
