@@ -24,12 +24,12 @@ import models.api._
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
 import services.SessionService.leadPartnerEntityKey
-import services.{SessionService, _}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class SoleTraderIdentificationController @Inject()(val sessionService: SessionService,
@@ -49,22 +49,29 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
         implicit profile =>
           vatRegistrationService.partyType.flatMap {
             case partyType@(Individual | NETP) =>
-              soleTraderIdentificationService.startSoleTraderJourney(
-                SoleTraderIdJourneyConfig(
+              for {
+                isTransactor <- vatRegistrationService.isTransactor
+                fullNamePageLabel = isTransactor match {
+                  case true => Some(request2Messages(request)("transactorName.optFullNamePageLabel"))
+                  case _ => None
+                }
+                config = SoleTraderIdJourneyConfig(
                   continueUrl = appConfig.soleTraderCallbackUrl,
                   optServiceName = Some(request2Messages(request)("service.name")),
+                  optFullNamePageLabel = fullNamePageLabel,
                   deskProServiceId = appConfig.contactFormServiceIdentifier,
                   signOutUrl = appConfig.feedbackUrl,
                   accessibilityUrl = appConfig.accessibilityStatementUrl,
                   regime = appConfig.regime,
                   businessVerificationCheck = true
-                ),
-                partyType
-              ).map(url => Redirect(url))
+                )
+                url <- soleTraderIdentificationService.startSoleTraderJourney(config,partyType)
+              } yield {
+                Redirect(url)
+              }
             case partyType => throw new InternalServerException(
               s"[SoleTraderIdentificationController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
             )
-
           }
     }
 

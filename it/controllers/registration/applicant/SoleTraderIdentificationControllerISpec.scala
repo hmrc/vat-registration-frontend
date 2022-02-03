@@ -42,11 +42,28 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
   )
 
   "GET /start-sti-journey" when {
-    "STI returns a journey ID" must {
+    "STI returns a journey ID when user is not transactor" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-sti-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(testJourneyUrl)
+        }
+      }
+    }
+    "STI returns a journey ID when user is transactor" must {
+      "redirect to the journey using the ID provided" in new Setup {
+        given()
+          .user.isAuthorised
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, isTransactor = true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
