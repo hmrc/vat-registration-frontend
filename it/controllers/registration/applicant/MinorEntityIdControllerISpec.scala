@@ -145,7 +145,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided for Trust" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -161,7 +161,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
       "redirect to the journey using the ID provided for Unincorporated Association" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -177,7 +177,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
       "redirect to the journey using the ID provided for Non UK Company" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -197,7 +197,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "redirect to the lead business entity type page for Trust" when {
       "S4L model is not full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
@@ -216,7 +216,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
       "the model in S4l is full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(trustApplicantDetails)
@@ -237,7 +237,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "redirect to the lead business entity type page for Unincorporated Association" when {
       "S4L model is not full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testUnincorpAssoc)))
@@ -256,7 +256,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
       "the model in S4l is full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(unincorpAssocApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(unincorpAssocApplicantDetails)
@@ -277,7 +277,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
     "redirect to the lead business entity type page for Non UK Company" when {
       "S4L model is not full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testNonUkCompany)))
@@ -296,7 +296,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
       "the model in S4l is full" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .vatScheme.isUpdatedWith(nonUkCompanyApplicantDetails)

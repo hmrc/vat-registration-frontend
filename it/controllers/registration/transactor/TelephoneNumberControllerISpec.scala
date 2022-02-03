@@ -21,7 +21,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -34,7 +34,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
 
     "show the view with organisation name" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(testDetails)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -52,7 +52,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
   s"POST $url" should {
     "Redirect to Transactor Email Address page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
 

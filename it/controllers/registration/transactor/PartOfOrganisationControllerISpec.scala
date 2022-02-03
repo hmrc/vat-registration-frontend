@@ -21,7 +21,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
 
@@ -37,7 +37,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
     s"POST $url" should {
       "redirect to Organisation Name page when yes is selected" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
@@ -54,7 +54,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
       }
       "redirect to Declaration Capacity page when no is selected" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)

@@ -27,7 +27,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
   "GET /transactor-details/email-address-verified" should {
     "show the view correctly" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -42,7 +42,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
       disable(StubEmailVerification)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

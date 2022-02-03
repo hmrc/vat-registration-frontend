@@ -42,7 +42,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       "S4L doesn't contain an answer" must {
         "return OK with the correct page" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -55,7 +55,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       "S4L contains an answer" must {
         "return OK and pre-populate the form if the answer is UK" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(
             testReturns.copy(
               overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
@@ -72,7 +72,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       }
       "return OK and pre-populate the form if the answer is OVERSEAS" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[Returns].contains(
           testReturns.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
@@ -93,7 +93,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "redirect to the dispatch from warehouse controller" in new Setup {
           disable(NorthernIrelandProtocol)
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
             .vatScheme.isUpdatedWith(testReturns.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
@@ -111,7 +111,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "redirect to the Returns Frequency page" in new Setup {
           disable(NorthernIrelandProtocol)
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
             .vatScheme.isUpdatedWith(testReturns.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
@@ -127,7 +127,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "redirect to the Northern Ireland page" in new Setup {
           enable(NorthernIrelandProtocol)
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
             .vatScheme.isUpdatedWith(testReturns.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
@@ -144,7 +144,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       "the user submits an invalid answer" must {
         "return BAD_REQUEST" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
             .vatScheme.isUpdatedWith(testReturns.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))

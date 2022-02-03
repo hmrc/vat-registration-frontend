@@ -50,12 +50,12 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
     vatRegistrationStatus = VatRegStatus.draft
   )
 
-  def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded])
+  def submitAuthorised(a: => Action[AnyContent], r: => FakeRequest[AnyContentAsFormUrlEncoded], useBasicAuth: Boolean = false)
                       (test: Future[Result] => Assertion): Unit =
-    submitWithAuthorisedUser(a, r)(test)
+    submitWithAuthorisedUser(a, r, useBasicAuth)(test)
 
-  def callAuthorised(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
-    withAuthorisedUser(a)(test)
+  def callAuthorised(a: Action[AnyContent], useBasicAuth: Boolean = false)(test: Future[Result] => Assertion): Unit =
+    withAuthorisedUser(a, useBasicAuth)(test)
 
   def callAuthorisedOrg(a: Action[AnyContent])(test: Future[Result] => Assertion): Unit =
     withAuthorisedOrgUser(a)(test)

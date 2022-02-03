@@ -19,7 +19,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "reading from S4L" must {
       "return OK when the TransactorDetails block is empty" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.contains(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
 
@@ -31,7 +31,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       }
       "return OK and pre-populate when the TransactorDetails block contains an address" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.contains(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails(address = Some(testShortForeignAddress)))
 
@@ -53,7 +53,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         val trDetails = TransactorDetails(address = Some(testForeignAddress))
 
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(trDetails))
 
@@ -74,7 +74,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
   "POST /your-address/international" must {
     "Store the address and redirect to the next page if a minimal address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyUkCompanyVatScheme)
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
@@ -92,7 +92,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     }
     "Store the address and redirect to the next page if a full address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyUkCompanyVatScheme)
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
@@ -115,7 +115,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyUkCompanyVatScheme)
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
@@ -136,7 +136,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyUkCompanyVatScheme)
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
@@ -157,7 +157,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyUkCompanyVatScheme)
         .vatScheme.doesNotExistForKey("transactor-details")
         .s4lContainer[TransactorDetails].contains(TransactorDetails())

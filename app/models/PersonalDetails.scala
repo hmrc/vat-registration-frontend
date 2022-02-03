@@ -23,10 +23,11 @@ import java.time.LocalDate
 
 case class PersonalDetails(firstName: String,
                            lastName: String,
-                           nino: Option[String],
-                           trn: Option[String],
+                           nino: Option[String] = None,
+                           trn: Option[String] = None,
                            identifiersMatch: Boolean,
-                           dateOfBirth: LocalDate) {
+                           dateOfBirth: Option[LocalDate] = None,
+                           arn: Option[String] = None) {
   def fullName: String = firstName + " " + lastName
 }
 
@@ -37,7 +38,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "nino").formatNullable[String] and
     (__ \ "trn").formatNullable[String] and
     (__ \ "identifiersMatch").formatWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").format[LocalDate]
+    (__ \ "dateOfBirth").formatNullable[LocalDate] and
+    OFormat[Option[String]](_ => JsSuccess(None), (_: Option[String]) => Json.obj())
     )(PersonalDetails.apply, unlift(PersonalDetails.unapply))
 
   val soleTraderIdentificationReads: Reads[PersonalDetails] = (
@@ -46,7 +48,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "nino").readNullable[String] and
     (__ \ "trn").readNullable[String] and
     (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").read[LocalDate]
+    (__ \ "dateOfBirth").readNullable[LocalDate] and
+    Reads.pure(None)
   )(PersonalDetails.apply _)
 
   val apiReads: Reads[PersonalDetails] = (
@@ -55,7 +58,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "nino").readNullable[String] and
     (__ \ "trn").readNullable[String] and
     (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").read[LocalDate]
+    (__ \ "dateOfBirth").readNullable[LocalDate] and
+    (__ \ "arn").readNullable[String]
   )(PersonalDetails.apply _)
 
   val apiWrites: Writes[PersonalDetails] = (
@@ -64,7 +68,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "nino").writeNullable[String] and
     (__ \ "trn").writeNullable[String] and
     (__ \ "identifiersMatch").write[Boolean] and
-    (__ \ "dateOfBirth").write[LocalDate]
+    (__ \ "dateOfBirth").writeNullable[LocalDate] and
+    (__ \ "arn").writeNullable[String]
   )(unlift(PersonalDetails.unapply))
 
   implicit val apiFormat: Format[PersonalDetails] = Format(apiReads, apiWrites)

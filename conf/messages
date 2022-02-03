@@ -1165,6 +1165,17 @@ telephoneNumber.error.incorrectFormat                    = Enter a telephone num
 telephoneNumber.error.nothingEntered                     = Enter your telephone number
 telephoneNumber.error.incorrectLength                    = Enter a telephone number that is between 1 and 24 characters
 
+## AGENT NAME (TRANSACTOR)
+agentName.heading                                        = What is your name?
+agentName.firstName                                      = First name
+agentName.lastName                                       = Last name
+validation.agentName.firstName.missing                   = Enter a first name
+validation.agentName.firstName.invalid                   = Enter a valid first name
+validation.agentName.firstName.maxLen                    = Enter your first name using 35 characters or less
+validation.agentName.lastName.missing                    = Enter a last name
+validation.agentName.lastName.invalid                    = Enter a valid last name
+validation.agentName.lastName.maxLen                     = Enter your last name using 35 characters or less
+
 ## TRANSACTOR CAPTURE EMAIL ADDRESS
 transactorEmail.heading                                  = What is your email address?
 transactorEmail.paragraph                                = We will send you a confirmation code

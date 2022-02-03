@@ -32,7 +32,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
   "show Business Name page" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -49,7 +49,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
   "submit Business Name page" should {
     "return SEE_OTHER" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .vatScheme.isUpdatedWith(
         validFullApplicantDetails.copy(

@@ -46,7 +46,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,7 +59,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
     "returns an OK with prepopulated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -79,7 +79,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
           .s4lContainer[TransactorDetails].isUpdatedWith(
           TransactorDetails().copy(email = Some(testEmail))
@@ -99,7 +99,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(email = Some(testEmail)))
           .s4lContainer[TransactorDetails].isUpdatedWith(
@@ -122,7 +122,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].contains(validTransactorDetails.copy(email = None))
           .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

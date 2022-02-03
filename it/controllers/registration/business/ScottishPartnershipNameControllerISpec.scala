@@ -17,7 +17,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
   "show Scottish Partnership Name page" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
@@ -35,7 +35,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
   "submit Scottish Partnership Name page" should {
     "post to the backend" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

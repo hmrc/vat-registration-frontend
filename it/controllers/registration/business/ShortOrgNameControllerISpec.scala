@@ -32,7 +32,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
   "show Short Org Name page" should {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -48,7 +48,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
 
     "return OK with prepop" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(TradingDetails(shortOrgName = Some(testShortOrgName)))
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -67,7 +67,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
   "submit Trading Name page" should {
     "return SEE_OTHER" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
         .vatScheme.isUpdatedWith(tradingDetails.copy(shortOrgName = Some(testShortOrgName)))

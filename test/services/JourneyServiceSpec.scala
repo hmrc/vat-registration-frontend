@@ -29,12 +29,12 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class CurrentProfileServiceSpec extends VatRegSpec {
+class JourneyServiceSpec extends VatRegSpec {
 
   lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
-    val service = new CurrentProfileService(
+    val service = new JourneyService(
       mockVatRegistrationService,
       mockSessionService,
       frontendAppConfig

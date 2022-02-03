@@ -21,7 +21,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "reading from S4L" must {
       "return OK when the ApplicantDetails block is empty" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.contains(emptyVatSchemeNetp)
           .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
           .s4lContainer[BusinessContact].contains(BusinessContact())
@@ -34,7 +34,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       }
       "return OK and pre-populate when the ApplicantDetails block contains an address" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.contains(emptyVatSchemeNetp)
           .s4lContainer[BusinessContact].contains(BusinessContact(ppobAddress = Some(testForeignAddress)))
 
@@ -54,7 +54,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate the page" in new Setup {
         val businessContact = BusinessContact(ppobAddress = Some(testForeignAddress))
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[BusinessContact].isEmpty
           .vatScheme.contains(emptyVatSchemeNetp)
           .vatScheme.has("business-contact", Json.toJson(businessContact)(BusinessContact.apiFormat))
@@ -76,7 +76,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
   "POST /principal-place-business/international" must {
     "Store the address and redirect to the previous address page if a minimal address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].isEmpty
@@ -94,7 +94,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     }
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].contains(BusinessContact())
@@ -117,7 +117,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
         .s4lContainer[BusinessContact].contains(BusinessContact())
@@ -138,7 +138,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.doesNotExistForKey("business-contact")
         .s4lContainer[BusinessContact].contains(BusinessContact())
@@ -159,7 +159,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is UK" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.contains(emptyVatSchemeNetp)
         .vatScheme.doesNotExistForKey("business-contact")
         .s4lContainer[BusinessContact].contains(BusinessContact())

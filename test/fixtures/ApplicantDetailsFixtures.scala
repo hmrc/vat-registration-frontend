@@ -55,7 +55,7 @@ trait ApplicantDetailsFixtures {
 
   val testBpSafeId = "testBpId"
 
-  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
+  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, Some(testApplicantDob))
 
   val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
     testCrn,

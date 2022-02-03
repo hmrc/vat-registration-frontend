@@ -31,7 +31,7 @@ class RetrieveVatSubmissionControllerISpec extends ControllerISpec {
 
   "GET /test-only/submission-payload" must {
     "return OK with the submission Json" in new Setup {
-      given().user.isAuthorised
+      given().user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
       stubGet(connectorUrl, OK, testJsonResponse.toString())

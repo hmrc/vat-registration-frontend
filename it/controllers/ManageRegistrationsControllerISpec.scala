@@ -23,7 +23,7 @@ class ManageRegistrationsControllerISpec extends ControllerISpec with Registrati
 
   "GET /manage-registrations" must {
     "return OK and present a list of only draft or submitted registrations" in new Setup {
-      given.user.isAuthorised
+      given.user.isAuthorised()
 
       registrationsApi.GET.respondsWith(OK, Some(Json.arr(
         vatSchemeHeaderJson(testRegId, VatRegStatus.submitted),

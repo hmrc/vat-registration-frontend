@@ -18,7 +18,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -32,7 +32,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
 
     "return an OK with pre-populated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
         .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
 
@@ -53,7 +53,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
   s"POST $url" must {
     "return a redirect to flatrate scheme" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
         .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
         .s4lContainer[BankAccount].clearedByKey

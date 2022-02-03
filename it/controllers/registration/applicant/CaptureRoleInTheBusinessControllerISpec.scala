@@ -28,7 +28,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view with prepopulated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -51,7 +51,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy())
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -70,7 +70,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         disable(StubEmailVerification)
 
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
           .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
           .s4lContainer[ApplicantDetails].clearedByKey

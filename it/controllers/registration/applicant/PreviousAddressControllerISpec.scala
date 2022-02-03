@@ -77,7 +77,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
     "redirect to International Address capture if the user is a NETP" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
@@ -92,7 +92,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
     "redirect to International Address capture if the user is a Non UK Company" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
@@ -107,7 +107,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
     "patch Applicant Details in backend" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .vatScheme.patched(keyBlock, validJson)
         .s4lContainer[ApplicantDetails].clearedByKey
@@ -186,7 +186,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
            |}""".stripMargin)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .vatScheme.patched(keyBlock, validJson)

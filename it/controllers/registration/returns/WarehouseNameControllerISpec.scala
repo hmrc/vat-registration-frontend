@@ -32,7 +32,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
   s"GET $url" must {
     "Return OK when there is no value for 'fulfilmentWarehouseName' saved" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -47,7 +47,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
     "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in the backend" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("returns", Json.toJson(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
@@ -65,7 +65,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
     "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in S4L" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       ))
@@ -84,7 +84,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
   s"POST $url" must {
     "redirect to the return frequency page when the answer has a name" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseName)))
@@ -103,7 +103,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
     "redirect to the Northern Ireland Protocol page when the answer has a name" in new Setup {
       enable(NorthernIrelandProtocol)
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseName)))
@@ -121,7 +121,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
     "return a bad request when the answer is empty" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -135,7 +135,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
     "return a bad request when the answer has invalid characters" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

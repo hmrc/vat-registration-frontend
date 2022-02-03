@@ -11,7 +11,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
   "GET /principal-place-business" should {
     "redirect to ALF" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .alfeJourney.initialisedSuccessfully()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -37,7 +37,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
   "GET /principal-place-business/acceptFromTxm" should {
     "return SEE_OTHER save to vat as model is complete" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
         .vatScheme.isUpdatedWith(validBusinessContactDetails)
@@ -57,7 +57,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
     }
     "returnFromTxm should return SEE_OTHER save to s4l as model is incomplete" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())

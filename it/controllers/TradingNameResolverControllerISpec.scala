@@ -30,7 +30,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
     List(Individual, NETP).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
@@ -49,7 +49,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
     List(Partnership, ScotPartnership).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.PartnershipNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .audit.writesAudit()
@@ -73,7 +73,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       enable(ShortOrgName)
 
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UkCompany)))
         .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity =
@@ -93,7 +93,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.TradingNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
@@ -112,7 +112,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
     List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.BusinessNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))(ApplicantDetails.writes))

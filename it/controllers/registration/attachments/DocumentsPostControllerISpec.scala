@@ -11,7 +11,7 @@ class DocumentsPostControllerISpec extends ControllerISpec {
   s"GET $showUrl" must {
     "return an OK" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       val res = buildClient(showUrl).get()
 

@@ -29,7 +29,7 @@ class Vat5LRequiredControllerISpec extends ControllerISpec {
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

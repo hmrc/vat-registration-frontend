@@ -12,7 +12,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
   "GET /what-company-does" must {
     "return OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(sicAndCompliance)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -28,7 +28,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
   "POST /what-company-does" must {
     "redirect to ICL on submit" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(sicAndCompliance)
         .vatScheme.isUpdatedWith[SicAndCompliance](sicAndCompliance.copy(description = Some(BusinessActivityDescription("foo"))))
         .s4lContainer[SicAndCompliance].clearedByKey

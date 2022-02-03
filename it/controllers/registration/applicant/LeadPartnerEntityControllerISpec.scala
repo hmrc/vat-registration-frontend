@@ -22,7 +22,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "display the page" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -37,7 +37,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
     "display the page with pre-pop" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("partners", Json.toJson(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -57,7 +57,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       s"the user selects $partyType" should {
         "store the partyType in session repo and begin a STI journey" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -73,7 +73,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       s"the user selects $partyType" should {
         "store the partyType in session repo and begin an IncorpId journey" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -89,7 +89,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       s"the user selects $partyType" should {
         "store the partyType in session repo and begin an PartnershipId journey" in new Setup {
           given()
-            .user.isAuthorised
+            .user.isAuthorised()
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -104,7 +104,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     s"the user selects $ScotPartnership" should {
       "store the partyType in session repo and go to ScottishPartnershipName page" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -118,7 +118,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "the user submits an invalid lead partner" should {
       "throw an exception" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

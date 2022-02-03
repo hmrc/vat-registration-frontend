@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+package models.api
 
-@this(hmrcHeader: HmrcHeader)
+import models.{ApiKey, S4LKey}
+import play.api.libs.json.{Format, Json}
 
-@(showSignOut: Boolean = true)(implicit messages: Messages)
+case class AgentDetails(arn: Option[String] = None,
+                        name: Option[String] = None)
 
-@hmrcHeader(Header(
-    homepageUrl = controllers.routes.JourneyController.show.url,
-    serviceName = Some(messages("app.title")),
-    serviceUrl = controllers.routes.JourneyController.show.url,
-    containerClasses = "govuk-width-container",
-    signOutHref = if (showSignOut) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None
-))
+object AgentDetails {
+  implicit val apiKey: ApiKey[AgentDetails] = ApiKey("agent")
+  implicit val s4lKey: S4LKey[AgentDetails] = S4LKey("agent")
+
+  implicit val format: Format[AgentDetails] = Json.format[AgentDetails]
+}
+

@@ -45,7 +45,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
   s"GET ${routes.ApplicationSubmissionController.show}" should {
     "display the submission confirmation page to the user" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
@@ -59,7 +59,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       }
     }
     "display the submission confirmation page to the user when IdentityEvidence is available" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -74,7 +74,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
 
     "display the submission confirmation page to the user when IdentityEvidence is available and Method is Other" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -89,7 +89,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
 
     "display the submission confirmation page to the user when IdentityEvidence is available and Method is Attached" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -104,7 +104,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
 
     "display the submission confirmation page to the user when IdentityEvidence is available and Method is Post" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -119,7 +119,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
 
     "display the submission confirmation page to the user when IdentityEvidence is available and Method is EmailMethod" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -134,7 +134,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     }
 
     "display the submission confirmation page to the user when VAT51 is available" in {
-      mockAuthenticated()
+      mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))

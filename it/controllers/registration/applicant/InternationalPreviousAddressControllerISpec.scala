@@ -21,7 +21,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     "reading from S4L" must {
       "return OK when the ApplicantDetails block is empty" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
 
@@ -33,7 +33,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       }
       "return OK and pre-populate when the ApplicantDetails block contains an address" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
 
@@ -54,7 +54,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         val appDetails = ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress))))
         val vatScheme = emptyUkCompanyVatScheme.copy(applicantDetails = Some(appDetails))
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[ApplicantDetails].isEmpty
           .vatScheme.contains(vatScheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -77,7 +77,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
   "POST /previous-address/international" must {
     "Store the address and redirect to the email address page if a minimal address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
@@ -95,7 +95,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "Store the address and redirect to the email address page if a full address is provided" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
@@ -118,7 +118,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
@@ -139,7 +139,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
@@ -160,7 +160,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.doesNotExistForKey("applicant-details")
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())

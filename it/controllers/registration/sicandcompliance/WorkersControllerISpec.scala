@@ -14,7 +14,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
   "workers controller" should {
     "redirect to party type resolver for UkCompany" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
@@ -37,7 +37,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
     "redirect to party type resolver for sole trader" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,

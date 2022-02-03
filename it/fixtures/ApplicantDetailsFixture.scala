@@ -32,8 +32,8 @@ trait ApplicantDetailsFixture {
   val testTrn = "0001234567"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
 
-  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, testApplicantDob)
-  val testNetpPersonalDetails = PersonalDetails(testFirstName, testLastName, None, Some(testTrn), identifiersMatch = false, testApplicantDob)
+  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, Some(testApplicantDob))
+  val testNetpPersonalDetails = PersonalDetails(testFirstName, testLastName, None, Some(testTrn), identifiersMatch = false, Some(testApplicantDob))
 
   val testApplicantCrn = "testCrn"
   val testApplicantCompanyName = "testCompanyName"

@@ -70,7 +70,7 @@ class ManageRegistrationsViewSpec extends VatRegViewSpec with VatRegistrationFix
       "have a link to start the selected journey" in new ViewSetup {
         val link = doc.select(tableLinkSelector)
         link.text mustBe testApplicationReference
-        link.attr("href") mustBe controllers.routes.WelcomeController.continueJourney(Some(testRegId)).url
+        link.attr("href") mustBe controllers.routes.JourneyController.continueJourney(Some(testRegId)).url
       }
     }
   }

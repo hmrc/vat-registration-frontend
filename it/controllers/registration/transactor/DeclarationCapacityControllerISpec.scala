@@ -22,7 +22,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .vatScheme.contains(emptyUkCompanyVatScheme)
@@ -40,7 +40,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
 
     "show the view with prepopulated data" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(testDetails)
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
@@ -61,7 +61,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
     "the TransactorDetails model is incomplete" should {
       "update S4L and redirect to Transactor Identification" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)

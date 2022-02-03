@@ -43,7 +43,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     NorthernIrelandProtocol,
     ShortOrgName,
     MultipleRegistrations,
-    LandAndProperty
+    LandAndProperty,
+    FullAgentJourney
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -146,4 +147,9 @@ case object MultipleRegistrations extends FeatureSwitch {
 case object LandAndProperty extends FeatureSwitch {
   override val configName: String = "feature-switch.land-and-property-fe"
   override val displayName: String = "Enable land and property page (USE WITH ELIGIBILITY L&P FEATURE)"
+}
+
+case object FullAgentJourney extends FeatureSwitch {
+  override val configName: String = "feature-switch.full-agent-journey"
+  override val displayName: String = "Enable full agent journey"
 }

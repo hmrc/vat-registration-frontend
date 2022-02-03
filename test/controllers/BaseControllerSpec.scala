@@ -108,7 +108,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     }
 
     "return an Exception if something went wrong" in {
-      mockAuthenticated()
+      mockAuthenticatedOrg()
 
       val result = TestController.callAuthenticatedButError(FakeRequest())
       an[Exception] mustBe thrownBy(await(result))
@@ -142,7 +142,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
       }
 
       "return an Exception if something went wrong" in {
-        mockAuthenticatedOrg()
+        mockAuthenticated()
         mockWithCurrentProfile(Some(currentProfile))
 
         val result = TestController.callAuthenticatedWithProfileButError()(FakeRequest())
@@ -172,7 +172,7 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
 
         val result = TestController.callAuthenticatedWithProfile()(FakeRequest())
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.WelcomeController.show.url)
+        redirectLocation(result) mustBe Some(routes.JourneyController.show.url)
       }
 
       "return 303 to GG login if user has No Active Session" in {

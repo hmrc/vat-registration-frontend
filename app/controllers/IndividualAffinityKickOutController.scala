@@ -40,7 +40,7 @@ class IndividualAffinityKickOutController @Inject()(view: IndividualAffinityKick
   }
 
   val signOutAndRedirect: Action[AnyContent] = Action.async {
-    Future.successful(SeeOther(appConfig.individualKickoutUrl(routes.WelcomeController.show.url)).withNewSession)
+    Future.successful(SeeOther(appConfig.individualKickoutUrl(routes.JourneyController.show.url)).withNewSession)
   }
 
   val businessSignInRedirect: Action[AnyContent] = Action.async {

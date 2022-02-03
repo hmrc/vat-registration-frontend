@@ -14,7 +14,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
   "GET /claim-vat-refunds" must {
     "Return OK when there is no value for 'claim refunds' in the backend" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
 
       val res = buildClient("/claim-vat-refunds").get()
@@ -25,7 +25,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     }
     "Return OK when there is a value for 'claim refunds' in the backend" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, Some(true), None, None, testApplicantIncorpDate))
 
       val res = buildClient("/claim-vat-refunds").get()
@@ -40,7 +40,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to the voluntary start date page when the user is voluntary" in {
       disable(NorthernIrelandProtocol)
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
@@ -57,7 +57,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to the mandatory start date page when the user is mandatory" in {
       disable(NorthernIrelandProtocol)
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
@@ -74,7 +74,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "redirect to the Northern Ireland Protocol page when the user is non-NETP" in {
       enable(NorthernIrelandProtocol)
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
@@ -90,7 +90,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
     "redirect to send goods overseas page when the user is NETP" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
@@ -106,7 +106,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
     "redirect to send goods overseas page when the user is Non UK Company" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))

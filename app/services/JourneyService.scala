@@ -19,18 +19,20 @@ package services
 import config.FrontendAppConfig
 
 import javax.inject.{Inject, Singleton}
-import models.CurrentProfile
-import uk.gov.hmrc.http.HeaderCarrier
+import models.{ApiKey, CurrentProfile}
+import models.api.EligibilitySubmissionData
+import play.api.libs.json.Format
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistrationService,
-                                      val sessionService: SessionService,
-                                      val config: FrontendAppConfig
-                                     )(implicit ec: ExecutionContext) {
-
-  def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier): Future[CurrentProfile] = {
+class JourneyService @Inject()(val vatRegistrationService: VatRegistrationService,
+                               val sessionService: SessionService,
+                               val config: FrontendAppConfig
+                              )(implicit ec: ExecutionContext) {
+  
+  def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier, profileFormat: Format[CurrentProfile]): Future[CurrentProfile] =
     for {
       status <- vatRegistrationService.getStatus(regId)
       profile = CurrentProfile(
@@ -39,9 +41,8 @@ class CurrentProfileService @Inject()(val vatRegistrationService: VatRegistratio
       )
       _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile
-  }
 
-  def addRejectionFlag(txId: String): Future[Option[String]] = {
+  def addRejectionFlag(txId: String): Future[Option[String]] =
     sessionService.addRejectionFlag(txId)
-  }
+
 }

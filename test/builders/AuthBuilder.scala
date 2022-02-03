@@ -42,9 +42,9 @@ trait AuthBuilder extends SessionBuilder with AuthMock {
     test(result)
   }
 
-  def withAuthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any) {
+  def withAuthorisedUser(action: Action[AnyContent], useBasicAuth: Boolean = false)(test: Future[Result] => Any) {
     val userId = "testUserId"
-    mockAuthenticated()
+    if (useBasicAuth) mockAuthenticatedBasic else mockAuthenticated()
     val result = action(buildRequestWithSession(userId))
     test(result)
   }
@@ -63,9 +63,9 @@ trait AuthBuilder extends SessionBuilder with AuthMock {
     test(result)
   }
 
-  def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
+  def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], useBasicAuth: Boolean = true)
                               (test: Future[Result] => Any) {
-    mockAuthenticated()
+    if (useBasicAuth) mockAuthenticatedBasic else mockAuthenticated()
     val result = action.apply(updateRequestFormWithSession(request, userId))
     test(result)
   }

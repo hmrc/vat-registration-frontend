@@ -22,7 +22,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
   s"GET $url" should {
     "show the view" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .vatScheme.contains(emptyUkCompanyVatScheme)
@@ -37,7 +37,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
 
     "show the view with organisation name" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(testDetails)
         .vatScheme.contains(emptyUkCompanyVatScheme)
 
@@ -56,7 +56,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
   s"POST $url" should {
     "Redirect to Declaration Capacity" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)

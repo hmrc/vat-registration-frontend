@@ -17,7 +17,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   "GET /account-details" must {
     "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -30,7 +30,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
     "return OK with a pre-populated form from S4L" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(bankAccount)))
         .vatScheme.doesNotExistForKey("bank-account")
@@ -47,7 +47,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
     "return OK with a pre-populated form from the backend" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
         .s4l.isEmpty()
         .vatScheme.has("bank-account", Json.toJson(bankAccount))
@@ -67,7 +67,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   "POST /account-details" must {
     "redirect to the Join Flat Rate page if the bank details are valid" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .bankAccountReputation.passes
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
         .s4lContainer[BankAccount].cleared
@@ -87,7 +87,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
     "return BAD_REQUEST if Bank Account Reputation states the bank details are invalid" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .bankAccountReputation.fails
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
 
@@ -103,7 +103,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
     "return BAD_REQUEST if the entered bank details are not correct" in new Setup {
       given
-        .user.isAuthorised
+        .user.isAuthorised()
         .bankAccountReputation.fails
         .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
 

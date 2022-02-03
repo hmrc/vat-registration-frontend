@@ -28,6 +28,7 @@ import java.time.LocalDate
 
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testRegId = "1"
+  val testArn = "testArn"
   val testCreatedDate = LocalDate.of(2021, 1, 1)
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
@@ -289,7 +290,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       nino = Some("AB123456C"),
       trn = None,
       identifiersMatch = true,
-      dateOfBirth = LocalDate.of(2020, 1, 1)
+      dateOfBirth = Some(LocalDate.of(2020, 1, 1))
     )),
     isPartOfOrganisation = Some(true),
     organisationName = Some("testCompanyName"),

@@ -35,7 +35,7 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -50,7 +50,7 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
 
     "return an OK for a transactor" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))

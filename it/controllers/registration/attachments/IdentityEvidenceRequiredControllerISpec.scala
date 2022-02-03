@@ -11,7 +11,7 @@ class IdentityEvidenceRequiredControllerISpec extends ControllerISpec {
   s"GET $showUrl" must {
     "return OK" in {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 

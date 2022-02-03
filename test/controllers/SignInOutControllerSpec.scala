@@ -33,7 +33,7 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
   "Post-sign-in" should {
     "redirect to CT post sign in" in {
       callAuthorised(testController.postSignIn) { res =>
-        redirectLocation(res) mustBe Some(controllers.routes.WelcomeController.show.url)
+        redirectLocation(res) mustBe Some(controllers.routes.JourneyController.show.url)
       }
     }
   }

@@ -22,7 +22,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "a reference already exists in the users' registration" must {
       "return OK with a pre-filled form" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -37,7 +37,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "a reference doesn't exist in the users'registration" must {
       "return OK with a pre-filled form" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

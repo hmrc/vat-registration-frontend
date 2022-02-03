@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+package utils
 
-@this(hmrcHeader: HmrcHeader)
+import uk.gov.hmrc.auth.core.Enrolments
 
-@(showSignOut: Boolean = true)(implicit messages: Messages)
+object EnrolmentUtil {
 
-@hmrcHeader(Header(
-    homepageUrl = controllers.routes.JourneyController.show.url,
-    serviceName = Some(messages("app.title")),
-    serviceUrl = controllers.routes.JourneyController.show.url,
-    containerClasses = "govuk-width-container",
-    signOutHref = if (showSignOut) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None
-))
+  implicit class AuthReferenceExtractor(enrolments: Enrolments) {
+
+    val agentEnrolmentKey = "HMRC-AS-AGENT"
+    val arnKey = "AgentReferenceNumber"
+
+    def agentReferenceNumber: Option[String] =
+      for {
+        agentEnrolment <- enrolments.getEnrolment(agentEnrolmentKey)
+        identifier <- agentEnrolment.getIdentifier(arnKey)
+        arn = identifier.value
+      } yield arn
+
+  }
+
+}

@@ -19,7 +19,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "the backend contains no attachment information" must {
       "return OK and render the page with a blank form" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("attachments", Json.toJson(emptyAttachmentList))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -34,7 +34,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "the backend contains Post as the attachment method" must {
       "return OK and render the page with the Post option selected" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("attachments", Json.toJson(fullAttachmentList))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -49,7 +49,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "the backend contains Email as the attachment method" must {
       "return OK and render the page with the Email option selected" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.has("attachments", Json.toJson(fullAttachmentList.copy(method = Some(EmailMethod))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -67,7 +67,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "Post is selected" must {
       "store the answer and redirect to the next page" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.storesAttachments(Attachments(Some(Post), List()))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -83,7 +83,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "Email is selected" must {
       "store the answer and redirect to the next page" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
           .vatScheme.storesAttachments(Attachments(Some(Post), List()))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -99,7 +99,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "nothing is selected" must {
       "return BAD_REQUEST" in new Setup {
         given
-          .user.isAuthorised
+          .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

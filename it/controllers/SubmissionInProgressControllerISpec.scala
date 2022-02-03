@@ -35,7 +35,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
   s"GET $url" must {
     "return an OK" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,7 +50,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
   s"POST $url" must {
     "return a redirect to Submission Successful page if the status is submitted" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.regStatus(VatRegStatus.submitted)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -65,7 +65,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
     "return a redirect to Submission In Progress page if the status is locked" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.regStatus(VatRegStatus.locked)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -80,7 +80,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
     "return a redirect to Already Submitted page if the status is duplicateSubmission" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.regStatus(VatRegStatus.duplicateSubmission)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -95,7 +95,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
     "return a redirect to Submission Failed page if the status is failed" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.regStatus(VatRegStatus.failed)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -110,7 +110,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
     "return a redirect to Submission Retryable page if the status is failedRetryable" in new Setup {
       given()
-        .user.isAuthorised
+        .user.isAuthorised()
         .vatScheme.regStatus(VatRegStatus.failedRetryable)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
