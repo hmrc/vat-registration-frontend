@@ -62,7 +62,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     "STI returns a journey ID when user is transactor" must {
       "redirect to the journey using the ID provided" in new Setup {
         given()
-          .user.isAuthorised
+          .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, isTransactor = true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
