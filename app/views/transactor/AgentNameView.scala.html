@@ -32,6 +32,8 @@
 
 @layout(pageTitle = Some(title(agentNameForm, messages("agentName.heading")))) {
 
+    @errorSummary(agentNameForm.errors)
+
     @h1(messages("agentName.heading"))
 
     @form(controllers.registration.transactor.routes.AgentNameController.submit) {
