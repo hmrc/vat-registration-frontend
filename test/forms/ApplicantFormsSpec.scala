@@ -17,7 +17,6 @@
 package forms
 
 import java.time.LocalDate
-
 import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
 import models.api.Address
@@ -43,7 +42,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe testDataWithName
+      result mustBe testDataWithName
     }
 
     "bind successfully with data set to false" in {
@@ -57,7 +56,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe testDataNoName
+      result mustBe testDataNoName
     }
 
     "have the correct error if nothing is selected" in {
@@ -106,7 +105,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         "formerName" -> "Test Old Name"
       )
 
-      testForm.fill(testDataWithName).data shouldBe data
+      testForm.fill(testDataWithName).data mustBe data
     }
 
     "Unbind successfully with false and no name" in {
@@ -114,7 +113,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         "value" -> "false"
       )
 
-      testForm.fill(testDataNoName).data shouldBe data
+      testForm.fill(testDataNoName).data mustBe data
     }
   }
 
@@ -135,7 +134,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe testData
+      result mustBe testData
     }
 
     "bind unsuccessfully with data" in {
@@ -178,7 +177,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         "formerNameDate.year" -> "2000"
       )
 
-      testForm.fill(testData).data shouldBe data
+      testForm.fill(testData).data mustBe data
     }
   }
 
@@ -197,7 +196,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe testData.copy(address = None)
+      result mustBe testData.copy(address = None)
     }
 
     "have the correct error if no data is provided" in {
@@ -210,7 +209,7 @@ class ApplicantFormsSpec extends VatRegSpec {
     "Unbind successfully with full data" in {
       val data = Map(ADDRESS_ID -> address.id)
 
-      testForm.fill(testData).data shouldBe data
+      testForm.fill(testData).data mustBe data
     }
   }
 
@@ -229,7 +228,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result shouldBe PreviousAddressView(yesNo = true, None)
+      result mustBe PreviousAddressView(yesNo = true, None)
     }
 
     "have the correct error if no data is provided" in {
@@ -242,7 +241,7 @@ class ApplicantFormsSpec extends VatRegSpec {
     "Unbind successfully with full data" in {
       val data = Map("previousAddressQuestionRadio" -> "false")
 
-      testForm.fill(testData).data shouldBe data
+      testForm.fill(testData).data mustBe data
     }
   }
 }

@@ -16,7 +16,6 @@
 
 package forms
 
-import org.scalatest.Matchers._
 import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
@@ -28,30 +27,30 @@ class TransactorTelephoneFormSpec extends VatRegSpec {
   val nothingEnteredErrorKey: String = "telephoneNumber.error.nothingEntered"
   val incorrectLengthErrorKey: String = "telephoneNumber.error.incorrectLength"
 
-  "The TransactorTelephoneForm" should {
+  "The TransactorTelephoneForm" must {
     "validate that testTelephoneNumber is valid" in {
       val form = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumber)).value
 
-      form shouldBe Some(testTelephoneNumber)
+      form mustBe Some(testTelephoneNumber)
     }
 
     "validate that incorrect telephone number format fails" in {
       val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> ":::><|"))
 
-      formWithError.errors should contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectFormatErrorKey))
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectFormatErrorKey))
     }
 
     "validate that a telephone number exceeding max length fails" in {
       val exceedMaxLengthEmail: String = "1" * 25
       val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> exceedMaxLengthEmail))
 
-      formWithError.errors should contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectLengthErrorKey))
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectLengthErrorKey))
     }
 
     "validate that an empty field fails" in {
       val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> ""))
 
-      formWithError.errors should contain(FormError(TransactorTelephoneForm.telephoneNumberKey, nothingEnteredErrorKey))
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, nothingEnteredErrorKey))
     }
 
   }

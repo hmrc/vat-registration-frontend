@@ -16,7 +16,6 @@
 
 package forms
 
-import org.scalatest.Matchers._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.{Form, FormError}
@@ -29,23 +28,23 @@ class EmailPasscodeFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val incorrect_format_error_key: String = "capture-email-passcode.error.incorrect_passcode"
   val incorrect_length_error_key: String = "capture-email-passcode.error.incorrect_length"
 
-  "The passcodeForm" should {
+  "The passcodeForm" must {
     "validate that testPasscode is valid" in {
       val form = passcodeForm.bind(Map(EmailPasscodeForm.passcodeKey -> testPasscode)).value
 
-      form shouldBe Some(testPasscode)
+      form mustBe Some(testPasscode)
     }
 
     "validate that the field is not empty" in {
       val formWithError = passcodeForm.bind(Map(EmailPasscodeForm.passcodeKey -> ""))
 
-      formWithError.errors should contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
+      formWithError.errors must contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
     }
 
     "validate that the passcode is not greater than 6 characters" in {
       val formWithError = passcodeForm.bind(Map(EmailPasscodeForm.passcodeKey -> "1234567"))
 
-      formWithError.errors should contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
+      formWithError.errors must contain(FormError(EmailPasscodeForm.passcodeKey, incorrect_length_error_key))
     }
   }
 

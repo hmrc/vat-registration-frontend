@@ -16,10 +16,12 @@
 
 package common
 
-import org.scalatest.{Inside, Inspectors, Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{Inside, Inspectors}
+import org.scalatest.matchers.should.Matchers
 
 
-class MaskedStringConverterSpec extends WordSpec with Inside with Inspectors with Matchers {
+class MaskedStringConverterSpec extends AnyWordSpec with Inside with Inspectors with Matchers {
 
   import StringMasking._
 
