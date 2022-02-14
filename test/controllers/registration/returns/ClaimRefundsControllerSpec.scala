@@ -80,6 +80,8 @@ class ClaimRefundsControllerSpec extends ControllerSpec
       disable(NorthernIrelandProtocol)
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
 
@@ -101,6 +103,8 @@ class ClaimRefundsControllerSpec extends ControllerSpec
       disable(NorthernIrelandProtocol)
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(false))))
 
@@ -121,6 +125,8 @@ class ClaimRefundsControllerSpec extends ControllerSpec
       enable(NorthernIrelandProtocol)
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(NETP))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
       when(mockReturnsService.isVoluntary(any(), any()))
@@ -136,10 +142,33 @@ class ClaimRefundsControllerSpec extends ControllerSpec
       }
     }
 
+    "return SEE_OTHER when registrationReason is TransferOfAGoingConcern then redirect to return's frequency page" in new Setup {
+      disable(NorthernIrelandProtocol)
+      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+      when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
+      when(mockReturnsService.isVoluntary(any(), any()))
+        .thenReturn(Future.successful(!voluntary))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        "value" -> "true"
+      )
+
+      submitAuthorised(testController.submit, request) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/register-for-vat/how-often-submit-returns")
+      }
+    }
+
     "return SEE_OTHER when they expect to reclaim more vat than they charge and redirect to NIP pages" in new Setup {
       enable(NorthernIrelandProtocol)
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(mockReturnsService.saveReclaimVATOnMostReturns(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reclaimVatOnMostReturns = Some(true))))
       when(mockReturnsService.isVoluntary(any(), any()))

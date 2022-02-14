@@ -19,7 +19,7 @@ package controllers.registration.returns
 import itutil.ControllerISpec
 import models.api.returns.Returns
 import models.api._
-import models.{ConditionalValue, NIPCompliance}
+import models.{ConditionalValue, NIPCompliance, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -59,7 +59,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   }
 
   "submit Receive Goods page" should {
-    "return SEE_OTHER when NETP" in new Setup {
+    "return SEE_OTHER and redirect to return's frequency page when NETP" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
@@ -76,7 +76,24 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER when Non NETP and voluntary registration" in new Setup {
+    "return SEE_OTHER and redirect to return's frequency page when Registration reason is TransferOfAGoingConcern" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
+      }
+    }
+
+    "return SEE_OTHER and redirect to voluntary registration start date page when Non NETP and voluntary registration" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
@@ -93,7 +110,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER when Non NETP and mandatory registration" in new Setup {
+    "return SEE_OTHER and redirect to mandatory registration start date page when Non NETP and mandatory registration" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))

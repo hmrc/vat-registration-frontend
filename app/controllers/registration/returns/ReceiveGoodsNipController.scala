@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ReceiveGoodsNipForm
 import models.api.{NETP, NonUkNonEstablished}
-import models.{ConditionalValue, NIPCompliance}
+import models.{ConditionalValue, NIPCompliance, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, _}
 import views.html.returns.ReceiveGoodsNip
@@ -64,13 +64,14 @@ class ReceiveGoodsNipController @Inject()(val sessionService: SessionService,
                 )
               )
               _ <- returnsService.submitReturns(updatedReturns)
-              v <- returnsService.isVoluntary
-              pt <- vatRegistrationService.partyType
+              isVoluntary <- returnsService.isVoluntary
+              partyType <- vatRegistrationService.partyType
+              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
             } yield {
-              (v, pt) match {
-                case (_, NETP | NonUkNonEstablished) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
-                case (true, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage)
-                case (false, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage)
+              (isVoluntary, partyType, registrationReason) match {
+                case (_, _, TransferOfAGoingConcern) | (_, NETP | NonUkNonEstablished, _) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
+                case (true, _, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage)
+                case (false, _, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage)
               }
             }
           }

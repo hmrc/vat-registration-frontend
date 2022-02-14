@@ -3,6 +3,7 @@ package controllers.registration.returns
 
 import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
+import models.TransferOfAGoingConcern
 import models.api.returns.Returns
 import models.api._
 import play.api.http.HeaderNames
@@ -117,6 +118,23 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show.url)
+      }
+    }
+
+    "redirect to return's frequency page when Registration reason is TransferOfAGoingConcern and feature switch NorthernIrelandProtocol is disabled" in {
+      disable(NorthernIrelandProtocol)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
+        .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
+        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+      val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
   }
