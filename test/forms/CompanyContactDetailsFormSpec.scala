@@ -150,16 +150,16 @@ class CompanyContactDetailsFormSpec extends VatRegSpec {
       val data = Map("email" -> Seq(""), "mobile" -> Seq(""), "csrfToken" -> Seq(""))
       val formError = testForm.bindFromRequest(data)
 
-      CompanyContactDetailsForm.transformErrors(formError).hasErrors shouldBe true
-      CompanyContactDetailsForm.transformErrors(formError).hasGlobalErrors shouldBe true
-      CompanyContactDetailsForm.transformErrors(formError).globalError shouldBe Some(FormError("", "validation.businessContactDetails.missing", Seq("email")))
+      CompanyContactDetailsForm.transformErrors(formError).hasErrors mustBe true
+      CompanyContactDetailsForm.transformErrors(formError).hasGlobalErrors mustBe true
+      CompanyContactDetailsForm.transformErrors(formError).globalError mustBe Some(FormError("", "validation.businessContactDetails.missing", Seq("email")))
     }
 
     "do nothing if form has errors and data is not empty" in {
       val data = Map("email" -> Seq("t@@"), "mobile" -> Seq(""), "csrfToken" -> Seq(""))
       val formError = testForm.bindFromRequest(data)
 
-      CompanyContactDetailsForm.transformErrors(formError) shouldBe formError
+      CompanyContactDetailsForm.transformErrors(formError) mustBe formError
     }
   }
 }

@@ -20,7 +20,7 @@
 @this(
     hmrcBanner: HmrcBanner,
     govukBackLink: GovukBackLink,
-    govukLayout: GovukLayout,
+    hmrcLayout: HmrcLayout,
     siteHeader: components.siteHeader,
     phaseBanner: components.phaseBanner,
     footerLinks: HmrcStandardFooter,
@@ -37,33 +37,29 @@
         timeout: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@hmrcTrackingConsentSnippet()
 @head = {
     <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
-    <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
-        <!--<![endif]-->
-@if(timeout) {
-    @hmrcTimeoutDialog(TimeoutDialog(
-        language = Some("en"),
-        timeout = Option(appConfig.timeout),
-        countdown = Option(appConfig.countdown),
-        keepAliveUrl = Some("/register-for-vat/renew-session"),
-        signOutUrl = Some(controllers.callbacks.routes.SignInOutController.signOut.url)
-    ))
+    <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" /><!--<![endif]-->
+
+    @if(timeout) {
+        @hmrcTimeoutDialog(TimeoutDialog(
+            language = Some("en"),
+            timeout = Option(appConfig.timeout),
+            countdown = Option(appConfig.countdown),
+            keepAliveUrl = Some("/register-for-vat/renew-session"),
+            signOutUrl = Some(controllers.callbacks.routes.SignInOutController.signOut.url)
+        ))
     }
 }
 
-@beforeContentBlock = {
-    @phaseBanner("beta")
-    @hmrcBanner(Banner(if(messages.lang.code == "cy") {Cy} else {En}))
-
-    @if(backLink) {
-        @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
-    }
+@feedbackBanner = {
+    @messages("app.phaseBanner1")
+    <a class='govuk-link' href="@controllers.feedback.routes.FeedbackController.feedbackShow" id="phase-banner-feedback-url" target="_blank">
+    @messages("app.phaseBanner2")</a>
+    @messages("app.phaseBanner3")
 }
 
 @scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
     <script>window.GOVUKFrontend.initAll();
     window.HMRCFrontend.initAll()</script>
@@ -71,18 +67,21 @@
 }
 
 @content = {
-    <div class="govuk-!-margin-bottom-6">
-        @contentBlock
-    </div>
+    @contentBlock
     @hmrcReportTechnicalIssueHelper()
 }
 
-@govukLayout(
+@hmrcLayout(
     pageTitle = pageTitle,
-    headBlock = Some(head),
-    beforeContentBlock = Some(beforeContentBlock),
-    bodyEndBlock = None,
-    headerBlock = Some(siteHeader(signOutLink)),
-    footerBlock = Some(footerLinks()),
-    scriptsBlock = Some(scripts)
+    serviceName = Some(messages("service.name")),
+    isWelshTranslationAvailable = false,
+    signOutUrl = if (signOutLink) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None,
+    serviceUrl = Some(controllers.routes.JourneyController.show.url),
+    phaseBanner = Some(PhaseBanner(
+        tag = Some(Tag(content = Text("BETA"))),
+        content = HtmlContent(feedbackBanner)
+    )),
+    backLinkUrl = if (backLink) Some("#") else None,
+    displayHmrcBanner = true,
+    additionalScriptsBlock = Some(scripts)
 )(content)

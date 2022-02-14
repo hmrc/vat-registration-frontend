@@ -16,8 +16,9 @@
 
 package testHelpers
 
+import org.scalatest.Inspectors
 import org.scalatest.compatible.Assertion
-import org.scalatest.{Inspectors, Matchers}
+import org.scalatest.matchers.should.Matchers
 import play.api.data.{Form, FormError}
 
 object FormInspectors extends Matchers with Inspectors {

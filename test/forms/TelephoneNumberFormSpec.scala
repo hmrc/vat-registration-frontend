@@ -16,7 +16,6 @@
 
 package forms
 
-import org.scalatest.Matchers._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.{Form, FormError}
@@ -29,30 +28,30 @@ class TelephoneNumberFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val telephone_number_length_error_key: String = "capture-telephone-number.error.incorrect_length"
   val telephone_number_empty_error_key: String = "capture-telephone-number.error.nothing_entered"
 
-  "The telephoneNumberForm" should {
+  "The telephoneNumberForm" must {
     "validate that testTelephoneNumber is valid" in {
       val form = telephoneNumberForm.bind(Map(TelephoneNumberForm.telephoneNumberKey -> testTelephoneNumber)).value
 
-      form shouldBe Some(testTelephoneNumber)
+      form mustBe Some(testTelephoneNumber)
     }
 
     "validate that incorrect telephone number format fails" in {
       val formWithError = telephoneNumberForm.bind(Map(TelephoneNumberForm.telephoneNumberKey -> ":::><|"))
 
-      formWithError.errors should contain(FormError(TelephoneNumberForm.telephoneNumberKey, incorrect_telephone_number_format_error_key))
+      formWithError.errors must contain(FormError(TelephoneNumberForm.telephoneNumberKey, incorrect_telephone_number_format_error_key))
     }
 
     "validate that a telephone number exceeding max length fails" in {
       val exceedMaxLengthEmail: String = "1" * 25
       val formWithError = telephoneNumberForm.bind(Map(TelephoneNumberForm.telephoneNumberKey -> exceedMaxLengthEmail))
 
-      formWithError.errors should contain(FormError(TelephoneNumberForm.telephoneNumberKey, telephone_number_length_error_key))
+      formWithError.errors must contain(FormError(TelephoneNumberForm.telephoneNumberKey, telephone_number_length_error_key))
     }
 
     "validate that an empty field fails" in {
       val formWithError = telephoneNumberForm.bind(Map(TelephoneNumberForm.telephoneNumberKey -> ""))
 
-      formWithError.errors should contain(FormError(TelephoneNumberForm.telephoneNumberKey, telephone_number_empty_error_key))
+      formWithError.errors must contain(FormError(TelephoneNumberForm.telephoneNumberKey, telephone_number_empty_error_key))
     }
 
   }

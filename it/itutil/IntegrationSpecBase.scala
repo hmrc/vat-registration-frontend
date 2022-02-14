@@ -17,11 +17,13 @@ package itutil
 
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import org.scalatest.matchers.must.Matchers
 
-trait IntegrationSpecBase extends WordSpec
+trait IntegrationSpecBase extends AnyWordSpec
   with GivenWhenThen
-  with GuiceOneServerPerSuite with ScalaFutures with IntegrationPatience with MustMatchers
+  with GuiceOneServerPerSuite with ScalaFutures with IntegrationPatience with Matchers
   with WiremockHelper with BeforeAndAfterEach with BeforeAndAfterAll {
 
   override def beforeEach() = {
