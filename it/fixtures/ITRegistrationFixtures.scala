@@ -66,7 +66,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
   val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
   val fullReturns: Returns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
-
+  val testCalculatedDate: LocalDate = LocalDate.now()
   val testLine1 = "line1"
   val testLine2 = "line2"
   val testCountry = Country(Some("UK"), Some("United Kingdom"))
@@ -90,7 +90,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     MTDfB,
     UkCompany,
     isTransactor = false,
-    registrationReason = ForwardLook
+    registrationReason = ForwardLook,
+    calculatedDate = Some(testCalculatedDate)
   )
 
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
