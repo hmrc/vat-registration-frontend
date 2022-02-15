@@ -20,6 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.NorthernIrelandProtocol
 import forms.ChargeExpectancyForm
+import models.TransferOfAGoingConcern
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
@@ -57,13 +58,16 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
           success => {
             for {
               _ <- returnsService.saveReclaimVATOnMostReturns(success)
-              v <- returnsService.isVoluntary
-              pt <- vatRegistrationService.partyType
-            } yield (v, pt) match {
-              case (_, NETP | NonUkNonEstablished) => Redirect(routes.SendGoodsOverseasController.show)
-              case (_, _) if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
-              case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
-              case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage)
+              isVoluntary <- returnsService.isVoluntary
+              partyType <- vatRegistrationService.partyType
+              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
+            } yield (isVoluntary, partyType, registrationReason) match {
+              case (_, NETP | NonUkNonEstablished, _) => Redirect(routes.SendGoodsOverseasController.show)
+              case (_, _, _) if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
+              case (_, _, TransferOfAGoingConcern) =>
+                Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
+              case (true, _, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
+              case (false, _, _) => Redirect(routes.ReturnsController.mandatoryStartPage)
             }
           }
         )
