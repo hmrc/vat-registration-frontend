@@ -59,22 +59,9 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[LocalDate] = {
-    vatService.getVatScheme(profile, hc).map { scheme =>
-      scheme.eligibilitySubmissionData match {
-        case Some(EligibilitySubmissionData(threshold, _, _, NETP | NonUkNonEstablished, _, _)) =>
-          threshold.thresholdOverseas
-            .getOrElse(throw new InternalServerException("[ReturnsService] Overseas user missing overseas threshold date"))
-        case Some(EligibilitySubmissionData(threshold, _, _, _, _, _)) =>
-          List[Option[LocalDate]](
-            threshold.thresholdInTwelveMonths.map(_.withDayOfMonth(1).plusMonths(2)),
-            threshold.thresholdPreviousThirtyDays,
-            threshold.thresholdNextThirtyDays
-          ).flatten
-            .sortBy((date: LocalDate) => date.toEpochDay)
-            .headOption
-            .getOrElse(throw new InternalServerException("[ReturnsService] Unable to calculate start date due to missing threshold data"))
-      }
-    }
+    vatService.getEligibilitySubmissionData.map(
+      _.calculatedDate.getOrElse(throw new InternalServerException("[ReturnsService] Missing calculated date"))
+    )
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
