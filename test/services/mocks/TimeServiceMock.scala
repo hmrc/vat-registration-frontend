@@ -58,4 +58,8 @@ trait TimeServiceMock {
         BankHoliday(title = "New Year's Day", date = new JodaLocalDate(2018, 1, 1))
       )))
   }
+
+  def mockToday(todaysDate: LocalDate): OngoingStubbing[LocalDate] =
+    when(mockTimeService.today).thenReturn(todaysDate)
+
 }

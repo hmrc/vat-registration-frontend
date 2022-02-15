@@ -19,10 +19,12 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ReceiveGoodsNipForm
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.external.{IncorporatedEntity, PartnershipIdEntity}
 import models.{ConditionalValue, NIPCompliance, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, _}
+import uk.gov.hmrc.http.InternalServerException
 import views.html.returns.ReceiveGoodsNip
 
 import javax.inject.Inject
@@ -60,20 +62,17 @@ class ReceiveGoodsNipController @Inject()(val sessionService: SessionService,
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
-                northernIrelandProtocol = Some(NIPCompliance(returns.northernIrelandProtocol.flatMap(_.goodsToEU), Some(ConditionalValue(receiveGoods,amount)))
-                )
+                northernIrelandProtocol = Some(NIPCompliance(returns.northernIrelandProtocol.flatMap(_.goodsToEU), Some(ConditionalValue(receiveGoods,amount))))
               )
               _ <- returnsService.submitReturns(updatedReturns)
-              isVoluntary <- returnsService.isVoluntary
+              regReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
               partyType <- vatRegistrationService.partyType
-              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
-            } yield {
-              (isVoluntary, partyType, registrationReason) match {
-                case (_, _, TransferOfAGoingConcern) | (_, NETP | NonUkNonEstablished, _) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
-                case (true, _, _) => Redirect(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage)
-                case (false, _, _) => Redirect(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage)
+            } yield (partyType, regReason) match {
+                case (NETP | NonUkNonEstablished, _) | (_, TransferOfAGoingConcern) =>
+                  Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
+                case _ =>
+                  Redirect(routes.VatRegStartDateResolverController.resolve)
               }
-            }
           }
         )
   }

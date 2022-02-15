@@ -19,7 +19,6 @@ package services
 import java.io.InputStream
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate => JavaLocalDate, LocalDateTime => JavaLocalDateTime}
-
 import javax.inject.{Inject, Singleton}
 import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
 import play.api.Environment
@@ -28,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.time.DateTimeUtils._
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet, LocalDateWithHolidays}
 import utils.SystemDate
-
 
 import scala.language.implicitConversions
 
@@ -44,7 +42,7 @@ class TimeService @Inject()(val environment: Environment,
 
   def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate
 
-  def today: JavaLocalDate = JavaLocalDate.now
+  def today: JavaLocalDate = JavaLocalDate.now()
 
   lazy val bankHolidaySet: BankHolidaySet = {
     implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]

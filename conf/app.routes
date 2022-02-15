@@ -34,6 +34,9 @@ POST        /application-reference                                              
 GET         /honesty-declaration                                                               controllers.HonestyDeclarationController.show
 POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit
 
+## START DATE RESOLVER
+GET         /resolve-vat-start-date                                                           controllers.registration.returns.VatRegStartDateResolverController.resolve
+
 ## VOLUNTARY START DATE PAGE
 GET         /vat-start-date                                                                    controllers.registration.returns.ReturnsController.voluntaryStartPage
 POST        /vat-start-date                                                                    controllers.registration.returns.ReturnsController.submitVoluntaryStart
@@ -41,6 +44,10 @@ POST        /vat-start-date                                                     
 ## MANDATORY START DATE PAGE
 GET         /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.mandatoryStartPage
 POST        /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.submitMandatoryStart
+
+## VOLUNTART START DATE (no date choice) PAGE
+GET         /voluntary-vat-start-date                                                          controllers.registration.returns.VoluntaryStartDateNoChoiceController.show
+POST        /voluntary-vat-start-date                                                          controllers.registration.returns.VoluntaryStartDateNoChoiceController.submit
 
 ## TRADING NAME PAGE
 GET         /trading-name                                                                      controllers.registration.business.TradingNameController.show

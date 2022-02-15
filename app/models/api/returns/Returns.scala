@@ -16,7 +16,7 @@
 
 package models.api.returns
 
-import models.{NIPCompliance, S4LKey}
+import models.{ApiKey, NIPCompliance, S4LKey}
 import play.api.libs.json._
 import utils.JsonUtilities
 
@@ -33,6 +33,7 @@ case class Returns(zeroRatedSupplies: Option[BigDecimal] = None,
 
 object Returns extends JsonUtilities {
   implicit val s4lKey: S4LKey[Returns] = S4LKey("returns")
+  implicit val apiKey: ApiKey[Returns] = ApiKey("returns")
   implicit val format: Format[Returns] = Json.format[Returns]
 }
 

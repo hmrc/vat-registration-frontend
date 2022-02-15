@@ -266,6 +266,12 @@ validation.startDate.range                            = Enter a date between {0}
 validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
 
+## Voluntart Start Date (no date choice) page
+voluntaryStartDateNoChoice.heading                    = What do you want the business’s VAT start date to be
+voluntaryStartDateNoChoice.para                       = You can choose the date the business becomes VAT registered when you register voluntarily. This could be up to 4 years ago or within the next 3 months
+voluntaryStartDateNoChoice.panel                      = Once the business is successfully registered for VAT you cannot change its start date
+voluntaryStartDateNoChoice.hint                       = For example, {0}
+
 ## Trading Name Page
 pages.tradingName.heading                           = Does or will the business trade using a name that is different from {0}?
 pages.tradingName.tradingNameLabel                  = Enter the trading name

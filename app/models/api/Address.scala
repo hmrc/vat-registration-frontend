@@ -49,7 +49,7 @@ case class Address(line1: String,
   def normalise(): Address =
     Address(
       this.line1.trim,
-      this.line2 map (_.trim) filterNot(_.isEmpty),
+      this.line2 map (_.trim) filterNot (_.isEmpty),
       this.line3 map (_.trim) filterNot (_.isEmpty),
       this.line4 map (_.trim) filterNot (_.isEmpty),
       this.line5 map (_.trim) filterNot (_.isEmpty),

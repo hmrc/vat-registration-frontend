@@ -48,10 +48,10 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations
 
-  def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKet: ApiKey[T]): Future[Option[T]] =
+  def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[Option[T]] =
     registrationApiConnector.getSection[T](regId)
 
-  def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKet: ApiKey[T]): Future[T] =
+  def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[T] =
     registrationApiConnector.replaceSection[T](regId, data)
 
   // -- End new Registrations API methods --
