@@ -91,9 +91,9 @@ object Address {
       val addressValidated = (json \ "id").isDefined
 
       if (postcode.isEmpty && country.isEmpty) {
-        JsError(JsonValidationError("neither postcode nor country were defined"))
-      } else if (lineMap.size < 2) {
-        JsError(JsonValidationError(s"only ${lineMap.size} lines provided from address-lookup-frontend"))
+        JsError(JsonValidationError("Neither postcode nor country were defined"))
+      } else if (lineMap.isEmpty) {
+        JsError(JsonValidationError(s"ALF returned no address lines"))
       } else {
         JsSuccess(Address(lineMap(0), lineMap.get(1), lineMap.get(2), lineMap.get(3), lineMap.get(4), postcode, country, addressValidated))
       }
