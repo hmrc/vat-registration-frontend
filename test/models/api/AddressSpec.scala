@@ -82,13 +82,13 @@ class AddressSpec extends VatRegSpec with Inspectors {
       val validJson = Json.parse(
         """{
           | "address": {
-          |   "lines": ["line 1", "line 2"],
+          |   "lines": ["line 1"],
           |   "postcode": "BN3 1JU"
           | }
           |}""".stripMargin)
 
       implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), postcode = Some("BN3 1JU"), addressValidated = false))
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", postcode = Some("BN3 1JU"), addressValidated = false))
     }
 
 
