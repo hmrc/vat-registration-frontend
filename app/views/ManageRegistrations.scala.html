@@ -38,7 +38,9 @@
 
     @table(Table(rows = builder.tableRows(registrations), head = Some(builder.tableHead)))
 
-    @link(controllers.routes.JourneyController.startNewJourney.url, messages("manageRegistrations.startNew"))
+    <div class="govuk-!-margin-bottom-6">
+        @link(controllers.routes.JourneyController.startNewJourney.url, messages("manageRegistrations.startNew"), additionalClasses = "govuk-!-margin-bottom-6")
+    </div>
 
 }
 
