@@ -18,7 +18,7 @@ package services
 
 import _root_.models._
 import _root_.models.api._
-import featureswitch.core.config.{AnnualAccountingScheme, FeatureSwitching}
+import featureswitch.core.config.FeatureSwitching
 import models.api.returns._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -408,7 +408,6 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
     val invalidTurnover = 1350001L
 
     "return false for a turnover that is above 1350000" in new Setup {
-      enable(AnnualAccountingScheme)
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
@@ -416,11 +415,9 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
         .thenReturn(Future.successful(Some(TurnoverEstimates(invalidTurnover))))
 
       await(service.isEligibleForAAS) mustBe false
-      disable(AnnualAccountingScheme)
     }
 
     "return false for a Groups Registration" in new Setup {
-      enable(AnnualAccountingScheme)
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)))
 
@@ -428,21 +425,9 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
         .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
 
       await(service.isEligibleForAAS) mustBe false
-      disable(AnnualAccountingScheme)
     }
 
-    "return false when the AAS FS is disabled" in new Setup {
-      when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
-        .thenReturn(Future.successful(validEligibilitySubmissionData))
-
-      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
-
-      await(service.isEligibleForAAS) mustBe false
-    }
-
-    "return true otherwise" in new Setup {
-      enable(AnnualAccountingScheme)
+    "return true when the turnover estimate is valid for AAS" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
@@ -450,7 +435,6 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
         .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
 
       await(service.isEligibleForAAS) mustBe true
-      disable(AnnualAccountingScheme)
     }
   }
 }

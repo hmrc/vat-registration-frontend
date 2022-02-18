@@ -17,7 +17,7 @@
 package services
 
 import connectors.VatRegistrationConnector
-import featureswitch.core.config.{AnnualAccountingScheme, FeatureSwitching}
+import featureswitch.core.config.FeatureSwitching
 import models._
 import models.api._
 import models.api.returns._
@@ -161,7 +161,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
       turnoverEstimates <- vatService.fetchTurnoverEstimates
       isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
     } yield {
-      turnoverEstimates.exists(_.turnoverEstimate <= 1350000) && isEnabled(AnnualAccountingScheme) && !isGroupRegistration
+      turnoverEstimates.exists(_.turnoverEstimate <= 1350000)  && !isGroupRegistration
     }
   }
 
