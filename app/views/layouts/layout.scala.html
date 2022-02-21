@@ -75,6 +75,7 @@
     pageTitle = pageTitle,
     serviceName = Some(messages("service.name")),
     isWelshTranslationAvailable = false,
+    additionalHeadBlock = Some(head),
     signOutUrl = if (signOutLink) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None,
     serviceUrl = Some(controllers.routes.JourneyController.show.url),
     phaseBanner = Some(PhaseBanner(
