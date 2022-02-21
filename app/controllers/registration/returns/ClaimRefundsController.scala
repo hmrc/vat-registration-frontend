@@ -50,6 +50,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
         }
   }
 
+  //scalastyle:off
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
@@ -58,16 +59,13 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
           success => {
             for {
               _ <- returnsService.saveReclaimVATOnMostReturns(success)
-              isVoluntary <- returnsService.isVoluntary
               partyType <- vatRegistrationService.partyType
-              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
-            } yield (isVoluntary, partyType, registrationReason) match {
-              case (_, NETP | NonUkNonEstablished, _) => Redirect(routes.SendGoodsOverseasController.show)
-              case (_, _, _) if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
-              case (_, _, TransferOfAGoingConcern) =>
-                Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
-              case (true, _, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
-              case (false, _, _) => Redirect(routes.ReturnsController.mandatoryStartPage)
+              regReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
+            } yield (partyType, regReason) match {
+              case (NETP | NonUkNonEstablished, _) => Redirect(routes.SendGoodsOverseasController.show)
+              case _ if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
+              case (_, TransferOfAGoingConcern) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
+              case _ => Redirect(routes.VatRegStartDateResolverController.resolve)
             }
           }
         )

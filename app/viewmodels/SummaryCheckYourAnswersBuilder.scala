@@ -579,8 +579,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
         case None if partyType.equals(NETP) => None
         case None => Some(s"$sectionId.mandatoryStartDate")
       },
-      if (mandatoryRegistration) Some(returnsRoutes.ReturnsController.mandatoryStartPage.url)
-      else Some(returnsRoutes.ReturnsController.voluntaryStartPage.url)
+      Some(controllers.registration.returns.routes.VatRegStartDateResolverController.resolve.url)
     )
 
     val zeroRatedRow = optSummaryListRowString(

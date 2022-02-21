@@ -48,6 +48,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
   class ViewSetup(implicit val doc: Document) {
     case class Link(text: String, href: String)
     case class Details(summary: String, body: String)
+    case class DateField(legend: String, hint: Option[String] = None)
 
     implicit class ElementExtractor(elements: Elements) {
       def toList: List[Element] = elements.iterator.asScala.toList
@@ -56,6 +57,9 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
     }
 
     implicit class SelectorDoc(doc: Document) extends BaseSelectors {
+      private def selectText(selector: String): List[String] =
+        doc.select(selector).asScala.toList.map(_.text())
+
       def heading: Option[String] = doc.select(h1).headOption.map(_.text)
 
       def headingLevel2(n: Int) = doc.select(h2(n)).headOption.map(_.text)
@@ -76,6 +80,10 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def para(n: Int): Option[String] = doc.select(p(n)).headOption.map(_.text)
 
+      def panelIndentHeading(n: Int): Option[String] = selectText(panelHeading).lift(n)
+
+      def panelIndent(n: Int): Option[String] = selectText("main .govuk-inset-text").headOption
+
       def unorderedList(n: Int): List[String] = doc.select(s"main ul:nth-of-type($n)").first.children().eachText().asScala.toList
 
       def link(n: Int): Option[Link] = doc.select(a).toList.map(l => Link(l.text, l.attr("href"))).lift(n - 1)
@@ -95,6 +103,14 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
           doc.select(s"label[for=${elem.id}]").first.text
         }
       }
+
+      def dateInput(n: Int): Option[DateField] =
+        doc.select(s"main .govuk-fieldset").asScala.toList.lift(n - 1).map { elem =>
+          DateField(
+            legend = elem.select(".govuk-fieldset__legend").text(),
+            hint = elem.select(".govuk-hint").asScala.toList.headOption.map(_.text)
+          )
+        }
 
       def radio(value: String): Option[String] = input("radio", "value", value)
 

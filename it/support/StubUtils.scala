@@ -717,6 +717,13 @@ trait StubUtils {
   }
 
   case class RegistrationApiStub()(implicit builder: PreconditionBuilder) {
+    def getRegistration(vatScheme: VatScheme, regId: String = "1")(implicit format: Format[VatScheme] = VatScheme.format): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/registrations/$regId"))
+        .willReturn(ok(Json.stringify(Json.toJson(vatScheme)))
+      ))
+      builder
+    }
+
     def getSection[T: ApiKey](contains: Option[T], regId: String = "1", isComplete: Boolean = true)(implicit format: Format[T]): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))

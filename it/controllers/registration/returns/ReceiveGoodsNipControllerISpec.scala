@@ -59,12 +59,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   }
 
   "submit Receive Goods page" should {
-    "return SEE_OTHER and redirect to return's frequency page when NETP" in new Setup {
+    "redirect to the returns frequency page when NETP" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
-        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -76,12 +75,27 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER and redirect to return's frequency page when Registration reason is TransferOfAGoingConcern" in new Setup {
+    "redirect to the returns frequency page when NonUkNonEstablished" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
-        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
+      }
+    }
+
+    "redirect to the returns frequency page when the registration reason is TOGC" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
+        .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -93,12 +107,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       }
     }
 
-    "return SEE_OTHER and redirect to voluntary registration start date page when Non NETP and voluntary registration" in new Setup {
+    "redirect to the start date resolver in all other cases" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
         .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
-        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -106,25 +119,9 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.voluntaryStartPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
       }
     }
 
-    "return SEE_OTHER and redirect to mandatory registration start date page when Non NETP and mandatory registration" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
-        .s4lContainer[Returns].isUpdatedWith(Returns(northernIrelandProtocol = Some(NIPCompliance(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
-        .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = true)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.mandatoryStartPage.url)
-      }
-    }
   }
 }
