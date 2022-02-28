@@ -19,12 +19,10 @@ package controllers.registration.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ReceiveGoodsNipForm
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
-import models.external.{IncorporatedEntity, PartnershipIdEntity}
+import models.api.{NETP, NonUkNonEstablished}
 import models.{ConditionalValue, NIPCompliance, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, _}
-import uk.gov.hmrc.http.InternalServerException
 import views.html.returns.ReceiveGoodsNip
 
 import javax.inject.Inject

@@ -18,7 +18,6 @@ package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.NorthernIrelandProtocol
 import forms.WarehouseNameForm
 import models.api.returns.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
@@ -66,10 +65,7 @@ class WarehouseNameController @Inject()(val sessionService: SessionService,
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              if(isEnabled(NorthernIrelandProtocol))
                 Redirect(routes.SellOrMoveNipController.show)
-              else
-                Redirect(routes.ReturnsController.returnsFrequencyPage)
             }
           }
         )

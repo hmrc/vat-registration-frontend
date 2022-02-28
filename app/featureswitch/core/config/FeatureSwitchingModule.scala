@@ -39,7 +39,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     UseSoleTraderIdentification,
     UseUpscan,
     SaveAndContinueLater,
-    NorthernIrelandProtocol,
     ShortOrgName,
     MultipleRegistrations,
     LandAndProperty,
@@ -121,11 +120,6 @@ case object UseUpscan extends FeatureSwitch {
 case object SaveAndContinueLater extends FeatureSwitch {
   val configName = "feature-switch.save-and-continue-later"
   val displayName = "Enable Save and Continue Later"
-}
-
-case object NorthernIrelandProtocol extends FeatureSwitch {
-  val configName: String = "feature-switch.northern-ireland-protocol"
-  val displayName: String = "Enable Northern Ireland protocol (NIP) flow"
 }
 
 case object ShortOrgName extends FeatureSwitch {

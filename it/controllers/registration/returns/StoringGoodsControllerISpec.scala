@@ -1,7 +1,6 @@
 
 package controllers.registration.returns
 
-import featureswitch.core.config.NorthernIrelandProtocol
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.returns.{OverseasCompliance, Returns, StoringOverseas, StoringWithinUk}
@@ -91,7 +90,6 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
     "POST /storing-goods-for-dispatch" when {
       "the user submits Storing Within the UK" must {
         "redirect to the dispatch from warehouse controller" in new Setup {
-          disable(NorthernIrelandProtocol)
           given()
             .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
@@ -108,24 +106,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         }
       }
       "the user submits Storing Overseas" must {
-        "redirect to the Returns Frequency page" in new Setup {
-          disable(NorthernIrelandProtocol)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[Returns].contains(testReturns)
-            .vatScheme.isUpdatedWith(testReturns.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
-          ))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage.url)
-        }
         "redirect to the Northern Ireland page" in new Setup {
-          enable(NorthernIrelandProtocol)
           given()
             .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
