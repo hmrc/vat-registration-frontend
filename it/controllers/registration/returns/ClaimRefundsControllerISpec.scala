@@ -1,9 +1,7 @@
 
 package controllers.registration.returns
 
-import featureswitch.core.config.NorthernIrelandProtocol
 import itutil.ControllerISpec
-import models.TransferOfAGoingConcern
 import models.api.returns.Returns
 import models.api._
 import play.api.http.HeaderNames
@@ -54,8 +52,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the Northern Ireland Protocol page when the user is non-NETP and the NIP FS is enabled" in {
-      enable(NorthernIrelandProtocol)
+    "redirect to the Northern Ireland Protocol page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
@@ -101,22 +98,5 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.SendGoodsOverseasController.show.url)
       }
     }
-
-    "redirect to the start date resolver in any other case" in {
-      disable(NorthernIrelandProtocol)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
-        .s4lContainer[Returns].isUpdatedWith(Returns(None, Some(true), None, None, None))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
-      }
-    }
-
   }
 }

@@ -18,7 +18,6 @@ package controllers.registration.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.NorthernIrelandProtocol
 import forms.ChargeExpectancyForm
 import models.TransferOfAGoingConcern
 import models.api.{NETP, NonUkNonEstablished}
@@ -63,9 +62,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
               regReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
             } yield (partyType, regReason) match {
               case (NETP | NonUkNonEstablished, _) => Redirect(routes.SendGoodsOverseasController.show)
-              case _ if isEnabled(NorthernIrelandProtocol) => Redirect(routes.SellOrMoveNipController.show)
-              case (_, TransferOfAGoingConcern) => Redirect(controllers.registration.returns.routes.ReturnsController.returnsFrequencyPage)
-              case _ => Redirect(routes.VatRegStartDateResolverController.resolve)
+              case _ => Redirect(routes.SellOrMoveNipController.show)
             }
           }
         )
