@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executionContext: ExecutionContext) {
 
-  def initiateUpscan(regId: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[UpscanResponse] = {
+  def initiateUpscan(regId: String)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     upscanConnector.upscanInitiate().flatMap { response =>
       upscanConnector.storeUpscanReference(regId, response.reference).map(_ => response)
     }

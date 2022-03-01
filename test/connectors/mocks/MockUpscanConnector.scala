@@ -34,7 +34,7 @@ trait MockUpscanConnector extends MockitoSugar {
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
 
   def mockUpscanInitiate(res: Future[UpscanResponse]): OngoingStubbing[Future[UpscanResponse]] =
-    when(mockUpscanConnector.upscanInitiate()(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[AnyContent]])).thenReturn(res)
+    when(mockUpscanConnector.upscanInitiate()(ArgumentMatchers.any[HeaderCarrier])).thenReturn(res)
 
   def mockStoreUpscanReference(regId: String, reference: String)(res: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
     when(mockUpscanConnector.storeUpscanReference(
