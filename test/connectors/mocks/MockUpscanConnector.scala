@@ -23,6 +23,7 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
@@ -33,7 +34,7 @@ trait MockUpscanConnector extends MockitoSugar {
   val mockUpscanConnector: UpscanConnector = mock[UpscanConnector]
 
   def mockUpscanInitiate(res: Future[UpscanResponse]): OngoingStubbing[Future[UpscanResponse]] =
-    when(mockUpscanConnector.upscanInitiate()(ArgumentMatchers.any[HeaderCarrier])).thenReturn(res)
+    when(mockUpscanConnector.upscanInitiate()(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[AnyContent]])).thenReturn(res)
 
   def mockStoreUpscanReference(regId: String, reference: String)(res: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
     when(mockUpscanConnector.storeUpscanReference(

@@ -19,6 +19,7 @@ package services
 import connectors.mocks.MockUpscanConnector
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
+import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 
@@ -34,6 +35,7 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
 
   "initiateUpscan" must {
+    implicit val rq = FakeRequest()
     "return an UpscanResponse" in {
       mockUpscanInitiate(Future.successful(testUpscanResponse))
       mockStoreUpscanReference(testRegId, testReference)(Future.successful(HttpResponse(OK, "{}")))

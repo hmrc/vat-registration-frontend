@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
@@ -28,14 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppConfig)(implicit executionContext: ExecutionContext) {
 
-  def upscanInitiate()(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
+  def upscanInitiate()(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[UpscanResponse] = {
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-      "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.url,
+      "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
+      "errorRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
       "minimumFileSize" -> 0,
-      "maximumFileSize" -> 10485760,
-      "expectedContentType" -> "image/jpeg"
+      "maximumFileSize" -> 10485760
     )
 
     httpClient.POST[JsValue, HttpResponse](url, body).map {
