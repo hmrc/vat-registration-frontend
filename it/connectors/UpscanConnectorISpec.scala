@@ -22,6 +22,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream5xxResponse}
@@ -58,14 +59,15 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
 
   "upscanInitiate" must {
+    implicit val rq = FakeRequest()
     "return an UpscanResponse" in {
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-        "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.url,
+        "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
+        "errorRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
         "minimumFileSize" -> 0,
-        "maximumFileSize" -> 10485760,
-        "expectedContentType" -> "image/jpeg")
+        "maximumFileSize" -> 10485760)
 
       val response = await(connector.upscanInitiate())
 
