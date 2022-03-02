@@ -45,6 +45,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   private def loadConfig(key: String) = servicesConfig.getString(key)
 
   lazy val hostUrl: String = loadConfig("microservice.services.vat-registration-frontend.www.url")
+  lazy val hostAbsoluteUrl: String = loadConfig("microservice.services.vat-registration-frontend.www.absoluteUrl")
   lazy val host: String = servicesConfig.baseUrl("vat-registration-frontend.internal")
   lazy val backendHost: String = servicesConfig.baseUrl("vat-registration")
   lazy val eligibilityHost: String = servicesConfig.baseUrl("vat-registration-eligibility-frontend")

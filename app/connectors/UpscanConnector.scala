@@ -29,12 +29,12 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppConfig)(implicit executionContext: ExecutionContext) {
 
-  def upscanInitiate()(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[UpscanResponse] = {
+  def upscanInitiate()(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-      "successRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
-      "errorRedirect" -> controllers.test.routes.FileUploadController.callbackCheck.absoluteURL(),
+      "successRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.test.routes.FileUploadController.callbackCheck.url}",
+      "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.test.routes.FileUploadController.callbackCheck.url}",
       "minimumFileSize" -> 0,
       "maximumFileSize" -> 10485760
     )

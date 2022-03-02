@@ -35,7 +35,6 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
 
   "initiateUpscan" must {
-    implicit val rq = FakeRequest()
     "return an UpscanResponse" in {
       mockUpscanInitiate(Future.successful(testUpscanResponse))
       mockStoreUpscanReference(testRegId, testReference)(Future.successful(HttpResponse(OK, "{}")))
