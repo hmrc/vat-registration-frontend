@@ -547,6 +547,17 @@ cya.warehouseName                                    = Fulfilment Warehouse busi
 cya.sellOrMoveNip                                    = Sell or move goods from Northern Ireland?
 cya.receiveGoodsNip                                  = Receive goods in Northern Ireland from EU?
 
+## Summary Page Transactor Details
+cya.transactor.isPartOfOrganisation                  = Part of an organisation
+cya.transactor.organisationName                      = Organisation name
+cya.transactor.roleInTheBusiness                     = Role in business registering for VAT
+cya.transactor.fullName                              = Full name
+cya.transactor.dateOfBirth                           = Date of birth
+cya.transactor.nino                                  = National Insurance number
+cya.transactor.homeAddress                           = Home address
+cya.transactor.telephoneNumber                       = Telephone number
+cya.transactor.emailAddress                          = Email address
+
 ## Error Pages
 error.error_template.tryagain                        = Try again
 
