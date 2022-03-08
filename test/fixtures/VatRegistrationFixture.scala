@@ -187,6 +187,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
+  val validNipCompliance = NIPCompliance(
+    goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
+    goodsFromEU = Some(ConditionalValue(true, Some(BigDecimal(1))))
+  )
   val validReturns = Returns(
     Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
   )

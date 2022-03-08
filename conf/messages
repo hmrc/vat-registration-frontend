@@ -558,6 +558,37 @@ cya.transactor.homeAddress                           = Home address
 cya.transactor.telephoneNumber                       = Telephone number
 cya.transactor.emailAddress                          = Email address
 
+## CYA About the business
+cya.aboutTheBusiness.homeAddress                    = Business address
+cya.aboutTheBusiness.emailBusiness                  = Business email address
+cya.aboutTheBusiness.daytimePhoneBusiness           = Business daytime phone number
+cya.aboutTheBusiness.mobileBusiness                 = Business mobile number
+cya.aboutTheBusiness.website                        = Business website address
+cya.aboutTheBusiness.contactPreference              = Contact preference
+cya.aboutTheBusiness.buySellLandAndProperty         = Does the business’s activities include the buying, selling or letting of land or property?
+cya.aboutTheBusiness.businessDescription            = What does the business do?
+cya.aboutTheBusiness.mainSicCode                    = Main business activity
+cya.aboutTheBusiness.sicCodes                       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
+cya.aboutTheBusiness.supplyWorkers                  = Supplying workers to provide a service to another business
+cya.aboutTheBusiness.numberOfWorkers                = Number of workers supplied
+cya.aboutTheBusiness.intermediarySupply             = Intermediary arranging the supply of workers
+cya.aboutTheBusiness.tradingName                    = Different Trading name
+cya.aboutTheBusiness.mandatoryName                  = Trading name
+cya.aboutTheBusiness.applyForEori                   = Apply for EORI?
+cya.aboutTheBusiness.zeroRated                      = Zero rated turnnover for the next 12 months
+cya.aboutTheBusiness.claimRefunds                   = Expect to claim VAT refunds regularly?
+cya.aboutTheBusiness.sendGoodsOverseas              = Will the business send goods directly to customers from overseas countries?
+cya.aboutTheBusiness.sendGoodsToEu                  = Do you intend to send goods direct to customers from within the EU?
+cya.aboutTheBusiness.storingGoods                   = Where are you storing your goods for dispatch?
+cya.aboutTheBusiness.storingGoods.uk                = Within the United Kingdom
+cya.aboutTheBusiness.storingGoods.overseas          = Overseas
+cya.aboutTheBusiness.dispatchFromWarehouse          = Will the business dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse?
+cya.aboutTheBusiness.warehouseNumber                = Fulfilment Warehouse number
+cya.aboutTheBusiness.warehouseName                  = Fulfilment Warehouse business name
+cya.aboutTheBusiness.sellOrMoveNip                  = Sell or move goods from NI?
+cya.aboutTheBusiness.receiveGoodsNip                = Receive goods in Northern Ireland from EU?
+cya.aboutTheBusiness.valueOfGoods                   = Value of goods:
+
 ## Error Pages
 error.error_template.tryagain                        = Try again
 
