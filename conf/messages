@@ -457,6 +457,29 @@ cya.overseasCountry                                  = Overseas country
 cya.zeroRatedSupplies                                = Zero-rated turnover for the next 12 months
 cya.reclaimMoreVat                                   = Expect to claim VAT refunds regularly
 
+## Summary page Applicant details
+cya.applicantDetails.leadPartner.uniqueTaxpayerReference            = Lead partner’s Unique Taxpayer Reference
+cya.applicantDetails.leadPartner.companyUniqueTaxpayerReference     = Lead partner’s company Unique Taxpayer Reference
+cya.applicantDetails.leadPartner.companyRegistrationNumber          = Lead partner’s company registration number
+cya.applicantDetails.leadPartner.companyName                        = Lead partner’s company name
+cya.applicantDetails.leadPartner.partnershipName                    = Lead partner’s Partnership name
+cya.applicantDetails.leadPartner.companyNumber                      = Lead partner’s company number
+cya.applicantDetails.leadPartner.registeredPostcode                 = Lead partner’s registered postcode
+cya.applicantDetails.leadPartner.postcodeForSelfAssessment          = Lead partner’s registered postcode for self assessment
+cya.applicantDetails.leadPartner.charityHMRCReferenceNumber         = Charity’s HMRC reference number
+cya.applicantDetails.firstName                                      = First Name
+cya.applicantDetails.lastName                                       = Last Name
+cya.applicantDetails.dob                                            = Date of birth
+cya.applicantDetails.nino                                           = National Insurance number
+cya.applicantDetails.roleInTheBusiness                              = Role in the business
+cya.applicantDetails.formerName                                     = Former name
+cya.applicantDetails.formerNameDate                                 = Date former name changed
+cya.applicantDetails.homeAddress                                    = Home address
+cya.applicantDetails.moreThanThreeYears                             = Lived at current address for more than 3 years
+cya.applicantDetails.previousAddress                                = Previous address
+cya.applicantDetails.email                                          = Email address
+cya.applicantDetails.telephone                                      = Telephone number
+
 ## Summary Page Company details
 cya.tradingName                                      = Different Trading name
 cya.mandatoryName                                    = Trading name
