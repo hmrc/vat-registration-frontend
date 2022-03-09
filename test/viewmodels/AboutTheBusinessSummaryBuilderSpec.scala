@@ -26,9 +26,9 @@ import play.api.i18n.{Lang, MessagesApi}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
-class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
+class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
-  object Builder extends AboutTheBusinessCheckYourAnswersBuilder
+  object Builder extends AboutTheBusinessSummaryBuilder
 
   val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
@@ -65,7 +65,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
         res mustBe SummaryList(
           List(
-            optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
+            optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -100,7 +100,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
         res mustBe SummaryList(
           List(
-            optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
+            optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -131,7 +131,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
         res mustBe SummaryList(
           List(
-            optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
+            optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -164,7 +164,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
         res mustBe SummaryList(
           List(
-            optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
+            optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -198,7 +198,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
         res mustBe SummaryList(
           List(
-            optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
+            optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -241,7 +241,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
           res mustBe SummaryList(
             List(
-              optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
+              optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
               optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
               optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -289,7 +289,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
             res mustBe SummaryList(
               List(
-                optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
@@ -338,7 +338,7 @@ class AboutTheBusinessCheckYourAnswersBuilderSpec extends VatRegSpec {
 
             res mustBe SummaryList(
               List(
-                optSummaryListRowSeq(s"$sectionId.ppob", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(businessContactRoutes.InternationalPpobAddressController.show.url)),
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),

@@ -19,10 +19,10 @@ package viewmodels
 import connectors.ConfigConnector
 import controllers.registration.returns.{routes => returnsRoutes}
 import featureswitch.core.config.FeatureSwitching
-import models.{BankAccount, BankAccountDetails, BeingSetup, FlatRateScheme, NameChange, OverseasAccount, OverseasBankDetails}
-import models.api.returns.{Annual, AnnualStagger, Monthly, Quarterly, Returns}
+import models.api.returns._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
+import models._
 import play.api.i18n.Messages
 import services.FlatRateService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
@@ -33,8 +33,8 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
-                                           flatRateService: FlatRateService) extends FeatureSwitching {
+class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnector,
+                                                  flatRateService: FlatRateService) extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId = "cya.registrationDetails"
@@ -84,7 +84,7 @@ class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
 
   private def lastMonthOfAccountingYear(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
-    s"$sectionId.lastMonthOfAccountingYear",
+      s"$sectionId.lastMonthOfAccountingYear",
       returns.staggerStart match {
         case Some(period: AnnualStagger) => Some(s"$sectionId.lastMonthOfAccountingYear.${period.toString}")
         case _ => None
@@ -94,7 +94,7 @@ class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
 
   private def paymentFrequency(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
-    s"$sectionId.paymentFrequency",
+      s"$sectionId.paymentFrequency",
       returns.annualAccountingDetails.flatMap(_.paymentFrequency).map { paymentFrequency =>
         s"$sectionId.paymentFrequency.${paymentFrequency.toString}"
       },
@@ -103,14 +103,14 @@ class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
 
   private def paymentMethod(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
-    s"$sectionId.paymentMethod",
+      s"$sectionId.paymentMethod",
       returns.annualAccountingDetails.flatMap(_.paymentMethod).map { paymentMethod =>
         s"$sectionId.paymentMethod.${paymentMethod.toString}"
       },
       Some(returnsRoutes.PaymentMethodController.show.url)
     )
 
-  private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType) (implicit messages: Messages): List[SummaryListRow] = {
+  private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
     val bankAccount: Option[BankAccount] = vatScheme.bankAccount
 
     val accountIsProvidedRow = optSummaryListRowBoolean(
@@ -148,7 +148,7 @@ class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
     ).flatten
   }
 
-  private def flatRateSchemeSection(vatScheme: VatScheme, partyType: PartyType) (implicit messages: Messages): List[SummaryListRow] = {
+  private def flatRateSchemeSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
 
     val optFlatRateScheme: Option[FlatRateScheme] = vatScheme.flatRateScheme
     val isLimitedCostTrader: Boolean = optFlatRateScheme.exists(_.limitedCostTrader.contains(true))
@@ -197,13 +197,23 @@ class RegistrationDetailsBuilder @Inject()(configConnector: ConfigConnector,
       Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
     )
 
+    val frsStartDate = optSummaryListRowString(
+      s"$sectionId.frsStartDate",
+      (vatScheme.returns.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart.flatMap(_.date))) match {
+        case (Some(startDate), Some(date)) if startDate.isEqual(date) => Some(s"$sectionId.dateOfRegistration")
+        case (_, Some(date)) => Some(date.format(presentationFormatter))
+        case _ => None
+      },
+      Some(controllers.registration.flatratescheme.routes.StartDateController.show.url)
+    )
     List(
       joinFrsRow,
       costsInclusiveRow,
       estimateTotalSalesRow,
       costsLimitedRow,
       flatRatePercentageRow,
-      businessSectorRow
+      businessSectorRow,
+      frsStartDate
     ).flatten
   }
 }

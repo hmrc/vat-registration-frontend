@@ -46,10 +46,9 @@ class SummaryController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         for {
-          eligibilitySummary <- summaryService.getEligibilityDataSummary
-          summary <- summaryService.getRegistrationSummary
+          accordion <- summaryService.getSummaryData
           _ <- s4LService.clear
-          html = summaryPage(eligibilitySummary, summary)
+          html = summaryPage(accordion)
           _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
         } yield Ok(html)
   }

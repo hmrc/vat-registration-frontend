@@ -30,7 +30,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import services.mocks.MockNonRepudiationService
 import testHelpers.{ControllerSpec, FutureAssertions}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.cache.client.CacheMap
 import views.html.pages.Summary
 
@@ -62,10 +62,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     "the StoreAnswersForNrs feature switch is enabled" should {
       "return OK with a valid summary view" in new Setup {
         when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
-        when(mockSummaryService.getRegistrationSummary(any(), any(), any()))
-          .thenReturn(Future.successful(SummaryList()))
-        when(mockSummaryService.getEligibilityDataSummary(any(), any(), any()))
-          .thenReturn(Future.successful(SummaryList()))
+        when(mockSummaryService.getSummaryData(any(), any(), any()))
+          .thenReturn(Future.successful(Accordion()))
         mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
 
         callAuthorised(testSummaryController.show)(status(_) mustBe OK)

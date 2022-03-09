@@ -29,14 +29,14 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class TransactorDetailsBlockBuilder @Inject()() extends FeatureSwitching {
+class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.transactor"
 
-  def generateTransactorSummaryList(implicit vatScheme: VatScheme, messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
     val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
-      .getOrElse(throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Missing party type"))
+      .getOrElse(throw new InternalServerException("[TransactorDetailsSummaryBuilder] Missing party type"))
     val optTransactorDetails: Option[TransactorDetails] = vatScheme.transactorDetails
     val summaryListRows: Seq[SummaryListRow] = optTransactorDetails.fold(Seq[SummaryListRow]())(transactorDetails =>
       generateTransactorSummaryListRows(transactorDetails, partyType)

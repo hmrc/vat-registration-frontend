@@ -31,16 +31,18 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
+class ApplicantDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.applicantDetails"
 
-  def generateApplicantDetailsSummaryList(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): SummaryList = {
-    SummaryList(generateLeadPartnerSummaryListRows ++ generateApplicantDetailsSummaryListRows)
+  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+    val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
+      .getOrElse(throw new InternalServerException("[ApplicantDetailsSummaryBuilder] Missing party type"))
+
+    SummaryList(generateLeadPartnerSummaryListRows(vatScheme) ++ generateApplicantDetailsSummaryListRows(vatScheme, partyType))
   }
 
-  def generateApplicantDetailsSummaryListRows(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
-
+  def generateApplicantDetailsSummaryListRows(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): Seq[SummaryListRow] = {
     val applicantDetails = vatScheme.applicantDetails.getOrElse(throw new InternalServerException("[SummaryApplicantDetailsBuilder] Missing applicant details block"))
 
     val changePersonalDetailsUrl: String = {
@@ -102,19 +104,22 @@ class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
         )
     }
 
-    val formerName = optSummaryListRowString(
+    val changedName = optSummaryListRowBoolean(
       s"$sectionId.formerName",
-      applicantDetails.formerName match {
-        case None => Some(s"$sectionId.noFormerName")
-        case formerName => formerName.map(_.asLabel)
-      },
+      applicantDetails.hasFormerName,
       Some(applicantRoutes.FormerNameController.show.url)
+    )
+
+    val formerName = optSummaryListRowString(
+      s"$sectionId.formerNameCapture",
+      applicantDetails.formerName.map(_.asLabel),
+      Some(applicantRoutes.FormerNameCaptureController.show.url)
     )
 
     val formerNameDate = optSummaryListRowString(
       s"$sectionId.formerNameDate",
       applicantDetails.formerNameDate.map(_.date.format(presentationFormatter)),
-      Some(applicantRoutes.FormerNameController.show.url)
+      Some(applicantRoutes.FormerNameDateController.show.url)
     )
 
     val email = optSummaryListRowString(
@@ -163,6 +168,7 @@ class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
       dob,
       nino,
       roleInTheBusiness,
+      changedName,
       formerName,
       formerNameDate,
       homeAddress,
@@ -172,91 +178,10 @@ class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
       telephone
     ).flatten
 
-    val leadPartnerSummaryListRows: Seq[SummaryListRow] = {
-      val leadPartner: Option[PartnerEntity] = for {
-        partners <- vatScheme.partners
-        leadPartner <- partners.headOption
-      } yield leadPartner
-
-      leadPartner.map { partner =>
-        val url = partner.partyType match {
-          case Individual | NETP => Some(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url)
-          case UkCompany | RegSociety | CharitableOrg => Some(applicantRoutes.IncorpIdController.startPartnerJourney.url)
-          case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(applicantRoutes.PartnershipIdController.startPartnerJourney.url)
-        }
-        val uniqueTaxpayerReference = partner.details match {
-          case soleTrader: SoleTraderIdEntity => optSummaryListRowString(
-            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
-            optAnswer = soleTrader.sautr,
-            optUrl = url)
-          case partnership: PartnershipIdEntity => optSummaryListRowString(
-            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
-            optAnswer = partnership.sautr,
-            optUrl = url)
-          case incorporated: IncorporatedEntity => optSummaryListRowString(
-            questionId = partner.partyType match {
-              case RegSociety => s"$sectionId.leadPartner.uniqueTaxpayerReference"
-              case _ => s"$sectionId.leadPartner.companyUniqueTaxpayerReference"
-            },
-            optAnswer = incorporated.ctutr,
-            optUrl = url)
-          case _ => None
-        }
-        val companyRegistrationNumber = partner.details match {
-          case partnership: PartnershipIdEntity => optSummaryListRowString(
-            questionId = s"$sectionId.leadPartner.companyNumber",
-            optAnswer = partnership.companyNumber,
-            optUrl = url)
-          case incorporated: IncorporatedEntity => optSummaryListRowString(
-            questionId = s"$sectionId.leadPartner.companyRegistrationNumber",
-            optAnswer = Some(incorporated.companyNumber),
-            optUrl = url)
-          case _ => None
-        }
-        val companyName = partner.details match {
-          case partnership: PartnershipIdEntity
-            if partner.partyType.equals(ScotLtdPartnership) || partner.partyType.equals(LtdLiabilityPartnership) =>
-            optSummaryListRowString(
-              questionId = s"$sectionId.leadPartner.partnershipName",
-              optAnswer = partnership.companyName,
-              optUrl = url)
-          case incorporated: IncorporatedEntity => optSummaryListRowString(
-            questionId = s"$sectionId.leadPartner.companyName",
-            optAnswer = incorporated.companyName,
-            optUrl = url)
-          case _ => None
-        }
-        val registeredPostcode = partner.details match {
-          case partnership: PartnershipIdEntity =>
-            val questionId = partner.partyType match {
-              case ScotLtdPartnership | LtdLiabilityPartnership => s"$sectionId.leadPartner.postcodeForSelfAssessment"
-              case _ => s"$sectionId.leadPartner.registeredPostcode"
-            }
-            optSummaryListRowString(questionId = questionId, optAnswer =  partnership.postCode, optUrl = url)
-          case _ => None
-        }
-        val charityHMRCReferenceNumber = optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.charityHMRCReferenceNumber",
-          optAnswer = partner.details match {
-            case incorporated: IncorporatedEntity => incorporated.chrn
-            case _ => None
-          },
-          optUrl = url)
-
-        Seq(
-          uniqueTaxpayerReference,
-          companyRegistrationNumber,
-          companyName,
-          registeredPostcode,
-          charityHMRCReferenceNumber
-        ).flatten
-      }.getOrElse(Nil)
-    }
-
-    leadPartnerSummaryListRows ++ applicantSummaryListRows
+    applicantSummaryListRows
   }
 
-  def generateLeadPartnerSummaryListRows(implicit vatScheme: VatScheme, partyType: PartyType, messages: Messages): Seq[SummaryListRow] = {
+  def generateLeadPartnerSummaryListRows(vatScheme: VatScheme)(implicit messages: Messages): Seq[SummaryListRow] = {
     val leadPartner: Option[PartnerEntity] = for {
       partners <- vatScheme.partners
       leadPartner <- partners.headOption
@@ -316,7 +241,7 @@ class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
             case ScotLtdPartnership | LtdLiabilityPartnership => s"$sectionId.leadPartner.postcodeForSelfAssessment"
             case _ => s"$sectionId.leadPartner.registeredPostcode"
           }
-          optSummaryListRowString(questionId = questionId, optAnswer =  partnership.postCode, optUrl = url)
+          optSummaryListRowString(questionId = questionId, optAnswer = partnership.postCode, optUrl = url)
         case _ => None
       }
       val charityHMRCReferenceNumber = optSummaryListRowString(

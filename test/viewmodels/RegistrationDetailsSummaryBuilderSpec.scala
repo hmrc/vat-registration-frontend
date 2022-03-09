@@ -26,14 +26,14 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
-class RegistrationDetailsBuilderSpec extends VatRegSpec {
+class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val Builder = new RegistrationDetailsBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
+    val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
   }
 
   object TestContent {
@@ -51,6 +51,8 @@ class RegistrationDetailsBuilderSpec extends VatRegSpec {
     val costsLimited = "Will the business spend more than £0, including VAT, on relevant goods over the next 3 months?"
     val flatRate = "Do you want to use the 3.14% flat rate?"
     val businessSector = "Business type for the Flat Rate Scheme"
+    val flatRateDate = "When do you want to join the Flat Rate Scheme?"
+    val flatRateRegDate = "Date of registration"
   }
 
   "Generate Registration Details Builder" when {
@@ -63,8 +65,9 @@ class RegistrationDetailsBuilderSpec extends VatRegSpec {
           zeroRatedSupplies = None,
           reclaimVatOnMostReturns = Some(true),
           returnsFrequency = Some(Annual),
-          annualAccountingDetails = Some(validAasDetails)),
-        ),
+          annualAccountingDetails = Some(validAasDetails),
+          startDate = frsDate.flatMap(_.date)
+        )),
         bankAccount = Some(validUkBankAccount),
         flatRateScheme = Some(validFlatRate)
       )
@@ -118,6 +121,10 @@ class RegistrationDetailsBuilderSpec extends VatRegSpec {
           questionId = TestContent.businessSector,
           optAnswer = Some("Pubs"),
           optUrl = Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
+        optSummaryListRowString(
+          questionId = TestContent.flatRateDate,
+          optAnswer = Some(TestContent.flatRateRegDate),
+          optUrl = Some(controllers.registration.flatratescheme.routes.StartDateController.show.url))
       ).flatten)
 
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("Pubs", BigDecimal("6.5")))
@@ -152,7 +159,7 @@ class RegistrationDetailsBuilderSpec extends VatRegSpec {
         optSummaryListRowBoolean(
           questionId = TestContent.bankAccount,
           optAnswer = Some(true),
-          optUrl = Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url)),
+          optUrl = Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url))
       ).flatten)
 
       val res: SummaryList = Builder.build(testVatScheme)
