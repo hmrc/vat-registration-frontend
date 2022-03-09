@@ -83,7 +83,7 @@ class SessionProfileSpec extends VatRegSpec {
       mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.failed)))
       val result = sessionProfile.withCurrentProfile() { _ => testFunc }
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some("/register-for-vat/something-went-wrong")
+      redirectLocation(result) mustBe Some("/register-for-vat/problem-vat-application")
     }
     "redirect to the retry submission page if the status is failedRetryable" in new Setup {
       mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)))

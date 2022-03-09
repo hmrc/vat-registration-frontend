@@ -19,17 +19,18 @@ package views.pages.error
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.pages.error.submissionFailed
+import views.html.pages.error.SubmissionFailed
 
 class SubmissionFailedViewSpec extends VatRegViewSpec {
   object ExpectedContent {
-    val heading = "We couldn’t process your application"
+    val heading = "There’s a problem"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved."
-    val para2 = "Fill out the form below so we can help you complete your application."
+    val linkText = "VAT1 form"
+    val link = "https://www.gov.uk/guidance/register-for-vat"
+    val para1 = s"You cannot submit this application. You need to register for VAT using the $linkText."
   }
 
-  val view: submissionFailed = app.injector.instanceOf[submissionFailed]
+  val view: SubmissionFailed = app.injector.instanceOf[SubmissionFailed]
 
   implicit val doc: Document = Jsoup.parse(view().body)
 
@@ -48,7 +49,10 @@ class SubmissionFailedViewSpec extends VatRegViewSpec {
 
     "have correct text" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.para1)
-      doc.para(2) mustBe Some(ExpectedContent.para2)
+    }
+
+    "have the correct link" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.linkText, ExpectedContent.link))
     }
   }
 }

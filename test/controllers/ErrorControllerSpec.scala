@@ -18,11 +18,11 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.error.{AlreadySubmittedKickout, SubmissionRetryableView, submissionFailed}
+import views.html.pages.error.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView}
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
-  val mockSubmissionFailedView = app.injector.instanceOf[submissionFailed]
+  val mockSubmissionFailedView = app.injector.instanceOf[SubmissionFailed]
   val mockSubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
   val mockAlreadySubmittedView = app.injector.instanceOf[AlreadySubmittedKickout]
 

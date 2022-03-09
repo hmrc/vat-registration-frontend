@@ -216,10 +216,10 @@ pages.retrySubmission.p1                = Sorry, there is a technical problem an
 pages.retrySubmission.p2                = Please resend your application.
 pages.retrySubmission.button            = Resend
 
-##Submission Failed Page
-pages.failedSubmission.heading          = We couldn’t process your application
-pages.failedSubmission.p1               = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.
-pages.failedSubmission.p2               = Fill out the form below so we can help you complete your application.
+## Submission Failed Page
+pages.failedSubmission.heading          = There’s a problem
+pages.failedSubmission.p1               = You cannot submit this application. You need to register for VAT using the
+pages.failedSubmission.link             = VAT1 form
 
 ##Passcode Not Found Page
 page.passcodeNotFound.heading           = You need to start again

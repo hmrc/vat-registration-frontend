@@ -17,10 +17,9 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import controllers.callbacks.routes
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
-import views.html.pages.error.{AlreadySubmittedKickout, SubmissionRetryableView, submissionFailed}
+import views.html.pages.error.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ErrorController @Inject()(val authConnector: AuthClientConnector,
                                 val sessionService: SessionService,
-                                submissionFailedView: submissionFailed,
+                                submissionFailedView: SubmissionFailed,
                                 submissionRetryableView: SubmissionRetryableView,
                                 alreadySubmittedView: AlreadySubmittedKickout)
                                (implicit appConfig: FrontendAppConfig,
@@ -37,21 +36,18 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
   extends BaseController with SessionProfile {
 
   def submissionRetryable: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ =>
-        Future.successful(Ok(submissionRetryableView()))
+    implicit request => _ => Future.successful(Ok(submissionRetryableView()))
   }
 
   def submissionFailed: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ =>
-        Future.successful(Ok(submissionFailedView()))
+    implicit request => _ => Future.successful(Ok(submissionFailedView()))
   }
 
   def alreadySubmitted: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ =>
-      Future.successful(Ok(alreadySubmittedView()))
+    implicit request => _ => Future.successful(Ok(alreadySubmittedView()))
   }
 
-  def alreadySubmittedSignOut: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck{
+  def alreadySubmittedSignOut: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.signOut))
   }
 }

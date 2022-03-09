@@ -17,16 +17,19 @@
 @import config.FrontendAppConfig
 
 @this(
-    h1: components.h1,
-    layout: layouts.layout,
-    p: components.p
+        h1: components.h1,
+        layout: layouts.layout,
+        p: components.p,
+        link: components.link
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle  = Some(titleNoForm("pages.failedSubmission.heading")), backLink = false) {
+@layout(pageTitle = Some(titleNoForm("pages.failedSubmission.heading")), backLink = false) {
     @h1("pages.failedSubmission.heading")
 
-    @p { @messages("pages.failedSubmission.p1") }
-    @p { @messages("pages.failedSubmission.p2") }
+    @p {
+        @messages("pages.failedSubmission.p1")
+        @link(appConfig.vat1Link, "pages.failedSubmission.link").
+    }
 }
