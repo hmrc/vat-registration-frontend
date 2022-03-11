@@ -172,6 +172,10 @@ POST        /role-in-the-business                                               
 GET         /changed-name                                                                      controllers.registration.applicant.FormerNameController.show
 POST        /changed-name                                                                      controllers.registration.applicant.FormerNameController.submit
 
+## FORMER NAME CAPTURE PAGE
+GET         /what-was-previous-name                                                            controllers.registration.applicant.FormerNameCaptureController.show
+POST        /what-was-previous-name                                                            controllers.registration.applicant.FormerNameCaptureController.submit
+
 ## FORMER NAME DATE PAGE
 GET         /when-change                                                                       controllers.registration.applicant.FormerNameDateController.show
 POST        /when-change                                                                       controllers.registration.applicant.FormerNameDateController.submit

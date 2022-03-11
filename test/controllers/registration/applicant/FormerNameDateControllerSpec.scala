@@ -20,7 +20,8 @@ import java.time.LocalDate
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.api.{NETP, UkCompany}
-import models.view.{FormerNameDateView, FormerNameView}
+import models.external.Name
+import models.view.FormerNameDateView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -51,7 +52,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
   val fakeRequest = FakeRequest(applicantRoutes.FormerNameDateController.show)
 
   val incompleteApplicantDetails = emptyApplicantDetails
-    .copy(formerName = Some(FormerNameView(true, Some("Old Name"))),personalDetails = Some(testPersonalDetails))
+    .copy(hasFormerName = Some(false), formerName = Some(Name(Some("Old"), last = "Name")),personalDetails = Some(testPersonalDetails))
 
   val incompleteApplicantDetailsDate = incompleteApplicantDetails
     .copy(formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 6, 23))),

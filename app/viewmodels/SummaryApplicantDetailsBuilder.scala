@@ -104,9 +104,9 @@ class SummaryApplicantDetailsBuilder @Inject()() extends FeatureSwitching {
 
     val formerName = optSummaryListRowString(
       s"$sectionId.formerName",
-      applicantDetails.formerName.flatMap(_.formerName) match {
+      applicantDetails.formerName match {
         case None => Some(s"$sectionId.noFormerName")
-        case formerName => formerName
+        case formerName => formerName.map(_.asLabel)
       },
       Some(applicantRoutes.FormerNameController.show.url)
     )

@@ -4,7 +4,7 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api.{Address, EligibilitySubmissionData, NETP, NonUkNonEstablished}
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import org.jsoup.Jsoup
@@ -20,17 +20,9 @@ class FormerNameControllerISpec extends ControllerISpec {
 
   val keyBlock = "applicant-details"
   val email = "test@t.test"
-  val nino = "SR123456C"
-  val role = "03"
-  val dob = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
-
-  val applicant = Applicant(
-    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
-    role = role
-  )
 
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
@@ -41,7 +33,8 @@ class FormerNameControllerISpec extends ControllerISpec {
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
-    formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+    hasFormerName = Some(true),
+    formerName = Some(Name(Some(testFirstName),last = testLastName)),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(true, None)),
     roleInTheBusiness = Some(Director)
@@ -74,7 +67,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
         res.status mustBe OK
-        Jsoup.parse(res.body).getElementById("formerName").attr("value") mustBe "New Name Cosmo"
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 1
       }
     }
   }
@@ -85,14 +78,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       val validJson = Json.parse(
         s"""
            |{
-           |  "name": {
-           |    "first": "${applicant.name.first}",
-           |    "middle": "${applicant.name.middle}",
-           |    "last": "${applicant.name.last}"
-           |  },
-           |  "role": "${applicant.role}",
-           |  "dob": "$dob",
-           |  "nino": "$nino",
            |  "currentAddress": {
            |    "line1": "$addrLine1",
            |    "line2": "$addrLine2",
@@ -126,27 +111,29 @@ class FormerNameControllerISpec extends ControllerISpec {
         (json \ "contact" \ "email").as[JsString].value mustBe email
         (json \ "contact" \ "tel").as[JsString].value mustBe "1234"
         (json \ "contact" \ "emailVerified").as[JsBoolean].value mustBe true
-        (json \ "changeOfName").validateOpt[JsObject].get mustBe None
+        (json \ "changeOfName").validateOpt[JsObject].get mustBe Some(Json.obj("hasFormerName" -> false))
       }
     }
 
-    "Update S4L with formerName and redirect to the Former Name Date page" in new Setup {
+    "Update backend with formerName and redirect to the Former Name Capture page" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(yesNo = false, None)), formerNameDate = None))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(s4lData)
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .s4lContainer[ApplicantDetails].contains(s4lData.copy(hasFormerName = None))
+        .s4lContainer[ApplicantDetails].clearedByKey(ApplicantDetails.s4lKey)
+        .vatScheme.isUpdatedWith[ApplicantDetails](s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/changed-name").post(Map(
-        "value" -> Seq("true"),
-        "formerName" -> Seq("New Name Cosmo")
+        "value" -> "true"
       ))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
       }
     }
 
@@ -154,7 +141,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = None, formerName = None))
         .vatScheme.doesNotExistForKey("applicant-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
@@ -174,7 +161,7 @@ class FormerNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(formerName = Some(FormerNameView(yesNo = false, None))))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = Some(false), formerName = None))
         .vatScheme.doesNotExistForKey("applicant-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
@@ -187,27 +174,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
-      }
-    }
-
-    "save Applicant Details to S4L if user needs to provide a former name date" in new Setup {
-      val updatedS4LData = s4lData.copy(formerNameDate = None)
-
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(formerName = Some(FormerNameView(true, None)), formerNameDate = None))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(updatedS4LData)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/changed-name").post(Map(
-        "value" -> Seq("true"),
-        "formerName" -> Seq("New Name Cosmo")
-      ))
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
       }
     }
   }

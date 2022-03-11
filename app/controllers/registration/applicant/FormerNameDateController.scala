@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.former_name_date
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
@@ -46,10 +46,10 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
-          formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
+          formerName = applicant.formerName.getOrElse(throw new IllegalStateException("Missing applicant former name"))
           filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
           name <- applicantDetailsService.getTransactorApplicantName
-        } yield Ok(formerNameDatePage(filledForm, formerName, name))
+        } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -61,9 +61,9 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
             FormerNameDateForm.form(dob).bindFromRequest().fold(
               badForm => for {
                 applicant <- applicantDetailsService.getApplicantDetails
-                formerName = applicant.formerName.flatMap(_.formerName).getOrElse(throw new IllegalStateException("Missing applicant former name"))
+                formerName = applicant.formerName.getOrElse(throw new IllegalStateException("Missing applicant former name"))
                 name <- applicantDetailsService.getTransactorApplicantName
-              } yield BadRequest(formerNameDatePage(badForm, formerName, name)),
+              } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
               data => {
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
                   vatRegistrationService.partyType map {

@@ -16,106 +16,16 @@
 
 package forms
 
-import java.time.LocalDate
 import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
 import models.api.Address
 import models.view._
 import testHelpers.VatRegSpec
 
+import java.time.LocalDate
+
 class ApplicantFormsSpec extends VatRegSpec {
 
-
-  "FormerNameForm" should {
-    val testForm = FormerNameForm.form
-    val testDataWithName = FormerNameView(true, Some("Test Old Name"))
-    val testDataNoName = FormerNameView(false, None)
-
-    "bind successfully with data set to true" in {
-      val data = Map(
-        "value" -> "true",
-        "formerName" -> "Test Old Name"
-      )
-
-      val result = testForm.bind(data).fold(
-        errors => errors,
-        success => success
-      )
-
-      result mustBe testDataWithName
-    }
-
-    "bind successfully with data set to false" in {
-      val data = Map(
-        "value" -> "false",
-        "formerName" -> ""
-      )
-
-      val result = testForm.bind(data).fold(
-        errors => errors,
-        success => success
-      )
-
-      result mustBe testDataNoName
-    }
-
-    "have the correct error if nothing is selected" in {
-      val data = Map(
-        "value" -> "",
-        "formerName" -> "Test Old Name"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("value" -> "validation.formerName.choice.missing")
-    }
-
-    "have the correct error if true is selected and no name is provided" in {
-      val data = Map(
-        "value" -> "true",
-        "formerName" -> ""
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.missing")
-    }
-
-    "have the correct error if true is selected and invalid name is provided" in {
-      val data = Map(
-        "value" -> "true",
-        "formerName" -> "wrong N@m€"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.invalid")
-    }
-
-    "have the correct error if true is selected and a too long name is provided" in {
-      val data = Map(
-        "value" -> "true",
-        "formerName" -> "tooooooooooooooooooo looooooooooonnnnnnng nnnnaaaaaaaaaaammeeeeeeeeeeee"
-      )
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq("formerName" -> "validation.formerName.maxlen")
-    }
-
-    "Unbind successfully with true and valid name" in {
-      val data = Map(
-        "value" -> "true",
-        "formerName" -> "Test Old Name"
-      )
-
-      testForm.fill(testDataWithName).data mustBe data
-    }
-
-    "Unbind successfully with false and no name" in {
-      val data = Map(
-        "value" -> "false"
-      )
-
-      testForm.fill(testDataNoName).data mustBe data
-    }
-  }
 
 
   "FormerNameDateForm" should {

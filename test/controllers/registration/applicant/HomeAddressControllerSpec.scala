@@ -21,8 +21,8 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.{ApplicantDetails, TelephoneNumber}
 import models.api.Address
-import models.external.{EmailAddress, EmailVerified}
-import models.view.{FormerNameView, HomeAddressView}
+import models.external.{EmailAddress, EmailVerified, Name}
+import models.view.HomeAddressView
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
@@ -60,7 +60,8 @@ class HomeAddressControllerSpec extends ControllerSpec
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
-    formerName = Some(FormerNameView(true, Some("Old Name"))),
+    hasFormerName = Some(false),
+    formerName = Some(Name(Some("Old"), last = "Name")),
     formerNameDate = None,
     previousAddress = None
   )

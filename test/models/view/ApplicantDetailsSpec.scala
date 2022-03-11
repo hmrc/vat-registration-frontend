@@ -29,49 +29,6 @@ class ApplicantDetailsSpec extends VatRegSpec {
   val previousAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
   "apiReads" should {
-    "return a correct partial ApplicantDetails view model with full name" in {
-      val json = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "First",
-           |    "middle": "Middle",
-           |    "last": "Last"
-           |  },
-           |  "dob": "1998-07-12",
-           |  "nino": "AA123456Z"
-           |}
-         """.stripMargin)
-
-      val applicantDetails = ApplicantDetails(
-        formerName = Some(FormerNameView(false, None)),
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
-
-      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
-    }
-
-    "return a correct partial ApplicantDetails view model with partial name" in {
-      val json = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "First",
-           |    "last": "Last"
-           |  },
-           |  "role": "Director",
-           |  "nino": "AA123456Z"
-           |}
-         """.stripMargin)
-
-      val applicantDetails = ApplicantDetails(
-        formerName = Some(FormerNameView(false, None)),
-        previousAddress = Some(PreviousAddressView(true, None))
-      )
-
-      ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
-    }
-
     "return a correct full ApplicantDetails view model with max data" in {
       val json = Json.parse(
         s"""
@@ -109,6 +66,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "role": "Director",
            |  "changeOfName": {
+           |    "hasFormerName": true,
            |    "name": {
            |      "first": "New",
            |      "middle": "Name",
@@ -134,7 +92,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
+        hasFormerName = Some(true),
+        formerName = Some(formerName),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
@@ -179,6 +138,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "roleInTheBusiness": "03",
            |  "changeOfName": {
+           |    "hasFormerName": true,
            |    "name": {
            |      "first": "New",
            |      "middle": "Name",
@@ -204,7 +164,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = true, Some(formerName.asLabel))),
+        hasFormerName = Some(true),
+        formerName = Some(formerName),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
         roleInTheBusiness = Some(Director)
@@ -236,6 +197,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "email": "test@t.test",
            |    "emailVerified": true,
            |    "tel": "1234"
+           |  },
+           |  "changeOfName": {
+           |    "hasFormerName": false
            |  }
            |}
          """.stripMargin)
@@ -245,7 +209,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = false, None)),
+        hasFormerName = Some(false),
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
@@ -269,7 +233,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
+        hasFormerName = Some(true),
+        formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
       )
@@ -298,6 +263,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "ctutr": "testCtUtr"
            |  },
            |  "changeOfName": {
+           |    "hasFormerName": true,
            |    "change": "2000-07-12",
            |    "name": {
            |      "middle": "Name",
@@ -335,7 +301,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = true, Some("New Name Cosmo"))),
+        hasFormerName = Some(true),
+        formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
         formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
         previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
         roleInTheBusiness = Some(OwnerProprietor)
@@ -377,6 +344,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "roleInTheBusiness": "01",
            |  "changeOfName": {
+           |    "hasFormerName": true,
            |    "name": {
            |      "first": "New",
            |      "middle": "Name",
@@ -402,7 +370,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(yesNo = false, None)),
+        hasFormerName = Some(false),
         previousAddress = Some(PreviousAddressView(yesNo = true, None))
       )
 
@@ -419,6 +387,9 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    "line2": "TestLine2",
            |    "postcode": "TE 1ST",
            |    "addressValidated": true
+           |  },
+           |  "changeOfName": {
+           |    "hasFormerName": false
            |  }
            |}""".stripMargin)
 

@@ -1,0 +1,66 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import controllers.registration.applicant.{routes => applicantRoutes}
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import views.html.components._
+@import views.html.layouts._
+@import models.external.Name
+
+@this(
+        layout: layout,
+        h1: h1,
+        errorSummary: errorSummary,
+        formWithCSRF: FormWithCSRF,
+        inputText: inputText,
+        button: button
+)
+
+@(formerNameCaptureForm: Form[Name], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(formerNameCaptureForm, name.fold(messages("pages.formerNameCapture.yourHeading"))(name => messages("pages.formerNameCapture.namedHeading", name))))) {
+
+    @errorSummary(formerNameCaptureForm.errors)
+
+    @h1(name.fold(messages("pages.formerNameCapture.yourHeading"))(name => messages("pages.formerNameCapture.namedHeading", name)))
+
+    @formWithCSRF(action = applicantRoutes.FormerNameCaptureController.submit) {
+        @inputText(
+        formerNameCaptureForm,
+        id = "formerFirstName",
+        name = "formerFirstName",
+        label = messages("pages.formerNameCapture.first.label"),
+        isLabelHidden = false,
+        isPageHeading = false,
+        classes = Some("govuk-input--width-20")
+        )
+
+        @inputText(
+        formerNameCaptureForm,
+        id = "formerLastName",
+        name = "formerLastName",
+        label = messages("pages.formerNameCapture.last.label"),
+        isLabelHidden = false,
+        isPageHeading = false,
+        classes = Some("govuk-input--width-20")
+        )
+
+        @button(messages("app.common.continue"))
+    }
+}

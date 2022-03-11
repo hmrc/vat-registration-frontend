@@ -40,7 +40,8 @@ class HomeAddressControllerISpec extends ControllerISpec {
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
-      formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+      hasFormerName = Some(true),
+      formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
     )
@@ -71,7 +72,8 @@ class HomeAddressControllerISpec extends ControllerISpec {
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
-      formerName = Some(FormerNameView(false, None)),
+      hasFormerName = Some(false),
+      formerName = None,
       formerNameDate = None,
       previousAddress = Some(PreviousAddressView(true, None)),
       roleInTheBusiness = Some(Director)
