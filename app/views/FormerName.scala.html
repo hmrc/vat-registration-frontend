@@ -16,25 +16,24 @@
 
 @import config.FrontendAppConfig
 @import controllers.registration.applicant.{routes => applicantRoutes}
-@import models.view.FormerNameView
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
 @import views.html.components._
 @import views.html.layouts._
+@import models.external.Name
 
 @this(
         layout: layout,
         h1: h1,
         errorSummary: errorSummary,
-        yesNoRadio: yesNoRadio,
         p: p,
         formWithCSRF: FormWithCSRF,
-        inputText: inputText,
+        yesNoRadio: yesNoRadio,
         button: button
 )
 
-@(formerNameForm: Form[FormerNameView], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(formerNameForm: Form[Boolean], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(title(formerNameForm, name.fold(messages("pages.formerName.yourHeading"))(name => messages("pages.formerName.namedHeading", name))))) {
 
@@ -42,30 +41,15 @@
 
     @h1(name.fold(messages("pages.formerName.yourHeading"))(name => messages("pages.formerName.namedHeading", name)))
 
-    @p{ @messages("pages.formerName.married") }
+    @p { @messages("pages.formerName.married") }
 
     @formWithCSRF(action = applicantRoutes.FormerNameController.submit) {
         @yesNoRadio(
-            form = formerNameForm,
-            headingKey = messages("pages.formerName.heading"),
-            isPageHeading = false,
-            inline = false,
-            classes = "govuk-visually-hidden",
-            hiddenYesContent = Some(hiddenYesContent)
+        form = formerNameForm,
+        headingKey = "",
+        isPageHeading = false
         )
 
         @button(messages("app.common.continue"))
     }
-}
-
-@hiddenYesContent = {
-    @inputText(
-        formerNameForm,
-        id = "formerName",
-        name = "formerName",
-        label = messages("pages.formerName.fullName.label"),
-        isLabelHidden = false,
-        isPageHeading = false,
-        hint = Some(Html(messages("pages.formerName.fullName.hint")))
-    )
 }

@@ -366,19 +366,22 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
     )
 
-    val formerName = optSummaryListRowString(
+    val formerName = optSummaryListRowBoolean(
       s"$sectionId.formerName",
-      applicantDetails.formerName.flatMap(_.formerName) match {
-        case None => Some(s"$sectionId.noFormerName")
-        case formerName => formerName
-      },
+      applicantDetails.hasFormerName,
       Some(applicantRoutes.FormerNameController.show.url)
+    )
+
+    val formerNameCapture = optSummaryListRowString(
+      s"$sectionId.formerNameCapture",
+      applicantDetails.formerName.map(_.asLabel),
+      Some(applicantRoutes.FormerNameCaptureController.show.url)
     )
 
     val formerNameDate = optSummaryListRowString(
       s"$sectionId.formerNameDate",
       applicantDetails.formerNameDate.map(_.date.format(presentationFormatter)),
-      Some(applicantRoutes.FormerNameController.show.url)
+      Some(applicantRoutes.FormerNameDateController.show.url)
     )
 
     val email = optSummaryListRowString(
@@ -437,6 +440,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       dob,
       roleInTheBusiness,
       formerName,
+      formerNameCapture,
       formerNameDate,
       email,
       telephone,

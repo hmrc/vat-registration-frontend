@@ -18,7 +18,7 @@ package models
 
 import models.api.{Address, PartyType}
 import models.external.{BusinessEntity, EmailAddress, EmailVerified, Name}
-import models.view.{FormerNameDateView, FormerNameView, HomeAddressView, PreviousAddressView}
+import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -30,7 +30,8 @@ case class ApplicantDetails(entity: Option[BusinessEntity] = None,
                             emailAddress: Option[EmailAddress] = None,
                             emailVerified: Option[EmailVerified] = None,
                             telephoneNumber: Option[TelephoneNumber] = None,
-                            formerName: Option[FormerNameView] = None,
+                            hasFormerName: Option[Boolean] = None,
+                            formerName: Option[Name] = None,
                             formerNameDate: Option[FormerNameDateView] = None,
                             previousAddress: Option[PreviousAddressView] = None,
                             roleInTheBusiness: Option[RoleInTheBusiness] = None)
@@ -45,8 +46,8 @@ object ApplicantDetails {
       (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
       (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
       (__ \ "contact" \ "tel").readNullable[String].fmap(_.map(TelephoneNumber(_))) and
-      (__ \ "changeOfName" \ "name").readNullable[Name]
-        .fmap(con => Some(FormerNameView(con.isDefined, con.map(name => name.asLabel)))) and
+      (__ \ "changeOfName" \ "hasFormerName").readNullable[Boolean] and
+      (__ \ "changeOfName" \ "name").readNullable[Name] and
       (__ \ "changeOfName" \ "change").readNullable[LocalDate]
         .fmap(cond => cond.map(FormerNameDateView(_))) and
       (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address))) and
@@ -60,7 +61,8 @@ object ApplicantDetails {
       (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
       (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
       (__ \ "contact" \ "tel").writeNullable[String].contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
-      (__ \ "changeOfName" \ "name").writeNullable[Name].contramap[Option[FormerNameView]](_.flatMap(_.formerName.map(splitName))) and
+      (__ \ "changeOfName" \ "hasFormerName").writeNullable[Boolean] and
+      (__ \ "changeOfName" \ "name").writeNullable[Name] and
       (__ \ "changeOfName" \ "change").writeNullable[LocalDate].contramap[Option[FormerNameDateView]](_.map(_.date)) and
       (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address)) and
       (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]

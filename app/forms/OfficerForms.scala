@@ -16,39 +16,14 @@
 
 package forms
 
-import java.time.LocalDate
-
-import models.view._
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, maxLenText, missingBooleanFieldMapping, nonEmptyValidText, textMapping}
+import forms.FormValidation.{ErrorCode, inRange, missingBooleanFieldMapping, textMapping}
 import models.DateModel
+import models.view._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
-import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
-object FormerNameForm {
-  val FORMER_NAME_MAX_LENGTH = 70
-  val RADIO_YES_NO: String = "value"
-  val INPUT_FORMER_NAME: String = "formerName"
-
-  val FORMER_NAME_REGEX = """^[A-Za-z0-9.,\-()/!"%&*;'<>][A-Za-z0-9 .,\-()/!"%&*;'<>]*$""".r
-
-  implicit val errorCode: ErrorCode = INPUT_FORMER_NAME
-
-  def form = Form(
-    mapping(
-      RADIO_YES_NO -> missingBooleanFieldMapping()("formerName.choice"),
-      INPUT_FORMER_NAME -> mandatoryIf(
-        isEqual(RADIO_YES_NO, "true"),
-        text.verifying(StopOnFirstFail(
-          nonEmptyValidText(FORMER_NAME_REGEX),
-          maxLenText(FORMER_NAME_MAX_LENGTH)
-        ))
-      )
-    )(FormerNameView.apply)(FormerNameView.unapply)
-  )
-}
+import java.time.LocalDate
 
 object FormerNameDateForm {
   implicit val errorCode: ErrorCode = "formerNameDate"

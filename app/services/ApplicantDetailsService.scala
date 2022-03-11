@@ -22,6 +22,7 @@ import models.{ApplicantDetails, _}
 import models.external._
 import models.view._
 import play.api.libs.json.{Reads, Writes}
+import services.ApplicantDetailsService.HasFormerName
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
@@ -39,7 +40,7 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
       implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.s4LReads(partyType)
 
       s4LService.fetchAndGet[ApplicantDetails].flatMap {
-        case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None)) =>
+        case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None, None)) =>
           vatRegistrationConnector.getApplicantDetails(cp.registrationId, partyType).flatMap {
             case Some(applicantDetails) => Future.successful(applicantDetails)
             case None => Future.successful(ApplicantDetails())
@@ -77,11 +78,11 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = {
     applicantDetails match {
-      case ApplicantDetails(None, None, None, None, None, None, _, None, None, None) =>
+      case ApplicantDetails(None, None, None, None, None, None, None, _, None, None, None) =>
         Incomplete(applicantDetails)
-      case ApplicantDetails(Some(SoleTraderIdEntity(_, _, _, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), _) if fName.yesNo == fNameDate.isDefined =>
+      case ApplicantDetails(Some(SoleTraderIdEntity(_, _, _, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _, _, Some(_), _) =>
         Complete(applicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor)))
-      case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(fName), fNameDate, Some(_), Some(_)) if fName.yesNo == fNameDate.isDefined =>
+      case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _, _, Some(_), Some(_)) =>
         Complete(applicantDetails)
       case _ =>
         Incomplete(applicantDetails)
@@ -117,14 +118,22 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
         before.copy(emailVerified = Some(emailVerified))
       case telephoneNumber: TelephoneNumber =>
         before.copy(telephoneNumber = Some(telephoneNumber))
-      case fName: FormerNameView =>
-        before.copy(formerName = Some(fName), formerNameDate = if (fName.yesNo) before.formerNameDate else None)
+      case fName: Name =>
+        before.copy(formerName = Some(fName))
       case fNameDate: FormerNameDateView =>
         before.copy(formerNameDate = Some(fNameDate))
       case prevAddr: PreviousAddressView =>
         before.copy(previousAddress = Some(prevAddr))
       case roleInTheBusiness: RoleInTheBusiness =>
         before.copy(roleInTheBusiness = Some(roleInTheBusiness))
+      case HasFormerName(hasFormerName) if !hasFormerName =>
+        before.copy(hasFormerName = Some(hasFormerName), formerName = None, formerNameDate = None)
+      case HasFormerName(hasFormerName) =>
+        before.copy(hasFormerName = Some(hasFormerName))
     }
   }
+}
+
+object ApplicantDetailsService {
+  case class HasFormerName(hasFormerName: Boolean)
 }

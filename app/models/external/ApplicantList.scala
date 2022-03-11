@@ -27,7 +27,7 @@ import play.api.libs.json.JodaWrites._
 import play.api.libs.json._
 
 case class Name(first: Option[String],
-                middle: Option[String],
+                middle: Option[String] = None,
                 last: String,
                 title: Option[String] = None) {
 

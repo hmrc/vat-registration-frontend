@@ -404,7 +404,8 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
         emailAddress = Some(EmailAddress("test@t.test")),
         emailVerified = Some(EmailVerified(true)),
         telephoneNumber = Some(TelephoneNumber("1234")),
-        formerName = Some(FormerNameView(false, None)),
+        hasFormerName = Some(false),
+        formerName = None,
         previousAddress = Some(PreviousAddressView(true, None))
       )
 
@@ -421,6 +422,9 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
            |    "line2": "TestLine2",
            |    "postcode": "TE 1ST",
            |    "addressValidated": true
+           |  },
+           |  "changeOfName": {
+           |    "hasFormerName":false
            |  }
            |}""".stripMargin)
 

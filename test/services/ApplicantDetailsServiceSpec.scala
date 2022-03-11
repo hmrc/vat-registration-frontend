@@ -19,12 +19,13 @@ package services
 import common.enums.VatRegStatus
 import fixtures.ApplicantDetailsFixtures
 import models.api.{Address, UkCompany}
-import models.external.{EmailAddress, EmailVerified}
+import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, CurrentProfile, OwnerProprietor, TelephoneNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import play.api.libs.json.Json
+import services.ApplicantDetailsService.HasFormerName
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -39,7 +40,8 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   override implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val validFullApplicantDetailsNoFormerName = completeApplicantDetails.copy(
-    formerName = Some(FormerNameView(false, None)),
+    hasFormerName = Some(false),
+    formerName = None,
     formerNameDate = None
   )
 
@@ -232,33 +234,30 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         }
       }
 
-      "updating applicant former name" that {
-        val formerNameFalse = FormerNameView(false, None)
-        val formerNameTrue = FormerNameView(true, Some("New FormerName TADA"))
-
+      "updating applicant has former name" that {
         "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(formerName = Some(formerNameFalse))
-
-          service.saveApplicantDetails(formerNameFalse) returns expected
+          val expected = emptyApplicantDetails.copy(hasFormerName = Some(false))
+          service.saveApplicantDetails(HasFormerName(false)) returns expected
         }
 
-        "makes the block incomplete and save to S4L, model was previously complete no former name" in new SetupForS4LSave(validFullApplicantDetailsNoFormerName) {
-          val formerName = FormerNameView(true, Some("New Name TADA"))
-          val expected = validFullApplicantDetailsNoFormerName.copy(formerName = Some(formerName))
+        "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
+          val expected = completeApplicantDetails.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None)
 
+          service.saveApplicantDetails(HasFormerName(false)) returns expected
+        }
+      }
+
+      "updating applicant former name" that {
+        val formerName = Name(Some(testFirstName), last = testLastName)
+
+        "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
+          val expected = emptyApplicantDetails.copy(formerName = Some(formerName))
           service.saveApplicantDetails(formerName) returns expected
         }
 
         "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(formerName = Some(formerNameFalse), formerNameDate = None)
-
-          service.saveApplicantDetails(formerNameFalse) returns expected
-        }
-
-        "update the former name and clean up former name date" in new SetupForS4LSave(completeApplicantDetails.copy(formerName = Some(formerNameTrue), formerNameDate = None)) {
-          val expected = completeApplicantDetails.copy(formerName = Some(formerNameTrue), formerNameDate = None)
-
-          service.saveApplicantDetails(formerNameTrue) returns expected
+          val expected = completeApplicantDetails.copy(formerName = Some(formerName))
+          service.saveApplicantDetails(formerName) returns expected
         }
       }
 

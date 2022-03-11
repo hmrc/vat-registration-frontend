@@ -16,24 +16,23 @@
 
 package views
 
-import forms.FormerNameForm
+import forms.FormerNameCaptureForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.FormerName
+import views.html.FormerNameCapture
 
-class FormerNameViewSpec extends VatRegViewSpec {
+class FormerNameCaptureViewSpec extends VatRegViewSpec {
 
   val name = "testFirstName"
-  lazy val view: FormerName = app.injector.instanceOf[FormerName]
-  implicit val nonTransactorDoc: Document = Jsoup.parse(view(FormerNameForm.form, None).body)
-  val transactorDoc: Document = Jsoup.parse(view(FormerNameForm.form, Some(name)).body)
+  lazy val view: FormerNameCapture = app.injector.instanceOf[FormerNameCapture]
+  implicit val nonTransactorDoc: Document = Jsoup.parse(view(FormerNameCaptureForm.form, None).body)
+  val transactorDoc: Document = Jsoup.parse(view(FormerNameCaptureForm.form, Some(name)).body)
 
-  val heading = "Have you ever changed your name?"
-  val namedHeading = "Has testFirstName ever changed their name?"
+  val heading = "What was your previous name?"
+  val namedHeading = "What was testFirstName’s previous name?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para = "This could be if you got married or changed your name by deed poll."
-  val yes = "Yes"
-  val no = "No"
+  val firstLabel = "First name"
+  val lastLabel = "Last name"
   val continue = "Save and continue"
 
   "Former Name Page" should {
@@ -53,13 +52,12 @@ class FormerNameViewSpec extends VatRegViewSpec {
       nonTransactorDoc.title mustBe title
     }
 
-    "have correct text" in new ViewSetup {
-      nonTransactorDoc.para(1) mustBe Some(para)
+    "have a first name label" in new ViewSetup {
+      nonTransactorDoc.textBox("formerFirstName") mustBe Some(firstLabel)
     }
 
-    "have yes/no radio options" in new ViewSetup {
-      nonTransactorDoc.radio("true") mustBe Some(yes)
-      nonTransactorDoc.radio("false") mustBe Some(no)
+    "have a last name label" in new ViewSetup {
+      nonTransactorDoc.textBox("formerLastName") mustBe Some(lastLabel)
     }
 
     "have a save and continue button" in new ViewSetup {

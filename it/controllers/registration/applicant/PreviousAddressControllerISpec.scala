@@ -6,7 +6,7 @@ import controllers.registration.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api.{Address, Country, EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import models.external.{Applicant, EmailAddress, EmailVerified, Name}
-import models.view.{FormerNameDateView, FormerNameView, HomeAddressView}
+import models.view.{FormerNameDateView, HomeAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
@@ -38,7 +38,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
-      formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+      hasFormerName = Some(true),
+      formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = None,
       roleInTheBusiness = Some(Director)
@@ -143,7 +144,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       emailAddress = Some(EmailAddress("test@t.test")),
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
-      formerName = Some(FormerNameView(false, None)),
+      hasFormerName = Some(false),
+      formerName = None,
       formerNameDate = None,
       previousAddress = None,
       roleInTheBusiness = Some(Director)

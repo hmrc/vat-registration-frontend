@@ -46,6 +46,7 @@ trait ApplicantDetailsFixtures {
     emailAddress = None,
     emailVerified = None,
     telephoneNumber = None,
+    hasFormerName = None,
     formerName = None,
     formerNameDate = None,
     previousAddress = None,
@@ -78,7 +79,8 @@ trait ApplicantDetailsFixtures {
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
     roleInTheBusiness = testRole,
-    formerName = Some(FormerNameView(true, Some("New Name Cosmo"))),
+    hasFormerName = Some(true),
+    formerName = Some(Name(Some("New"),Some("Name"),"Cosmo")),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))
   )
@@ -124,7 +126,8 @@ trait ApplicantDetailsFixtures {
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
     roleInTheBusiness = None,
-    formerName = Some(FormerNameView(yesNo = false, None)),
+    hasFormerName = Some(false),
+    formerName = None,
     formerNameDate = None,
     previousAddress = Some(PreviousAddressView(yesNo = false, Some(validPrevAddress)))
   )

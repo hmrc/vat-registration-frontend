@@ -19,11 +19,11 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.{ApplicantDetailsFixtures, VatRegistrationFixture}
 import models.api.{NETP, UkCompany}
-import models.view.FormerNameView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.ApplicantDetailsService.HasFormerName
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
-import views.html.former_name
+import views.html.FormerName
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -42,7 +42,7 @@ class FormerNameControllerSpec extends ControllerSpec
       mockSessionService,
       mockApplicantDetailsService,
       vatRegistrationServiceMock,
-      app.injector.instanceOf[former_name]
+      app.injector.instanceOf[FormerName]
     )
 
     mockAuthenticated()
@@ -51,12 +51,12 @@ class FormerNameControllerSpec extends ControllerSpec
 
   val fakeRequest = FakeRequest(applicantRoutes.FormerNameController.show)
 
-  val incompleteApplicantDetails = emptyApplicantDetails.copy(formerName = Some(FormerNameView(true, Some("Old Name"))))
+  val testApplicantDetails = emptyApplicantDetails.copy(hasFormerName = Some(true))
 
   "show" should {
     "return OK when there's data" in new Setup {
-      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+      mockGetApplicantDetails(currentProfile)(testApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -73,7 +73,7 @@ class FormerNameControllerSpec extends ControllerSpec
     }
 
     "return OK when there's data and the user is a transactor" in new Setup {
-      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockGetApplicantDetails(currentProfile)(testApplicantDetails)
       mockIsTransactor(Future.successful(true))
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
@@ -103,7 +103,7 @@ class FormerNameControllerSpec extends ControllerSpec
 
     "Redirect to ALF if no former name" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
+      mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
         redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
@@ -112,21 +112,20 @@ class FormerNameControllerSpec extends ControllerSpec
 
     "Redirect to International Address capture if no former name and NETP" in new Setup {
       mockPartyType(Future.successful(NETP))
-      mockSaveApplicantDetails(FormerNameView(false))(emptyApplicantDetails)
+      mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
         redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
       }
     }
 
-    "Redirect to FormerNameDate with valid data with former name" in new Setup {
-      mockSaveApplicantDetails(FormerNameView(true, Some("some name")))(emptyApplicantDetails)
+    "Redirect to FormerNameCapture with valid data with has former name" in new Setup {
+      mockSaveApplicantDetails(HasFormerName(true))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "true",
-        "formerName" -> "some name"
+        "value" -> "true"
       )) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
+        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
       }
     }
   }

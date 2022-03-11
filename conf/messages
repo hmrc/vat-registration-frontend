@@ -430,9 +430,9 @@ cya.whoIsRegistering                                 = Who is registering the co
 cya.firstName                                        = First Name
 cya.lastName                                         = Last Name
 cya.roleInTheBusiness                                = Role in the business
-cya.formerName                                       = Former name
+cya.formerName                                       = Changed Name
+cya.formerNameCapture                                = Former Name
 cya.formerNameDate                                   = Date former name changed
-cya.noFormerName                                     = No former name
 cya.homeAddress                                      = Home address
 cya.moreThanThreeYears                               = Lived at current address for more than 3 years
 cya.previousAddress                                  = Previous address
@@ -743,12 +743,19 @@ pages.roleInTheBusiness.error.message                    = Select your role with
 pages.formerName.yourHeading                             = Have you ever changed your name?
 pages.formerName.namedHeading                            = Has {0} ever changed their name?
 pages.formerName.married                                 = This could be if you got married or changed your name by deed poll.
-pages.formerName.fullName.label                          = Enter your former name
-pages.formerName.fullName.hint                           = First name and last name
 validation.formerName.choice.missing                     = Select yes if you have ever changed your name
-validation.formerName.missing                            = Enter your former name
-validation.formerName.invalid                            = Enter a valid former name
-validation.formerName.maxlen                             = Enter a former name that has 70 characters or less
+
+## Former Name Capture
+pages.formerNameCapture.yourHeading                      = What was your previous name?
+pages.formerNameCapture.namedHeading                     = What was {0}’s previous name?
+pages.formerNameCapture.first.label                      = First name
+pages.formerNameCapture.last.label                       = Last name
+validation.formerNameCapture.first.missing               = Enter a first name
+validation.formerNameCapture.last.missing                = Enter a last name
+validation.formerNameCapture.first.invalid               = Enter a valid first name
+validation.formerNameCapture.last.invalid                = Enter a valid last name
+validation.formerNameCapture.first.maxlen                = Enter a name using 35 characters or less
+validation.formerNameCapture.first.maxlen                = Enter a name using 35 characters or less
 
 ## Former Name Date
 pages.formerNameDate.yourHeading                         = When did you change your name?

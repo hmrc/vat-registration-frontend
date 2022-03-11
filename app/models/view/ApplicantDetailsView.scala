@@ -22,11 +22,6 @@ import models.DateModel
 import models.api.Address
 import play.api.libs.json.Json
 
-case class FormerNameView(yesNo: Boolean, formerName: Option[String] = None)
-
-object FormerNameView {
-  implicit val format = Json.format[FormerNameView]
-}
 
 case class FormerNameDateView(date: LocalDate)
 

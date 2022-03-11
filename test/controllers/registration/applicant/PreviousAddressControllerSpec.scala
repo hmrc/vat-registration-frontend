@@ -16,12 +16,12 @@
 
 package controllers.registration.applicant
 
-import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, applicantAddressThreeYearsOrLess, homeAddress}
+import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, applicantAddressThreeYearsOrLess}
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
 import models.api.{Address, NETP, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
-import models.view.{FormerNameView, HomeAddressView, PreviousAddressView}
+import models.view.{HomeAddressView, PreviousAddressView}
 import models.{ApplicantDetails, TelephoneNumber}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -62,7 +62,9 @@ class PreviousAddressControllerSpec extends ControllerSpec
     homeAddress = Some(HomeAddressView(address.id, Some(address))),
     emailAddress = Some(EmailAddress("test@t.test")),
     emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")), formerName = Some(FormerNameView(false, None)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
+    hasFormerName = Some(false),
+    formerName = None,
     formerNameDate = None,
     previousAddress = Some(PreviousAddressView(true, Some(address)))
   )

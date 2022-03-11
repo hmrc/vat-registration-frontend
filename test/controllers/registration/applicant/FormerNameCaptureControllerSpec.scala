@@ -16,51 +16,45 @@
 
 package controllers.registration.applicant
 
-import fixtures.ApplicantDetailsFixtures
-import models.TelephoneNumber
-import models.api.{NETP, UkCompany}
-import models.external.{EmailAddress, EmailVerified, Name}
+import controllers.registration.applicant.{routes => applicantRoutes}
+import fixtures.{ApplicantDetailsFixtures, VatRegistrationFixture}
+import models.external.Name
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
-import views.html.capture_telephone_number
+import views.html.FormerNameCapture
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CaptureTelephoneNumberControllerSpec extends ControllerSpec
+class FormerNameCaptureControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
   with ApplicantDetailsFixtures
+  with VatRegistrationFixture
   with MockVatRegistrationService {
 
   trait Setup {
-    val view: capture_telephone_number = app.injector.instanceOf[capture_telephone_number]
-    val controller: CaptureTelephoneNumberController = new CaptureTelephoneNumberController(
-      view,
+    val controller: FormerNameCaptureController = new FormerNameCaptureController(
       mockAuthClientConnector,
       mockSessionService,
       mockApplicantDetailsService,
-      vatRegistrationServiceMock
+      app.injector.instanceOf[FormerNameCapture]
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val fakeRequest = FakeRequest(routes.CaptureTelephoneNumberController.show)
-  val incompleteApplicantDetails = emptyApplicantDetails.copy(
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some("Old"), last = "Name"))
-  )
+  val fakeRequest = FakeRequest(applicantRoutes.FormerNameCaptureController.show)
+  val testName = Name(first = Some(testFirstName), last = testLastName)
+  val testApplicantDetails = emptyApplicantDetails.copy(hasFormerName = Some(true), formerName = Some(testName))
 
   "show" should {
     "return OK when there's data" in new Setup {
-      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+      mockGetApplicantDetails(currentProfile)(testApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -69,7 +63,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
 
     "return OK when there's no data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+      mockGetTransactorApplicantName(currentProfile)(None)
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
@@ -77,7 +71,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     }
 
     "return OK when there's data and the user is a transactor" in new Setup {
-      mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
+      mockGetApplicantDetails(currentProfile)(testApplicantDetails)
       mockIsTransactor(Future.successful(true))
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
@@ -97,35 +91,24 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
     }
   }
 
- "submit" should {
+  "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()){
-        result => status(result) mustBe BAD_REQUEST
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+        status(result) mustBe BAD_REQUEST
       }
     }
-    "return SEE_OTHER with valid Contact Details entered" in new Setup {
-      val phone = "01234567891"
 
-      mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
-      mockPartyType(Future.successful(UkCompany))
+    "Redirect to FormerNameDate with valid data with former name" in new Setup {
+      mockSaveApplicantDetails(Name(Some(testFirstName), last = testLastName))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
-        status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.registration.business.routes.PpobAddressController.startJourney.url)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        "formerFirstName" -> testFirstName,
+        "formerLastName" -> testLastName
+      )) { result =>
+        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameDateController.show.url)
       }
     }
-   "return SEE_OTHER with valid Contact Details entered for a NETP" in new Setup {
-     val phone = "01234567891"
-
-     mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
-     mockPartyType(Future.successful(NETP))
-
-     submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
-         status(res) mustBe SEE_OTHER
-         redirectLocation(res) mustBe Some(controllers.registration.business.routes.InternationalPpobAddressController.show.url)
-     }
-   }
   }
 
 }
