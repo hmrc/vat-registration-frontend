@@ -315,7 +315,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
     "return a SubmissionFailed" in new Setup {
       when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
-        .thenReturn(Future.failed(new Upstream4xxResponse("400", 400, 400)))
+        .thenReturn(Future.failed(new BadRequestException("")))
 
       await(connector.submitRegistration("tstID", Map.empty)) mustBe SubmissionFailed
     }

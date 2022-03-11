@@ -81,8 +81,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
     vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
-  } recover {
-    case _ => SubmissionFailedRetryable
   }
 
   def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =

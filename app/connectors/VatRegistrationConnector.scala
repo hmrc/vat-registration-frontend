@@ -18,9 +18,9 @@ package connectors
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
+import models._
 import models.api._
 import models.api.returns.Returns
-import models.{ApplicantDetails, _}
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
@@ -153,15 +153,15 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   def submitRegistration(regId: String, userHeaders: Map[String, String])(implicit hc: HeaderCarrier): Future[DESResponse] = {
     val jsonBody = Json.obj("userHeaders" -> userHeaders)
 
-    http.PUT[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", jsonBody) map {
+    http.PUT[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/submit-registration", jsonBody).map {
       _.status match {
         case OK => Success
       }
-    } recover {
-      case e: Upstream5xxResponse => SubmissionFailedRetryable
-      case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadySubmitted
-      case Upstream4xxResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
-      case _ => SubmissionFailed
+    }.recover {
+      case UpstreamErrorResponse(_, CONFLICT, _, _) => AlreadySubmitted
+      case UpstreamErrorResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
+      case ex: BadRequestException => SubmissionFailed
+      case ex => SubmissionFailedRetryable
     }
   }
 
