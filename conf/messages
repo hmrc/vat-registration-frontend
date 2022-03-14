@@ -755,7 +755,7 @@ validation.formerNameCapture.last.missing                = Enter a last name
 validation.formerNameCapture.first.invalid               = Enter a valid first name
 validation.formerNameCapture.last.invalid                = Enter a valid last name
 validation.formerNameCapture.first.maxlen                = Enter a name using 35 characters or less
-validation.formerNameCapture.first.maxlen                = Enter a name using 35 characters or less
+validation.formerNameCapture.last.maxlen                 = Enter a name using 35 characters or less
 
 ## Former Name Date
 pages.formerNameDate.yourHeading                         = When did you change your name?
