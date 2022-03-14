@@ -18,8 +18,9 @@ package fixtures
 
 import models.api.Address
 import models.external._
+import models.external.soletraderid.OverseasIdentifierDetails
 import models.view._
-import models.{ApplicantDetails, Director, TelephoneNumber, PersonalDetails}
+import models.{ApplicantDetails, Director, PersonalDetails, TelephoneNumber}
 
 import java.time.LocalDate
 
@@ -33,6 +34,10 @@ trait ApplicantDetailsFixtures {
   val validCurrentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
   val validPrevAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
+  val testOverseasIdentifier = "1234567890"
+  val testOverseasIdentifierCountry = "EE"
+  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+  val testOverseasCountryName = "Estonia"
   val testCrn = "testCrn"
   val testChrn = "testChrn"
   val testCasc = "testCasc"
@@ -141,10 +146,49 @@ trait ApplicantDetailsFixtures {
     identifiersMatch = true
   )
 
+  val testLimitedPartnership: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = None,
+    companyNumber = Some(testCrn),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testScottishPartnership: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = Some(testSautr),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testScottishLimitedPartnership: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = None,
+    companyNumber = Some(testCrn),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testLimitedLiabilityPartnership: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = None,
+    companyNumber = Some(testCrn),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
   val testTrust: MinorEntity = MinorEntity(
     sautr = Some(testSautr),
     ctutr = None,
-    postCode = None,
+    postCode = Some(testPostcode),
     chrn = Some(testChrn),
     casc = None,
     registration = testRegistration,
@@ -156,9 +200,22 @@ trait ApplicantDetailsFixtures {
   val testUnincorpAssoc: MinorEntity = MinorEntity(
     sautr = Some(testSautr),
     ctutr = None,
-    postCode = None,
+    postCode = Some(testPostcode),
     chrn = Some(testChrn),
     casc = Some(testCasc),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testSafeId),
+    identifiersMatch = true
+  )
+
+  val testNonUkCompany: MinorEntity = MinorEntity(
+    sautr = Some(testSautr),
+    ctutr = None,
+    overseas = Some(testOverseasIdentifierDetails),
+    postCode = None,
+    chrn = Some(testChrn),
+    casc = None,
     registration = testRegistration,
     businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
