@@ -28,7 +28,8 @@ object TradingNameView {
 
 case class TradingDetails(tradingNameView: Option[TradingNameView] = None,
                           euGoods: Option[Boolean] = None,
-                          shortOrgName: Option[String] = None)
+                          shortOrgName: Option[String] = None,
+                          tradeVatGoodsOutsideUk: Option[Boolean] = None)
 
 object TradingDetails {
   implicit val s4lKey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
@@ -36,13 +37,15 @@ object TradingDetails {
   val reads: Reads[TradingDetails] = (
     (__ \ "tradingName").readNullable[String].map[Option[TradingNameView]](tradingName => Some(TradingNameView(tradingName.isDefined, tradingName))) and
       (__ \ "eoriRequested").readNullable[Boolean] and
-      (__ \ "shortOrgName").readNullable[String]
+      (__ \ "shortOrgName").readNullable[String] and
+      (__ \ "tradeVatGoodsOutsideUk").readNullable[Boolean]
     ) (TradingDetails.apply _)
 
   val writes: Writes[TradingDetails] = (
     (__ \ "tradingName").writeNullable[String].contramap[Option[TradingNameView]](_.flatMap(_.tradingName)) and
       (__ \ "eoriRequested").writeNullable[Boolean] and
-      (__ \ "shortOrgName").writeNullable[String]
+      (__ \ "shortOrgName").writeNullable[String] and
+      (__ \ "tradeVatGoodsOutsideUk").writeNullable[Boolean]
   ) (unlift(TradingDetails.unapply))
 
   val apiFormat = Format[TradingDetails](reads, writes)

@@ -741,9 +741,16 @@ class SummaryCheckYourAnswersBuilder @Inject()(configConnector: ConfigConnector,
       Some(controllers.registration.business.routes.ApplyForEoriController.show.url)
     )
 
+    val importsOrExportsRow = optSummaryListRowBoolean(
+      s"$sectionId.importsOrExports",
+      tradingDetails.tradeVatGoodsOutsideUk,
+      Some(controllers.registration.business.routes.ImportsOrExportsController.show.url)
+    )
+
     Seq(
       shortOrgNameRow,
       tradingNameRow,
+      importsOrExportsRow,
       applyForEoriRow
     ).flatten
   }

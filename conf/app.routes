@@ -436,3 +436,7 @@ POST        /submission-in-progress                                             
 ## Land And Property
 GET         /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.show
 POST        /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.submit
+
+## Imports Or Exports
+GET         /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.show
+POST        /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.submit

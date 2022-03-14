@@ -62,7 +62,7 @@ class MandatoryTradingNameController @Inject()(val sessionService: SessionServic
               _ =>
                 vatRegistrationService.partyType.map {
                   case NETP => Redirect(controllers.registration.returns.routes.ZeroRatedSuppliesResolverController.resolve)
-                  case _ => Redirect(controllers.registration.business.routes.ApplyForEoriController.show)
+                  case _ => Redirect(controllers.registration.business.routes.ImportsOrExportsController.show)
                 }
             }
           }

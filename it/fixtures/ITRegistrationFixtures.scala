@@ -32,7 +32,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCreatedDate = LocalDate.of(2021, 1, 1)
   val tradingDetails = TradingDetails(
     tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
-    euGoods = Some(false)
+    euGoods = Some(false),
+    tradeVatGoodsOutsideUk = Some(false)
   )
 
   val sicAndCompliance = SicAndCompliance(
@@ -185,7 +186,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
-    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None)),
+    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None, None, None)),
     returns = Some(fullReturns.copy(overseasCompliance = Some(testFullOverseasCompliance))),
     bankAccount = Some(testOverseasBankAccount)
   )
