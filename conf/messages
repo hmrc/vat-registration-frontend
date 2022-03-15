@@ -627,6 +627,46 @@ cya.grsDetails.trustSaPostcode                       = Trust’s registered post
 cya.grsDetails.overseasIdentifier                    = Overseas tax identifier
 cya.grsDetails.overseasCountry                       = Overseas country
 
+## CYA Registration Details
+cya.registrationDetails.startDate                               = VAT start date
+cya.registrationDetails.mandatoryStartDate                      = The date the company is registered with Companies House
+cya.registrationDetails.accountingPeriod                        = When do you want to submit VAT Returns?
+cya.registrationDetails.accountingPeriod.monthly                = Once a month
+cya.registrationDetails.accountingPeriod.jan                    = January, April, July and October
+cya.registrationDetails.accountingPeriod.feb                    = February, May, August and November
+cya.registrationDetails.accountingPeriod.mar                    = March, June, September and December
+cya.registrationDetails.accountingPeriod.annual                 = I would like to join the Annual Accounting Scheme
+cya.registrationDetails.companyBankAccount                      = Have a business bank account set up
+cya.registrationDetails.companyBankAccount.details              = Bank details
+cya.registrationDetails.companyBankAccount.reason               = Reason the bank account is not set up yet
+cya.registrationDetails.joinFrs                                 = Do you want to join the Flat Rate Scheme?
+cya.registrationDetails.costsInclusive                          = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
+cya.registrationDetails.estimateTotalSales                      = Total sales, including VAT, for the next 3 months
+cya.registrationDetails.costsLimited                            = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+cya.registrationDetails.flatRate                                = Do you want to use the {0}% flat rate?
+cya.registrationDetails.businessSector                          = Business type for the Flat Rate Scheme
+cya.registrationDetails.lastMonthOfAccountingYear               = Last month of your accounting year
+cya.registrationDetails.lastMonthOfAccountingYear.FebJanStagger = January
+cya.registrationDetails.lastMonthOfAccountingYear.MarFebStagger = February
+cya.registrationDetails.lastMonthOfAccountingYear.AprMarStagger = March
+cya.registrationDetails.lastMonthOfAccountingYear.MayAprStagger = April
+cya.registrationDetails.lastMonthOfAccountingYear.JunMayStagger = May
+cya.registrationDetails.lastMonthOfAccountingYear.JulJunStagger = June
+cya.registrationDetails.lastMonthOfAccountingYear.AugJulStagger = July
+cya.registrationDetails.lastMonthOfAccountingYear.SepAugStagger = August
+cya.registrationDetails.lastMonthOfAccountingYear.OctSepStagger = September
+cya.registrationDetails.lastMonthOfAccountingYear.NovOctStagger = October
+cya.registrationDetails.lastMonthOfAccountingYear.DecNovStagger = November
+cya.registrationDetails.lastMonthOfAccountingYear.JanDecStagger = December
+cya.registrationDetails.paymentFrequency                        = How often do you want to make payments?
+cya.registrationDetails.paymentFrequency.MonthlyPayment         = Monthly
+cya.registrationDetails.paymentFrequency.QuarterlyPayment       = Quarterly
+cya.registrationDetails.paymentMethod                           = How do you want to pay VAT?
+cya.registrationDetails.paymentMethod.BACS                      = BACS or internet banking
+cya.registrationDetails.paymentMethod.BankGIRO                  = Bank Giro Transfer
+cya.registrationDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
+cya.registrationDetails.paymentMethod.StandingOrder             = Standing order
+
 ## Error Pages
 error.error_template.tryagain                        = Try again
 
