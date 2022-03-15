@@ -31,7 +31,7 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
 
   def getTradingDetailsViewModel(regId: String)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[TradingDetails] =
     s4lService.fetchAndGet[TradingDetails] flatMap {
-      case None | Some(TradingDetails(None, None, None)) => registrationConnector.getTradingDetails(regId) map {
+      case None | Some(TradingDetails(None, None, None, None)) => registrationConnector.getTradingDetails(regId) map {
         case Some(tradingDetails) => tradingDetails
         case None => TradingDetails()
       }
@@ -39,7 +39,7 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
     }
 
   def getS4LCompletion(data: TradingDetails): Completion[TradingDetails] = data match {
-    case TradingDetails(Some(_), _, _) => Complete(data)
+    case TradingDetails(Some(_), _, _, _) => Complete(data)
     case _ => Incomplete(data)
   }
 
@@ -67,6 +67,13 @@ class TradingDetailsService @Inject()(val s4lService: S4LService,
                  (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
     updateTradingDetails(regId) {
       storedData => storedData.copy(euGoods = Some(euGoods))
+    }
+  }
+
+  def saveTradeVatGoodsOutsideUk(regId: String, tradeVatGoodsOutsideUk: Boolean)
+                                (implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[TradingDetails] = {
+    updateTradingDetails(regId) {
+      storedData => storedData.copy(tradeVatGoodsOutsideUk = Some(tradeVatGoodsOutsideUk))
     }
   }
 

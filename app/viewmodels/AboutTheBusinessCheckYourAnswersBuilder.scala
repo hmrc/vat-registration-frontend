@@ -61,6 +61,7 @@ class AboutTheBusinessCheckYourAnswersBuilder extends FeatureSwitching {
       complianceSection(sicAndCompliance) ++
       List(
         tradingName(tradingDetails, partyType),
+        importsOrExports(tradingDetails, partyType),
         applyForEori(tradingDetails, partyType),
         zeroRatedTurnover(vatScheme),
         claimRefunds(returns),
@@ -194,6 +195,17 @@ class AboutTheBusinessCheckYourAnswersBuilder extends FeatureSwitching {
       }
     )
   }
+
+  private def importsOrExports(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+    if (partyType == NETP || partyType == NonUkNonEstablished) {
+      None
+    } else {
+      optSummaryListRowBoolean(
+        s"$sectionId.importsOrExports",
+        tradingDetails.flatMap(_.tradeVatGoodsOutsideUk),
+        Some(controllers.registration.business.routes.ImportsOrExportsController.show.url)
+      )
+    }
 
   private def applyForEori(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     if (partyType == NETP || partyType == NonUkNonEstablished) {

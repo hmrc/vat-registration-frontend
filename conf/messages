@@ -496,6 +496,7 @@ cya.sicCodes                                         = SIC codes
 cya.mainSicCode                                      = Main business activity
 cya.zeroRated                                        = Zero rated turnover for the next 12 months
 cya.claimRefunds                                     = Expect to claim VAT refunds regularly?
+cya.importsOrExports               = Trade VAT-taxable goods outside UK
 cya.applyForEori                                     = Apply for EORI?
 
 ## Summary Page Business Activities
@@ -597,6 +598,7 @@ cya.aboutTheBusiness.numberOfWorkers                = Number of workers supplied
 cya.aboutTheBusiness.intermediarySupply             = Intermediary arranging the supply of workers
 cya.aboutTheBusiness.tradingName                    = Different Trading name
 cya.aboutTheBusiness.mandatoryName                  = Trading name
+cya.aboutTheBusiness.importsOrExports               = Trade VAT-taxable goods outside UK
 cya.aboutTheBusiness.applyForEori                   = Apply for EORI?
 cya.aboutTheBusiness.zeroRated                      = Zero rated turnnover for the next 12 months
 cya.aboutTheBusiness.claimRefunds                   = Expect to claim VAT refunds regularly?
@@ -1362,3 +1364,7 @@ landAndProperty.link1                    = VAT5L form
 landAndProperty.p2                       = Some transactions involving land building are exempt from VAT. You can
 landAndProperty.link2                    = read the guidance on land and property
 landAndProperty.error.missing            = Select yes if the business’s activities include the buying, selling or letting of land or property
+
+## IMPORTS OR EXPORTS
+importsOrExports.heading                   = Will the business trade VAT-taxable goods with countries outside the UK?
+validation.ImportsOrExports.error          = Select yes if the business will trade VAT-taxable goods with countries outside the UK

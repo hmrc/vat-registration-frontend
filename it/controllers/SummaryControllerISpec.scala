@@ -91,6 +91,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
           ("Expect to claim VAT refunds regularly?", "Yes"),
           ("When do you want to submit VAT Returns?", "January, April, July and October"),
           ("Different Trading name", "No"),
+          ("Trade VAT-taxable goods outside UK", "No"),
           ("Apply for EORI?", "No"),
           ("Have a business bank account set up", "Yes"),
           ("Bank details", "testName 12345678 12-34-56"),

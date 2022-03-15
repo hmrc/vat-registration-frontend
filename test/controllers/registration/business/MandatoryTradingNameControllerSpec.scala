@@ -100,7 +100,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/apply-for-eori")
+        redirectLocation(result) mustBe Some("/register-for-vat/imports-or-exports")
       }
     }
 
