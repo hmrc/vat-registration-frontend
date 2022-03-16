@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns.{Monthly, Returns}
+import models.api.returns.{AASDetails, BACS, Monthly, QuarterlyPayment, Returns}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
@@ -194,6 +194,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validReturns = Returns(
     Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
   )
+
+  val validAasDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
 
   val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
