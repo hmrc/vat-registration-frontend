@@ -724,16 +724,30 @@ trait StubUtils {
       builder
     }
 
-    def getSection[T: ApiKey](contains: Option[T], regId: String = "1", isComplete: Boolean = true)(implicit format: Format[T]): PreconditionBuilder = {
+    def getSection[T: ApiKey](optSection: Option[T], regId: String = "1", isComplete: Boolean = true, idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+      val url = idx match {
+        case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"
+        case None => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"
+      }
+      stubFor(
+        get(urlPathEqualTo(url))
+          .willReturn(
+            optSection match {
+              case Some(section) => ok(
+                Json.toJson[T](section).toString()
+              )
+              case None => notFound()
+            }))
+      builder
+    }
+
+    def getListSection[T: ApiKey](optSections: Option[List[T]], regId: String = "1")(implicit format: Format[List[T]]): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
           .willReturn(
-            contains match {
-              case Some(section) => ok(
-                Json.obj(
-                  "isComplete" -> isComplete,
-                  "data" -> Json.toJson[T](section)
-                ).toString()
+            optSections match {
+              case Some(sections) => ok(
+                Json.toJson[List[T]](sections).toString()
               )
               case None => notFound()
             }))
@@ -748,14 +762,15 @@ trait StubUtils {
       builder
     }
 
-    def replaceSection[T: ApiKey](data: T, regId: String = "1", isComplete: Boolean = true)(implicit format: Format[T]): PreconditionBuilder = {
+    def replaceSection[T: ApiKey](data: T, regId: String = "1", idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+      val url = idx match {
+        case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"
+        case None => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"
+      }
       stubFor(
-        put(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+        put(urlPathEqualTo(url))
           .willReturn(ok(
-            Json.obj(
-              "isComplete" -> isComplete,
-              "data" -> Json.toJson[T](data)
-            ).toString()
+            Json.toJson[T](data).toString()
           )))
       builder
     }

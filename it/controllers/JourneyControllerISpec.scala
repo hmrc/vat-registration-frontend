@@ -345,7 +345,7 @@ class JourneyControllerISpec extends ControllerISpec
               .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
             sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-              .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData))))
+              .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData)))
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -364,7 +364,7 @@ class JourneyControllerISpec extends ControllerISpec
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -383,7 +383,7 @@ class JourneyControllerISpec extends ControllerISpec
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -400,7 +400,7 @@ class JourneyControllerISpec extends ControllerISpec
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.obj("data" -> Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true)))))
+                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
