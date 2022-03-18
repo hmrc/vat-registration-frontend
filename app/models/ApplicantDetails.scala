@@ -72,22 +72,7 @@ object ApplicantDetails {
     implicit val businessEntityReads: Reads[BusinessEntity] = BusinessEntity.reads(partyType)
     Json.reads[ApplicantDetails]
   }
+
   implicit val s4LWrites: Writes[ApplicantDetails] = Json.writes[ApplicantDetails]
-
-  private def splitName(fullName: String): Name = {
-    val split = fullName.trim.split("\\s+")
-
-    val middleName = {
-      val middleSplit = split
-        .drop(1)
-        .dropRight(1)
-        .toList
-
-      if (middleSplit.nonEmpty) Some(middleSplit.mkString(" ")) else None
-    }
-    val firstName = if (split.length < 2) None else Some(split.head)
-
-    Name(firstName, middleName, split.last)
-  }
 
 }
