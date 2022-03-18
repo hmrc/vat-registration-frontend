@@ -18,9 +18,8 @@ package services
 
 import config.FrontendAppConfig
 import models.CurrentProfile
-import models.view.EligibilityJsonParser
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.SummaryCheckYourAnswersBuilder
 
@@ -33,21 +32,12 @@ class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
                               )(implicit ec: ExecutionContext,
                                 appConfig: FrontendAppConfig) {
 
-  private[services] def eligibilityCall(uri: String): String = s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri"
-
-  def getEligibilityDataSummary(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[SummaryList] = {
-    vatRegistrationService.getEligibilityData.map { json =>
-      json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, messages("app.common.change"))).fold(
-        errors => throw new Exception(s"[SummaryController][getEligibilitySummary] Json could not be parsed with errors: $errors with regId: ${profile.registrationId}"),
-        identity
-      )
-    }
-  }
-
-  def getRegistrationSummary(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[SummaryList] = {
-    vatRegistrationService.getVatScheme.map { vatScheme =>
-      summaryCheckYourAnswersBuilder.generateSummaryList(vatScheme, messages)
-    }
+  def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[Accordion] = {
+    for {
+      vatScheme <- vatRegistrationService.getVatScheme
+      eligibilityJson <- vatRegistrationService.getEligibilityData
+      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme, eligibilityJson)(messages)
+    } yield accordion
   }
 
 }

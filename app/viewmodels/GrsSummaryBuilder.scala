@@ -24,7 +24,7 @@ import models.external._
 import models.external.soletraderid.OverseasIdentifierDetails
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
@@ -35,7 +35,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
 
   val sectionId: String = "cya.grsDetails"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
 
     val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[GrsSummaryBuilder] Missing party type"))
 
@@ -80,7 +80,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
         case minorEntity: MinorEntity => minorEntity.ctutr
         case _ => None
       },
-      applicantDetails.entity.flatMap  {
+      applicantDetails.entity.flatMap {
         case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
         case _ => Some(applicantRoutes.IncorpIdController.startJourney.url)
       }
@@ -173,7 +173,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
       }
     )
 
-    Seq(
+    SummaryList(Seq(
       companyNumber,
       businessName,
       ctutr,
@@ -183,6 +183,6 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
       overseasIdentifier,
       overseasCountry,
       chrn
-    ).flatten
+    ).flatten)
   }
 }

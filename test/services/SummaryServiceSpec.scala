@@ -17,14 +17,13 @@
 package services
 
 import config.FrontendAppConfig
-import models.view.EligibilityJsonParser
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.JsObject
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import viewmodels.SummaryCheckYourAnswersBuilder
 
 import scala.concurrent.Future
@@ -42,34 +41,15 @@ class SummaryServiceSpec extends VatRegSpec {
     )
   }
 
-  "eligibilityCall" should {
-    "return a full url" in new Setup {
-      val res: String = testService.eligibilityCall("page1OfEligibility")
-      res mustBe "http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=page1OfEligibility"
-    }
-  }
-
   "getRegistrationSummary" should {
     "map a valid VatScheme object to a Summary object" in new Setup {
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(validVatScheme))
-      when(mockSummaryCheckYourAnswersBuilder.generateSummaryList(ArgumentMatchers.eq(validVatScheme), ArgumentMatchers.eq(messages)))
-        .thenReturn(SummaryList())
-
-      await(testService.getRegistrationSummary) mustBe SummaryList()
-    }
-  }
-
-  "getEligibilitySummary" should {
-    "return a Summary when valid json is returned from vatregservice" in new Setup {
       when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(fullEligibilityDataJson.as[JsObject])
+      when(mockSummaryCheckYourAnswersBuilder.generateSummaryAccordion(ArgumentMatchers.eq(validVatScheme), ArgumentMatchers.eq(fullEligibilityDataJson))(ArgumentMatchers.eq(messages)))
+        .thenReturn(Accordion())
 
-      await(testService.getEligibilityDataSummary).rows.length mustBe 8
-    }
-    "return an exception when json is invalid returned from vatregservice" in new Setup {
-      when(mockVatRegistrationService.getEligibilityData(any(), any())) thenReturn Future.successful(Json.obj("foo" -> "bar"))
-
-      intercept[Exception](await(testService.getEligibilityDataSummary))
+      await(testService.getSummaryData) mustBe Accordion()
     }
   }
 }

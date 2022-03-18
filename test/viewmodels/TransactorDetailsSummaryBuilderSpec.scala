@@ -26,13 +26,13 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 import java.time.LocalDate
 
-class TransactorDetailsBlockBuilderSpec extends VatRegSpec {
+class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
   class Setup {
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val Builder = new TransactorDetailsBlockBuilder
+    object Builder extends TransactorDetailsSummaryBuilder
   }
 
   val testOrganisationName = "testOrganisationName"
@@ -133,7 +133,7 @@ class TransactorDetailsBlockBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.generateTransactorSummaryList(testVatScheme, messages)
+      val res: SummaryList = Builder.build(testVatScheme)(messages)
 
       res mustBe expectedSummaryList
     }
@@ -197,7 +197,7 @@ class TransactorDetailsBlockBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.generateTransactorSummaryList(testVatScheme, messages)
+      val res: SummaryList = Builder.build(testVatScheme)(messages)
 
       res mustBe expectedSummaryList
     }
@@ -248,7 +248,7 @@ class TransactorDetailsBlockBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.generateTransactorSummaryList(testVatScheme, messages)
+      val res: SummaryList = Builder.build(testVatScheme)(messages)
 
       res mustBe expectedSummaryList
     }
@@ -262,7 +262,7 @@ class TransactorDetailsBlockBuilderSpec extends VatRegSpec {
         transactorDetails = None
       )
 
-      val res: SummaryList = Builder.generateTransactorSummaryList(testVatScheme, messages)
+      val res: SummaryList = Builder.build(testVatScheme)(messages)
 
       res mustBe SummaryList(Nil)
     }

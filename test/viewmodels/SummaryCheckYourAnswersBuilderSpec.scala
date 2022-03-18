@@ -17,274 +17,152 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import models.PartnerEntity
-import models.api.{CharitableOrg, Individual, LtdLiabilityPartnership, NETP, RegSociety, ScotLtdPartnership, ScotPartnership, UkCompany}
+import models.api.VatScheme
 import models.view.SummaryListRowUtils.optSummaryListRowString
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
 
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+
+  val govukSummaryList = new GovukSummaryList
+  val mockEligibilitySummaryBuilder: EligibilitySummaryBuilder = mock[EligibilitySummaryBuilder]
+  val mockGrsSummaryBuilder: GrsSummaryBuilder = mock[GrsSummaryBuilder]
+  val mockTransactorDetailsSummaryBuilder: TransactorDetailsSummaryBuilder = mock[TransactorDetailsSummaryBuilder]
+  val mockApplicantDetailsSummaryBuilder: ApplicantDetailsSummaryBuilder = mock[ApplicantDetailsSummaryBuilder]
+  val mockAboutTheBusinessSummaryBuilder: AboutTheBusinessSummaryBuilder = mock[AboutTheBusinessSummaryBuilder]
+  val mockRegistrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder = mock[RegistrationDetailsSummaryBuilder]
+
+  def testSummaryList(id: String): SummaryList = SummaryList(optSummaryListRowString(
+    id,
+    Some("testAnswer"),
+    Some("testUrl")
+  ).toSeq)
+
+  val eligibilityId = "eligibility"
+  val transactorId = "transactor"
+  val verifyBusinessId = "verifyBusiness"
+  val applicantId = "applicant"
+  val aboutBusinessId = "aboutBusiness"
+  val vatRegDetailsId = "vatRegDetails"
+
   class Setup {
-    implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-    implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
-
+    object Builder extends SummaryCheckYourAnswersBuilder(
+      govukSummaryList,
+      mockEligibilitySummaryBuilder,
+      mockGrsSummaryBuilder,
+      mockTransactorDetailsSummaryBuilder,
+      mockApplicantDetailsSummaryBuilder,
+      mockAboutTheBusinessSummaryBuilder,
+      mockRegistrationDetailsSummaryBuilder
+    )
   }
 
-  "leadPartnershipSection" when {
+  "generateSummaryAccordion" must {
+    "combine the summary sections into an accordion" in new Setup {
+      when(mockEligibilitySummaryBuilder.build(ArgumentMatchers.eq(fullEligibilityDataJson), ArgumentMatchers.eq(validVatScheme.id))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(eligibilityId))
+      when(mockTransactorDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(SummaryList())
+      when(mockGrsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(verifyBusinessId))
+      when(mockApplicantDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(applicantId))
+      when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(aboutBusinessId))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(vatRegDetailsId))
 
-    "called with Individual party type" should {
-      "return the summary list for Individual" in new Setup {
-        val testLeadPartnerIndividual: PartnerEntity = PartnerEntity(
-          testSoleTrader,
-          Individual,
-          isLeadPartner = true
+      val expectedAccordion: Accordion = Accordion(
+        items = Seq(
+          Section(
+            headingContent = Text("Registration reason"),
+            content = HtmlContent(govukSummaryList(testSummaryList(eligibilityId)))
+          ),
+          Section(
+            headingContent = Text("Verify your business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
+          ),
+          Section(
+            headingContent = Text("About you"),
+            content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
+          ),
+          Section(
+            headingContent = Text("About the business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(aboutBusinessId)))
+          ),
+          Section(
+            headingContent = Text("VAT Registration Details"),
+            content = HtmlContent(govukSummaryList(testSummaryList(vatRegDetailsId)))
+          )
         )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerIndividual)))
-        val expectedIndividualSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s first name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s last name",
-            optAnswer = Some("testLastName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s date of birth",
-            optAnswer = Some("1 January 2020"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s National Insurance number",
-            optAnswer = Some("AB123456C"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey"))
-        ).flatten
+      )
 
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = Individual, messages = messages)
-        result mustBe expectedIndividualSummaryList
-      }
+      val result: Accordion = Builder.generateSummaryAccordion(validVatScheme, fullEligibilityDataJson)
+
+      result mustBe expectedAccordion
     }
 
-    "called with NETP party type" should {
-      "return the summary list for NETP" in new Setup {
-        val testLeadPartnerNetp: PartnerEntity = PartnerEntity(
-          testSoleTrader,
-          NETP,
-          isLeadPartner = true
+    "combine the summary sections into an accordion for a transactor" in new Setup {
+      val testVatScheme: VatScheme = validVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
+        transactorDetails = Some(validTransactorDetails)
+      )
+
+      when(mockEligibilitySummaryBuilder.build(ArgumentMatchers.eq(fullEligibilityDataJson), ArgumentMatchers.eq(testVatScheme.id))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(eligibilityId))
+      when(mockTransactorDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(transactorId))
+      when(mockGrsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(verifyBusinessId))
+      when(mockApplicantDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(applicantId))
+      when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(aboutBusinessId))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(testSummaryList(vatRegDetailsId))
+
+      val expectedAccordion: Accordion = Accordion(
+        items = Seq(
+          Section(
+            headingContent = Text("Registration reason"),
+            content = HtmlContent(govukSummaryList(testSummaryList(eligibilityId)))
+          ),
+          Section(
+            headingContent = Text("About you"),
+            content = HtmlContent(govukSummaryList(testSummaryList(transactorId)))
+          ),
+          Section(
+            headingContent = Text("Verify your business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
+          ),
+          Section(
+            headingContent = Text("Applicant details"),
+            content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
+          ),
+          Section(
+            headingContent = Text("About the business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(aboutBusinessId)))
+          ),
+          Section(
+            headingContent = Text("VAT Registration Details"),
+            content = HtmlContent(govukSummaryList(testSummaryList(vatRegDetailsId)))
+          )
         )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerNetp)))
-        val expectedNetpSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s first name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s last name",
-            optAnswer = Some("testLastName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s date of birth",
-            optAnswer = Some("1 January 2020"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s National Insurance number",
-            optAnswer = Some("AB123456C"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey"))
-        ).flatten
+      )
 
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = NETP, messages = messages)
-        result mustBe expectedNetpSummaryList
-      }
-    }
+      val result: Accordion = Builder.generateSummaryAccordion(testVatScheme, fullEligibilityDataJson)
 
-    "called with Limited company party type" should {
-      "return the summary list for Limited company" in new Setup {
-        val testLeadPartnerLtdCompany: PartnerEntity = PartnerEntity(
-          testLimitedCompany,
-          UkCompany,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerLtdCompany)))
-        val expectedLtdCompanySummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s company Unique Taxpayer Reference",
-            optAnswer = Some("testCtUtr"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company registration number",
-            optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company name",
-            optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = UkCompany, messages = messages)
-        result mustBe expectedLtdCompanySummaryList
-      }
-    }
-
-    "called with Scottish partnership party type" should {
-      "return the summary list for Scottish partnership" in new Setup {
-        val testLeadPartnerScotPartnership: PartnerEntity = PartnerEntity(
-          testGeneralPartnership,
-          ScotPartnership,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerScotPartnership)))
-        val expectedScotPartnershipSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode",
-            optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = ScotPartnership, messages = messages)
-        result mustBe expectedScotPartnershipSummaryList
-      }
-    }
-
-    "called with Scottish limited partnership party type" should {
-      "return the summary list for Scottish limited partnership" in new Setup {
-        val testLeadPartnerScotLtdPartnership: PartnerEntity = PartnerEntity(
-          testGeneralPartnership.copy(companyNumber = Some("1234567890"), companyName = Some("testPartnershipName")),
-          ScotLtdPartnership,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerScotLtdPartnership)))
-        val expectedScotLtdPartnershipSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company number",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s Partnership name",
-            optAnswer = Some("testPartnershipName"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode for self assessment",
-            optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = ScotLtdPartnership, messages = messages)
-        result mustBe expectedScotLtdPartnershipSummaryList
-      }
-    }
-
-    "called with Limited liability partnership party type" should {
-      "return the summary list for Limited liability partnership" in new Setup {
-        val testLeadPartnerScotLtdPartnership: PartnerEntity = PartnerEntity(
-          testGeneralPartnership.copy(companyNumber = Some("1234567890"), companyName = Some("testPartnershipName")),
-          LtdLiabilityPartnership,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerScotLtdPartnership)))
-        val expectedLtdLiabilityPartnershipSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company number",
-            optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s Partnership name",
-            optAnswer = Some("testPartnershipName"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode for self assessment",
-            optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = LtdLiabilityPartnership, messages = messages)
-        result mustBe expectedLtdLiabilityPartnershipSummaryList
-      }
-    }
-
-    "called with Charitable org party type" should {
-      "return the summary list for Charitable org" in new Setup {
-        val testLeadPartnerLtdCompany: PartnerEntity = PartnerEntity(
-          testCharitableOrganisation,
-          CharitableOrg,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerLtdCompany)))
-        val expectedCharitableOrgSummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s company registration number",
-            optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company name",
-            optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Charity’s HMRC reference number",
-            optAnswer = Some("testChrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = CharitableOrg, messages = messages)
-        result mustBe expectedCharitableOrgSummaryList
-      }
-    }
-
-    "called with Registered society party type" should {
-      "return the summary list for Registered society" in new Setup {
-        val testLeadPartnerLtdCompany: PartnerEntity = PartnerEntity(
-          testRegisteredSociety,
-          RegSociety,
-          isLeadPartner = true
-        )
-        val vatScheme = validVatScheme.copy(partners = Some(List(testLeadPartnerLtdCompany)))
-        val expectedRegSocietySummaryList = Seq(
-          optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
-            optAnswer = Some("testCtUtr"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company registration number",
-            optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
-          optSummaryListRowString(
-            questionId = "Lead partner’s company name",
-            optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey"))
-        ).flatten
-
-        val summaryCheckYourAnswersBuilder = new SummaryCheckYourAnswersBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
-        val result = summaryCheckYourAnswersBuilder.leadPartnershipSection(vatScheme = vatScheme, partyType = RegSociety, messages = messages)
-        result mustBe expectedRegSocietySummaryList
-      }
+      result mustBe expectedAccordion
     }
   }
-
 }

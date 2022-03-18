@@ -30,7 +30,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import uk.gov.hmrc.http.InternalServerException
 
 // scalastyle:off
-class AboutTheBusinessCheckYourAnswersBuilder extends FeatureSwitching {
+class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
 
   val sectionId = "cya.aboutTheBusiness"
 
@@ -75,7 +75,7 @@ class AboutTheBusinessCheckYourAnswersBuilder extends FeatureSwitching {
 
   private def ppobAddress(businessContact: BusinessContact, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
-      s"$sectionId.ppob",
+      s"$sectionId.homeAddress",
       businessContact.ppobAddress.map(Address.normalisedSeq),
       partyType match {
         case NETP =>
