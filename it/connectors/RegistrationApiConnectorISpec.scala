@@ -16,13 +16,14 @@
 
 package connectors
 
-import common.enums.VatRegStatus
+import com.github.tomakehurst.wiremock.client.WireMock.{getRequestedFor, urlEqualTo, verify}
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.{EligibilitySubmissionData, VatScheme}
+import models.ApiKey
+import models.api.EligibilitySubmissionData
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, Upstream5xxResponse}
+import uk.gov.hmrc.http.InternalServerException
 
 class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -34,6 +35,16 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
 
         await(connector.getSection[EligibilitySubmissionData](testRegId)) mustBe Some(testEligibilitySubmissionData)
+        verify(getRequestedFor(urlEqualTo(s"/vatreg/registrations/$testRegId/sections/${ApiKey[EligibilitySubmissionData]}")))
+    }
+
+    "return the indexed requested model when index is passed" in {
+      val index = 1
+      given()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId, idx = Some(index))
+
+      await(connector.getSection[EligibilitySubmissionData](testRegId, idx = Some(index))) mustBe Some(testEligibilitySubmissionData)
+      verify(getRequestedFor(urlEqualTo(s"/vatreg/registrations/$testRegId/sections/${ApiKey[EligibilitySubmissionData]}/$index")))
     }
 
     "return None if the backend returns NOT_FOUND" in {
@@ -51,12 +62,44 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
     }
   }
 
+  "getListSection" should {
+    "return the requested model if the backend returns OK" in {
+      given()
+        .registrationApi.getListSection[EligibilitySubmissionData](Some(List(testEligibilitySubmissionData, testEligibilitySubmissionData)), testRegId)
+
+      await(connector.getListSection[EligibilitySubmissionData](testRegId)) mustBe List(testEligibilitySubmissionData, testEligibilitySubmissionData)
+      verify(getRequestedFor(urlEqualTo(s"/vatreg/registrations/$testRegId/sections/${ApiKey[EligibilitySubmissionData]}")))
+    }
+
+    "return empty list if the backend returns NOT_FOUND" in {
+      given()
+        .registrationApi.getListSection[EligibilitySubmissionData](None, testRegId)
+
+      await(connector.getListSection[EligibilitySubmissionData](testRegId)) mustBe Nil
+    }
+
+    "throw an exception on an unexpected response" in {
+      given()
+        .registrationApi.getSectionFails[EligibilitySubmissionData](testRegId)
+
+      intercept[InternalServerException](await(connector.getSection[EligibilitySubmissionData](testRegId)))
+    }
+  }
+
   "replaceSection" should {
     "return the stored model if the backend returns OK" in {
       given()
         .registrationApi.replaceSection[EligibilitySubmissionData](testEligibilitySubmissionData, testRegId)
 
       await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData)) mustBe testEligibilitySubmissionData
+    }
+
+    "return the indexed stored model when index is passed" in {
+      val index = 1
+      given()
+        .registrationApi.replaceSection[EligibilitySubmissionData](testEligibilitySubmissionData, testRegId, Some(index))
+
+      await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData, idx = Some(index))) mustBe testEligibilitySubmissionData
     }
 
     "throw an exception on an unexpected response" in {

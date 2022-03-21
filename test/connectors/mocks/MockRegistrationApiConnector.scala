@@ -18,6 +18,7 @@ package connectors.mocks
 
 import connectors.RegistrationApiConnector
 import models.ApiKey
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => matches}
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
@@ -35,7 +36,8 @@ trait MockRegistrationApiConnector {
   def mockReplaceSection[T](regId: String, section: T): OngoingStubbing[Future[T]] =
     when(mockRegistrationApiConnector.replaceSection(
       regId = matches(regId),
-      section = matches(section)
+      section = matches(section),
+      idx = ArgumentMatchers.any()
     )(
       any[ApiKey[T]],
       any[HeaderCarrier],
@@ -44,7 +46,8 @@ trait MockRegistrationApiConnector {
 
   def mockGetSection[T](regId: String, section: Option[T]): OngoingStubbing[Future[Option[T]]] =
     when(mockRegistrationApiConnector.getSection[T](
-      regId = matches(regId)
+      regId = matches(regId),
+      idx = ArgumentMatchers.any()
     )(
       any[ApiKey[T]],
       any[HeaderCarrier],

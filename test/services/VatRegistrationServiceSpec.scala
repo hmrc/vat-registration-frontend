@@ -89,13 +89,13 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
   "getSection" must {
     "return a section if it exists" in new Setup {
-      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId))(any(), any(), any()))
+      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(validEligibilitySubmissionData)))
 
       await(service.getSection[EligibilitySubmissionData](testRegId)) mustBe Some(validEligibilitySubmissionData)
     }
     "return None for a section that doesn't exist" in new Setup {
-      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId))(any(), any(), any()))
+      when(mockRegistrationApiConnector.getSection[EligibilitySubmissionData](ArgumentMatchers.eq(testRegId), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.getSection[EligibilitySubmissionData](testRegId)) mustBe None
@@ -107,7 +107,8 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
       when(
         mockRegistrationApiConnector.replaceSection[EligibilitySubmissionData](
           ArgumentMatchers.eq(testRegId),
-          ArgumentMatchers.eq(validEligibilitySubmissionData)
+          ArgumentMatchers.eq(validEligibilitySubmissionData),
+          any()
         )(any(), any(), any())
       ).thenReturn(Future.successful(validEligibilitySubmissionData))
 
