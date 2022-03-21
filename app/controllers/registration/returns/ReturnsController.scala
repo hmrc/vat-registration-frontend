@@ -180,8 +180,8 @@ class ReturnsController @Inject()(val sessionService: SessionService,
                   returnsService.saveVatStartDate(Some(startDate)).map(_ =>
                     Redirect(routes.ReturnsController.returnsFrequencyPage)
                   )
-                case _ =>
-                  returnsService.saveVatStartDate(None).map(_ =>
+                case (DateSelection.calculated_date, _) =>
+                  returnsService.saveVatStartDate(Some(calcDate)).map(_ =>
                     Redirect(routes.ReturnsController.returnsFrequencyPage)
                   )
               }

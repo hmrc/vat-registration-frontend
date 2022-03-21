@@ -334,12 +334,13 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> DateSelection.calculated_date
       )
+      val calculatedDate: LocalDate = LocalDate.now().minusMonths(3)
 
-      when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(None))(any(), any()))
+      when(mockReturnsService.saveVatStartDate(ArgumentMatchers.eq(Some(calculatedDate)))(any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
-        .thenReturn(Future.successful(LocalDate.now().minusMonths(3)))
+        .thenReturn(Future.successful(calculatedDate))
 
       when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
         .thenReturn(Future.successful(Some(LocalDate.now.minusYears(3))))

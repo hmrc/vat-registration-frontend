@@ -475,7 +475,6 @@ cya.grsDetails.overseasCountry                       = Overseas country
 
 ## CYA Registration Details
 cya.registrationDetails.startDate                               = VAT start date
-cya.registrationDetails.mandatoryStartDate                      = The date the company is registered with Companies House
 cya.registrationDetails.accountingPeriod                        = When do you want to submit VAT Returns?
 cya.registrationDetails.accountingPeriod.monthly                = Once a month
 cya.registrationDetails.accountingPeriod.jan                    = January, April, July and October

@@ -19,10 +19,10 @@ package viewmodels
 import connectors.ConfigConnector
 import controllers.registration.returns.{routes => returnsRoutes}
 import featureswitch.core.config.FeatureSwitching
+import models._
 import models.api.returns._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
-import models._
 import play.api.i18n.Messages
 import services.FlatRateService
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
@@ -45,7 +45,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     SummaryList(
       List(
-        startDate(returns, partyType),
+        startDate(returns),
         accountingPeriod(returns),
         lastMonthOfAccountingYear(returns),
         paymentFrequency(returns),
@@ -56,13 +56,12 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     )
   }
 
-  private def startDate(returns: Returns, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+  private def startDate(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.startDate",
       returns.startDate match {
         case Some(date) => Some(date.format(presentationFormatter))
-        case None if partyType.equals(NETP) => None
-        case None => Some(s"$sectionId.mandatoryStartDate")
+        case _ => None
       },
       Some(controllers.registration.returns.routes.VatRegStartDateResolverController.resolve.url)
     )
