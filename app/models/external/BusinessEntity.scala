@@ -24,7 +24,9 @@ import uk.gov.hmrc.http.InternalServerException
 
 import java.time.LocalDate
 
-sealed trait BusinessEntity
+sealed trait BusinessEntity {
+  val dateOfIncorporation: Option[LocalDate] = None
+}
 
 object BusinessEntity {
   def reads(partyType: PartyType): Reads[BusinessEntity] = Reads { json =>
@@ -53,7 +55,7 @@ case class IncorporatedEntity(companyNumber: String,
                               companyName: Option[String],
                               ctutr: Option[String] = None,
                               chrn: Option[String] = None,
-                              dateOfIncorporation: Option[LocalDate],
+                              override val dateOfIncorporation: Option[LocalDate],
                               countryOfIncorporation: String = "GB",
                               identifiersMatch: Boolean,
                               registration: String,
@@ -114,7 +116,7 @@ object SoleTraderIdEntity {
 case class PartnershipIdEntity(sautr: Option[String],
                                companyNumber: Option[String] = None,
                                companyName: Option[String] = None,
-                               dateOfIncorporation: Option[LocalDate] = None,
+                               override val dateOfIncorporation: Option[LocalDate] = None,
                                postCode: Option[String],
                                registration: String,
                                businessVerification: Option[BusinessVerificationStatus],

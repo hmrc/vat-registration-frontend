@@ -55,8 +55,8 @@
             items = Seq(
                 RadioItem(
                     content = Text(calculatedDate),
-                    value = Some(DateSelection.company_registration_date.toString),
-                    checked = mandatoryDateForm("value").value.contains(DateSelection.company_registration_date.toString)
+                    value = Some(DateSelection.calculated_date.toString),
+                    checked = mandatoryDateForm("value").value.contains(DateSelection.calculated_date.toString)
                 ),
                 RadioItem(
                     content = Text(messages("pages.start.date.incorp.differentDate")),
