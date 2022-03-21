@@ -19,6 +19,7 @@ package controllers.registration.applicant
 import controllers.registration.applicant.{routes => applicantRoutes}
 import fixtures.{ApplicantDetailsFixtures, VatRegistrationFixture}
 import models.external.Name
+import org.jsoup.Jsoup
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -58,6 +59,20 @@ class FormerNameCaptureControllerSpec extends ControllerSpec
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
+      }
+    }
+
+    "return OK with an empty first name box if the firstName is missing" in new Setup {
+      val oldName = Name(None, None, testLastName, None)
+
+      mockGetApplicantDetails(currentProfile)(testApplicantDetails.copy(formerName = Some(oldName)))
+      mockGetTransactorApplicantName(currentProfile)(None)
+
+      callAuthorised(controller.show) { result =>
+        status(result) mustBe OK
+        val doc = Jsoup.parse(contentAsString(result))
+        doc.getElementById("formerFirstName").`val`() mustBe ""
+        doc.getElementById("formerLastName").`val`() mustBe testLastName
       }
     }
 

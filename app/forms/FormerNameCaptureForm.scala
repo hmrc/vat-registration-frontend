@@ -46,5 +46,6 @@ object FormerNameCaptureForm {
       )
     )((first, last) => Name(Some(first), None, last, None))(name => Name.unapply(name).map {
       case (Some(first), _, last, _) => (first, last)
+      case (None, _, last, _) => ("", last)
     }))
 }
