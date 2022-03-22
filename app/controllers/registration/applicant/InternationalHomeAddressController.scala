@@ -20,10 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
-import models.api.{Address, Country}
 import models.view.HomeAddressView
-import play.api.data.Form
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -35,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class InternationalHomeAddressController @Inject()(val authConnector: AuthConnector,
                                                    val sessionService: SessionService,
-                                                   applicantDetailsService: ApplicantDetailsService,
+                                                   val applicantDetailsService: ApplicantDetailsService,
                                                    configConnector: ConfigConnector,
                                                    view: CaptureInternationalAddress,
                                                    formProvider: InternationalAddressForm)
@@ -43,7 +40,6 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
                                                    val executionContext: ExecutionContext,
                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile{
 
-  private val headingMessageKey = "internationalAddress.home.heading"
   private lazy val submitAction = routes.InternationalHomeAddressController.submit
 
   private val postcodeRequiredCountry = "United Kingdom"
@@ -55,39 +51,47 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
     implicit request => implicit profile =>
       for {
         applicantDetails <- applicantDetailsService.getApplicantDetails
+        name <- applicantDetailsService.getTransactorApplicantName
+        headingMessageKey = if(name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
         countries = configConnector.countries.flatMap(_.name)
         filledForm = applicantDetails.homeAddress.flatMap(_.address).fold(formProvider.form())(formProvider.form().fill)
-      } yield Ok(view(filledForm, countries, submitAction, headingMessageKey))
+      } yield Ok(view(filledForm, countries, submitAction, headingMessageKey, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
       val countries = configConnector.countries.flatMap(_.name)
-
-      formProvider.form().bindFromRequest.fold(
-        formWithErrors => {
-          val finalForm = if (formWithErrors(countryField).value.contains(postcodeRequiredCountry) && formWithErrors(postcodeField).value.contains("")) {
-            formWithErrors.withError(postcodeField, postcodeRequiredErrorKey)
-          } else {
-            formWithErrors
-          }
-          Future.successful(BadRequest(view(finalForm, countries, submitAction, headingMessageKey)))
-        },
-        internationalAddress => {
-          if (internationalAddress.country.flatMap(_.name).contains(postcodeRequiredCountry) && internationalAddress.postcode.isEmpty) {
-            Future.successful(BadRequest(view(
-              internationalAddressForm = formProvider.form().fill(internationalAddress).withError(postcodeField, postcodeRequiredErrorKey),
-              countries = countries,
-              submitAction = submitAction,
-              headingKey = headingMessageKey
-            )))
-          } else {
-            applicantDetailsService.saveApplicantDetails(HomeAddressView(internationalAddress.id, Some(internationalAddress))) map { _ =>
-              Redirect(routes.PreviousAddressController.show)
+      for{
+        name <- applicantDetailsService.getTransactorApplicantName
+        headingMessageKey = if(name.isDefined) "internationalAddress.home.heading" else "internationalAddress.home.3pt.heading"
+        result <- {
+          formProvider.form().bindFromRequest.fold(
+            formWithErrors => {
+              val finalForm = if (formWithErrors(countryField).value.contains(postcodeRequiredCountry) && formWithErrors(postcodeField).value.contains("")) {
+                formWithErrors.withError(postcodeField, postcodeRequiredErrorKey)
+              } else {
+                formWithErrors
+              }
+              Future.successful(BadRequest(view(finalForm, countries, submitAction, headingMessageKey, name)))
+            },
+            internationalAddress => {
+              if (internationalAddress.country.flatMap(_.name).contains(postcodeRequiredCountry) && internationalAddress.postcode.isEmpty) {
+                Future.successful(BadRequest(view(
+                  internationalAddressForm = formProvider.form().fill(internationalAddress).withError(postcodeField, postcodeRequiredErrorKey),
+                  countries = countries,
+                  submitAction = submitAction,
+                  headingKey = headingMessageKey,
+                  name = name
+                )))
+              } else {
+                applicantDetailsService.saveApplicantDetails(HomeAddressView(internationalAddress.id, Some(internationalAddress))) map { _ =>
+                  Redirect(routes.PreviousAddressController.show)
+                }
+              }
             }
-          }
+          )
         }
-      )
+      } yield result
   }
 
 }

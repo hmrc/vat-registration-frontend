@@ -28,10 +28,10 @@
     button: components.button
 )
 
-@(workersForm: Form[Workers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(workersForm: Form[Workers], isTransactor: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(
-    pageTitle = Some(title(workersForm, messages("pages.labourCompliance.workers.heading"))),
+    pageTitle = Some(title(workersForm, if(!isTransactor) messages("pages.labourCompliance.workers.heading") else messages("pages.labourCompliance.workers.3pt.heading"))),
     backLink = true
 ) {
     @errorSummary(workersForm.errors)
@@ -41,7 +41,7 @@
             form = workersForm,
             id = "numberOfWorkers",
             name = "numberOfWorkers",
-            label = messages("pages.labourCompliance.workers.heading"),
+            label = if(!isTransactor) messages("pages.labourCompliance.workers.heading") else messages("pages.labourCompliance.workers.3pt.heading"),
             isPageHeading = true,
             isDecimal = false,
             classes = Some("govuk-!-width-one-quarter")

@@ -19,17 +19,17 @@ package controllers.registration.sicandcompliance
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.SupplyWorkersForm
-
-import javax.inject.Inject
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{SessionProfile, SessionService, SicAndComplianceService}
+import play.api.mvc.{Action, AnyContent}
+import services.{SessionProfile, SessionService, SicAndComplianceService, VatRegistrationService}
 import views.html.labour.supply_workers
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
                                         val sicAndCompService: SicAndComplianceService,
+                                        val vatRegistrationService: VatRegistrationService,
                                         view: supply_workers)
                                        (implicit val appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
@@ -40,25 +40,31 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.supplyWorkers.fold(SupplyWorkersForm.form)(SupplyWorkersForm.form.fill)
-        } yield Ok(view(formFilled))
+          isTransactor <- vatRegistrationService.isTransactor
+          formFilled = sicCompliance.supplyWorkers.fold(SupplyWorkersForm.form(isTransactor))(SupplyWorkersForm.form(isTransactor).fill)
+        } yield Ok(view(formFilled, isTransactor))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        SupplyWorkersForm.form.bindFromRequest().fold(
-          badForm =>
-            Future.successful(BadRequest(view(badForm))),
-          view =>
-            sicAndCompService.updateSicAndCompliance(view).map { _ =>
-              if (view.yesNo) {
-                controllers.registration.sicandcompliance.routes.WorkersController.show
-              } else {
-                controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show
-              }
-            } map Redirect
-        )
+        for {
+          isTransactor <- vatRegistrationService.isTransactor
+          result <- {
+            SupplyWorkersForm.form(isTransactor).bindFromRequest().fold(
+            badForm =>
+              vatRegistrationService.isTransactor.map { _ =>
+                BadRequest(view(badForm, isTransactor))
+              },
+            view =>
+              sicAndCompService.updateSicAndCompliance(view).map { _ =>
+                if (view.yesNo) {
+                  controllers.registration.sicandcompliance.routes.WorkersController.show
+                } else {
+                  controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show
+                }
+              } map Redirect
+          )}
+        } yield result
   }
-
 }

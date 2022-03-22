@@ -23,12 +23,15 @@ import views.html.CaptureInternationalAddress
 
 class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
 
+  val testTransactorName = Some("John")
+
   val view = app.injector.instanceOf[CaptureInternationalAddress]
   val form = app.injector.instanceOf[InternationalAddressForm].form()
 
   object ExpectedMessages {
     val title = "Enter your home address"
-    val h1 = "Enter your home address"
+    val heading = "Enter your home address"
+    val thirdPartyHeading = "Enter " + testTransactorName.get + "’s home address"
     val line1 = "Address line 1"
     val line2 = "Address line 2 (optional)"
     val line3 = "Address line 3 (optional)"
@@ -39,14 +42,18 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val continue = "Continue"
   }
 
-  implicit val doc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.heading").body)
+  val transactorDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName).body)
+  implicit val doc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.heading", name = None).body)
 
   "the Capture International Address page" should {
     "have the correct page title" in new ViewSetup {
       doc.title() must include(ExpectedMessages.title)
     }
-    "have the correct h1 heading" in new ViewSetup {
-      doc.heading mustBe Some(ExpectedMessages.h1)
+    "have the correct heading when the user is not transactor" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedMessages.heading)
+    }
+    "have the correct heading when the user is transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe ExpectedMessages.thirdPartyHeading
     }
     "have a field for line 1" in new ViewSetup {
       doc.textBox("line1") mustBe Some(ExpectedMessages.line1)

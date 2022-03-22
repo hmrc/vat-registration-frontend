@@ -21,14 +21,14 @@ import models.api.{Individual, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.SicAndComplianceServiceMock
+import services.mocks.{MockApplicantDetailsService, SicAndComplianceServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.labour.intermediary_supply
 
 import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock {
+  with VatRegistrationFixture with SicAndComplianceServiceMock with MockApplicantDetailsService {
 
   trait Setup {
     val view = app.injector.instanceOf[intermediary_supply]
@@ -36,6 +36,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockAuthClientConnector,
       mockSessionService,
       mockSicAndComplianceService,
+      mockApplicantDetailsService,
       view
     )
 
@@ -46,6 +47,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
   s"GET ${controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show}" should {
     "return OK when there's a Temporary Contracts model in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
 
       callAuthorised(controller.show) {
         result =>
@@ -57,6 +60,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -68,6 +73,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
@@ -76,6 +83,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "redirect to PartyType resolver with Yes selected for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
@@ -89,6 +98,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "redirect to PartyType resolver with No selected for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
@@ -102,6 +113,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "redirect to PartyType resolver with Yes selected for Sole Trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
@@ -115,6 +128,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "redirect to PartyType resolver with No selected for Sole Trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(

@@ -4,7 +4,7 @@ package controllers.registration.sicandcompliance
 import common.enums.VatRegStatus
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
-import models.api.{Individual, UkCompany, VatScheme}
+import models.api.{EligibilitySubmissionData, Individual, VatScheme}
 import models.{IntermediarySupply, SicAndCompliance}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -16,6 +16,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       given()
         .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -37,6 +38,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
         )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))
         .s4lContainer[SicAndCompliance].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,6 +62,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       )
         .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(intermediarySupply = Some(IntermediarySupply(true))))
         .s4lContainer[SicAndCompliance].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

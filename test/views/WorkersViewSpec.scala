@@ -23,11 +23,13 @@ import views.html.labour.workers
 class WorkersViewSpec extends VatRegViewSpec {
 
   lazy val view = app.injector.instanceOf[workers]
-  implicit val doc = Jsoup.parse(view(WorkersForm.form).body)
+  val transactorDoc = Jsoup.parse(view(WorkersForm.form(true), true).body)
+  implicit val doc = Jsoup.parse(view(WorkersForm.form(false), false).body)
 
   object ExpectedContent {
     val title = "How many supply workers do you supply? - Register for VAT - GOV.UK"
     val heading = "How many supply workers do you supply?"
+    val thirdPartyHeading = "How many workers does the business supply?"
     val button = "Save and continue"
   }
 
@@ -35,7 +37,10 @@ class WorkersViewSpec extends VatRegViewSpec {
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
     }
-    "have the correct heading" in new ViewSetup {
+    "have the correct heading when user is transactor" in {
+      transactorDoc.select(Selectors.h1).text mustBe ExpectedContent.thirdPartyHeading
+    }
+    "have the correct heading when the user is not transactor" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
     "have a label that's the same as the heading" in new ViewSetup {

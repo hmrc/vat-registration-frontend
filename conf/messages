@@ -583,16 +583,22 @@ pages.compliance.introduction.para1                          = We’re going to 
 
 ## Labour Compliance
 ## Does Company Provide Workers
-pages.labourCompliance.supplyWorkers.heading               = Do you supply workers to provide a service to another business?
-validation.supplyWorkers.missing                           = Select yes if you supply workers to provide a service to another business
+pages.labourCompliance.supplyWorkers.heading                 = Do you supply workers to provide a service to another business?
+pages.labourCompliance.supplyWorkers.3pt.heading             = Does the business supply workers to provide a service to another business?
+validation.labourCompliance.supplyWorkers.missing                             = Select yes if you supply workers to provide a service to another business
+validation.labourCompliance.supplyWorkers.3pt.missing                         = Select yes if the business supplies workers to provide a service to another business
 
 ## Workers
-pages.labourCompliance.workers.heading                = How many supply workers do you supply?
-validation.labourCompliance.numberOfWorkers.missing   = Enter the number of workers you supply
+pages.labourCompliance.workers.heading                       = How many supply workers do you supply?
+pages.labourCompliance.workers.3pt.heading                   = How many workers does the business supply?
+validation.labourCompliance.numberOfWorkers.missing          = Enter the number of workers you supply
+validation.labourCompliance.numberOfWorkers.3pt.missing      = Enter the number of workers the business supplies
 
 ## Intermediary supply
-pages.labourCompliance.intermediarySupply.heading                = Are you an intermediary arranging the supply of workers?
-validation.labourCompliance.intermediarySupply.missing           = Select yes if you an intermediary arranging the supply of workers
+pages.labourCompliance.intermediarySupply.heading            = Are you an intermediary arranging the supply of workers?
+pages.labourCompliance.intermediarySupply.3pt.heading        = Is {0} an intermediary arranging the supply of workers?
+validation.labourCompliance.intermediarySupply.missing       = Select yes if you are an intermediary arranging the supply of workers
+validation.labourCompliance.intermediarySupply.3pt.missing   = Select yes if {0} is an intermediary arranging the supply of workers
 
 ## Apply For Eori
 pages.applyForEori.heading                  = Do you need an EORI number?
@@ -917,15 +923,15 @@ netp.overseas.hint                                       = England, Scotland, Wa
 validation.overseas.error                                = Select yes if the business send goods directly to customers from overseas countries
 
 ## SEND EU GOODS
-pages.sendEUGoods.heading                                = Do you intend to send goods direct to customers from within the EU?
-validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU.
+pages.sendEUGoods.heading                                = Does the business intend to send goods direct to customers from within the EU?
+validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU
 
 ## WAREHOUSE LOCATION
-pages.netp.warehouseLocation.title                       = Where are you storing your goods for dispatch?
-pages.netp.warehouseLocation.heading                     = Where are you storing your goods for dispatch?
+pages.netp.warehouseLocation.title                       = Where is the business storing your goods for dispatch?
+pages.netp.warehouseLocation.heading                     = Where is the business storing your goods for dispatch?
 pages.netp.warehouseLocation.uk                          = Within the United Kingdom
 pages.netp.warehouseLocation.overseas                    = Overseas
-pages.netp.warehouseLocation.error                       = Select where you store your goods for dispatch
+pages.netp.warehouseLocation.error                       = Select the place the business stores goods for dispatch
 
 ## DISPATCH FROM WAREHOUSE
 pages.dispatchFromWarehouse.heading                      = Will the business dispatch goods from a Fulfilment House Due Diligence Scheme (FHDDS) registered warehouse?
@@ -947,6 +953,7 @@ validation.warehouseName.format                          = Enter a business name
 
 ## Overseas address capture
 internationalAddress.home.heading                        = Enter your home address
+internationalAddress.home.3pt.heading                    = Enter {0}’s home address
 internationalAddress.prev.heading                        = Enter your previous home address
 internationalAddress.ppob.heading                        = Enter the primary place of business address
 internationalAddress.line1                               = Address line 1
