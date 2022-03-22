@@ -24,16 +24,16 @@
     button: components.button
 )
 
-@(intermediarySupplyForm: Form[IntermediarySupply])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(intermediarySupplyForm: Form[IntermediarySupply], name: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(intermediarySupplyForm, messages("pages.labourCompliance.intermediarySupply.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(intermediarySupplyForm, name.fold(messages("pages.labourCompliance.intermediarySupply.heading"))(name => messages("pages.labourCompliance.intermediarySupply.3pt.heading", name)))), backLink = true) {
 
     @errorSummary(intermediarySupplyForm.errors)
 
     @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit) {
         @yesNoRadio(
             form = intermediarySupplyForm,
-            headingKey = messages("pages.labourCompliance.intermediarySupply.heading"),
+            headingKey = name.fold(messages("pages.labourCompliance.intermediarySupply.heading"))(name => messages("pages.labourCompliance.intermediarySupply.3pt.heading", name)),
             isPageHeading = true
         )
 

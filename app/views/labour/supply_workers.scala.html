@@ -30,10 +30,10 @@
     button: components.button
 )
 
-@(companyProvideWorkersForm: Form[SupplyWorkers])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(companyProvideWorkersForm: Form[SupplyWorkers], isTransactor: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(
-    pageTitle = Some(title(companyProvideWorkersForm, messages("pages.labourCompliance.supplyWorkers.heading"))),
+    pageTitle = Some(title(companyProvideWorkersForm, if(!isTransactor) messages("pages.labourCompliance.supplyWorkers.heading") else messages("pages.labourCompliance.supplyWorkers.3pt.heading"))),
     backLink = true
 ) {
     @errorSummary(companyProvideWorkersForm.errors)
@@ -41,7 +41,7 @@
     @form(action = controllers.registration.sicandcompliance.routes.SupplyWorkersController.submit) {
         @yesNoRadio(
             form = companyProvideWorkersForm,
-            headingKey = messages("pages.labourCompliance.supplyWorkers.heading"),
+            headingKey = if(!isTransactor) messages("pages.labourCompliance.supplyWorkers.heading") else messages("pages.labourCompliance.supplyWorkers.3pt.heading"),
             inline = true,
             isPageHeading = true
         )

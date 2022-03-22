@@ -4,6 +4,7 @@ package controllers.registration.sicandcompliance
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
 import models._
+import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -14,6 +15,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
       given()
         .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -42,6 +44,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
         .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(incompleteModel)
         .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

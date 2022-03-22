@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.IntermediarySupplyForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, SicAndComplianceService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService, SicAndComplianceService}
 import views.html.labour.intermediary_supply
 
 import javax.inject.{Inject, Singleton}
@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClientConnector,
                                                     val sessionService: SessionService,
                                                     val sicAndCompService: SicAndComplianceService,
+                                                    val applicantDetailsService: ApplicantDetailsService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -40,21 +41,29 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
       implicit profile =>
         for {
           sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.intermediarySupply.fold(IntermediarySupplyForm.form)(IntermediarySupplyForm.form.fill)
-        } yield Ok(view(formFilled))
+          name <- applicantDetailsService.getTransactorApplicantName
+          intermediarySupplyForm = IntermediarySupplyForm(name)
+          formFilled = sicCompliance.intermediarySupply.fold(intermediarySupplyForm.form)(intermediarySupplyForm.form.fill)
+        } yield Ok(view(formFilled, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        IntermediarySupplyForm.form.bindFromRequest().fold(
-          badForm =>
-            Future.successful(BadRequest(view(badForm))),
-          data =>
-            sicAndCompService.updateSicAndCompliance(data) map { _ =>
-              Redirect(controllers.routes.TradingNameResolverController.resolve)
-            }
-        )
+        for {
+          name <- applicantDetailsService.getTransactorApplicantName
+          intermediarySupplyForm = IntermediarySupplyForm(name)
+          result <- {
+            intermediarySupplyForm.form.bindFromRequest().fold(
+              badForm =>
+                Future.successful(BadRequest(view(badForm, name))),
+              data =>
+                sicAndCompService.updateSicAndCompliance(data) map { _ =>
+                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                }
+            )
+          }
+        } yield result
   }
 
 }

@@ -29,9 +29,9 @@ class SendEUGoodsViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
-    val heading = "Do you intend to send goods direct to customers from within the EU?"
+    val heading = "Does the business intend to send goods direct to customers from within the EU?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val error = "Select yes if the business intends to send goods direct to customers from within the EU."
+    val error = "Select yes if the business intends to send goods direct to customers from within the EU"
     val continue = "Save and continue"
     val yes = "Yes"
     val no = "No"

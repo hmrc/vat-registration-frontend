@@ -22,7 +22,7 @@ import helpers.RequestsFinder
 import itutil.ControllerISpec
 import models.SicAndCompliance.{s4lKey => sicAndCompKey}
 import models._
-import models.api.{Individual, SicCode, UkCompany, VatScheme}
+import models.api.{EligibilitySubmissionData, Individual, SicCode, VatScheme}
 import models.test.SicStub
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -280,6 +280,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     given()
       .user.isAuthorised()
       .s4lContainer[SicAndCompliance].contains(fullModel)
+      .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 

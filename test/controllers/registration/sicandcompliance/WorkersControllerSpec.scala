@@ -21,14 +21,14 @@ import models.api.{Individual, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.SicAndComplianceServiceMock
+import services.mocks.{MockVatRegistrationService, SicAndComplianceServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.labour.workers
 
 import scala.concurrent.Future
 
 class WorkersControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock {
+  with VatRegistrationFixture with SicAndComplianceServiceMock with MockVatRegistrationService {
 
   trait Setup {
     val view = app.injector.instanceOf[workers]
@@ -36,6 +36,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockAuthClientConnector,
       mockSessionService,
       mockSicAndComplianceService,
+      vatRegistrationServiceMock,
       view
     )
 
@@ -46,6 +47,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   s"GET ${controllers.registration.sicandcompliance.routes.WorkersController.show}" should {
     "return OK when there's a Workers model in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockIsTransactor(Future.successful(true))
 
       callAuthorised(controller.show) {
         result =>
@@ -56,6 +58,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      mockIsTransactor(Future.successful(true))
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -74,6 +77,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
     "redirect to the Party type resolver for UkCompany" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
@@ -85,6 +89,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
 
     "redirect to the party type resolver for sole trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"

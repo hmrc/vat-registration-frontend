@@ -4,7 +4,7 @@ package controllers.registration.sicandcompliance
 import common.enums.VatRegStatus
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
-import models.api.{Individual, VatScheme}
+import models.api.{EligibilitySubmissionData, Individual, VatScheme}
 import models.{SicAndCompliance, Workers}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -16,6 +16,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
       given()
         .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.contains(
           VatScheme(id = currentProfile.registrationId,
             status = VatRegStatus.draft,
@@ -39,6 +40,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
       given()
         .user.isAuthorised()
         .s4lContainer[SicAndCompliance].contains(fullModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,

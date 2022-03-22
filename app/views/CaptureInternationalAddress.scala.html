@@ -31,14 +31,15 @@
         internationalAddressForm: Form[Address],
         countries: Seq[String],
         submitAction: Call,
-        headingKey: String
+        headingKey: String,
+        name: Option[String] = None
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(internationalAddressForm, messages(headingKey)))) {
+@layout(pageTitle = Some(title(internationalAddressForm, name.fold(messages(headingKey))(name => messages(headingKey, name))))) {
 
     @errorSummary(internationalAddressForm.errors)
 
-    @h1(messages(headingKey))
+    @h1(name.fold(messages(headingKey))(name => messages(headingKey, name)))
 
     @form(action = submitAction) {
         @inputText(
