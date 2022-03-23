@@ -54,4 +54,12 @@ trait MockRegistrationApiConnector {
       any[Format[T]]
     )).thenReturn(Future.successful(section))
 
+  def mockGetListSection[T](regId: String, section: List[T]): OngoingStubbing[Future[List[T]]] =
+    when(mockRegistrationApiConnector.getListSection[T](
+      regId = matches(regId)
+    )(
+      any[ApiKey[T]],
+      any[HeaderCarrier],
+      any[Format[List[T]]]
+    )).thenReturn(Future.successful(section))
 }
