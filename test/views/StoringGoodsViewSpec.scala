@@ -28,8 +28,8 @@ class StoringGoodsViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view(form).body)
 
   object ExpectedMessages {
-    val title = "Where is the business storing your goods for dispatch?"
-    val h1 = "Where is the business storing your goods for dispatch?"
+    val title = "Where is the business storing goods for dispatch?"
+    val h1 = "Where is the business storing goods for dispatch?"
     val error = "Select the place the business stores goods for dispatch"
     val ukRadio = "Within the United Kingdom"
     val overseasRadio = "Overseas"

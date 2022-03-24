@@ -927,8 +927,8 @@ pages.sendEUGoods.heading                                = Does the business int
 validation.sendEUGoods.error                             = Select yes if the business intends to send goods direct to customers from within the EU
 
 ## WAREHOUSE LOCATION
-pages.netp.warehouseLocation.title                       = Where is the business storing your goods for dispatch?
-pages.netp.warehouseLocation.heading                     = Where is the business storing your goods for dispatch?
+pages.netp.warehouseLocation.title                       = Where is the business storing goods for dispatch?
+pages.netp.warehouseLocation.heading                     = Where is the business storing goods for dispatch?
 pages.netp.warehouseLocation.uk                          = Within the United Kingdom
 pages.netp.warehouseLocation.overseas                    = Overseas
 pages.netp.warehouseLocation.error                       = Select the place the business stores goods for dispatch
