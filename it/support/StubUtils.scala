@@ -724,7 +724,7 @@ trait StubUtils {
       builder
     }
 
-    def getSection[T: ApiKey](optSection: Option[T], regId: String = "1", isComplete: Boolean = true, idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+    def getSection[T: ApiKey](optSection: Option[T], regId: String = "1", idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
       val url = idx match {
         case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"
         case None => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"

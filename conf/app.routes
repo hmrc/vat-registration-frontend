@@ -440,3 +440,7 @@ POST        /land-and-property                                                  
 ## Imports Or Exports
 GET         /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.show
 POST        /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.submit
+
+## Other Business Involvement Business Name
+GET         /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
+POST        /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)

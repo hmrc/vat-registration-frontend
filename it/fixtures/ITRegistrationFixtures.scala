@@ -304,4 +304,14 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     declarationCapacity = Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )
 
+  lazy val testBusinessName = "testBusinessName"
+  lazy val testVrn = "123456782"
+  lazy val fullOtherBusinessInvolvement: OtherBusinessInvolvement = OtherBusinessInvolvement(
+    businessName = Some(testBusinessName),
+    hasVrn = Some(true),
+    vrn = Some(testVrn),
+    hasUtr = None,
+    utr = None,
+    stillTrading = Some(true)
+  )
 }
