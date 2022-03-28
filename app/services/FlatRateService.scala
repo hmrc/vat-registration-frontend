@@ -47,15 +47,19 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       case Some(flatRateScheme) => Future.successful(flatRateScheme)
     }
 
-  def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = flatRate match {
-    case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), _, Some(_), Some(_))
-    => Complete(flatRate.copy(limitedCostTrader = Some(!isOverBusinessGoodsPercent)))
-    case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), _, Some(_), Some(_))
-    => Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None, limitedCostTrader = Some(true)))
-    case FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)
-    => Complete(flatRate)
-    case _
-    => Incomplete(flatRate)
+  def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = {
+    flatRate match {
+      case FlatRateScheme(_, Some(true), None, None, _, _, _, _, _) =>
+        Incomplete(FlatRateScheme(Some(true), Some(true)))
+      case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), _, Some(_), Some(_)) =>
+        Complete(flatRate.copy(limitedCostTrader = Some(!isOverBusinessGoodsPercent)))
+      case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), _, Some(_), Some(_)) =>
+        Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None, limitedCostTrader = Some(true)))
+      case FlatRateScheme(Some(false), _, _, _, _, _, _, _, _) =>
+        Complete(flatRate)
+      case _ =>
+        Incomplete(flatRate)
+    }
   }
 
   def submitFlatRate(data: FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
@@ -80,6 +84,8 @@ class FlatRateService @Inject()(val s4LService: S4LService,
         overBusinessGoods = Some(newValue),
         useThisRate = if (storedData.overBusinessGoods.contains(newValue)) storedData.useThisRate else None,
         categoryOfBusiness = if (newValue) storedData.categoryOfBusiness else None,
+        estimateTotalSales = if (!newValue) None else storedData.estimateTotalSales,
+        overBusinessGoodsPercent = if (!newValue) None else storedData.overBusinessGoodsPercent,
         limitedCostTrader = Some(!newValue)
       )
     }

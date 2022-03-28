@@ -141,7 +141,6 @@ class JoinFlatRateSchemeControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "return 303 with Join Flat Rate Scheme selected Yes" in new Setup {
-
       when(mockSessionService.fetchAndGet[CurrentProfile](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Some(currentProfile)))
 
