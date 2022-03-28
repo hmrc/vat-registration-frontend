@@ -1269,7 +1269,7 @@ validation.obi.otherBusinessName.missing                          = Enter the na
 validation.obi.otherBusinessName.maxlen                           = The name of the other business must be 105 characters or fewer
 
 # CAPTURE OTHER BUSINESS VRN
-obi.captureVrn.heading                                     = What is the other business‘s VAT number?
+obi.captureVrn.heading                                     = What is the other business’s VAT number?
 obi.captureVrn.hint                                        = This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate.
-validation.obi.captureVrn.invalid                          = Enter the other business‘s VAT number in the correct format
-validation.obi.captureVrn.missing                          = Enter the other business‘s VAT number
+validation.obi.captureVrn.invalid                          = Enter the other business’s VAT number in the correct format
+validation.obi.captureVrn.missing                          = Enter the other business’s VAT number
