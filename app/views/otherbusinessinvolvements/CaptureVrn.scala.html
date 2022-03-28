@@ -28,18 +28,19 @@
         button: components.button
 )
 
-@(businessNameForm: Form[String], index: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(captureVrnForm: Form[String], index: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(businessNameForm, messages("obi.otherBusinessName.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(captureVrnForm, messages("obi.captureVrn.heading"))), backLink = true) {
 
-    @errorSummary(businessNameForm.errors)
+    @errorSummary(captureVrnForm.errors)
 
-    @form(action = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.submit(index)) {
+    @form(action = controllers.registration.otherbusinessinvolvements.routes.CaptureVrnController.submit(index)) {
         @inputText(
-            businessNameForm,
-            id = "otherBusinessName",
-            name = "otherBusinessName",
-            label = messages("obi.otherBusinessName.heading"),
+            captureVrnForm,
+            id = "captureVrn",
+            name = "captureVrn",
+            label = messages("obi.captureVrn.heading"),
+            hint = Some(Html(messages("obi.captureVrn.hint"))),
             isPageHeading = true,
             classes = Some("govuk-input--width-20")
         )

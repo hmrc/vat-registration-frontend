@@ -444,3 +444,7 @@ POST        /imports-or-exports                                                 
 ## Other Business Involvement Business Name
 GET         /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
 POST        /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
+
+## Other Business Involvement Capture VRN
+GET         /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
+POST        /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
