@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.otherbusinessinvolvements.OtherBusinessName
 
-class BusinessNameViewSpec extends VatRegViewSpec {
+class OtherBusinessNameViewSpec extends VatRegViewSpec {
   val view: OtherBusinessName = app.injector.instanceOf[OtherBusinessName]
 
   object ExpectedContent {
@@ -34,7 +34,7 @@ class BusinessNameViewSpec extends VatRegViewSpec {
 
   implicit val doc: Document = Jsoup.parse(view(BusinessNameForm(), 1).body)
 
-  "Sole Trader Name page" must {
+  "Other Business Name page" must {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
