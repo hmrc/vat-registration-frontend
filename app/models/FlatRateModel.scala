@@ -74,7 +74,7 @@ object FlatRateScheme {
 
   val writes: Writes[FlatRateScheme] = new Writes[FlatRateScheme] {
     override def writes(s4l: FlatRateScheme): JsValue = {
-      val businessGoods = if(s4l.overBusinessGoods.contains(true)) {
+      val businessGoods = if (s4l.overBusinessGoods.contains(true)) {
         Some(Json.obj("businessGoods"   -> Json.obj(
           "estimatedTotalSales"           -> s4l.estimateTotalSales,
           "overTurnover"                  -> s4l.overBusinessGoodsPercent
