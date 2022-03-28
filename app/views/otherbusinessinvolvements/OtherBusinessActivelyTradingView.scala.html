@@ -1,0 +1,44 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        errorSummary: errorSummary,
+        form: FormWithCSRF,
+        yesNoRadio: yesNoRadio,
+        button: button
+)
+
+@(otherBusinessActivelyTradingForm: Form[Boolean], index: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(otherBusinessActivelyTradingForm, messages("obi.otherBusinessActivelyTrading.heading"))), backLink = true) {
+
+    @errorSummary(otherBusinessActivelyTradingForm.errors)
+
+    @form(action = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.submit(index)) {
+        @yesNoRadio(
+            form = otherBusinessActivelyTradingForm,
+            headingKey = messages("obi.otherBusinessActivelyTrading.heading"),
+            isPageHeading = true
+        )
+
+        @button(messages("app.common.continue"), showSaveProgressButton = true)
+    }
+}
