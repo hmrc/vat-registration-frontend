@@ -26,7 +26,7 @@ class CaptureVrnViewSpec extends VatRegViewSpec {
   val view: CaptureVrn = app.injector.instanceOf[CaptureVrn]
 
   object ExpectedContent {
-    val heading = "What is the other business‘s VAT number?"
+    val heading = "What is the other business’s VAT number?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val hint = "This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate."
     val label = "What is the name of the other business?"
