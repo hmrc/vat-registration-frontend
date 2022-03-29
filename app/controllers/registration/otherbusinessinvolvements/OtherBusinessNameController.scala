@@ -68,7 +68,7 @@ class OtherBusinessNameController @Inject()(val authConnector: AuthConnector,
             Future.successful(BadRequest(view(errors, index))),
           success => {
             otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, BusinessNameAnswer(success)).map { _ =>
-              Redirect(routes.OtherBusinessNameController.show(index)) //TODO Route to next page when it is done
+              Redirect(routes.HaveVatNumberController.show(index))
             }
           }
         )

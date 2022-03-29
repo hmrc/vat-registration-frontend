@@ -137,7 +137,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(idx1).url)
       }
     }
 
@@ -158,7 +158,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(idx1).url)
       }
     }
   }

@@ -49,6 +49,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
     case class Link(text: String, href: String)
     case class Details(summary: String, body: String)
     case class DateField(legend: String, hint: Option[String] = None)
+    case class SummaryRow(label: String, answer: String, actions: Seq[Link])
 
     implicit class ElementExtractor(elements: Elements) {
       def toList: List[Element] = elements.iterator.asScala.toList
@@ -73,6 +74,18 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
           .map(l => Link(l.text, l.attr("href")))
 
       def hasErrorSummary: Boolean = errorSummary.isDefined
+
+      def summaryRow(n: Int): Option[SummaryRow] = {
+        val key = doc.select(".govuk-summary-list__key").toList.lift(n).map(_.text)
+        val value = doc.select(".govuk-summary-list__value").toList.lift(n).map(_.text)
+        val actions = doc.select(".govuk-summary-list__actions").toList.lift(n).map(_.select("a").toList.map(l => Link(l.text, l.attr("href"))))
+
+        for {
+          keyValue <- key
+          answerValue <- value
+          actionsSeq <- actions
+        } yield SummaryRow(keyValue, answerValue, actionsSeq)
+      }
 
       def hintWithMultiple(n: Int): Option[String] = doc.select(multipleHints(n)).headOption.map(_.text)
 

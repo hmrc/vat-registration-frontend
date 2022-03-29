@@ -446,17 +446,21 @@ GET         /other-business-involvements                                        
 POST        /other-business-involvements                                                       controllers.registration.sicandcompliance.OtherBusinessInvolvementController.submit
 
 ## Other Business Involvement Business Name
-GET         /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
-POST        /other-business-involvement/business-name/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
-
-## Other Business Involvement Capture VRN
-GET         /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
-POST        /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
-
-## Other Business Involvement Business Actively Trading
-GET         /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
-POST        /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)
+GET         /other-business-involvement/:index/business-name                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
+POST        /other-business-involvement/:index/business-name                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
 
 ## Other Business Involvement Have VAT number
-GET         /other-business-involvement/have-vat-number/:index                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
-POST        /other-business-involvement/have-vat-number/:index                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
+GET         /other-business-involvement/:index/have-vat-number                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
+POST        /other-business-involvement/:index/have-vat-number                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
+
+## Other Business Involvement Capture VRN
+GET         /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
+POST        /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
+
+## Other Business Involement Still Trading
+GET         /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
+POST        /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)
+
+## Other Business Involvement CYA
+GET         /other-business-involvement/:index/check-answers                                   controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.show(index: Int, changeMode: Boolean ?= false)
+POST        /other-business-involvement/check-answers                                          controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.submit
