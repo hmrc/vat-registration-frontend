@@ -16,11 +16,14 @@
 
 package controllers.test
 
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.SicCode
 import models.test.SicStub
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -29,7 +32,7 @@ import views.html.test.SicStubPage
 import scala.concurrent.Future
 
 class SicStubControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture {
+  with VatRegistrationFixture with FeatureSwitching {
 
   trait Setup {
     val controller: SicStubController = new SicStubController(
@@ -71,24 +74,35 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
 
     "return 303 and correct redirection with only one sic code selected" in new Setup {
-      when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
+      enable(OtherBusinessInvolvement)
+      when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")) {
-        _ redirectsTo controllers.routes.TradingNameResolverController.resolve.url
-      }
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")
+      verifyFeatureSwitchFlow(disable, controller, request, controllers.routes.TradingNameResolverController.resolve)
+      verifyFeatureSwitchFlow(enable, controller, request, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
     }
 
     "return 303 and correct redirection with only one labour sic code selected" in new Setup {
-      when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
+      when(mockS4LService.save[SicStub](any())(any(), any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockConfigConnector.getSicCodeDetails(any())).thenReturn(dummySicCode)
       when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
         _ redirectsTo controllers.routes.ComplianceIntroductionController.show.url
+      }
+    }
+
+    def verifyFeatureSwitchFlow(featureSwitchFn: FeatureSwitch => Unit, controller: SicStubController,
+                                request: FakeRequest[AnyContentAsFormUrlEncoded], resolvedCall: Call): Unit = {
+
+      featureSwitchFn(OtherBusinessInvolvement)
+      submitAuthorised(controller.submit, request) {
+        _ redirectsTo resolvedCall.url
       }
     }
   }

@@ -17,7 +17,7 @@
 package models
 
 import models.api.SicCode
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{Format, JsObject, Json}
 import testHelpers.VatRegSpec
 
 class SicAndComplianceSpec extends VatRegSpec {
@@ -142,21 +142,23 @@ class SicAndComplianceSpec extends VatRegSpec {
     intermediarySupply = Some(IntermediarySupply(false))
   )
 
-  "fromApi" should {
+  "api read" should {
+    implicit val frmt: Format[SicAndCompliance] = SicAndCompliance.apiFormat
+
     "return a valid view model for a none labour SIC Code" in {
-      SicAndCompliance.fromApi(jsonNoneLabour) mustBe noneLabour
+      jsonNoneLabour.as[SicAndCompliance] mustBe noneLabour
     }
 
     "return a valid view model for a labour SIC Code without workers" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutWorkers) mustBe labourWithoutWorkers
+      jsonLabourWithoutWorkers.as[SicAndCompliance] mustBe labourWithoutWorkers
     }
 
     "return a valid view model for a labour SIC Code with workers" in {
-      SicAndCompliance.fromApi(jsonLabourWithWorkers) mustBe labourWithWorkers
+      jsonLabourWithWorkers.as[SicAndCompliance] mustBe labourWithWorkers
     }
 
     "return a valid view model for a labour SIC Code without temporary contracts" in {
-      SicAndCompliance.fromApi(jsonLabourWithoutTemporaryContracts) mustBe labourWithoutTemporaryContracts
+      jsonLabourWithoutTemporaryContracts.as[SicAndCompliance] mustBe labourWithoutTemporaryContracts
     }
   }
 

@@ -16,10 +16,13 @@
 
 package controllers.registration.sicandcompliance
 
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.{Individual, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockVatRegistrationService, SicAndComplianceServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -28,7 +31,7 @@ import views.html.labour.workers
 import scala.concurrent.Future
 
 class WorkersControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock with MockVatRegistrationService {
+  with VatRegistrationFixture with SicAndComplianceServiceMock with MockVatRegistrationService with FeatureSwitching {
 
   trait Setup {
     val view = app.injector.instanceOf[workers]
@@ -79,25 +82,28 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "numberOfWorkers" -> "5"
-      )) {
-        result =>
-          result redirectsTo controllers.routes.TradingNameResolverController.resolve.url
-      }
+      verifyFeatureSwitchFlow(controller, fakeRequest)
     }
 
     "redirect to the party type resolver for sole trader" in new Setup {
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "numberOfWorkers" -> "5"
-      )) {
-        result =>
-          result redirectsTo controllers.routes.TradingNameResolverController.resolve.url
-      }
+      verifyFeatureSwitchFlow(controller, fakeRequest)
     }
   }
 
+  private def verifyFeatureSwitchFlow(controller: WorkersController,
+                                      fakeRequest: FakeRequest[AnyContentAsEmpty.type]): Unit = {
+
+    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
+      featureSwitchFn(OtherBusinessInvolvement)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        "numberOfWorkers" -> "5"
+      ))( _ redirectsTo resolvedLocation.url)
+    }
+
+    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
+    verifyRedirectLocation(enable, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+  }
 }

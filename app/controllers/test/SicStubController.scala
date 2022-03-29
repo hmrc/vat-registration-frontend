@@ -19,6 +19,7 @@ package controllers.test
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
+import featureswitch.core.config.OtherBusinessInvolvement
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
 import play.api.mvc.{Action, AnyContent}
@@ -62,7 +63,11 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
                 Redirect(controllers.routes.ComplianceIntroductionController.show)
               } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve)
+                if (isEnabled(OtherBusinessInvolvement)) {
+                  Redirect(controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+                } else {
+                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                }
               }
             } else {
               Redirect(controllers.routes.SicAndComplianceController.showMainBusinessActivity)

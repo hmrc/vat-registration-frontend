@@ -23,10 +23,11 @@ import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
 import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, Call, Result}
 import services.{SessionService, _}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html._
+import featureswitch.core.config.OtherBusinessInvolvement
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,14 +72,22 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
               _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
               _ <- frsService.resetFRSForSAC(selected)
             } yield {
-              if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
-                Redirect(routes.ComplianceIntroductionController.show)
-              } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve)
-              }
+              Redirect(resolveRoute(sicCodeList))
             })
           )
         }
+  }
+
+  private def resolveRoute(sicCodeList: List[SicCode]): Call = {
+    if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
+      routes.ComplianceIntroductionController.show
+    } else {
+      if (isEnabled(OtherBusinessInvolvement)) {
+        controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show
+      } else {
+        controllers.routes.TradingNameResolverController.resolve
+      }
+    }
   }
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -123,12 +132,9 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
               routes.SicAndComplianceController.showMainBusinessActivity
-            case codes if sicAndCompService.needComplianceQuestions(codes) =>
-              controllers.routes.ComplianceIntroductionController.show
-            case List(onlyOneCode) =>
-              controllers.routes.TradingNameResolverController.resolve
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
+            case codes => resolveRoute(codes)
           })
         }
   }
