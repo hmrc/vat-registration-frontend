@@ -19,9 +19,9 @@ package controllers.registration.business
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.SoleTraderNameForm
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.NETP
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SessionService, TradingDetailsService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.soletrader_name
 

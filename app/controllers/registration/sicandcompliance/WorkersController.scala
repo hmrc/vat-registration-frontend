@@ -22,6 +22,7 @@ import forms.WorkersForm
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, SicAndComplianceService, VatRegistrationService}
 import views.html.labour.workers
+import featureswitch.core.config.OtherBusinessInvolvement
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,7 +55,11 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
             WorkersForm.form(isTransactor).bindFromRequest().fold(
               badForm => Future.successful(BadRequest(view(badForm, isTransactor))),
               data => sicAndCompService.updateSicAndCompliance(data) map { _ =>
-                Redirect(controllers.routes.TradingNameResolverController.resolve)
+                if (isEnabled(OtherBusinessInvolvement)) {
+                  Redirect(controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+                } else {
+                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                }
               }
             )
           }

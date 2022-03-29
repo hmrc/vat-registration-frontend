@@ -1262,6 +1262,11 @@ landAndProperty.error.missing            = Select yes if the business’s activi
 importsOrExports.heading                   = Will the business trade VAT-taxable goods with countries outside the UK?
 validation.ImportsOrExports.error          = Select yes if the business will trade VAT-taxable goods with countries outside the UK
 
+## OTHER BUSINESS INVOLVEMENT
+otherBusinessInvolvement.heading           = Have you or any of the partners or directors in this business been involved in any other businesses in the last 2 years?
+otherBusinessInvolvement.para              = Select ‘yes’ if any of the partners or directors in the business have acted as a sole trader, partner or director in any other business in the United Kingdom or Isle of Man in the last 2 years.
+validation.OtherBusinessInvolvement.error  = Select yes if there has been involvement in any other businesses in the last 2 years
+
 # OTHER BUSINESS NAME
 obi.otherBusinessName.heading                                     = What is the name of the other business?
 validation.obi.otherBusinessName.invalid                          = The other business name must only include numbers, letters a to z, and special characters such as hyphens, apostrophes and brackets

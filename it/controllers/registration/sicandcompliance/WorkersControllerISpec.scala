@@ -2,14 +2,17 @@
 package controllers.registration.sicandcompliance
 
 import common.enums.VatRegStatus
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.models.FeatureSwitch
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, Individual, VatScheme}
 import models.{SicAndCompliance, Workers}
 import play.api.http.HeaderNames
+import play.api.mvc.Call
 import play.api.test.Helpers._
 
-class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture {
+class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture with FeatureSwitching {
 
   "workers controller" should {
     "redirect to party type resolver for UkCompany" in new Setup {
@@ -28,12 +31,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
-      }
+      verifyRedirectOnFeatureSwitch()
     }
 
     "redirect to party type resolver for sole trader" in new Setup {
@@ -52,13 +50,22 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
-      }
+      verifyRedirectOnFeatureSwitch()
     }
   }
 
+  private def verifyRedirectOnFeatureSwitch(): Unit = {
+
+    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call) = {
+      featureSwitchFn(OtherBusinessInvolvement)
+      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(resolvedLocation.url)
+      }
+    }
+
+    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
+    verifyRedirectLocation(enable, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+  }
 }

@@ -42,7 +42,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     ShortOrgName,
     MultipleRegistrations,
     LandAndProperty,
-    FullAgentJourney
+    FullAgentJourney,
+    OtherBusinessInvolvement
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -140,4 +141,9 @@ case object LandAndProperty extends FeatureSwitch {
 case object FullAgentJourney extends FeatureSwitch {
   override val configName: String = "feature-switch.full-agent-journey"
   override val displayName: String = "Enable full agent journey"
+}
+
+case object OtherBusinessInvolvement extends FeatureSwitch {
+  override val configName: String = "feature-switch.other-business-involvement"
+  override val displayName: String = "Enable other business involvement journey"
 }

@@ -22,6 +22,7 @@ import forms.IntermediarySupplyForm
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService, SicAndComplianceService}
 import views.html.labour.intermediary_supply
+import featureswitch.core.config.OtherBusinessInvolvement
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,7 +60,11 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                 Future.successful(BadRequest(view(badForm, name))),
               data =>
                 sicAndCompService.updateSicAndCompliance(data) map { _ =>
-                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                  if (isEnabled(OtherBusinessInvolvement)) {
+                    Redirect(controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+                  } else {
+                    Redirect(controllers.routes.TradingNameResolverController.resolve)
+                  }
                 }
             )
           }

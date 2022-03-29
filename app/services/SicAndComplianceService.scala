@@ -32,9 +32,9 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
 
   def getSicAndCompliance(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[SicAndCompliance] = {
     s4lService.fetchAndGet[SicAndCompliance].flatMap {
-      case None | Some(SicAndCompliance(None, None, None, None, None, None, None)) =>
+      case None | Some(SicAndCompliance(None, None, None, None, None, None, None, None)) =>
         registrationConnector.getSicAndCompliance.map {
-          case Some(sicAndCompliance) => SicAndCompliance.fromApi(sicAndCompliance)
+          case Some(sicAndCompliance) => sicAndCompliance.as[SicAndCompliance](SicAndCompliance.apiFormat)
           case None => SicAndCompliance()
         }
       case Some(sicAndCompliance) => Future.successful(sicAndCompliance)
@@ -89,6 +89,7 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
       case d: Workers => before.copy(workers = Some(d))
       case e: IntermediarySupply => before.copy(intermediarySupply = Some(e))
       case landAndProperty: LandAndPropertyAnswer => before.copy(hasLandAndProperty = Some(landAndProperty.answer))
+      case obi: OtherBusinessInvolvementAnswer => before.copy(otherBusinessInvolvement = Some(obi.answer))
       case g: SicAndCompliance => g
       case _ => before
     }
@@ -97,15 +98,15 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
   // list of sics nil, 1 or many
   private def isModelComplete(view: SicAndCompliance): Completion[SicAndCompliance] = {
     view match {
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(false)), _, Some(_), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(false)), _, Some(_), _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(true)), Some(Workers(_)), _, _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(SupplyWorkers(true)), Some(Workers(_)), _, _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(IntermediarySupply(false)), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(IntermediarySupply(false)), _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(_), _) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(_)), Some(_), Some(_), Some(_), _, _) =>
         Complete(view)
-      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(sicCodes)), None, None, None, _) if !needComplianceQuestions(sicCodes) =>
+      case SicAndCompliance(Some(_), Some(MainBusinessActivityView(_, Some(_))), Some(BusinessActivities(sicCodes)), None, None, None, _, _) if !needComplianceQuestions(sicCodes) =>
         Complete(view)
       case _ => Incomplete(view)
     }
@@ -122,3 +123,5 @@ class SicAndComplianceService @Inject()(val s4lService: S4LService,
 }
 
 case class LandAndPropertyAnswer(answer: Boolean)
+
+case class OtherBusinessInvolvementAnswer(answer: Boolean)

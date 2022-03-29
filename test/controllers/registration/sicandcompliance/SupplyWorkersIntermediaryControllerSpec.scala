@@ -16,10 +16,13 @@
 
 package controllers.registration.sicandcompliance
 
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.{Individual, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockApplicantDetailsService, SicAndComplianceServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -28,7 +31,7 @@ import views.html.labour.intermediary_supply
 import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock with MockApplicantDetailsService {
+  with VatRegistrationFixture with SicAndComplianceServiceMock with MockApplicantDetailsService with FeatureSwitching {
 
   trait Setup {
     val view = app.injector.instanceOf[intermediary_supply]
@@ -82,18 +85,13 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "redirect to PartyType resolver with Yes selected for UkCompany" in new Setup {
+      enable(OtherBusinessInvolvement)
       mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "true"
-      )) {
-        response =>
-          status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
-      }
+      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = true)
     }
 
     "redirect to PartyType resolver with No selected for UkCompany" in new Setup {
@@ -102,13 +100,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "false"
-      )) {
-        response =>
-          status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
-      }
+      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = false)
     }
 
     "redirect to PartyType resolver with Yes selected for Sole Trader" in new Setup {
@@ -117,13 +109,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "true"
-      )) {
-        response =>
-          status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
-      }
+      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = true)
     }
 
     "redirect to PartyType resolver with No selected for Sole Trader" in new Setup {
@@ -132,13 +118,26 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
 
+      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = false)
+    }
+  }
+
+  private def verifyFeatureSwitchFlow(controller: SupplyWorkersIntermediaryController,
+                                     fakeRequest: FakeRequest[AnyContentAsEmpty.type],
+                                     partyTypeSelection: Boolean): Unit = {
+
+    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
+      featureSwitchFn(OtherBusinessInvolvement)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "false"
+        "value" -> partyTypeSelection.toString
       )) {
         response =>
           status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe controllers.routes.TradingNameResolverController.resolve.url
+          redirectLocation(response).getOrElse("") mustBe resolvedLocation.url
       }
     }
+
+    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
+    verifyRedirectLocation(enable, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
   }
 }

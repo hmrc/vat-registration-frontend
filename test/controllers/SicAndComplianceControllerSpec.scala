@@ -136,7 +136,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.TradingNameResolverController.resolve.url
+            res redirectsTo controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show.url
         }
       }
 
@@ -212,6 +212,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-business")
 
     }
+
     "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
       mockSessionFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
 
@@ -221,9 +222,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(false)
 
       submitAuthorised(controller.submitMainBusinessActivity,
-
         fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo controllers.routes.TradingNameResolverController.resolve.url)
+      )(_ redirectsTo controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show.url)
     }
   }
 
