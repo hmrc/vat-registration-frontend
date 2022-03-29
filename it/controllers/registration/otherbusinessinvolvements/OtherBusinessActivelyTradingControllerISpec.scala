@@ -16,7 +16,7 @@
 
 package controllers.registration.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.{CaptureVrnForm, OtherBusinessNameForm}
+import forms.otherbusinessinvolvements.OtherBusinessActivelyTradingForm
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{OtherBusinessInvolvement, S4LKey}
@@ -27,11 +27,12 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class CaptureVrnControllerISpec extends ControllerISpec {
+class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
+
   val idx1: Int = 1
   val idx2: Int = 2
 
-  def pageUrl(index: Int): String = routes.CaptureVrnController.show(index).url
+  def pageUrl(index: Int): String = routes.OtherBusinessActivelyTradingController.show(index).url
 
   s"GET ${pageUrl(idx1)}" must {
     "return OK" in new Setup {
@@ -54,7 +55,7 @@ class CaptureVrnControllerISpec extends ControllerISpec {
       }
     }
 
-    "return OK with prepop" in new Setup {
+    "return OK with pre-pop" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
@@ -70,7 +71,7 @@ class CaptureVrnControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe OK
-        Jsoup.parse(res.body).getElementById(CaptureVrnForm.captureVrnKey).attr("value") mustBe testVrn
+        Jsoup.parse(res.body).getElementById(OtherBusinessActivelyTradingForm.yesNo).hasAttr("checked")
       }
     }
   }
@@ -128,21 +129,20 @@ class CaptureVrnControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some(testVrn)))
+        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some("true")))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureVrnForm.captureVrnKey -> Seq(testVrn)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessActivelyTradingForm.yesNo -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url) //TODO Update url when next page is done
       }
     }
 
     "return a redirect to next page after storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
-      val testNewVrn = "987654353"
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -150,15 +150,15 @@ class CaptureVrnControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
         .s4lContainer[OtherBusinessInvolvement].clearedByKey
-        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(vrn = Some(testNewVrn)), idx = Some(idx1))
+        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(stillTrading = Some(false)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureVrnForm.captureVrnKey -> Seq(testNewVrn)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessActivelyTradingForm.yesNo -> Seq("false")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url) //TODO Update url when next page is done
       }
     }
   }

@@ -448,3 +448,7 @@ POST        /other-business-involvement/business-name/:index                    
 ## Other Business Involvement Capture VRN
 GET         /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
 POST        /other-business-involvement/vat-number/:index                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
+
+## Other Business Involvement Business Actively Trading
+GET         /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
+POST        /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)

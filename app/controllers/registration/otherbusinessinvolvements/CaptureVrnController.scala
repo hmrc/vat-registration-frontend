@@ -68,7 +68,7 @@ class CaptureVrnController @Inject()(val authConnector: AuthConnector,
             Future.successful(BadRequest(view(errors, index))),
           success => {
             otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, VrnAnswer(success)).map { _ =>
-              Redirect(routes.CaptureVrnController.show(index)) //TODO Route to next page when it is done
+              Redirect(routes.OtherBusinessActivelyTradingController.show(index))
             }
           }
         )

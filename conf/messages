@@ -1273,3 +1273,8 @@ obi.captureVrn.heading                                     = What is the other b
 obi.captureVrn.hint                                        = This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate.
 validation.obi.captureVrn.invalid                          = Enter the other business’s VAT number in the correct format
 validation.obi.captureVrn.missing                          = Enter the other business’s VAT number
+
+
+## OTHER BUSINESS ACTIVELY TRADING
+obi.otherBusinessActivelyTrading.heading                   = Is the other business still actively trading?
+obi.otherBusinessActivelyTrading.error                     = Select yes if the other business is still actively trading
