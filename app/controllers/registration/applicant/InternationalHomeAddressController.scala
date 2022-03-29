@@ -63,7 +63,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
       val countries = configConnector.countries.flatMap(_.name)
       for{
         name <- applicantDetailsService.getTransactorApplicantName
-        headingMessageKey = if(name.isDefined) "internationalAddress.home.heading" else "internationalAddress.home.3pt.heading"
+        headingMessageKey = if(name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
         result <- {
           formProvider.form().bindFromRequest.fold(
             formWithErrors => {
