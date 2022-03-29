@@ -305,10 +305,11 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   lazy val testBusinessName = "testBusinessName"
+  lazy val testHasVrn = true
   lazy val testVrn = "123456782"
   lazy val fullOtherBusinessInvolvement: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some(testBusinessName),
-    hasVrn = Some(true),
+    hasVrn = Some(testHasVrn),
     vrn = Some(testVrn),
     hasUtr = None,
     utr = None,

@@ -16,22 +16,22 @@
 
 package views.otherbusinessinvolvements
 
-import forms.BusinessNameForm
+import forms.otherbusinessinvolvements.HaveVatNumberForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.otherbusinessinvolvements.OtherBusinessName
+import views.html.otherbusinessinvolvements.HaveVatNumber
 
-class OtherBusinessNameViewSpec extends VatRegViewSpec {
-  val view: OtherBusinessName = app.injector.instanceOf[OtherBusinessName]
+class HaveVatNumberViewSpec extends VatRegViewSpec {
+  val view: HaveVatNumber = app.injector.instanceOf[HaveVatNumber]
 
   object ExpectedContent {
-    val heading = "What is the name of the other business?"
+    val heading = "Does the business have a VAT number?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(BusinessNameForm(), 1).body)
+  implicit val doc: Document = Jsoup.parse(view(HaveVatNumberForm(), 1).body)
 
   "Other Business Name page" must {
     "have a back link" in new ViewSetup {

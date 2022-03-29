@@ -456,3 +456,7 @@ POST        /other-business-involvement/vat-number/:index                       
 ## Other Business Involvement Business Actively Trading
 GET         /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
 POST        /other-business-involvement/still-trading/:index                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)
+
+## Other Business Involvement Have VAT number
+GET         /other-business-involvement/have-vat-number/:index                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
+POST        /other-business-involvement/have-vat-number/:index                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)

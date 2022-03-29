@@ -24,7 +24,7 @@ class OtherBusinessNameFormSpec extends VatRegSpec {
   val formValue: String = OtherBusinessNameForm.businessNameKey
   val testBusinessName = "testBusinessName"
 
-  "FormerNameForm" must {
+  "OtherBusinessNameForm" must {
     "bind successfully with valid data" in {
       val data = Map(
         formValue -> testBusinessName
