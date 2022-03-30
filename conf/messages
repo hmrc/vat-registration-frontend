@@ -1279,7 +1279,10 @@ obi.captureVrn.hint                                        = This is 9 numbers, 
 validation.obi.captureVrn.invalid                          = Enter the other business’s VAT number in the correct format
 validation.obi.captureVrn.missing                          = Enter the other business’s VAT number
 
-
 ## OTHER BUSINESS ACTIVELY TRADING
 obi.otherBusinessActivelyTrading.heading                   = Is the other business still actively trading?
 obi.otherBusinessActivelyTrading.error                     = Select yes if the other business is still actively trading
+
+# HAVE VAT NUMBER
+obi.haveVatNumber.heading                  = Does the business have a VAT number?
+validation.obi.haveVatNumber.missing       = Select yes if the other business has a VAT number
