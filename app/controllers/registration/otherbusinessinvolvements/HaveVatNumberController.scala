@@ -66,9 +66,14 @@ class HaveVatNumberController @Inject()(val authConnector: AuthConnector,
         HaveVatNumberForm().bindFromRequest.fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
-          success => {
-            otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, HasVrnAnswer(success)).map { _ =>
-              Redirect(routes.HaveVatNumberController.show(index)) //TODO Route to next page when it is done
+          hasVrn => {
+            otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, HasVrnAnswer(hasVrn)).map { _ =>
+              if (hasVrn) {
+                Redirect(routes.CaptureVrnController.show(index))
+              } else {
+                // TODO: Route to "Do you have a UTR" page once completed
+                Redirect(routes.OtherBusinessActivelyTradingController.show(index))
+              }
             }
           }
         )

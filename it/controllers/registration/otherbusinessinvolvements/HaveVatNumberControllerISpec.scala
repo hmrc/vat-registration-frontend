@@ -136,11 +136,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HaveVatNumberController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
       }
     }
 
-    "return a redirect to next page after storing in BE" in new Setup {
+    "redirect to the Capture VRN page if the user answers 'Yes' after storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
@@ -157,7 +157,29 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HaveVatNumberController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
+      }
+    }
+
+    // TODO: Update to go to the "Has UTR" page once UTR portion of the journey has been implemented
+    "redirect to the Still Actively Trading page if the user answers 'No' after storing in BE" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
+        .s4lContainer[OtherBusinessInvolvement].clearedByKey
+        .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("false")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
       }
     }
 

@@ -1,0 +1,90 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        summary: GovukSummaryList,
+        form: FormWithCSRF,
+        button: components.button
+)
+
+@(index: Int, businessName: String, hasVrn: Boolean, optVatNumber: Option[String], stillActivelyTrading: Boolean, changeMode: Boolean)(implicit request: Request[_], appConfig: FrontendAppConfig, messages: Messages)
+
+@defining(if (changeMode) { messages("obi.cya.titleWithName", businessName) } else { messages("obi.cya.title") }) { title =>
+
+    @layout(pageTitle = Some(titleNoForm(title))) {
+
+        @h1(title)
+
+        @defining(
+            (if (stillActivelyTrading) messages("app.common.yes") else messages("app.common.no"),
+             if (hasVrn) messages("app.common.yes") else messages("app.common.no"))
+        ) { case (stillTradingFormatted, hasVrn) =>
+            @summary(SummaryList(
+                rows = Seq(
+                    Some(SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.businessName"))),
+                        value = Value(content = Text(businessName)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    )),
+                    Some(SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.hasVatNumber"))),
+                        value = Value(content = Text(hasVrn)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    )),
+                    optVatNumber.map(vrn => SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.vatNumber"))),
+                        value = Value(content = Text(vrn)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.CaptureVrnController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    )),
+                    Some(SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.stillActivelyTrading"))),
+                        value = Value(content = Text(stillTradingFormatted)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    ))
+                ).flatten
+            ))
+        }
+
+        @form(action = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessCheckAnswersController.submit) {
+            @button(messages("app.common.continue"))
+        }
+    }
+
+}

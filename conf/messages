@@ -1273,7 +1273,11 @@ validation.obi.otherBusinessName.invalid                          = The other bu
 validation.obi.otherBusinessName.missing                          = Enter the name of the other business
 validation.obi.otherBusinessName.maxlen                           = The name of the other business must be 105 characters or fewer
 
-# CAPTURE OTHER BUSINESS VRN
+# OTHR BUSINESS HAVE VAT NUMBER
+obi.haveVatNumber.heading                  = Does the business have a VAT number?
+validation.obi.haveVatNumber.missing       = Select yes if the other business has a VAT number
+
+# OTHER BUSINESS CAPTURE VRN
 obi.captureVrn.heading                                     = What is the other business’s VAT number?
 obi.captureVrn.hint                                        = This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate.
 validation.obi.captureVrn.invalid                          = Enter the other business’s VAT number in the correct format
@@ -1283,6 +1287,10 @@ validation.obi.captureVrn.missing                          = Enter the other bus
 obi.otherBusinessActivelyTrading.heading                   = Is the other business still actively trading?
 obi.otherBusinessActivelyTrading.error                     = Select yes if the other business is still actively trading
 
-# HAVE VAT NUMBER
-obi.haveVatNumber.heading                  = Does the business have a VAT number?
-validation.obi.haveVatNumber.missing       = Select yes if the other business has a VAT number
+## OTHER BUSINESS CHECK ANSWERS
+obi.cya.title                               = Check your answers
+obi.cya.titleWithName                       = Change {0} details
+obi.cya.businessName                        = Business name
+obi.cya.hasVatNumber                        = Other business has VAT number?
+obi.cya.vatNumber                           = VAT number
+obi.cya.stillActivelyTrading                = Still actively trading

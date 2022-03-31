@@ -136,7 +136,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessNameController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HaveVatNumberController.show(idx1).url)
       }
     }
 
@@ -158,7 +158,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessNameController.show(idx1).url) //TODO Update url when next page is done
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HaveVatNumberController.show(idx1).url)
       }
     }
   }

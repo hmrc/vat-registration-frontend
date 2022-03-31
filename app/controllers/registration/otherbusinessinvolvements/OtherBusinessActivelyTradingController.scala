@@ -67,7 +67,7 @@ class OtherBusinessActivelyTradingController @Inject()(val sessionService: Sessi
             Future.successful(BadRequest(view(errors, index))),
           success =>
             otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, StillTradingAnswer(success)).map { _ =>
-              Redirect(obiRoutes.OtherBusinessActivelyTradingController.show(index)) //TODO Route to next page
+              Redirect(obiRoutes.OtherBusinessCheckAnswersController.show(index))
           }
         )
   }
