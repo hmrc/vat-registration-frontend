@@ -23,7 +23,6 @@ import java.time.LocalDate
 
 case class EligibilitySubmissionData(threshold: Threshold,
                                      estimates: TurnoverEstimates,
-                                     customerStatus: CustomerStatus,
                                      partyType: PartyType,
                                      isTransactor: Boolean,
                                      registrationReason: RegistrationReason,
