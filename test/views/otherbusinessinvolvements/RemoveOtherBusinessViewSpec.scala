@@ -16,24 +16,25 @@
 
 package views.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.HaveVatNumberForm
+import forms.otherbusinessinvolvements.RemoveOtherBusinessForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.otherbusinessinvolvements.HaveVatNumber
+import views.html.otherbusinessinvolvements.RemoveOtherBusiness
 
-class HaveVatNumberViewSpec extends VatRegViewSpec {
-  val view: HaveVatNumber = app.injector.instanceOf[HaveVatNumber]
+class RemoveOtherBusinessViewSpec extends VatRegViewSpec {
+  val view: RemoveOtherBusiness = app.injector.instanceOf[RemoveOtherBusiness]
 
   object ExpectedContent {
-    val heading = "Does the business have a VAT number?"
+    val testOtherBusinessName = "testOtherBusinessName"
+    val heading = s"Are you sure you want to remove $testOtherBusinessName?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(HaveVatNumberForm(), 1).body)
+  implicit val doc: Document = Jsoup.parse(view(RemoveOtherBusinessForm(ExpectedContent.testOtherBusinessName).form, ExpectedContent.testOtherBusinessName, 1).body)
 
-  "Other Business Have Vat number page" must {
+  "Remove Other Business page" must {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }

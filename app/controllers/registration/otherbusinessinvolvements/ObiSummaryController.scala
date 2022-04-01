@@ -83,7 +83,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
       ObiSummaryRow(
         businessName = businessName,
         changeAction = routes.OtherBusinessNameController.show(indexFrom1),
-        deleteAction = routes.OtherBusinessNameController.show(indexFrom1) /* TODO: update with delete page URL */
+        deleteAction = routes.RemoveOtherBusinessController.show(indexFrom1)
       )
     }
 

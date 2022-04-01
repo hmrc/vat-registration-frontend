@@ -77,19 +77,19 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].isEmpty
-        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
+        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
+      val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
       whenReady(response) { res =>
         res.status mustBe OK

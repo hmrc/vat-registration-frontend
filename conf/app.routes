@@ -476,3 +476,7 @@ POST        /other-business-involvement/check-answers                           
 ## Other Business Involvement Summary
 GET         /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.show
 POST        /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.submit
+
+## Other Business Involvement Remove
+GET         /other-business-involvement/:index/remove                                          controllers.registration.otherbusinessinvolvements.RemoveOtherBusinessController.show(index: Int)
+POST        /other-business-involvement/:index/remove                                          controllers.registration.otherbusinessinvolvements.RemoveOtherBusinessController.submit(otherBusinessName: String, index: Int)
