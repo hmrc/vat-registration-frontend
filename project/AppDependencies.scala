@@ -23,16 +23,16 @@ object AppDependencies {
 
 private object CompileDependencies {
   private val simpleReactivemongoVersion = "8.0.0-play-28"
-  private val bootstrapVersion = "5.16.0"
+  private val bootstrapVersion = "5.20.0"
   private val timeVersion = "3.25.0"
-  private val partialsVersion = "8.2.0-play-28"
-  private val cachingClientVersion = "9.5.0-play-28"
-  private val formMappingVersion = "1.10.0-play-28"
+  private val partialsVersion = "8.3.0-play-28"
+  private val cachingClientVersion = "9.6.0-play-28"
+  private val formMappingVersion = "1.11.0-play-28"
   private val catsVersion = "1.0.0"
-  private val playUiVersion = "9.7.0-play-28"
+  private val playUiVersion = "9.8.0-play-28"
   private val playJsonJodaVersion = "2.9.2"
 
-  private val playHmrcFrontendVersion = "3.3.0-play-28"
+  private val playHmrcFrontendVersion = "3.9.0-play-28"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
