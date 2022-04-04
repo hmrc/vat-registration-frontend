@@ -27,7 +27,6 @@ class Module extends AbstractModule {
   }
 
   private def hmrcDependencyBindings(): Unit = {
-    bind(classOf[AuthConnector]).to(classOf[AuthClientConnector]).asEagerSingleton()
     bind(classOf[SessionCache]).to(classOf[VatSessionCache]).asEagerSingleton()
     bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
     bind(classOf[ShortLivedCache]).to(classOf[VatShortLivedCache]).asEagerSingleton()
