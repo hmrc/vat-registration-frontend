@@ -170,15 +170,14 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
   }
 
   "POST /other-business-involvements/check-answers" must {
-    "redirect to the summary page - NOT IMPLEMENTED" in new Setup {
-      // TODO: update and use this test once the summary page has been implemented
+    "redirect to the summary page" in new Setup {
       given.user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(routes.OtherBusinessCheckAnswersController.submit.url).post(""))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessSummaryController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.ObiSummaryController.show.url)
     }
   }
 

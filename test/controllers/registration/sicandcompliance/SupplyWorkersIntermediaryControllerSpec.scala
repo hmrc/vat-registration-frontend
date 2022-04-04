@@ -138,6 +138,6 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
-    verifyRedirectLocation(enable, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+    verifyRedirectLocation(enable, controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
   }
 }

@@ -109,22 +109,22 @@ GET         /business-description                                               
 POST        /business-description                                                               controllers.registration.sicandcompliance.BusinessActivityDescriptionController.submit
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-business-income                                                       controllers.SicAndComplianceController.showMainBusinessActivity
-POST        /main-source-business-income                                                       controllers.SicAndComplianceController.submitMainBusinessActivity
+GET         /main-source-business-income                                                       controllers.registration.sicandcompliance.SicAndComplianceController.showMainBusinessActivity
+POST        /main-source-business-income                                                       controllers.registration.sicandcompliance.SicAndComplianceController.submitMainBusinessActivity
 
 ## CONFIRM SIC CODES
-GET         /choose-standard-industry-classification-codes                                     controllers.SicAndComplianceController.showSicHalt
-POST        /choose-standard-industry-classification-codes                                     controllers.SicAndComplianceController.submitSicHalt
+GET         /choose-standard-industry-classification-codes                                     controllers.registration.sicandcompliance.SicAndComplianceController.showSicHalt
+POST        /choose-standard-industry-classification-codes                                     controllers.registration.sicandcompliance.SicAndComplianceController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-business                                                   controllers.ComplianceIntroductionController.show
-POST        /tell-us-more-about-the-business                                                   controllers.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-business                                                   controllers.registration.sicandcompliance.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-business                                                   controllers.registration.sicandcompliance.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
-GET         /save-sic-codes                                                                    controllers.SicAndComplianceController.saveIclCodes
+GET         /save-sic-codes                                                                    controllers.registration.sicandcompliance.SicAndComplianceController.saveIclCodes
 
 ## SHOW ICL CONFIRM
-GET         /show-icl-confirmation                                                             controllers.SicAndComplianceController.returnToICL
+GET         /show-icl-confirmation                                                             controllers.registration.sicandcompliance.SicAndComplianceController.returnToICL
 
 ## LABOUR COMPLIANCE QUESTIONS
 GET         /supply-of-workers                                                                 controllers.registration.sicandcompliance.SupplyWorkersController.show
@@ -442,16 +442,16 @@ GET         /imports-or-exports                                                 
 POST        /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.submit
 
 ## Other Business Involvements
-GET         /other-business-involvements                                                       controllers.registration.sicandcompliance.OtherBusinessInvolvementController.show
-POST        /other-business-involvements                                                       controllers.registration.sicandcompliance.OtherBusinessInvolvementController.submit
+GET         /other-business-involvements                                                       controllers.registration.otherbusinessinvolvements.OtherBusinessInvolvementController.show
+POST        /other-business-involvements                                                       controllers.registration.otherbusinessinvolvements.OtherBusinessInvolvementController.submit
 
 ## Other Business Involvement Business Name
-GET         /other-business-involvement/:index/business-name                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
-POST        /other-business-involvement/:index/business-name                                   controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
+GET         /other-business-involvement/:index/business-name                                  controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
+POST        /other-business-involvement/:index/business-name                                  controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
 
 ## Other Business Involvement Have VAT number
-GET         /other-business-involvement/:index/have-vat-number                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
-POST        /other-business-involvement/:index/have-vat-number                                 controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
+GET         /other-business-involvement/:index/have-vat-number                                controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
+POST        /other-business-involvement/:index/have-vat-number                                controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
 
 ## Other Business Involvement Capture VRN
 GET         /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
@@ -472,3 +472,7 @@ POST        /other-business-involvement/:index/still-trading                    
 ## Other Business Involvement CYA
 GET         /other-business-involvement/:index/check-answers                                   controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.show(index: Int, changeMode: Boolean ?= false)
 POST        /other-business-involvement/check-answers                                          controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.submit
+
+## Other Business Involvement Summary
+GET         /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.show
+POST        /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.submit

@@ -104,6 +104,6 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
 
     verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
-    verifyRedirectLocation(enable, controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+    verifyRedirectLocation(enable, controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
   }
 }

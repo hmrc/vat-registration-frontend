@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.registration.sicandcompliance.SicAndComplianceController
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
@@ -104,7 +105,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity.url
+            res redirectsTo controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity.url
         }
       }
 
@@ -120,7 +121,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo routes.SicAndComplianceController.showMainBusinessActivity.url
+            res redirectsTo controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity.url
         }
       }
 
@@ -136,7 +137,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show.url
+            res redirectsTo controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
         }
       }
 
@@ -153,13 +154,13 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.routes.ComplianceIntroductionController.show.url
+            res redirectsTo controllers.registration.sicandcompliance.routes.ComplianceIntroductionController.show.url
         }
       }
     }
   }
 
-  s"GET ${routes.SicAndComplianceController.showMainBusinessActivity}" should {
+  s"GET ${controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity}" should {
     "return OK when view present in S4L" in new Setup {
       mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
@@ -179,8 +180,8 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
     }
   }
 
-  s"POST ${routes.SicAndComplianceController.submitMainBusinessActivity}" should {
-    val fakeRequest = FakeRequest(routes.SicAndComplianceController.showMainBusinessActivity)
+  s"POST ${controllers.registration.sicandcompliance.routes.SicAndComplianceController.submitMainBusinessActivity}" should {
+    val fakeRequest = FakeRequest(controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity)
 
     "return 400" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
@@ -223,7 +224,7 @@ class SicAndComplianceControllerSpec extends ControllerSpec with FutureAssertion
 
       submitAuthorised(controller.submitMainBusinessActivity,
         fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show.url)
+      )(_ redirectsTo controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
     }
   }
 

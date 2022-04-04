@@ -16,6 +16,7 @@ app.common.saveAndComeBackLater         = Save and come back later
 app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = There is a problem
 app.common.change                       = Change
+app.common.remove                       = Remove
 app.common.gbp.symbol                   = £
 app.common.back                         = Back
 app.common.openInNewWindow              = (opens in a new window)
@@ -1307,3 +1308,10 @@ obi.cya.vatNumber                                                = VAT number
 obi.cya.hasUtr                                                   = Other business has Unique Taxpayer Reference
 obi.cya.utr                                                      = Unique Taxpayer Reference for other business
 obi.cya.stillActivelyTrading                                     = Still actively trading
+
+# OBI SUMMARY PAGE
+obi.summary.heading                        = You have added {0} business involvement
+obi.summary.headingPlural                  = You have added {0} business involvements
+obi.summary.subHeading                     = Do you need to add another business?
+obi.summary.hint                           = You must tell us about any other businesses the partners or directors are a sole trader, partner or director of in the United Kingdom or Isle of Man.
+validation.obi.summary.error               = Select yes if you need to add another business

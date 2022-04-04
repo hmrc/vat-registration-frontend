@@ -138,7 +138,7 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
     optSummaryListRowString(
       s"$sectionId.mainSicCode",
       sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description)),
-      Some(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url)
+      Some(sicAndCompRoutes.SicAndComplianceController.showMainBusinessActivity.url)
     )
 
   private def otherBusinessActivities(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
@@ -148,7 +148,7 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
         sicAndCompliance.businessActivities.map(codes => codes.sicCodes.map(
           sicCode => sicCode.code + " - " + sicCode.description
         )),
-        Some(controllers.routes.SicAndComplianceController.returnToICL.url)
+        Some(sicAndCompRoutes.SicAndComplianceController.returnToICL.url)
       )
     } else {
       None

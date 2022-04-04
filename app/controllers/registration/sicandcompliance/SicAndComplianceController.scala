@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{FeatureSwitching, StubIcl}
+import controllers.BaseController
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
 import forms.MainBusinessActivityForm
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
@@ -27,7 +28,6 @@ import play.api.mvc.{Action, AnyContent, Call, Result}
 import services.{SessionService, _}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html._
-import featureswitch.core.config.OtherBusinessInvolvement
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -83,7 +83,7 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
       routes.ComplianceIntroductionController.show
     } else {
       if (isEnabled(OtherBusinessInvolvement)) {
-        controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show
+        controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
       } else {
         controllers.routes.TradingNameResolverController.resolve
       }
