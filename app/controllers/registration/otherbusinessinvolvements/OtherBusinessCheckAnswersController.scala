@@ -40,8 +40,8 @@ class OtherBusinessCheckAnswersController @Inject()(val bcc: BaseControllerCompo
   def show(index: Int, changeMode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>implicit profile =>
     validateIndex(index, idx => routes.OtherBusinessCheckAnswersController.show(idx)) {
       obiService.getOtherBusinessInvolvement(index).flatMap {
-        case Some(OtherBusinessInvolvement(Some(businessName), Some(hasVrn), optVrn, _, _, Some(stillTrading))) =>
-          Future.successful(Ok(view(index, businessName, hasVrn, optVrn, stillTrading, changeMode)))
+        case Some(OtherBusinessInvolvement(Some(businessName), Some(hasVrn), optVrn, optHasUtr, optUtr, Some(stillTrading))) =>
+          Future.successful(Ok(view(index, businessName, hasVrn, optVrn, optHasUtr, optUtr, stillTrading, changeMode)))
         case _ =>
           obiService.getHighestValidIndex.map { maxIndex =>
             if (index > maxIndex) {

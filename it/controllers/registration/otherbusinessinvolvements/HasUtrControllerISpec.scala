@@ -16,7 +16,7 @@
 
 package controllers.registration.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.HaveVatNumberForm
+import forms.otherbusinessinvolvements.HasUtrForm
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{OtherBusinessInvolvement, S4LKey}
@@ -27,11 +27,21 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class HaveVatNumberControllerISpec extends ControllerISpec {
+class HasUtrControllerISpec extends ControllerISpec {
   val idx1: Int = 1
   val idx2: Int = 2
 
-  def pageUrl(index: Int): String = routes.HaveVatNumberController.show(index).url
+  lazy val testUtr = "testUtr"
+  override lazy val fullOtherBusinessInvolvement: OtherBusinessInvolvement = OtherBusinessInvolvement(
+    businessName = Some(testBusinessName),
+    hasVrn = Some(false),
+    vrn = None,
+    hasUtr = Some(true),
+    utr = Some(testUtr),
+    stillTrading = Some(true)
+  )
+
+  def pageUrl(index: Int): String = routes.HasUtrController.show(index).url
 
   s"GET ${pageUrl(idx1)}" must {
     "return OK" in new Setup {
@@ -77,7 +87,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -132,11 +142,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq(testHasVrn.toString)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HasUtrForm.hasUtrKey -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureUtrController.show(idx1).url)
       }
     }
 
@@ -153,15 +163,15 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq(testHasVrn.toString)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HasUtrForm.hasUtrKey -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureUtrController.show(idx1).url)
       }
     }
 
-    "redirect to the Still Actively Trading page if the user answers 'No' after storing in BE" in new Setup {
+    "redirect to the Still Actively Trading page if the user answers 'No' after deleting the UTR answer and storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
@@ -170,15 +180,15 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
         .s4lContainer[OtherBusinessInvolvement].clearedByKey
-        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(hasVrn = Some(false), vrn = None), idx = Some(idx1))
+        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(hasUtr = Some(false), utr = None), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("false")))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HasUtrForm.hasUtrKey -> Seq("false")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasUtrController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
       }
     }
 
@@ -195,7 +205,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("")))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HasUtrForm.hasUtrKey -> Seq("")))
 
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST

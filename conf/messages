@@ -1268,29 +1268,42 @@ otherBusinessInvolvement.para              = Select ‘yes’ if any of the part
 validation.OtherBusinessInvolvement.error  = Select yes if there has been involvement in any other businesses in the last 2 years
 
 # OTHER BUSINESS NAME
-obi.otherBusinessName.heading                                     = What is the name of the other business?
-validation.obi.otherBusinessName.invalid                          = The other business name must only include numbers, letters a to z, and special characters such as hyphens, apostrophes and brackets
-validation.obi.otherBusinessName.missing                          = Enter the name of the other business
-validation.obi.otherBusinessName.maxlen                           = The name of the other business must be 105 characters or fewer
+obi.otherBusinessName.heading                                    = What is the name of the other business?
+validation.obi.otherBusinessName.invalid                         = The other business name must only include numbers, letters a to z, and special characters such as hyphens, apostrophes and brackets
+validation.obi.otherBusinessName.missing                         = Enter the name of the other business
+validation.obi.otherBusinessName.maxlen                          = The name of the other business must be 105 characters or fewer
 
-# OTHR BUSINESS HAVE VAT NUMBER
-obi.haveVatNumber.heading                  = Does the business have a VAT number?
-validation.obi.haveVatNumber.missing       = Select yes if the other business has a VAT number
+# OTHER BUSINESS HAVE VAT NUMBER
+obi.haveVatNumber.heading                                        = Does the business have a VAT number?
+validation.obi.haveVatNumber.missing                             = Select yes if the other business has a VAT number
 
 # OTHER BUSINESS CAPTURE VRN
-obi.captureVrn.heading                                     = What is the other business’s VAT number?
-obi.captureVrn.hint                                        = This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate.
-validation.obi.captureVrn.invalid                          = Enter the other business’s VAT number in the correct format
-validation.obi.captureVrn.missing                          = Enter the other business’s VAT number
+obi.captureVrn.heading                                           = What is the other business’s VAT number?
+obi.captureVrn.hint                                              = This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate.
+validation.obi.captureVrn.invalid                                = Enter the other business’s VAT number in the correct format
+validation.obi.captureVrn.missing                                = Enter the other business’s VAT number
+
+# OTHER BUSINESS HAVE UTR
+obi.hasUtr.heading                                               = Does the other business have a Unique Taxpayer Reference?
+validation.obi.hasUtr.missing                                    = Select yes if the other business has a Unique Taxpayer Reference
+
+# OTHER BUSINESS CAPTURE UTR
+obi.captureUtr.heading                                           = What is the business’s Unique Taxpayer Reference?
+obi.captureUtr.para                                              = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax or Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+obi.captureUtr.link                                              = I can not provide the business’s UTR number
+validation.obi.captureUtr.invalid                                = Enter the Unique Taxpayer Reference in the correct format
+validation.obi.captureUtr.missing                                = Enter the Unique Taxpayer Reference
 
 ## OTHER BUSINESS ACTIVELY TRADING
-obi.otherBusinessActivelyTrading.heading                   = Is the other business still actively trading?
-obi.otherBusinessActivelyTrading.error                     = Select yes if the other business is still actively trading
+obi.otherBusinessActivelyTrading.heading                         = Is the other business still actively trading?
+obi.otherBusinessActivelyTrading.error                           = Select yes if the other business is still actively trading
 
 ## OTHER BUSINESS CHECK ANSWERS
-obi.cya.title                               = Check your answers
-obi.cya.titleWithName                       = Change {0} details
-obi.cya.businessName                        = Business name
-obi.cya.hasVatNumber                        = Other business has VAT number?
-obi.cya.vatNumber                           = VAT number
-obi.cya.stillActivelyTrading                = Still actively trading
+obi.cya.title                                                    = Check your answers
+obi.cya.titleWithName                                            = Change {0} details
+obi.cya.businessName                                             = Business name
+obi.cya.hasVatNumber                                             = Other business has VAT number
+obi.cya.vatNumber                                                = VAT number
+obi.cya.hasUtr                                                   = Other business has Unique Taxpayer Reference
+obi.cya.utr                                                      = Unique Taxpayer Reference for other business
+obi.cya.stillActivelyTrading                                     = Still actively trading

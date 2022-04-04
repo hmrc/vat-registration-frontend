@@ -16,26 +16,24 @@
 
 package views.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.CaptureVrnForm
+import forms.otherbusinessinvolvements.HasUtrForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.otherbusinessinvolvements.CaptureVrn
+import views.html.otherbusinessinvolvements.HasUtr
 
-class CaptureVrnViewSpec extends VatRegViewSpec {
-  val view: CaptureVrn = app.injector.instanceOf[CaptureVrn]
+class HasUtrViewSpec extends VatRegViewSpec {
+  val view: HasUtr = app.injector.instanceOf[HasUtr]
 
   object ExpectedContent {
-    val heading = "What is the other business’s VAT number?"
+    val heading = "Does the other business have a Unique Taxpayer Reference?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val hint = "This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate."
-    val label = "What is the name of the other business?"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(CaptureVrnForm(), 1).body)
+  implicit val doc: Document = Jsoup.parse(view(HasUtrForm(), 1).body)
 
-  "Capture VRN page" must {
+  "Other Business Name page" must {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
@@ -46,10 +44,6 @@ class CaptureVrnViewSpec extends VatRegViewSpec {
 
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
-    }
-
-    "have the correct hint" in new ViewSetup {
-      doc.hintText mustBe Some(ExpectedContent.hint)
     }
 
     "have a primary action" in new ViewSetup {

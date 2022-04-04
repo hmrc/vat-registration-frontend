@@ -457,6 +457,14 @@ POST        /other-business-involvement/:index/have-vat-number                  
 GET         /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
 POST        /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
 
+## Other Business Involvement Have UTR
+GET         /other-business-involvement/:index/have-utr                                        controllers.registration.otherbusinessinvolvements.HasUtrController.show(index: Int)
+POST        /other-business-involvement/:index/have-utr                                        controllers.registration.otherbusinessinvolvements.HasUtrController.submit(index: Int)
+
+## Other Business Involvement Have UTR
+GET         /other-business-involvement/:index/utr                                             controllers.registration.otherbusinessinvolvements.CaptureUtrController.show(index: Int)
+POST        /other-business-involvement/:index/utr                                             controllers.registration.otherbusinessinvolvements.CaptureUtrController.submit(index: Int)
+
 ## Other Business Involement Still Trading
 GET         /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
 POST        /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)

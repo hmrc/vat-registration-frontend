@@ -18,40 +18,38 @@ package controllers.registration.otherbusinessinvolvements
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.otherbusinessinvolvements.HaveVatNumberForm
+import forms.otherbusinessinvolvements.{HasUtrForm, HaveVatNumberForm}
 import models.OtherBusinessInvolvement
 import play.api.mvc.{Action, AnyContent}
-import services.OtherBusinessInvolvementsService.HasVrnAnswer
+import services.OtherBusinessInvolvementsService.HasUtrAnswer
 import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.otherbusinessinvolvements.HaveVatNumber
+import views.html.otherbusinessinvolvements.HasUtr
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class HaveVatNumberController @Inject()(val authConnector: AuthConnector,
-                                        val sessionService: SessionService,
-                                        otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
-                                        view: HaveVatNumber)
-                                       (implicit appConfig: FrontendAppConfig,
-                                        val executionContext: ExecutionContext,
-                                        baseControllerComponents: BaseControllerComponents)
+class HasUtrController @Inject()(val authConnector: AuthConnector,
+                                  val sessionService: SessionService,
+                                  otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
+                                  view: HasUtr)
+                                 (implicit appConfig: FrontendAppConfig,
+                                  val executionContext: ExecutionContext,
+                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with ObiIndexValidation with SessionProfile {
 
   def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        validateIndex(index, routes.HaveVatNumberController.show) {
+        validateIndex(index, routes.HasUtrController.show) {
           otherBusinessInvolvementsService.getOtherBusinessInvolvement(index).flatMap {
-            case Some(OtherBusinessInvolvement(_, Some(haveVatNumber), _, _, _, _)) =>
-              Future.successful(Ok(view(HaveVatNumberForm().fill(haveVatNumber), index)))
-            case Some(_) =>
-              Future.successful(Ok(view(HaveVatNumberForm(), index)))
+            case Some(OtherBusinessInvolvement(_, _, _, optHasUtr, _, _)) =>
+              Future.successful(Ok(view(optHasUtr.fold(HasUtrForm())(HasUtrForm().fill(_)), index)))
             case None =>
               otherBusinessInvolvementsService.getHighestValidIndex.map { maxIndex =>
                 if (index > maxIndex) {
-                  Redirect(routes.HaveVatNumberController.show(maxIndex))
+                  Redirect(routes.HasUtrController.show(maxIndex))
                 } else {
                   Ok(view(HaveVatNumberForm(), index))
                 }
@@ -63,15 +61,15 @@ class HaveVatNumberController @Inject()(val authConnector: AuthConnector,
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        HaveVatNumberForm().bindFromRequest.fold(
+        HasUtrForm().bindFromRequest.fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
-          hasVrn => {
-            otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, HasVrnAnswer(hasVrn)).map { _ =>
-              if (hasVrn) {
-                Redirect(routes.CaptureVrnController.show(index))
+          hasUtr => {
+            otherBusinessInvolvementsService.updateOtherBusinessInvolvement(index, HasUtrAnswer(hasUtr)).map { _ =>
+              if (hasUtr) {
+                Redirect(routes.CaptureUtrController.show(index))
               } else {
-                Redirect(routes.HasUtrController.show(index))
+                Redirect(routes.OtherBusinessActivelyTradingController.show(index))
               }
             }
           }

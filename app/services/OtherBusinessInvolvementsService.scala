@@ -67,9 +67,11 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
   private[services] def updateModel[T](otherBusinessInvolvement: OtherBusinessInvolvement, data: T): OtherBusinessInvolvement =
     data match {
       case BusinessNameAnswer(answer) => otherBusinessInvolvement.copy(businessName = Some(answer))
-      case HasVrnAnswer(answer) => otherBusinessInvolvement.copy(hasVrn = Some(answer))
+      case HasVrnAnswer(true) => otherBusinessInvolvement.copy(hasVrn = Some(true), hasUtr = None, utr = None)
+      case HasVrnAnswer(false) => otherBusinessInvolvement.copy(hasVrn = Some(false), vrn = None)
       case VrnAnswer(answer) => otherBusinessInvolvement.copy(vrn = Some(answer))
-      case HasUtrAnswer(answer) => otherBusinessInvolvement.copy(hasUtr = Some(answer))
+      case HasUtrAnswer(true) => otherBusinessInvolvement.copy(hasUtr = Some(true))
+      case HasUtrAnswer(false) => otherBusinessInvolvement.copy(hasUtr = Some(false), utr = None)
       case UtrAnswer(answer) => otherBusinessInvolvement.copy(utr = Some(answer))
       case StillTradingAnswer(answer) => otherBusinessInvolvement.copy(stillTrading = Some(answer))
     }
@@ -78,8 +80,6 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
     otherBusinessInvolvement match {
       case OtherBusinessInvolvement(Some(businessName), Some(true), Some(vrn), _, _, Some(activelyTrading)) =>
         Complete(otherBusinessInvolvement.copy(hasUtr = None, utr = None))
-      case OtherBusinessInvolvement(Some(businessName), Some(false), _, _, _, Some(activelyTrading)) => //TODO Remove this case when utr pages are added
-        Complete(otherBusinessInvolvement.copy(vrn = None))
       case OtherBusinessInvolvement(Some(businessName), Some(false), _, Some(true), Some(utr), Some(activelyTrading)) =>
         Complete(otherBusinessInvolvement.copy(vrn = None))
       case OtherBusinessInvolvement(Some(businessName), Some(false), _, Some(false), _, Some(activelyTrading)) =>

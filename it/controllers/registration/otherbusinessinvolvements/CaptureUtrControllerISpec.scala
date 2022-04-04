@@ -16,7 +16,7 @@
 
 package controllers.registration.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.HaveVatNumberForm
+import forms.otherbusinessinvolvements.CaptureUtrForm
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{OtherBusinessInvolvement, S4LKey}
@@ -27,11 +27,21 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class HaveVatNumberControllerISpec extends ControllerISpec {
+class CaptureUtrControllerISpec extends ControllerISpec {
   val idx1: Int = 1
   val idx2: Int = 2
 
-  def pageUrl(index: Int): String = routes.HaveVatNumberController.show(index).url
+  lazy val testUtr = "1234567890"
+  override lazy val fullOtherBusinessInvolvement: OtherBusinessInvolvement = OtherBusinessInvolvement(
+    businessName = Some(testBusinessName),
+    hasVrn = Some(false),
+    vrn = None,
+    hasUtr = Some(true),
+    utr = Some(testUtr),
+    stillTrading = Some(true)
+  )
+
+  def pageUrl(index: Int): String = routes.CaptureUtrController.show(index).url
 
   s"GET ${pageUrl(idx1)}" must {
     "return OK" in new Setup {
@@ -70,14 +80,14 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe OK
-        Jsoup.parse(res.body).getElementsByAttribute("checked").first().parent().text() mustBe "Yes"
+        Jsoup.parse(res.body).getElementById(CaptureUtrForm.captureUtrKey).attr("value") mustBe testUtr
       }
     }
   }
 
   s"GET ${pageUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -128,20 +138,21 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some(testBusinessName)))
+        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some(testUtr)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq(testHasVrn.toString)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureUtrForm.captureUtrKey -> Seq(testUtr)))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
       }
     }
 
-    "redirect to the Capture VRN page if the user answers 'Yes' after storing in BE" in new Setup {
+    "return a redirect to next page after storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      val testNewUtr = "0987654321"
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
@@ -149,53 +160,32 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
         .s4lContainer[OtherBusinessInvolvement].clearedByKey
-        .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
+        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(utr = Some(testNewUtr)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq(testHasVrn.toString)))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureUtrForm.captureUtrKey -> Seq(testNewUtr)))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureVrnController.show(idx1).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
       }
     }
 
-    "redirect to the Still Actively Trading page if the user answers 'No' after storing in BE" in new Setup {
+    "return a BAD_REQUEST if invalid data is submitted" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      val invalidUtr = "invalidUtr"
+
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
-        .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(hasVrn = Some(false), vrn = None), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("false")))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasUtrController.show(idx1).url)
-      }
-    }
-
-    "return BAD_REQUEST if none of the option is selected" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
-      given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
-        .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("")))
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureUtrForm.captureUtrKey -> Seq(invalidUtr)))
 
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST
