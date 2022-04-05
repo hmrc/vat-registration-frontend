@@ -50,6 +50,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
     case class Details(summary: String, body: String)
     case class DateField(legend: String, hint: Option[String] = None)
     case class SummaryRow(label: String, answer: String, actions: Seq[Link])
+    case class RadioGroup(legend: String, options: List[String], hint: Option[String] = None)
 
     implicit class ElementExtractor(elements: Elements) {
       def toList: List[Element] = elements.iterator.asScala.toList
@@ -126,6 +127,15 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
         }
 
       def radio(value: String): Option[String] = input("radio", "value", value)
+
+      def radioGroup(n: Int): Option[RadioGroup] =
+        doc.select("main .govuk-fieldset").toList.lift(n - 1).map { elem =>
+          RadioGroup(
+            legend = elem.select("legend").first().text(),
+            options = elem.select("label").toList.map(_.text()),
+            hint = elem.select(".govuk-hint").toList.headOption.map(_.text)
+          )
+        }
 
       def checkbox(value: String): Option[String] = input("checkbox", "value", value)
 

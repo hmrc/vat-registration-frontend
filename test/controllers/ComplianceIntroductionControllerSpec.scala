@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.registration.sicandcompliance.ComplianceIntroductionController
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -37,7 +38,7 @@ class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAss
 
   "saveIclSicCodes" should {
     "redirect and save" when {
-      s"GET ${routes.ComplianceIntroductionController.show}" should {
+      s"GET ${controllers.registration.sicandcompliance.routes.ComplianceIntroductionController.show}" should {
         "display the introduction page to a set of compliance questions" in new Setup {
           callAuthorised(controller.show) {
             status(_) mustBe OK
@@ -45,7 +46,7 @@ class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAss
         }
       }
 
-      s"POST ${routes.ComplianceIntroductionController.submit}" should {
+      s"POST ${controllers.registration.sicandcompliance.routes.ComplianceIntroductionController.submit}" should {
         "redirect the user to the SIC code selection page" in new Setup {
           callAuthorised(controller.submit) {
             result =>

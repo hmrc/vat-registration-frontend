@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import views.html.compliance_introduction

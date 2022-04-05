@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package views
+package views.otherbusinessinvolvements
 
 import forms.OtherBusinessInvolvementForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.OtherBusinessInvolvement
+import views.VatRegViewSpec
+import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 
 class OtherBusinessInvolvementViewSpec extends VatRegViewSpec {
 
-  val view: OtherBusinessInvolvement = app.injector.instanceOf[OtherBusinessInvolvement]
+  val view = app.injector.instanceOf[OtherBusinessInvolvement]
   implicit val doc: Document = Jsoup.parse(view(OtherBusinessInvolvementForm.form).body)
 
   object ExpectedContent {

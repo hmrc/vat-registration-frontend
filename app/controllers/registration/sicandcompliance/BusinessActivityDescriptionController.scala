@@ -17,7 +17,7 @@
 package controllers.registration.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import controllers.{BaseController, routes => baseRoutes}
+import controllers.BaseController
 import forms.BusinessActivityDescriptionForm
 
 import javax.inject.Inject
@@ -51,7 +51,7 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
         BusinessActivityDescriptionForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
           data => sicAndCompService.updateSicAndCompliance(data).map {
-            _ => Redirect(baseRoutes.SicAndComplianceController.showSicHalt)
+            _ => Redirect(controllers.registration.sicandcompliance.routes.SicAndComplianceController.showSicHalt)
           }
         )
   }

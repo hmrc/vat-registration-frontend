@@ -28,6 +28,7 @@ import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
+import controllers.registration.sicandcompliance.{routes => sicRoutes}
 
 class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder with SicAndComplianceFixture {
 
@@ -189,7 +190,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ComplianceIntroductionController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(sicRoutes.ComplianceIntroductionController.show.url)
     }
   }
 
@@ -200,7 +201,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(controllers.routes.SicAndComplianceController.showMainBusinessActivity.url).get()
+    val response = buildClient(sicRoutes.SicAndComplianceController.showMainBusinessActivity.url).get()
     whenReady(response) { res =>
       res.status mustBe OK
     }
@@ -228,7 +229,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+    val response = buildClient(sicRoutes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
@@ -263,7 +264,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(controllers.routes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+    val response = buildClient(sicRoutes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)

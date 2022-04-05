@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.registration.sicandcompliance
-
+package controllers.registration.otherbusinessinvolvements
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.OtherBusinessInvolvementForm
 import play.api.mvc.{Action, AnyContent}
 import services.{OtherBusinessInvolvementAnswer, SessionProfile, SessionService, SicAndComplianceService}
-import views.html.OtherBusinessInvolvement
+import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

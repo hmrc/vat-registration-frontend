@@ -61,7 +61,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
               data =>
                 sicAndCompService.updateSicAndCompliance(data) map { _ =>
                   if (isEnabled(OtherBusinessInvolvement)) {
-                    Redirect(controllers.registration.sicandcompliance.routes.OtherBusinessInvolvementController.show)
+                    Redirect(controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                   } else {
                     Redirect(controllers.routes.TradingNameResolverController.resolve)
                   }

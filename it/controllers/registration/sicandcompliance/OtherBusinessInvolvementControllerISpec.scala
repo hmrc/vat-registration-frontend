@@ -28,7 +28,8 @@ import scala.concurrent.Future
 
 class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
 
-  val url: String = routes.OtherBusinessInvolvementController.show.url
+  val url: String = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+
   s"GET $url" must {
     "return OK" in new Setup {
       given
