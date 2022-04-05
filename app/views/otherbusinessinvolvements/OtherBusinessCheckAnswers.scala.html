@@ -24,7 +24,7 @@
         button: components.button
 )
 
-@(index: Int, businessName: String, hasVrn: Boolean, optVatNumber: Option[String], stillActivelyTrading: Boolean, changeMode: Boolean)(implicit request: Request[_], appConfig: FrontendAppConfig, messages: Messages)
+@(index: Int, businessName: String, hasVrn: Boolean, optVatNumber: Option[String], optHasUtr: Option[Boolean], optUtr: Option[String], stillActivelyTrading: Boolean, changeMode: Boolean)(implicit request: Request[_], appConfig: FrontendAppConfig, messages: Messages)
 
 @defining(if (changeMode) { messages("obi.cya.titleWithName", businessName) } else { messages("obi.cya.title") }) { title =>
 
@@ -34,8 +34,9 @@
 
         @defining(
             (if (stillActivelyTrading) messages("app.common.yes") else messages("app.common.no"),
-             if (hasVrn) messages("app.common.yes") else messages("app.common.no"))
-        ) { case (stillTradingFormatted, hasVrn) =>
+             if (hasVrn) messages("app.common.yes") else messages("app.common.no"),
+             optHasUtr.map(hasUtr => if (hasUtr) messages("app.common.yes") else messages("app.common.no")))
+        ) { case (stillTradingFormatted, hasVrn, optHasUtr) =>
             @summary(SummaryList(
                 rows = Seq(
                     Some(SummaryListRow(
@@ -64,6 +65,26 @@
                         actions = Some(Actions(items = Seq(
                             ActionItem(
                                 href = controllers.registration.otherbusinessinvolvements.routes.CaptureVrnController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    )),
+                   optHasUtr.map(hasUtr => SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.hasUtr"))),
+                        value = Value(content = Text(hasUtr)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
+                                content = Text(messages("app.common.change"))
+                            )
+                        )))
+                    )),
+                    optUtr.map(utr => SummaryListRow(
+                        key = Key(content = Text(messages("obi.cya.utr"))),
+                        value = Value(content = Text(utr)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))

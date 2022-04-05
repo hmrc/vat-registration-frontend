@@ -16,24 +16,26 @@
 
 package views.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.CaptureVrnForm
+import forms.otherbusinessinvolvements.CaptureUtrForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.otherbusinessinvolvements.CaptureVrn
+import views.html.otherbusinessinvolvements.CaptureUtr
 
-class CaptureVrnViewSpec extends VatRegViewSpec {
-  val view: CaptureVrn = app.injector.instanceOf[CaptureVrn]
+class CaptureUtrViewSpec extends VatRegViewSpec {
+  val view: CaptureUtr = app.injector.instanceOf[CaptureUtr]
 
   object ExpectedContent {
-    val heading = "What is the other business’s VAT number?"
+    val heading = "What is the business’s Unique Taxpayer Reference?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val hint = "This is 9 numbers, for example 123456789. You can find it on the businesses VAT registration certificate."
-    val label = "What is the name of the other business?"
+    val para = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax or Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’."
+    val label = "What is the business’s Unique Taxpayer Reference?"
+    val linkText = "I can not provide the business’s UTR number"
+    val link = "https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(CaptureVrnForm(), 1).body)
+  implicit val doc: Document = Jsoup.parse(view(CaptureUtrForm(), 1).body)
 
   "Capture VRN page" must {
     "have a back link" in new ViewSetup {
@@ -48,8 +50,12 @@ class CaptureVrnViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct hint" in new ViewSetup {
-      doc.hintText mustBe Some(ExpectedContent.hint)
+    "have the correct para" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.para)
+    }
+
+    "have the correct link" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.linkText, ExpectedContent.link))
     }
 
     "have a primary action" in new ViewSetup {

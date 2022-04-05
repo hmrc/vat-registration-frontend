@@ -19,60 +19,60 @@ package forms.otherbusinessinvolvements
 import helpers.FormInspectors.FormErrorOps
 import testHelpers.VatRegSpec
 
-class CaptureVrnFormSpec extends VatRegSpec {
+class CaptureUtrFormSpec extends VatRegSpec {
 
-  val formValue: String = CaptureVrnForm.captureVrnKey
-  val testVrn = "123456782"
+  val formValue: String = CaptureUtrForm.captureUtrKey
+  val testUtr = "1234567890"
 
-  "CaptureVrnForm" must {
+  "CaptureUtrForm" must {
     "bind successfully with valid data" in {
       val data = Map(
-        formValue -> testVrn
+        formValue -> testUtr
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = CaptureUtrForm().bind(data)
 
-      boundForm.value mustBe Some(testVrn)
+      boundForm.value mustBe Some(testUtr)
     }
 
     "have the correct error if nothing is entered" in {
       val data = Map(
         formValue -> ""
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = CaptureUtrForm().bind(data)
 
       boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.missing"
+        formValue -> "validation.obi.captureUtr.missing"
       )
     }
 
-    "have the correct error if an invalid vrn is entered" in {
+    "have the correct error if an invalid utr is entered" in {
       val data = Map(
-        formValue -> "123456789"
+        formValue -> "123456789a"
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = CaptureUtrForm().bind(data)
 
       boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.invalid"
+        formValue -> "validation.obi.captureUtr.invalid"
       )
     }
 
-    "have the correct error if the vrn length is too long" in {
+    "have the correct error if the utr length is too long" in {
       val data = Map(
-        formValue -> "1234567890"
+        formValue -> "12345678900"
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = CaptureUtrForm().bind(data)
 
       boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.invalid"
+        formValue -> "validation.obi.captureUtr.invalid"
       )
     }
 
     "unbind successfully with valid data" in {
       val data = Map(
-        formValue -> testVrn
+        formValue -> testUtr
       )
 
-      CaptureVrnForm().fill(testVrn).data mustBe data
+      CaptureUtrForm().fill(testUtr).data mustBe data
     }
   }
 }

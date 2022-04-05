@@ -19,60 +19,37 @@ package forms.otherbusinessinvolvements
 import helpers.FormInspectors.FormErrorOps
 import testHelpers.VatRegSpec
 
-class CaptureVrnFormSpec extends VatRegSpec {
+class HasUtrFormSpec extends VatRegSpec {
 
-  val formValue: String = CaptureVrnForm.captureVrnKey
-  val testVrn = "123456782"
+  val formValue: String = HasUtrForm.hasUtrKey
 
-  "CaptureVrnForm" must {
+  "HasUtrForm" must {
     "bind successfully with valid data" in {
       val data = Map(
-        formValue -> testVrn
+        formValue -> "true"
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = HasUtrForm().bind(data)
 
-      boundForm.value mustBe Some(testVrn)
+      boundForm.value mustBe Some(true)
     }
 
     "have the correct error if nothing is entered" in {
       val data = Map(
         formValue -> ""
       )
-      val boundForm = CaptureVrnForm().bind(data)
+      val boundForm = HasUtrForm().bind(data)
 
       boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.missing"
-      )
-    }
-
-    "have the correct error if an invalid vrn is entered" in {
-      val data = Map(
-        formValue -> "123456789"
-      )
-      val boundForm = CaptureVrnForm().bind(data)
-
-      boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.invalid"
-      )
-    }
-
-    "have the correct error if the vrn length is too long" in {
-      val data = Map(
-        formValue -> "1234567890"
-      )
-      val boundForm = CaptureVrnForm().bind(data)
-
-      boundForm shouldHaveErrors Seq(
-        formValue -> "validation.obi.captureVrn.invalid"
+        formValue -> "validation.obi.hasUtr.missing"
       )
     }
 
     "unbind successfully with valid data" in {
       val data = Map(
-        formValue -> testVrn
+        formValue -> "true"
       )
 
-      CaptureVrnForm().fill(testVrn).data mustBe data
+      HasUtrForm().fill(true).data mustBe data
     }
   }
 }

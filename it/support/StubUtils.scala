@@ -769,6 +769,7 @@ trait StubUtils {
       }
       stubFor(
         put(urlPathEqualTo(url))
+          .withRequestBody(equalToJson(Json.toJson[T](data).toString()))
           .willReturn(ok(
             Json.toJson[T](data).toString()
           )))
