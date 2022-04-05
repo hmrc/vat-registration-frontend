@@ -64,6 +64,10 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
     } yield model
   }
 
+  def deleteOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Boolean] = {
+    registrationApiConnector.deleteSection[OtherBusinessInvolvement](regId = profile.registrationId, idx = Some(index))
+  }
+
   private[services] def updateModel[T](otherBusinessInvolvement: OtherBusinessInvolvement, data: T): OtherBusinessInvolvement =
     data match {
       case BusinessNameAnswer(answer) => otherBusinessInvolvement.copy(businessName = Some(answer))

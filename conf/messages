@@ -1299,6 +1299,10 @@ validation.obi.captureUtr.missing                                = Enter the Uni
 obi.otherBusinessActivelyTrading.heading                         = Is the other business still actively trading?
 obi.otherBusinessActivelyTrading.error                           = Select yes if the other business is still actively trading
 
+# OTHER BUSINESS REMOVE
+obi.removeOtherBusiness.heading                  = Are you sure you want to remove {0}?
+validation.obi.removeOtherBusiness.missing       = Select yes if you want to remove {0}
+
 ## OTHER BUSINESS CHECK ANSWERS
 obi.cya.title                                                    = Check your answers
 obi.cya.titleWithName                                            = Change {0} details
