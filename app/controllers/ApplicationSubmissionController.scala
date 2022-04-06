@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import models.api.IdentityEvidence
 import play.api.mvc._
 import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
-import views.html.pages.application_submission_confirmation
+import views.html.application_submission_confirmation
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

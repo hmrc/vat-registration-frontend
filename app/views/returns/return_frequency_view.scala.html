@@ -55,7 +55,7 @@
         )
     }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitReturnsFrequency) {
+    @formWithCSRF(action = controllers.returns.routes.ReturnsController.submitReturnsFrequency) {
         @inputRadio(
             form = form,
             legend = messages("pages.vat.return.frequency.heading"),

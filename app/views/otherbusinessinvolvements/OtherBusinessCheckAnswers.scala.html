@@ -44,7 +44,7 @@
                         value = Value(content = Text(businessName)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -54,7 +54,7 @@
                         value = Value(content = Text(hasVrn)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.HaveVatNumberController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -64,7 +64,7 @@
                         value = Value(content = Text(vrn)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.CaptureVrnController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.CaptureVrnController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -74,7 +74,7 @@
                         value = Value(content = Text(hasUtr)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -84,7 +84,7 @@
                         value = Value(content = Text(utr)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.HasUtrController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -94,7 +94,7 @@
                         value = Value(content = Text(stillTradingFormatted)),
                         actions = Some(Actions(items = Seq(
                             ActionItem(
-                                href = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(index).url,
+                                href = controllers.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(index).url,
                                 content = Text(messages("app.common.change"))
                             )
                         )))
@@ -103,7 +103,7 @@
             ))
         }
 
-        @form(action = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessCheckAnswersController.submit) {
+        @form(action = controllers.otherbusinessinvolvements.routes.OtherBusinessCheckAnswersController.submit) {
             @button(messages("app.common.continue"))
         }
     }

@@ -35,7 +35,7 @@
 
     @errorSummary(errors = removeOtherBusinessForm.errors)
 
-    @formWithCSRF(action = controllers.registration.otherbusinessinvolvements.routes.RemoveOtherBusinessController.submit(otherBusinessName, index)) {
+    @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.RemoveOtherBusinessController.submit(otherBusinessName, index)) {
 
         @yesNoRadio(
             form = removeOtherBusinessForm,

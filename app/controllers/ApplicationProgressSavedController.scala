@@ -19,7 +19,7 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService}
-import views.html.pages.application_progress_saved
+import views.html.application_progress_saved
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

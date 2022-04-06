@@ -19,7 +19,7 @@ package views
 import forms.StartNewApplicationForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.pages.start_new_application
+import views.html.start_new_application
 
 class StartNewApplicationViewSpec extends VatRegViewSpec {
 

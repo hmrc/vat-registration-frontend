@@ -16,9 +16,9 @@
 
 package viewmodels
 
-import controllers.registration.business.{routes => businessContactRoutes}
-import controllers.registration.returns.{routes => returnsRoutes}
-import controllers.registration.sicandcompliance.{routes => sicAndCompRoutes}
+import controllers.business.{routes => businessContactRoutes}
+import controllers.returns.{routes => returnsRoutes}
+import controllers.sicandcompliance.{routes => sicAndCompRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
 import models.api._
@@ -117,14 +117,14 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
     optSummaryListRowString(
       s"$sectionId.contactPreference",
       businessContact.contactPreference.map(_.toString),
-      Some(controllers.routes.ContactPreferenceController.showContactPreference.url)
+      Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     )
 
   private def buySellLandOrProperty(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.buySellLandAndProperty",
       sicAndCompliance.hasLandAndProperty,
-      Some(controllers.routes.ContactPreferenceController.showContactPreference.url)
+      Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     )
 
   private def businessDescription(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
@@ -189,9 +189,9 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
         case optTradingName => optTradingName
       },
       if (tradingNameOptional) {
-        Some(controllers.registration.business.routes.TradingNameController.show.url)
+        Some(controllers.business.routes.TradingNameController.show.url)
       } else {
-        Some(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
+        Some(controllers.business.routes.MandatoryTradingNameController.show.url)
       }
     )
   }
@@ -203,7 +203,7 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
       optSummaryListRowBoolean(
         s"$sectionId.importsOrExports",
         tradingDetails.flatMap(_.tradeVatGoodsOutsideUk),
-        Some(controllers.registration.business.routes.ImportsOrExportsController.show.url)
+        Some(controllers.business.routes.ImportsOrExportsController.show.url)
       )
     }
 
@@ -214,7 +214,7 @@ class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
       optSummaryListRowBoolean(
         s"$sectionId.applyForEori",
         tradingDetails.flatMap(_.euGoods),
-        Some(controllers.registration.business.routes.ApplyForEoriController.show.url)
+        Some(controllers.business.routes.ApplyForEoriController.show.url)
       )
     }
 

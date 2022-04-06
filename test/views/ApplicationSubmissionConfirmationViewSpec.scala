@@ -18,7 +18,7 @@ package views
 
 import models.api.{EmailMethod, Post}
 import org.jsoup.Jsoup
-import views.html.pages.application_submission_confirmation
+import views.html.application_submission_confirmation
 
 class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 

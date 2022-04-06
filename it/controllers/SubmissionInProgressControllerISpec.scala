@@ -89,7 +89,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ErrorController.alreadySubmitted.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.alreadySubmitted.url)
       }
     }
 
@@ -104,7 +104,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ErrorController.submissionFailed.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.submissionFailed.url)
       }
     }
 
@@ -119,7 +119,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ErrorController.submissionRetryable.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.submissionRetryable.url)
       }
     }
   }

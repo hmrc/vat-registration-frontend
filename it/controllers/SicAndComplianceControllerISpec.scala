@@ -28,7 +28,7 @@ import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
-import controllers.registration.sicandcompliance.{routes => sicRoutes}
+import controllers.sicandcompliance.{routes => sicRoutes}
 
 class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder with SicAndComplianceFixture {
 
@@ -316,7 +316,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val response = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.sicandcompliance.routes.SupplyWorkersController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.SupplyWorkersController.show.url)
     }
   }
 

@@ -43,20 +43,20 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
       implicit profile =>
         vatRegistrationService.partyType.flatMap {
           case Individual | NETP =>
-            Future.successful(Redirect(controllers.registration.business.routes.MandatoryTradingNameController.show))
+            Future.successful(Redirect(controllers.business.routes.MandatoryTradingNameController.show))
           case Partnership | ScotPartnership =>
-            Future.successful(Redirect(controllers.registration.business.routes.PartnershipNameController.show))
+            Future.successful(Redirect(controllers.business.routes.PartnershipNameController.show))
           case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
             applicantDetailsService.getCompanyName.map {
-              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
-              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
-              case None => Redirect(controllers.registration.business.routes.BusinessNameController.show)
+              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.business.routes.ShortOrgNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.business.routes.BusinessNameController.show)
             }
           case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
             applicantDetailsService.getCompanyName.map {
-              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.registration.business.routes.ShortOrgNameController.show)
-              case Some(_) => Redirect(controllers.registration.business.routes.TradingNameController.show)
-              case None => Redirect(controllers.registration.business.routes.PartnershipNameController.show)
+              case Some(companyName) if companyName.length > 105 & isEnabled(ShortOrgName) => Redirect(controllers.business.routes.ShortOrgNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.business.routes.PartnershipNameController.show)
             }
           case pt => throw new InternalServerException(s"PartyType: $pt not supported")
         }

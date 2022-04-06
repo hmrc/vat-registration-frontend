@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.twirl.api.Html
-import views.html.pages.error.error_template
+import views.html.errors.error_template
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 class FrontendGlobal @Inject()(error_template: error_template)(val messagesApi: MessagesApi, val appConfig: FrontendAppConfig) extends FrontendErrorHandler {

@@ -69,7 +69,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockSessionService.cache(any(), any())(any(), any())).thenReturn(Future.successful(dummyCacheMap))
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666", "sicCode2" -> "88888")) {
-        _ redirectsTo controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity.url
+        _ redirectsTo controllers.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity.url
       }
     }
 
@@ -83,7 +83,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody("sicCode1" -> "66666")
       verifyFeatureSwitchFlow(disable, controller, request, controllers.routes.TradingNameResolverController.resolve)
-      verifyFeatureSwitchFlow(enable, controller, request, controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      verifyFeatureSwitchFlow(enable, controller, request, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
 
     "return 303 and correct redirection with only one labour sic code selected" in new Setup {
@@ -93,7 +93,7 @@ class SicStubControllerSpec extends ControllerSpec with FutureAwaits with Future
       when(mockSicAndComplianceService.submitSicCodes(any())(any(), any())).thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
       when(mockSicAndComplianceService.needComplianceQuestions(any())).thenReturn(true)
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("sicCode1" -> "01610")) {
-        _ redirectsTo controllers.registration.sicandcompliance.routes.ComplianceIntroductionController.show.url
+        _ redirectsTo controllers.sicandcompliance.routes.ComplianceIntroductionController.show.url
       }
     }
 

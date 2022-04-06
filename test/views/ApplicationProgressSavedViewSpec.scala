@@ -18,7 +18,7 @@ package views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.pages.application_progress_saved
+import views.html.application_progress_saved
 
 class ApplicationProgressSavedViewSpec extends VatRegViewSpec {
 

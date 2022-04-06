@@ -39,8 +39,8 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
     val submitButton = "Save and continue"
   }
 
-  val changeLink = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
-  val removeLink = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
+  val changeLink = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
+  val removeLink = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
   val testVatNumber = "testVatNumber"
 
   val testList = List(ObiSummaryRow(

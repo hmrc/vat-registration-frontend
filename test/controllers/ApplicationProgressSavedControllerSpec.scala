@@ -18,7 +18,7 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.application_progress_saved
+import views.html.application_progress_saved
 
 class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 

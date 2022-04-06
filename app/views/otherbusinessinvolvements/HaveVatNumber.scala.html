@@ -35,7 +35,7 @@
 
     @errorSummary(errors = haveVatNumberForm.errors)
 
-    @formWithCSRF(action = controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.submit(index)) {
+    @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.HaveVatNumberController.submit(index)) {
 
         @yesNoRadio(
             form = haveVatNumberForm,

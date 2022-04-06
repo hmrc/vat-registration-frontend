@@ -35,196 +35,196 @@ GET         /honesty-declaration                                                
 POST        /honesty-declaration                                                               controllers.HonestyDeclarationController.submit
 
 ## START DATE RESOLVER
-GET         /resolve-vat-start-date                                                           controllers.registration.returns.VatRegStartDateResolverController.resolve
+GET         /resolve-vat-start-date                                                           controllers.returns.VatRegStartDateResolverController.resolve
 
 ## VOLUNTARY START DATE PAGE
-GET         /vat-start-date                                                                    controllers.registration.returns.ReturnsController.voluntaryStartPage
-POST        /vat-start-date                                                                    controllers.registration.returns.ReturnsController.submitVoluntaryStart
+GET         /vat-start-date                                                                    controllers.returns.ReturnsController.voluntaryStartPage
+POST        /vat-start-date                                                                    controllers.returns.ReturnsController.submitVoluntaryStart
 
 ## MANDATORY START DATE PAGE
-GET         /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.mandatoryStartPage
-POST        /mandatory-vat-start-date                                                          controllers.registration.returns.ReturnsController.submitMandatoryStart
+GET         /mandatory-vat-start-date                                                          controllers.returns.ReturnsController.mandatoryStartPage
+POST        /mandatory-vat-start-date                                                          controllers.returns.ReturnsController.submitMandatoryStart
 
 ## VOLUNTART START DATE (no date choice) PAGE
-GET         /voluntary-vat-start-date                                                          controllers.registration.returns.VoluntaryStartDateNoChoiceController.show
-POST        /voluntary-vat-start-date                                                          controllers.registration.returns.VoluntaryStartDateNoChoiceController.submit
+GET         /voluntary-vat-start-date                                                          controllers.returns.VoluntaryStartDateNoChoiceController.show
+POST        /voluntary-vat-start-date                                                          controllers.returns.VoluntaryStartDateNoChoiceController.submit
 
 ## TRADING NAME PAGE
-GET         /trading-name                                                                      controllers.registration.business.TradingNameController.show
-POST        /trading-name                                                                      controllers.registration.business.TradingNameController.submit
+GET         /trading-name                                                                      controllers.business.TradingNameController.show
+POST        /trading-name                                                                      controllers.business.TradingNameController.submit
 
 ## BUSINESS NAME PAGE
-GET         /business-name                                                                     controllers.registration.business.BusinessNameController.show
-POST        /business-name                                                                     controllers.registration.business.BusinessNameController.submit
+GET         /business-name                                                                     controllers.business.BusinessNameController.show
+POST        /business-name                                                                     controllers.business.BusinessNameController.submit
 
 ## FULL BUSINESS NAME PAGE
-GET         /short-organisation-name                                                           controllers.registration.business.ShortOrgNameController.show
-POST        /short-organisation-name                                                           controllers.registration.business.ShortOrgNameController.submit
+GET         /short-organisation-name                                                           controllers.business.ShortOrgNameController.show
+POST        /short-organisation-name                                                           controllers.business.ShortOrgNameController.submit
 
 ## EU GOODS PAGE
-GET         /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.show
-POST        /apply-for-eori                                                                    controllers.registration.business.ApplyForEoriController.submit
+GET         /apply-for-eori                                                                    controllers.business.ApplyForEoriController.show
+POST        /apply-for-eori                                                                    controllers.business.ApplyForEoriController.submit
 
 ## ZERO RATED SUPPLIES RESOLVER
-GET         /resolve-zero-rated-turnover                                                       controllers.registration.returns.ZeroRatedSuppliesResolverController.resolve
+GET         /resolve-zero-rated-turnover                                                       controllers.returns.ZeroRatedSuppliesResolverController.resolve
 
 ## ZERO RATED SUPPLIES PAGE
-GET         /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.show
-POST        /zero-rated-turnover                                                               controllers.registration.returns.ZeroRatedSuppliesController.submit
+GET         /zero-rated-turnover                                                               controllers.returns.ZeroRatedSuppliesController.show
+POST        /zero-rated-turnover                                                               controllers.returns.ZeroRatedSuppliesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
-GET         /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.show
-POST        /claim-vat-refunds                                                                 controllers.registration.returns.ClaimRefundsController.submit
+GET         /claim-vat-refunds                                                                 controllers.returns.ClaimRefundsController.show
+POST        /claim-vat-refunds                                                                 controllers.returns.ClaimRefundsController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /submit-vat-returns                                                                controllers.registration.returns.ReturnsController.accountPeriodsPage
-POST        /submit-vat-returns                                                                controllers.registration.returns.ReturnsController.submitAccountPeriods
+GET         /submit-vat-returns                                                                controllers.returns.ReturnsController.accountPeriodsPage
+POST        /submit-vat-returns                                                                controllers.returns.ReturnsController.submitAccountPeriods
 
 ## VAT RETURN FREQUENCY
-GET         /how-often-submit-returns                                                          controllers.registration.returns.ReturnsController.returnsFrequencyPage
-POST        /how-often-submit-returns                                                          controllers.registration.returns.ReturnsController.submitReturnsFrequency
+GET         /how-often-submit-returns                                                          controllers.returns.ReturnsController.returnsFrequencyPage
+POST        /how-often-submit-returns                                                          controllers.returns.ReturnsController.submitReturnsFrequency
 
 ## COMPANY BANK ACCOUNT
-GET         /companys-bank-account                                                             controllers.registration.bankdetails.HasBankAccountController.show
-POST        /companys-bank-account                                                             controllers.registration.bankdetails.HasBankAccountController.submit
+GET         /companys-bank-account                                                             controllers.bankdetails.HasBankAccountController.show
+POST        /companys-bank-account                                                             controllers.bankdetails.HasBankAccountController.submit
 
 ## NO UK BANK ACCOUNT
-GET         /bank-account-not-set-up                                                           controllers.registration.bankdetails.NoUKBankAccountController.show
-POST        /bank-account-not-set-up                                                           controllers.registration.bankdetails.NoUKBankAccountController.submit
+GET         /bank-account-not-set-up                                                           controllers.bankdetails.NoUKBankAccountController.show
+POST        /bank-account-not-set-up                                                           controllers.bankdetails.NoUKBankAccountController.submit
 
 ## OVERSEAS BANK ACCOUNT
-GET         /bank-details-overseas                                                             controllers.registration.bankdetails.OverseasBankAccountController.show
-POST        /bank-details-overseas                                                             controllers.registration.bankdetails.OverseasBankAccountController.submit
+GET         /bank-details-overseas                                                             controllers.bankdetails.OverseasBankAccountController.show
+POST        /bank-details-overseas                                                             controllers.bankdetails.OverseasBankAccountController.submit
 
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
-GET         /account-details                                                                   controllers.registration.bankdetails.UkBankAccountDetailsController.show
-POST        /account-details                                                                   controllers.registration.bankdetails.UkBankAccountDetailsController.submit
+GET         /account-details                                                                   controllers.bankdetails.UkBankAccountDetailsController.show
+POST        /account-details                                                                   controllers.bankdetails.UkBankAccountDetailsController.submit
 
 ## Contact Preference
-GET         /contact-preference                                                                controllers.ContactPreferenceController.showContactPreference
-POST        /contact-preference                                                                controllers.ContactPreferenceController.submitContactPreference
+GET         /contact-preference                                                                controllers.business.ContactPreferenceController.showContactPreference
+POST        /contact-preference                                                                controllers.business.ContactPreferenceController.submitContactPreference
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /business-description                                                               controllers.registration.sicandcompliance.BusinessActivityDescriptionController.show
-POST        /business-description                                                               controllers.registration.sicandcompliance.BusinessActivityDescriptionController.submit
+GET         /business-description                                                               controllers.sicandcompliance.BusinessActivityDescriptionController.show
+POST        /business-description                                                               controllers.sicandcompliance.BusinessActivityDescriptionController.submit
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-business-income                                                       controllers.registration.sicandcompliance.SicAndComplianceController.showMainBusinessActivity
-POST        /main-source-business-income                                                       controllers.registration.sicandcompliance.SicAndComplianceController.submitMainBusinessActivity
+GET         /main-source-business-income                                                       controllers.sicandcompliance.SicAndComplianceController.showMainBusinessActivity
+POST        /main-source-business-income                                                       controllers.sicandcompliance.SicAndComplianceController.submitMainBusinessActivity
 
 ## CONFIRM SIC CODES
-GET         /choose-standard-industry-classification-codes                                     controllers.registration.sicandcompliance.SicAndComplianceController.showSicHalt
-POST        /choose-standard-industry-classification-codes                                     controllers.registration.sicandcompliance.SicAndComplianceController.submitSicHalt
+GET         /choose-standard-industry-classification-codes                                     controllers.sicandcompliance.SicAndComplianceController.showSicHalt
+POST        /choose-standard-industry-classification-codes                                     controllers.sicandcompliance.SicAndComplianceController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-business                                                   controllers.registration.sicandcompliance.ComplianceIntroductionController.show
-POST        /tell-us-more-about-the-business                                                   controllers.registration.sicandcompliance.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-business                                                   controllers.sicandcompliance.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-business                                                   controllers.sicandcompliance.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
-GET         /save-sic-codes                                                                    controllers.registration.sicandcompliance.SicAndComplianceController.saveIclCodes
+GET         /save-sic-codes                                                                    controllers.sicandcompliance.SicAndComplianceController.saveIclCodes
 
 ## SHOW ICL CONFIRM
-GET         /show-icl-confirmation                                                             controllers.registration.sicandcompliance.SicAndComplianceController.returnToICL
+GET         /show-icl-confirmation                                                             controllers.sicandcompliance.SicAndComplianceController.returnToICL
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /supply-of-workers                                                                 controllers.registration.sicandcompliance.SupplyWorkersController.show
-POST        /supply-of-workers                                                                 controllers.registration.sicandcompliance.SupplyWorkersController.submit
+GET         /supply-of-workers                                                                 controllers.sicandcompliance.SupplyWorkersController.show
+POST        /supply-of-workers                                                                 controllers.sicandcompliance.SupplyWorkersController.submit
 
-GET         /number-of-workers-supplied                                                        controllers.registration.sicandcompliance.WorkersController.show
-POST        /number-of-workers-supplied                                                        controllers.registration.sicandcompliance.WorkersController.submit
+GET         /number-of-workers-supplied                                                        controllers.sicandcompliance.WorkersController.show
+POST        /number-of-workers-supplied                                                        controllers.sicandcompliance.WorkersController.submit
 
-GET         /arrange-supply-of-workers                                                         controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.show
-POST        /arrange-supply-of-workers                                                         controllers.registration.sicandcompliance.SupplyWorkersIntermediaryController.submit
+GET         /arrange-supply-of-workers                                                         controllers.sicandcompliance.SupplyWorkersIntermediaryController.show
+POST        /arrange-supply-of-workers                                                         controllers.sicandcompliance.SupplyWorkersIntermediaryController.submit
 
 ## PPOB ADDRESS
-GET         /principal-place-business                                                          controllers.registration.business.PpobAddressController.startJourney
-GET         /principal-place-business/acceptFromTxm                                            controllers.registration.business.PpobAddressController.callback(id: String ?= "")
+GET         /principal-place-business                                                          controllers.business.PpobAddressController.startJourney
+GET         /principal-place-business/acceptFromTxm                                            controllers.business.PpobAddressController.callback(id: String ?= "")
 
 # International PPOB address
-GET         /principal-place-business/international                                            controllers.registration.business.InternationalPpobAddressController.show
-POST        /principal-place-business/international                                            controllers.registration.business.InternationalPpobAddressController.submit
+GET         /principal-place-business/international                                            controllers.business.InternationalPpobAddressController.show
+POST        /principal-place-business/international                                            controllers.business.InternationalPpobAddressController.submit
 
 ## BUSINESS CONTACT DETAILS PAGE
-GET         /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.show
-POST        /business-contact-details                                                          controllers.registration.business.BusinessContactDetailsController.submit
+GET         /business-contact-details                                                          controllers.business.BusinessContactDetailsController.show
+POST        /business-contact-details                                                          controllers.business.BusinessContactDetailsController.submit
 
 ## Applicant ADDRESS PAGE
-GET         /home-address                                                                      controllers.registration.applicant.HomeAddressController.redirectToAlf
-GET         /home-address/acceptFromTxm                                                        controllers.registration.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
+GET         /home-address                                                                      controllers.applicant.HomeAddressController.redirectToAlf
+GET         /home-address/acceptFromTxm                                                        controllers.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")
 
 ## International home address
-GET         /home-address/international                                                        controllers.registration.applicant.InternationalHomeAddressController.show
-POST        /home-address/international                                                        controllers.registration.applicant.InternationalHomeAddressController.submit
+GET         /home-address/international                                                        controllers.applicant.InternationalHomeAddressController.show
+POST        /home-address/international                                                        controllers.applicant.InternationalHomeAddressController.submit
 
 ## International home address
-GET         /previous-address/international                                                    controllers.registration.applicant.InternationalPreviousAddressController.show
-POST        /previous-address/international                                                    controllers.registration.applicant.InternationalPreviousAddressController.submit
+GET         /previous-address/international                                                    controllers.applicant.InternationalPreviousAddressController.show
+POST        /previous-address/international                                                    controllers.applicant.InternationalPreviousAddressController.submit
 
 ## TELEPHONE PAGE
-GET         /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.show
-POST        /telephone-number                                                                  controllers.registration.applicant.CaptureTelephoneNumberController.submit
+GET         /telephone-number                                                                  controllers.applicant.CaptureTelephoneNumberController.show
+POST        /telephone-number                                                                  controllers.applicant.CaptureTelephoneNumberController.submit
 
 ## ROLE IN THE BUSINESS
-GET         /role-in-the-business                                                              controllers.registration.applicant.CaptureRoleInTheBusinessController.show
-POST        /role-in-the-business                                                              controllers.registration.applicant.CaptureRoleInTheBusinessController.submit
+GET         /role-in-the-business                                                              controllers.applicant.CaptureRoleInTheBusinessController.show
+POST        /role-in-the-business                                                              controllers.applicant.CaptureRoleInTheBusinessController.submit
 
 ## FORMER NAME PAGE
-GET         /changed-name                                                                      controllers.registration.applicant.FormerNameController.show
-POST        /changed-name                                                                      controllers.registration.applicant.FormerNameController.submit
+GET         /changed-name                                                                      controllers.applicant.FormerNameController.show
+POST        /changed-name                                                                      controllers.applicant.FormerNameController.submit
 
 ## FORMER NAME CAPTURE PAGE
-GET         /what-was-previous-name                                                            controllers.registration.applicant.FormerNameCaptureController.show
-POST        /what-was-previous-name                                                            controllers.registration.applicant.FormerNameCaptureController.submit
+GET         /what-was-previous-name                                                            controllers.applicant.FormerNameCaptureController.show
+POST        /what-was-previous-name                                                            controllers.applicant.FormerNameCaptureController.submit
 
 ## FORMER NAME DATE PAGE
-GET         /when-change                                                                       controllers.registration.applicant.FormerNameDateController.show
-POST        /when-change                                                                       controllers.registration.applicant.FormerNameDateController.submit
+GET         /when-change                                                                       controllers.applicant.FormerNameDateController.show
+POST        /when-change                                                                       controllers.applicant.FormerNameDateController.submit
 
 ## PREVIOUS ADDRESS QUESTION
-GET         /current-address                                                                   controllers.registration.applicant.PreviousAddressController.show
-POST        /current-address                                                                   controllers.registration.applicant.PreviousAddressController.submit
-GET         /current-address/changePreviousAddress                                             controllers.registration.applicant.PreviousAddressController.previousAddress
-GET         /current-address/acceptFromTxm                                                     controllers.registration.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
+GET         /current-address                                                                   controllers.applicant.PreviousAddressController.show
+POST        /current-address                                                                   controllers.applicant.PreviousAddressController.submit
+GET         /current-address/changePreviousAddress                                             controllers.applicant.PreviousAddressController.previousAddress
+GET         /current-address/acceptFromTxm                                                     controllers.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
 
 ## Incorp ID Pages
-GET         /start-incorp-id-journey                                                           controllers.registration.applicant.IncorpIdController.startJourney
-GET         /incorp-id-callback                                                                controllers.registration.applicant.IncorpIdController.incorpIdCallback(journeyId)
-GET         /start-incorp-id-partner-journey                                                   controllers.registration.applicant.IncorpIdController.startPartnerJourney
-GET         /incorp-id-partner-callback                                                        controllers.registration.applicant.IncorpIdController.partnerCallback(journeyId)
+GET         /start-incorp-id-journey                                                           controllers.applicant.IncorpIdController.startJourney
+GET         /incorp-id-callback                                                                controllers.applicant.IncorpIdController.incorpIdCallback(journeyId)
+GET         /start-incorp-id-partner-journey                                                   controllers.applicant.IncorpIdController.startPartnerJourney
+GET         /incorp-id-partner-callback                                                        controllers.applicant.IncorpIdController.partnerCallback(journeyId)
 
 ## Personal Details Validation Pages
-GET         /start-personal-details-validation-journey                                         controllers.registration.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-GET         /personal-details-validation-callback                                              controllers.registration.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
+GET         /start-personal-details-validation-journey                                         controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
+GET         /personal-details-validation-callback                                              controllers.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
 
 ## Sole Trader Identification Journey
-GET         /start-sti-journey                                                                 controllers.registration.applicant.SoleTraderIdentificationController.startJourney
-GET         /sti-callback                                                                      controllers.registration.applicant.SoleTraderIdentificationController.callback(journeyId)
-GET         /start-sti-individual-journey                                                      controllers.registration.applicant.IndividualIdentificationController.startJourney
-GET         /sti-individual-callback                                                           controllers.registration.applicant.IndividualIdentificationController.callback(journeyId)
-GET         /start-sti-partner-journey                                                         controllers.registration.applicant.SoleTraderIdentificationController.startPartnerJourney
-GET         /sti-partner-callback                                                              controllers.registration.applicant.SoleTraderIdentificationController.partnerCallback(journeyId: String)
-GET         /start-sti-transactor-journey                                                      controllers.registration.transactor.TransactorIdentificationController.startJourney
-GET         /sti-transactor-callback                                                           controllers.registration.transactor.TransactorIdentificationController.callback(journeyId)
+GET         /start-sti-journey                                                                 controllers.applicant.SoleTraderIdentificationController.startJourney
+GET         /sti-callback                                                                      controllers.applicant.SoleTraderIdentificationController.callback(journeyId)
+GET         /start-sti-individual-journey                                                      controllers.applicant.IndividualIdentificationController.startJourney
+GET         /sti-individual-callback                                                           controllers.applicant.IndividualIdentificationController.callback(journeyId)
+GET         /start-sti-partner-journey                                                         controllers.applicant.SoleTraderIdentificationController.startPartnerJourney
+GET         /sti-partner-callback                                                              controllers.applicant.SoleTraderIdentificationController.partnerCallback(journeyId: String)
+GET         /start-sti-transactor-journey                                                      controllers.transactor.TransactorIdentificationController.startJourney
+GET         /sti-transactor-callback                                                           controllers.transactor.TransactorIdentificationController.callback(journeyId)
 
 ## Partnership ID Pages
-GET         /start-partnership-id-journey                                                      controllers.registration.applicant.PartnershipIdController.startJourney
-GET         /partnership-id-callback                                                           controllers.registration.applicant.PartnershipIdController.callback(journeyId)
-GET         /start-partnership-id-partner-journey                                              controllers.registration.applicant.PartnershipIdController.startPartnerJourney
-GET         /partnership-id-partner-callback                                                   controllers.registration.applicant.PartnershipIdController.partnerCallback(journeyId)
+GET         /start-partnership-id-journey                                                      controllers.applicant.PartnershipIdController.startJourney
+GET         /partnership-id-callback                                                           controllers.applicant.PartnershipIdController.callback(journeyId)
+GET         /start-partnership-id-partner-journey                                              controllers.applicant.PartnershipIdController.startPartnerJourney
+GET         /partnership-id-partner-callback                                                   controllers.applicant.PartnershipIdController.partnerCallback(journeyId)
 
 ## Minor Entity ID Pages
-GET         /start-minor-entity-id-journey                                                     controllers.registration.applicant.MinorEntityIdController.startJourney
-GET         /minor-entity-id-callback                                                          controllers.registration.applicant.MinorEntityIdController.callback(journeyId)
+GET         /start-minor-entity-id-journey                                                     controllers.applicant.MinorEntityIdController.startJourney
+GET         /minor-entity-id-callback                                                          controllers.applicant.MinorEntityIdController.callback(journeyId)
 
 ## Email Verification Pages
-GET         /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.show
-POST        /email-address                                                                     controllers.registration.applicant.CaptureEmailAddressController.submit
+GET         /email-address                                                                     controllers.applicant.CaptureEmailAddressController.show
+POST        /email-address                                                                     controllers.applicant.CaptureEmailAddressController.submit
 
-GET         /email-address-verification                                                        controllers.registration.applicant.CaptureEmailPasscodeController.show
-POST        /email-address-verification                                                        controllers.registration.applicant.CaptureEmailPasscodeController.submit
+GET         /email-address-verification                                                        controllers.applicant.CaptureEmailPasscodeController.show
+POST        /email-address-verification                                                        controllers.applicant.CaptureEmailPasscodeController.submit
 
-GET         /email-address-verified                                                            controllers.registration.applicant.EmailAddressVerifiedController.show
-POST        /email-address-verified                                                            controllers.registration.applicant.EmailAddressVerifiedController.submit
+GET         /email-address-verified                                                            controllers.applicant.EmailAddressVerifiedController.show
+POST        /email-address-verified                                                            controllers.applicant.EmailAddressVerifiedController.submit
 
 ## SUMMARY
 GET         /check-confirm-answers                                                             controllers.SummaryController.show
@@ -244,239 +244,239 @@ POST        /application-submitted                                              
 ## FRS FLOW
 ##
 ##Are you interested in FRS Page
-GET         /join-flat-rate                                                                    controllers.registration.flatratescheme.JoinFlatRateSchemeController.show
-POST        /join-flat-rate                                                                    controllers.registration.flatratescheme.JoinFlatRateSchemeController.submit
+GET         /join-flat-rate                                                                    controllers.flatratescheme.JoinFlatRateSchemeController.show
+POST        /join-flat-rate                                                                    controllers.flatratescheme.JoinFlatRateSchemeController.submit
 
 ##Do you spend less than 250 a year Page
-GET         /business-spend-relevant-goods                                                     controllers.FlatRateController.annualCostsInclusivePage
-POST        /business-spend-relevant-goods                                                     controllers.FlatRateController.submitAnnualInclusiveCosts
+GET         /business-spend-relevant-goods                                                     controllers.flatratescheme.FlatRateController.annualCostsInclusivePage
+POST        /business-spend-relevant-goods                                                     controllers.flatratescheme.FlatRateController.submitAnnualInclusiveCosts
 
 ## Estimate Total Sales
-GET         /estimate-total-sales                                                              controllers.registration.flatratescheme.EstimateTotalSalesController.estimateTotalSales
-POST        /estimate-total-sales                                                              controllers.registration.flatratescheme.EstimateTotalSalesController.submitEstimateTotalSales
+GET         /estimate-total-sales                                                              controllers.flatratescheme.EstimateTotalSalesController.estimateTotalSales
+POST        /estimate-total-sales                                                              controllers.flatratescheme.EstimateTotalSalesController.submitEstimateTotalSales
 
 ## Do you want to register for FRS page
-GET         /business-flat-rate                                                                controllers.FlatRateController.registerForFrsPage
-POST        /business-flat-rate                                                                controllers.FlatRateController.submitRegisterForFrs
+GET         /business-flat-rate                                                                controllers.flatratescheme.FlatRateController.registerForFrsPage
+POST        /business-flat-rate                                                                controllers.flatratescheme.FlatRateController.submitRegisterForFrs
 
 ## Do you want to register for FRS page - Business Sector selected
-GET         /confirm-flat-rate                                                                 controllers.FlatRateController.yourFlatRatePage
-POST        /confirm-flat-rate                                                                 controllers.FlatRateController.submitYourFlatRate
+GET         /confirm-flat-rate                                                                 controllers.flatratescheme.FlatRateController.yourFlatRatePage
+POST        /confirm-flat-rate                                                                 controllers.flatratescheme.FlatRateController.submitYourFlatRate
 
 ##Do you spend less than 2% of turnover a year Page
-GET         /company-spend-goods                                                               controllers.FlatRateController.annualCostsLimitedPage
-POST        /company-spend-goods                                                               controllers.FlatRateController.submitAnnualCostsLimited
+GET         /company-spend-goods                                                               controllers.flatratescheme.FlatRateController.annualCostsLimitedPage
+POST        /company-spend-goods                                                               controllers.flatratescheme.FlatRateController.submitAnnualCostsLimited
 
 ## Choose business type
-GET         /choose-business-type                                                              controllers.registration.flatratescheme.ChooseBusinessTypeController.show
-POST        /choose-business-type                                                              controllers.registration.flatratescheme.ChooseBusinessTypeController.submit
+GET         /choose-business-type                                                              controllers.flatratescheme.ChooseBusinessTypeController.show
+POST        /choose-business-type                                                              controllers.flatratescheme.ChooseBusinessTypeController.submit
 
 ## FRS Confirm business sector page
-GET         /confirm-business-type                                                             controllers.registration.flatratescheme.ConfirmBusinessTypeController.show
-POST        /confirm-business-type                                                             controllers.registration.flatratescheme.ConfirmBusinessTypeController.submit
+GET         /confirm-business-type                                                             controllers.flatratescheme.ConfirmBusinessTypeController.show
+POST        /confirm-business-type                                                             controllers.flatratescheme.ConfirmBusinessTypeController.submit
 
 ## When do you want to join the Flat Rate Scheme?
-GET         /flat-rate-date                                                                    controllers.registration.flatratescheme.StartDateController.show
-POST        /flat-rate-date                                                                    controllers.registration.flatratescheme.StartDateController.submit
+GET         /flat-rate-date                                                                    controllers.flatratescheme.StartDateController.show
+POST        /flat-rate-date                                                                    controllers.flatratescheme.StartDateController.submit
 
 ## Errors
-GET         /submission-failure                                                                controllers.ErrorController.submissionRetryable
-GET         /problem-vat-application                                                           controllers.ErrorController.submissionFailed
-GET         /already-submitted                                                                 controllers.ErrorController.alreadySubmitted
-POST        /already-submitted                                                                 controllers.ErrorController.alreadySubmittedSignOut
+GET         /submission-failure                                                                controllers.errors.ErrorController.submissionRetryable
+GET         /problem-vat-application                                                           controllers.errors.ErrorController.submissionFailed
+GET         /already-submitted                                                                 controllers.errors.ErrorController.alreadySubmitted
+POST        /already-submitted                                                                 controllers.errors.ErrorController.alreadySubmittedSignOut
 
 ## Email max attempts error page
-GET         /error/passcode-too-many-attempts                                                  controllers.registration.errors.EmailPasscodesMaxAttemptsExceededController.show
+GET         /error/passcode-too-many-attempts                                                  controllers.errors.EmailPasscodesMaxAttemptsExceededController.show
 
 ## Email passcode not found
-GET         /error/passcode-not-found                                                          controllers.registration.errors.EmailPasscodeNotFoundController.show(redirectUrl: String)
+GET         /error/passcode-not-found                                                          controllers.errors.EmailPasscodeNotFoundController.show(redirectUrl: String)
 
 ##individual affinity kick out
-GET         /error/individual-affinity                                                         controllers.IndividualAffinityKickOutController.show
-GET         /error/individual-affinity-redirect                                                controllers.IndividualAffinityKickOutController.signOutAndRedirect
-GET         /error/individual-affinity-signin                                                  controllers.IndividualAffinityKickOutController.businessSignInRedirect
+GET         /error/individual-affinity                                                         controllers.errors.IndividualAffinityKickOutController.show
+GET         /error/individual-affinity-redirect                                                controllers.errors.IndividualAffinityKickOutController.signOutAndRedirect
+GET         /error/individual-affinity-signin                                                  controllers.errors.IndividualAffinityKickOutController.businessSignInRedirect
 
 ## LastMonthOfAccountingYearController
-GET         /last-month-of-accounting-year                                                     controllers.registration.returns.LastMonthOfAccountingYearController.show
-POST        /last-month-of-accounting-year                                                     controllers.registration.returns.LastMonthOfAccountingYearController.submit
+GET         /last-month-of-accounting-year                                                     controllers.returns.LastMonthOfAccountingYearController.show
+POST        /last-month-of-accounting-year                                                     controllers.returns.LastMonthOfAccountingYearController.submit
 
 ## AASPaymentMethodController
-GET         /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.show
-POST        /how-do-you-want-to-pay                                                            controllers.registration.returns.PaymentMethodController.submit
+GET         /how-do-you-want-to-pay                                                            controllers.returns.PaymentMethodController.show
+POST        /how-do-you-want-to-pay                                                            controllers.returns.PaymentMethodController.submit
 
 ## PaymentFrequencyController
-GET         /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.show
-POST        /how-often-you-pay                                                                 controllers.registration.returns.PaymentFrequencyController.submit
+GET         /how-often-you-pay                                                                 controllers.returns.PaymentFrequencyController.show
+POST        /how-often-you-pay                                                                 controllers.returns.PaymentFrequencyController.submit
 
 ## MandatoryTradingNameController
-GET         /trading-name-not-incorporated                                                     controllers.registration.business.MandatoryTradingNameController.show
-POST        /trading-name-not-incorporated                                                     controllers.registration.business.MandatoryTradingNameController.submit
+GET         /trading-name-not-incorporated                                                     controllers.business.MandatoryTradingNameController.show
+POST        /trading-name-not-incorporated                                                     controllers.business.MandatoryTradingNameController.submit
 
 ## LeadPartnerEntityController
-GET         /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
-POST        /lead-partner-entity                                                               controllers.registration.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
+GET         /lead-partner-entity                                                               controllers.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
+POST        /lead-partner-entity                                                               controllers.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
 
 ## PartyTypeResolverController
 GET         /resolve-party-type                                                                controllers.TradingNameResolverController.resolve
 
 ## Send Goods Overseas page
-GET         /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.show
-POST        /send-goods-overseas                                                               controllers.registration.returns.SendGoodsOverseasController.submit
+GET         /send-goods-overseas                                                               controllers.returns.SendGoodsOverseasController.show
+POST        /send-goods-overseas                                                               controllers.returns.SendGoodsOverseasController.submit
 
 ## Send EU Goods Page
-GET         /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.show
-POST        /send-eu-goods                                                                     controllers.registration.returns.SendEUGoodsController.submit
+GET         /send-eu-goods                                                                     controllers.returns.SendEUGoodsController.show
+POST        /send-eu-goods                                                                     controllers.returns.SendEUGoodsController.submit
 
 ## NETP Storing Goods page
-GET         /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.show
-POST        /storing-goods-for-dispatch                                                        controllers.registration.returns.StoringGoodsController.submit
+GET         /storing-goods-for-dispatch                                                        controllers.returns.StoringGoodsController.show
+POST        /storing-goods-for-dispatch                                                        controllers.returns.StoringGoodsController.submit
 
 ## Dispatch From Warehouse Page
-GET         /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.show
-POST        /using-fulfilment-warehouse                                                        controllers.registration.returns.DispatchFromWarehouseController.submit
+GET         /using-fulfilment-warehouse                                                        controllers.returns.DispatchFromWarehouseController.show
+POST        /using-fulfilment-warehouse                                                        controllers.returns.DispatchFromWarehouseController.submit
 
 ## Warehouse Number Page
-GET         /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.show
-POST        /warehouse-number                                                                  controllers.registration.returns.WarehouseNumberController.submit
+GET         /warehouse-number                                                                  controllers.returns.WarehouseNumberController.show
+POST        /warehouse-number                                                                  controllers.returns.WarehouseNumberController.submit
 
 ## Warehouse Name Page
-GET         /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.show
-POST        /warehouse-name                                                                    controllers.registration.returns.WarehouseNameController.submit
+GET         /warehouse-name                                                                    controllers.returns.WarehouseNameController.show
+POST        /warehouse-name                                                                    controllers.returns.WarehouseNameController.submit
 
 ## Attachment Method Page
-GET         /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.show
-POST        /attachment-method                                                                 controllers.registration.attachments.AttachmentMethodController.submit
+GET         /attachment-method                                                                 controllers.attachments.AttachmentMethodController.show
+POST        /attachment-method                                                                 controllers.attachments.AttachmentMethodController.submit
 
 ## Documents Required Pages
-GET         /attachments-resolve                                                               controllers.registration.attachments.DocumentsRequiredController.resolve
-GET         /identity-documents-required                                                       controllers.registration.attachments.IdentityEvidenceRequiredController.show
-GET         /your-identity-documents-required                                                  controllers.registration.attachments.TransactorIdentityEvidenceRequiredController.show
-GET         /vat51-required                                                                    controllers.registration.attachments.Vat51RequiredController.show
-GET         /vat5L-required                                                                    controllers.registration.attachments.Vat5LRequiredController.show
-GET         /vat2-required                                                                     controllers.registration.attachments.Vat2RequiredController.show
-GET         /multiple-documents-required                                                       controllers.registration.attachments.MultipleDocumentsRequiredController.show
-POST        /documents-required                                                                controllers.registration.attachments.DocumentsRequiredController.submit
+GET         /attachments-resolve                                                               controllers.attachments.DocumentsRequiredController.resolve
+GET         /identity-documents-required                                                       controllers.attachments.IdentityEvidenceRequiredController.show
+GET         /your-identity-documents-required                                                  controllers.attachments.TransactorIdentityEvidenceRequiredController.show
+GET         /vat51-required                                                                    controllers.attachments.Vat51RequiredController.show
+GET         /vat5L-required                                                                    controllers.attachments.Vat5LRequiredController.show
+GET         /vat2-required                                                                     controllers.attachments.Vat2RequiredController.show
+GET         /multiple-documents-required                                                       controllers.attachments.MultipleDocumentsRequiredController.show
+POST        /documents-required                                                                controllers.attachments.DocumentsRequiredController.submit
 
 ## Documents Post Page
-GET         /post-documents                                                                    controllers.registration.attachments.DocumentsPostController.show
+GET         /post-documents                                                                    controllers.attachments.DocumentsPostController.show
 
 ## Postal Cover Sheet Page
-GET         /postal-cover-sheet                                                                controllers.registration.attachments.PostalCoverSheetController.show
+GET         /postal-cover-sheet                                                                controllers.attachments.PostalCoverSheetController.show
 
 ## Email Cover Sheet Page
-GET         /email-cover-sheet                                                                 controllers.registration.attachments.EmailCoverSheetController.show
+GET         /email-cover-sheet                                                                 controllers.attachments.EmailCoverSheetController.show
 
 ## Northern Ireland Receive Goods Page
-GET         /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.show
-POST        /receive-goods-nip                                                                 controllers.registration.returns.ReceiveGoodsNipController.submit
+GET         /receive-goods-nip                                                                 controllers.returns.ReceiveGoodsNipController.show
+POST        /receive-goods-nip                                                                 controllers.returns.ReceiveGoodsNipController.submit
 
 ## Northern Ireland Sell Or Move Page
-GET         /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.show
-POST        /sell-or-move-nip                                                                  controllers.registration.returns.SellOrMoveNipController.submit
+GET         /sell-or-move-nip                                                                  controllers.returns.SellOrMoveNipController.show
+POST        /sell-or-move-nip                                                                  controllers.returns.SellOrMoveNipController.submit
 
 ## Attachments Email Documents Page
-GET         /attachments/email-documents                                                       controllers.registration.attachments.EmailDocumentsController.show
+GET         /attachments/email-documents                                                       controllers.attachments.EmailDocumentsController.show
 
 ## Part Of Organisation Page
-GET         /part-of-organisation                                                              controllers.registration.transactor.PartOfOrganisationController.show
-POST        /part-of-organisation                                                              controllers.registration.transactor.PartOfOrganisationController.submit
+GET         /part-of-organisation                                                              controllers.transactor.PartOfOrganisationController.show
+POST        /part-of-organisation                                                              controllers.transactor.PartOfOrganisationController.submit
 
 ## Declaration Capacity
-GET         /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.show
-POST        /your-role-in-the-business                                                         controllers.registration.transactor.DeclarationCapacityController.submit
+GET         /your-role-in-the-business                                                         controllers.transactor.DeclarationCapacityController.show
+POST        /your-role-in-the-business                                                         controllers.transactor.DeclarationCapacityController.submit
 
 ## Agent Name
-GET         /agent-name                                                                        controllers.registration.transactor.AgentNameController.show
-POST        /agent-name                                                                        controllers.registration.transactor.AgentNameController.submit
+GET         /agent-name                                                                        controllers.transactor.AgentNameController.show
+POST        /agent-name                                                                        controllers.transactor.AgentNameController.submit
 
 ## Organisation Name
-GET         /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.show
-POST        /organisation-name                                                                 controllers.registration.transactor.OrganisationNameController.submit
+GET         /organisation-name                                                                 controllers.transactor.OrganisationNameController.show
+POST        /organisation-name                                                                 controllers.transactor.OrganisationNameController.submit
 
 ## Transactor Address
-GET         /your-address                                                                      controllers.registration.transactor.TransactorHomeAddressController.redirectToAlf
-GET         /your-address/callback                                                             controllers.registration.transactor.TransactorHomeAddressController.addressLookupCallback(id: String ?= "")
+GET         /your-address                                                                      controllers.transactor.TransactorHomeAddressController.redirectToAlf
+GET         /your-address/callback                                                             controllers.transactor.TransactorHomeAddressController.addressLookupCallback(id: String ?= "")
 
 ## Transactor International Address
-GET         /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.show
-POST        /your-address/international                                                        controllers.registration.transactor.TransactorInternationalAddressController.submit
+GET         /your-address/international                                                        controllers.transactor.TransactorInternationalAddressController.show
+POST        /your-address/international                                                        controllers.transactor.TransactorInternationalAddressController.submit
 
 ## Telephone Number
-GET         /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.show
-POST        /your-telephone-number                                                             controllers.registration.transactor.TelephoneNumberController.submit
+GET         /your-telephone-number                                                             controllers.transactor.TelephoneNumberController.show
+POST        /your-telephone-number                                                             controllers.transactor.TelephoneNumberController.submit
 
 
 ## Transactor Capture Email Address
-GET         /your-email-address                                                                controllers.registration.transactor.TransactorCaptureEmailAddressController.show
-POST        /your-email-address                                                                controllers.registration.transactor.TransactorCaptureEmailAddressController.submit
+GET         /your-email-address                                                                controllers.transactor.TransactorCaptureEmailAddressController.show
+POST        /your-email-address                                                                controllers.transactor.TransactorCaptureEmailAddressController.submit
 
 ## Transactor Capture Email Passcode
-GET         /enter-the-verification-code                                                       controllers.registration.transactor.TransactorCaptureEmailPasscodeController.show
-POST        /enter-the-verification-code                                                       controllers.registration.transactor.TransactorCaptureEmailPasscodeController.submit
+GET         /enter-the-verification-code                                                       controllers.transactor.TransactorCaptureEmailPasscodeController.show
+POST        /enter-the-verification-code                                                       controllers.transactor.TransactorCaptureEmailPasscodeController.submit
 
 ## Transactor Email Verified
-GET         /your-email-address-verified                                                       controllers.registration.transactor.TransactorEmailAddressVerifiedController.show
-POST        /your-email-address-verified                                                       controllers.registration.transactor.TransactorEmailAddressVerifiedController.submit
+GET         /your-email-address-verified                                                       controllers.transactor.TransactorEmailAddressVerifiedController.show
+POST        /your-email-address-verified                                                       controllers.transactor.TransactorEmailAddressVerifiedController.submit
 
 ## Business Identification Resolver
 GET         /resolve-business-identification                                                   controllers.BusinessIdentificationResolverController.resolve
 
 ## Partnership Name
-GET         /partnership-official-name                                                         controllers.registration.business.PartnershipNameController.show
-POST        /partnership-official-name                                                         controllers.registration.business.PartnershipNameController.submit
+GET         /partnership-official-name                                                         controllers.business.PartnershipNameController.show
+POST        /partnership-official-name                                                         controllers.business.PartnershipNameController.submit
 
 ## Scottish Partnership Name
-GET         /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.show
-POST        /scottish-partnership-name                                                         controllers.registration.business.ScottishPartnershipNameController.submit
+GET         /scottish-partnership-name                                                         controllers.business.ScottishPartnershipNameController.show
+POST        /scottish-partnership-name                                                         controllers.business.ScottishPartnershipNameController.submit
 
 ## Submission In Progress
 GET         /submission-in-progress                                                            controllers.SubmissionInProgressController.show
 POST        /submission-in-progress                                                            controllers.SubmissionInProgressController.submit
 
 ## Land And Property
-GET         /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.show
-POST        /land-and-property                                                                 controllers.registration.sicandcompliance.LandAndPropertyController.submit
+GET         /land-and-property                                                                 controllers.sicandcompliance.LandAndPropertyController.show
+POST        /land-and-property                                                                 controllers.sicandcompliance.LandAndPropertyController.submit
 
 ## Imports Or Exports
-GET         /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.show
-POST        /imports-or-exports                                                                controllers.registration.business.ImportsOrExportsController.submit
+GET         /imports-or-exports                                                                controllers.business.ImportsOrExportsController.show
+POST        /imports-or-exports                                                                controllers.business.ImportsOrExportsController.submit
 
 ## Other Business Involvements
-GET         /other-business-involvements                                                       controllers.registration.otherbusinessinvolvements.OtherBusinessInvolvementController.show
-POST        /other-business-involvements                                                       controllers.registration.otherbusinessinvolvements.OtherBusinessInvolvementController.submit
+GET         /other-business-involvements                                                       controllers.otherbusinessinvolvements.OtherBusinessInvolvementController.show
+POST        /other-business-involvements                                                       controllers.otherbusinessinvolvements.OtherBusinessInvolvementController.submit
 
 ## Other Business Involvement Business Name
-GET         /other-business-involvement/:index/business-name                                  controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
-POST        /other-business-involvement/:index/business-name                                  controllers.registration.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
+GET         /other-business-involvement/:index/business-name                                  controllers.otherbusinessinvolvements.OtherBusinessNameController.show(index: Int)
+POST        /other-business-involvement/:index/business-name                                  controllers.otherbusinessinvolvements.OtherBusinessNameController.submit(index: Int)
 
 ## Other Business Involvement Have VAT number
-GET         /other-business-involvement/:index/have-vat-number                                controllers.registration.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
-POST        /other-business-involvement/:index/have-vat-number                                controllers.registration.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
+GET         /other-business-involvement/:index/have-vat-number                                controllers.otherbusinessinvolvements.HaveVatNumberController.show(index: Int)
+POST        /other-business-involvement/:index/have-vat-number                                controllers.otherbusinessinvolvements.HaveVatNumberController.submit(index: Int)
 
 ## Other Business Involvement Capture VRN
-GET         /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
-POST        /other-business-involvement/:index/vat-number                                      controllers.registration.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
+GET         /other-business-involvement/:index/vat-number                                      controllers.otherbusinessinvolvements.CaptureVrnController.show(index: Int)
+POST        /other-business-involvement/:index/vat-number                                      controllers.otherbusinessinvolvements.CaptureVrnController.submit(index: Int)
 
 ## Other Business Involvement Have UTR
-GET         /other-business-involvement/:index/have-utr                                        controllers.registration.otherbusinessinvolvements.HasUtrController.show(index: Int)
-POST        /other-business-involvement/:index/have-utr                                        controllers.registration.otherbusinessinvolvements.HasUtrController.submit(index: Int)
+GET         /other-business-involvement/:index/have-utr                                        controllers.otherbusinessinvolvements.HasUtrController.show(index: Int)
+POST        /other-business-involvement/:index/have-utr                                        controllers.otherbusinessinvolvements.HasUtrController.submit(index: Int)
 
 ## Other Business Involvement Have UTR
-GET         /other-business-involvement/:index/utr                                             controllers.registration.otherbusinessinvolvements.CaptureUtrController.show(index: Int)
-POST        /other-business-involvement/:index/utr                                             controllers.registration.otherbusinessinvolvements.CaptureUtrController.submit(index: Int)
+GET         /other-business-involvement/:index/utr                                             controllers.otherbusinessinvolvements.CaptureUtrController.show(index: Int)
+POST        /other-business-involvement/:index/utr                                             controllers.otherbusinessinvolvements.CaptureUtrController.submit(index: Int)
 
 ## Other Business Involement Still Trading
-GET         /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
-POST        /other-business-involvement/:index/still-trading                                   controllers.registration.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)
+GET         /other-business-involvement/:index/still-trading                                   controllers.otherbusinessinvolvements.OtherBusinessActivelyTradingController.show(index: Int)
+POST        /other-business-involvement/:index/still-trading                                   controllers.otherbusinessinvolvements.OtherBusinessActivelyTradingController.submit(index: Int)
 
 ## Other Business Involvement CYA
-GET         /other-business-involvement/:index/check-answers                                   controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.show(index: Int, changeMode: Boolean ?= false)
-POST        /other-business-involvement/check-answers                                          controllers.registration.otherbusinessinvolvements.OtherBusinessCheckAnswersController.submit
+GET         /other-business-involvement/:index/check-answers                                   controllers.otherbusinessinvolvements.OtherBusinessCheckAnswersController.show(index: Int, changeMode: Boolean ?= false)
+POST        /other-business-involvement/check-answers                                          controllers.otherbusinessinvolvements.OtherBusinessCheckAnswersController.submit
 
 ## Other Business Involvement Summary
-GET         /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.show
-POST        /other-business-involvement/summary                                                controllers.registration.otherbusinessinvolvements.ObiSummaryController.submit
+GET         /other-business-involvement/summary                                                controllers.otherbusinessinvolvements.ObiSummaryController.show
+POST        /other-business-involvement/summary                                                controllers.otherbusinessinvolvements.ObiSummaryController.submit
 
 ## Other Business Involvement Remove
-GET         /other-business-involvement/:index/remove                                          controllers.registration.otherbusinessinvolvements.RemoveOtherBusinessController.show(index: Int)
-POST        /other-business-involvement/:index/remove                                          controllers.registration.otherbusinessinvolvements.RemoveOtherBusinessController.submit(otherBusinessName: String, index: Int)
+GET         /other-business-involvement/:index/remove                                          controllers.otherbusinessinvolvements.RemoveOtherBusinessController.show(index: Int)
+POST        /other-business-involvement/:index/remove                                          controllers.otherbusinessinvolvements.RemoveOtherBusinessController.submit(otherBusinessName: String, index: Int)

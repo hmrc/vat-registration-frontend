@@ -23,7 +23,7 @@ import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
-import views.html.pages.error.TimeoutView
+import views.html.errors.TimeoutView
 
 import scala.concurrent.{ExecutionContext, Future}
 

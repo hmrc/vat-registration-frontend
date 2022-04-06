@@ -19,8 +19,7 @@ package controllers
 import common.enums.VatRegStatus
 import config.{BaseControllerComponents, FrontendAppConfig}
 import forms.ApplicationReferenceForm
-import models.api.{VatScheme, VatSchemeHeader}
-import play.api.data.Form
+import models.api.VatScheme
 import play.api.mvc.{Action, AnyContent}
 import services.{SaveAndRetrieveService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector

@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.registration.applicant.{routes => applicantRoutes}
-import controllers.registration.transactor.{routes => transactorRoutes}
+import controllers.applicant.{routes => applicantRoutes}
+import controllers.transactor.{routes => transactorRoutes}
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, RegSociety, UkCompany}
 import play.api.mvc.AnyContentAsEmpty

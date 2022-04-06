@@ -41,7 +41,7 @@
 
     @panelIndent{ @messages("voluntaryStartDateNoChoice.panel") }
 
-    @formWithCsrf(action = controllers.registration.returns.routes.VoluntaryStartDateNoChoiceController.submit) {
+    @formWithCsrf(action = controllers.returns.routes.VoluntaryStartDateNoChoiceController.submit) {
         @inputDate(
             form = startDateForm,
             legendContent = messages("voluntaryStartDateNoChoice.heading"),

@@ -35,7 +35,7 @@
 
     @errorSummary(errors = hasUtrForm.errors)
 
-    @formWithCSRF(action = controllers.registration.otherbusinessinvolvements.routes.HasUtrController.submit(index)) {
+    @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.HasUtrController.submit(index)) {
 
         @yesNoRadio(
             form = hasUtrForm,

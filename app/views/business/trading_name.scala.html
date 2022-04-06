@@ -1,0 +1,74 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    errorSummary: components.errorSummary,
+    yesNoRadio: components.yesNoRadio,
+    p: components.p,
+    form: FormWithCSRF,
+    inputText: components.inputText,
+    details: components.details,
+    button: components.button
+)
+
+@(tradingNameForm: Form[(Boolean, Option[String])], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(tradingNameForm, messages("pages.tradingName.heading", companyName))), backLink = true) {
+
+    @errorSummary(tradingNameForm.errors)
+    @h1(messages("pages.tradingName.heading", companyName))
+
+    @details(
+        summary = messages("pages.tradingName.panel.para1"),
+        content = detailsContent
+    )
+
+    @form(action = controllers.business.routes.TradingNameController.submit) {
+        @yesNoRadio(
+            form = tradingNameForm,
+            headingKey = messages("pages.tradingName.heading"),
+            isPageHeading = false,
+            inline = false,
+            classes = "govuk-visually-hidden",
+            hiddenYesContent = Some(hiddenYesContent)
+        )
+
+        @button(messages("app.common.continue"))
+    }
+}
+
+@detailsContent = {
+    @p { @messages("pages.tradingName.panel.para2") }
+    @p { @messages("pages.tradingName.panel.para3") }
+}
+
+@hiddenYesContent = {
+
+    @inputText(
+        tradingNameForm,
+        id = "tradingName",
+        name = "tradingName",
+        label = messages("pages.tradingName.tradingNameLabel"),
+        isLabelHidden = false,
+        isPageHeading = false,
+        hint = Some(Html(messages("pages.tradingdetails.input.hint-text")))
+    )
+
+}

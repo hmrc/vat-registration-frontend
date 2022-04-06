@@ -55,13 +55,13 @@ class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
     val isPartOfOrganisation = optSummaryListRowBoolean(
       s"$sectionId.isPartOfOrganisation",
       transactorDetails.isPartOfOrganisation,
-      Some(controllers.registration.transactor.routes.PartOfOrganisationController.show.url)
+      Some(controllers.transactor.routes.PartOfOrganisationController.show.url)
     )
 
     val organisationName = optSummaryListRowString(
       s"$sectionId.organisationName",
       transactorDetails.organisationName,
-      Some(controllers.registration.transactor.routes.OrganisationNameController.show.url)
+      Some(controllers.transactor.routes.OrganisationNameController.show.url)
     )
 
     val roleInTheBusiness = optSummaryListRowString(
@@ -74,29 +74,29 @@ class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
         case DeclarationCapacityAnswer(AuthorisedEmployee, _) => Some("declarationCapacity.authorisedEmployee")
         case DeclarationCapacityAnswer(Other, role) => role
       },
-      Some(controllers.registration.transactor.routes.DeclarationCapacityController.show.url)
+      Some(controllers.transactor.routes.DeclarationCapacityController.show.url)
     )
 
     val fullName = optSummaryListRowString(
       s"$sectionId.fullName",
       transactorDetails.personalDetails.map(details => s"${details.firstName} ${details.lastName}"),
       if (isAgent) {
-        Some(controllers.registration.transactor.routes.AgentNameController.show.url)
+        Some(controllers.transactor.routes.AgentNameController.show.url)
       } else {
-        Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+        Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
       }
     )
 
     val dateOfBirth = optSummaryListRowString(
       s"$sectionId.dateOfBirth",
       transactorDetails.personalDetails.flatMap(_.dateOfBirth.map(_.format(presentationFormatter))),
-      Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+      Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
     )
 
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
       transactorDetails.personalDetails.flatMap(_.nino),
-      Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+      Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
     )
 
     val homeAddress = optSummaryListRowSeq(
@@ -104,22 +104,22 @@ class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
       transactorDetails.address.map(Address.normalisedSeq),
       partyType match {
         case NETP | NonUkNonEstablished =>
-          Some(controllers.registration.transactor.routes.TransactorInternationalAddressController.show.url)
+          Some(controllers.transactor.routes.TransactorInternationalAddressController.show.url)
         case _ =>
-          Some(controllers.registration.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
+          Some(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
       }
     )
 
     val telephoneNumber = optSummaryListRowString(
       s"$sectionId.telephoneNumber",
       transactorDetails.telephone,
-      Some(controllers.registration.transactor.routes.TelephoneNumberController.show.url)
+      Some(controllers.transactor.routes.TelephoneNumberController.show.url)
     )
 
     val emailAddress = optSummaryListRowString(
       s"$sectionId.emailAddress",
       transactorDetails.email,
-      Some(controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url)
+      Some(controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url)
     )
 
     Seq(

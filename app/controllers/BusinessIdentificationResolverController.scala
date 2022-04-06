@@ -17,7 +17,7 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.applicant.{routes => applicantRoutes}
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
