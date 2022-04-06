@@ -40,9 +40,9 @@ trait SessionProfile {
           profile.vatRegistrationStatus match {
             case VatRegStatus.draft => f(profile)
             case VatRegStatus.submitted if checkStatus => Future.successful(Redirect(routes.ApplicationSubmissionController.show))
-            case VatRegStatus.failedRetryable if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionRetryable))
-            case VatRegStatus.failed if checkStatus => Future.successful(Redirect(routes.ErrorController.submissionFailed))
-            case VatRegStatus.duplicateSubmission if checkStatus => Future.successful(Redirect(routes.ErrorController.alreadySubmitted))
+            case VatRegStatus.failedRetryable if checkStatus => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionRetryable))
+            case VatRegStatus.failed if checkStatus => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionFailed))
+            case VatRegStatus.duplicateSubmission if checkStatus => Future.successful(Redirect(controllers.errors.routes.ErrorController.alreadySubmitted))
             case VatRegStatus.locked if checkStatus => Future.successful(Redirect(routes.SubmissionInProgressController.show))
             case _ if !checkStatus => f(profile)
           }

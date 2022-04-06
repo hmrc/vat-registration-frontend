@@ -40,7 +40,7 @@
 
     @panelIndent{ @messages("partOfOrganisation.indentText") }
 
-    @form(action = controllers.registration.transactor.routes.PartOfOrganisationController.submit) {
+    @form(action = controllers.transactor.routes.PartOfOrganisationController.submit) {
         @yesNoRadio(
             form = partOfOrganisationForm,
             headingKey = messages("partOfOrganisation.heading"),

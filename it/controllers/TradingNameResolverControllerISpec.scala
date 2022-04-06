@@ -28,7 +28,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
   "Trading name page resolver" should {
     List(Individual, NETP).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
@@ -41,13 +41,13 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         val response = buildClient("/resolve-party-type").get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.MandatoryTradingNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.MandatoryTradingNameController.show.url)
         }
       }
     }
 
     List(Partnership, ScotPartnership).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.PartnershipNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.PartnershipNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
@@ -62,12 +62,12 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         val response = buildClient("/resolve-party-type").get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.PartnershipNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.PartnershipNameController.show.url)
         }
       }
     }
 
-    s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.ShortOrgNameController.show.url} for a ${UkCompany.toString} with a company name longer than 105" in new Setup {
+    s"return SEE_OTHER and redirects to ${controllers.business.routes.ShortOrgNameController.show.url} for a ${UkCompany.toString} with a company name longer than 105" in new Setup {
       val longCompanyName: String = "1" * 106
 
       enable(ShortOrgName)
@@ -86,12 +86,12 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       val response = buildClient("/resolve-party-type").get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.ShortOrgNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ShortOrgNameController.show.url)
       }
     }
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.TradingNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.TradingNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
@@ -104,13 +104,13 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         val response = buildClient("/resolve-party-type").get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.TradingNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
         }
       }
     }
 
     List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.registration.business.routes.BusinessNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.BusinessNameController.show.url} for ${partyType.toString}" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
@@ -123,7 +123,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         val response = buildClient("/resolve-party-type").get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.business.routes.BusinessNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessNameController.show.url)
         }
       }
     }

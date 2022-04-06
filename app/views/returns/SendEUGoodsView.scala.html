@@ -37,7 +37,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCSRF(action = controllers.registration.returns.routes.SendEUGoodsController.submit) {
+    @formWithCSRF(action = controllers.returns.routes.SendEUGoodsController.submit) {
         @yesNoRadio(
             form = form,
             headingKey = "pages.sendEUGoods.heading",

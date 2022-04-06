@@ -21,7 +21,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
-import views.html.pages.SubmissionInProgress
+import views.html.SubmissionInProgress
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,9 +51,9 @@ class SubmissionInProgressController @Inject()(view: SubmissionInProgress,
           redirect = status match {
             case VatRegStatus.submitted => Redirect(controllers.routes.ApplicationSubmissionController.show)
             case VatRegStatus.locked => Redirect(controllers.routes.SubmissionInProgressController.show)
-            case VatRegStatus.duplicateSubmission => Redirect(controllers.routes.ErrorController.alreadySubmitted)
-            case VatRegStatus.failed => Redirect(controllers.routes.ErrorController.submissionFailed)
-            case VatRegStatus.failedRetryable => Redirect(controllers.routes.ErrorController.submissionRetryable)
+            case VatRegStatus.duplicateSubmission => Redirect(controllers.errors.routes.ErrorController.alreadySubmitted)
+            case VatRegStatus.failed => Redirect(controllers.errors.routes.ErrorController.submissionFailed)
+            case VatRegStatus.failedRetryable => Redirect(controllers.errors.routes.ErrorController.submissionRetryable)
           }
         } yield redirect
 

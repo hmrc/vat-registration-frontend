@@ -32,7 +32,7 @@
 
     @errorSummary(otherBusinessActivelyTradingForm.errors)
 
-    @form(action = controllers.registration.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.submit(index)) {
+    @form(action = controllers.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.submit(index)) {
         @yesNoRadio(
             form = otherBusinessActivelyTradingForm,
             headingKey = messages("obi.otherBusinessActivelyTrading.heading"),

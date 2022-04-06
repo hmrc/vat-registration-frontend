@@ -16,7 +16,7 @@
 
 package viewmodels
 
-import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api._

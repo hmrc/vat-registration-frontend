@@ -68,7 +68,7 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
     implicit request =>
       authorised(authPredicate).retrieve(affinityGroup) {
         case Some(AffinityGroup.Individual) =>
-          Future.successful(Redirect(routes.IndividualAffinityKickOutController.show))
+          Future.successful(Redirect(controllers.errors.routes.IndividualAffinityKickOutController.show))
         case Some(AffinityGroup.Organisation | AffinityGroup.Agent) =>
           f(request)
         case _ => throw new InternalServerException("User has no affinity group on their credential")

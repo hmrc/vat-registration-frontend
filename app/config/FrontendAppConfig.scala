@@ -179,7 +179,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def getPersonalDetailsValidationJourneyUrl(): String =
     if (isEnabled(StubPersonalDetailsValidation)) {
-      controllers.registration.applicant.routes.PersonalDetailsValidationController.personalDetailsValidationCallback("testValidationId").url
+      controllers.applicant.routes.PersonalDetailsValidationController.personalDetailsValidationCallback("testValidationId").url
     } else {
       s"$personalDetailsValidationFrontendUrl/personal-details-validation/start"
     }

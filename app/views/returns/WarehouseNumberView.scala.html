@@ -37,7 +37,7 @@
     @h1(messages("pages.warehouseNumber.heading"))
     @p{ @messages("pages.warehouseNumber.para1") }
 
-    @form(action = controllers.registration.returns.routes.WarehouseNumberController.submit) {
+    @form(action = controllers.returns.routes.WarehouseNumberController.submit) {
         @inputText(
             form = warehouseNumberForm,
             id = WarehouseNumberForm.value,

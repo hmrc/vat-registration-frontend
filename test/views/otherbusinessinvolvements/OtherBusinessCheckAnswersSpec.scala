@@ -79,55 +79,55 @@ class OtherBusinessCheckAnswersSpec extends VatRegViewSpec with VatRegistrationF
         doc.summaryRow(0) mustBe Some(SummaryRow(
           ExpectedMessages.businessNameRow,
           testCompanyName,
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.OtherBusinessNameController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(testIndex).url))
         ))
       }
       "show the right VRN and UTR answers when user has VRN" in new ViewSetup()(document(changeMode = false)) {
         doc.summaryRow(1) mustBe Some(SummaryRow(
           ExpectedMessages.hasVrnRow,
           "Yes",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
         ))
         doc.summaryRow(2) mustBe Some(SummaryRow(
           ExpectedMessages.vrnRow,
           testVatNumber,
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.CaptureVrnController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.CaptureVrnController.show(testIndex).url))
         ))
       }
       "show the right VRN and UTR answers when user has UTR without VRN" in new ViewSetup()(document(changeMode = false, vatNumber = None, utr = Some(testUtr))) {
         doc.summaryRow(1) mustBe Some(SummaryRow(
           ExpectedMessages.hasVrnRow,
           "No",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
         ))
         doc.summaryRow(2) mustBe Some(SummaryRow(
           ExpectedMessages.hasUtrRow,
           "Yes",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
         ))
         doc.summaryRow(3) mustBe Some(SummaryRow(
           ExpectedMessages.utrRow,
           testUtr,
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
         ))
       }
       "show the right VRN and UTR answers when user has no UTR or VRN" in new ViewSetup()(document(changeMode = false, vatNumber = None, utr = None)) {
         doc.summaryRow(1) mustBe Some(SummaryRow(
           ExpectedMessages.hasVrnRow,
           "No",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HaveVatNumberController.show(testIndex).url))
         ))
         doc.summaryRow(2) mustBe Some(SummaryRow(
           ExpectedMessages.hasUtrRow,
           "No",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.HasUtrController.show(testIndex).url))
         ))
       }
       "show the actively trading answer" in new ViewSetup()(document(changeMode = false)) {
         doc.summaryRow(3) mustBe Some(SummaryRow(
           ExpectedMessages.activelyTradingRow,
           "No",
-          Seq(Link(ExpectedMessages.change, controllers.registration.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(testIndex).url))
+          Seq(Link(ExpectedMessages.change, controllers.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(testIndex).url))
         ))
       }
       "have a Save and Continue button" in new ViewSetup()(document(changeMode = false)) {

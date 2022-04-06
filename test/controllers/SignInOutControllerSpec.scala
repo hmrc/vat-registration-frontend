@@ -20,7 +20,7 @@ import controllers.callbacks.SignInOutController
 import play.api.mvc.Session
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.pages.error.TimeoutView
+import views.html.errors.TimeoutView
 
 class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
 

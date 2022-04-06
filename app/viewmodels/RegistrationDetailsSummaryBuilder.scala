@@ -17,7 +17,7 @@
 package viewmodels
 
 import connectors.ConfigConnector
-import controllers.registration.returns.{routes => returnsRoutes}
+import controllers.returns.{routes => returnsRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models._
 import models.api.returns._
@@ -63,7 +63,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         case Some(date) => Some(date.format(presentationFormatter))
         case _ => None
       },
-      Some(controllers.registration.returns.routes.VatRegStartDateResolverController.resolve.url)
+      Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)
     )
 
   private def accountingPeriod(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
@@ -115,7 +115,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
       bankAccount.map(_.isProvided),
-      Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url)
+      Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(
@@ -125,8 +125,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         case _ => bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq))
       },
       partyType match {
-        case NETP | NonUkNonEstablished => Some(controllers.registration.bankdetails.routes.OverseasBankAccountController.show.url)
-        case _ => Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show.url)
+        case NETP | NonUkNonEstablished => Some(controllers.bankdetails.routes.OverseasBankAccountController.show.url)
+        case _ => Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
       }
     )
 
@@ -137,7 +137,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
         case NameChange => "pages.noUKBankAccount.reason.nameChange"
       },
-      Some(controllers.registration.bankdetails.routes.NoUKBankAccountController.show.url)
+      Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
     )
 
     List(
@@ -155,25 +155,25 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val joinFrsRow = optSummaryListRowBoolean(
       s"$sectionId.joinFrs",
       optFlatRateScheme.flatMap(_.joinFrs),
-      Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     )
 
     val costsInclusiveRow = optSummaryListRowBoolean(
       s"$sectionId.costsInclusive",
       optFlatRateScheme.flatMap(_.overBusinessGoods),
-      Some(controllers.routes.FlatRateController.annualCostsInclusivePage.url)
+      Some(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)
     )
 
     val estimateTotalSalesRow = optSummaryListRowString(
       s"$sectionId.estimateTotalSales",
       optFlatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).map(sales => s"£$sales"),
-      Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
+      Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
     )
 
     val costsLimitedRow = optSummaryListRowBoolean(
       s"$sectionId.costsLimited",
       optFlatRateScheme.flatMap(_.overBusinessGoodsPercent),
-      Some(controllers.routes.FlatRateController.annualCostsLimitedPage.url),
+      Some(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url),
       Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))).map("%,d".format(_)).getOrElse("0"))
     )
 
@@ -181,8 +181,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       s"$sectionId.flatRate",
       optFlatRateScheme.flatMap(_.useThisRate),
       Some(
-        if (isLimitedCostTrader) controllers.routes.FlatRateController.registerForFrsPage.url
-        else controllers.routes.FlatRateController.yourFlatRatePage.url
+        if (isLimitedCostTrader) controllers.flatratescheme.routes.FlatRateController.registerForFrsPage.url
+        else controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage.url
       ),
       Seq(
         if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString
@@ -193,7 +193,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val businessSectorRow = optSummaryListRowString(
       s"$sectionId.businessSector",
       optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
-      Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)
+      Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)
     )
 
     val frsStartDate = optSummaryListRowString(
@@ -203,7 +203,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         case (_, Some(date)) => Some(date.format(presentationFormatter))
         case _ => None
       },
-      Some(controllers.registration.flatratescheme.routes.StartDateController.show.url)
+      Some(controllers.flatratescheme.routes.StartDateController.show.url)
     )
     List(
       joinFrsRow,

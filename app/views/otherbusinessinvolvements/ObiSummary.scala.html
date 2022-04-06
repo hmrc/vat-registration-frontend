@@ -43,7 +43,7 @@
 
         @obiSummaryTable(obiList)
 
-        @formWithCSRF(action = controllers.registration.otherbusinessinvolvements.routes.ObiSummaryController.submit) {
+        @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.submit) {
             @yesNoRadio(
                 form = obiSummaryForm,
                 headingKey = messages("obi.summary.subHeading"),

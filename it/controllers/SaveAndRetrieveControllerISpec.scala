@@ -2,7 +2,7 @@
 package controllers
 
 import common.enums.VatRegStatus
-import controllers.registration.applicant.routes
+import controllers.applicant.routes
 import itutil.ControllerISpec
 import models.api.VatScheme
 import play.api.http.HeaderNames

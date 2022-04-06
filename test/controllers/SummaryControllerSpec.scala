@@ -32,7 +32,7 @@ import services.mocks.MockNonRepudiationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.cache.client.CacheMap
-import views.html.pages.Summary
+import views.html.Summary
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -102,7 +102,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody(), useBasicAuth = true) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result redirectsTo controllers.routes.ErrorController.submissionRetryable.url
+          result redirectsTo controllers.errors.routes.ErrorController.submissionRetryable.url
 
       }
     }
@@ -120,7 +120,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody(), useBasicAuth = true) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
-          result redirectsTo controllers.routes.ErrorController.submissionFailed.url
+          result redirectsTo controllers.errors.routes.ErrorController.submissionFailed.url
       }
     }
   }

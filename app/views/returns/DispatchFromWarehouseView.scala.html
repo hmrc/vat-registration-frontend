@@ -40,7 +40,7 @@
         @link(appConfig.fhddsRegisteredBusinessesListUrl, "pages.dispatchFromWarehouse.link", isExternal = true).
     }
 
-    @form(action = controllers.registration.returns.routes.DispatchFromWarehouseController.submit) {
+    @form(action = controllers.returns.routes.DispatchFromWarehouseController.submit) {
         @yesNoRadio(
             form = dispatchFromWarehouseForm,
             headingKey = messages("pages.dispatchFromWarehouse.heading"),

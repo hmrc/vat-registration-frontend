@@ -17,7 +17,7 @@
 package viewmodels
 
 import connectors.ConfigConnector
-import controllers.registration.applicant.{routes => applicantRoutes}
+import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config._
 import models.api._
 import models.external._
@@ -67,7 +67,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
         case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
         case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
         case _: PartnershipIdEntity if List(Partnership, ScotPartnership).contains(partyType) =>
-          Some(controllers.registration.business.routes.PartnershipNameController.show.url)
+          Some(controllers.business.routes.PartnershipNameController.show.url)
         case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
         case _ => None
       }

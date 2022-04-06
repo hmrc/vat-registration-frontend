@@ -18,7 +18,7 @@ package views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.pages.SubmissionInProgress
+import views.html.SubmissionInProgress
 
 class SubmissionInProgressViewSpec extends VatRegViewSpec {
   object ExpectedContent {

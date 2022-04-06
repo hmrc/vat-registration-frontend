@@ -88,47 +88,47 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             TestContent.isPartOfOrganisation,
             Some("Yes"),
-            Some(controllers.registration.transactor.routes.PartOfOrganisationController.show.url)
+            Some(controllers.transactor.routes.PartOfOrganisationController.show.url)
           ),
           optSummaryListRowString(
             TestContent.organisationName,
             Some(testOrganisationName),
-            Some(controllers.registration.transactor.routes.OrganisationNameController.show.url)
+            Some(controllers.transactor.routes.OrganisationNameController.show.url)
           ),
           optSummaryListRowString(
             TestContent.roleInTheBusiness,
             Some(testOtherDeclarationCapacity),
-            Some(controllers.registration.transactor.routes.DeclarationCapacityController.show.url)
+            Some(controllers.transactor.routes.DeclarationCapacityController.show.url)
           ),
           optSummaryListRowString(
             TestContent.fullName,
             Some(testFirstName + " " + testLastName),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
             Some(testDateOfBirth.format(Builder.presentationFormatter)),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.nino,
             Some(testNino),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowSeq(
             TestContent.homeAddress,
             Some(Address.normalisedSeq(testAddress)),
-            Some(controllers.registration.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
+            Some(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
           ),
           optSummaryListRowString(
             TestContent.telephoneNumber,
             Some(testTelephoneNumber),
-            Some(controllers.registration.transactor.routes.TelephoneNumberController.show.url)
+            Some(controllers.transactor.routes.TelephoneNumberController.show.url)
           ),
           optSummaryListRowString(
             TestContent.emailAddress,
             Some(testEmail),
-            Some(controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url)
+            Some(controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url)
           )
         ).flatten
       )
@@ -152,47 +152,47 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             TestContent.isPartOfOrganisation,
             Some("Yes"),
-            Some(controllers.registration.transactor.routes.PartOfOrganisationController.show.url)
+            Some(controllers.transactor.routes.PartOfOrganisationController.show.url)
           ),
           optSummaryListRowString(
             TestContent.organisationName,
             Some(testOrganisationName),
-            Some(controllers.registration.transactor.routes.OrganisationNameController.show.url)
+            Some(controllers.transactor.routes.OrganisationNameController.show.url)
           ),
           optSummaryListRowString(
             TestContent.roleInTheBusiness,
             Some(testOtherDeclarationCapacity),
-            Some(controllers.registration.transactor.routes.DeclarationCapacityController.show.url)
+            Some(controllers.transactor.routes.DeclarationCapacityController.show.url)
           ),
           optSummaryListRowString(
             TestContent.fullName,
             Some(testFirstName + " " + testLastName),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
             Some(testDateOfBirth.format(Builder.presentationFormatter)),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.nino,
             Some(testNino),
-            Some(controllers.registration.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
           ),
           optSummaryListRowSeq(
             TestContent.homeAddress,
             Some(Address.normalisedSeq(testAddress)),
-            Some(controllers.registration.transactor.routes.TransactorInternationalAddressController.show.url)
+            Some(controllers.transactor.routes.TransactorInternationalAddressController.show.url)
           ),
           optSummaryListRowString(
             TestContent.telephoneNumber,
             Some(testTelephoneNumber),
-            Some(controllers.registration.transactor.routes.TelephoneNumberController.show.url)
+            Some(controllers.transactor.routes.TelephoneNumberController.show.url)
           ),
           optSummaryListRowString(
             TestContent.emailAddress,
             Some(testEmail),
-            Some(controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url)
+            Some(controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url)
           )
         ).flatten
       )
@@ -233,17 +233,17 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             TestContent.fullName,
             Some(testFirstName + " " + testLastName),
-            Some(controllers.registration.transactor.routes.AgentNameController.show.url)
+            Some(controllers.transactor.routes.AgentNameController.show.url)
           ),
           optSummaryListRowString(
             TestContent.telephoneNumber,
             Some(testTelephoneNumber),
-            Some(controllers.registration.transactor.routes.TelephoneNumberController.show.url)
+            Some(controllers.transactor.routes.TelephoneNumberController.show.url)
           ),
           optSummaryListRowString(
             TestContent.emailAddress,
             Some(testEmail),
-            Some(controllers.registration.transactor.routes.TransactorCaptureEmailAddressController.show.url)
+            Some(controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url)
           )
         ).flatten
       )

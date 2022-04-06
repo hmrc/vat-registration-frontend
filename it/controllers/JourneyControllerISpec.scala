@@ -27,7 +27,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.RegistrationsApiStubs
-import controllers.registration.transactor.{routes => transactorRoutes}
+import controllers.transactor.{routes => transactorRoutes}
 
 import java.time.LocalDate
 
@@ -237,7 +237,7 @@ class JourneyControllerISpec extends ControllerISpec
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.attachments.routes.DocumentsRequiredController.resolve.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
     "the channel for traffic management is VatReg" when {
@@ -389,7 +389,7 @@ class JourneyControllerISpec extends ControllerISpec
 
               val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
-              res.header(HeaderNames.LOCATION) mustBe Some(controllers.registration.transactor.routes.AgentNameController.show.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(controllers.transactor.routes.AgentNameController.show.url)
             }
             "redirect to the Business Identification resolver when the FullAgentJourney FS is disnabled" in new Setup {
               disable(FullAgentJourney)

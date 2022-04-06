@@ -2,8 +2,8 @@
 
 package controllers
 
-import controllers.registration.applicant.{routes => applicantRoutes}
-import controllers.registration.transactor.{routes => transactorRoutes}
+import controllers.applicant.{routes => applicantRoutes}
+import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec

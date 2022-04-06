@@ -47,7 +47,7 @@
 
     @p{ @messages("pages.accounting.period.para1") }
 
-    @formWithCSRF(action = controllers.registration.returns.routes.ReturnsController.submitAccountPeriods) {
+    @formWithCSRF(action = controllers.returns.routes.ReturnsController.submitAccountPeriods) {
         @inputRadio(
             form = accountingPeriodForm,
             legend = messages("pages.accounting.period.heading"),

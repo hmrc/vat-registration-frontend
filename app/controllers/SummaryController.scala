@@ -24,7 +24,7 @@ import models.CurrentProfile
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.pages.Summary
+import views.html.Summary
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -77,15 +77,15 @@ class SummaryController @Inject()(val sessionService: SessionService,
         }
       case AlreadySubmitted =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.duplicateSubmission)).map {
-          _ => Redirect(controllers.routes.ErrorController.alreadySubmitted)
+          _ => Redirect(controllers.errors.routes.ErrorController.alreadySubmitted)
         }
       case SubmissionFailed =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failed)).map {
-          _ => Redirect(controllers.routes.ErrorController.submissionFailed)
+          _ => Redirect(controllers.errors.routes.ErrorController.submissionFailed)
         }
       case SubmissionFailedRetryable =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)).map {
-          _ => Redirect(controllers.routes.ErrorController.submissionRetryable)
+          _ => Redirect(controllers.errors.routes.ErrorController.submissionRetryable)
         }
     }
   }

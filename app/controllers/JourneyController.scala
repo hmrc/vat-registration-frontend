@@ -22,8 +22,8 @@ import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveA
 import forms.StartNewApplicationForm
 import play.api.mvc._
 import services.{SessionService, _}
-import views.html.pages.start_new_application
-import controllers.registration.transactor.{routes => transactorRoutes}
+import views.html.start_new_application
+import controllers.transactor.{routes => transactorRoutes}
 import models.api.VatSchemeHeader
 import uk.gov.hmrc.http.InternalServerException
 
@@ -108,7 +108,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
         } yield (header.status, trafficManagementResponse) match {
           case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
           case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
-          case _ if header.requiresAttachments => Redirect(controllers.registration.attachments.routes.DocumentsRequiredController.resolve)
+          case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
           case _ if isEnabled(MultipleRegistrations) => Redirect(routes.ApplicationReferenceController.show)
           case _ => Redirect(routes.HonestyDeclarationController.show)
         }

@@ -61,16 +61,16 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
           } yield {
             if (sicCodesList.size == 1) {
               if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                Redirect(controllers.registration.sicandcompliance.routes.ComplianceIntroductionController.show)
+                Redirect(controllers.sicandcompliance.routes.ComplianceIntroductionController.show)
               } else {
                 if (isEnabled(OtherBusinessInvolvement)) {
-                  Redirect(controllers.registration.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                  Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                 } else {
                   Redirect(controllers.routes.TradingNameResolverController.resolve)
                 }
               }
             } else {
-              Redirect(controllers.registration.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity)
+              Redirect(controllers.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity)
             }
           }
         )

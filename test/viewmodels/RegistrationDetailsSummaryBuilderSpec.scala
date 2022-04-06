@@ -76,55 +76,55 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
-          optUrl = Some(controllers.registration.returns.routes.VatRegStartDateResolverController.resolve.url)),
+          optUrl = Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("I would like to join the Annual Accounting Scheme"),
-          optUrl = Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage.url)),
+          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url)),
         optSummaryListRowString(
           questionId = TestContent.paymentFrequency,
           optAnswer = Some("Quarterly"),
-          optUrl = Some(controllers.registration.returns.routes.PaymentFrequencyController.show.url)),
+          optUrl = Some(controllers.returns.routes.PaymentFrequencyController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.paymentMethod,
           optAnswer = Some("BACS or internet banking"),
-          optUrl = Some(controllers.registration.returns.routes.PaymentMethodController.show.url)),
+          optUrl = Some(controllers.returns.routes.PaymentMethodController.show.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.bankAccount,
           optAnswer = Some(true),
-          optUrl = Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url)),
+          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
         optSummaryListRowSeq(
           questionId = TestContent.bankAccountDetails,
           optAnswers = Some(Seq("testName", "12-34-56", "12345678")),
-          optUrl = Some(controllers.registration.bankdetails.routes.UkBankAccountDetailsController.show.url)),
+          optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.joinFrs,
           optAnswer = Some(true),
-          optUrl = Some(controllers.registration.flatratescheme.routes.JoinFlatRateSchemeController.show.url)),
+          optUrl = Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.costsInclusive,
           optAnswer = Some(true),
-          optUrl = Some(controllers.routes.FlatRateController.annualCostsInclusivePage.url)),
+          optUrl = Some(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)),
         optSummaryListRowString(
           questionId = TestContent.estimatedTotalSales,
           optAnswer = Some("£5,003"),
-          optUrl = Some(controllers.registration.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)),
+          optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.costsLimited,
           optAnswer = Some(true),
-          optUrl = Some(controllers.routes.FlatRateController.annualCostsLimitedPage.url)),
+          optUrl = Some(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.flatRate,
           optAnswer = Some(true),
-          optUrl = Some(controllers.routes.FlatRateController.yourFlatRatePage.url)),
+          optUrl = Some(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage.url)),
         optSummaryListRowString(
           questionId = TestContent.businessSector,
           optAnswer = Some("Pubs"),
-          optUrl = Some(controllers.registration.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
+          optUrl = Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.flatRateDate,
           optAnswer = Some(TestContent.flatRateRegDate),
-          optUrl = Some(controllers.registration.flatratescheme.routes.StartDateController.show.url))
+          optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
       ).flatten)
 
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("Pubs", BigDecimal("6.5")))
@@ -151,15 +151,15 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
-          optUrl = Some(controllers.registration.returns.routes.VatRegStartDateResolverController.resolve.url)),
+          optUrl = Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("Once a month"),
-          optUrl = Some(controllers.registration.returns.routes.ReturnsController.accountPeriodsPage.url)),
+          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.bankAccount,
           optAnswer = Some(true),
-          optUrl = Some(controllers.registration.bankdetails.routes.HasBankAccountController.show.url))
+          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url))
       ).flatten)
 
       val res: SummaryList = Builder.build(testVatScheme)
