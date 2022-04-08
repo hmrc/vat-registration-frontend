@@ -20,8 +20,9 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
+import models.api.{AttachmentType, PrimaryIdentityEvidence}
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -92,9 +93,12 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an OK" in {
       stubPost(upscanReferenceUrl, OK, testReference)
 
-      val response = await(connector.storeUpscanReference(testRegId, testReference))
+      val response = await(connector.storeUpscanReference(testRegId, testReference, PrimaryIdentityEvidence))
 
-      verify(postRequestedFor(urlEqualTo(upscanReferenceUrl)).withRequestBody(equalToJson(JsString(testReference).toString())))
+      verify(postRequestedFor(urlEqualTo(upscanReferenceUrl)).withRequestBody(equalToJson(Json.obj(
+        "reference" -> testReference,
+        "attachmentType" -> Json.toJson[AttachmentType](PrimaryIdentityEvidence)
+      ).toString())))
       response.status mustBe OK
     }
   }

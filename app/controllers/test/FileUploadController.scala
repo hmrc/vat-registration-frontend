@@ -18,6 +18,7 @@ package controllers.test
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import models.api.PrimaryIdentityEvidence
 import play.api.mvc.{Action, AnyContent, Session}
 import services.{SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -38,7 +39,7 @@ class FileUploadController @Inject()(fileUploadView: file_upload,
   extends BaseController with SessionProfile {
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => profile =>
-    upscanService.initiateUpscan(profile.registrationId).map{ upscanResponse =>
+    upscanService.initiateUpscan(profile.registrationId, PrimaryIdentityEvidence).map{ upscanResponse =>
       Ok(fileUploadView(upscanResponse)).addingToSession("reference" -> upscanResponse.reference)
     }
   }
