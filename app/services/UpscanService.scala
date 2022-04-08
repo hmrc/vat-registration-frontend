@@ -17,8 +17,8 @@
 package services
 
 import connectors.UpscanConnector
+import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
-import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -27,9 +27,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executionContext: ExecutionContext) {
 
-  def initiateUpscan(regId: String)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
+  def initiateUpscan(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     upscanConnector.upscanInitiate().flatMap { response =>
-      upscanConnector.storeUpscanReference(regId, response.reference).map(_ => response)
+      upscanConnector.storeUpscanReference(regId, response.reference, attachmentType).map(_ => response)
     }
   }
 

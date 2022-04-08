@@ -17,6 +17,7 @@
 package services
 
 import connectors.mocks.MockUpscanConnector
+import models.api.PrimaryIdentityEvidence
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import play.api.test.FakeRequest
@@ -37,9 +38,9 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   "initiateUpscan" must {
     "return an UpscanResponse" in {
       mockUpscanInitiate(Future.successful(testUpscanResponse))
-      mockStoreUpscanReference(testRegId, testReference)(Future.successful(HttpResponse(OK, "{}")))
+      mockStoreUpscanReference(testRegId, testReference, PrimaryIdentityEvidence)(Future.successful(HttpResponse(OK, "{}")))
 
-      val response = await(TestService.initiateUpscan(testRegId))
+      val response = await(TestService.initiateUpscan(testRegId, PrimaryIdentityEvidence))
 
       response mustBe testUpscanResponse
     }
@@ -47,14 +48,14 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
     "throw an exception if initiate fails" in {
       mockUpscanInitiate(Future.failed(new InternalServerException("")))
 
-      intercept[InternalServerException](await(TestService.initiateUpscan(testRegId)))
+      intercept[InternalServerException](await(TestService.initiateUpscan(testRegId, PrimaryIdentityEvidence)))
     }
 
     "throw an exception if store fails" in {
       mockUpscanInitiate(Future.successful(testUpscanResponse))
-      mockStoreUpscanReference(testRegId, testReference)(Future.failed(new InternalServerException("")))
+      mockStoreUpscanReference(testRegId, testReference, PrimaryIdentityEvidence)(Future.failed(new InternalServerException("")))
 
-      intercept[InternalServerException](await(TestService.initiateUpscan(testRegId)))
+      intercept[InternalServerException](await(TestService.initiateUpscan(testRegId, PrimaryIdentityEvidence)))
     }
   }
 

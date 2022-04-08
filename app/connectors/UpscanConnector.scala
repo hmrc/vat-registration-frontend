@@ -17,10 +17,10 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
@@ -46,10 +46,13 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
     }
   }
 
-  def storeUpscanReference(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def storeUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     lazy val url = appConfig.storeUpscanReferenceUrl(regId)
 
-    httpClient.POST[String, HttpResponse](url, reference) recover {
+    httpClient.POST[JsValue, HttpResponse](url, Json.obj(
+      "reference" -> reference,
+      "attachmentType" -> attachmentType
+    )) recover {
       case e => throw logResponse(e, "storeUpscanReference")
     }
   }

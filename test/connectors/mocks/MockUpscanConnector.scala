@@ -17,6 +17,7 @@
 package connectors.mocks
 
 import connectors.UpscanConnector
+import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -36,10 +37,11 @@ trait MockUpscanConnector extends MockitoSugar {
   def mockUpscanInitiate(res: Future[UpscanResponse]): OngoingStubbing[Future[UpscanResponse]] =
     when(mockUpscanConnector.upscanInitiate()(ArgumentMatchers.any[HeaderCarrier])).thenReturn(res)
 
-  def mockStoreUpscanReference(regId: String, reference: String)(res: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
+  def mockStoreUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(res: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
     when(mockUpscanConnector.storeUpscanReference(
       ArgumentMatchers.eq(regId),
-      ArgumentMatchers.eq(reference)
+      ArgumentMatchers.eq(reference),
+      ArgumentMatchers.eq(attachmentType)
     )(
       ArgumentMatchers.any[HeaderCarrier]
     )).thenReturn(res)
