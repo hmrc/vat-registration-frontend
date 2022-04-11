@@ -37,7 +37,9 @@ case class VatScheme(id: String,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      partners: Option[List[PartnerEntity]] = None,
                      createdDate: Option[LocalDate] = None,
-                     applicationReference: Option[String] = None)
+                     applicationReference: Option[String] = None,
+                     otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None
+                    )
 
 object VatScheme {
 
@@ -57,7 +59,8 @@ object VatScheme {
           (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
           (__ \ "partners").readNullable[List[PartnerEntity]] and
           (__ \ "createdDate").readNullable[LocalDate] and
-          (__ \ "applicationReference").readNullable[String]
+          (__ \ "applicationReference").readNullable[String] and
+          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]]
         ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
@@ -73,7 +76,8 @@ object VatScheme {
           Reads.pure(None) and
           Reads.pure(None) and
           (__ \ "createdDate").readNullable[LocalDate] and
-          (__ \ "applicationReference").readNullable[String]
+          (__ \ "applicationReference").readNullable[String] and
+          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]]
         ) (VatScheme.apply _)
     }
 
@@ -91,7 +95,8 @@ object VatScheme {
       (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
       (__ \ "partners").writeNullable[List[PartnerEntity]] and
       (__ \ "createdDate").writeNullable[LocalDate] and
-      (__ \ "applicationReference").writeNullable[String]
+      (__ \ "applicationReference").writeNullable[String] and
+      (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]]
     ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)

@@ -24,6 +24,8 @@ import models.external._
 import models.external.soletraderid.OverseasIdentifierDetails
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.InternalServerException
 
@@ -31,11 +33,11 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends FeatureSwitching {
+class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummaryList: GovukSummaryList) extends FeatureSwitching {
 
   val sectionId: String = "cya.grsDetails"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
 
     val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[GrsSummaryBuilder] Missing party type"))
 
@@ -173,7 +175,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
       }
     )
 
-    SummaryList(Seq(
+    govukSummaryList(SummaryList(Seq(
       companyNumber,
       businessName,
       ctutr,
@@ -183,6 +185,6 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector) extends Feat
       overseasIdentifier,
       overseasCountry,
       chrn
-    ).flatten)
+    ).flatten))
   }
 }

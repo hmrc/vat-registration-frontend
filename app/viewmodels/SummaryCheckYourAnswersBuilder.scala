@@ -20,10 +20,10 @@ import featureswitch.core.config.FeatureSwitching
 import models.api._
 import play.api.i18n.Messages
 import play.api.libs.json.JsValue
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
@@ -47,12 +47,12 @@ class SummaryCheckYourAnswersBuilder @Inject()(govukSummaryList: GovukSummaryLis
       (if (isTransactor) messages(s"cya.heading.applicant.transactor") else messages(s"cya.heading.applicant.self")) -> applicantDetailsSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.aboutBusiness") -> aboutTheBusinessSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.vatRegDetails") -> registrationDetailsSummaryBuilder.build(vatScheme)
-    ).filter { case (_, summaryList) => summaryList.rows.nonEmpty }
+    )
 
     Accordion(items = summaryMap.map { case (heading, summarySection) =>
       Section(
         headingContent = Text(heading),
-        content = HtmlContent(govukSummaryList(summarySection))
+        content = HtmlContent(summarySection)
       )
     }.toSeq)
   }

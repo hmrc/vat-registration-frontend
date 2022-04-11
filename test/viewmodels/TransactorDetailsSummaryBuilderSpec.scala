@@ -21,18 +21,21 @@ import models.api._
 import models.view.SummaryListRowUtils.{optSummaryListRowSeq, optSummaryListRowString}
 import models.{Other, _}
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 import java.time.LocalDate
 
 class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
   class Setup {
+    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    object Builder extends TransactorDetailsSummaryBuilder
+    object Builder extends TransactorDetailsSummaryBuilder(govukSummaryList)
   }
 
   val testOrganisationName = "testOrganisationName"
@@ -133,9 +136,9 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.build(testVatScheme)(messages)
+      val res = Builder.build(testVatScheme)(messages)
 
-      res mustBe expectedSummaryList
+      res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
 
     "return an full summary list for an Overseas transactor" in new Setup {
@@ -197,9 +200,9 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.build(testVatScheme)(messages)
+      val res = Builder.build(testVatScheme)(messages)
 
-      res mustBe expectedSummaryList
+      res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
 
     "return an full summary list for an Agent transactor" in new Setup {
@@ -248,9 +251,9 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res: SummaryList = Builder.build(testVatScheme)(messages)
+      val res = Builder.build(testVatScheme)(messages)
 
-      res mustBe expectedSummaryList
+      res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
 
     "return an empty summary list for a non-transactor" in new Setup {
@@ -262,9 +265,9 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         transactorDetails = None
       )
 
-      val res: SummaryList = Builder.build(testVatScheme)(messages)
+      val res = Builder.build(testVatScheme)(messages)
 
-      res mustBe SummaryList(Nil)
+      res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(Nil))))
     }
   }
 }

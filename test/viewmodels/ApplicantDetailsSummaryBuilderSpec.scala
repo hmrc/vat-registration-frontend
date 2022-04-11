@@ -21,17 +21,20 @@ import models.PartnerEntity
 import models.api._
 import models.view.SummaryListRowUtils.optSummaryListRowString
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
+    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val applicantDetailsSummaryBuilder = new ApplicantDetailsSummaryBuilder()
+    val applicantDetailsSummaryBuilder = new ApplicantDetailsSummaryBuilder(govukSummaryList)
   }
 
   "SummaryApplicantDetailsBuilder" when {
@@ -91,8 +94,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
       }
     }
     "called with Individual lead partner" must {
@@ -165,8 +168,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedIndividualSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedIndividualSummaryList)))
       }
     }
     "called with NETP lead partner" must {
@@ -239,8 +242,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedNETPSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNETPSummaryList)))
       }
     }
     "called with Limited company lead partner" must {
@@ -321,8 +324,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedLtdCompanySummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdCompanySummaryList)))
       }
     }
     "called with Scottish partnership lead partner" must {
@@ -399,8 +402,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedScotPartnershipSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScotPartnershipSummaryList)))
       }
     }
     "called with Scottish limited partnership lead partner" must {
@@ -485,8 +488,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedScotLtdPartnershipSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScotLtdPartnershipSummaryList)))
       }
     }
     "called with Limited liability partnership lead partner" must {
@@ -571,8 +574,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedLtdLiabilityPartnershipSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdLiabilityPartnershipSummaryList)))
       }
     }
     "called with Charitable org lead partner" must {
@@ -653,8 +656,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedCharitableOrgSummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedCharitableOrgSummaryList)))
       }
     }
     "called with Registered society lead partner" must {
@@ -735,8 +738,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result: SummaryList = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedRegSocietySummaryList
+        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedRegSocietySummaryList)))
       }
     }
   }

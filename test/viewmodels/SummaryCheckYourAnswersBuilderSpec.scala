@@ -22,6 +22,7 @@ import models.view.SummaryListRowUtils.optSummaryListRowString
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
@@ -30,11 +31,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
 
+  val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-  val govukSummaryList = new GovukSummaryList
   val mockEligibilitySummaryBuilder: EligibilitySummaryBuilder = mock[EligibilitySummaryBuilder]
   val mockGrsSummaryBuilder: GrsSummaryBuilder = mock[GrsSummaryBuilder]
   val mockTransactorDetailsSummaryBuilder: TransactorDetailsSummaryBuilder = mock[TransactorDetailsSummaryBuilder]
@@ -70,17 +71,17 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
   "generateSummaryAccordion" must {
     "combine the summary sections into an accordion" in new Setup {
       when(mockEligibilitySummaryBuilder.build(ArgumentMatchers.eq(fullEligibilityDataJson), ArgumentMatchers.eq(validVatScheme.id))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(eligibilityId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(eligibilityId)))))
       when(mockTransactorDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(SummaryList())
+        .thenReturn(HtmlFormat.empty)
       when(mockGrsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(verifyBusinessId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(verifyBusinessId)))))
       when(mockApplicantDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(applicantId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(applicantId)))))
       when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(aboutBusinessId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
       when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(vatRegDetailsId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
       val expectedAccordion: Accordion = Accordion(
         items = Seq(
@@ -119,17 +120,17 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
       )
 
       when(mockEligibilitySummaryBuilder.build(ArgumentMatchers.eq(fullEligibilityDataJson), ArgumentMatchers.eq(testVatScheme.id))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(eligibilityId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(eligibilityId)))))
       when(mockTransactorDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(transactorId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(transactorId)))))
       when(mockGrsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(verifyBusinessId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(verifyBusinessId)))))
       when(mockApplicantDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(applicantId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(applicantId)))))
       when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(aboutBusinessId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
       when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
-        .thenReturn(testSummaryList(vatRegDetailsId))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
       val expectedAccordion: Accordion = Accordion(
         items = Seq(

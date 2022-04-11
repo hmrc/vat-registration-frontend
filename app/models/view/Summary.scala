@@ -85,6 +85,31 @@ object SummaryListRowUtils {
         }
       )
     }
+
+  def optSummaryListRowIndexed(questionId: String,
+                               optAnswer: Option[HtmlContent],
+                               optUrl: Option[String],
+                               index: Int
+                              )(implicit messages: Messages): Option[SummaryListRow] =
+    optAnswer.map { answer =>
+      val ordinal = messages(s"ordinals.$index")
+
+      SummaryListRow(
+        key = Key(Text(messages(questionId)), "govuk-!-width-one-half"),
+        value = Value(answer),
+        actions = optUrl.map { url =>
+          Actions(
+            items = Seq(
+              ActionItem(
+                href = url,
+                content = Text(messages("app.common.change")),
+                visuallyHiddenText = Some(messages(s"$questionId.hiddenText", ordinal))
+              )
+            )
+          )
+        }
+      )
+    }
 }
 
 object EligibilityJsonParser {

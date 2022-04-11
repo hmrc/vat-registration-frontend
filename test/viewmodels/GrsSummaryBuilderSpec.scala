@@ -23,17 +23,20 @@ import models.external._
 import models.view.SummaryListRowUtils.optSummaryListRowString
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class GrsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
+    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val grsCheckYourAnswersBuilder = new GrsSummaryBuilder(configConnector = mockConfigConnector)
+    val grsCheckYourAnswersBuilder = new GrsSummaryBuilder(configConnector = mockConfigConnector, govukSummaryList)
   }
 
   "generateGrsDetailsSummaryListRows" when {
@@ -77,7 +80,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedLtdCompanySummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdCompanySummaryList)))
       }
     }
     "called with Charitable org party type" should {
@@ -114,7 +117,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedCharitableOrgSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedCharitableOrgSummaryList)))
       }
     }
     "called with Registered society party type" should {
@@ -155,7 +158,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedRegSocietySummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedRegSocietySummaryList)))
       }
     }
 
@@ -190,7 +193,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedIndividualSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedIndividualSummaryList)))
       }
     }
     "called with NETP party type" should {
@@ -223,7 +226,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedNetpSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNetpSummaryList)))
       }
     }
 
@@ -264,7 +267,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedGeneralPartnershipSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedGeneralPartnershipSummaryList)))
       }
     }
     "called with Limited Partnership party type" should {
@@ -307,7 +310,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedLimitedPartnershipSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLimitedPartnershipSummaryList)))
       }
     }
     "called with Scottish Partnership party type" should {
@@ -345,7 +348,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedScottishPartnershipSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScottishPartnershipSummaryList)))
       }
     }
     "called with Scottish Limited Partnership party type" should {
@@ -388,7 +391,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedScottishLimitedPartnershipSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScottishLimitedPartnershipSummaryList)))
       }
     }
     "called with Limited Liability Partnership party type" should {
@@ -431,7 +434,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedLimitedLiabilityPartnershipSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLimitedLiabilityPartnershipSummaryList)))
       }
     }
 
@@ -469,7 +472,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedUnincorpAssocSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedUnincorpAssocSummaryList)))
       }
     }
     "called with Trust party type" should {
@@ -505,7 +508,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedTrustSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedTrustSummaryList)))
       }
     }
     "called with Non UK Company party type" should {
@@ -548,7 +551,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         ).flatten)
 
         val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
-        result mustBe expectedNonUkNonEstablishedSummaryList
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNonUkNonEstablishedSummaryList)))
       }
     }
   }

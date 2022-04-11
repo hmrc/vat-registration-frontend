@@ -24,7 +24,9 @@ import models.api.returns._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import services.FlatRateService
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 
@@ -34,16 +36,17 @@ import javax.inject.{Inject, Singleton}
 // scalastyle:off
 @Singleton
 class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnector,
-                                                  flatRateService: FlatRateService) extends FeatureSwitching {
+                                                  flatRateService: FlatRateService,
+                                                  govukSummaryList: GovukSummaryList) extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId = "cya.registrationDetails"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("Eligibility"))
     val returns = vatScheme.returns.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Returns"))
 
-    SummaryList(
+    govukSummaryList(SummaryList(
       List(
         startDate(returns),
         accountingPeriod(returns),
@@ -53,7 +56,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       ).flatten ++
         bankAccountSection(vatScheme, partyType) ++
         flatRateSchemeSection(vatScheme, partyType)
-    )
+    ))
   }
 
   private def startDate(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
