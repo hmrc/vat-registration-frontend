@@ -21,6 +21,8 @@ import models._
 import models.api.{Address, NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 
@@ -29,12 +31,12 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
+class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.transactor"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
       .getOrElse(throw new InternalServerException("[TransactorDetailsSummaryBuilder] Missing party type"))
     val optTransactorDetails: Option[TransactorDetails] = vatScheme.transactorDetails
@@ -42,9 +44,9 @@ class TransactorDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
       generateTransactorSummaryListRows(transactorDetails, partyType)
     )
 
-    SummaryList(
+    govukSummaryList(SummaryList(
       summaryListRows
-    )
+    ))
   }
 
   private def generateTransactorSummaryListRows(transactorDetails: TransactorDetails,

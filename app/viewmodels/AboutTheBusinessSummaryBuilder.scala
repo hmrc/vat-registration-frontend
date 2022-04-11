@@ -20,58 +20,122 @@ import controllers.business.{routes => businessContactRoutes}
 import controllers.returns.{routes => returnsRoutes}
 import controllers.sicandcompliance.{routes => sicAndCompRoutes}
 import featureswitch.core.config.FeatureSwitching
-import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
 import models.api._
-import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
-import models.{BusinessContact, SicAndCompliance, TradingDetails}
+import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
+import models.view.SummaryListRowUtils._
+import models.{BusinessContact, OtherBusinessInvolvement, SicAndCompliance, TradingDetails}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 
+import javax.inject.Inject
+
 // scalastyle:off
-class AboutTheBusinessSummaryBuilder extends FeatureSwitching {
+class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList,
+                                               h3: views.html.components.h3) extends FeatureSwitching {
 
   val sectionId = "cya.aboutTheBusiness"
+  private val extraBottomMarginClass = "govuk-!-margin-bottom-9"
+  private val noExtraClasses = ""
 
   private def missingSection(section: String) =
     new InternalServerException(s"[AboutTheBusinessCheckYourAnswersBuilder] Couldn't construct CYA due to missing section: $section")
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val businessContact = vatScheme.businessContact.getOrElse(throw missingSection("Business Contact"))
     val sicAndCompliance = vatScheme.sicAndCompliance.getOrElse(throw missingSection("Sic And Compliance"))
     val tradingDetails = vatScheme.tradingDetails
     val returns = vatScheme.returns.getOrElse(throw missingSection("Returns"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
+    val obis = vatScheme.otherBusinessInvolvements.getOrElse(Nil)
 
-    SummaryList(
-      List(
-        ppobAddress(businessContact, partyType),
-        businessEmailAddress(businessContact),
-        businessDaytimePhoneNumber(businessContact),
-        businessMobilePhoneNumber(businessContact),
-        businessWebsite(businessContact),
-        contactPreference(businessContact),
-        buySellLandOrProperty(sicAndCompliance),
-        businessDescription(sicAndCompliance),
-        otherBusinessActivities(sicAndCompliance),
-        mainBusinessActivity(sicAndCompliance),
-        supplyWorkers(sicAndCompliance)
-      ).flatten ++
-      complianceSection(sicAndCompliance) ++
-      List(
-        tradingName(tradingDetails, partyType),
-        importsOrExports(tradingDetails, partyType),
-        applyForEori(tradingDetails, partyType),
-        zeroRatedTurnover(vatScheme),
-        claimRefunds(returns),
-        sendGoodsOverseas(returns),
-        sendGoodsToEu(returns)
-      ).flatten ++
-      netpSection(returns, partyType) ++
-      nipSection(returns)
-    )
+    HtmlFormat.fill(List(
+      govukSummaryList(SummaryList(
+        classes = extraBottomMarginClass,
+        rows = List(
+          ppobAddress(businessContact, partyType),
+          businessEmailAddress(businessContact),
+          businessDaytimePhoneNumber(businessContact),
+          businessMobilePhoneNumber(businessContact),
+          businessWebsite(businessContact),
+          contactPreference(businessContact),
+          buySellLandOrProperty(sicAndCompliance),
+          businessDescription(sicAndCompliance),
+          otherBusinessActivities(sicAndCompliance),
+          mainBusinessActivity(sicAndCompliance),
+          supplyWorkers(sicAndCompliance)
+        ).flatten ++
+        complianceSection(sicAndCompliance) ++
+        List(
+          tradingName(tradingDetails, partyType),
+          importsOrExports(tradingDetails, partyType),
+          applyForEori(tradingDetails, partyType),
+          zeroRatedTurnover(vatScheme),
+          claimRefunds(returns),
+          sendGoodsOverseas(returns),
+          sendGoodsToEu(returns)
+        ).flatten ++
+        netpSection(returns, partyType) ++
+        nipSection(returns)
+      )),
+      obiSection(obis)
+    ))
   }
+
+  private def obiSection(obis: List[OtherBusinessInvolvement])(implicit messages: Messages): Html =
+    HtmlFormat.fill(
+      obis
+        .zip(1 to obis.size)
+        .map {
+          case (obi, n) =>
+            HtmlFormat.fill(List(
+              h3(messages("cya.heading.obi", messages(s"ordinals.$n"))),
+              govukSummaryList(SummaryList(
+                classes = if (n < obis.size) extraBottomMarginClass else noExtraClasses,
+                rows = List(
+                  optSummaryListRowIndexed(
+                    questionId = "obi.cya.businessName",
+                    optAnswer = obi.businessName.map(HtmlContent(_)),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(n).url),
+                    index = n),
+                  optSummaryListRowIndexed(
+                    questionId = "obi.cya.hasVatNumber",
+                    optAnswer = obi.hasVrn.map(hasVrn => if (hasVrn) HtmlContent(messages("app.common.yes")) else HtmlContent(messages("app.common.no"))),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.HaveVatNumberController.show(n).url),
+                    index = n),
+                  optSummaryListRowIndexed(
+                    questionId ="obi.cya.vatNumber",
+                    optAnswer = obi.vrn.map(HtmlContent(_)),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.CaptureVrnController.show(n).url),
+                    index = n
+                  ),
+                  optSummaryListRowIndexed(
+                    questionId ="obi.cya.hasUtr",
+                    optAnswer = obi.hasUtr.map(hasUtr => if (hasUtr) HtmlContent(messages("app.common.yes")) else HtmlContent(messages("app.common.no"))),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.HasUtrController.show(n).url),
+                    index = n
+                  ),
+                  optSummaryListRowIndexed(
+                    questionId ="obi.cya.utr",
+                    optAnswer = obi.utr.map(HtmlContent(_)),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.CaptureUtrController.show(n).url),
+                    index = n
+                  ),
+                  optSummaryListRowIndexed(
+                    questionId ="obi.cya.stillActivelyTrading",
+                    optAnswer = obi.stillTrading.map(trading => if (trading) HtmlContent(messages("app.common.yes")) else HtmlContent(messages("app.common.no"))),
+                    optUrl = Some(controllers.otherbusinessinvolvements.routes.OtherBusinessActivelyTradingController.show(n).url),
+                    index = n
+                  )
+                ).flatten
+              ))
+            ))
+        }
+    )
+
 
   private def ppobAddress(businessContact: BusinessContact, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(

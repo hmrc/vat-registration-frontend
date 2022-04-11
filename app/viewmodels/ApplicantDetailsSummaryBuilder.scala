@@ -23,6 +23,8 @@ import models.api._
 import models.external.{IncorporatedEntity, PartnershipIdEntity, SoleTraderIdEntity}
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 
@@ -31,15 +33,15 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class ApplicantDetailsSummaryBuilder @Inject()() extends FeatureSwitching {
+class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.applicantDetails"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): SummaryList = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
       .getOrElse(throw new InternalServerException("[ApplicantDetailsSummaryBuilder] Missing party type"))
 
-    SummaryList(generateLeadPartnerSummaryListRows(vatScheme) ++ generateApplicantDetailsSummaryListRows(vatScheme, partyType))
+    govukSummaryList(SummaryList(generateLeadPartnerSummaryListRows(vatScheme) ++ generateApplicantDetailsSummaryListRows(vatScheme, partyType)))
   }
 
   def generateApplicantDetailsSummaryListRows(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): Seq[SummaryListRow] = {

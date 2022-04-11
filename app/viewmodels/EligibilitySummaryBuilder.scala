@@ -21,19 +21,22 @@ import featureswitch.core.config.FeatureSwitching
 import models.view.EligibilityJsonParser
 import play.api.i18n.Messages
 import play.api.libs.json.JsValue
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class EligibilitySummaryBuilder @Inject()(implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
+class EligibilitySummaryBuilder @Inject()(govukSummaryList: GovukSummaryList)
+                                         (implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
 
   private[viewmodels] def eligibilityCall(uri: String): String = s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri"
 
-  def build(json: JsValue, regId: String)(implicit messages: Messages): SummaryList = {
+  def build(json: JsValue, regId: String)(implicit messages: Messages): HtmlFormat.Appendable = {
     json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, messages("app.common.change"))).fold(
       errors => throw new Exception(s"[EligibilitySummaryBuilder] Json could not be parsed with errors: $errors with regId: $regId"),
-      identity
+      list => govukSummaryList(identity(list))
     )
   }
 }

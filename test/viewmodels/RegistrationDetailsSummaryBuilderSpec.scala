@@ -23,17 +23,20 @@ import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryList
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
+    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService)
+    val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService, govukSummaryList)
   }
 
   object TestContent {
@@ -129,9 +132,9 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("Pubs", BigDecimal("6.5")))
 
-      val res: SummaryList = Builder.build(testVatScheme)
+      val res = Builder.build(testVatScheme)
 
-      res mustBe expectedSummaryList
+      res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
 
     "returns a registration detail summary list for NETP" in new Setup {
@@ -162,9 +165,9 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url))
       ).flatten)
 
-      val res: SummaryList = Builder.build(testVatScheme)
+      val res = Builder.build(testVatScheme)
 
-      res mustBe expectedSummaryList
+      res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
   }
 

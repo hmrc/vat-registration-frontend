@@ -31,6 +31,29 @@ date.day                                = Day
 date.month                              = Month
 date.year                               = Year
 
+# Ordinal numbers
+ordinals.1 = First
+ordinals.2 = Second
+ordinals.3 = Third
+ordinals.4 = Fourth
+ordinals.5 = Fifth
+ordinals.6 = Sixth
+ordinals.7 = Seventh
+ordinals.8 = Eighth
+ordinals.9 = Ninth
+ordinals.10 = Tenth
+# Beyond 10 for future proofing
+ordinals.11 = Eleventh
+ordinals.12 = Twelfth
+ordinals.13 = Thirteenth
+ordinals.14 = Fourteenth
+ordinals.15 = Fifteenth
+ordinals.16 = Sixteenth
+ordinals.17 = Seventeenth
+ordinals.18 = Eighteenth
+ordinals.19 = Nineteenth
+ordinals.20 = Twentieth
+
 #Sections
 section.vatRegistration                 = VAT registration
 
@@ -523,6 +546,7 @@ cya.heading.applicant.self                           = About you
 cya.heading.applicant.transactor                     = Applicant details
 cya.heading.aboutBusiness                            = About the business
 cya.heading.vatRegDetails                            = VAT Registration Details
+cya.heading.obi                                      = {0} other business involvement
 
 ## Error Pages
 error.error_template.tryagain                        = Try again
@@ -1307,11 +1331,17 @@ validation.obi.removeOtherBusiness.missing       = Select yes if you want to rem
 obi.cya.title                                                    = Check your answers
 obi.cya.titleWithName                                            = Change {0} details
 obi.cya.businessName                                             = Business name
+obi.cya.businessName.hiddenText                                  = Business name for {0} Other Business Involvement
 obi.cya.hasVatNumber                                             = Other business has VAT number
+obi.cya.hasVatNumber.hiddenText                                  = Other business has VAT number for {0} Other Business Involvement
 obi.cya.vatNumber                                                = VAT number
+obi.cya.vatNumber.hiddenText                                     = VAT number for {0} Other Business Involvement
 obi.cya.hasUtr                                                   = Other business has Unique Taxpayer Reference
+obi.cya.hasUtr.hiddenText                                        = Other business has Unique Taxpayer Reference for {0} Other Business Involvement
 obi.cya.utr                                                      = Unique Taxpayer Reference for other business
+obi.cya.utr.hiddenText                                           = Unique Taxpayer Reference for other business for {0} Other Business Involvement
 obi.cya.stillActivelyTrading                                     = Still actively trading
+obi.cya.stillActivelyTrading.hiddenText                          = Still actively trading for {0} Other Business Involvement
 
 # OBI SUMMARY PAGE
 obi.summary.heading                        = You have added {0} business involvement
