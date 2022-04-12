@@ -31,15 +31,13 @@
 
     @errorSummary(partnershipNameForm.errors)
 
-    @h1("partnershipName.heading")
-
     @form(action = controllers.business.routes.PartnershipNameController.submit) {
         @inputText(
             partnershipNameForm,
             id = "partnershipName",
             name = "partnershipName",
-            label = "",
-            isPageHeading = false
+            label = messages("partnershipName.heading"),
+            isPageHeading = true
         )
 
         @button("app.common.continue", showSaveProgressButton = true)
