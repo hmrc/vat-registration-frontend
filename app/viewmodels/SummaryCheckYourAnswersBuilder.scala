@@ -35,6 +35,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(govukSummaryList: GovukSummaryLis
                                                transactorDetailsSummaryBuilder: TransactorDetailsSummaryBuilder,
                                                applicantDetailsSummaryBuilder: ApplicantDetailsSummaryBuilder,
                                                aboutTheBusinessSummaryBuilder: AboutTheBusinessSummaryBuilder,
+                                               otherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder,
                                                registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureSwitching {
 
   def generateSummaryAccordion(vatScheme: VatScheme, eligibilityJson: JsValue)(implicit messages: Messages): Accordion = {
@@ -45,7 +46,11 @@ class SummaryCheckYourAnswersBuilder @Inject()(govukSummaryList: GovukSummaryLis
       messages(s"cya.heading.transactor") -> transactorDetailsSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.verifyBusiness") -> grsSummaryBuilder.build(vatScheme),
       (if (isTransactor) messages(s"cya.heading.applicant.transactor") else messages(s"cya.heading.applicant.self")) -> applicantDetailsSummaryBuilder.build(vatScheme),
-      messages(s"cya.heading.aboutBusiness") -> aboutTheBusinessSummaryBuilder.build(vatScheme),
+      messages(s"cya.heading.aboutBusiness") -> aboutTheBusinessSummaryBuilder.build(vatScheme)
+    ) ++ {
+      val html = otherBusinessInvolvementSummaryBuilder.build(vatScheme)
+      if (html != HtmlFormat.empty) ListMap(messages(s"cya.heading.otherBusinessInvolvements") -> html) else ListMap()
+    } ++ ListMap(
       messages(s"cya.heading.vatRegDetails") -> registrationDetailsSummaryBuilder.build(vatScheme)
     )
 

@@ -17,6 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
+import models.OtherBusinessInvolvement
 import models.api.VatScheme
 import models.view.SummaryListRowUtils.optSummaryListRowString
 import org.mockito.ArgumentMatchers
@@ -41,6 +42,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
   val mockTransactorDetailsSummaryBuilder: TransactorDetailsSummaryBuilder = mock[TransactorDetailsSummaryBuilder]
   val mockApplicantDetailsSummaryBuilder: ApplicantDetailsSummaryBuilder = mock[ApplicantDetailsSummaryBuilder]
   val mockAboutTheBusinessSummaryBuilder: AboutTheBusinessSummaryBuilder = mock[AboutTheBusinessSummaryBuilder]
+  val mockOtherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder = mock[OtherBusinessInvolvementSummaryBuilder]
   val mockRegistrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder = mock[RegistrationDetailsSummaryBuilder]
 
   def testSummaryList(id: String): SummaryList = SummaryList(optSummaryListRowString(
@@ -54,6 +56,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
   val verifyBusinessId = "verifyBusiness"
   val applicantId = "applicant"
   val aboutBusinessId = "aboutBusiness"
+  val otherBusinessId = "otherBusiness"
   val vatRegDetailsId = "vatRegDetails"
 
   class Setup {
@@ -64,9 +67,21 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
       mockTransactorDetailsSummaryBuilder,
       mockApplicantDetailsSummaryBuilder,
       mockAboutTheBusinessSummaryBuilder,
+      mockOtherBusinessInvolvementSummaryBuilder,
       mockRegistrationDetailsSummaryBuilder
     )
   }
+
+  val testVrn = "testVrn"
+
+  val testObi = OtherBusinessInvolvement(
+    businessName = Some(testCompanyName),
+    hasVrn = Some(true),
+    vrn = Some(testVrn),
+    stillTrading = Some(true)
+  )
+
+  val testObiSection = List(testObi, testObi)
 
   "generateSummaryAccordion" must {
     "combine the summary sections into an accordion" in new Setup {
@@ -80,6 +95,8 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(applicantId)))))
       when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
+      when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.empty)
       when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
@@ -113,6 +130,56 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
       result mustBe expectedAccordion
     }
 
+    "combine the summary sections into an accordion when the user has other business involvements" in new Setup {
+      when(mockEligibilitySummaryBuilder.build(ArgumentMatchers.eq(fullEligibilityDataJson), ArgumentMatchers.eq(validVatScheme.id))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(eligibilityId)))))
+      when(mockTransactorDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.empty)
+      when(mockGrsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(verifyBusinessId)))))
+      when(mockApplicantDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(applicantId)))))
+      when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
+      when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(otherBusinessId)))))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(validVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
+
+      val expectedAccordion: Accordion = Accordion(
+        items = Seq(
+          Section(
+            headingContent = Text("Registration reason"),
+            content = HtmlContent(govukSummaryList(testSummaryList(eligibilityId)))
+          ),
+          Section(
+            headingContent = Text("Verify your business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
+          ),
+          Section(
+            headingContent = Text("About you"),
+            content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
+          ),
+          Section(
+            headingContent = Text("About the business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(aboutBusinessId)))
+          ),
+          Section(
+            headingContent = Text("Other business involvements"),
+            content = HtmlContent(govukSummaryList(testSummaryList(otherBusinessId)))
+          ),
+          Section(
+            headingContent = Text("VAT Registration Details"),
+            content = HtmlContent(govukSummaryList(testSummaryList(vatRegDetailsId)))
+          )
+        )
+      )
+
+      val result: Accordion = Builder.generateSummaryAccordion(validVatScheme, fullEligibilityDataJson)
+
+      result mustBe expectedAccordion
+    }
+
     "combine the summary sections into an accordion for a transactor" in new Setup {
       val testVatScheme: VatScheme = validVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
@@ -129,6 +196,8 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(applicantId)))))
       when(mockAboutTheBusinessSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
+      when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+        .thenReturn(HtmlFormat.empty)
       when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 

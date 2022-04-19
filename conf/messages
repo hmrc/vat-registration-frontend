@@ -463,6 +463,7 @@ cya.aboutTheBusiness.contactPreference              = Contact preference
 cya.aboutTheBusiness.buySellLandAndProperty         = Does the business’s activities include the buying, selling or letting of land or property?
 cya.aboutTheBusiness.businessDescription            = What does the business do?
 cya.aboutTheBusiness.mainSicCode                    = Main business activity
+cya.aboutTheBusiness.obi                            = Involved with any other business?
 cya.aboutTheBusiness.sicCodes                       = Confirm the business’s Standard Industry Classification (SIC) codes for VAT
 cya.aboutTheBusiness.supplyWorkers                  = Supplying workers to provide a service to another business
 cya.aboutTheBusiness.numberOfWorkers                = Number of workers supplied
@@ -545,6 +546,7 @@ cya.heading.verifyBusiness                           = Verify your business
 cya.heading.applicant.self                           = About you
 cya.heading.applicant.transactor                     = Applicant details
 cya.heading.aboutBusiness                            = About the business
+cya.heading.otherBusinessInvolvements                = Other business involvements
 cya.heading.vatRegDetails                            = VAT Registration Details
 cya.heading.obi                                      = {0} other business involvement
 
