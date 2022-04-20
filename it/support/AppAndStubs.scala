@@ -130,6 +130,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
         s"microservice.services.$service.host" -> WiremockHelper.wiremockHost,
         s"microservice.services.$service.port" -> WiremockHelper.wiremockPort)
     } +
+      ("play.filters.csp.nonce.enabled" -> "false") +
       (s"auditing.consumer.baseUri.host" -> WiremockHelper.wiremockHost, s"auditing.consumer.baseUri.port" -> WiremockHelper.wiremockPort) +
       ("play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck") +
       ("microservice.services.address-lookup-frontend.new-address-callback.url" -> s"http://${WiremockHelper.wiremockHost}:${WiremockHelper.wiremockPort}") +

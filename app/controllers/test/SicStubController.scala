@@ -22,6 +22,7 @@ import controllers.BaseController
 import featureswitch.core.config.OtherBusinessInvolvement
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
+import models.test._
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile, SessionService, SicAndComplianceService}
 import views.html.test._
@@ -41,6 +42,11 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  val single = List("36000")
+  val singleCompliance = List("42110")
+  val multiple = List("01110", "81300", "82190")
+  val labourSicCodes = List("81221", "81222", "81223")
+
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
@@ -54,7 +60,14 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
           badForm => Future.successful(BadRequest(view(badForm))),
           data => for {
             sicCodesList <- Future {
-              data.fullSicCodes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
+              val codes = data.selection match {
+                case SingleSicCode => single
+                case SingleSicCodeCompliance => singleCompliance
+                case MultipleSicCodeNoCompliance => multiple
+                case MultipleSicCodeCompliance => labourSicCodes
+                case CustomSicCodes => data.fullSicCodes
+              }
+              codes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
             }
             _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
             _ <- sicAndCompService.submitSicCodes(sicCodesList)

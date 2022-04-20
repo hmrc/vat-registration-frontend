@@ -307,9 +307,13 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
   }
 
   "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
+    val labourSicCode = "42110123"
     given()
       .user.isAuthorised()
-      .s4lContainer[SicStub].contains(SicStub(Some("42110123"), Some("42910123"), None, None))
+      .s4lContainer[SicAndCompliance].contains(fullModel.copy(
+        mainBusinessActivity = Some(MainBusinessActivityView(labourSicCode, Some(SicCode(labourSicCode, "", "")))),
+        businessActivities = Some(BusinessActivities(List(SicCode(labourSicCode, "", ""))))
+      ))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 

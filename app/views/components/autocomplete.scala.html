@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import views.html.helper.CSPNonce
+
 @this(select: GovukSelect)
 
 @(
@@ -24,7 +26,7 @@
         labelText: String,
         defaultOptionText: String = "",
         isPageHeading: Boolean = false
-)(implicit messages: Messages)
+)(implicit messages: Messages, request: Request[_])
 
 @select(Select(
     id = "country",
@@ -43,22 +45,7 @@
     ))
 ))
 
-<script src="@controllers.routes.Assets.versioned("javascripts/autocomplete.js")"></script>
-<script>
-        accessibleAutocomplete.enhanceSelectElement({
-            selectElement: document.getElementById("country"),
-            name: 'country',
-            defaultValue: '',
-
-            onConfirm: () => {
-                const matchingOption = Array.from(document.querySelectorAll("#countryCode-select > option")).find(function(c) {
-                    return c.text === document.getElementById("country").value;
-                });
-                const countryCode = matchingOption ? matchingOption.value : undefined;
-                document.getElementById("country").value = countryCode;
-            }
-        })
-</script>
+<script @{CSPNonce.attr} src="@controllers.routes.Assets.versioned("javascripts/autocomplete.js")"></script>
 
 
 

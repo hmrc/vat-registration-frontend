@@ -19,18 +19,14 @@ package models.test
 import models.S4LKey
 import play.api.libs.json.Json
 
-case class SicStub(sicCode1: Option[String],
-                   sicCode2: Option[String],
-                   sicCode3: Option[String],
-                   sicCode4: Option[String]) {
+case class SicStub(selection: SicStubSelection,
+                   sicCode1: Option[String] = None,
+                   sicCode2: Option[String] = None,
+                   sicCode3: Option[String] = None,
+                   sicCode4: Option[String] = None) {
 
-  def sicCodes: List[String] = this.productIterator.toList.collect {
-    case Some(s: String) if s.length == 5 => s
-  }
+  def fullSicCodes: List[String] = (sicCode1 ++ sicCode2 ++ sicCode3 ++ sicCode4).toList
 
-  def fullSicCodes: List[String] = this.productIterator.toList.collect {
-    case Some(s: String) => s
-  }
 }
 
 object SicStub {
