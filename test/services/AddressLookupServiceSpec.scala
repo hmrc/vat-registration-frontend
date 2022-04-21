@@ -34,7 +34,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
   implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
 
   object Config extends AddressLookupConfiguration {
-    override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call): AddressLookupConfigurationModel =
+    override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean): AddressLookupConfigurationModel =
       AddressLookupConstants.testAlfConfig
   }
 

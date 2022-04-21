@@ -70,7 +70,8 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
   "initialising ALF journey" should {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-    val journeyModel = new AddressLookupConfiguration()(appConfig, messagesApi)(homeAddress, Call("GET", "continueUrl"))
+    val alfConfig = app.injector.instanceOf[AddressLookupConfiguration]
+    val journeyModel = alfConfig(homeAddress, Call("GET", "continueUrl"), useUkMode = false)
 
     "return a URL for redirecting the user off to ALF" when {
       "Location header is present" in {

@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig, messages: MessagesApi) {
 
-  def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call): AddressLookupConfigurationModel = {
+  def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean): AddressLookupConfigurationModel = {
     val english = Lang("en")
     val welsh = Lang("cy")
 
@@ -40,7 +40,7 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
         showPhaseBanner = true,
         showBackButtons = true,
         includeHMRCBranding = false,
-        ukMode = false,
+        ukMode = useUkMode,
         selectPageConfig = AddressLookupSelectConfigModel (
           showSearchAgainLink = false
         ),

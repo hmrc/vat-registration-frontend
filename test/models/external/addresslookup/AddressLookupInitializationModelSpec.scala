@@ -20,7 +20,7 @@ import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.i18n.MessagesApi
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsBoolean, JsObject, JsValue, Json}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
@@ -31,8 +31,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
   val testJourneyId = AddressLookupJourneyIdentifier.homeAddress
   val testContinueUrl = Call("GET", "/continueUrl")
 
-  def addressInitializationModel: AddressLookupConfigurationModel =
-    new AddressLookupConfiguration()(frontendAppConfig, messagesApi).apply(testJourneyId, testContinueUrl)
+  def addressInitializationModel(ukMode: Boolean = false): AddressLookupConfigurationModel =
+    new AddressLookupConfiguration()(frontendAppConfig, messagesApi).apply(testJourneyId, testContinueUrl, ukMode)
 
   object LookupPageOptions {
     val title = "Find your home address"
@@ -164,10 +164,19 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
   )
 
   "AddressLookupInitializationModel" must {
-    "write to Json correctly" in {
-      val actualResult = Json.toJson(addressInitializationModel)
+    "write to Json correctly when UK mode is false" in {
+      val actualResult = Json.toJson(addressInitializationModel())
 
       actualResult mustBe addressInitializationJson
+    }
+    "Send the UK mode flag as true when required" in {
+      val actualResult = Json.toJson(addressInitializationModel(ukMode = true))
+
+      actualResult mustBe addressInitializationJson.as[JsObject].deepMerge(
+        Json.obj("options" ->
+          Json.obj("ukMode" -> true)
+        )
+      )
     }
   }
 
