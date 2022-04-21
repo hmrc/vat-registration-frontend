@@ -480,3 +480,10 @@ POST        /other-business-involvement/summary                                 
 ## Other Business Involvement Remove
 GET         /other-business-involvement/:index/remove                                          controllers.otherbusinessinvolvements.RemoveOtherBusinessController.show(index: Int)
 POST        /other-business-involvement/:index/remove                                          controllers.otherbusinessinvolvements.RemoveOtherBusinessController.submit(otherBusinessName: String, index: Int)
+
+## Uploaded Documents Summary
+GET         /file-upload/summary                                                               controllers.fileupload.DocumentUploadSummaryController.show
+
+## Uploaded Document Remove
+GET         /file-upload/:reference/remove                                                     controllers.fileupload.RemoveUploadedDocumentController.show(reference: String)
+POST        /file-upload/:reference/remove                                                     controllers.fileupload.RemoveUploadedDocumentController.submit(reference: String)

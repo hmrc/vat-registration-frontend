@@ -36,6 +36,10 @@ class AttachmentsConnectorSpec extends VatRegSpec {
 
   val testEmptyAttachments: Attachments = Attachments(None, testEmptyAttachmentList)
 
+  val testIncompleteAttachments: Attachments = Attachments(None, testAttachmentList)
+
+  val testEmptyIncompleteAttachments: Attachments = Attachments(None, testEmptyAttachmentList)
+
   val testStoreAttachmentsOtherResponseJson: JsObject = Json.obj(
     "method" -> Some(Other).toString,
   )
@@ -95,6 +99,32 @@ class AttachmentsConnectorSpec extends VatRegSpec {
       val result = connector.storeAttachmentDetails(testRegId, Post)
 
       await(result) mustBe testStoreAttachmentsOtherResponseJson
+    }
+  }
+
+  "getIncompleteAttachments" should {
+    "return a list of incomplete attachments" in {
+      mockHttpGET(appConfig.incompleteAttachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(testAttachmentList).toString))
+
+      val result = connector.getIncompleteAttachments(testRegId)
+
+      await(result) mustBe testAttachmentList
+    }
+
+    "return an empty list of incomplete attachments" in {
+      mockHttpGET(appConfig.incompleteAttachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(List.empty[AttachmentType]).toString()))
+
+      val result = connector.getIncompleteAttachments(testRegId)
+
+      await(result) mustBe empty
+    }
+
+    "throw an exception" in {
+      mockHttpGET(appConfig.incompleteAttachmentsApiUrl(testRegId), HttpResponse(INTERNAL_SERVER_ERROR, ""))
+
+      val result = connector.getIncompleteAttachments(testRegId)
+
+      intercept[InternalServerException](await(result)).message mustBe "[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: 500"
     }
   }
 }

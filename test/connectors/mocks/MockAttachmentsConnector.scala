@@ -17,7 +17,7 @@
 package connectors.mocks
 
 import connectors.AttachmentsConnector
-import models.api.{AttachmentMethod, Attachments}
+import models.api.{AttachmentMethod, AttachmentType, Attachments}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
@@ -42,4 +42,7 @@ trait MockAttachmentsConnector extends MockitoSugar {
       ArgumentMatchers.eq(method)
     )(ArgumentMatchers.any())).thenReturn(response)
 
+  def mockGetIncompleteAttachments(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
+    when(mockAttachmentsConnector.getIncompleteAttachments(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
+      .thenReturn(response)
 }

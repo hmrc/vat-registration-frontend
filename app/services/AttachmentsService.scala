@@ -17,7 +17,7 @@
 package services
 
 import connectors.AttachmentsConnector
-import models.api.{AttachmentMethod, Attachments}
+import models.api.{AttachmentMethod, AttachmentType, Attachments}
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -33,4 +33,6 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
   def storeAttachmentDetails(regId: String, method: AttachmentMethod)(implicit hc: HeaderCarrier): Future[JsValue] =
     attachmentsConnector.storeAttachmentDetails(regId, method)
 
+  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
+    attachmentsConnector.getIncompleteAttachments(regId)
 }

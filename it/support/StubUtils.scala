@@ -23,10 +23,11 @@ import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.api.returns.Returns
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
-import models.api.{Attachments, SicCode, VatScheme}
+import models.api.{AttachmentType, Attachments, SicCode, VatScheme}
+import models.external.upscan.UpscanDetails
 import models.{ApiKey, S4LKey}
 import play.api.http.Status._
-import play.api.libs.json._
+import play.api.libs.json.{Json, _}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
@@ -74,6 +75,10 @@ trait StubUtils {
     def trafficManagement = TrafficManagementStub()
 
     def registrationApi = RegistrationApiStub()
+
+    def upscanApi = UpscanApiStub()
+
+    def attachmentsApi = AttachmentsApiStub()
   }
 
   def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
@@ -793,4 +798,37 @@ trait StubUtils {
     }
   }
 
+  case class UpscanApiStub()(implicit builder: PreconditionBuilder) {
+
+    def fetchUpscanFileDetails(upscanDetails: UpscanDetails, regId: String = "1", reference: String)(implicit format: Format[UpscanDetails]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/$regId/upscan-file-details/$reference"))
+        .willReturn(ok(Json.stringify(Json.toJson[UpscanDetails](upscanDetails)))
+        ))
+      builder
+    }
+
+    def fetchAllUpscanDetails(upscanDetails: List[UpscanDetails], regId: String = "1")(implicit format: Format[List[UpscanDetails]]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/$regId/upscan-file-details"))
+        .willReturn(ok(Json.stringify(Json.toJson[List[UpscanDetails]](upscanDetails)))
+        ))
+      builder
+    }
+
+    def deleteUpscanDetails(regId: String = "1", reference: String = "test-reference"): PreconditionBuilder = {
+      stubFor(
+        delete(urlPathEqualTo(s"/vatreg/$regId/upscan-file-details/$reference"))
+          .willReturn(noContent())
+      )
+      builder
+    }
+  }
+
+  case class AttachmentsApiStub()(implicit builder: PreconditionBuilder) {
+    def getIncompleteAttachments(attachments: List[AttachmentType], regId: String = "1")(implicit format: Format[Attachments]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/$regId/incomplete-attachments"))
+        .willReturn(ok(Json.stringify(Json.toJson[List[AttachmentType]](attachments)))
+        ))
+      builder
+    }
+  }
 }
