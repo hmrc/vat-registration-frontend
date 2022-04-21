@@ -45,4 +45,14 @@ class AttachmentsConnector @Inject()(httpClient: HttpClient, config: FrontendApp
       body = Json.obj("method" -> Json.toJson(attachmentMethod))
     )
 
+  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
+    implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
+
+    httpClient.GET[HttpResponse](config.incompleteAttachmentsApiUrl(regId)).map { result =>
+      result.status match {
+        case OK => result.json.as[List[AttachmentType]]
+        case status => throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
+      }
+    }
+  }
 }

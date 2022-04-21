@@ -1,0 +1,62 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import config.FrontendAppConfig
+@import viewmodels.DocumentUploadSummaryRow
+
+@this(
+layout: layouts.layout,
+h1: components.h1,
+p: components.p,
+subheading: components.subheading,
+button: components.button,
+formWithCSRF: FormWithCSRF,
+documentUploadSummaryTable: components.DocumentUploadSummaryTable
+)
+
+@(uploadedDocuments: Seq[DocumentUploadSummaryRow], pendingDocumentsCount: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@defining(uploadedDocuments.size) { noOfUploadedDocuments =>
+    @defining(
+        if (noOfUploadedDocuments ==0 || noOfUploadedDocuments > 1)
+            messages("document.upload.summary.headingPlural", noOfUploadedDocuments)
+        else
+            messages("document.upload.summary.heading", noOfUploadedDocuments)
+    ) { headingMessage =>
+        @layout(pageTitle = Some(titleNoForm(headingMessage)), backLink = false) {
+
+            @h1(headingMessage)
+
+            @documentUploadSummaryTable(uploadedDocuments)
+
+            @if(pendingDocumentsCount > 0) {
+                @defining(
+                    if (pendingDocumentsCount > 1) messages("pending.documents.messagePlural", pendingDocumentsCount)
+                    else messages("pending.documents.message")
+                ) { pendingDocumentsMessage =>
+                    @p { @pendingDocumentsMessage }
+                }
+            }
+
+            @formWithCSRF(action = controllers.test.routes.FileUploadController.show) {
+                @button("app.common.continue", showSaveProgressButton = true)
+            }
+
+        }
+    }
+}

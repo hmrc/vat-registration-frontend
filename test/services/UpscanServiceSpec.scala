@@ -20,7 +20,6 @@ import connectors.mocks.MockUpscanConnector
 import models.api.PrimaryIdentityEvidence
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
-import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
 
@@ -75,4 +74,31 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
     }
   }
 
+  "fetchAllUpscanDetails" must {
+    "return list of uploaded files" in {
+      mockFetchAllUpscanDetails(testRegId)(Future.successful(List(testUpscanDetails)))
+
+      val response = await(TestService.fetchAllUpscanDetails(testRegId))
+      response mustBe List(testUpscanDetails)
+    }
+
+    "throw an exception if fetch fails" in {
+      mockFetchAllUpscanDetails(testRegId)(Future.failed(new InternalServerException("")))
+      intercept[InternalServerException](await(TestService.fetchAllUpscanDetails(testRegId)))
+    }
+  }
+
+  "deleteUpscanDetails" must {
+    "return true if successfully deleted" in {
+      mockDeleteUpscanDetails(testRegId, testReference)(Future.successful(true))
+
+      val response = await(TestService.deleteUpscanDetails(testRegId, testReference))
+      response mustBe true
+    }
+
+    "throw an exception if delete fails" in {
+      mockDeleteUpscanDetails(testRegId, testReference)(Future.failed(new InternalServerException("")))
+      intercept[InternalServerException](await(TestService.deleteUpscanDetails(testRegId, testReference)))
+    }
+  }
 }

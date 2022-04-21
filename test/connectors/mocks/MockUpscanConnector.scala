@@ -24,7 +24,6 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
@@ -48,6 +47,19 @@ trait MockUpscanConnector extends MockitoSugar {
 
   def mockFetchUpscanFileDetails(regId: String, reference: String)(res: Future[UpscanDetails]): OngoingStubbing[Future[UpscanDetails]] =
     when(mockUpscanConnector.fetchUpscanFileDetails(
+      ArgumentMatchers.eq(regId),
+      ArgumentMatchers.eq(reference)
+    )(
+      ArgumentMatchers.any[HeaderCarrier]
+    )).thenReturn(res)
+
+  def mockFetchAllUpscanDetails(regId: String)(res: Future[Seq[UpscanDetails]]): OngoingStubbing[Future[Seq[UpscanDetails]]] =
+    when(mockUpscanConnector.fetchAllUpscanDetails(ArgumentMatchers.eq(regId))(
+      ArgumentMatchers.any[HeaderCarrier]
+    )).thenReturn(res)
+
+  def mockDeleteUpscanDetails(regId: String, reference: String)(res: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
+    when(mockUpscanConnector.deleteUpscanDetails(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(reference)
     )(

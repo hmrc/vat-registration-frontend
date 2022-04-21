@@ -17,7 +17,7 @@
 package services
 
 import connectors.mocks.MockAttachmentsConnector
-import models.api.{Attachments, IdentityEvidence, Post}
+import models.api.{AttachmentType, Attachments, IdentityEvidence, Post}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
@@ -63,4 +63,23 @@ class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector {
     }
   }
 
+  "getIncompleteAttachments" when {
+    "the backend doesn't contain any incomplete attachments" should {
+      "proxy through the response from the connector" in {
+        mockGetIncompleteAttachments(testRegId)(Future.successful(List.empty[AttachmentType]))
+        val res = await(Service.getIncompleteAttachments(testRegId))
+
+        res mustBe empty
+      }
+    }
+    "the backend contains full attachment details" should {
+      "proxy through the response from the connector" in {
+        val fullAttachmentList = List(IdentityEvidence)
+        mockGetIncompleteAttachments(testRegId)(Future.successful(fullAttachmentList))
+        val res = await(Service.getIncompleteAttachments(testRegId))
+
+        res mustBe fullAttachmentList
+      }
+    }
+  }
 }

@@ -22,11 +22,12 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{AttachmentType, PrimaryIdentityEvidence}
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
-import play.api.libs.json.{JsObject, Json}
+import play.api.http.Status.NO_CONTENT
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream5xxResponse, UpstreamErrorResponse}
 
 class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -50,6 +51,8 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
   val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map("testField1" -> "test1", "testField2" -> "test2"))
 
   val upscanReferenceUrl = s"/vatreg/$testRegId/upscan-reference"
+
+  val upscanFilesUrl = s"/vatreg/$testRegId/upscan-file-details"
 
   val upscanDetailsUrl = s"/vatreg/$testRegId/upscan-file-details/$testReference"
   val testUpscanDetailsJson: JsObject = Json.obj(
@@ -117,6 +120,36 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
       stubGet(upscanDetailsUrl, NOT_FOUND, testUpscanDetailsJson.toString())
 
       intercept[NotFoundException](await(connector.fetchUpscanFileDetails(testRegId, testReference)))
+    }
+  }
+
+  "fetchAllUpscanDetails" must {
+    "return list of UpscanDetails" in {
+      stubGet(upscanFilesUrl, OK, JsArray(List(testUpscanDetailsJson)).toString())
+
+      val response = await(connector.fetchAllUpscanDetails(testRegId))
+      verify(getRequestedFor(urlEqualTo(upscanFilesUrl)))
+      response mustBe List(testUpscanDetails)
+    }
+
+    "return an exception if fetch fails" in {
+      stubGet(upscanFilesUrl, INTERNAL_SERVER_ERROR, JsArray(List(testUpscanDetailsJson)).toString())
+      intercept[UpstreamErrorResponse](await(connector.fetchAllUpscanDetails(testRegId)))
+    }
+  }
+
+  "deleteUpscanDetails" must {
+    "return true if delete successful" in {
+      stubDelete(upscanDetailsUrl, NO_CONTENT, "")
+
+      val response = await(connector.deleteUpscanDetails(testRegId, testReference))
+      verify(deleteRequestedFor(urlEqualTo(upscanDetailsUrl)))
+      response mustBe true
+    }
+
+    "return an exception if delete fails" in {
+      stubDelete(upscanDetailsUrl, INTERNAL_SERVER_ERROR, "")
+      intercept[UpstreamErrorResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
     }
   }
 }
