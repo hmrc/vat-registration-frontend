@@ -32,6 +32,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
   val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
   val userIdKey: String = "userId"
   val tokenKey: String = "token"
+  val referenceKey: String = "reference"
 
   def cookieValue(sessionData: Map[String, String]) = {
     def encode(data: Map[String, String]): PlainText = {
@@ -68,11 +69,12 @@ object SessionCookieBaker extends IntegrationSpecBase {
     result
   }
 
-  def cookieData(userId: String = "anyUserId"): Map[String, String] = {
+  def cookieData(userId: String = "anyUserId", reference: Option[String] = None): Map[String, String] = {
     Map(
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
       tokenKey -> "RANDOMTOKEN",
-      userIdKey -> userId)
+      userIdKey -> userId
+    ) ++ List(reference.map(referenceKey -> _)).flatten.toMap
   }
 
   def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
@@ -81,7 +83,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
       tokenKey -> "RANDOMTOKEN",
       userIdKey -> userId)
 
-  def getSessionCookie(additionalData: Map[String, String] = Map(), timeStampRollback: Long = 0) = {
-    cookieValue(cookieData())
+  def getSessionCookie(reference: Option[String] = None) = {
+    cookieValue(cookieData(reference = reference))
   }
 }

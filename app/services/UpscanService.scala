@@ -18,7 +18,7 @@ package services
 
 import connectors.UpscanConnector
 import models.api.AttachmentType
-import models.external.upscan.{UpscanDetails, UpscanResponse}
+import models.external.upscan.{FileStatus, UpscanDetails, UpscanResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -43,5 +43,11 @@ class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executi
 
   def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     upscanConnector.deleteUpscanDetails(regId, reference)
+  }
+
+  def getUpscanFileStatus(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[FileStatus] = {
+    fetchUpscanFileDetails(regId, reference).map{ upscanDetails =>
+      upscanDetails.fileStatus
+    }
   }
 }

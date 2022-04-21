@@ -336,4 +336,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val landAndPropertyGuidance: String = "https://www.gov.uk/guidance/vat-on-land-and-property-notice-742"
   lazy val vat1Link = "https://www.gov.uk/guidance/register-for-vat"
   lazy val utrCopyLink = "https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr"
+  lazy val upscanTimeout = 20000
+  lazy val upscanInterval = 2000
 }

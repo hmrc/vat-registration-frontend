@@ -487,3 +487,8 @@ GET         /file-upload/summary                                                
 ## Uploaded Document Remove
 GET         /file-upload/:reference/remove                                                     controllers.fileupload.RemoveUploadedDocumentController.show(reference: String)
 POST        /file-upload/:reference/remove                                                     controllers.fileupload.RemoveUploadedDocumentController.submit(reference: String)
+
+## Uploading Document
+GET         /file-upload/uploading-document                                                    controllers.fileupload.UploadingDocumentController.show
+POST        /file-upload/uploading-document                                                    controllers.fileupload.UploadingDocumentController.submit(reference: String)
+GET         /file-upload/uploading-document-poll                                               controllers.fileupload.UploadingDocumentController.poll(reference: String)
