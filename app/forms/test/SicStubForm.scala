@@ -16,14 +16,40 @@
 
 package forms.test
 
-import models.test.SicStub
-import play.api.data.Form
+import models.test._
 import play.api.data.Forms._
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError}
 
 object SicStubForm {
 
+  implicit val sicStubFormatter = new Formatter[SicStubSelection] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], SicStubSelection] =
+      data.get(key) match {
+        case Some("SingleSicCode") => Right(SingleSicCode)
+        case Some("SingleSicCodeCompliance") => Right(SingleSicCodeCompliance)
+        case Some("MultipleSicCodeNoCompliance") => Right(MultipleSicCodeNoCompliance)
+        case Some("MultipleSicCodeCompliance") => Right(MultipleSicCodeCompliance)
+        case Some("CustomSicCodes") => Right(CustomSicCodes)
+        case _ => Left(Seq(FormError(key, "Select ")))
+      }
+
+    override def unbind(key: String, value: SicStubSelection): Map[String, String] = {
+      val strValue = value match {
+        case SingleSicCode => "SingleSicCode"
+        case SingleSicCodeCompliance => "SingleSicCodeCompliance"
+        case MultipleSicCodeNoCompliance => "MultipleSicCodeNoCompliance"
+        case MultipleSicCodeCompliance => "MultipleSicCodeCompliance"
+        case CustomSicCodes => "CustomSicCodes"
+      }
+
+      Map(key -> strValue)
+    }
+  }
+
   val form = Form(
     mapping(
+      "value" -> of[SicStubSelection],
       "sicCode1" -> optional(text),
       "sicCode2" -> optional(text),
       "sicCode3" -> optional(text),
@@ -32,3 +58,4 @@ object SicStubForm {
   )
 
 }
+

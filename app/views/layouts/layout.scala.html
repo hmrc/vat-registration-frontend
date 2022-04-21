@@ -16,17 +16,16 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
+@import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(
-    hmrcBanner: HmrcBanner,
     govukBackLink: GovukBackLink,
     hmrcLayout: HmrcLayout,
-    siteHeader: components.siteHeader,
-    phaseBanner: components.phaseBanner,
-    footerLinks: HmrcStandardFooter,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
+    trackingConsentSnippet: HmrcTrackingConsentSnippet,
+    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+    standardBetaBanner: StandardBetaBanner
 )
 
 @(
@@ -36,6 +35,8 @@
         signOutLink: Boolean = true,
         timeout: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@trackingConsentSnippet(nonce = CSPNonce.get)
 
 @head = {
     <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
@@ -52,17 +53,8 @@
     }
 }
 
-@feedbackBanner = {
-    @messages("app.phaseBanner1")
-    <a class='govuk-link' href="@controllers.feedback.routes.FeedbackController.feedbackShow" id="phase-banner-feedback-url" target="_blank">
-    @messages("app.phaseBanner2")</a>
-    @messages("app.phaseBanner3")
-}
-
 @scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.HMRCFrontend.initAll()</script>
-    <script src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
+    <script @{CSPNonce.attr} src="@controllers.routes.Assets.versioned("javascripts/backLink.js")"></script>
 }
 
 @content = {
@@ -77,11 +69,9 @@
     additionalHeadBlock = Some(head),
     signOutUrl = if (signOutLink) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None,
     serviceUrl = Some(controllers.routes.JourneyController.show.url),
-    phaseBanner = Some(PhaseBanner(
-        tag = Some(Tag(content = Text("BETA"))),
-        content = HtmlContent(feedbackBanner)
-    )),
+    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl)),
     backLinkUrl = if (backLink) Some("#") else None,
     displayHmrcBanner = true,
+    nonce = CSPNonce.get,
     additionalScriptsBlock = Some(scripts)
 )(content)

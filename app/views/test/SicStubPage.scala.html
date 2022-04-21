@@ -24,65 +24,80 @@
         layout: layouts.layout,
         h1: components.h1,
         form: FormWithCSRF,
-        button: components.button
+        button: components.button,
+        inputRadio: components.inputRadio,
+        inputText: components.inputText
 )
 
 @(sicStubForm: Form[SicStub])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm("SIC codes"))) {
+@manualSicEntry = {
+    @inputText(
+        form = sicStubForm,
+        id = "sicCode1",
+        name = "sicCode1",
+        label = "Sic code 1",
+        isPageHeading = false
+    )
+    @inputText(
+        form = sicStubForm,
+        id = "sicCode2",
+        name = "sicCode2",
+        label = "Sic code 2",
+        isPageHeading = false
+    )
+    @inputText(
+        form = sicStubForm,
+        id = "sicCode3",
+        name = "sicCode3",
+        label = "Sic code 3",
+        isPageHeading = false
+    )
+    @inputText(
+        form = sicStubForm,
+        id = "sicCode4",
+        name = "sicCode4",
+        label = "Sic code 4",
+        isPageHeading = false
+    )
+}
 
-    @h1("Enter 1-4, 5 digit SIC codes:")
-
-    <p><button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-1" type="button" onclick="fillLabourCodes()">Labour compliance</button></p>
-    <p><button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-1" type="button" onclick="fillSingleCode()">Single code - no compliance</button></p>
-    <p><button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-1" type="button" onclick="fillMultipleCodes()">Multiple codes - no compliance</button></p>
-    <p><button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-1" type="button" onclick="clearCodes()">Clear</button></p>
+@layout(pageTitle = Some(title(sicStubForm, "SIC codes"))) {
 
     @form(action = controllers.test.routes.SicStubController.submit) {
-        <div class="govuk-form-group">
-            <legend class="govuk-label govuk-visually-hidden">Enter 1-4, 5 digit SIC codes:</legend>
 
-            <p><input class="govuk-input" type="text" id="sicCode1" name="sicCode1" maxlength="5" title="sic1" value=""/></p>
-            <p><input class="govuk-input" type="text" id="sicCode2" name="sicCode2" maxlength="5" title="sic2" value=""/></p>
-            <p><input class="govuk-input" type="text" id="sicCode3" name="sicCode3" maxlength="5" title="sic4" value=""/></p>
-            <p><input class="govuk-input" type="text" id="sicCode4" name="sicCode4" maxlength="5" title="sic4" value=""/></p>
-        </div>
+        @inputRadio(
+            form = sicStubForm,
+            legend = "Enter 1-4, 5 digit SIC codes",
+            items = Seq(
+                RadioItem(
+                    content = Text("Single SIC code"),
+                    value = Some("SingleSicCode")
+                ),
+                RadioItem(
+                    content = Text("Single SIC code (with compliance questions)"),
+                    value = Some("SingleSicCodeCompliance")
+                ),
+                RadioItem(
+                    content = Text("Multiple SIC codes"),
+                    value = Some("MultipleSicCodeNoCompliance")
+                ),
+                RadioItem(
+                    content = Text("Multiple SIC codes (with compliance questions)"),
+                    value = Some("MultipleSicCodeCompliance")
+                ),
+                RadioItem(
+                    content = Text("Custom codes"),
+                    value = Some("CustomSicCodes"),
+                    conditionalHtml = Some(manualSicEntry)
+                )
+            )
+        )
 
         @button("Submit", showSaveProgressButton = false)
     }
 }
 
 
-<script type="application/javascript">
 
-        var blanks = ["", "", "", ""];
-        var single = ["36000", "", "", ""];
-        var multiple = ["01110", "81300", "82190", ""];
-        var labourSicCodes = ["81221", "81222", "81223", ""];
-
-        function fillInputs(arr) {
-            let elements = document.querySelectorAll('input[type=text]')
-            Array.prototype.forEach.call(elements, function (element, index) {
-                element.value = arr[index];
-            });
-            return false;
-        }
-
-        function clearCodes() {
-            return fillInputs(blanks)
-        }
-
-        function fillSingleCode() {
-            return fillInputs(single)
-        }
-
-        function fillMultipleCodes() {
-            return fillInputs(multiple)
-        }
-
-        function fillLabourCodes() {
-            return fillInputs(labourSicCodes)
-        }
-
-</script>
 
