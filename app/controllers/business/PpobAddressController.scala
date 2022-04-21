@@ -40,7 +40,8 @@ class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
     implicit request => _ =>
         addressLookupService.getJourneyUrl(
           journeyId = AddressLookupJourneyIdentifier.businessActivities,
-          continueUrl = routes.PpobAddressController.callback()
+          continueUrl = routes.PpobAddressController.callback(),
+          useUkMode = true
         ) map Redirect
   }
 

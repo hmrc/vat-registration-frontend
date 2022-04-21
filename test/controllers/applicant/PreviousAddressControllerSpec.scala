@@ -130,7 +130,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
     }
     "redirect the user to TxM address capture page with No selected" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      when(mockAddressLookupService.getJourneyUrl(any(), any())(any()))
+      when(mockAddressLookupService.getJourneyUrl(any(), any(), ArgumentMatchers.eq(false))(any()))
         .thenReturn(Future.successful(Call("GET", "TxM")))
       when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
@@ -169,7 +169,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
   "previousAddress" when {
     "non transactor journey" should {
       "redirect to ALF with default journeyId" in new Setup {
-        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(addressThreeYearsOrLess), any())(any()))
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(addressThreeYearsOrLess), any(), ArgumentMatchers.eq(false))(any()))
           .thenReturn(Future.successful(Call("GET", "TxM")))
         when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
@@ -181,7 +181,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
     }
     "transactor journey" should {
       "redirect to ALF with applicant journeyId" in new Setup {
-        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddressThreeYearsOrLess), any())(any()))
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddressThreeYearsOrLess), any(), ArgumentMatchers.eq(false))(any()))
           .thenReturn(Future.successful(Call("GET", "TxM")))
         when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(true))
 

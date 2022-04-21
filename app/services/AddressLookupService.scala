@@ -32,8 +32,8 @@ class AddressLookupService @Inject()(val addressLookupConnector: AddressLookupCo
 
   def getAddressById(id: String)(implicit hc: HeaderCarrier): Future[Address] = addressLookupConnector.getAddress(id)
 
-  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call)(implicit hc: HeaderCarrier): Future[Call] = {
-    addressLookupConnector.getOnRampUrl(alfConfig(journeyId, continueUrl))
+  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call, useUkMode: Boolean = false)(implicit hc: HeaderCarrier): Future[Call] = {
+    addressLookupConnector.getOnRampUrl(alfConfig(journeyId, continueUrl, useUkMode))
   }
 
 }
