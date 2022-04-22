@@ -1056,6 +1056,10 @@ attachments.documentsPost.line3                    = HM Revenue and Customs
 attachments.documentsPost.postCode                 = BX9 1WR
 attachments.documentsPost.country                  = United Kingdom
 
+# UPLOADING DOCUMENT
+attachments.uploadingDocument.heading              = Uploading the document
+attachments.uploadingDocument.subheading           = We are checking your file.
+attachments.uploadingDocument.status.button.text   = Check status
 
 pages.PostalCoverSheet.heading                           = Print cover letter for documents
 pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your supporting documents.

@@ -38,7 +38,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
   }
 
   "POST /email-address-verification" should {
-      "return NotImplemented" in new Setup {
+      "redirect to CaptureTelephoneNumber page" in new Setup {
         disable(StubEmailVerification)
 
         given()
