@@ -52,8 +52,8 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
         )
       ),
       labels = AddressMessageLanguageModel(
-        en = AddressMessagesModel.forJourney(journeyId.toString, english),
-        cy = AddressMessagesModel.forJourney(journeyId.toString, welsh)
+        en = AddressMessagesModel.forJourney(journeyId.toString, english, useUkMode),
+        cy = AddressMessagesModel.forJourney(journeyId.toString, welsh, useUkMode)
       )
     )
   }

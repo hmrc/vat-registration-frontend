@@ -30,18 +30,21 @@ case class AddressMessagesModel(appLevelLabels: AppLevelMessagesModel,
                                 lookupPageLabels: LookupPageMessagesModel,
                                 selectPageLabels: SelectPageMessagesModel,
                                 editPageLabels: EditPageMessagesModel,
-                                confirmPageLabels: ConfirmPageMessagesModel)
+                                confirmPageLabels: ConfirmPageMessagesModel,
+                                countryPickerLabels: Option[CountryPickerMessagesModel] = None
+                               )
 
 object AddressMessagesModel {
   implicit val writes: Writes[AddressMessagesModel] = Json.writes[AddressMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): AddressMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, useUkMode: Boolean = false)(implicit messagesApi: MessagesApi): AddressMessagesModel = {
     AddressMessagesModel(
       appLevelLabels = AppLevelMessagesModel.forLang(lang),
       lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang),
       selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
       editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang),
-      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang)
+      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang),
+      countryPickerLabels = if (useUkMode) None else Some(CountryPickerMessagesModel.forJourney(journeyId, lang))
     )
   }
 }
@@ -84,6 +87,20 @@ object LookupPageMessagesModel {
       noResultsFoundMessage = MessageOption(s"addressLookup.$journeyId.lookupPage.noResultsFoundMessage", lang),
       resultLimitExceededMessage = MessageOption(s"addressLookup.$journeyId.lookupPage.resultLimitExceededMessage", lang),
       manualAddressLinkText = MessageOption(s"addressLookup.$journeyId.lookupPage.manualAddressLinkText", lang)
+    )
+  }
+}
+
+case class CountryPickerMessagesModel(title: Option[String],
+                                      heading: Option[String])
+
+object CountryPickerMessagesModel {
+  implicit val writes: Writes[CountryPickerMessagesModel] = Json.writes[CountryPickerMessagesModel]
+
+  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): CountryPickerMessagesModel = {
+    CountryPickerMessagesModel(
+      title = MessageOption(s"addressLookup.$journeyId.countryPicker.title", lang),
+      heading = MessageOption(s"addressLookup.$journeyId.countryPicker.heading", lang)
     )
   }
 }
