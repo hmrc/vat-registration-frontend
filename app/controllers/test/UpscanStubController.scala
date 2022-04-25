@@ -25,6 +25,7 @@ import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -48,7 +49,7 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
       _ <- sessionService.cache(testOnlyUpscanCallbackUrl, callbackUrl)
       _ <- sessionService.cache(testOnlyUpscanSuccessUrl, successUrl)
     } yield Ok(Json.obj(
-      "reference" -> "testFile",
+      "reference" -> UUID.randomUUID(),
       "uploadRequest" -> Json.obj(
         "href" -> "/register-for-vat/test-only/upscan/upload-response",
         "fields" -> Json.obj("test" -> "field")
@@ -60,9 +61,10 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
     for {
       optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
       optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
-      callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved form session"))
-      successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("success URL couldn't be retrieved form session"))
-      _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl)
+      reference = request.session.get("reference").get
+      callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved from session"))
+      successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("Success URL couldn't be retrieved from session"))
+      _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl, reference)
     } yield Redirect(successUrl)
   }
 

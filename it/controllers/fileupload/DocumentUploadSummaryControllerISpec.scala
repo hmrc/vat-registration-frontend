@@ -9,9 +9,9 @@ import play.api.test.Helpers._
 
 import java.time.LocalDateTime
 
-class DocumentUploadSummaryControllerSpec  extends ControllerISpec {
+class DocumentUploadSummaryControllerISpec  extends ControllerISpec {
 
-  def pageUrl(): String = routes.DocumentUploadSummaryController.show.url
+  val pageUrl: String = routes.DocumentUploadSummaryController.show.url
 
   val testUpscanDetails = List(
     UpscanDetails(
@@ -24,7 +24,7 @@ class DocumentUploadSummaryControllerSpec  extends ControllerISpec {
     UpscanDetails(reference = "tes-reference", fileStatus = Ready)
   )
 
-  "GET" when {
+  s"GET $pageUrl" when {
     "the user has 1 or more documents uploaded" must {
       "return OK with the view" in new Setup {
         given
@@ -36,7 +36,7 @@ class DocumentUploadSummaryControllerSpec  extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(pageUrl()).get)
+        val res = await(buildClient(pageUrl).get)
         res.status mustBe OK
       }
 
@@ -50,7 +50,7 @@ class DocumentUploadSummaryControllerSpec  extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(pageUrl()).get)
+        val res = await(buildClient(pageUrl).get)
         res.status mustBe INTERNAL_SERVER_ERROR
       }
     }

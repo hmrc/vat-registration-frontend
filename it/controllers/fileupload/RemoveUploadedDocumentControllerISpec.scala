@@ -10,14 +10,14 @@ import play.api.test.Helpers._
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class RemoveUploadedDocumentControllerSpec  extends ControllerISpec {
+class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
 
   val testReference = "test-reference"
 
   def removeDocumentUrl(reference: String): String = routes.RemoveUploadedDocumentController.submit(reference).url
 
   val testUpscanDetails: UpscanDetails = UpscanDetails(
-    reference = "test-reference",
+    reference = testReference,
     fileStatus = Ready,
     uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))
   )

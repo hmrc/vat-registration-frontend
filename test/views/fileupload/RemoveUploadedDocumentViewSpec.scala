@@ -23,9 +23,9 @@ import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import viewmodels.DocumentUploadSummaryRow
 import views.VatRegViewSpec
-import views.html.fileUpload.RemoveUploadedDocument
+import views.html.fileupload.RemoveUploadedDocument
 
-class RemoveUploadedDocumentViewSpec  extends VatRegViewSpec with VatRegistrationFixture {
+class RemoveUploadedDocumentViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   val testReference = "reference"
   val testDocumentName = "testDocumentName"

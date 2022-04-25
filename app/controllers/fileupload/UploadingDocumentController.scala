@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
-import views.html.fileUpload.UploadingDocument
+import views.html.fileupload.UploadingDocument
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,26 +34,29 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
                                             upscanService: UpscanService,
                                             val authConnector: AuthConnector,
                                             val sessionService: SessionService
-                                    )(implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
+                                           )(implicit appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext,
+                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    Future.successful(Ok(uploadingDocument(request.session.get("reference").getOrElse(throw new InternalServerException("Upscan document reference not in session")))))
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
+      Future.successful(Ok(uploadingDocument(request.session.get("reference").getOrElse(throw new InternalServerException("Upscan document reference not in session")))))
   }
 
-  def poll(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    upscanService.getUpscanFileStatus(profile.registrationId, reference).map{ status =>
-      Ok(Json.obj("status" -> Json.toJson(status)))
-    }
+  def poll(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
+      upscanService.getUpscanFileStatus(profile.registrationId, reference).map { status =>
+        Ok(Json.obj("status" -> Json.toJson(status)))
+      }
   }
 
-  def submit(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    upscanService.getUpscanFileStatus(profile.registrationId, reference).map{
-      case InProgress => Redirect(routes.UploadingDocumentController.show)
-      case Ready => Redirect(routes.DocumentUploadSummaryController.show)
-      case Failed => NotImplemented
-    }
+  def submit(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
+      upscanService.getUpscanFileStatus(profile.registrationId, reference).map {
+        case InProgress => Redirect(routes.UploadingDocumentController.show)
+        case Ready => Redirect(routes.DocumentUploadSummaryController.show)
+        case Failed => NotImplemented
+      }
   }
 }

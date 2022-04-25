@@ -53,7 +53,7 @@ documentUploadSummaryTable: components.DocumentUploadSummaryTable
                 }
             }
 
-            @formWithCSRF(action = controllers.test.routes.FileUploadController.show) {
+            @formWithCSRF(action = controllers.fileupload.routes.UploadDocumentController.show) {
                 @button("app.common.continue", showSaveProgressButton = true)
             }
 

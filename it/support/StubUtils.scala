@@ -27,9 +27,10 @@ import models.api.{AttachmentType, Attachments, SicCode, VatScheme}
 import models.external.upscan.UpscanDetails
 import models.{ApiKey, S4LKey}
 import play.api.http.Status._
-import play.api.libs.json.{Json, _}
+import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import play.api.test.Helpers.OK
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import utils.JsonUtilities
 
@@ -498,8 +499,10 @@ trait StubUtils {
             Json.stringify(Json.obj(
               "registrationId" -> "1",
               "status" -> status.toString
-            ) ++ {if (withDate) Json.obj("createdDate" -> "2021-01-01") else Json.obj()}
-          ))))
+            ) ++ {
+              if (withDate) Json.obj("createdDate" -> "2021-01-01") else Json.obj()
+            }
+            ))))
 
       builder
     }
@@ -725,7 +728,7 @@ trait StubUtils {
     def getRegistration(vatScheme: VatScheme, regId: String = "1")(implicit format: Format[VatScheme] = VatScheme.format): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/registrations/$regId"))
         .willReturn(ok(Json.stringify(Json.toJson(vatScheme)))
-      ))
+        ))
       builder
     }
 
@@ -799,6 +802,33 @@ trait StubUtils {
   }
 
   case class UpscanApiStub()(implicit builder: PreconditionBuilder) {
+
+    def upscanInitiate(reference: String): PreconditionBuilder = {
+      stubFor(post(urlPathEqualTo("/upscan/v2/initiate"))
+        .willReturn(ok(Json.stringify(Json.obj(
+          "reference" -> reference,
+          "uploadRequest" -> Json.obj(
+            "href" -> "testHref",
+            "fields" -> Json.obj(
+              "testField1" -> "test1",
+              "testField2" -> "test2"
+            )
+          )
+        ))))
+      )
+      builder
+    }
+
+    def storeUpscanReference(reference: String, attachmentType: AttachmentType, regId: String = "1")(implicit format: Format[UpscanDetails]): PreconditionBuilder = {
+      stubFor(post(urlPathEqualTo(s"/vatreg/$regId/upscan-reference"))
+        .withRequestBody(equalToJson(Json.stringify(Json.obj(
+          "reference" -> reference,
+          "attachmentType" -> attachmentType
+        ))))
+        .willReturn(ok())
+      )
+      builder
+    }
 
     def fetchUpscanFileDetails(upscanDetails: UpscanDetails, regId: String = "1", reference: String)(implicit format: Format[UpscanDetails]): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/$regId/upscan-file-details/$reference"))
