@@ -6,6 +6,7 @@ import models.{ApplicantDetails, TransactorDetails}
 import models.api.{Address, Country, EligibilitySubmissionData}
 import models.view.HomeAddressView
 import org.jsoup.Jsoup
+import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -159,25 +160,29 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
     }
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
+      def assertMissingPostcode(country: String): Assertion = {
+        given
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .vatScheme.doesNotExistForKey("applicant-details")
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Map(
-        "line1" -> "testLine1",
-        "line2" -> "testLine2",
-        "line3" -> "testLine3",
-        "line4" -> "testLine4",
-        "line5" -> "testLine5",
-        "country" -> "United Kingdom"
-      )))
+        val res = await(buildClient(url).post(Map(
+          "line1" -> "testLine1",
+          "line2" -> "testLine2",
+          "line3" -> "testLine3",
+          "line4" -> "testLine4",
+          "line5" -> "testLine5",
+          "country" -> country
+        )))
 
-      res.status mustBe BAD_REQUEST
+        res.status mustBe BAD_REQUEST
+      }
+
+      List("United Kingdom", "Isle of Man", "Guernsey", "Jersey").foreach(assertMissingPostcode)
     }
   }
 
