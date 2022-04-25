@@ -67,7 +67,12 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     val changeLinkText = "Edit this address"
   }
 
-  val addressInitializationJson: JsValue = Json.obj(
+  object CountryPickerLabels {
+    val title = "Find your home address"
+    val heading = "Find your home address"
+  }
+
+  val addressInitializationJson: JsObject = Json.obj(
     "version" -> 2,
     "options" -> Json.obj(
       "continueUrl" -> "http://localhost:9895/continueUrl",
@@ -167,12 +172,30 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     "write to Json correctly when UK mode is false" in {
       val actualResult = Json.toJson(addressInitializationModel())
 
-      actualResult mustBe addressInitializationJson
+      actualResult mustBe addressInitializationJson.deepMerge(
+        Json.obj(
+          "labels" -> Json.obj(
+            "en" -> Json.obj(
+              "countryPickerLabels" -> Json.obj(
+                "title" -> CountryPickerLabels.title,
+                "heading" -> CountryPickerLabels.heading,
+              )
+            ),
+            "cy" -> Json.obj(
+              "countryPickerLabels" -> Json.obj(
+                "title" -> CountryPickerLabels.title,
+                "heading" -> CountryPickerLabels.heading,
+              )
+            )
+          )
+        )
+      )
     }
+
     "Send the UK mode flag as true when required" in {
       val actualResult = Json.toJson(addressInitializationModel(ukMode = true))
 
-      actualResult mustBe addressInitializationJson.as[JsObject].deepMerge(
+      actualResult mustBe addressInitializationJson.deepMerge(
         Json.obj("options" ->
           Json.obj("ukMode" -> true)
         )

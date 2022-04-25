@@ -93,6 +93,9 @@ addressLookup.homeAddress.confirmPage.heading                = Confirm your home
 addressLookup.homeAddress.confirmPage.changeLinkText         = Edit this address
 addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 
+addressLookup.homeAddress.countryPicker.title                = Find your home address
+addressLookup.homeAddress.countryPicker.heading              = Find your home address
+
 ## applicantAddress
 addressLookup.applicantAddress.lookupPage.title                   = Find their address
 addressLookup.applicantAddress.lookupPage.heading                 = Find their address
@@ -118,6 +121,9 @@ addressLookup.applicantAddress.confirmPage.title                  = Confirm the 
 addressLookup.applicantAddress.confirmPage.heading                = Confirm the address
 addressLookup.applicantAddress.confirmPage.changeLinkText         = Edit this address
 addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
+
+addressLookup.applicantAddress.countryPicker.title                = Find your home address
+addressLookup.applicantAddress.countryPicker.heading              = Find your home address
 
 ## addressThreeYearsOrLess
 addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Find your previous home address
@@ -147,6 +153,9 @@ addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Confi
 addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
+addressLookup.addressThreeYearsOrLess.countryPicker.title                = Find your home address
+addressLookup.addressThreeYearsOrLess.countryPicker.heading              = Find your home address
+
 ## applicantAddressThreeYearsOrLess
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.title                   = Find their previous address
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.heading                 = Find their previous address
@@ -175,9 +184,12 @@ addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading              
 addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
+addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Find your home address
+addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Find your home address
+
 ## businessActivities
-addressLookup.businessActivities.lookupPage.title                   = What is the business address?
-addressLookup.businessActivities.lookupPage.heading                 = What is the business address?
+addressLookup.businessActivities.lookupPage.title                   = Where is the primary place of business?
+addressLookup.businessActivities.lookupPage.heading                 = Where is the primary place of business?
 addressLookup.businessActivities.lookupPage.filterLabel             = Property name or number
 addressLookup.businessActivities.lookupPage.submitLabel             = Continue
 addressLookup.businessActivities.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
@@ -188,8 +200,8 @@ addressLookup.businessActivities.selectPage.searchAgainLinkText     = Search aga
 addressLookup.businessActivities.selectPage.editAddressLinkText     = Edit address
 addressLookup.businessActivities.selectPage.submitLabel             = Continue
 
-addressLookup.businessActivities.editPage.title                     = Enter the business address
-addressLookup.businessActivities.editPage.heading                   = Enter the business address
+addressLookup.businessActivities.editPage.title                     = Enter the primary place of business address
+addressLookup.businessActivities.editPage.heading                   = Enter the primary place of business address
 addressLookup.businessActivities.editPage.line1Label                = Address line 1
 addressLookup.businessActivities.editPage.line2Label                = Address line 2
 addressLookup.businessActivities.editPage.line3Label                = Address line 3
@@ -228,6 +240,9 @@ addressLookup.transactorAddress.confirmPage.title                  = Confirm you
 addressLookup.transactorAddress.confirmPage.heading                = Confirm your address
 addressLookup.transactorAddress.confirmPage.changeLinkText         = Edit this address
 addressLookup.transactorAddress.confirmPage.submitLabel            = Continue
+
+addressLookup.transactorAddress.countryPicker.title                = Find your home address
+addressLookup.transactorAddress.countryPicker.heading              = Find your home address
 
 #Timeout Page
 pages.timeout.heading                   = Your session has timed out due to inactivity
