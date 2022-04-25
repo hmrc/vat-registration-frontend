@@ -18,6 +18,7 @@ package forms
 
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
 import forms.constraints.utils.ValidationHelper.{validate, validateNot}
+import forms.FormValidation.removeSpaces
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import play.api.data.validation.Constraint
@@ -29,7 +30,7 @@ object TransactorTelephoneForm {
   val form =
     Form(
       single(
-        telephoneNumberKey -> text.verifying(
+        telephoneNumberKey -> text.transform(removeSpaces, identity[String]).verifying(
           TransactorTelephoneConstraints.telephoneNumberEmpty andThen
           TransactorTelephoneConstraints.telephoneNumberLength andThen
           TransactorTelephoneConstraints.telephoneNumberFormat
