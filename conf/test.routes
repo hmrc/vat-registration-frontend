@@ -28,6 +28,8 @@ GET         /personal-details-validation/:validationId        controllers.test.P
 
 + nocsrf
 POST        /sole-trader-identification                       controllers.test.SoleTraderIdentificationStubController.createJourney(partyType: Option[String])
++ nocsrf
+POST        /sole-trader-identification-individual            controllers.test.SoleTraderIdentificationStubController.createIndividualJourney(partyType: Option[String])
 GET         /sole-trader-identification/:journeyId            controllers.test.SoleTraderIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf

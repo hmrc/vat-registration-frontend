@@ -45,9 +45,9 @@ trait MockSoleTraderIdConnector extends MockitoSugar {
       journeyId = matches(journeyId)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockStartIndividualJourney(config: SoleTraderIdJourneyConfig)(response: Future[String]): OngoingStubbing[Future[String]] =
+  def mockStartIndividualJourney(config: SoleTraderIdJourneyConfig, partyType: Option[PartyType])(response: Future[String]): OngoingStubbing[Future[String]] =
     when(mockSoleTraderIdConnector.startIndividualJourney(
-      config = matches(config)
+      config = matches(config), matches(partyType)
     )(any[HeaderCarrier])) thenReturn response
 
   def mockRetrieveIndividualDetails(journeyId: String)(response: Future[PersonalDetails]): OngoingStubbing[Future[PersonalDetails]] =

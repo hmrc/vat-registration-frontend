@@ -17,7 +17,7 @@
 package services
 
 import connectors.mocks.MockSoleTraderIdConnector
-import models.api.Individual
+import models.api.{Individual, UkCompany}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
@@ -69,14 +69,14 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
 
   "startIndividualJourney" must {
     "return a journeyId when provided with config" in new Setup {
-      mockStartIndividualJourney(testJourneyConfig)(Future.successful(testJourneyUrl))
+      mockStartIndividualJourney(testJourneyConfig, None)(Future.successful(testJourneyUrl))
 
       val res = await(Service.startIndividualJourney(testJourneyConfig))
 
       res mustBe testJourneyUrl
     }
     "throw an exception if the call to STI fails" in new Setup {
-      mockStartIndividualJourney(testJourneyConfig)(Future.failed(new InternalServerException("")))
+      mockStartIndividualJourney(testJourneyConfig, None)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException] {
         await(Service.startIndividualJourney(testJourneyConfig))

@@ -93,7 +93,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         given()
         stubPost(createIndividualJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.startIndividualJourney(testJourneyConfig))
+        val res = await(connector.startIndividualJourney(testJourneyConfig, None))
 
         res mustBe testJourneyUrl
       }
@@ -102,7 +102,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createIndividualJourneyUrl, CREATED, "{}")
 
         intercept[InternalServerException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }
@@ -112,7 +112,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createIndividualJourneyUrl, UNAUTHORIZED, "")
 
         intercept[UnauthorizedException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }
@@ -122,7 +122,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         stubPost(createIndividualJourneyUrl, IM_A_TEAPOT, "")
 
         intercept[InternalServerException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }

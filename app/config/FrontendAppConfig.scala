@@ -165,6 +165,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
+
   def incorpIdPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-partner-callback"
 
   // Personal Details Validation Section
@@ -200,9 +201,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
       s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/sole-trader-journey"
     }
 
-  def individualJourneyUrl: String =
+  def individualJourneyUrl(partyType: Option[PartyType]): String =
     if (isEnabled(StubSoleTraderIdentification)) {
-      s"$host/register-for-vat/test-only/sole-trader-identification"
+      s"$host/register-for-vat/test-only/sole-trader-identification-individual${partyType.fold("")(pt => s"?partyType=${PartyType.stati(pt)}")}"
     } else {
       s"$soleTraderIdentificationFrontendHost/sole-trader-identification/api/individual-journey"
     }
@@ -215,8 +216,11 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def soleTraderCallbackUrl: String = s"$hostUrl/register-for-vat/sti-callback"
+
   def individualCallbackUrl: String = s"$hostUrl/register-for-vat/sti-individual-callback"
+
   def transactorCallbackUrl: String = s"$hostUrl/register-for-vat/sti-transactor-callback"
+
   def leadPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/sti-partner-callback"
 
   // Partnership Identification Section
@@ -246,6 +250,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     }
 
   def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
+
   def partnershipIdPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-partner-callback"
 
   // Minor Entity Identification Section
