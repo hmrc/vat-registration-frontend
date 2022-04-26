@@ -162,7 +162,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       "return the journey ID when the response JSON includes the journeyId" in new Setup {
         mockHttpPOST(createIndividualJourneyUrl, HttpResponse(CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString))
 
-        val res = await(connector.startIndividualJourney(testJourneyConfig))
+        val res = await(connector.startIndividualJourney(testJourneyConfig, None))
 
         res mustBe testJourneyUrl
       }
@@ -170,7 +170,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createIndividualJourneyUrl, HttpResponse(CREATED, Json.obj().toString))
 
         intercept[InternalServerException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }
@@ -179,7 +179,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createIndividualJourneyUrl, HttpResponse(UNAUTHORIZED, ""))
 
         intercept[UnauthorizedException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }
@@ -188,7 +188,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
         mockHttpPOST(createIndividualJourneyUrl, HttpResponse(IM_A_TEAPOT, ""))
 
         intercept[InternalServerException] {
-          await(connector.startIndividualJourney(testJourneyConfig))
+          await(connector.startIndividualJourney(testJourneyConfig, None))
         }
       }
     }

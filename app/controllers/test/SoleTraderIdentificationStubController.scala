@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import models.api.{Individual, Partnership, PartyType, NETP => PartyTypeNETP}
+import models.api.{Individual, NonUkNonEstablished, Partnership, PartyType, NETP => PartyTypeNETP}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.libs.json.{JsObject, JsString, Json}
@@ -34,7 +34,7 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
   val netpExcludeBv = "NETP_EXCLUDE_BV"
   val netp = "NETP"
   val individual = "INDIVIDUAL"
-
+  val overseasIndividual = "OVERSEAS_INDIVIDUAL"
 
   def createJourney(optPartyType: Option[String]): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
     def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
@@ -54,6 +54,18 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
 
   }
 
+  def createIndividualJourney(optPartyType: Option[String]): Action[SoleTraderIdJourneyConfig] = Action(parse.json[SoleTraderIdJourneyConfig]) { request =>
+    def json(id: String): JsObject = Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$id"))
+
+    optPartyType.map(PartyType.fromString) match {
+      case Some(NonUkNonEstablished) =>
+        Created(json(overseasIndividual))
+      case _ =>
+        Created(json(individual))
+    }
+
+  }
+
   def retrieveValidationResult(journeyId: String): Action[AnyContent] = Action {
     Ok(
       journeyId match {
@@ -61,7 +73,8 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
         case `soleTrader` => soleTraderValidationResult(businessVerification = true)
         case `netpExcludeBv` => netpValidationResult(businessVerification = false)
         case `netp` => netpValidationResult(businessVerification = true)
-        case `individual` => individualValidationResult
+        case `overseasIndividual` => individualValidationResult(identifiersMatch = false)
+        case `individual` => individualValidationResult(identifiersMatch = true)
       }
     )
   }
@@ -95,19 +108,21 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
       "registration" -> Json.obj(
         "registrationStatus" -> "REGISTERED",
         "registeredBusinessPartnerId" -> "X00000123456789"
-      )
+      ),
+      "identifiersMatch" -> false
     )
     businessVerificationStatus(businessVerification, json)
   }
 
-  val individualValidationResult: JsObject = {
+  def individualValidationResult(identifiersMatch: Boolean): JsObject = {
     Json.obj(
       "fullName" -> Json.obj(
         "firstName" -> "testFirstName",
         "lastName" -> "testLastName"
       ),
       "nino" -> "AA123456A",
-      "dateOfBirth" -> LocalDate.of(1990, 1, 1)
+      "dateOfBirth" -> LocalDate.of(1990, 1, 1),
+      "identifiersMatch" -> identifiersMatch
     )
   }
 

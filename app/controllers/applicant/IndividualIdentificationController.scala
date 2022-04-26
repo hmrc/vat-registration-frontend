@@ -59,7 +59,8 @@ class IndividualIdentificationController @Inject()(val sessionService: SessionSe
               regime = appConfig.regime,
               businessVerificationCheck = true
             )
-            url <- soleTraderIdentificationService.startIndividualJourney(config)
+            partyType <- vatRegistrationService.partyType
+            url <- soleTraderIdentificationService.startIndividualJourney(config, Some(partyType))
           } yield {
             Redirect(url)
           }
