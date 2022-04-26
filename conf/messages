@@ -1020,7 +1020,7 @@ internationalAddress.error.line5.length                  = Enter line 5 using 35
 internationalAddress.error.line5.invalid                 = Enter line 5 without special characters
 internationalAddress.error.postcode.invalid              = Enter the postcode without special characters
 internationalAddress.error.postcode.length               = Enter the postcode using 10 characters or less
-internationalAddress.error.postcode.empty                = Enter a UK postcode
+internationalAddress.error.postcode.empty                = Enter a {0} postcode
 internationalAddress.error.country                       = Select a country
 internationalAddress.error.country.invalid               = Select a country
 

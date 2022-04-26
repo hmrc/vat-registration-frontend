@@ -6,6 +6,7 @@ import models.{ApplicantDetails, BusinessContact}
 import models.api.{Address, Country}
 import models.view.HomeAddressView
 import org.jsoup.Jsoup
+import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -177,6 +178,32 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe BAD_REQUEST
+    }
+
+    "return BAD_REQUEST if postcode missing and country requires postcode" in new Setup {
+
+      def assertMissingPostcode(country: String): Assertion = {
+        given
+          .user.isAuthorised()
+          .vatScheme.contains(emptyVatSchemeNetp)
+          .vatScheme.doesNotExistForKey("business-contact")
+          .s4lContainer[BusinessContact].contains(BusinessContact())
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).post(Map(
+          "line1" -> "testLine1",
+          "line2" -> "testLine2",
+          "line3" -> "testLine3",
+          "line4" -> "testLine4",
+          "line5" -> "testLine5",
+          "country" -> country
+        )))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      List("Isle of Man", "Guernsey", "Jersey").foreach(assertMissingPostcode)
     }
   }
 

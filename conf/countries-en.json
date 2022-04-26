@@ -1804,5 +1804,32 @@
     "official-name": "The Republic of Poland",
     "name": "Poland",
     "citizen-names": "Pole"
+  },
+  "JE": {
+    "entry-number": "147",
+    "entry-timestamp": "2016-04-05T13:23:05Z",
+    "item-hash": "sha-256:47d94070060f8b731c007a3f471a727502455fed7f4690be4f37cc52acbf2035",
+    "country": "JE",
+    "official-name": "Bailiwick of Jersey",
+    "name": "Jersey",
+    "citizen-names": "British"
+  },
+  "GG": {
+    "entry-number": "148",
+    "entry-timestamp": "2016-04-05T13:23:05Z",
+    "item-hash": "sha-256:d356f55a910cadce1e81f1fe8f1501a7f4c256239edb618ae3587d0bbcc89a17",
+    "country": "GG",
+    "official-name": "Bailiwick of Guernsey",
+    "name": "Guernsey",
+    "citizen-names": "British"
+  },
+  "IM": {
+    "entry-number": "149",
+    "entry-timestamp": "2016-04-05T13:23:05Z",
+    "item-hash": "sha-256:34096f96f68fb8fa37a92e0f42e33a14ccf82a11660d05b015357ad1fd407535",
+    "country": "GG",
+    "official-name": "Isle of Man",
+    "name": "Isle of Man",
+    "citizen-names": "British"
   }
 }

@@ -16,24 +16,27 @@
 
 package controllers.business
 
+import common.validators.AddressFormResultsHandler
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
+import models.api.Country
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessContactService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class InternationalPpobAddressController  @Inject()(val authConnector: AuthConnector,
                                                     val sessionService: SessionService,
                                                     businessContactService: BusinessContactService,
                                                     configConnector: ConfigConnector,
                                                     view: CaptureInternationalAddress,
-                                                    formProvider: InternationalAddressForm)
+                                                    formProvider: InternationalAddressForm,
+                                                    addressFormResultsHandler: AddressFormResultsHandler)
                                                    (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile{
@@ -42,22 +45,25 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
   private lazy val submitAction = routes.InternationalPpobAddressController.submit
   private val invalidCountries = Seq("United Kingdom")
 
-  private def countries: Seq[String] = configConnector.countries.flatMap(_.name).diff(invalidCountries)
+  private val countries: Seq[Country] = configConnector.countries.filter(country => {
+    country.name.isDefined && !invalidCountries.contains(country.name.get)
+  })
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
       for {
         contactDetails <- businessContactService.getBusinessContact
         filledForm = contactDetails.ppobAddress.fold(formProvider.form(invalidCountries))(formProvider.form(invalidCountries).fill)
-      } yield Ok(view(filledForm, countries, submitAction, headingMessageKey))
+      } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
-      formProvider.form(invalidCountries).bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(view(formWithErrors, countries, submitAction, headingMessageKey)))
-        },
+      addressFormResultsHandler.handle(
+        countries,
+        headingMessageKey,
+        formProvider.form(invalidCountries).bindFromRequest,
+        submitAction,
         internationalAddress => {
           businessContactService.updateBusinessContact(internationalAddress) map { _ =>
             Redirect(routes.BusinessContactDetailsController.show)
@@ -65,5 +71,4 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
         }
       )
   }
-
 }
