@@ -24,7 +24,7 @@ import services.{AttachmentsService, SessionProfile, SessionService, UpscanServi
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.DocumentUploadSummaryRow
-import views.html.fileUpload.DocumentUploadSummary
+import views.html.fileupload.DocumentUploadSummary
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -35,23 +35,29 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
                                                 attachmentsService: AttachmentsService,
                                                 val authConnector: AuthConnector,
                                                 val sessionService: SessionService
-                                    )(implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
+                                               )(implicit appConfig: FrontendAppConfig,
+                                                 val executionContext: ExecutionContext,
+                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => profile =>
-    for {
-      upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
-      uploadSummaryRows = scanDetailsAsSummaryRows(upscanResponse)
-      incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
-    } yield Ok(view(uploadSummaryRows, incompleteAttachments.size))
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    profile =>
+      for {
+        upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
+        uploadSummaryRows = scanDetailsAsSummaryRows(upscanResponse)
+        incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
+      } yield {
+        uploadSummaryRows match {
+          case Nil => Redirect(routes.UploadDocumentController.show)
+          case _ => Ok(view(uploadSummaryRows, incompleteAttachments.size))
+        }
+      }
   }
 
   private def scanDetailsAsSummaryRows(upscanResponse: Seq[UpscanDetails]): Seq[DocumentUploadSummaryRow] = {
     upscanResponse.filter(_.fileStatus == Ready).map(details => {
-      val fileName = details.uploadDetails.map(_.fileName).getOrElse (
-        throw new InternalServerException (s"Failed to render upscan summary page, missing file name for reference: ${details.reference}")
+      val fileName = details.uploadDetails.map(_.fileName).getOrElse(
+        throw new InternalServerException(s"Failed to render upscan summary page, missing file name for reference: ${details.reference}")
       )
       DocumentUploadSummaryRow(fileName, routes.RemoveUploadedDocumentController.show(details.reference))
     })

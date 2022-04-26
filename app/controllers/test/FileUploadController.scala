@@ -22,7 +22,7 @@ import models.api.PrimaryIdentityEvidence
 import play.api.mvc.{Action, AnyContent, Session}
 import services.{SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.fileUpload.{callback_check, file_upload}
+import views.html.fileupload.{callback_check, file_upload}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext

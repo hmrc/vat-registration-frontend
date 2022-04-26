@@ -18,11 +18,11 @@ package views.fileupload
 
 import fixtures.VatRegistrationFixture
 import org.jsoup.Jsoup
-import views.VatRegViewSpec
 import viewmodels.DocumentUploadSummaryRow
-import views.html.fileUpload.DocumentUploadSummary
+import views.VatRegViewSpec
+import views.html.fileupload.DocumentUploadSummary
 
-class DocumentUploadSummaryViewSpec  extends VatRegViewSpec with VatRegistrationFixture {
+class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   val view = app.injector.instanceOf[DocumentUploadSummary]
 
@@ -42,7 +42,7 @@ class DocumentUploadSummaryViewSpec  extends VatRegViewSpec with VatRegistration
 
   "The document upload summary view" must {
     "have the correct title" in new ViewSetup {
-      doc.title must include (ExpectedMessages.heading)
+      doc.title must include(ExpectedMessages.heading)
     }
     "have the correct h1 heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedMessages.heading)

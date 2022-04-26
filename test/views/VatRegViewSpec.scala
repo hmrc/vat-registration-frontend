@@ -96,7 +96,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def panelIndentHeading(n: Int): Option[String] = selectText(panelHeading).lift(n)
 
-      def panelIndent(n: Int): Option[String] = selectText("main .govuk-inset-text").headOption
+      def panelIndent(n: Int): Option[String] = selectText("main .govuk-inset-text").lift(n)
 
       def unorderedList(n: Int): List[String] = doc.select(s"main ul:nth-of-type($n)").first.children().eachText().asScala.toList
 

@@ -26,13 +26,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class TestUpscanCallbackConnector @Inject()(http: HttpClient)
                                            (implicit ec: ExecutionContext) {
 
-  def postUpscanResponse(callbackUrl: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def postUpscanResponse(callbackUrl: String, reference: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     http.POST(
       url = callbackUrl,
       body = Json.parse(
         s"""
           |{
-          |    "reference": "testFile",
+          |    "reference": "$reference",
           |    "downloadUrl": "https://test",
           |    "fileStatus": "READY",
           |    "uploadDetails": {

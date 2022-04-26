@@ -14,29 +14,36 @@
  * limitations under the License.
  */
 
-package views.attachments
+package views.fileupload
 
+
+import models.external.upscan.UpscanResponse
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.fileUpload.UploadingDocument
+import views.html.fileupload.UploadDocument
 
-class UploadingDocumentViewSpec extends VatRegViewSpec {
+class UploadDocumentViewSpec extends VatRegViewSpec {
 
-  val uploadingDocumentPage = app.injector.instanceOf[UploadingDocument]
-
-  lazy val view: Html = uploadingDocumentPage("reference")
-  implicit val doc = Jsoup.parse(view.body)
+  val uploadDocumentsPage: UploadDocument = app.injector.instanceOf[UploadDocument]
+  val testReference = "testReference"
+  val testHref = "testHref"
+  val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map("testField1" -> "test1", "testField2" -> "test2"))
 
   object ExpectedContent {
-    val heading = "Uploading the document"
+    val heading = "Upload a document"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val subheading = "We are checking your file."
+    val testHint = "testHint"
+    val label = "Upload a file"
     val continue = "Save and continue"
   }
 
-  "The Uploading Document page" must {
-    "have a back link in new Setup" in new ViewSetup {
+  "The Upload Documents Page" must {
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint))
+    implicit val doc: Document = Jsoup.parse(view.body)
+
+    "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
 
@@ -48,8 +55,12 @@ class UploadingDocumentViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct subheading" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.subheading)
+    "have the correct panel text" in new ViewSetup {
+      doc.panelIndent(0) mustBe Some(ExpectedContent.testHint)
+    }
+
+    "have a primary action" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
 

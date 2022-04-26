@@ -1380,3 +1380,24 @@ pending.documents.messagePlural             = You need to upload another {0} doc
 # DOCUMENT UPLOAD REMOVE
 document.upload.remove.heading                  = Are you sure you want to remove {0}?
 validation.document.upload.remove.missing       = Select yes if you want to remove {0}
+
+# UPLOAD PHOTO DOCUMENT PAGE
+fileUpload.uploadDocument.heading                    = Upload a document
+fileUpload.uploadDocument.hint.primary               = This must be a passport, photocard drivers licence or a national identity card. The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT.
+fileUpload.uploadDocument.hint.primary3pt            = This must be {0}’s passport, photocard driving licence or their national identity card. The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT.
+fileUpload.uploadDocument.hint.extraIdText           = This could be a:
+fileUpload.uploadDocument.hint.extraIdText3pt        = This could be any of the following for {0}:
+fileUpload.uploadDocument.hint.extraIdBullet1        = mortgage statement
+fileUpload.uploadDocument.hint.extraIdBullet1.3pt    = a mortgage statement
+fileUpload.uploadDocument.hint.extraIdBullet2        = lease or rental agreement
+fileUpload.uploadDocument.hint.extraIdBullet2.3pt    = a lease or rental agreement
+fileUpload.uploadDocument.hint.extraIdBullet3        = work permit or Visa
+fileUpload.uploadDocument.hint.extraIdBullet3.3pt    = a work permit or Visa
+fileUpload.uploadDocument.hint.extraIdBullet4        = any correspondence from the Department for Work and Pensions confirming entitlement to benefits
+fileUpload.uploadDocument.hint.extraIdBullet4.3pt    = any correspondence from the Department for Work and Pensions confirming entitlement to benefits
+fileUpload.uploadDocument.hint.extraIdBullet5        = recent utility bill
+fileUpload.uploadDocument.hint.extraIdBullet5.3pt    = a recent utility bill
+fileUpload.uploadDocument.hint.extraIdBullet6        = birth certificate
+fileUpload.uploadDocument.hint.extraIdBullet6.3pt    = a birth certificate
+fileUpload.uploadDocument.hint.fileType              = The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT.
+fileUpload.uploadDocument.label                      = Upload a file

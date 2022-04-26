@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
-import views.html.fileUpload.RemoveUploadedDocument
+import views.html.fileupload.RemoveUploadedDocument
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,8 +35,8 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
                                                  upscanService: UpscanService,
                                                  view: RemoveUploadedDocument)
                                                 (implicit appConfig: FrontendAppConfig,
-                                              val executionContext: ExecutionContext,
-                                              baseControllerComponents: BaseControllerComponents)
+                                                 val executionContext: ExecutionContext,
+                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -67,7 +67,7 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
                 RemoveUploadedDocumentForm(uploadDetails.fileName).form.bindFromRequest.fold(
                   errors => Future.successful(BadRequest(view(errors, reference, uploadDetails.fileName))),
                   success => {
-                    if(success) {
+                    if (success) {
                       for {
                         _ <- upscanService.deleteUpscanDetails(profile.registrationId, reference)
                       } yield Redirect(routes.DocumentUploadSummaryController.show)

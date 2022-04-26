@@ -47,7 +47,7 @@ class VoluntaryStartDateNoChoiceViewSpec extends VatRegViewSpec {
       doc.para(1) mustBe Some(ExpectedMessages.para)
     }
     "have the correct panel indent text" in new ViewSetup {
-      doc.panelIndent(1) mustBe Some(ExpectedMessages.panel)
+      doc.panelIndent(0) mustBe Some(ExpectedMessages.panel)
     }
     "have the correct date input" in new ViewSetup {
       doc.dateInput(1) mustBe Some(DateField(
