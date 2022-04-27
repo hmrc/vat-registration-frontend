@@ -23,11 +23,18 @@ class TransactorTelephoneFormSpec extends VatRegSpec {
 
   val telephoneNumberForm: Form[String] = TransactorTelephoneForm.form
   val testTelephoneNumber: String = "1234"
+  val testTelephoneNumberWithSpaces: String = " 12 34 "
   val incorrectFormatErrorKey: String = "telephoneNumber.error.incorrectFormat"
   val nothingEnteredErrorKey: String = "telephoneNumber.error.nothingEntered"
   val incorrectLengthErrorKey: String = "telephoneNumber.error.incorrectLength"
 
   "The TransactorTelephoneForm" must {
+    "remove spaces from telephone number" in {
+      val form = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumberWithSpaces)).value
+
+      form mustBe Some(testTelephoneNumber)
+    }
+
     "validate that testTelephoneNumber is valid" in {
       val form = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumber)).value
 
