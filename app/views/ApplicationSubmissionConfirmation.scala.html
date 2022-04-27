@@ -15,12 +15,10 @@
  *@
 
 @import config.FrontendAppConfig
+@import models.api.{Attached, AttachmentMethod, EmailMethod, Post}
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import models.api.AttachmentMethod
-@import models.api.Post
-@import models.api.EmailMethod
 
 @this(
         layout: layout,
@@ -46,19 +44,25 @@
         content = HtmlContent(referenceNumber)
     ))
 
-    @if(attachmentMethod.contains(EmailMethod)) {
-        @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
+    @if(attachmentMethod.contains(Post)) {
+        @p(content = Html(messages("pages.application.submission.confirmation.par1.post")), id = Some("confirmation-par1"))
     } else {
-        @p(content = Html(messages("pages.application.submission.confirmation.attachments.par1")), id = Some("confirmation-par1"))
+        @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
     }
 
     @h2(messages("pages.application.submission.confirmation.heading2"))
 
     @if(attachmentsListExists) {
         @attachmentMethod match {
-            case Some(Post) => {@orderedListHtml(bulletPost, bulletLetter, bulletRegistration)}
-            case Some(EmailMethod) => {@orderedListHtml(bulletEmail, bulletLetter, bulletRegistration)}
-            case _ => {@orderedListHtml(bulletPost, bulletLetter, bulletRegistration)}
+            case Some(Post) => {
+                @orderedListHtml(bulletPost, bulletLetter, bulletRegistration)
+            }
+            case Some(EmailMethod) => {
+                @orderedListHtml(bulletEmail, bulletLetter, bulletRegistration)
+            }
+            case _ => {
+                @orderedListHtml(bulletLetter, bulletRegistration)
+            }
         }
     } else {
         @orderedListHtml(bulletLetter, bulletRegistration)
@@ -69,13 +73,13 @@
 
     <ul class="govuk-list govuk-list--bullet">
         <li>
-        @link(appConfig.govukVat, messages("pages.application.submission.confirmation.link1"), Some("vat-link"), true)
+            @link(appConfig.govukVat, messages("pages.application.submission.confirmation.link1"), Some("vat-link"), true)
         </li>
         <li>
-        @link(appConfig.govukMtd, messages("pages.application.submission.confirmation.link2"), Some("mtd-link"), true)
+            @link(appConfig.govukMtd, messages("pages.application.submission.confirmation.link2"), Some("mtd-link"), true)
         </li>
         <li>
-        @link(appConfig.govukSoftware, messages("pages.application.submission.confirmation.link3"), Some("software-link"), true)
+            @link(appConfig.govukSoftware, messages("pages.application.submission.confirmation.link3"), Some("software-link"), true)
         </li>
     </ul>
 
@@ -100,7 +104,6 @@
 
 @bulletLetter = {
     @messages("pages.application.submission.confirmation.list.item1")
-
 }
 
 @bulletRegistration = {

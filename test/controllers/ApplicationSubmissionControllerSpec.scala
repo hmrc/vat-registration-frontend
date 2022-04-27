@@ -24,14 +24,14 @@ import org.mockito.Mockito._
 import play.api.mvc.Session
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.application_submission_confirmation
+import views.html.ApplicationSubmissionConfirmation
 
 import scala.concurrent.Future
 
 class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with MockVatRegistrationService with VatRegistrationFixture {
 
-  val applicationSubmissionConfirmationView: application_submission_confirmation =
-    fakeApplication.injector.instanceOf[application_submission_confirmation]
+  val applicationSubmissionConfirmationView: ApplicationSubmissionConfirmation =
+    fakeApplication.injector.instanceOf[ApplicationSubmissionConfirmation]
 
   val testController = new ApplicationSubmissionController(
     vatRegistrationServiceMock,
@@ -56,6 +56,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         status(res) mustBe OK
       }
     }
+
     "display the submission confirmation page to the user when IdentityEvidence is available" in {
       mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
