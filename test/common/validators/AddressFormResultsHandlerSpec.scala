@@ -32,13 +32,11 @@ class AddressFormResultsHandlerSpec extends VatRegSpec with Matchers {
     "return successfully if country config available in countries list" in {
       val resultsHandler = new AddressFormResultsHandler(app.injector.instanceOf[CaptureInternationalAddress])
 
-      val country = Some("United Kingdom")
-      val expectedCountryCode = "UK"
+      val expectedCountryName = "United Kingdom"
+      val testCountriesList = List(Country(Some("UK"), Some(expectedCountryName)))
+      val actualCountryName = resultsHandler.getCountryName(testCountriesList, Some(expectedCountryName))
 
-      val testCountriesList = List(Country(Some(expectedCountryCode), country))
-      val actualCountryCode = resultsHandler.getCountryCode(testCountriesList, country)
-
-      actualCountryCode mustBe expectedCountryCode
+      actualCountryName mustBe expectedCountryName
     }
 
     "fail if given country name is empty" in {
@@ -46,23 +44,23 @@ class AddressFormResultsHandlerSpec extends VatRegSpec with Matchers {
       val testCountriesList = List(Country(Some("UK"), Some("United Kingdom")))
 
       val caught = intercept[InternalServerException] {
-        resultsHandler.getCountryCode(testCountriesList, None)
+        resultsHandler.getCountryName(testCountriesList, None)
       }
 
       caught.getMessage mustBe "[AddressFormResultsHandler] Missing country name"
     }
 
-    "fail if given country name has no code configured" in {
+    "fail if given country name mapping is missing" in {
       val resultsHandler = new AddressFormResultsHandler(app.injector.instanceOf[CaptureInternationalAddress])
 
-      val country = Some("United Kingdom")
-      val testCountriesList = List(Country(None, country))
+      val country = "missing-country"
+      val testCountriesList = List(Country(Some("UK"), Some("United Kingdom")))
 
       val caught = intercept[InternalServerException] {
-        resultsHandler.getCountryCode(testCountriesList, country)
+        resultsHandler.getCountryName(testCountriesList, Some(country))
       }
 
-      caught.getMessage mustBe s"[AddressFormResultsHandler] Missing country code for '${country.get}' country"
+      caught.getMessage mustBe s"[AddressFormResultsHandler] Missing country mapping for '$country'"
     }
   }
 }

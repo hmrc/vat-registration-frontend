@@ -50,7 +50,7 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
       formWithErrors => {
         val maybeCountryName = formWithErrors(countryField).value
         val finalForm = if (missingPostcode(maybeCountryName, formWithErrors(postcodeField).value)) {
-          formWithErrors.withError(postcodeField, postcodeRequiredErrorKey, getCountryCode(countries, maybeCountryName))
+          formWithErrors.withError(postcodeField, postcodeRequiredErrorKey, getCountryName(countries, maybeCountryName))
         } else {
           formWithErrors
         }
@@ -61,7 +61,7 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
         if (missingPostcode(maybeCountryName, internationalAddress.postcode)) {
           Future.successful(BadRequest(view(
             internationalAddressForm = addressForm.fill(internationalAddress).withError(
-              postcodeField, postcodeRequiredErrorKey, getCountryCode(countries, maybeCountryName)
+              postcodeField, postcodeRequiredErrorKey, getCountryName(countries, maybeCountryName)
             ),
             countries = countries.flatMap(_.name),
             submitAction = submitAction,
@@ -79,13 +79,13 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
     maybeCountry.nonEmpty && postcodeRequiredCountries.contains(maybeCountry.get) && maybePostcode.isEmpty
   }
 
-  private[validators] def getCountryCode(countries: Seq[Country], maybeCountryName: Option[String]): String = {
+  private[validators] def getCountryName(countries: Seq[Country], maybeCountryName: Option[String]): String = {
     val countryName = maybeCountryName.getOrElse(
       throw new InternalServerException("[AddressFormResultsHandler] Missing country name")
     )
 
-    countries.find(_.name.contains(countryName)).flatMap(_.code).getOrElse(
-      throw new InternalServerException(s"[AddressFormResultsHandler] Missing country code for '$countryName' country")
+    countries.find(_.name.contains(countryName)).flatMap(_.name).getOrElse(
+      throw new InternalServerException(s"[AddressFormResultsHandler] Missing country mapping for '$countryName'")
     )
   }
 }
