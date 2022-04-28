@@ -1,16 +1,17 @@
 
 package controllers.applicant
 
-import java.time.LocalDate
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Address, Country, EligibilitySubmissionData, NETP, NonUkNonEstablished}
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.api._
+import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, HomeAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
+
+import java.time.LocalDate
 
 class PreviousAddressControllerISpec extends ControllerISpec {
 
@@ -23,11 +24,6 @@ class PreviousAddressControllerISpec extends ControllerISpec {
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
 
-  val applicant = Applicant(
-    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
-    role = role
-  )
-
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
   "POST Previous Address page" should {
@@ -39,7 +35,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
       hasFormerName = Some(true),
-      formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
+      formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = None,
       roleInTheBusiness = Some(Director)

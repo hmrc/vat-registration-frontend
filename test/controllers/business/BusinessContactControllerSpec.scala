@@ -34,7 +34,6 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
       mockAuthClientConnector,
       mockSessionService,
       mockBusinessContactService,
-      mockPrePopulationService,
       mockAddressLookupService,
       view
     ) {

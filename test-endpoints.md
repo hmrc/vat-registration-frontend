@@ -4,12 +4,6 @@ Clears all data stored in SAVE4LATER mongo collection for the current user.
 `GET         /sic-stub`  
 Temporary solution for capturing SIC codes.
 
-`GET         /working-days`  
-Lists upcoming working days.
-
-`GET         /ct-registration`  
-Gets CTActiveDate and displays it on screen.
-
 `GET        /feature-switches`
 Used to turn features on/off.
 

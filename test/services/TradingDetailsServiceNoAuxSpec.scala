@@ -16,7 +16,7 @@
 
 package services
 
-import models.{TradingNameView, _}
+import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import testHelpers.{S4LMockSugar, VatRegSpec}
@@ -29,8 +29,7 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
   class Setup {
     val service: TradingDetailsService = new TradingDetailsService(
       mockS4LService,
-      mockVatRegistrationConnector,
-      mockPrePopulationService
+      mockVatRegistrationConnector
     )
   }
 
@@ -106,7 +105,8 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
     }
   }
 
-  "submitTradingDetails" should {"if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
+  "submitTradingDetails" should {
+    "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
       when(mockS4LService.clearKey(any(), any(), any()))

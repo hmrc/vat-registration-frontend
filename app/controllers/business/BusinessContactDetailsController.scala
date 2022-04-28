@@ -19,23 +19,20 @@ package controllers.business
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.CompanyContactDetailsForm
-
-import javax.inject.{Inject, Singleton}
 import models.CompanyContactDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, BusinessContactService, PrePopulationService, SessionProfile, SessionService}
+import services.{AddressLookupService, BusinessContactService, SessionProfile, SessionService}
 import views.html.business.business_contact_details
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BusinessContactDetailsController @Inject()(val authConnector: AuthClientConnector,
                                                  val sessionService: SessionService,
                                                  val businessContactService: BusinessContactService,
-                                                 val prepopService: PrePopulationService,
                                                  val addressLookupService: AddressLookupService,
-                                                 business_contact_details: business_contact_details
-                                                )
+                                                 business_contact_details: business_contact_details)
                                                 (implicit appConfig: FrontendAppConfig,
                                                  val executionContext: ExecutionContext,
                                                  baseControllerComponents: BaseControllerComponents)

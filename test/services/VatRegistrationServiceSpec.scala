@@ -60,7 +60,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
        |{
        |  "IncorporationInfo":{
        |    "IncorpSubscription":{
-       |      "callbackUrl":"http://localhost:9896/TODO-CHANGE-THIS"
+       |      "callbackUrl":"http://localhost:9896/callback-url"
        |    },
        |    "IncorpStatusEvent":{
        |      "status":"accepted",

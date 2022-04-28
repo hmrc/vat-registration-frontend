@@ -36,8 +36,7 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
     val service = new ReturnsService(
       mockVatRegistrationConnector,
       mockVatRegistrationService,
-      mockS4LService,
-      mockPrePopulationService
+      mockS4LService
     )
   }
 

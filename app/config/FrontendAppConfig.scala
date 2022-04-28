@@ -135,7 +135,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
 
-  // TODO Update to limited-company-journey
   def startUkCompanyIncorpJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
       s"$host/register-for-vat/test-only/api/incorp-id-journey?partyType=${PartyType.stati(UkCompany)}"
