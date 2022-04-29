@@ -32,7 +32,7 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   val testReference = "testReference"
   val testHref = "testHref"
   val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map())
-  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
+  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress, attachmentType = PrimaryIdentityEvidence)
 
   "initiateUpscan" must {
     "return an UpscanResponse" in {

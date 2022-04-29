@@ -18,6 +18,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
   val submitUrl: String = routes.UploadingDocumentController.submit(testReference).url
 
   def testUpscanDetails(fileStatus: FileStatus): UpscanDetails = UpscanDetails(
+    attachmentType = PrimaryIdentityEvidence,
     reference = testReference,
     fileStatus = fileStatus,
     uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))

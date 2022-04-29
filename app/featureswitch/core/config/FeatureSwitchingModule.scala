@@ -37,7 +37,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubMinorEntityIdentification,
     TrafficManagementPredicate,
     UseSoleTraderIdentification,
-    UseUpscan,
     SaveAndContinueLater,
     ShortOrgName,
     MultipleRegistrations,
@@ -81,7 +80,7 @@ case object StubSoleTraderIdentification extends FeatureSwitch {
 
 case object StubUpscan extends FeatureSwitch {
   val configName = "feature-switch.stub-upscan"
-  val displayName = "Stub Upscan flow"
+  val displayName = "Stub Upscan Calls (Digital attachments)"
 }
 
 case object StubAlf extends FeatureSwitch {
@@ -112,11 +111,6 @@ case object TrafficManagementPredicate extends FeatureSwitch {
 case object UseSoleTraderIdentification extends FeatureSwitch {
   val configName = "feature-switch.use-sole-trader-identification"
   val displayName = "Use sole trader identification journey"
-}
-
-case object UseUpscan extends FeatureSwitch {
-  val configName = "feature-switch.use-upscan"
-  val displayName = "Use Upscan flow"
 }
 
 case object SaveAndContinueLater extends FeatureSwitch {
