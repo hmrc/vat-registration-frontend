@@ -16,11 +16,13 @@
 
 package models.external.upscan
 
-import play.api.libs.json.{Format, JsPath, JsString, Json, OFormat, Reads, Writes}
+import models.api.AttachmentType
+import play.api.libs.json._
 
 import java.time.LocalDateTime
 
-case class UpscanDetails(reference: String,
+case class UpscanDetails(attachmentType: AttachmentType,
+                         reference: String,
                          downloadUrl: Option[String] = None,
                          fileStatus: FileStatus,
                          uploadDetails: Option[UploadDetails] = None,

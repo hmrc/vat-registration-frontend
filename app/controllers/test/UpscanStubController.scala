@@ -17,6 +17,7 @@
 package controllers.test
 
 import config.{BaseControllerComponents, FrontendAppConfig}
+import connectors.UpscanConnector
 import connectors.test.TestUpscanCallbackConnector
 import controllers.BaseController
 import play.api.libs.json.{JsValue, Json}
@@ -32,7 +33,8 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UpscanStubController @Inject()(val authConnector: AuthConnector,
                                      val sessionService: SessionService,
-                                     upscanCallbackConnector: TestUpscanCallbackConnector)
+                                     upscanCallbackConnector: TestUpscanCallbackConnector,
+                                     upscanConnector: UpscanConnector)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
                                      val bcc: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -56,14 +58,15 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
     ))
   }
 
-  def uploadResponse: Action[AnyContent] = Action.async { implicit request =>
+  def uploadResponse: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
     for {
       optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
       optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
       reference = request.session.get("reference").get
       callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved from session"))
       successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("Success URL couldn't be retrieved from session"))
-      _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl, reference)
+      unfinishedUpscan <- upscanConnector.fetchUpscanFileDetails(profile.registrationId, reference)
+      _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl, reference, unfinishedUpscan.attachmentType)
     } yield Redirect(successUrl)
   }
 

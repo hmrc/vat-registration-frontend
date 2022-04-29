@@ -2,6 +2,7 @@
 package controllers.fileupload
 
 import itutil.ControllerISpec
+import models.api.PrimaryIdentityEvidence
 import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -17,6 +18,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
   def removeDocumentUrl(reference: String): String = routes.RemoveUploadedDocumentController.submit(reference).url
 
   val testUpscanDetails: UpscanDetails = UpscanDetails(
+    attachmentType = PrimaryIdentityEvidence,
     reference = testReference,
     fileStatus = Ready,
     uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))

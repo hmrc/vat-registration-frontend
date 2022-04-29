@@ -14,26 +14,28 @@
  * limitations under the License.
  *@
 
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
 @import config.FrontendAppConfig
+@import featureswitch.core.config.SaveAndContinueLater
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
 @import viewmodels.DocumentUploadSummaryRow
 
 @this(
-layout: layouts.layout,
-h1: components.h1,
-p: components.p,
-subheading: components.subheading,
-button: components.button,
-formWithCSRF: FormWithCSRF,
-documentUploadSummaryTable: components.DocumentUploadSummaryTable
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        subheading: components.subheading,
+        link: components.link,
+        formWithCSRF: FormWithCSRF,
+        documentUploadSummaryTable: components.DocumentUploadSummaryTable,
+        saveProgressButton: components.saveProgressButton
 )
 
 @(uploadedDocuments: Seq[DocumentUploadSummaryRow], pendingDocumentsCount: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @defining(uploadedDocuments.size) { noOfUploadedDocuments =>
     @defining(
-        if (noOfUploadedDocuments ==0 || noOfUploadedDocuments > 1)
+        if(noOfUploadedDocuments == 0 || noOfUploadedDocuments > 1)
             messages("document.upload.summary.headingPlural", noOfUploadedDocuments)
         else
             messages("document.upload.summary.heading", noOfUploadedDocuments)
@@ -46,16 +48,26 @@ documentUploadSummaryTable: components.DocumentUploadSummaryTable
 
             @if(pendingDocumentsCount > 0) {
                 @defining(
-                    if (pendingDocumentsCount > 1) messages("pending.documents.messagePlural", pendingDocumentsCount)
+                    if(pendingDocumentsCount > 1) messages("pending.documents.messagePlural", pendingDocumentsCount)
                     else messages("pending.documents.message")
                 ) { pendingDocumentsMessage =>
-                    @p { @pendingDocumentsMessage }
+                    @p {
+                        @pendingDocumentsMessage
+                    }
                 }
             }
 
-            @formWithCSRF(action = controllers.fileupload.routes.UploadDocumentController.show) {
-                @button("app.common.continue", showSaveProgressButton = true)
-            }
+            <div class="govuk-button-group">
+                @link(
+                    link = controllers.fileupload.routes.UploadDocumentController.show.url,
+                    messageKey = "app.common.continue",
+                    isButton = true
+                )
+
+                @if(appConfig.isEnabled(SaveAndContinueLater)) {
+                    @saveProgressButton()
+                }
+            </div>
 
         }
     }

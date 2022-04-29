@@ -59,10 +59,11 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
   val deleteAllUpscanDetailsUrl = s"/vatreg/$testRegId/upscan-file-details"
 
   val testUpscanDetailsJson: JsObject = Json.obj(
+    "attachmentType" -> "primaryIdentityEvidence",
     "reference" -> testReference,
     "fileStatus" -> "IN_PROGRESS"
   )
-  val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress)
+  val testUpscanDetails: UpscanDetails = UpscanDetails(attachmentType = PrimaryIdentityEvidence, reference = testReference, fileStatus = InProgress)
 
 
   "upscanInitiate" must {

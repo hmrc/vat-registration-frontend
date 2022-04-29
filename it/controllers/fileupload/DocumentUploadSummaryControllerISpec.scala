@@ -2,7 +2,7 @@
 package controllers.fileupload
 
 import itutil.ControllerISpec
-import models.api.AttachmentType
+import models.api.{AttachmentType, PrimaryIdentityEvidence}
 import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
 import play.api.http.Status.OK
 import play.api.test.Helpers._
@@ -15,13 +15,14 @@ class DocumentUploadSummaryControllerISpec  extends ControllerISpec {
 
   val testUpscanDetails = List(
     UpscanDetails(
+      attachmentType = PrimaryIdentityEvidence,
       reference = "tes-reference",
       fileStatus = Ready,
       uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))
     )
   )
   val testUpscanDetailsWithMissingUploadDetails = List(
-    UpscanDetails(reference = "tes-reference", fileStatus = Ready)
+    UpscanDetails(attachmentType = PrimaryIdentityEvidence, reference = "tes-reference", fileStatus = Ready)
   )
 
   s"GET $pageUrl" when {
