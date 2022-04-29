@@ -431,6 +431,14 @@ trait StubUtils {
       builder
     }
 
+    def deleteAttachments(implicit writes: Writes[Attachments]) = {
+      stubFor(
+        delete(urlPathMatching(s"/vatreg/1/upscan-file-details"))
+          .willReturn(aResponse().withStatus(NO_CONTENT))
+      )
+      builder
+    }
+
     def isUpdatedWithPartner[T](t: T)(implicit tFmt: Format[T]): PreconditionBuilder = {
       stubFor(
         put(urlPathMatching(s"/vatreg/1/partners/.*"))

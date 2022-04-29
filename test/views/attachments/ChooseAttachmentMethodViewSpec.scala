@@ -16,12 +16,14 @@
 
 package views.attachments
 
+import featureswitch.core.config._
 import forms.AttachmentMethodForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.ChooseAttachmentMethod
 
-class ChooseAttachmentMethodViewSpec extends VatRegViewSpec {
+class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val view = app.injector.instanceOf[ChooseAttachmentMethod]
   val form = app.injector.instanceOf[AttachmentMethodForm]
@@ -30,19 +32,41 @@ class ChooseAttachmentMethodViewSpec extends VatRegViewSpec {
 
   object ExpectedMessages {
     val heading = "How would you like to send the additional documents?"
+    val p = "You can only select one method."
+    val upload = "Upload the documents using this service"
     val email = "Email copies to HMRC"
     val post = "Post copies to HMRC"
     val button = "Save and continue"
   }
 
   "The Choose Attachment Method page" must {
+
+    enable(UploadDocuments)
+
+    val view = app.injector.instanceOf[ChooseAttachmentMethod]
+    val form = app.injector.instanceOf[AttachmentMethodForm]
+    implicit val doc: Document = Jsoup.parse(view(form()).body)
+
+    disable(UploadDocuments)
+
     "have the correct page title" in new ViewSetup {
       doc.title must include(ExpectedMessages.heading)
     }
     "have the correct page heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
-    "have the correct options" in new ViewSetup {
+
+    "have the correct text" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedMessages.p)
+    }
+
+    "have the correct radio options" in new ViewSetup {
+      doc.radio("3") mustBe Some(ExpectedMessages.post)
+      doc.radio("email") mustBe Some(ExpectedMessages.email)
+    }
+
+    "have the correct radio options when UploadDocuments FS is enabled" in new ViewSetup {
+      doc.radio("2") mustBe Some(ExpectedMessages.upload)
       doc.radio("3") mustBe Some(ExpectedMessages.post)
       doc.radio("email") mustBe Some(ExpectedMessages.email)
     }

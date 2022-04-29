@@ -37,12 +37,16 @@ class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executi
     upscanConnector.fetchUpscanFileDetails(regId, reference)
   }
 
-  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
-    upscanConnector.fetchAllUpscanDetails(regId)
-  }
-
   def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     upscanConnector.deleteUpscanDetails(regId, reference)
+  }
+
+  def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    upscanConnector.deleteAllUpscanDetails(regId)
+  }
+
+  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
+    upscanConnector.fetchAllUpscanDetails(regId)
   }
 
   def getUpscanFileStatus(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[FileStatus] = {

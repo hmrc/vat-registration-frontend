@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.{AttachmentMethod, EmailMethod, Post}
+import models.api._
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
@@ -24,7 +24,8 @@ import play.api.data.{Form, FormError}
 class AttachmentMethodForm {
 
   def apply(): Form[AttachmentMethod] = Form[AttachmentMethod](
-    single(AttachmentMethodForm.fieldName -> of(AttachmentMethodForm.formatter))
+    single(
+      AttachmentMethodForm.fieldName -> of(AttachmentMethodForm.formatter))
   )
 
 }
@@ -38,23 +39,26 @@ object AttachmentMethodForm {
   }
 
   private object Options {
-    val Email = "email"
+    val Upload = "2"
     val Post = "3"
+    val Email = "email"
   }
 
   def formatter: Formatter[AttachmentMethod] = new Formatter[AttachmentMethod] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], AttachmentMethod] = {
       data.get(key) match {
-        case Some(Options.Email) => Right(EmailMethod)
+        case Some(Options.Upload) => Right(Attached)
         case Some(Options.Post) => Right(Post)
-        case None => Left(Seq(FormError(fieldName, Messages.invalidSelection)))
+        case Some(Options.Email) => Right(EmailMethod)
+        case None => Left(Seq(FormError(key, Messages.invalidSelection)))
       }
     }
 
     override def unbind(key: String, value: AttachmentMethod): Map[String, String] = {
       val selectedOption = value match {
-        case EmailMethod => Options.Email
+        case Attached => Options.Upload
         case Post => Options.Post
+        case EmailMethod => Options.Email
       }
       Map(key -> selectedOption)
     }

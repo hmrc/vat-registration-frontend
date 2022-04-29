@@ -27,6 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
+import scala.concurrent.Future.successful
 
 trait MockUpscanConnector extends MockitoSugar {
   self: Suite =>
@@ -53,16 +54,23 @@ trait MockUpscanConnector extends MockitoSugar {
       ArgumentMatchers.any[HeaderCarrier]
     )).thenReturn(res)
 
-  def mockFetchAllUpscanDetails(regId: String)(res: Future[Seq[UpscanDetails]]): OngoingStubbing[Future[Seq[UpscanDetails]]] =
-    when(mockUpscanConnector.fetchAllUpscanDetails(ArgumentMatchers.eq(regId))(
-      ArgumentMatchers.any[HeaderCarrier]
-    )).thenReturn(res)
-
   def mockDeleteUpscanDetails(regId: String, reference: String)(res: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
     when(mockUpscanConnector.deleteUpscanDetails(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(reference)
     )(
+      ArgumentMatchers.any[HeaderCarrier]
+    )).thenReturn(res)
+
+  def mockDeleteAllUpscanDetails(regId: String)(res: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
+    when(mockUpscanConnector.deleteAllUpscanDetails(
+      ArgumentMatchers.eq(regId)
+    )(
+      ArgumentMatchers.any[HeaderCarrier]
+    )).thenReturn(res)
+
+  def mockFetchAllUpscanDetails(regId: String)(res: Future[Seq[UpscanDetails]]): OngoingStubbing[Future[Seq[UpscanDetails]]] =
+    when(mockUpscanConnector.fetchAllUpscanDetails(ArgumentMatchers.eq(regId))(
       ArgumentMatchers.any[HeaderCarrier]
     )).thenReturn(res)
 }

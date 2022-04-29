@@ -43,7 +43,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     MultipleRegistrations,
     LandAndProperty,
     FullAgentJourney,
-    OtherBusinessInvolvement
+    OtherBusinessInvolvement,
+    UploadDocuments
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -146,4 +147,9 @@ case object FullAgentJourney extends FeatureSwitch {
 case object OtherBusinessInvolvement extends FeatureSwitch {
   override val configName: String = "feature-switch.other-business-involvement"
   override val displayName: String = "Enable other business involvement journey"
+}
+
+case object UploadDocuments extends FeatureSwitch {
+  override val configName: String = "feature-switch.upload-documents"
+  override val displayName: String = "Enable upload documents attachment method"
 }
