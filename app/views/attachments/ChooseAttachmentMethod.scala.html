@@ -15,10 +15,14 @@
  *@
 
 @import config.FrontendAppConfig
+@import featureswitch.core.config.UploadDocuments
 @import models.api.AttachmentMethod
 
 @this(
     layout: layouts.layout,
+    errorSummary: components.errorSummary,
+    h1: components.h1,
+    p: components.p,
     form: FormWithCSRF,
     inputRadio: components.inputRadio,
     button: components.button
@@ -28,22 +32,27 @@
 
 @layout(pageTitle = Some(title(attachmentMethodForm, messages("attachmentMethod.title")))) {
 
-    @form(action = controllers.attachments.routes.AttachmentMethodController.submit) {
+    @errorSummary(attachmentMethodForm.errors)
+
+    @h1("attachmentMethod.title")
+
+    @p{ @messages("attachmentMethod.text") }
+
+    @form(action = controllers.attachments.routes.AttachmentMethodController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = attachmentMethodForm,
             legend = messages("attachmentMethod.title"),
-            legendAsHeading = true,
-            items = Seq(
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            items = uploadDocuments ++ Seq(
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.post")),
                     value = Some("3"),
-                    id = Some("post"),
                     checked = attachmentMethodForm("value").value.contains("3")
                 ),
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.email")),
                     value = Some("email"),
-                    id = Some("email"),
                     checked = attachmentMethodForm("value").value.contains("email")
                 )
             )
@@ -52,4 +61,18 @@
         @button("app.common.continue", showSaveProgressButton = true)
     }
 
+}
+
+@uploadDocuments = @{
+    if(appConfig.isEnabled(UploadDocuments)) {
+        Seq(
+            RadioItem(
+                content = Text(messages("attachmentMethod.options.upload")),
+                value = Some("2"),
+                checked = attachmentMethodForm("value").value.contains("2")
+            )
+        )
+    } else {
+        Nil
+    }
 }

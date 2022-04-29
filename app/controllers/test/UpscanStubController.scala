@@ -29,7 +29,6 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-
 @Singleton
 class UpscanStubController @Inject()(val authConnector: AuthConnector,
                                      val sessionService: SessionService,

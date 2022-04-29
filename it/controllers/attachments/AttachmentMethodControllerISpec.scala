@@ -1,9 +1,10 @@
 
 package controllers.attachments
 
+import featureswitch.core.config.UploadDocuments
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.{Attachments, EmailMethod, IdentityEvidence, Post}
+import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -27,8 +28,9 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         val res = await(buildClient(url).get())
 
         res.status mustBe OK
-        Jsoup.parse(res.body).select("input[id=post]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[id=email]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
       }
     }
     "the backend contains Post as the attachment method" must {
@@ -42,8 +44,9 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         val res = await(buildClient(url).get())
 
         res.status mustBe OK
-        Jsoup.parse(res.body).select("input[id=post]").hasAttr("checked") mustBe true
-        Jsoup.parse(res.body).select("input[id=email]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe true
+        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
       }
     }
     "the backend contains Email as the attachment method" must {
@@ -57,13 +60,51 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         val res = await(buildClient(url).get())
 
         res.status mustBe OK
-        Jsoup.parse(res.body).select("input[id=post]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[id=email]").hasAttr("checked") mustBe true
+        Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe true
+      }
+    }
+    "the backend contains Upload as the attachment method" must {
+      "return OK and render the page with the Upload option selected" in new Setup {
+        enable(UploadDocuments)
+        given
+          .user.isAuthorised()
+          .vatScheme.has("attachments", Json.toJson(fullAttachmentList.copy(method = Some(Attached))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get())
+
+        res.status mustBe OK
+        Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe true
+        Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
+        disable(UploadDocuments)
       }
     }
   }
 
   "POST /register-for-vat/attachment-method" when {
+    "Upload is selected" must {
+      "store the answer and redirect to the next page" in new Setup {
+        enable(UploadDocuments)
+        given
+          .user.isAuthorised()
+          .vatScheme.storesAttachments(Attachments(Some(Attached), List()))
+          .vatScheme.deleteAttachments
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).post(Json.obj(
+          "value" -> "2"
+        )))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.fileupload.routes.UploadDocumentController.show.url)
+        disable(UploadDocuments)
+      }
+    }
     "Post is selected" must {
       "store the answer and redirect to the next page" in new Setup {
         given

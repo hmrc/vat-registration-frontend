@@ -1027,6 +1027,8 @@ internationalAddress.error.country.invalid               = Select a country
 ## ATTACHMENT METHOD
 
 attachmentMethod.title                                    = How would you like to send the additional documents?
+attachmentMethod.text                                     = You can only select one method.
+attachmentMethod.options.upload                           = Upload the documents using this service
 attachmentMethod.options.email                            = Email copies to HMRC
 attachmentMethod.options.post                             = Post copies to HMRC
 attachmentMethod.error.missing                            = Select how you want to send copies of the documents to HMRC

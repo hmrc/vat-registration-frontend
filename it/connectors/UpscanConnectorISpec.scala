@@ -55,6 +55,9 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
   val upscanFilesUrl = s"/vatreg/$testRegId/upscan-file-details"
 
   val upscanDetailsUrl = s"/vatreg/$testRegId/upscan-file-details/$testReference"
+
+  val deleteAllUpscanDetailsUrl = s"/vatreg/$testRegId/upscan-file-details"
+
   val testUpscanDetailsJson: JsObject = Json.obj(
     "reference" -> testReference,
     "fileStatus" -> "IN_PROGRESS"
@@ -123,6 +126,48 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     }
   }
 
+  "deleteUpscanDetails" must {
+    "delete and return true" in {
+      given
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      stubDelete(upscanDetailsUrl, NO_CONTENT, "")
+
+      val response = await(connector.deleteUpscanDetails(testRegId, testReference))
+
+      verify(deleteRequestedFor(urlEqualTo(upscanDetailsUrl)))
+      response mustBe true
+    }
+
+    "return an exception if delete fails" in {
+      given
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+
+      stubDelete(upscanDetailsUrl, IM_A_TEAPOT, "")
+
+      intercept[UpstreamErrorResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
+    }
+  }
+
+  "deleteAllUpscanDetails" must {
+    "delete and return true" in {
+      stubDelete(deleteAllUpscanDetailsUrl, NO_CONTENT, "true")
+
+      val response = await(connector.deleteAllUpscanDetails(testRegId))
+
+      verify(deleteRequestedFor(urlEqualTo(deleteAllUpscanDetailsUrl)))
+      response mustBe true
+    }
+
+    "return an exception if delete fails" in {
+      stubDelete(deleteAllUpscanDetailsUrl, IM_A_TEAPOT, "")
+
+      intercept[UpstreamErrorResponse](await(connector.deleteAllUpscanDetails(testRegId)))
+    }
+  }
+
   "fetchAllUpscanDetails" must {
     "return list of UpscanDetails" in {
       stubGet(upscanFilesUrl, OK, JsArray(List(testUpscanDetailsJson)).toString())
@@ -135,21 +180,6 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if fetch fails" in {
       stubGet(upscanFilesUrl, INTERNAL_SERVER_ERROR, JsArray(List(testUpscanDetailsJson)).toString())
       intercept[UpstreamErrorResponse](await(connector.fetchAllUpscanDetails(testRegId)))
-    }
-  }
-
-  "deleteUpscanDetails" must {
-    "return true if delete successful" in {
-      stubDelete(upscanDetailsUrl, NO_CONTENT, "")
-
-      val response = await(connector.deleteUpscanDetails(testRegId, testReference))
-      verify(deleteRequestedFor(urlEqualTo(upscanDetailsUrl)))
-      response mustBe true
-    }
-
-    "return an exception if delete fails" in {
-      stubDelete(upscanDetailsUrl, INTERNAL_SERVER_ERROR, "")
-      intercept[UpstreamErrorResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
     }
   }
 }

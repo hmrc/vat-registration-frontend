@@ -18,10 +18,11 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.UploadDocuments
 import forms.AttachmentMethodForm
-import models.api.{Attachments, EmailMethod, Post}
+import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{AttachmentsService, SessionProfile, SessionService}
+import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import views.html.attachments.ChooseAttachmentMethod
 
 import javax.inject.Inject
@@ -30,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AttachmentMethodController @Inject()(val authConnector: AuthClientConnector,
                                            val sessionService: SessionService,
                                            attachmentsService: AttachmentsService,
+                                           upscanService: UpscanService,
                                            form: AttachmentMethodForm,
                                            view: ChooseAttachmentMethod)
                                           (implicit appConfig: FrontendAppConfig,
@@ -49,19 +51,24 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),
-      attachmentMethod =>
+      attachmentMethod => {
         attachmentsService
           .storeAttachmentDetails(profile.registrationId, attachmentMethod)
-          .map { _ =>
+          .flatMap { _ =>
             attachmentMethod match {
+              case Attached if isEnabled(UploadDocuments) =>
+                upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
+                  Redirect(controllers.fileupload.routes.UploadDocumentController.show)
+                }
               case Post =>
-                Redirect(routes.DocumentsPostController.show)
+                Future.successful(Redirect(routes.DocumentsPostController.show))
               case EmailMethod =>
-                Redirect(routes.EmailDocumentsController.show)
+                Future.successful(Redirect(routes.EmailDocumentsController.show))
               case _ =>
-                BadRequest(view(form().fill(attachmentMethod)))
+                Future.successful(BadRequest(view(form().fill(attachmentMethod))))
             }
           }
+      }
     )
   }
 
