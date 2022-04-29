@@ -19,7 +19,6 @@ package services
 import connectors.VatRegistrationConnector
 import featureswitch.core.config.FeatureSwitching
 import models._
-import models.api._
 import models.api.returns._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -31,8 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
                                val vatService: VatRegistrationService,
-                               val s4lService: S4LService,
-                               val prePopService: PrePopulationService
+                               val s4lService: S4LService
                               )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
 
   def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[MandatoryDateModel] = {
@@ -161,7 +159,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
       turnoverEstimates <- vatService.fetchTurnoverEstimates
       isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
     } yield {
-      turnoverEstimates.exists(_.turnoverEstimate <= 1350000)  && !isGroupRegistration
+      turnoverEstimates.exists(_.turnoverEstimate <= 1350000) && !isGroupRegistration
     }
   }
 

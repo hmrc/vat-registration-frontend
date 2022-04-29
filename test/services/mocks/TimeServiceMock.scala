@@ -26,12 +26,12 @@ import java.time.{LocalDate, LocalDateTime}
 
 trait TimeServiceMock {
 
-  import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
+  import org.joda.time.{LocalDate => JodaLocalDate}
 
   val mockTimeService: TimeService
 
   def mockAllTimeService(date: LocalDateTime, minAdditionalDayInFuture: Int): OngoingStubbing[BankHolidaySet] = {
-    val ldt = JodaLocalDateTime.parse(date.toString)
+    val ldt = LocalDateTime.parse(date.toString)
     val ld = ldt.toLocalDate
 
     when(mockTimeService.currentLocalDate)
@@ -40,13 +40,13 @@ trait TimeServiceMock {
       .thenReturn(ldt)
     when(mockTimeService.dayEndHour)
       .thenReturn(14)
-    when(mockTimeService.getMinWorkingDayInFuture(any()))
+    when(mockTimeService.getMinWorkingDayInFuture)
       .thenReturn(LocalDate.parse(ld.plusDays(minAdditionalDayInFuture).toString))
     when(mockTimeService.addMonths(any()))
       .thenReturn(LocalDate.parse(ld.plusMonths(3).toString))
     when(mockTimeService.minusYears(any()))
       .thenReturn(LocalDate.parse(ld.minusYears(4).toString))
-    when(mockTimeService.bankHolidaySet)
+    when(mockTimeService.bankHolidays)
       .thenReturn(BankHolidaySet("england-and-wales", List(
         BankHoliday(title = "Good Friday", date = new JodaLocalDate(2017, 4, 14)),
         BankHoliday(title = "Easter Monday", date = new JodaLocalDate(2017, 4, 17)),

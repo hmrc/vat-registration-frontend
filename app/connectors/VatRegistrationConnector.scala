@@ -132,10 +132,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/registrations/$regId").map(_.status == OK)
   }
 
-  def deleteVREFESession(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.DELETE[HttpResponse](s"$vatRegElUrl/internal/$regId/delete-session") //Doesn't actually exist on VRS-EL-FE
-  }
-
   def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
     http.GET[VatRegStatus.Value](s"$vatRegUrl/vatreg/$regId/status") recover {
       case e: Exception => throw logResponse(e, "getStatus")

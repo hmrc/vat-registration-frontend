@@ -16,14 +16,15 @@
 
 package testHelpers
 
-import connectors.mocks.{AuthMock, HttpClientMock, SessionServiceMock, MockS4lConnector}
 import connectors._
+import connectors.mocks.{AuthMock, HttpClientMock, MockS4lConnector, SessionServiceMock}
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.cache.SyncCacheApi
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
-import services.mocks.{IncorpIdServiceMock, PersonalDetailsValidationServiceMock, SicAndComplianceServiceMock}
 import services._
+import services.mocks.{IncorpIdServiceMock, PersonalDetailsValidationServiceMock, SicAndComplianceServiceMock}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
@@ -56,15 +57,12 @@ trait VatMocks
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
   implicit lazy val mockCurrentProfileService = mock[JourneyService]
-  implicit lazy val mockCancellationService = mock[CancellationService]
   implicit lazy val mockAddressLookupService = mock[AddressLookupService]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
-  implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockApplicantDetailsServiceOld = mock[ApplicantDetailsService]
   implicit lazy val mockFlatRateService = mock[FlatRateService]
-  implicit lazy val mockPrePopulationService: PrePopulationService = mock[PrePopulationService]
   implicit lazy val mockTrafficManagementService = mock[TrafficManagementService]
   implicit lazy val mockAttachmentsService = mock[AttachmentsService]
   lazy val mockTradingDetailsService = mock[TradingDetailsService]
@@ -74,6 +72,8 @@ trait VatMocks
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
   implicit lazy val mockSaveAndRetrieveService = mock[SaveAndRetrieveService]
+  lazy val mockBankHolidayConnector: BankHolidaysConnector = mock[BankHolidaysConnector]
+  lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 
   def resetMocks() {
     reset(
@@ -87,8 +87,6 @@ trait VatMocks
       mockAudit,
       mockVatRegistrationService,
       mockVatRegistrationConnector,
-      mockPrePopulationService,
-      mockDateService,
       mockConfigConnector,
       mockAddressLookupConnector,
       mockCurrentProfileService,
@@ -98,12 +96,13 @@ trait VatMocks
       mockFlatRateService,
       mockSicAndComplianceService,
       mockMessagesAPI,
-      mockPrePopulationService,
       mockSummaryService,
       mockBusinessContactService,
       mockAuthClientConnector,
       mockTimeService,
-      mockTrafficManagementService
+      mockTrafficManagementService,
+      mockBankHolidayConnector,
+      mockCache
     )
   }
 }

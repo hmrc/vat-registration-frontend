@@ -1,26 +1,19 @@
 
 package fixtures
 
+import models._
 import models.api.Address
 import models.external._
 import models.view._
-import models._
 
 import java.time.LocalDate
 
 trait ApplicantDetailsFixture {
 
-
-  def generateApplicant(first: String, middle: Option[String], last: String, role: String) = Applicant(
-    name = Name(first = Some(first), middle = middle, last = last),
-    role = role
-  )
-
   val applicantDob = LocalDate.of(1998, 7, 12)
 
   val testRole: RoleInTheBusiness = Director
   val applicantNino = "ZZ987654A"
-  val validApplicant: Applicant = generateApplicant("First", Some("Middle"), "Last", "Director")
   val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
   val validCurrentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
   val validPrevAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
@@ -51,7 +44,7 @@ trait ApplicantDetailsFixture {
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber(testApplicantPhone)),
     hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
+    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress))),
     entity = Some(testApplicantIncorpDetails),

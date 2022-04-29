@@ -24,8 +24,9 @@ import views.html.applicant.capture_telephone_number
 
 class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitching {
 
-  val title = "What is your telephone number?"
+
   val heading = "What is your telephone number?"
+  val title = s"$heading - Register for VAT - GOV.UK"
   val namedHeading = "What is testFirstName’s telephone number?"
   val paragraph = "We may need to contact you about the application."
   val buttonText = "Save and continue"
@@ -41,7 +42,7 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
     lazy val transactorDoc = Jsoup.parse(transactorView.body)
 
     "have the correct title" in {
-      doc.title must include(title) // TODO review titles as they seem to be missing a message key 'site.govuk'
+      doc.title mustBe title
     }
 
     "have the correct heading" in {

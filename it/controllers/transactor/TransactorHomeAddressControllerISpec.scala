@@ -3,7 +3,6 @@ package controllers.transactor
 
 import itutil.ControllerISpec
 import models.api.{Address, Country, EligibilitySubmissionData}
-import models.external.{Applicant, Name}
 import models.{DeclarationCapacityAnswer, Director, TransactorDetails}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -22,11 +21,6 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
   val postcode = "TE1 1ST"
   val name = "Johnny Test"
   val telephone = "1234"
-
-  val transactor = Applicant(
-    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
-    role = role
-  )
 
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 

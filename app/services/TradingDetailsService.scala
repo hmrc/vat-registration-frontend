@@ -26,8 +26,7 @@ import scala.concurrent.Future
 
 @Singleton
 class TradingDetailsService @Inject()(val s4lService: S4LService,
-                                      val registrationConnector: VatRegistrationConnector,
-                                      val prePopService: PrePopulationService) {
+                                      val registrationConnector: VatRegistrationConnector) {
 
   def getTradingDetailsViewModel(regId: String)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[TradingDetails] =
     s4lService.fetchAndGet[TradingDetails] flatMap {

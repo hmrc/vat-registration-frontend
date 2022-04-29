@@ -4,7 +4,7 @@ package controllers.applicant
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api.{Address, Country, EligibilitySubmissionData}
-import models.external.{Applicant, EmailAddress, EmailVerified, Name}
+import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
@@ -24,11 +24,6 @@ class HomeAddressControllerISpec extends ControllerISpec {
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
 
-  val applicant = Applicant(
-    name = Name(first = Some("First"), middle = Some("Middle"), last = "Last"),
-    role = role
-  )
-
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
 
@@ -41,7 +36,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
       emailVerified = Some(EmailVerified(true)),
       telephoneNumber = Some(TelephoneNumber("1234")),
       hasFormerName = Some(true),
-      formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
+      formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
       formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
       previousAddress = Some(PreviousAddressView(true, None))
     )
