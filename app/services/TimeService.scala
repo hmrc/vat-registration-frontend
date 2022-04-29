@@ -16,63 +16,67 @@
 
 package services
 
-import java.io.InputStream
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate => JavaLocalDate, LocalDateTime => JavaLocalDateTime}
-import javax.inject.{Inject, Singleton}
-import org.joda.time.{LocalDate => JodaLocalDate, LocalDateTime => JodaLocalDateTime}
-import play.api.Environment
-import play.api.libs.json.{Json, Reads}
+import common.DateConversions._
+import connectors.BankHolidaysConnector
+import play.api.cache.SyncCacheApi
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.time.DateTimeUtils._
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet, LocalDateWithHolidays}
+import uk.gov.hmrc.time.workingdays._
 import utils.SystemDate
 
-import scala.language.implicitConversions
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import scala.util.Try
 
 @Singleton
-class TimeService @Inject()(val environment: Environment,
+class TimeService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
+                            val cache: SyncCacheApi,
                             val servicesConfig: ServicesConfig) {
-  lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
 
-  import play.api.libs.json.JodaReads._
+  val bankHolidaysCacheKey = "bankHolidaySet"
 
-  // TODO: Refactor to use Java LocalDate instead of Joda
-  def currentDateTime: JodaLocalDateTime = SystemDate.getSystemDate
-
-  def currentLocalDate: JodaLocalDate = SystemDate.getSystemDate
-
-  def today: JavaLocalDate = JavaLocalDate.now()
-
-  lazy val bankHolidaySet: BankHolidaySet = {
-    implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
-    implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
-
-    val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
-    //if below .get fails, app startup fails. This is as expected. bank-holidays.json file must be on classpath
-    val parsed = Json.parse(resourceAsStream).asOpt[Map[String, BankHolidaySet]].get
-    parsed("england-and-wales")
+  def bankHolidays: BankHolidaySet = cache.getOrElseUpdate[BankHolidaySet](bankHolidaysCacheKey, 1 day) {
+    logger.info(s"Reloading cache entry for $bankHolidaysCacheKey")
+    Try {
+      Await.result(bankHolidaysConnector.bankHolidays()(HeaderCarrier()), 5 seconds)
+    }.getOrElse {
+      logger.error("Failed to load bank holidays schedule from BankHolidaysConnector, using default bank holiday set")
+      bankHolidaysConnector.defaultHolidaySet
+    }
   }
 
-  implicit def javaLDToJodaLDT(jldt: JavaLocalDateTime): JodaLocalDateTime = JodaLocalDateTime.parse(jldt.toString)
+  def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
+    implicit val holidaySet: BankHolidaySet = bankHolidays
 
-  implicit def javaToJoda(jld: JavaLocalDateTime): JodaLocalDate = JodaLocalDate.parse(jld.toLocalDate.toString)
+    javaToJoda(date).plusWorkingDays(days)
+  }
 
-  implicit def javaToJoda(jld: JavaLocalDate): JodaLocalDate = JodaLocalDate.parse(jld.toString)
+  lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
 
-  implicit def jodaToJava(jld: JodaLocalDate): JavaLocalDate = JavaLocalDate.parse(jld.toString)
+  def currentDateTime: LocalDateTime = SystemDate.getSystemDate
+
+  def currentLocalDate: LocalDate = SystemDate.getSystemDate.toLocalDate
+
+  def today: LocalDate = LocalDate.now()
 
   val DATE_FORMAT = "yyyy-MM-dd"
 
-  def isDateSomeWorkingDaysInFuture(futureDate: JavaLocalDate)(implicit bHS: BankHolidaySet): Boolean = {
+  def isDateSomeWorkingDaysInFuture(futureDate: LocalDate)(implicit bHS: BankHolidaySet): Boolean = {
     isEqualOrAfter(getMinWorkingDayInFuture, futureDate)
   }
 
-  def getMinWorkingDayInFuture(implicit bHS: BankHolidaySet): JavaLocalDate = {
-    currentLocalDate.plusWorkingDays(getDaysInAdvance(currentDateTime.getHourOfDay) + 1)
+  def getMinWorkingDayInFuture: LocalDate = {
+    addWorkingDays(currentLocalDate, getDaysInAdvance(currentDateTime.getHour) + 1)
   }
 
-  private def getDaysInAdvance(currentHour: Int)(implicit bHS: BankHolidaySet): Int = {
+  private def getDaysInAdvance(currentHour: Int): Int = {
+    implicit val holidaySet: BankHolidaySet = bankHolidays
+
     if (LocalDateWithHolidays(currentLocalDate).isWorkingDay) {
       if (currentHour >= dayEndHour) 3 else 2
     } else {
@@ -80,13 +84,13 @@ class TimeService @Inject()(val environment: Environment,
     }
   }
 
-  def futureWorkingDate(days: Int)(implicit bHS: BankHolidaySet): JavaLocalDate = currentLocalDate plusWorkingDays days
+  def futureWorkingDate(days: Int)(implicit bHS: BankHolidaySet): LocalDate = addWorkingDays(currentLocalDate, days)
 
-  def addMonths(months: Int): JavaLocalDate = currentLocalDate.plusMonths(months)
+  def addMonths(months: Int): LocalDate = currentLocalDate.plusMonths(months)
 
-  def minusYears(years: Int): JavaLocalDate = currentLocalDate.minusYears(years)
+  def minusYears(years: Int): LocalDate = currentLocalDate.minusYears(years)
 
-  def dynamicFutureDateExample(anchor: JavaLocalDate = SystemDate.getSystemDate.toLocalDate, displacement: Long = 10): String = {
+  def dynamicFutureDateExample(anchor: LocalDate = SystemDate.getSystemDate.toLocalDate, displacement: Long = 10): String = {
     anchor plusDays displacement format DateTimeFormatter.ofPattern("d M yyyy")
   }
 }

@@ -24,7 +24,6 @@ import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, _}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.returns.{AccountingPeriodView, mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 
 import java.time.LocalDate
@@ -111,7 +110,6 @@ class ReturnsController @Inject()(val sessionService: SessionService,
 
   val voluntaryStartPage: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
-      implicit val bhs: BankHolidaySet = timeService.bankHolidaySet
       returnsService.getReturns.flatMap { returns =>
         calculateEarliestStartDate.map { incorpDate =>
           val exampleVatStartDate = timeService.dynamicFutureDateExample()

@@ -20,6 +20,7 @@ import connectors._
 import connectors.mocks.{AuthMock, HttpClientMock, MockS4lConnector, SessionServiceMock}
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.cache.SyncCacheApi
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
 import services._
@@ -58,7 +59,6 @@ trait VatMocks
   implicit lazy val mockCurrentProfileService = mock[JourneyService]
   implicit lazy val mockAddressLookupService = mock[AddressLookupService]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
-  implicit lazy val mockDateService = mock[DateService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
   implicit lazy val mockReturnsService = mock[ReturnsService]
   implicit lazy val mockApplicantDetailsServiceOld = mock[ApplicantDetailsService]
@@ -72,6 +72,8 @@ trait VatMocks
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
   implicit lazy val mockSaveAndRetrieveService = mock[SaveAndRetrieveService]
+  lazy val mockBankHolidayConnector: BankHolidaysConnector = mock[BankHolidaysConnector]
+  lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 
   def resetMocks() {
     reset(
@@ -85,7 +87,6 @@ trait VatMocks
       mockAudit,
       mockVatRegistrationService,
       mockVatRegistrationConnector,
-      mockDateService,
       mockConfigConnector,
       mockAddressLookupConnector,
       mockCurrentProfileService,
@@ -99,7 +100,9 @@ trait VatMocks
       mockBusinessContactService,
       mockAuthClientConnector,
       mockTimeService,
-      mockTrafficManagementService
+      mockTrafficManagementService,
+      mockBankHolidayConnector,
+      mockCache
     )
   }
 }

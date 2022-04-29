@@ -18,6 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import org.joda.time.LocalDate
+import play.api.Environment
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
@@ -26,7 +27,8 @@ import scala.concurrent.Future
 class BankHolidaysConnectorSpec extends VatRegSpec {
 
   val appConfig = app.injector.instanceOf[FrontendAppConfig]
-  lazy val testConnector = new BankHolidaysConnector(mockHttpClient, appConfig)
+  val mockEnvironment = mock[Environment]
+  lazy val testConnector = new BankHolidaysConnector(mockHttpClient, appConfig, mockEnvironment)
 
   "bankHolidays" must {
     "return set of bank holidays for a specified division" in {
