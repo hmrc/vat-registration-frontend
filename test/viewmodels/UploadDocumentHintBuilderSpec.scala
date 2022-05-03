@@ -17,14 +17,14 @@
 package viewmodels
 
 import config.FrontendAppConfig
+import models.TransactorDetails
 import models.api._
-import models.{ApplicantDetails, TransactorDetails}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.twirl.api.{Html, HtmlFormat}
 import services.mocks.{MockApplicantDetailsService, MockTransactorDetailsService, MockVatRegistrationService}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
-import views.html.components.{bullets, p}
+import views.html.components.{bullets, link, p}
 
 import scala.concurrent.Future
 
@@ -33,6 +33,7 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
   class Setup {
     val bullets: bullets = app.injector.instanceOf[bullets]
     val p: p = app.injector.instanceOf[p]
+    val link: link = app.injector.instanceOf[link]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -42,7 +43,8 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
       vatRegistrationServiceMock,
       mockTransactorDetailsService,
       bullets,
-      p
+      p,
+      link
     )
   }
 
@@ -64,6 +66,7 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
     val thirdPartyBullet5 = "a recent utility bill"
     val thirdPartyBullet6 = "a birth certificate"
     val fileType = "The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT."
+    val VAT5LUploadMessage : String => String = link => s"Upload a completed $link (opens in new tab)"
   }
 
   "build" when {
@@ -174,6 +177,20 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
     "called with an unsupported AttachmentType" must {
       "fail" in new Setup {
         intercept[InternalServerException](await(Builder.build(LetterOfAuthority))).message mustBe "Attachment Type not recognised"
+      }
+    }
+
+    "called with chosen attachment type" must {
+      "generate hint for document uploading form" in new Setup {
+
+        val expectedHtml: (String, String) => Html = (href, msgSuffix) => HtmlFormat.fill(List(
+          Html(messages("supplementary.uploadDocument.start")),
+          link(href, messages(s"supplementary.uploadDocument.$msgSuffix"), isExternal = true)
+        ))
+
+        await(Builder.build(VAT5L)) mustBe expectedHtml(appConfig.vat5LLink, "vat5LLink")
+        await(Builder.build(VAT51)) mustBe expectedHtml(appConfig.vat51Link, "vat51Link")
+        await(Builder.build(VAT2)) mustBe expectedHtml(appConfig.vat2Link, "vat2Link")
       }
     }
   }

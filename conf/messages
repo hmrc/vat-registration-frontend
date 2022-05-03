@@ -1403,3 +1403,9 @@ fileUpload.uploadDocument.hint.extraIdBullet6        = birth certificate
 fileUpload.uploadDocument.hint.extraIdBullet6.3pt    = a birth certificate
 fileUpload.uploadDocument.hint.fileType              = The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT.
 fileUpload.uploadDocument.label                      = Upload a file
+
+# UPLOAD SUPPLEMENTARY FORMS PAGE
+supplementary.uploadDocument.start                   = Upload a completed
+supplementary.uploadDocument.vat5LLink               = VAT5L form
+supplementary.uploadDocument.vat51Link               = VAT 50/51 form
+supplementary.uploadDocument.vat2Link                = VAT2 form

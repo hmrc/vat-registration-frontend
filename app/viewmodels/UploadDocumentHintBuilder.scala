@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api._
 import play.api.i18n.Messages
@@ -32,9 +33,12 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
                                           vatRegistrationService: VatRegistrationService,
                                           transactorDetailsService: TransactorDetailsService,
                                           bullets: views.html.components.bullets,
-                                          p: views.html.components.p) {
+                                          p: views.html.components.p,
+                                          link: views.html.components.link) {
 
-  def build(attachmentType: AttachmentType)(implicit messages: Messages, hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext): Future[Html] = {
+  def build(attachmentType: AttachmentType)(
+    implicit appConfig: FrontendAppConfig, messages: Messages, hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext
+  ): Future[Html] = {
 
     def conditionalApplicantName: Future[Option[String]] =
       vatRegistrationService.isTransactor.flatMap { isTransactor =>
@@ -68,10 +72,24 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
         transactorName.map(dynamicPrimaryIdentityEvidenceHint)
       case ExtraTransactorIdentityEvidence =>
         transactorName.map(dynamicExtraIdentityEvidenceHint)
+      case VAT51 =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat51Link, "vat51Link"))
+      case VAT5L =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat5LLink, "vat5LLink"))
+      case VAT2 =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat2Link, "vat2Link"))
       case _ =>
         throw new InternalServerException("Attachment Type not recognised")
     }
+  }
 
+  private def supplementDocumentUploadHint(href: String, msgSuffix: String)(implicit messages: Messages) = {
+    HtmlFormat.fill(
+      List(
+        Html(messages("supplementary.uploadDocument.start")),
+        link(href, messages(s"supplementary.uploadDocument.$msgSuffix"), isExternal = true)
+      )
+    )
   }
 
   private def dynamicPrimaryIdentityEvidenceHint(name: String)(implicit messages: Messages) =
