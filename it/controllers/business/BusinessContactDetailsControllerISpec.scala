@@ -17,8 +17,9 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.{BusinessContact, CompanyContactDetails}
 import play.api.http.HeaderNames
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class BusinessContactDetailsControllerISpec extends ControllerISpec {
@@ -36,7 +37,6 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
     }
-
   }
   "submitCompanyContactDetails" should {
     "return SEE_OTHER and submit to s4l because the model is incomplete" in new Setup {
@@ -44,27 +44,35 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
-        .vatScheme.doesNotHave("business-contact")
+        .registrationApi.getSection[BusinessContact](None, testRegId)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/business-contact-details").post(Map("email" -> Seq("foo@foo.com"), "daytimePhone" -> Seq("0121401890")))
+
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
-
       }
     }
     "return SEE_OTHER and submit to vat reg because the model is complete" in new Setup {
+      val updateBusinessContact = validBusinessContactDetails.copy(companyContactDetails = Some(CompanyContactDetails(
+        email = "test@foo.com",
+        phoneNumber = Some("1234567890"),
+        mobileNumber = Some("9876547890"),
+        websiteAddress = Some("/test/url")
+      )))
+
       given()
         .user.isAuthorised()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(companyContactDetails = None))
-        .vatScheme.isUpdatedWith(validBusinessContactDetails)
+        .registrationApi.replaceSection[BusinessContact](updateBusinessContact, testRegId)(BusinessContact.apiKey, BusinessContact.apiFormat)
         .s4lContainer[BusinessContact].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient("/business-contact-details").post(Map("email" -> Seq("test@foo.com"), "daytimePhone" -> Seq("1234567890"), "mobile" -> Seq("9876547890"), "website" -> Seq("/test/url")))
+
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
@@ -74,7 +82,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BusinessContact].isEmpty
-        .vatScheme.doesNotExistForKey("business-contact")
+        .registrationApi.getSectionFails[BusinessContact]()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,7 +95,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .vatScheme.isNotUpdatedWith[BusinessContact](validBusinessContactDetails)
+        .registrationApi.replaceSectionFails[BusinessContact](testRegId)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

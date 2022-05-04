@@ -18,6 +18,7 @@ package services
 
 import _root_.models.api.Address
 import config.FrontendAppConfig
+import connectors.mocks.MockRegistrationApiConnector
 import models._
 import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito._
@@ -29,10 +30,10 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class BusinessContactServiceSpec extends VatRegSpec {
+class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
   val testService: BusinessContactService = new BusinessContactService(
-    mockVatRegistrationConnector,
+    mockRegistrationApiConnector,
     mockS4LService
   )
 
@@ -78,8 +79,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(None))
 
-        when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(Some(businessContact)))
+        mockGetSection[BusinessContact](testRegId, Some(businessContact))
 
         when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(dummyCacheMap))
@@ -100,8 +100,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
         when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(None))
 
-        when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(None))
+        mockGetSection[BusinessContact](testRegId, None)
 
         when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(dummyCacheMap))
@@ -123,8 +122,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockGetSection(testRegId, None)
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -145,8 +143,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockGetSection(testRegId, None)
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -167,8 +164,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.getBusinessContact(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockGetSection(testRegId, None)
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -301,8 +297,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
+      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(companyContactDetails = Some(companyContactDetails)))
 
       when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -321,8 +316,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
+      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(ppobAddress = Some(testAddress)))
 
       when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -343,8 +337,7 @@ class BusinessContactServiceSpec extends VatRegSpec {
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      when(mockVatRegistrationConnector.upsertBusinessContact(matchers.any())(matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Json.parse("""{"abc" : "xyz"}""")))
+      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(contactPreference = Some(contactPreference)))
 
       when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))

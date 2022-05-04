@@ -2,13 +2,11 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.{ApplicantDetails, BusinessContact}
+import models.BusinessContact
 import models.api.{Address, Country}
-import models.view.HomeAddressView
 import org.jsoup.Jsoup
 import org.scalatest.Assertion
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class InternationalPpobAddressControllerISpec extends ControllerISpec {
@@ -23,8 +21,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK when the ApplicantDetails block is empty" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyVatSchemeNetp)
-          .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
+          .registrationApi.getSection[BusinessContact](None, testRegId)
           .s4lContainer[BusinessContact].contains(BusinessContact())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -36,8 +33,8 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate when the ApplicantDetails block contains an address" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyVatSchemeNetp)
           .s4lContainer[BusinessContact].contains(BusinessContact(ppobAddress = Some(testForeignAddress)))
+          .registrationApi.getSection[BusinessContact](None, testRegId)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,8 +54,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .s4lContainer[BusinessContact].isEmpty
-          .vatScheme.contains(emptyVatSchemeNetp)
-          .vatScheme.has("business-contact", Json.toJson(businessContact)(BusinessContact.apiFormat))
+          .registrationApi.getSection[BusinessContact](Some(businessContact))(BusinessContact.apiKey, BusinessContact.apiFormat)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -78,8 +74,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the previous address page if a minimal address is provided" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyVatSchemeNetp)
-        .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testShortForeignAddress)))
 
@@ -96,8 +91,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyVatSchemeNetp)
-        .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
 
@@ -119,8 +113,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyVatSchemeNetp)
-        .vatScheme.has("business-contact", Json.toJson(BusinessContact())(BusinessContact.apiFormat))
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
 
@@ -140,8 +133,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is missing" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyVatSchemeNetp)
-        .vatScheme.doesNotExistForKey("business-contact")
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].contains(BusinessContact())
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
 
@@ -161,8 +153,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is UK" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyVatSchemeNetp)
-        .vatScheme.doesNotExistForKey("business-contact")
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].contains(BusinessContact())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -186,7 +177,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .vatScheme.contains(emptyVatSchemeNetp)
-          .vatScheme.doesNotExistForKey("business-contact")
+          .registrationApi.getSection[BusinessContact](None, testRegId)
           .s4lContainer[BusinessContact].contains(BusinessContact())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

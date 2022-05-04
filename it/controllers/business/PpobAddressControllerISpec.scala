@@ -40,7 +40,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .vatScheme.isUpdatedWith(validBusinessContactDetails)
+        .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails, testRegId)(BusinessContact.apiKey, BusinessContact.apiFormat)
         .s4lContainer[BusinessContact].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -49,9 +49,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessContactDetailsController.show.url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/business-contact")
-        json mustBe validBusinessContactDetailsJson
       }
 
     }
@@ -61,7 +58,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
-        .vatScheme.doesNotHave("business-contact")
+        .registrationApi.getSection[BusinessContact](None, testRegId)
         .s4lContainer[BusinessContact].isUpdatedWith(validBusinessContactDetails.copy(companyContactDetails = None))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

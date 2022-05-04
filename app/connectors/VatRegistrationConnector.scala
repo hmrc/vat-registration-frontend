@@ -213,20 +213,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getBusinessContact(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[Option[BusinessContact]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact").map { res =>
-      if (res.status.equals(OK)) Some(res.json.as[BusinessContact](BusinessContact.apiFormat)) else None
-    }.recover {
-      case e: Exception => throw logResponse(e, "getBusinessContact")
-    }
-  }
-
-  def upsertBusinessContact(businessContact: BusinessContact)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsValue] = {
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${cp.registrationId}/business-contact", Json.toJson(businessContact)(BusinessContact.apiFormat)) recover {
-      case e: Exception => throw logResponse(e, "upsertBusinessContact")
-    }
-  }
-
   def getReturns(regId: String)
                 (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
     http.GET[Returns](s"$vatRegUrl/vatreg/$regId/returns") recover {
