@@ -23,7 +23,6 @@
     govukBackLink: GovukBackLink,
     hmrcLayout: HmrcLayout,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
-    trackingConsentSnippet: HmrcTrackingConsentSnippet,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     standardBetaBanner: StandardBetaBanner
 )
@@ -35,8 +34,6 @@
         signOutLink: Boolean = true,
         timeout: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
-
-@trackingConsentSnippet(nonce = CSPNonce.get)
 
 @head = {
     <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
