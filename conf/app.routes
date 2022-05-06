@@ -492,6 +492,6 @@ POST        /file-upload/:reference/remove                                      
 GET         /file-upload/uploading-document                                                    controllers.fileupload.UploadingDocumentController.show
 POST        /file-upload/uploading-document                                                    controllers.fileupload.UploadingDocumentController.submit(reference: String)
 GET         /file-upload/uploading-document-poll                                               controllers.fileupload.UploadingDocumentController.poll(reference: String)
+
 ## Upload Document
 GET         /file-upload/upload-document                                                       controllers.fileupload.UploadDocumentController.show
-
