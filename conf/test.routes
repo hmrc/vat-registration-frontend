@@ -53,7 +53,7 @@ GET         /submission-payload                               controllers.test.R
 POST         /upscan/initiate                                 controllers.test.UpscanStubController.upscanInitiate
 
 + nocsrf
-POST         /upscan/upload-response                          controllers.test.UpscanStubController.uploadResponse
+POST         /upscan/upload-response                          controllers.test.UpscanStubController.uploadResponse(reference: String)
 
 + nocsrf
 POST         /bars/validate-bank-details                      controllers.test.BankAccountReputationStubController.validateBankDetails

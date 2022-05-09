@@ -49,20 +49,20 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
     for {
       _ <- sessionService.cache(testOnlyUpscanCallbackUrl, callbackUrl)
       _ <- sessionService.cache(testOnlyUpscanSuccessUrl, successUrl)
+      reference = UUID.randomUUID()
     } yield Ok(Json.obj(
-      "reference" -> UUID.randomUUID(),
+      "reference" -> reference,
       "uploadRequest" -> Json.obj(
-        "href" -> "/register-for-vat/test-only/upscan/upload-response",
+        "href" -> s"/register-for-vat/test-only/upscan/upload-response?reference=$reference",
         "fields" -> Json.obj("test" -> "field")
       )
     ))
   }
 
-  def uploadResponse: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def uploadResponse(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
     for {
       optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
       optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
-      reference = request.session.get("reference").get
       callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved from session"))
       successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("Success URL couldn't be retrieved from session"))
       unfinishedUpscan <- upscanConnector.fetchUpscanFileDetails(profile.registrationId, reference)
