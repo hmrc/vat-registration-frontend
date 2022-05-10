@@ -98,7 +98,8 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
       val res = buildClient(submitUrl).post(Json.obj())
 
       whenReady(res) { result =>
-        result.status mustBe NOT_IMPLEMENTED
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.UploadDocumentController.show.url)
       }
     }
   }

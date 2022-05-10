@@ -495,3 +495,6 @@ GET         /file-upload/uploading-document-poll                                
 
 ## Upload Document
 GET         /file-upload/upload-document                                                       controllers.fileupload.UploadDocumentController.show
+
+## Async upload document error page
+GET         /file-upload/problem-with-selected-file                                            controllers.fileupload.DocumentUploadErrorController.show

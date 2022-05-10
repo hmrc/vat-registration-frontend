@@ -47,7 +47,8 @@ class UploadDocumentController @Inject()(view: UploadDocument,
           case list =>
             upscanService.initiateUpscan(profile.registrationId, list.head).flatMap { upscanResponse =>
               uploadDocumentHint.build(list.head).map { hintHtml =>
-                Ok(view(upscanResponse, hintHtml)).addingToSession("reference" -> upscanResponse.reference)
+                val maybeErrorCode = request.queryString.get("errorCode").flatMap(_.headOption)
+                Ok(view(upscanResponse, hintHtml, maybeErrorCode)).addingToSession("reference" -> upscanResponse.reference)
               }
             }
         }

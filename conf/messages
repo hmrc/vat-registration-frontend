@@ -1409,3 +1409,11 @@ supplementary.uploadDocument.start                   = Upload a completed
 supplementary.uploadDocument.vat5LLink               = VAT5L form
 supplementary.uploadDocument.vat51Link               = VAT 50/51 form
 supplementary.uploadDocument.vat2Link                = VAT2 form
+
+# UPLOAD FORM ERROR MESSAGES
+fileUpload.async.error.page.heading                  = There is a problem with the selected file
+fileUpload.async.error.page.back.url                 = You need to <a href="{0}">go back and upload a new one</a>.
+fileUpload.error.EntityTooLarge                      = The selected file must be smaller than 10MB
+fileUpload.error.InvalidArgument                     = Select a file
+fileUpload.error.EntityTooSmall                      = The selected file is empty
+fileUpload.error.InvalidFileType                     = The selected file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT

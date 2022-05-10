@@ -32,22 +32,13 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK when there's an incomplete attachment" in new Setup {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getIncompleteAttachments(List(PrimaryIdentityEvidence))
-        .upscanApi.upscanInitiate(testReference)
-        .upscanApi.storeUpscanReference(testReference, PrimaryIdentityEvidence)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
       insertCurrentProfileIntoDb(currentProfile, sessionId)
+      verifyDocumentUploadPage(url)
+    }
 
-      val response: Future[WSResponse] = buildClient(url).get()
-
-      whenReady(response) { res =>
-        res.status mustBe OK
-      }
+    "return an OK when there's an incomplete attachment and has an errorCode" in new Setup {
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      verifyDocumentUploadPage(s"$url?errorCode=EntityTooLarge")
     }
 
     "redirect to CYA when all attachments are complete" in new Setup {
@@ -68,4 +59,21 @@ class UploadDocumentControllerISpec extends ControllerISpec {
     }
   }
 
+  private def verifyDocumentUploadPage(url: String) = {
+    given()
+      .user.isAuthorised()
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .attachmentsApi.getIncompleteAttachments(List(PrimaryIdentityEvidence))
+      .upscanApi.upscanInitiate(testReference)
+      .upscanApi.storeUpscanReference(testReference, PrimaryIdentityEvidence)
+      .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+
+    val response: Future[WSResponse] = buildClient(url).get()
+
+    whenReady(response) { res =>
+      res.status mustBe OK
+    }
+  }
 }

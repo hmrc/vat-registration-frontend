@@ -37,12 +37,26 @@ class UploadDocumentViewSpec extends VatRegViewSpec {
     val testHint = "testHint"
     val label = "Upload a file"
     val continue = "Save and continue"
+    val fileUploadError = "Error: The selected file must be smaller than 10MB"
   }
 
-  "The Upload Documents Page" must {
-    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint))
+  "The Upload Documents Page with no error response from upscan" must {
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint), None)
+    verifyPageLayout(Jsoup.parse(view.body))
+  }
+
+  "The Upload Documents Page with error response from upscan" must {
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint), Some("EntityTooLarge"))
     implicit val doc: Document = Jsoup.parse(view.body)
 
+    verifyPageLayout(doc)
+
+    "have a correct error summary" in new ViewSetup {
+      doc.select(".govuk-error-message").text() mustBe ExpectedContent.fileUploadError
+    }
+  }
+
+  private def verifyPageLayout(implicit doc: Document): Unit = {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
@@ -63,5 +77,4 @@ class UploadDocumentViewSpec extends VatRegViewSpec {
       doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
-
 }
