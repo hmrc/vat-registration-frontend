@@ -56,7 +56,7 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
       upscanService.getUpscanFileStatus(profile.registrationId, reference).map {
         case InProgress => Redirect(routes.UploadingDocumentController.show)
         case Ready => Redirect(routes.DocumentUploadSummaryController.show)
-        case Failed => NotImplemented
+        case Failed => Redirect(routes.UploadDocumentController.show)
       }
   }
 }

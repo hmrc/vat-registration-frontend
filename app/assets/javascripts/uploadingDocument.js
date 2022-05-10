@@ -19,7 +19,7 @@
                         setTimeout(refresh, parseInt(dataTag.dataset.interval));
                         break;
                     case "ERROR":
-                        goToErrorPage();
+                        window.location.href = "/register-for-vat/file-upload/problem-with-selected-file";
                         break;
                     case "READY":
                         window.location.href = "/register-for-vat/file-upload/summary";
