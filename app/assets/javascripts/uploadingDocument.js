@@ -5,7 +5,7 @@
 
     submitButton.style.display = 'none'
     function goToErrorPage() {
-        window.location.href = "/error/page/url";
+        window.location.href = "/register-for-vat/file-upload/problem-with-selected-file";
     }
 
     function refresh() {
@@ -18,7 +18,7 @@
                     case "IN_PROGRESS":
                         setTimeout(refresh, parseInt(dataTag.dataset.interval));
                         break;
-                    case "ERROR":
+                    case "FAILED":
                         window.location.href = "/register-for-vat/file-upload/problem-with-selected-file";
                         break;
                     case "READY":

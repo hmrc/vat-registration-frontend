@@ -35,7 +35,7 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
       "successRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadingDocumentController.show.url}",
       "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadDocumentController.show.url}",
-      "minimumFileSize" -> 0,
+      "minimumFileSize" -> 1,
       "maximumFileSize" -> 10485760
     )
 
