@@ -174,10 +174,6 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     "have the correct panel text two" in new ViewSetup {
       doc.select(Selectors.indent).get(1).text mustBe ExpectedContent.panel2
     }
-
-    "have a print button" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.print)
-    }
   }
 }
 

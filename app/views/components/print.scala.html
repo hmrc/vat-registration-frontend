@@ -15,21 +15,11 @@
  *@
 
 @import config.FrontendAppConfig
+@import views.html.helper.CSPNonce
 
-@this(
-button: button,
-govukButton: GovukButton
-)
+@this()
 
-@(msg: String)(implicit messages: Messages, appConfig: FrontendAppConfig)
+@(msg: String)(implicit messages: Messages, appConfig: FrontendAppConfig, request: Request[_])
 
-@button = {
- @govukButton(Button(
-  content = Text(messages(msg)),
-  preventDoubleClick = true
- ))
-}
-
-<div onClick="window.print()" class="govuk-button-group">
-    @button
-</div>
+<div id="print-button" data-content="@{messages(msg)}"></div>
+<script @{CSPNonce.attr} src="@{controllers.routes.Assets.versioned("javascripts/print.js")}"></script>
