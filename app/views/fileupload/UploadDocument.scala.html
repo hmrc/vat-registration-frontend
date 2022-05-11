@@ -14,28 +14,31 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+@import helper.form
 @import models.external.upscan.UpscanResponse
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
-@import config.FrontendAppConfig
-@import helper.form
 
 @this(
         layout: layout,
         h1: h1,
         p: p,
         button: button,
-        govukFileUpload : GovukFileUpload,
+        govukFileUpload: GovukFileUpload,
         govukButton: GovukButton,
         errorSummary: errorSummary,
         inputRadio: inputRadio,
         panelIndent: panelIndent
 )
 
-@(upscanResponse: UpscanResponse, hintHtml: Html, maybeErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(upscanResponse: UpscanResponse, hintHtml: Html, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("fileUpload.uploadDocument.heading")))) {
+
+    @errorSummary(optErrorCode.map(errorCode => FormError("file-upload-1", s"fileUpload.error.$errorCode")).toSeq)
+
     @form(action = Call("POST", upscanResponse.href), 'enctype -> "multipart/form-data") {
         @for(field <- upscanResponse.fields) {
             <input type="hidden" name="@field._1" value="@field._2"/>
@@ -51,7 +54,7 @@
             label = Label(
                 content = Text(messages("fileUpload.uploadDocument.label"))
             ),
-            errorMessage = maybeErrorCode.map(errorCode => ErrorMessage(content = Text(messages(s"fileUpload.error.$errorCode")))),
+            errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(s"fileUpload.error.$errorCode")))),
             attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt")
         ))
 

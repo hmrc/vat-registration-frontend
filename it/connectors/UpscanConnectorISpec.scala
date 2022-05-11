@@ -74,7 +74,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
         "successRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadingDocumentController.show.url}",
         "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadDocumentController.show.url}",
-        "minimumFileSize" -> 0,
+        "minimumFileSize" -> 1,
         "maximumFileSize" -> 10485760)
 
       val response = await(connector.upscanInitiate())

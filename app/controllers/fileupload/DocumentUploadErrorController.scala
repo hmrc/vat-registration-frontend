@@ -16,8 +16,8 @@
 
 package controllers.fileupload
 
-import controllers.BaseController
 import config.{BaseControllerComponents, FrontendAppConfig}
+import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -26,11 +26,9 @@ import views.html.fileupload.UploadDocumentError
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DocumentUploadErrorController @Inject()(
-                                                    view: UploadDocumentError,
-                                                    val authConnector: AuthConnector,
-                                                    val sessionService: SessionService
-                                             )
+class DocumentUploadErrorController @Inject()(view: UploadDocumentError,
+                                              val authConnector: AuthConnector,
+                                              val sessionService: SessionService)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents)

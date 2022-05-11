@@ -90,7 +90,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.UploadingDocumentController.show.url)
       }
     }
-    "return Not implemented when upload file status is Failed" in {
+    "redirect to problem with file page when upload file status is Failed" in {
       given()
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails(Failed), reference = testReference)
@@ -99,7 +99,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.UploadDocumentController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadErrorController.show.url)
       }
     }
   }
