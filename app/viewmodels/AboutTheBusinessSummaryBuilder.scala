@@ -115,7 +115,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   private def businessWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.website",
-      businessContact.companyContactDetails.flatMap(_.websiteAddress),
+      businessContact.companyContactDetails.flatMap(_.website),
       Some(businessContactRoutes.BusinessContactDetailsController.show.url)
     )
 

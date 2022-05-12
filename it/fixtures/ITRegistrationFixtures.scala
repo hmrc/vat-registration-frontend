@@ -107,7 +107,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       email = "test@foo.com",
       phoneNumber = Some("123"),
       mobileNumber = Some("987654"),
-      websiteAddress = Some("/test/url")
+      website = Some("/test/url")
     )),
     ppobAddress = Some(addressWithCountry),
     contactPreference = Some(Email)

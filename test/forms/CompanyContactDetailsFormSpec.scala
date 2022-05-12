@@ -63,7 +63,7 @@ class CompanyContactDetailsFormSpec extends VatRegSpec {
           email          = EMAIL,
           phoneNumber    = Some(DAYTIME_PHONE),
           mobileNumber   = Some(MOBILE),
-          websiteAddress = None
+          website = None
         )
       }
 

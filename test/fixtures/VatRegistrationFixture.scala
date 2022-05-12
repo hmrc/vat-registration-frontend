@@ -204,7 +204,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
       email = "test@foo.com",
       phoneNumber = Some("123"),
       mobileNumber = Some("987654"),
-      websiteAddress = Some("/test/url")
+      website = Some("/test/url")
     )),
     ppobAddress = Some(testAddress),
     contactPreference = Some(Email)

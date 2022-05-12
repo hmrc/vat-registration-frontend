@@ -27,11 +27,9 @@ class CompanyContactDetailsSpec extends VatRegSpec {
       val jsonToParse = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com",
-          |   "tel" : "0123456",
-          |   "mobile" : "987654"
-          | },
+          | "email" : "test@test.com",
+          | "telephoneNumber" : "0123456",
+          | "mobile" : "987654",
           | "website" : "/test/url"
           |}
         """.stripMargin
@@ -41,7 +39,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
         email          = "test@test.com",
         phoneNumber    = Some("0123456"),
         mobileNumber   = Some("987654"),
-        websiteAddress = Some("/test/url")
+        website = Some("/test/url")
       )
 
 
@@ -52,9 +50,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
       val jsonToParse = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com"
-          | }
+          | "email" : "test@test.com"
           |}
         """.stripMargin
       )
@@ -63,7 +59,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
         email          = "test@test.com",
         phoneNumber    = None,
         mobileNumber   = None,
-        websiteAddress = None
+        website = None
       )
 
 
@@ -76,11 +72,9 @@ class CompanyContactDetailsSpec extends VatRegSpec {
       val expectedJson = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com",
-          |   "tel" : "0123456",
-          |   "mobile" : "987654"
-          | },
+          | "email" : "test@test.com",
+          | "telephoneNumber" : "0123456",
+          | "mobile" : "987654",
           | "website" : "/test/url"
           |}
         """.stripMargin
@@ -90,7 +84,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
         email          = "test@test.com",
         phoneNumber    = Some("0123456"),
         mobileNumber   = Some("987654"),
-        websiteAddress = Some("/test/url")
+        website = Some("/test/url")
       )
 
       Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) mustBe expectedJson
@@ -100,9 +94,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
       val expectedJson = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com"
-          | }
+          |  "email" : "test@test.com"
           |}
         """.stripMargin
       )
@@ -111,7 +103,7 @@ class CompanyContactDetailsSpec extends VatRegSpec {
         email          = "test@test.com",
         phoneNumber    = None,
         mobileNumber   = None,
-        websiteAddress = None
+        website = None
       )
 
       Json.toJson(modelToTransform)(CompanyContactDetails.apiWrites) mustBe expectedJson

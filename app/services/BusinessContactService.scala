@@ -20,6 +20,7 @@ import _root_.models.api.Address
 import _root_.models.{BusinessContact, CompanyContactDetails, ContactPreference, CurrentProfile}
 import connectors.RegistrationApiConnector
 import play.api.libs.json.Format
+import services.BusinessContactService.{Email, HasWebsite, TelephoneNumber, Website}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +32,7 @@ class BusinessContactService @Inject()(val registrationApiConnector: Registratio
 
   def getBusinessContact(implicit cp: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[BusinessContact] = {
     s4lService.fetchAndGet[BusinessContact].flatMap {
-      case None | Some(BusinessContact(None, None, None)) =>
+      case None | Some(BusinessContact(None, None, None, None, None, None, None, None)) =>
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
 
         registrationApiConnector.getSection[BusinessContact](cp.registrationId).map {
@@ -66,12 +67,24 @@ class BusinessContactService @Inject()(val registrationApiConnector: Registratio
       case address: Address => businessContact.copy(ppobAddress = Some(address))
       case details: CompanyContactDetails => businessContact.copy(companyContactDetails = Some(details))
       case preference: ContactPreference => businessContact.copy(contactPreference = Some(preference))
+      case Email(answer) => businessContact.copy(email = Some(answer))
+      case TelephoneNumber(answer) => businessContact.copy(telephoneNumber = Some(answer))
+      case HasWebsite(answer) => businessContact.copy(hasWebsite = Some(answer))
+      case Website(answer) => businessContact.copy(website = Some(answer))
     }
   }
 
   private def isModelComplete: BusinessContact => Completion[BusinessContact] = {
-    case businessContact@BusinessContact(Some(_), Some(_), Some(_)) => Complete(businessContact)
+    case businessContact@BusinessContact(Some(_), Some(_), _, _, _, _, _, Some(_)) => Complete(businessContact)
+    case businessContact@BusinessContact(Some(_), _, Some(_), Some(_), Some(_), Some(_), _, Some(_)) => Complete(businessContact)
     case businessContact => Incomplete(businessContact)
   }
 
+}
+
+object BusinessContactService {
+  case class Email(answer: String)
+  case class TelephoneNumber(answer: String)
+  case class HasWebsite(answer: Boolean)
+  case class Website(answer: String)
 }
