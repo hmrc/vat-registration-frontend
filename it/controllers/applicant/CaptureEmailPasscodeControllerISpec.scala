@@ -37,7 +37,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents)
+        .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -55,7 +55,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
           .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -74,7 +74,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -91,7 +91,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -111,7 +111,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)
+          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

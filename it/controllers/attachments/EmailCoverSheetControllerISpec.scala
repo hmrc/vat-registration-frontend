@@ -19,9 +19,9 @@ package controllers.attachments
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
 import models.api._
-import play.api.libs.json.{JsString, Json}
+import models.{ApplicantDetails, TransactorDetails}
+import play.api.libs.json.{Format, JsString, Json}
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
@@ -49,13 +49,14 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
     }
 
     "return an OK for a transactor" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(EmailMethod), List[AttachmentType](IdentityEvidence, VAT2))))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

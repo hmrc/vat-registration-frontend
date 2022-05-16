@@ -17,10 +17,10 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, TradingDetails, TradingNameView}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class TradingNameControllerISpec extends ControllerISpec {
@@ -28,11 +28,12 @@ class TradingNameControllerISpec extends ControllerISpec {
 
   "show Trading Name page" should {
     "return OK" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .vatScheme.doesNotHave("trading-details")
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -47,11 +48,12 @@ class TradingNameControllerISpec extends ControllerISpec {
 
   "submit Trading Name page" should {
     "return SEE_OTHER" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(tradingDetails)
         .vatScheme.doesNotHave("trading-details")
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(true, Some("Test Trading Name")))))
         .s4lContainer[TradingDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

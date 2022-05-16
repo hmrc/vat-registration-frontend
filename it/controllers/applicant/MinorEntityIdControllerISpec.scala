@@ -20,10 +20,10 @@ import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{EligibilitySubmissionData, NonUkNonEstablished, Trust, UnincorpAssoc}
+import models.api._
 import models.external.soletraderid.OverseasIdentifierDetails
 import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -196,9 +196,10 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
   "GET /minor-entity-id-callback" must {
     "redirect to the lead business entity type page for Trust" when {
       "S4L model is not full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
         given()
           .user.isAuthorised()
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
@@ -215,11 +216,12 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)
+          .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)(ApplicantDetails.s4LWrites)
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.isUpdatedWith(trustApplicantDetails)
+          .registrationApi.replaceSection[ApplicantDetails](trustApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
@@ -236,9 +238,10 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
     "redirect to the lead business entity type page for Unincorporated Association" when {
       "S4L model is not full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
         given()
           .user.isAuthorised()
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testUnincorpAssoc)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
@@ -255,11 +258,12 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(unincorpAssocApplicantDetails)
+          .s4lContainer[ApplicantDetails].contains(unincorpAssocApplicantDetails)(ApplicantDetails.s4LWrites)
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.isUpdatedWith(unincorpAssocApplicantDetails)
+          .registrationApi.replaceSection[ApplicantDetails](unincorpAssocApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
@@ -276,9 +280,10 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
     "redirect to the lead business entity type page for Non UK Company" when {
       "S4L model is not full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
         given()
           .user.isAuthorised()
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testNonUkCompany)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
@@ -295,11 +300,12 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)
+          .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)(ApplicantDetails.s4LWrites)
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.isUpdatedWith(nonUkCompanyApplicantDetails)
+          .registrationApi.replaceSection[ApplicantDetails](nonUkCompanyApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
         stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)

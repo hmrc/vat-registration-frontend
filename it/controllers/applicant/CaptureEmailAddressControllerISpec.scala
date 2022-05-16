@@ -19,10 +19,10 @@ package controllers.applicant
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -33,7 +33,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
   val url: String = controllers.applicant.routes.CaptureEmailAddressController.show.url
   private val testEmail = "test@test.com"
 
-  val s4lData = ApplicantDetails(
+  val s4lData: ApplicantDetails = ApplicantDetails(
     entity = Some(testIncorpDetails),
     personalDetails = Some(testPersonalDetails),
     emailAddress = Some(EmailAddress(testEmail)),
@@ -42,8 +42,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -57,7 +60,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -74,10 +77,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     "ApplicantDetails is not complete" should {
       "Update S4L and redirect to Capture Email Passcode page" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
         )
@@ -95,10 +99,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
       "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
@@ -117,10 +122,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
       "Update S4L redirect to Capture Telephone Number page when the user is a transactor" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].isUpdatedWith(
           ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
@@ -144,11 +150,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     "ApplicantDetails is complete" should {
       "Post the block to the backend and redirect to the capture email postcode page" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))
-          .vatScheme.patched("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(emailAddress = Some(EmailAddress(testEmail))))
           .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

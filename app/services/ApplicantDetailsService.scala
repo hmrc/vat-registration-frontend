@@ -17,20 +17,21 @@
 package services
 
 import config.Logging
-import connectors.VatRegistrationConnector
-import models.{ApplicantDetails, _}
+import connectors.RegistrationApiConnector
 import models.external._
 import models.view._
-import play.api.libs.json.{Reads, Writes}
+import models._
+import play.api.libs.json.{Format, Reads, Writes}
 import services.ApplicantDetailsService.HasFormerName
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistrationConnector,
+class ApplicantDetailsService @Inject()(val registrationApiConnector: RegistrationApiConnector,
                                         val vatRegistrationService: VatRegistrationService,
                                         val s4LService: S4LService
                                        )(implicit ec: ExecutionContext) extends Logging {
@@ -41,7 +42,9 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
       s4LService.fetchAndGet[ApplicantDetails].flatMap {
         case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None, None)) =>
-          vatRegistrationConnector.getApplicantDetails(cp.registrationId, partyType).flatMap {
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
+
+          registrationApiConnector.getSection[ApplicantDetails](cp.registrationId).flatMap {
             case Some(applicantDetails) => Future.successful(applicantDetails)
             case None => Future.successful(ApplicantDetails())
           }
@@ -87,12 +90,17 @@ class ApplicantDetailsService @Inject()(val vatRegistrationConnector: VatRegistr
 
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     getApplicantDetails.flatMap { applicantDetails =>
-      implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
-
       isModelComplete(updateModel(data, applicantDetails)).fold(
-        incomplete => s4LService.save[ApplicantDetails](incomplete).map(_ => incomplete),
+        incomplete => {
+          implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
+          s4LService.save[ApplicantDetails](incomplete).map(_ => incomplete)
+        },
         complete => for {
-          _ <- vatRegistrationConnector.patchApplicantDetails(complete)
+          partyType <- vatRegistrationService.partyType
+          _ <- {
+            implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
+            registrationApiConnector.replaceSection[ApplicantDetails](cp.registrationId, complete)
+          }
           _ <- s4LService.clearKey[ApplicantDetails]
         } yield complete
       )

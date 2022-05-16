@@ -21,7 +21,7 @@ import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, TradingDetails}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
@@ -29,11 +29,12 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
   "Trading name page resolver" should {
     List(Individual, NETP).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -48,13 +49,14 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
     List(Partnership, ScotPartnership).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.business.routes.PartnershipNameController.show.url} for ${partyType.toString}" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -72,13 +74,14 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
       enable(ShortOrgName)
 
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[TradingDetails].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UkCompany)))
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity =
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity =
         Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
-      ))(ApplicantDetails.writes))
+      )))
         .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -92,11 +95,12 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.business.routes.TradingNameController.show.url} for ${partyType.toString}" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -111,11 +115,12 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
     List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { partyType =>
       s"return SEE_OTHER and redirects to ${controllers.business.routes.BusinessNameController.show.url} for ${partyType.toString}" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
           .s4lContainer[TradingDetails].isEmpty
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
           .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

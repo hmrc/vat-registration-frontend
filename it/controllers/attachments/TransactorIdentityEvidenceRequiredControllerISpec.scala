@@ -2,9 +2,9 @@
 package controllers.attachments
 
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, TransactorDetails}
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class TransactorIdentityEvidenceRequiredControllerISpec extends ControllerISpec {
@@ -13,13 +13,14 @@ class TransactorIdentityEvidenceRequiredControllerISpec extends ControllerISpec 
 
   s"GET $showUrl" must {
     "return OK" in {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
       val res = buildClient(showUrl).get()
 

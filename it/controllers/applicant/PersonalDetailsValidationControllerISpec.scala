@@ -19,9 +19,9 @@ package controllers.applicant
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.StubPersonalDetailsValidation
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, PersonalDetails}
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}
 
@@ -49,14 +49,14 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
       disable(StubPersonalDetailsValidation)
 
       val testValidationId: String = "testValidationId"
-      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes)
 
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", applicantJson)
-        .vatScheme.patched("applicant-details", applicantJson)
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
-        .s4lContainer[ApplicantDetails].cleared
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(personalDetails = Some(testPersonalDetails)))
+        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -64,7 +64,6 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
       stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testPersonalDetails)(PersonalDetails.pdvFormat)).toString)
 
       val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
-
 
       res.status mustBe SEE_OTHER
     }

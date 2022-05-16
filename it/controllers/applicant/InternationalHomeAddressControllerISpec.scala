@@ -2,13 +2,13 @@
 package controllers.applicant
 
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
-import models.api.{Address, Country, EligibilitySubmissionData}
+import models.ApplicantDetails
+import models.api.{Address, Country, EligibilitySubmissionData, UkCompany}
 import models.view.HomeAddressView
 import org.jsoup.Jsoup
 import org.scalatest.Assertion
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class InternationalHomeAddressControllerISpec extends ControllerISpec {
@@ -21,9 +21,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
   "GET /home-address/international" when {
     "reading from S4L" must {
       "return OK when the ApplicantDetails block is empty" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -36,7 +38,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails(homeAddress = Some(HomeAddressView("", Some(testShortForeignAddress)))))
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails(homeAddress = Some(HomeAddressView("", Some(testShortForeignAddress)))))(ApplicantDetails.s4LWrites)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -52,6 +54,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
     "when reading from the backend" must {
       "return OK and pre-populate the page" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         val appDetails = ApplicantDetails(homeAddress = Some(HomeAddressView("", Some(testForeignAddress))))
         val vatScheme = emptyUkCompanyVatScheme.copy(applicantDetails = Some(appDetails))
         given
@@ -59,7 +62,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isEmpty
           .vatScheme.contains(vatScheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .vatScheme.has("applicant-details", Json.toJson(appDetails)(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,10 +80,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
   "POST /home-address/international" must {
     "Store the address and redirect to the previous address page if a minimal address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testShortForeignAddress)))))
 
@@ -95,10 +99,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.show.url)
     }
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
 
@@ -118,10 +123,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
 
@@ -139,10 +145,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
     }
     "return BAD_REQUEST if country is missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
 
@@ -161,10 +168,11 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
       def assertMissingPostcode(country: String): Assertion = {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .vatScheme.doesNotExistForKey("applicant-details")
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
 

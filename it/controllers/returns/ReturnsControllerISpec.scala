@@ -2,11 +2,11 @@
 package controllers.returns
 
 import itutil.ControllerISpec
-import models.api.{Threshold, EligibilitySubmissionData}
+import models.api.{EligibilitySubmissionData, Threshold, UkCompany}
 import models.api.returns.Returns
 import models.{ApplicantDetails, DateSelection}
 import org.joda.time.LocalDate
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.test.Helpers._
 
 class ReturnsControllerISpec extends ControllerISpec {
@@ -16,7 +16,7 @@ class ReturnsControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -42,15 +42,14 @@ class ReturnsControllerISpec extends ControllerISpec {
   "POST /vat-start-date" must {
     "Redirect to the next page when all data is valid" in {
       val today = LocalDate.now().plusDays(1)
-      val applicantJson = Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes)
 
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, Some(java.time.LocalDate.parse(today.toString))))
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
-        .vatScheme.has("applicant-details", applicantJson)
-        .vatScheme.patched("applicant-details", applicantJson)
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/vat-start-date").post(Json.obj(

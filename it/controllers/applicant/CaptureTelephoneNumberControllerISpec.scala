@@ -18,11 +18,11 @@ package controllers.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director, TelephoneNumber}
+import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -43,8 +43,6 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
     roleInTheBusiness = Some(Director)
   )
 
-  val keyblock = "applicant-details"
-
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
@@ -62,7 +60,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -134,10 +132,13 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
 
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
+          telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
+        ))
           .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -151,10 +152,11 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       "post to the backend and redirect to International Address for a NETP" in new Setup {
         disable(StubEmailVerification)
 
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .vatScheme.patched(keyblock, Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
           .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 

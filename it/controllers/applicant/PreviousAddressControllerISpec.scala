@@ -5,17 +5,18 @@ import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
-import models.view.{FormerNameDateView, HomeAddressView}
+import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.{Format, Json}
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class PreviousAddressControllerISpec extends ControllerISpec {
 
-  val keyBlock = "applicant-details"
   val email = "test@t.test"
   val nino = "SR123456C"
   val role = "03"
@@ -75,7 +76,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     "redirect to International Address capture if the user is a NETP" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -90,7 +91,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     "redirect to International Address capture if the user is a Non UK Company" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -103,10 +104,11 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "patch Applicant Details in backend" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
-        .vatScheme.patched(keyBlock, validJson)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -116,18 +118,6 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.applicant.routes.CaptureEmailAddressController.show.url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
-        (json \ "currentAddress" \ "line2").as[JsString].value mustBe testLine2
-        (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
-        (json \ "changeOfName" \ "change").as[LocalDate] mustBe LocalDate.of(2000, 7, 12)
-        (json \ "changeOfName" \ "name" \ "first").as[JsString].value mustBe "New"
-        (json \ "changeOfName" \ "name" \ "middle").as[JsString].value mustBe "Name"
-        (json \ "changeOfName" \ "name" \ "last").as[JsString].value mustBe "Cosmo"
-        (json \ "contact" \ "email").as[JsString].value mustBe email
-        (json \ "previousAddress").validateOpt[JsObject].get mustBe None
-        (json \ "roleInTheBusiness").as[JsString].value mustBe role
       }
     }
   }
@@ -154,55 +144,33 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       val addressCountry = "GB"
       val addressPostcode = "BN3 1JU"
 
-      val validJson = Json.parse(
-        s"""
-           |{
-           |  "name": {
-           |    "first": "First",
-           |    "middle": "Middle",
-           |    "last": "Last"
-           |  },
-           |  "role": "Director",
-           |  "dob": "1998-07-12",
-           |  "nino": "AA112233Z",
-           |  "currentAddress": {
-           |    "line1": "$addressLine1",
-           |    "line2": "$addressLine2",
-           |    "postcode": "$addressPostcode"
-           |  },
-           |  "contact": {
-           |    "email": "test@t.test",
-           |    "tel": "1234",
-           |    "mobile": "5678"
-           |  },
-           |  "previousAddress": {
-           |    "line1": "$addressLine1",
-           |    "line2": "$addressLine2",
-           |    "postcode": "$addressPostcode",
-           |    "country": "$addressCountry"
-           |  }
-           |}""".stripMargin)
+      val testApplicantDetails: ApplicantDetails = s4lData.copy(previousAddress = Some(PreviousAddressView(
+        yesNo = true,
+        Some(Address(
+          addressLine1,
+          Some(addressLine2),
+          postcode = Some(addressPostcode),
+          country = Some(Country(Some(addressCountry), Some("United Kingdom"))),
+          addressValidated = true
+        ))
+      )))
 
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
-        .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
-        .vatScheme.patched(keyBlock, validJson)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
+        .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
+        .registrationApi.replaceSection[ApplicantDetails](testApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
+      val response: Future[WSResponse] = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
+
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.applicant.routes.CaptureEmailAddressController.show.url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "previousAddress" \ "line1").as[JsString].value mustBe addressLine1
-        (json \ "previousAddress" \ "line2").as[JsString].value mustBe addressLine2
-        (json \ "previousAddress" \ "country").as[Country] mustBe Country(Some("GB"), Some("United Kingdom"))
-        (json \ "previousAddress" \ "postcode").as[JsString].value mustBe addressPostcode
       }
     }
   }

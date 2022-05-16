@@ -2,9 +2,9 @@
 package controllers.attachments
 
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
 import models.api._
-import play.api.libs.json.Json
+import models.{ApplicantDetails, TransactorDetails}
+import play.api.libs.json.{Format, Json}
 import play.api.test.Helpers._
 
 class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
@@ -28,6 +28,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
     }
 
     "return OK for a transactor" in {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .audit.writesAudit()
@@ -35,7 +36,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
       val res = buildClient(showUrl).get()
 

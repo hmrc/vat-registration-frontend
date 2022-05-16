@@ -18,9 +18,9 @@ package controllers.business
 
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, Trust, UkCompany}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -31,10 +31,11 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
   "show Business Name page" should {
     "return OK" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -48,10 +49,11 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
   "submit Business Name page" should {
     "return SEE_OTHER" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.isUpdatedWith(
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
+        .registrationApi.replaceSection[ApplicantDetails](
         validFullApplicantDetails.copy(
           entity = Some(testMinorEntity.copy(
             companyName = Some(businessName)
@@ -59,7 +61,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         ))
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

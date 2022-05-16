@@ -22,7 +22,7 @@ import itutil.ControllerISpec
 import models.api._
 import models.external.IncorporatedEntity
 import models.{ApplicantDetails, PartnerEntity}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -107,11 +107,12 @@ class IncorpIdControllerISpec extends ControllerISpec {
         enable(UseSoleTraderIdentification)
         disable(StubIncorpIdJourney)
 
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
@@ -130,11 +131,12 @@ class IncorpIdControllerISpec extends ControllerISpec {
         disable(UseSoleTraderIdentification)
         disable(StubIncorpIdJourney)
 
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
@@ -153,11 +155,12 @@ class IncorpIdControllerISpec extends ControllerISpec {
         disable(UseSoleTraderIdentification)
         disable(StubIncorpIdJourney)
 
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+          .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
@@ -252,10 +255,11 @@ class IncorpIdControllerISpec extends ControllerISpec {
     "redirect to STI" in new Setup {
       disable(StubIncorpIdJourney)
 
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
