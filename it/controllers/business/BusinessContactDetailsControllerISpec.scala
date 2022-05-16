@@ -60,7 +60,7 @@ class BusinessContactDetailsControllerISpec extends ControllerISpec {
         email = "test@foo.com",
         phoneNumber = Some("1234567890"),
         mobileNumber = Some("9876547890"),
-        websiteAddress = Some("/test/url")
+        website = Some("/test/url")
       )))
 
       given()

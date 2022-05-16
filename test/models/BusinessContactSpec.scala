@@ -27,11 +27,9 @@ class BusinessContactSpec extends VatRegSpec {
       val jsonToParse = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com",
-          |   "tel" : "0123456",
-          |   "mobile" : "987654"
-          | },
+          | "email" : "test@test.com",
+          | "telephoneNumber" : "0123456",
+          | "mobile" : "987654",
           | "website" : "/test/url",
           | "ppob" : {
           |   "line1" : "testLine1",
@@ -59,8 +57,12 @@ class BusinessContactSpec extends VatRegSpec {
           email          = "test@test.com",
           phoneNumber    = Some("0123456"),
           mobileNumber   = Some("987654"),
-          websiteAddress = Some("/test/url")
+          website = Some("/test/url")
         )),
+        email           = Some("test@test.com"),
+        telephoneNumber = Some("0123456"),
+        mobile          = Some("987654"),
+        website  = Some("/test/url"),
         contactPreference = Some(Email)
       )
 
@@ -86,11 +88,9 @@ class BusinessContactSpec extends VatRegSpec {
       val expectedJson = Json.parse(
         """
           |{
-          | "digitalContact" : {
-          |   "email" : "test@test.com",
-          |   "tel" : "0123456",
-          |   "mobile" : "987654"
-          | },
+          | "email" : "test@test.com",
+          | "telephoneNumber" : "0123456",
+          | "mobile" : "987654",
           | "website" : "/test/url",
           | "ppob" : {
           |   "line1" : "testLine1",
@@ -118,8 +118,12 @@ class BusinessContactSpec extends VatRegSpec {
           email          = "test@test.com",
           phoneNumber    = Some("0123456"),
           mobileNumber   = Some("987654"),
-          websiteAddress = Some("/test/url")
+          website = Some("/test/url")
         )),
+        email           = Some("test@test.com"),
+        telephoneNumber = Some("0123456"),
+        mobile          = Some("987654"),
+        website  = Some("/test/url"),
         contactPreference = Some(Letter)
       )
 

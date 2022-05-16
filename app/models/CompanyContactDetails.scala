@@ -22,30 +22,25 @@ import play.api.libs.json._
 case class CompanyContactDetails(email: String,
                                  phoneNumber: Option[String],
                                  mobileNumber: Option[String],
-                                 websiteAddress: Option[String])
+                                 website: Option[String])
 
 object CompanyContactDetails {
   implicit val format: Format[CompanyContactDetails] = Json.format[CompanyContactDetails]
 
   val apiReads: Reads[CompanyContactDetails] = (
-    (__ \ "digitalContact" \ "email").read[String] and
-      (__ \ "digitalContact" \ "tel").readNullable[String] and
-      (__ \ "digitalContact" \ "mobile").readNullable[String] and
-      (__ \ "website").readNullable[String]
-    ) (CompanyContactDetails.apply _)
+    (__ \ "email").read[String] and
+    (__ \ "telephoneNumber").readNullable[String] and
+    (__ \ "mobile").readNullable[String] and
+    (__ \ "website").readNullable[String]
+  ) (CompanyContactDetails.apply _)
 
   val apiWrites: Writes[CompanyContactDetails] = (companyContactDetails: CompanyContactDetails) => {
     val email = Json.obj("email" -> companyContactDetails.email)
-    val tel = companyContactDetails.phoneNumber.fold(Json.obj())(x => Json.obj("tel" -> x))
+    val telephoneNumber = companyContactDetails.phoneNumber.fold(Json.obj())(x => Json.obj("telephoneNumber" -> x))
     val mobile = companyContactDetails.mobileNumber.fold(Json.obj())(x => Json.obj("mobile" -> x))
+    val website = companyContactDetails.website.fold(Json.obj())(x => Json.obj("website" -> x))
 
-    val digitalContactSegments = email ++ tel ++ mobile
-
-    val website = companyContactDetails.websiteAddress.fold(Json.obj())(x => Json.obj("website" -> x))
-
-    val digitalContact = Json.obj("digitalContact" -> digitalContactSegments)
-
-    digitalContact ++ website
+    email ++ telephoneNumber ++ mobile ++ website
   }
 
   val apiFormat: Format[CompanyContactDetails] = Format[CompanyContactDetails](apiReads, apiWrites)
