@@ -95,7 +95,7 @@ class BusinessContactControllerSpec extends ControllerSpec with VatRegistrationF
     "return a 303" when {
       "user selects other and redirect to the contact preference page" in new SubmissionSetup {
         when(mockBusinessContactService.updateBusinessContact[CompanyContactDetails](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails.companyContactDetails.get))
+          .thenReturn(Future(validBusinessContactWithCompanyDetails.companyContactDetails.get))
 
         submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("email" -> "test@email.com", "mobile" -> "1224456378387")) {
           _ redirectsTo routes.ContactPreferenceController.showContactPreference.url
