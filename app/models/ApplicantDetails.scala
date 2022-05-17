@@ -38,6 +38,7 @@ case class ApplicantDetails(entity: Option[BusinessEntity] = None,
 
 object ApplicantDetails {
   implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
+  implicit val apiKey: ApiKey[ApplicantDetails] = ApiKey("applicant")
 
   def reads(partyType: PartyType): Reads[ApplicantDetails] = (
     (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
@@ -67,6 +68,8 @@ object ApplicantDetails {
       (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address)) and
       (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
     ) (unlift(ApplicantDetails.unapply))
+
+  def apiFormat(partyType: PartyType): Format[ApplicantDetails] = Format(reads(partyType), writes)
 
   def s4LReads(partyType: PartyType): Reads[ApplicantDetails] = {
     implicit val businessEntityReads: Reads[BusinessEntity] = BusinessEntity.reads(partyType)

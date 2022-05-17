@@ -18,9 +18,9 @@ package controllers.business
 
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, Partnership}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -31,13 +31,12 @@ class PartnershipNameControllerISpec extends ControllerISpec {
 
   "show Partnership Name page" should {
     "return OK" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,12 +49,11 @@ class PartnershipNameControllerISpec extends ControllerISpec {
 
   "submit Partnership Name page" should {
     "return SEE_OTHER" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
-        .vatScheme.isUpdatedWith(
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
+        .registrationApi.replaceSection[ApplicantDetails](
         validFullApplicantDetails.copy(
           entity = Some(testPartnership.copy(
             companyName = Some(partnershipName)

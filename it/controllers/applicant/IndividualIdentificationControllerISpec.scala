@@ -5,8 +5,8 @@ import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.EligibilitySubmissionData
-import play.api.libs.json.{JsObject, Json}
+import models.api.{EligibilitySubmissionData, UkCompany}
+import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -69,9 +69,11 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
 
   "GET /sti-individual-callback" must {
     "redirect to the RoleInTheBusiness page" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -87,11 +89,12 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
     }
 
     "redirect to the RoleInTheBusiness page when the model in S4l" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)

@@ -17,29 +17,29 @@
 package services
 
 import common.enums.VatRegStatus
+import connectors.mocks.MockRegistrationApiConnector
 import fixtures.ApplicantDetailsFixtures
-import models.api.{Address, UkCompany}
+import models.api.{Address, Individual, UkCompany}
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, CurrentProfile, OwnerProprietor, TelephoneNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
-import play.api.libs.json.Json
 import services.ApplicantDetailsService.HasFormerName
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures with MockVatRegistrationService {
+class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures with MockVatRegistrationService with MockRegistrationApiConnector {
   override val testRegId = "testRegId"
 
-  override implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
+  override implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
-  val validFullApplicantDetailsNoFormerName = completeApplicantDetails.copy(
+  val validFullApplicantDetailsNoFormerName: ApplicantDetails = completeApplicantDetails.copy(
     hasFormerName = Some(false),
     formerName = None,
     formerNameDate = None
@@ -47,7 +47,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
   class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[ApplicantDetails] = None) {
     val service = new ApplicantDetailsService(
-      mockVatRegistrationConnector,
+      mockRegistrationApiConnector,
       vatRegistrationServiceMock,
       mockS4LService
     )
@@ -55,8 +55,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     when(mockS4LService.fetchAndGet[ApplicantDetails](any(), any(), any(), any()))
       .thenReturn(Future.successful(s4lData))
 
-    when(mockVatRegistrationConnector.getApplicantDetails(any(), any())(any()))
-      .thenReturn(Future.successful(backendData))
+    mockGetSection[ApplicantDetails](testRegId, backendData)
 
     when(mockS4LService.save(any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
@@ -64,7 +63,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
   class SetupForS4LSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
-      mockVatRegistrationConnector,
+      mockRegistrationApiConnector,
       vatRegistrationServiceMock,
       mockS4LService
     ) {
@@ -79,17 +78,14 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
   class SetupForBackendSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
-      mockVatRegistrationConnector,
-      mockVatRegistrationService,
+      mockRegistrationApiConnector,
+      vatRegistrationServiceMock,
       mockS4LService
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
         Future.successful(applicantDetails)
       }
     }
-
-    when(mockVatRegistrationConnector.patchApplicantDetails(any())(any(), any()))
-      .thenReturn(Future.successful(Json.toJson(applicantDetails)(ApplicantDetails.writes)))
 
     when(mockS4LService.clearKey(any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
@@ -147,13 +143,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val applicantHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
 
           service.saveApplicantDetails(applicantHomeAddress) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(applicantHomeAddress) returns expected
         }
@@ -161,12 +159,14 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
       "updating business entity details for limited company" should {
         "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(entity = Some(testLimitedCompany))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(entity = Some(testLimitedCompany))
 
           service.saveApplicantDetails(testLimitedCompany) returns expected
         }
-        "store successfully in the backned if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
-          val expected = completeApplicantDetails
+        "store successfully in the backend if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
+          val expected: ApplicantDetails = completeApplicantDetails
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(testLimitedCompany) returns expected
         }
@@ -181,6 +181,8 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
         "update role to OwnerProprietor and store successfully in the backend if applicant details is complete" in new SetupForBackendSave(soleTraderApplicantDetails.copy(entity = None)) {
           val expected: ApplicantDetails = soleTraderApplicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(Individual))
 
           service.saveApplicantDetails(testSoleTrader) returns expected
         }
@@ -190,13 +192,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val applicantEmailAddress = EmailAddress("tt@dd.uk")
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
 
           service.saveApplicantDetails(applicantEmailAddress) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailAddress = None)) {
-          val expected = completeApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(applicantEmailAddress) returns expected
         }
@@ -206,13 +210,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val applicantEmailVerified = EmailVerified(true)
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
 
           service.saveApplicantDetails(applicantEmailVerified) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailVerified = None)) {
-          val expected = completeApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(applicantEmailVerified) returns expected
         }
@@ -222,13 +228,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val applicantTelephoneNumber = TelephoneNumber("1234")
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
 
           service.saveApplicantDetails(applicantTelephoneNumber) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(telephoneNumber = None)) {
-          val expected = completeApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(applicantTelephoneNumber) returns expected
         }
@@ -236,12 +244,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
       "updating applicant has former name" that {
         "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(hasFormerName = Some(false))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(hasFormerName = Some(false))
+
           service.saveApplicantDetails(HasFormerName(false)) returns expected
         }
 
         "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None)
+          val expected: ApplicantDetails = completeApplicantDetails.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None)
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(HasFormerName(false)) returns expected
         }
@@ -251,12 +262,16 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val formerName = Name(Some(testFirstName), last = testLastName)
 
         "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(formerName = Some(formerName))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(formerName = Some(formerName))
+
           service.saveApplicantDetails(formerName) returns expected
         }
 
         "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(formerName = Some(formerName))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(formerName = Some(formerName))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
+
           service.saveApplicantDetails(formerName) returns expected
         }
       }
@@ -265,13 +280,15 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         val formerNameDate = FormerNameDateView(LocalDate.of(2002, 5, 15))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(formerNameDate = Some(formerNameDate))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(formerNameDate = Some(formerNameDate))
 
           service.saveApplicantDetails(formerNameDate) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(formerNameDate = Some(formerNameDate))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(formerNameDate = Some(formerNameDate))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(formerNameDate) returns expected
         }
@@ -279,21 +296,22 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
       "updating applicant previous address" that {
         val addr = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
-        val previousAddress = PreviousAddressView(true, Some(addr))
+        val previousAddress = PreviousAddressView(yesNo = true, Some(addr))
 
         "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected = emptyApplicantDetails.copy(previousAddress = Some(previousAddress))
+          val expected: ApplicantDetails = emptyApplicantDetails.copy(previousAddress = Some(previousAddress))
 
           service.saveApplicantDetails(previousAddress) returns expected
         }
 
         "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected = completeApplicantDetails.copy(previousAddress = Some(previousAddress))
+          val expected: ApplicantDetails = completeApplicantDetails.copy(previousAddress = Some(previousAddress))
+          mockReplaceSection[ApplicantDetails](testRegId, expected)
+          mockPartyType(Future.successful(UkCompany))
 
           service.saveApplicantDetails(previousAddress) returns expected
         }
       }
     }
   }
-
 }

@@ -22,7 +22,7 @@ import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import models.{ApplicantDetails, Partner, PartnerEntity}
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.{Format, JsObject, JsString, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import services.SessionService.{leadPartnerEntityKey, scottishPartnershipNameKey}
@@ -57,7 +57,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   override val testPartnership: PartnershipIdEntity = PartnershipIdEntity(
     Some(testSautr),
     None,
-    Some(testCompanyName),
+    None,
     None,
     Some(testPostCode),
     testRegistration,
@@ -93,13 +93,14 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   "GET /partnership-id-callback" must {
     "redirect to the lead partner entity type page for Partnership" when {
       "S4L model is not full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
         given()
           .user.isAuthorised()
-          .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+          .registrationApi.getSection[ApplicantDetails](None)
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -113,11 +114,12 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)
+          .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)(ApplicantDetails.s4LWrites)
           .s4lContainer[ApplicantDetails].clearedByKey
-          .vatScheme.isUpdatedWith(partnershipApplicantDetails)
+          .registrationApi.replaceSection[ApplicantDetails](partnershipApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
@@ -133,9 +135,10 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(LtdLiabilityPartnership)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))

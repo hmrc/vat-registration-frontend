@@ -3,13 +3,13 @@ package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Address, EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.api.{Address, EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsBoolean, JsObject, JsString, Json}
+import play.api.libs.json.{Format, JsBoolean, JsObject, JsString, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -18,7 +18,6 @@ import scala.concurrent.Future
 
 class FormerNameControllerISpec extends ControllerISpec {
 
-  val keyBlock = "applicant-details"
   val email = "test@t.test"
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
@@ -59,7 +58,7 @@ class FormerNameControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -73,27 +72,12 @@ class FormerNameControllerISpec extends ControllerISpec {
   }
 
   "POST Former Name page" should {
-
     "patch Applicant Details in backend without former name" in new Setup {
-      val validJson = Json.parse(
-        s"""
-           |{
-           |  "currentAddress": {
-           |    "line1": "$addrLine1",
-           |    "line2": "$addrLine2",
-           |    "postcode": "$postcode"
-           |  },
-           |  "contact": {
-           |    "email": "$email",
-           |    "emailVerified": true,
-           |    "tel": "1234"
-           |  }
-           |}""".stripMargin)
-
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)
-        .vatScheme.patched(keyBlock, validJson)
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -103,26 +87,18 @@ class FormerNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
-
-        val json = getPATCHRequestJsonBody(s"/vatreg/1/$keyBlock")
-        (json \ "currentAddress" \ "line1").as[JsString].value mustBe testLine1
-        (json \ "currentAddress" \ "line2").as[JsString].value mustBe testLine2
-        (json \ "currentAddress" \ "postcode").validateOpt[String].get mustBe currentAddress.postcode
-        (json \ "contact" \ "email").as[JsString].value mustBe email
-        (json \ "contact" \ "tel").as[JsString].value mustBe "1234"
-        (json \ "contact" \ "emailVerified").as[JsBoolean].value mustBe true
-        (json \ "changeOfName").validateOpt[JsObject].get mustBe Some(Json.obj("hasFormerName" -> false))
       }
     }
 
     "Update backend with formerName and redirect to the Former Name Capture page" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(hasFormerName = None))
+        .s4lContainer[ApplicantDetails].contains(s4lData.copy(hasFormerName = None))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey(ApplicantDetails.s4lKey)
-        .vatScheme.isUpdatedWith[ApplicantDetails](s4lData)
+        .registrationApi.replaceSection[ApplicantDetails](s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -138,11 +114,12 @@ class FormerNameControllerISpec extends ControllerISpec {
     }
 
     "Update S4L with no formerName and redirect to the International Home Address page for NETP" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = None, formerName = None))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -158,11 +135,12 @@ class FormerNameControllerISpec extends ControllerISpec {
     }
 
     "Update S4L with no formerName and redirect to the International Home Address page for Non UK Company" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = Some(false), formerName = None))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

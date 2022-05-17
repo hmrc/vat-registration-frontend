@@ -21,7 +21,6 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .s4lContainer[ApplicantDetails].isEmpty
-        .vatScheme.has("applicant-details", Json.toJson(validFullApplicantDetails)(ApplicantDetails.writes))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

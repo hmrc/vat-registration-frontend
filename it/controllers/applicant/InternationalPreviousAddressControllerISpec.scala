@@ -3,12 +3,12 @@ package controllers.applicant
 
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{Address, Country, EligibilitySubmissionData}
-import models.view.{HomeAddressView, PreviousAddressView}
+import models.api.{Address, Country, EligibilitySubmissionData, UkCompany}
+import models.view.PreviousAddressView
 import org.jsoup.Jsoup
 import org.scalatest.Assertion
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class InternationalPreviousAddressControllerISpec extends ControllerISpec {
@@ -36,7 +36,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))(ApplicantDetails.s4LWrites)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -52,6 +52,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "when reading from the backend" must {
       "return OK and pre-populate the page" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         val appDetails = ApplicantDetails(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress))))
         val vatScheme = emptyUkCompanyVatScheme.copy(applicantDetails = Some(appDetails))
         given
@@ -59,7 +60,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
           .s4lContainer[ApplicantDetails].isEmpty
           .vatScheme.contains(vatScheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .vatScheme.has("applicant-details", Json.toJson(appDetails)(ApplicantDetails.writes))
+          .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,10 +78,11 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
 
   "POST /previous-address/international" must {
     "Store the address and redirect to the email address page if a minimal address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
 
@@ -95,10 +97,11 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show.url)
     }
     "Store the address and redirect to the email address page if a full address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
 
@@ -118,10 +121,11 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureEmailAddressController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
 
@@ -139,10 +143,11 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
     }
     "return BAD_REQUEST if country is missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("applicant-details")
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
 
@@ -161,10 +166,11 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if postcode is missing for country that requires postcode" in new Setup {
       def assertMissingPostcode(country: String): Assertion = {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .vatScheme.doesNotExistForKey("applicant-details")
+          .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
 

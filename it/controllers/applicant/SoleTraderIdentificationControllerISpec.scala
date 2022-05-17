@@ -8,7 +8,7 @@ import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass}
 import models.{ApplicantDetails, PartnerEntity}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import services.SessionService.leadPartnerEntityKey
@@ -80,9 +80,10 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
   "GET /sti-callback" must {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
+        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
@@ -98,11 +99,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     }
 
     "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -117,10 +119,11 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     }
 
     "throw an exception if the user is not a Sole Trader or NETP" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
@@ -181,10 +184,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
 
   "GET /sti-partner-callback" must {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
@@ -202,10 +207,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       }
     }
     "redirect to the FormerName page if the user is a NETP" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .vatScheme.has("applicant-details", Json.toJson(ApplicantDetails()))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
@@ -224,11 +231,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
     }
 
     "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
+        .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
@@ -246,11 +254,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       }
     }
     "redirect to the FormerName page when the model in S4l is full and the user is a NETP" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWith(validFullApplicantDetails)(ApplicantDetails.writes)
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
         .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
