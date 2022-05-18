@@ -19,8 +19,13 @@
                         setTimeout(refresh, parseInt(dataTag.dataset.interval));
                         break;
                     case "FAILED":
-                        window.location.href = "/register-for-vat/file-upload/problem-with-selected-file";
-                        break;
+                        if (data.reason === "REJECTED") {
+                            window.location.href = "/register-for-vat/file-upload/cannot-accept-file-type";
+                            break;
+                        } else {
+                            window.location.href = "/register-for-vat/file-upload/problem-with-selected-file";
+                            break;
+                        }
                     case "READY":
                         window.location.href = "/register-for-vat/file-upload/summary";
                         break;

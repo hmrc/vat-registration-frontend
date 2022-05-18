@@ -102,5 +102,20 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadErrorController.show.url)
       }
     }
+    "redirect to invalid file type page when upload file status is Failed and failure reason is Rejected" in {
+      given()
+        .user.isAuthorised()
+        .upscanApi.fetchUpscanFileDetails(
+        testUpscanDetails(Failed).copy(failureDetails = Some(FailureDetails(FailureDetails.rejectedKey, ""))),
+        reference = testReference
+      )
+
+      val res = buildClient(submitUrl).post(Json.obj())
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadTypeErrorController.show.url)
+      }
+    }
   }
 }

@@ -18,7 +18,7 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.external.upscan.{Failed, InProgress, Ready}
+import models.external.upscan.{Failed, FailureDetails, InProgress, Ready}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, UpscanService}
@@ -46,17 +46,27 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
 
   def poll(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
-      upscanService.getUpscanFileStatus(profile.registrationId, reference).map { status =>
-        Ok(Json.obj("status" -> Json.toJson(status)))
+      upscanService.fetchUpscanFileDetails(profile.registrationId, reference).map { details =>
+        Ok(
+          Json.obj("status" -> Json.toJson(details.fileStatus)) ++
+            details.failureDetails.fold(Json.obj())(failure => Json.obj("reason" -> failure.failureReason))
+        )
       }
   }
 
   def submit(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
-      upscanService.getUpscanFileStatus(profile.registrationId, reference).map {
-        case InProgress => Redirect(routes.UploadingDocumentController.show)
-        case Ready => Redirect(routes.DocumentUploadSummaryController.show)
-        case Failed => Redirect(routes.DocumentUploadErrorController.show)
+      upscanService.fetchUpscanFileDetails(profile.registrationId, reference).map { details =>
+        details.fileStatus match {
+          case InProgress => Redirect(routes.UploadingDocumentController.show)
+          case Ready => Redirect(routes.DocumentUploadSummaryController.show)
+          case Failed =>
+            if (details.failureDetails.exists(_.failureReason.equals(FailureDetails.rejectedKey))) {
+              Redirect(routes.DocumentUploadTypeErrorController.show)
+            } else {
+              Redirect(routes.DocumentUploadErrorController.show)
+            }
+        }
       }
   }
 }

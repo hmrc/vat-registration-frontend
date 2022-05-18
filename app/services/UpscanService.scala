@@ -48,10 +48,4 @@ class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executi
   def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
     upscanConnector.fetchAllUpscanDetails(regId)
   }
-
-  def getUpscanFileStatus(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[FileStatus] = {
-    fetchUpscanFileDetails(regId, reference).map{ upscanDetails =>
-      upscanDetails.fileStatus
-    }
-  }
 }
