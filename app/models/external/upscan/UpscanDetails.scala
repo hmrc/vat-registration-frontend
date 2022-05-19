@@ -46,6 +46,9 @@ case class FailureDetails(failureReason: String,
                           message: String)
 
 object FailureDetails {
+  val quarantineKey = "QUARANTINE"
+  val rejectedKey = "REJECTED"
+  val unknownKey = "UNKNOWN"
   implicit val format: OFormat[FailureDetails] = Json.format[FailureDetails]
 }
 

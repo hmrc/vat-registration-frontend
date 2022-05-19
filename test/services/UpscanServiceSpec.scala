@@ -119,14 +119,4 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
       intercept[InternalServerException](await(TestService.fetchAllUpscanDetails(testRegId)))
     }
   }
-
-  "getUpscanFileStatus" must {
-    "return a file status" in {
-      mockFetchUpscanFileDetails(testRegId, testReference)(Future.successful(testUpscanDetails))
-
-      val response = await(TestService.getUpscanFileStatus(testRegId, testReference))
-
-      response mustBe InProgress
-    }
-  }
 }

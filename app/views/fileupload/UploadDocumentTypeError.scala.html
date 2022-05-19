@@ -21,14 +21,19 @@
 @this(
         layout: layout,
         h1: h1,
+        p: p,
         link: link
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("fileUpload.async.error.page.heading"))), backLink = true) {
+@layout(pageTitle = Some(titleNoForm(messages("fileUpload.async.error.page.heading.mimeType"))), backLink = true) {
 
-    @h1(messages("fileUpload.async.error.page.heading"))
+    @h1(messages("fileUpload.async.error.page.heading.mimeType"))
+
+    @p {
+        @messages("fileUpload.async.error.page.para.mimeType")
+    }
 
     <div class="govuk-button-group">
     @link(controllers.fileupload.routes.UploadDocumentController.show.url, messages("fileUpload.async.error.page.button"), isButton = true)

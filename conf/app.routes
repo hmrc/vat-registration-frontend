@@ -498,3 +498,6 @@ GET         /file-upload/upload-document                                        
 
 ## Async upload document error page
 GET         /file-upload/problem-with-selected-file                                            controllers.fileupload.DocumentUploadErrorController.show
+
+## Async document type error page
+GET         /file-upload/cannot-accept-file-type                                               controllers.fileupload.DocumentUploadTypeErrorController.show
