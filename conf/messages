@@ -1161,6 +1161,14 @@ validation.businessName.invalid                          = Enter a valid officia
 validation.businessName.missing                          = Enter the official name of the business
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
 
+# BUSINESS TELEPHONE NUMBER
+business.telephoneNumber.heading                         = What is the business telephone number?
+business.telephoneNumber.hint                            = For international numbers include the country code
+validation.business.telephoneNumber.invalid              = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+validation.business.telephoneNumber.missing              = Enter the business telephone number
+validation.business.telephoneNumber.minlength            = The business telephone number must be at least 8 characters
+validation.business.telephoneNumber.maxlength            = The business telephone number must be 15 characters or fewer
+
 # SHORT ORG NAME
 shortOrgName.heading                                 = What is the official name of the business?
 validation.shortOrgName.invalid                      = Enter a valid official business name

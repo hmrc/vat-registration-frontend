@@ -57,6 +57,10 @@ POST        /trading-name                                                       
 GET         /business-name                                                                     controllers.business.BusinessNameController.show
 POST        /business-name                                                                     controllers.business.BusinessNameController.submit
 
+## BUSINESS TELEPHONE NUMBER PAGE
+GET         /business-telephone-number                                                         controllers.business.BusinessTelephoneNumberController.show
+POST        /business-telephone-number                                                         controllers.business.BusinessTelephoneNumberController.submit
+
 ## FULL BUSINESS NAME PAGE
 GET         /short-organisation-name                                                           controllers.business.ShortOrgNameController.show
 POST        /short-organisation-name                                                           controllers.business.ShortOrgNameController.submit
