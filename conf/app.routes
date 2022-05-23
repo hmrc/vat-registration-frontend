@@ -505,3 +505,7 @@ GET         /file-upload/problem-with-selected-file                             
 
 ## Async document type error page
 GET         /file-upload/cannot-accept-file-type                                               controllers.fileupload.DocumentUploadTypeErrorController.show
+
+## Business Email page
+GET         /business-email                                                                    controllers.business.BusinessEmailController.show
+POST        /business-email                                                                    controllers.business.BusinessEmailController.submit
