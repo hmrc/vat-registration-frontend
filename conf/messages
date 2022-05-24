@@ -1427,3 +1427,12 @@ fileUpload.error.EntityTooLarge                      = The selected file must be
 fileUpload.error.InvalidArgument                     = Select a file
 fileUpload.error.EntityTooSmall                      = The selected file is empty
 fileUpload.error.InvalidFileType                     = The selected file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT
+
+# BUSINESS EMAIL PAGE
+businessEmail.heading                                = What is the business email address?
+businessEmail.hint                                   = We use this to send business communications and VAT updates.
+businessEmail.para                                   = Full details of how we use contact information are in the
+businessEmail.link                                   = HMRC Privacy Notice
+validation.businessEmail.noEntry                     = Enter the business email address
+validation.businessEmail.incorrectFormat             = Enter the business email address in the correct format, like name@example.com
+validation.businessEmail.tooMany                     = The business email address must be X characters or fewer
