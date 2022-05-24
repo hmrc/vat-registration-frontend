@@ -1435,4 +1435,4 @@ businessEmail.para                                   = Full details of how we us
 businessEmail.link                                   = HMRC Privacy Notice
 validation.businessEmail.noEntry                     = Enter the business email address
 validation.businessEmail.incorrectFormat             = Enter the business email address in the correct format, like name@example.com
-validation.businessEmail.tooMany                     = The business email address must be X characters or fewer
+validation.businessEmail.tooMany                     = The business email address must be 132 characters or fewer
