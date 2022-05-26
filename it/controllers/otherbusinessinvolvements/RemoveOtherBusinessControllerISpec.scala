@@ -98,7 +98,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
-        .registrationApi.deleteSection[OtherBusinessInvolvement](idx = idx1)
+        .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -116,7 +116,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
-        .registrationApi.deleteSection[OtherBusinessInvolvement](idx = idx1)
+        .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List.empty))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

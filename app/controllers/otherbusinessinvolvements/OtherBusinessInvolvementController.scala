@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.OtherBusinessInvolvementForm
 import play.api.mvc.{Action, AnyContent}
-import services.{OtherBusinessInvolvementAnswer, SessionProfile, SessionService, SicAndComplianceService}
+import services.{OtherBusinessInvolvementAnswer, OtherBusinessInvolvementsService, SessionProfile, SessionService, SicAndComplianceService}
 import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 
 import javax.inject.Inject
@@ -29,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class OtherBusinessInvolvementController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthClientConnector,
                                                    sicAndComplianceService: SicAndComplianceService,
+                                                   otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
                                                    view: OtherBusinessInvolvement)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
@@ -51,12 +52,14 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
       implicit profile =>
         OtherBusinessInvolvementForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(view(errors))),
-          success => sicAndComplianceService.updateSicAndCompliance(OtherBusinessInvolvementAnswer(success)).map {
+          success => sicAndComplianceService.updateSicAndCompliance(OtherBusinessInvolvementAnswer(success)).flatMap {
             _ =>
               if (success) {
-                Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1))
+                Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)))
               } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve)
+                otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.map { _ =>
+                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                }
               }
           }
         )

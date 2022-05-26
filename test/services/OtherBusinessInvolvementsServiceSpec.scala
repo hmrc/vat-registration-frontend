@@ -226,4 +226,22 @@ class OtherBusinessInvolvementsServiceSpec extends VatRegSpec with MockRegistrat
       }
     }
   }
+
+  "deleteOtherBusinessInvolvement" must {
+    "return true after successfully deleting" in {
+      val testIndex = 1
+
+      mockDeleteSection[OtherBusinessInvolvement](testRegId)
+
+      await(TestService.deleteOtherBusinessInvolvement(testIndex)) mustBe true
+    }
+  }
+
+  "deleteOtherBusinessInvolvements" must {
+    "return true after successfully deleting" in {
+      mockDeleteSection[OtherBusinessInvolvement](testRegId)
+
+      await(TestService.deleteOtherBusinessInvolvements) mustBe true
+    }
+  }
 }

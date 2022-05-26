@@ -62,4 +62,15 @@ trait MockRegistrationApiConnector {
       any[HeaderCarrier],
       any[Format[List[T]]]
     )).thenReturn(Future.successful(section))
+
+  def mockDeleteSection[T](regId: String): OngoingStubbing[Future[Boolean]] =
+    when(mockRegistrationApiConnector.deleteSection[T](
+      regId = matches(regId),
+      idx = ArgumentMatchers.any[Option[Int]]
+    )(
+      any[ApiKey[T]],
+      any[HeaderCarrier],
+      any[Format[T]]
+    )).thenReturn(Future.successful(true))
+
 }
