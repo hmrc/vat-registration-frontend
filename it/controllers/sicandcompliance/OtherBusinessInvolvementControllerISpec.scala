@@ -17,7 +17,7 @@
 package controllers.sicandcompliance
 
 import itutil.ControllerISpec
-import models.SicAndCompliance
+import models.{OtherBusinessInvolvement, SicAndCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -70,6 +70,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .s4lContainer[SicAndCompliance].isEmpty
         .s4lContainer[SicAndCompliance].isUpdatedWith(SicAndCompliance(otherBusinessInvolvement = Some(true)))
         .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.deleteSection[OtherBusinessInvolvement]()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

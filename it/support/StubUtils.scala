@@ -792,8 +792,8 @@ trait StubUtils {
       builder
     }
 
-    def deleteSection[T: ApiKey](regId: String = "1", idx: Int)(implicit format: Format[T]): PreconditionBuilder = {
-      val url = s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$idx"
+    def deleteSection[T: ApiKey](regId: String = "1", optIdx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+      val url = s"/vatreg/registrations/$regId/sections/${ApiKey[T]}${optIdx.fold("")(idx => s"/$idx")}"
       stubFor(
         delete(urlPathEqualTo(url))
           .willReturn(aResponse.withStatus(NO_CONTENT)))
