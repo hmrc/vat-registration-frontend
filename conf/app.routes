@@ -509,3 +509,7 @@ GET         /file-upload/cannot-accept-file-type                                
 ## Business Email page
 GET         /business-email                                                                    controllers.business.BusinessEmailController.show
 POST        /business-email                                                                    controllers.business.BusinessEmailController.submit
+
+## Business Has Website
+GET         /business-has-website                                                              controllers.business.HasWebsiteController.show
+POST        /business-has-website                                                              controllers.business.HasWebsiteController.submit
