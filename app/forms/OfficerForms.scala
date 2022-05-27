@@ -58,9 +58,10 @@ object HomeAddressForm {
 object PreviousAddressForm {
   val RADIO_YES_NO: String = "previousAddressQuestionRadio"
 
-  val form = Form(
-    mapping(
-      RADIO_YES_NO -> missingBooleanFieldMapping()("previousAddressQuestion")
-    )(PreviousAddressView.apply(_))(view => Option(view.yesNo))
-  )
+  def form(errorCode: ErrorCode = "previousAddressQuestion"): Form[PreviousAddressView] =
+    Form(
+      mapping(
+        RADIO_YES_NO -> missingBooleanFieldMapping()(errorCode)
+      )(PreviousAddressView.apply(_))(view => Option(view.yesNo))
+    )
 }

@@ -125,7 +125,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
   "PreviousAddressForm" should {
     val address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
-    val testForm = PreviousAddressForm.form
+    val testForm = PreviousAddressForm.form()
     val testData = PreviousAddressView(yesNo = false, Some(address))
 
     "bind successfully with data" in {
@@ -146,6 +146,13 @@ class ApplicantFormsSpec extends VatRegSpec {
       val boundForm = testForm.bind(data)
 
       boundForm shouldHaveErrors Seq("previousAddressQuestionRadio" -> "validation.previousAddressQuestion.missing")
+    }
+
+    "have the correct error if no data is provided and an alternate error code is specified" in {
+      val data: Map[String, String] = Map()
+      val boundForm = PreviousAddressForm.form("previousAddressQuestionThirdParty").bind(data)
+
+      boundForm shouldHaveErrors Seq("previousAddressQuestionRadio" -> "validation.previousAddressQuestionThirdParty.missing")
     }
 
     "Unbind successfully with full data" in {

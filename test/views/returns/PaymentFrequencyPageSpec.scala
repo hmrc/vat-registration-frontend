@@ -35,7 +35,7 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
     val monthly = "Monthly"
     val saveAndContinue = "Save and Continue"
     val saveAndComeBackLater = "Save and come back later"
-    val error = "Tell us how often you want to make payments"
+    val error = "Select how often the business wants to make payments"
   }
 
   val view: payment_frequency = app.injector.instanceOf[payment_frequency]

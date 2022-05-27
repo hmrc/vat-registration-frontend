@@ -23,7 +23,7 @@ import controllers.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
 import models.api.{NETP, NonUkNonEstablished}
 import models.view.PreviousAddressView
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, WrappedRequest}
 import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.previous_address
@@ -48,34 +48,37 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.previousAddress.fold(PreviousAddressForm.form)(PreviousAddressForm.form.fill)
           name <- applicantDetailsService.getTransactorApplicantName
+          isTransactor = name.isDefined
+          errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
+          filledForm = applicant.previousAddress.fold(PreviousAddressForm.form(errorCode))(PreviousAddressForm.form(errorCode).fill)
+
         } yield Ok(previousAddressPage(filledForm, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        PreviousAddressForm.form.bindFromRequest.fold(
-          badForm =>
-            applicantDetailsService.getTransactorApplicantName.map { name =>
-              BadRequest(previousAddressPage(badForm, name))
-            },
-          data =>
-            if (data.yesNo) {
-              applicantDetailsService.saveApplicantDetails(data) map {
-                _ => Redirect(routes.CaptureEmailAddressController.show)
-              }
-            } else {
-              vatRegistrationService.partyType flatMap {
-                case NETP | NonUkNonEstablished =>
-                  Future.successful(Redirect(routes.InternationalPreviousAddressController.show))
-                case _ =>
-                  Future.successful(Redirect(routes.PreviousAddressController.previousAddress))
-              }
-
-            }
-        )
+        applicantDetailsService.getTransactorApplicantName.flatMap { optName =>
+          optName.fold(PreviousAddressForm.form())(_ => PreviousAddressForm.form("previousAddressQuestionThirdParty"))
+            .bindFromRequest.fold(
+              badForm =>
+                Future.successful(BadRequest(previousAddressPage(badForm, optName))),
+              data =>
+                if (data.yesNo) {
+                  applicantDetailsService.saveApplicantDetails(data) map {
+                    _ => Redirect(routes.CaptureEmailAddressController.show)
+                  }
+                } else {
+                  vatRegistrationService.partyType flatMap {
+                    case NETP | NonUkNonEstablished =>
+                      Future.successful(Redirect(routes.InternationalPreviousAddressController.show))
+                    case _ =>
+                      Future.successful(Redirect(routes.PreviousAddressController.previousAddress))
+                  }
+                }
+            )
+        }
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
