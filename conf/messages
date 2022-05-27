@@ -96,6 +96,22 @@ addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 addressLookup.homeAddress.countryPicker.title                = Find your home address
 addressLookup.homeAddress.countryPicker.heading              = Find your home address
 
+## international.homeAddress
+international.addressLookup.homeAddress.editPage.title                     = Enter your home address
+international.addressLookup.homeAddress.editPage.heading                   = Enter your home address
+international.addressLookup.homeAddress.editPage.line1Label                = Address line 1
+international.addressLookup.homeAddress.editPage.line2Label                = Address line 2
+international.addressLookup.homeAddress.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.homeAddress.editPage.townLabel                 = Town/City
+international.addressLookup.homeAddress.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.homeAddress.editPage.countryLabel              = Country
+international.addressLookup.homeAddress.editPage.submitLabel               = Continue
+
+international.addressLookup.homeAddress.confirmPage.title                  = Confirm your home address
+international.addressLookup.homeAddress.confirmPage.heading                = Confirm your home address
+international.addressLookup.homeAddress.confirmPage.changeLinkText         = Edit this address
+international.addressLookup.homeAddress.confirmPage.submitLabel            = Continue
+
 ## applicantAddress
 addressLookup.applicantAddress.lookupPage.title                   = Find their address
 addressLookup.applicantAddress.lookupPage.heading                 = Find their address
@@ -108,8 +124,8 @@ addressLookup.applicantAddress.selectPage.heading                 = Choose the a
 addressLookup.applicantAddress.selectPage.editAddressLinkText     = Enter address manually
 addressLookup.applicantAddress.selectPage.submitLabel             = Continue
 
-addressLookup.applicantAddress.editPage.title                     = Enter your home address
-addressLookup.applicantAddress.editPage.heading                   = Enter your home address
+addressLookup.applicantAddress.editPage.title                     = Enter their address
+addressLookup.applicantAddress.editPage.heading                   = Enter their address
 addressLookup.applicantAddress.editPage.line1Label                = Address line 1
 addressLookup.applicantAddress.editPage.line2Label                = Address line 2
 addressLookup.applicantAddress.editPage.line3Label                = Address line 3
@@ -124,6 +140,22 @@ addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
 
 addressLookup.applicantAddress.countryPicker.title                = Find your home address
 addressLookup.applicantAddress.countryPicker.heading              = Find your home address
+
+## international.applicantAddress
+international.addressLookup.applicantAddress.editPage.title                     = Enter their address
+international.addressLookup.applicantAddress.editPage.heading                   = Enter their address
+international.addressLookup.applicantAddress.editPage.line1Label                = Address line 1
+international.addressLookup.applicantAddress.editPage.line2Label                = Address line 2
+international.addressLookup.applicantAddress.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.applicantAddress.editPage.townLabel                 = Town/City
+international.addressLookup.applicantAddress.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.applicantAddress.editPage.countryLabel              = Country
+international.addressLookup.applicantAddress.editPage.submitLabel               = Continue
+
+international.addressLookup.applicantAddress.confirmPage.title                  = Confirm the address
+international.addressLookup.applicantAddress.confirmPage.heading                = Confirm the address
+international.addressLookup.applicantAddress.confirmPage.changeLinkText         = Edit this address
+international.addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
 
 ## addressThreeYearsOrLess
 addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Find your previous home address
@@ -156,6 +188,23 @@ addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit 
 addressLookup.addressThreeYearsOrLess.countryPicker.title                = Find your home address
 addressLookup.addressThreeYearsOrLess.countryPicker.heading              = Find your home address
 
+## international.addressThreeYearsOrLess
+international.addressLookup.addressThreeYearsOrLess.editPage.title                     = Enter your previous home address
+international.addressLookup.addressThreeYearsOrLess.editPage.heading                   = Enter your previous home address
+international.addressLookup.addressThreeYearsOrLess.editPage.line1Label                = Address line 1
+international.addressLookup.addressThreeYearsOrLess.editPage.line2Label                = Address line 2
+international.addressLookup.addressThreeYearsOrLess.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.addressThreeYearsOrLess.editPage.townLabel                 = Town/City
+international.addressLookup.addressThreeYearsOrLess.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.addressThreeYearsOrLess.editPage.countryLabel              = Country
+international.addressLookup.addressThreeYearsOrLess.editPage.submitLabel               = Continue
+international.addressLookup.addressThreeYearsOrLess.editPage.searchAgainLinkText       = Search again
+
+international.addressLookup.addressThreeYearsOrLess.confirmPage.title                  = Confirm your previous home address
+international.addressLookup.addressThreeYearsOrLess.confirmPage.heading                = Confirm your previous home address
+international.addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
+international.addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
+
 ## applicantAddressThreeYearsOrLess
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.title                   = Find their previous address
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.heading                 = Find their previous address
@@ -169,8 +218,8 @@ addressLookup.applicantAddressThreeYearsOrLess.selectPage.searchAgainLinkText   
 addressLookup.applicantAddressThreeYearsOrLess.selectPage.editAddressLinkText     = Enter address
 addressLookup.applicantAddressThreeYearsOrLess.selectPage.submitLabel             = Continue
 
-addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter your previous home address
-addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Enter your previous home address
+addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter their previous address
+addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Enter their previous address
 addressLookup.applicantAddressThreeYearsOrLess.editPage.line1Label                = Address line 1
 addressLookup.applicantAddressThreeYearsOrLess.editPage.line2Label                = Address line 2
 addressLookup.applicantAddressThreeYearsOrLess.editPage.line3Label                = Address line 3
@@ -186,6 +235,23 @@ addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText       
 
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Find your home address
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Find your home address
+
+## international.applicantAddressThreeYearsOrLess
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter their previous address
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Enter their previous address
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.line1Label                = Address line 1
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.line2Label                = Address line 2
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.townLabel                 = Town/City
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.countryLabel              = Country
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.submitLabel               = Continue
+international.addressLookup.applicantAddressThreeYearsOrLess.editPage.searchAgainLinkText       = Search again
+
+international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.title                  = Confirm the previous address
+international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading                = Confirm the previous address
+international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Continue
+international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
 ## businessActivities
 addressLookup.businessActivities.lookupPage.title                   = Where is the primary place of business?
@@ -227,6 +293,16 @@ addressLookup.transactorAddress.selectPage.heading                 = Choose the 
 addressLookup.transactorAddress.selectPage.editAddressLinkText     = Enter address manually
 addressLookup.transactorAddress.selectPage.submitLabel             = Continue
 
+international.addressLookup.transactorAddress.editPage.title                     = Enter your address
+international.addressLookup.transactorAddress.editPage.heading                   = Enter your address
+international.addressLookup.transactorAddress.editPage.line1Label                = Address line 1
+international.addressLookup.transactorAddress.editPage.line2Label                = Address line 2
+international.addressLookup.transactorAddress.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.transactorAddress.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.transactorAddress.editPage.townLabel                 = Town/City
+international.addressLookup.transactorAddress.editPage.countryLabel              = Country
+international.addressLookup.transactorAddress.editPage.submitLabel               = Continue
+
 addressLookup.transactorAddress.editPage.title                     = Enter your home address
 addressLookup.transactorAddress.editPage.heading                   = Enter your home address
 addressLookup.transactorAddress.editPage.line1Label                = Address line 1
@@ -235,6 +311,9 @@ addressLookup.transactorAddress.editPage.line3Label                = Address lin
 addressLookup.transactorAddress.editPage.postcodeLabel             = Postcode
 addressLookup.transactorAddress.editPage.countryLabel              = Country
 addressLookup.transactorAddress.editPage.submitLabel               = Continue
+
+international.addressLookup.transactorAddress.confirmPage.title                  = Confirm your address
+international.addressLookup.transactorAddress.confirmPage.heading                = Confirm your address
 
 addressLookup.transactorAddress.confirmPage.title                  = Confirm your address
 addressLookup.transactorAddress.confirmPage.heading                = Confirm your address
@@ -1105,7 +1184,7 @@ pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 ## COMMON COVER SHEET MESSAGES
 
 pages.CoverSheet.whatYouMustSend.para              = You must send us additional documents in order for us to process this VAT application:
-pages.CoverSheet.vat2Start                         = a completed 
+pages.CoverSheet.vat2Start                         = a completed
 pages.CoverSheet.vat2Link                          = VAT2 form
 pages.CoverSheet.vat2End                           = to capture the details of all the partners
 pages.CoverSheet.vat51Start                        = a completed

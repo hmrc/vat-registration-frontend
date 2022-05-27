@@ -17,6 +17,8 @@
 package fixtures
 
 import models.external.addresslookup._
+import models.external.addresslookup.messages.{AddressMessagesModel, InternationalAddressMessagesModel}
+
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 object AddressLookupConstants {
@@ -76,6 +78,14 @@ object AddressLookupConstants {
     confirmChangeText = None
   )
 
+  val internationalMessagesModel = InternationalAddressMessagesModel(
+    appLevelLabels = testAppLevelMessages,
+    lookupPageLabels = testLookupMessages,
+    selectPageLabels = testSelectMessages,
+    editPageLabels = testEditMessages,
+    confirmPageLabels = testConfirmMessages
+  )
+
   val testAlfConfig = AddressLookupConfigurationModel(
     version = 2,
     options = AddressLookupOptionsModel(
@@ -104,16 +114,17 @@ object AddressLookupConstants {
         lookupPageLabels = testLookupMessages,
         selectPageLabels = testSelectMessages,
         editPageLabels = testEditMessages,
-        confirmPageLabels = testConfirmMessages
+        confirmPageLabels = testConfirmMessages,
+        international = internationalMessagesModel
       ),
       cy = AddressMessagesModel(
         appLevelLabels = testAppLevelMessages,
         lookupPageLabels = testLookupMessages,
         selectPageLabels = testSelectMessages,
         editPageLabels = testEditMessages,
-        confirmPageLabels = testConfirmMessages
+        confirmPageLabels = testConfirmMessages,
+        international = internationalMessagesModel
       )
     )
   )
-
 }
