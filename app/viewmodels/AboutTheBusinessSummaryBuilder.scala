@@ -54,6 +54,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           businessEmailAddress(businessContact),
           businessDaytimePhoneNumber(businessContact),
           businessMobilePhoneNumber(businessContact),
+          businessHasWebsite(businessContact),
           businessWebsite(businessContact),
           contactPreference(businessContact),
           buySellLandOrProperty(sicAndCompliance),
@@ -110,6 +111,13 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       s"$sectionId.mobileBusiness",
       List(businessContact.mobile, businessContact.companyContactDetails.flatMap(_.mobileNumber)).flatten.headOption,
       Some(businessContactRoutes.BusinessContactDetailsController.show.url)
+    )
+
+  private def businessHasWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"$sectionId.hasWebsite",
+      businessContact.hasWebsite,
+      Some(businessContactRoutes.HasWebsiteController.show.url)
     )
 
   private def businessWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =

@@ -473,6 +473,7 @@ cya.aboutTheBusiness.homeAddress                    = Business address
 cya.aboutTheBusiness.emailBusiness                  = Business email address
 cya.aboutTheBusiness.daytimePhoneBusiness           = Business daytime phone number
 cya.aboutTheBusiness.mobileBusiness                 = Business mobile number
+cya.aboutTheBusiness.hasWebsite                     = Does the business have a website?
 cya.aboutTheBusiness.website                        = Business website address
 cya.aboutTheBusiness.contactPreference              = Contact preference
 cya.aboutTheBusiness.buySellLandAndProperty         = Does the business’s activities include the buying, selling or letting of land or property?
@@ -1436,3 +1437,7 @@ businessEmail.link                                   = HMRC Privacy Notice
 validation.businessEmail.noEntry                     = Enter the business email address
 validation.businessEmail.incorrectFormat             = Enter the business email address in the correct format, like name@example.com
 validation.businessEmail.tooMany                     = The business email address must be 132 characters or fewer
+
+# BUSINESS HAS WEBSITE
+pages.business.hasWebsite.heading                    = Does the business have a website?
+validation.business.hasWebsite.missing               = Select yes if the business has a website

@@ -20,7 +20,7 @@ import _root_.models.api.Address
 import _root_.models.{BusinessContact, CompanyContactDetails, ContactPreference, CurrentProfile}
 import connectors.RegistrationApiConnector
 import play.api.libs.json.Format
-import services.BusinessContactService.{Email, HasWebsite, TelephoneNumber, Website}
+import services.BusinessContactService.{Email, HasWebsiteAnswer, TelephoneNumber, Website}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -69,7 +69,7 @@ class BusinessContactService @Inject()(val registrationApiConnector: Registratio
       case preference: ContactPreference => businessContact.copy(contactPreference = Some(preference))
       case Email(answer) => businessContact.copy(email = Some(answer))
       case TelephoneNumber(answer) => businessContact.copy(telephoneNumber = Some(answer))
-      case HasWebsite(answer) => businessContact.copy(hasWebsite = Some(answer))
+      case HasWebsiteAnswer(answer) => businessContact.copy(hasWebsite = Some(answer))
       case Website(answer) => businessContact.copy(website = Some(answer))
     }
   }
@@ -85,6 +85,6 @@ class BusinessContactService @Inject()(val registrationApiConnector: Registratio
 object BusinessContactService {
   case class Email(answer: String)
   case class TelephoneNumber(answer: String)
-  case class HasWebsite(answer: Boolean)
+  case class HasWebsiteAnswer(answer: Boolean)
   case class Website(answer: String)
 }

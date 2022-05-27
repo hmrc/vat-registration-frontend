@@ -28,7 +28,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
-class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
+class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
   val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
   val builder = app.injector.instanceOf[AboutTheBusinessSummaryBuilder]
@@ -102,6 +102,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -135,6 +136,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -170,6 +172,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -206,6 +209,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -251,6 +255,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
               optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
               optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
               optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
               optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
               optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -301,6 +306,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+                optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
                 optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
                 optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -352,6 +358,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+                optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
                 optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
                 optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
                 optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)),
@@ -384,6 +391,7 @@ class AboutTheBusinessSummarybuilderSpec extends VatRegSpec {
         optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
         optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
         optSummaryListRowString(s"$sectionId.mobileBusiness", Some(testMobileNumber), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
+        optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(businessContactRoutes.HasWebsiteController.show.url)),
         optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(businessContactRoutes.BusinessContactDetailsController.show.url)),
         optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),
         optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(businessContactRoutes.ContactPreferenceController.showContactPreference.url)),

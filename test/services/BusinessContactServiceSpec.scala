@@ -23,7 +23,7 @@ import models._
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
-import services.BusinessContactService.{HasWebsite, Website, Email => BusinessContactEmail, TelephoneNumber => BusinessContactTelephoneNumber}
+import services.BusinessContactService.{HasWebsiteAnswer, Website, Email => BusinessContactEmail, TelephoneNumber => BusinessContactTelephoneNumber}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -233,7 +233,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         contactPreference = None
       )
 
-      val hasWebsite = HasWebsite(true)
+      val hasWebsite = HasWebsiteAnswer(true)
 
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
@@ -243,7 +243,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      val result = await(testService.updateBusinessContact[HasWebsite](hasWebsite))
+      val result = await(testService.updateBusinessContact[HasWebsiteAnswer](hasWebsite))
       result mustBe hasWebsite
     }
 
@@ -466,7 +466,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         contactPreference = Some(Email)
       )
 
-      val hasWebsite = HasWebsite(true)
+      val hasWebsite = HasWebsiteAnswer(true)
 
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
@@ -476,7 +476,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      val result = await(testService.updateBusinessContact[HasWebsite](hasWebsite))
+      val result = await(testService.updateBusinessContact[HasWebsiteAnswer](hasWebsite))
       result mustBe hasWebsite
     }
 
