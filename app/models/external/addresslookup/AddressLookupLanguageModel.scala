@@ -16,6 +16,7 @@
 
 package models.external.addresslookup
 
+import models.external.addresslookup.messages.AddressMessagesModel
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, Writes}
 import utils.MessageOption
@@ -24,29 +25,6 @@ case class AddressMessageLanguageModel(en: AddressMessagesModel, cy: AddressMess
 
 object AddressMessageLanguageModel {
   implicit val writes: Writes[AddressMessageLanguageModel] = Json.writes[AddressMessageLanguageModel]
-}
-
-case class AddressMessagesModel(appLevelLabels: AppLevelMessagesModel,
-                                lookupPageLabels: LookupPageMessagesModel,
-                                selectPageLabels: SelectPageMessagesModel,
-                                editPageLabels: EditPageMessagesModel,
-                                confirmPageLabels: ConfirmPageMessagesModel,
-                                countryPickerLabels: Option[CountryPickerMessagesModel] = None
-                               )
-
-object AddressMessagesModel {
-  implicit val writes: Writes[AddressMessagesModel] = Json.writes[AddressMessagesModel]
-
-  def forJourney(journeyId: String, lang: Lang, useUkMode: Boolean = false)(implicit messagesApi: MessagesApi): AddressMessagesModel = {
-    AddressMessagesModel(
-      appLevelLabels = AppLevelMessagesModel.forLang(lang),
-      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang),
-      selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
-      editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang),
-      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang),
-      countryPickerLabels = if (useUkMode) None else Some(CountryPickerMessagesModel.forJourney(journeyId, lang))
-    )
-  }
 }
 
 case class AppLevelMessagesModel(navTitle: String, phaseBannerHtml: Option[String] = None)
@@ -144,17 +122,20 @@ case class EditPageMessagesModel(title: Option[String],
 object EditPageMessagesModel {
   implicit val writes: Writes[EditPageMessagesModel] = Json.writes[EditPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): EditPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None)(implicit messagesApi: MessagesApi): EditPageMessagesModel = {
+    val section = s"addressLookup.$journeyId.editPage"
+    val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
+
     EditPageMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.editPage.title", lang),
-      heading = MessageOption(s"addressLookup.$journeyId.editPage.heading", lang),
-      line1Label = MessageOption(s"addressLookup.$journeyId.editPage.line1Label", lang),
-      line2Label = MessageOption(s"addressLookup.$journeyId.editPage.line2Label", lang),
-      line3Label = MessageOption(s"addressLookup.$journeyId.editPage.line3Label", lang),
-      townLabel = MessageOption(s"addressLookup.$journeyId.editPage.townLabel", lang),
-      postcodeLabel = MessageOption(s"addressLookup.$journeyId.editPage.postcodeLabel", lang),
-      countryLabel = MessageOption(s"addressLookup.$journeyId.editPage.countryLabel", lang),
-      submitLabel = MessageOption(s"addressLookup.$journeyId.editPage.submitLabel", lang)
+      title = MessageOption(s"$sectionPrefix.title", lang),
+      heading = MessageOption(s"$sectionPrefix.heading", lang),
+      line1Label = MessageOption(s"$sectionPrefix.line1Label", lang),
+      line2Label = MessageOption(s"$sectionPrefix.line2Label", lang),
+      line3Label = MessageOption(s"$sectionPrefix.line3Label", lang),
+      townLabel = MessageOption(s"$sectionPrefix.townLabel", lang),
+      postcodeLabel = MessageOption(s"$sectionPrefix.postcodeLabel", lang),
+      countryLabel = MessageOption(s"$sectionPrefix.countryLabel", lang),
+      submitLabel = MessageOption(s"$sectionPrefix.submitLabel", lang)
     )
   }
 }
@@ -172,16 +153,19 @@ case class ConfirmPageMessagesModel(title: Option[String],
 object ConfirmPageMessagesModel {
   implicit val writes: Writes[ConfirmPageMessagesModel] = Json.writes[ConfirmPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): ConfirmPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None)(implicit messagesApi: MessagesApi): ConfirmPageMessagesModel = {
+    val section = s"addressLookup.$journeyId.confirmPage"
+    val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
+
     ConfirmPageMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.confirmPage.title", lang),
-      heading = MessageOption(s"addressLookup.$journeyId.confirmPage.heading", lang),
-      infoMessage = MessageOption(s"addressLookup.$journeyId.confirmPage.infoMessage", lang),
-      infoSubheading = MessageOption(s"addressLookup.$journeyId.confirmPage.infoSubheading", lang),
-      submitLabel = MessageOption(s"addressLookup.$journeyId.confirmPage.submitLabel", lang),
-      searchAgainLinkText = MessageOption(s"addressLookup.$journeyId.confirmPage.searchAgainLinkText", lang),
-      changeLinkText = MessageOption(s"addressLookup.$journeyId.confirmPage.changeLinkText", lang),
-      confirmChangeText = MessageOption(s"addressLookup.$journeyId.confirmPage.confirmChangeText", lang)
+      title = MessageOption(s"$sectionPrefix.title", lang),
+      heading = MessageOption(s"$sectionPrefix.heading", lang),
+      infoMessage = MessageOption(s"$sectionPrefix.infoMessage", lang),
+      infoSubheading = MessageOption(s"$sectionPrefix.infoSubheading", lang),
+      submitLabel = MessageOption(s"$sectionPrefix.submitLabel", lang),
+      searchAgainLinkText = MessageOption(s"$sectionPrefix.searchAgainLinkText", lang),
+      changeLinkText = MessageOption(s"$sectionPrefix.changeLinkText", lang),
+      confirmChangeText = MessageOption(s"$sectionPrefix.confirmChangeText", lang)
     )
   }
 }

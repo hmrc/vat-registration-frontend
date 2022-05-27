@@ -18,9 +18,8 @@ package models.external.addresslookup
 
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
-import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.i18n.MessagesApi
-import play.api.libs.json.{JsBoolean, JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
@@ -55,9 +54,12 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     val line1Label = "Address line 1"
     val line2Label = "Address line 2"
     val line3Label = "Address line 3"
+    val internationalLine3Label = "Address line 3 (optional)"
     val countryLabel = "Country"
     val postcodeLabel = "Postcode"
+    val internationalPostcodeLabel = "Postcode (optional)"
     val submitLabel = "Continue"
+    val townLabel = "Town/City"
   }
 
   object ConfirmPageLabels {
@@ -71,6 +73,43 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     val title = "Find your home address"
     val heading = "Find your home address"
   }
+
+  private val internationalAddressMessages: JsObject = Json.obj(
+    "appLevelLabels" -> Json.obj(
+      "navTitle" -> "Register for VAT",
+      "phaseBannerHtml" -> "This is a new service. Help us improve it - send your <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">feedback</a>."
+    ),
+    "lookupPageLabels" -> Json.obj(
+      "title" -> LookupPageOptions.title,
+      "heading" -> LookupPageOptions.heading,
+      "filterLabel" -> LookupPageOptions.filterLabel,
+      "submitLabel" -> LookupPageOptions.submitLabel,
+      "manualAddressLinkText" -> LookupPageOptions.manualAddressLinkText
+    ),
+    "selectPageLabels" -> Json.obj(
+      "title" -> SelectPageOptions.title,
+      "heading" -> SelectPageOptions.heading,
+      "submitLabel" -> SelectPageOptions.submitLabel,
+      "editAddressLinkText" -> SelectPageOptions.editAddressLinkText
+    ),
+    "editPageLabels" -> Json.obj(
+      "title" -> EditPageOptions.title,
+      "heading" -> EditPageOptions.heading,
+      "line1Label" -> EditPageOptions.line1Label,
+      "line2Label" -> EditPageOptions.line2Label,
+      "line3Label" -> EditPageOptions.internationalLine3Label,
+      "townLabel" -> EditPageOptions.townLabel,
+      "postcodeLabel" -> EditPageOptions.internationalPostcodeLabel,
+      "countryLabel" -> EditPageOptions.countryLabel,
+      "submitLabel" -> EditPageOptions.submitLabel
+    ),
+    "confirmPageLabels" -> Json.obj(
+      "title" -> ConfirmPageLabels.title,
+      "heading" -> ConfirmPageLabels.heading,
+      "submitLabel" -> ConfirmPageLabels.submitLabel,
+      "changeLinkText" -> ConfirmPageLabels.changeLinkText
+    )
+  )
 
   val addressInitializationJson: JsObject = Json.obj(
     "version" -> 2,
@@ -128,7 +167,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
           "heading" -> ConfirmPageLabels.heading,
           "submitLabel" -> ConfirmPageLabels.submitLabel,
           "changeLinkText" -> ConfirmPageLabels.changeLinkText
-        )
+        ),
+        "international" -> internationalAddressMessages
       ),
       "cy" -> Json.obj(
         "appLevelLabels" -> Json.obj(
@@ -163,7 +203,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
           "heading" -> ConfirmPageLabels.heading,
           "submitLabel" -> ConfirmPageLabels.submitLabel,
           "changeLinkText" -> ConfirmPageLabels.changeLinkText
-        )
+        ),
+        "international" -> internationalAddressMessages
       )
     )
   )
