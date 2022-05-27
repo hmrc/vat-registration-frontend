@@ -16,25 +16,25 @@
 
 package forms
 
-import forms.constraints.EmailAddressConstraints
-import forms.constraints.utils.ConstraintUtil.ConstraintUtil
-import models.BusinessContact
+import forms.FormValidation.{ErrorCode, nonEmptyValidText}
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
-object BusinessEmailAddressForm {
+import scala.util.matching.Regex
 
-  val businessEmailKey = "businessEmailAddress"
+object BusinessWebsiteAddressForm {
+
+  val businessWebsiteAddressKey = "businessWebsiteAddress"
+  implicit val errorCode: ErrorCode = businessWebsiteAddressKey
+  val regex: Regex = """^(?i)(((HTTP|http)(S|s)?\:\/\/((WWW|www)\.)?)|((WWW|www)\.))?[a-zA-Z0-9\[_~\:\/?#\]@!&'()*+,;=% ]+\.[a-zA-Z]{2,5}(\.[a-zA-Z]{2,5})?(\:[0-9]{1,5})?(\/[a-zA-Z0-9_-]+(\/)?)*$""".r
 
   val form: Form[String] =
     Form(
       single(
-        businessEmailKey -> text.verifying(
-          EmailAddressConstraints.emailAddressEmpty("validation.businessEmail.noEntry") andThen
-            EmailAddressConstraints.emailAddressLength("validation.businessEmail.tooMany") andThen
-            EmailAddressConstraints.emailAddressFormat("validation.businessEmail.incorrectFormat")
-        )
-      )
+        businessWebsiteAddressKey -> text.verifying(StopOnFirstFail(
+          nonEmptyValidText(regex)
+        )))
     )
 
 }
