@@ -37,7 +37,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     val standingOrder = "Standing order"
     val saveAndContinue = "Save and Continue"
     val saveAndComeBackLater = "Save and come back later"
-    val error = "Tell us how you want to pay VAT bills"
+    val error = "Select the VAT payment method"
     val linkText = "print off and fill in a Direct debit mandate (opens in new tab)"
     val hiddenText = s"To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then $linkText"
   }

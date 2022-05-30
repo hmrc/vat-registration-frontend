@@ -329,8 +329,8 @@ pages.timeout.body.one                  = Your answers have been saved.
 pages.timeout.body.url                  = Sign in to <a href="{0}">continue registration</a>.
 
 ##Submission Timeout Page
-pages.retrySubmission.heading           = We couldn’t process your application
-pages.retrySubmission.p1                = Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved.
+pages.retrySubmission.heading           = We could not process your application
+pages.retrySubmission.p1                = Sorry, there is a technical problem and we could not process your application. Any details you entered have been saved.
 pages.retrySubmission.p2                = Please resend your application.
 pages.retrySubmission.button            = Resend
 
@@ -420,7 +420,7 @@ pages.start.date.incorp.para1                                = You must start yo
 pages.start.date.incorp.differentDate                        = A different date
 pages.start.date.incorp.earlierHead.hint                     = This must be on or after the date of incorporation or within the last 4 years.
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
-validation.startDateManIncorp.error                          = Tell us when you would like your registration date to start
+validation.startDateManIncorp.error                          = Enter the registration start date
 
 ## Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
@@ -454,7 +454,7 @@ pages.vat.return.frequency.details.para2                   = It may not suit bus
 pages.vat.return.frequency.details.para2.bullet1           = want to keep up to date with the exact amount of VAT they owe or need to reclaim
 pages.vat.return.frequency.details.para2.bullet2           = regularly reclaim more VAT than they charge, because they will only get one VAT refund a year
 pages.vat.return.frequency.aas.link                        = Find out more about the Annual Accounting Scheme
-validation.vat.return.frequency.missing                    = Tell us how often you want the business to submit VAT Returns
+validation.vat.return.frequency.missing                    = Select how often the business will submit its VAT Returns
 
 ## Accounting Period Page
 pages.accounting.period.heading                             = When do you want the business to submit its VAT Returns?
@@ -462,7 +462,7 @@ pages.accounting.period.para1                               = VAT Returns are us
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-validation.accounting.period.missing                        = Tell us when you want the business to submit its VAT Returns
+validation.accounting.period.missing                        = Select how often the business will submit its VAT Returns
 
 ##Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
@@ -471,15 +471,15 @@ pages.contactPreference.text1                          = We can send an email wh
 pages.contactPreference.text2                          = We may still need to send the business letters if this is the only service available or if the law requires us to do so.
 pages.contactPreference.letter                         = Letter
 pages.contactPreference.email                          = Email
-contactPreference.error.required                       = Select how you would like to be contacted
+contactPreference.error.required                       = Select how you would like the business to be contacted
 
 ##Business Activity Description
 pages.business.activity.description.title                     = What does the business do?
 pages.business.activity.description.heading                   = What does the business do?
 pages.business.activity.description.label                     = Describe the type of goods or services the business sells.
-validation.businessActivity.description.missing               = Tell us what the business does
-validation.businessActivity.description.invalid               = Tell us what the business does using only letters, numbers and standard punctuation. Do not use any special characters like @ or |
-validation.businessActivity.description.maxlen                = Tell us what the business does using 250 characters or less
+validation.businessActivity.description.missing               = Enter the business activity
+validation.businessActivity.description.invalid               = The business activity must only include letters, numbers and standard punctuation. Do not use any special characters like @ or |
+validation.businessActivity.description.maxlen                = The business activity must be 250 characters or less
 
 ## Summary Page
 pages.summary.heading                                       = Check your answers before sending your application
@@ -688,7 +688,7 @@ validation.companyBankAccount.invalidCombination    = Enter a valid bank account
 
 ## Main Business Activity
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?
-validation.mainBusinessActivity.missing                   = Tell us which activity is the business’s main source of income
+validation.mainBusinessActivity.missing                   = Select the business’s main source of income
 
 ## Confirm SIC
 pages.confirmsic.heading                                  = You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
@@ -755,7 +755,7 @@ validation.invalid.businessContactDetails.tooLong            = The telephone num
 pages.applicantHomeAddress.title                           = What is the applicant’s home address?
 pages.applicantHomeAddress.heading                         = What is your home address?
 pages.applicantHomeAddress.different.address               = A different address
-validation.applicantHomeAddress.missing                    = Tell us your home address
+validation.applicantHomeAddress.missing                    = Enter the address
 
 ## Applicant Completion Capacity
 pages.completionCapacity.title                           = Who is registering the company for VAT?
@@ -776,13 +776,13 @@ pages.roleInTheBusiness.yourHeading                      = What is your role in 
 pages.roleInTheBusiness.namedHeading                     = What is {0}’s role in the business?
 pages.roleInTheBusiness.radio1                           = Director
 pages.roleInTheBusiness.radio2                           = Company secretary
-pages.roleInTheBusiness.error.message                    = Select your role within the business
+pages.roleInTheBusiness.error.message                    = Select the role within the business
 
 ## Former Name
 pages.formerName.yourHeading                             = Have you ever changed your name?
 pages.formerName.namedHeading                            = Has {0} ever changed their name?
 pages.formerName.married                                 = This could be if you got married or changed your name by deed poll.
-validation.formerName.choice.missing                     = Select yes if you have ever changed your name
+validation.formerName.choice.missing                     = Select yes if there’s been a name change
 
 ## Former Name Capture
 pages.formerNameCapture.yourHeading                      = What was your previous name?
@@ -801,14 +801,15 @@ pages.formerNameDate.yourHeading                         = When did you change y
 pages.formerNameDate.namedHeading                        = When did {0} change their name?
 pages.formerNameDate.hint1                               = For example, 31 3 2006.
 validation.formerNameDate.invalid                        = Enter a valid date
-validation.formerNameDate.missing                        = Tell us when the name changed
-validation.formerNameDate.range.below                    = Enter a date which is on or after your date of birth
+validation.formerNameDate.missing                        = Enter the date when the name changed
+validation.formerNameDate.range.below                    = Enter a date which is on or after the date of birth
 validation.formerNameDate.range.above                    = Enter a date that is in the past
 
 ## Previous Address Question
 pages.previousAddressQuestion.yourHeading                = Have you lived at your current address for 3 years or more?
 pages.previousAddressQuestion.namedHeading               = Has {0} lived at their current address for 3 years or more?
 validation.previousAddressQuestion.missing               = Select yes if you have lived at your current address for 3 years or more
+validation.previousAddressQuestionThirdParty.missing    = Select yes if they have lived at the current address for 3 years or more
 
 ## PPOB
 pages.ppob.title                                        = What is the ’principal place of business’?
@@ -821,11 +822,11 @@ pages.ppob.panel.p1                                     = the address of a third
 pages.ppob.panel.p2                                     = a PO box address
 pages.ppob.panel.p3                                     = a ’care of’ address
 pages.ppob.nonuk.address                                = A non-UK address
-validation.ppob.missing                                 = Tell us the principal place of business
+validation.ppob.missing                                 = Enter the address for the primary place of business
 
 ## PPOB Drop Out page
-pages.ppobdropout.title                                 = Must be a UK address
-pages.ppobdropout.heading                               = You can’t register for VAT with this service
+pages.ppobdropout.title                                 = The address must be a UK address
+pages.ppobdropout.heading                               = You cannot register for VAT with this service
 pages.ppobdropout.p1                                    = To use this service, the address where the company carries out most its business activities (its ’principal place of business’) must be in the UK.
 pages.ppobdropout.p2                                    = Please
 pages.ppobdropout.url                                   = register with another service
@@ -849,7 +850,7 @@ pages.frs.join.list2.bullet2                    = earn in sales, including VAT, 
 pages.frs.join.para1                            = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
 pages.frs.join.para2                            = Find out more about
 pages.frs.join.para2.1                          = VAT Flat Rate Scheme
-validation.frs.join.missing                     = Tell us if you want to register the business for the Flat Rate Scheme
+validation.frs.join.missing                     = Select yes if you want to register the business for the Flat Rate Scheme
 
 ## Do you spend less than £1000 Page
 pages.frs.costsInclusive.heading                          = Will the business spend more than £250 over the next 3 months on ‘relevant goods’?
@@ -868,7 +869,7 @@ pages.frs.costsInclusive.list.bullet10                    = services - that is, 
 pages.frs.costsInclusive.para2                            = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
 pages.frs.costsInclusive.para3                            = Find out more about
 pages.frs.costsInclusive.para3.1                          = VAT Flat Rate Scheme
-validation.frs.costsInclusive.missing                     = Tell us if the business will spend more than £250 over the next 3 months on ’relevant goods’
+validation.frs.costsInclusive.missing                     = Select yes if the business will spend more than £250 over the next 3 months on ?relevant goods?
 
 ## Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading          = Estimate the business’s total sales, including VAT, for the next 3 months
@@ -885,28 +886,28 @@ pages.frs.confirmBusinessSector.para                      = We’ve based this o
 pages.frs.confirmBusinessSector.table.row1.heading        = Business type
 pages.frs.confirmBusinessSector.exclamationPoint          = It’s your legal responsibility to check the business type is the right one.
 pages.frs.confirmBusinessSector.changeLink                = Change the business type
-validation.frs.confirmBusinessSector.missing              = Tell us if you want to use this rate
+validation.frs.confirmBusinessSector.missing              = Select yes if you want to use this rate
 
 ## Choose business type
 pages.frs.chooseBusinessType.heading      = Choose the main business type
-validation.frs.chooseBusinessType.missing = Tell us what the business’s main business type is
+validation.frs.chooseBusinessType.missing = Select the business’ss main business type
 
 ## Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the business must use the 16.5% flat rate
 pages.frs.registerFor.para                                = This is because the business doesn’t spend enough (including VAT) on relevant goods.
 pages.frs.registerFor.indentText                           = Businesses in their first year of VAT registration can take an extra 1% off their flat rate.
 pages.frs.registerFor.subheading                          = Do you want the business to join the Flat Rate Scheme with this rate?
-validation.frs.registerFor.missing                        = Tell us if you want to use the 16.5% flat rate
+validation.frs.registerFor.missing                        = Select yes if you want to use the 16.5% flat rate
 
 ## Do you want to register for FRS Page business sector rate
 pages.frs.registerForWithSector.heading                   = The business’s VAT flat rate is {0}%
 pages.frs.registerForWithSector.info                      = Businesses in their first year of VAT registration can take 1% off their flat rate.
 pages.frs.registerForWithSector.subheading1               = Do you want the business to join the Flat Rate Scheme?
-validation.frs.registerForWithSector.missing              = Tell us if you want the business to join the Flat Rate Scheme
+validation.frs.registerForWithSector.missing              = Select yes if you want the business to join the Flat Rate Scheme
 
 ## Do you spend less than 2% of your turn over Page
 pages.frs.costsLimited.heading                          = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
-validation.frs.costsLimited.missing                     = Tell us if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
+validation.frs.costsLimited.missing                     = Select yes if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 
 ## When do you want to join the Flat Rate Scheme?
 pages.frs.startDate.heading                               = When does the business want to join the Flat Rate Scheme?
@@ -916,7 +917,7 @@ pages.frs.startDate.hint                                  = This date must be on
 pages.frs.startDate.hint1                                 = For example, {0}
 pages.frs.startDate.legend                                = Date the business wants to join the Flat Rate Scheme
 validation.frs.startDate.invalid                          = Enter a valid date
-validation.frs.startDate.choice.missing                   = Tell us when you want the business to join the Flat Rate Scheme
+validation.frs.startDate.choice.missing                   = Enter the date when the business wants to join the Flat Rate Scheme
 validation.frs.startDate.missing                          = Enter a date
 validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business’s registered for VAT
 validation.frs.startDate.range.after.maxDate              = The joining date must be within the first three months of VAT registration
@@ -937,7 +938,7 @@ capture-email-address.namedHeading                      = What is {0}’s email 
 capture-email-address.paragraph                         = We use this to send you communications and updates about your VAT
 capture-email-address.privacyInformation                = Full details of how we use your information are in the <a href="{0}" target="_blank">HMRC Privacy Notice (opens in new tab)</a>.
 capture-email-address.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
-capture-email-address.error.nothing_entered             = Enter your email address so we can send you communications and updates about your VAT
+capture-email-address.error.nothing_entered             = Enter the email address
 capture-email-address.error.incorrect_length            = The email address must be 132 characters or fewer
 
 ## CAPTURE EMAIL PASSCODE MESSAGES
@@ -965,7 +966,7 @@ capture-telephone-number.error.incorrect_length          = The telephone number 
 start-new-application.heading                            = Are you starting a new application?
 start-new-application.radio-yes                          = Yes
 start-new-application.radio-no                           = No - I already started one
-start-new-application.error.required                     = Tell us if you are starting a new application or have already started one
+start-new-application.error.required                     = Select yes if you are starting a new application
 
 ## LAST MONTH OF ACCOUNTING YEAR
 last-month-of-accounting-year.heading                    = What will be the last month of the business’s accounting year?
@@ -982,14 +983,14 @@ last-month-of-accounting-year.sep                        = September
 last-month-of-accounting-year.oct                        = October
 last-month-of-accounting-year.nov                        = November
 last-month-of-accounting-year.dec                        = December
-last-month-of-accounting-year.error.required             = Tell us when you want your accounting year to end
+last-month-of-accounting-year.error.required             = Select the last month of the business’s accounting year
 
 ## AAS HOW OFTEN MAKE PAYMENTS
 aas.paymentFrequency.heading                             = How often does the business want to make payments?
 ass.paymentFrequency.para                                = As part of the Annual Accounting Scheme each payment is either 10% of the estimated VAT bill for monthly payers or 25% for quarterly payers. The amount the business will pay is based on previous VAT Returns or if they have not yet submitted a VAT Return it will be estimated.
 aas.paymentFrequency.quarterly                           = Quarterly
 aas.paymentFrequency.monthly                             = Monthly
-aas.paymentFrequency.notProvided                         = Tell us how often you want to make payments
+aas.paymentFrequency.notProvided                         = Select how often the business wants to make payments
 
 ## AAS HOW WOULD YOU LIKE TO PAY
 aas.paymentMethod.heading                                = How does the business want to pay VAT?
@@ -998,7 +999,7 @@ aas.paymentMethod.bacs                                   = BACS (internet bankin
 aas.paymentMethod.giro                                   = Bank Giro Transfer
 aas.paymentMethod.chaps                                  = Clearing House Automated Payment System (CHAPS)
 aas.paymentMethod.standingOrder                          = Standing order
-aas.paymentMethod.error.required                         = Tell us how you want to pay VAT bills
+aas.paymentMethod.error.required                         = Select the VAT payment method
 aas.paymentMethod.bacs.hiddenContent                     = To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then
 aas.paymentMethod.bacs.linkText                          = print off and fill in a Direct debit mandate
 
@@ -1228,7 +1229,7 @@ nip.sellOrMove.para                                      = Tell us if the busine
 nip.sellOrMove.bullet1                                   = sell goods located in Northern Ireland to any country
 nip.sellOrMove.bullet2                                   = sell or move goods from Northern Ireland to an EU country
 nip.sellOrMove.hint                                      = What is the value of these goods?
-nip.error.missing                                        = Select ’yes’ if the business will do any of the activities in the next 12 months
+nip.error.missing                                        = Select yes if the business will do any of the activities in the next 12 months
 validation.sellOrMoveNip.missing                         = Enter the value of these goods
 
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
@@ -1258,7 +1259,7 @@ validation.shortOrgName.maxlen                       = Enter an official busines
 ## PART OF ORGANISATION
 partOfOrganisation.heading                               = Are you a part of an organisation?
 partOfOrganisation.indentText                            = As you are registering on behalf of someone else we need to collect your details in order to know a bit more about you.
-validation.partOfOrganisation.missing                    = Select ’yes’ if you are part of an organisation
+validation.partOfOrganisation.missing                    = Select yes if you are part of an organisation
 
 ## DECLARATION CAPACITY
 

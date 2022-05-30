@@ -30,7 +30,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
   val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
 
   val name = "testFirstName"
-  lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form
+  lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form()
   lazy val nonTransactorView: Html = previousAddressPage(form, None)
   implicit val nonTransactorDoc: Document = Jsoup.parse(nonTransactorView.body)
   lazy val transactorView: Html = previousAddressPage(form, Some(name))

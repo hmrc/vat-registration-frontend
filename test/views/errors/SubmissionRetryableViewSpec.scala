@@ -23,9 +23,9 @@ import views.html.errors.SubmissionRetryableView
 
 class SubmissionRetryableViewSpec extends VatRegViewSpec {
   object ExpectedContent {
-    val heading = "We couldn’t process your application"
+    val heading = "We could not process your application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "Sorry, there is a technical problem and we couldn’t process your application. Any details you entered have been saved."
+    val para1 = "Sorry, there is a technical problem and we could not process your application. Any details you entered have been saved."
     val para2 = "Please resend your application."
     val resend =  "Resend"
   }
