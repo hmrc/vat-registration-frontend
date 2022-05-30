@@ -16,53 +16,26 @@
 
 package forms
 
+import forms.FormValidation.{ErrorCode, removeSpaces}
+import forms.constraints.TransactorTelephoneNumberConstraints
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
-import forms.constraints.utils.ValidationHelper.{validate, validateNot}
-import forms.FormValidation.removeSpaces
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import play.api.data.validation.Constraint
 
 object TransactorTelephoneForm {
 
-  val telephoneNumberKey = "telephoneNumber"
+  val telephoneNumberKey = "transactorTelephoneNumber"
+  implicit val errorCode: ErrorCode = telephoneNumberKey
 
   val form =
     Form(
       single(
         telephoneNumberKey -> text.transform(removeSpaces, identity[String]).verifying(
-          TransactorTelephoneConstraints.telephoneNumberEmpty andThen
-          TransactorTelephoneConstraints.telephoneNumberLength andThen
-          TransactorTelephoneConstraints.telephoneNumberFormat
+          TransactorTelephoneNumberConstraints.telephoneNumberEmpty andThen
+          TransactorTelephoneNumberConstraints.telephoneNumberFormat andThen
+          TransactorTelephoneNumberConstraints.telephoneNumberMinLength andThen
+          TransactorTelephoneNumberConstraints.telephoneNumberMaxLength
         )
       )
     )
-}
-
-object TransactorTelephoneConstraints {
-
-  private val telephoneNumberRegex = """^[A-Z0-9 )/(*#+-]+$"""
-
-  private val telephoneNumberMaxLength = 24
-
-  def telephoneNumberFormat: Constraint[String] = Constraint("telephoneNumber.incorrectFormat")(
-    telephoneNumber => validateNot(
-      constraint = telephoneNumber matches telephoneNumberRegex,
-      errMsg = "telephoneNumber.error.incorrectFormat"
-    )
-  )
-
-  def telephoneNumberEmpty: Constraint[String] = Constraint("telephoneNumber.nothingEntered")(
-    telephoneNumber => validate(
-      constraint = telephoneNumber.isEmpty,
-      errMsg = "telephoneNumber.error.nothingEntered"
-    )
-  )
-
-  def telephoneNumberLength: Constraint[String] = Constraint("telephoneNumber.incorrectLength")(
-    telephoneNumber => validate(
-      constraint = telephoneNumber.trim.length > telephoneNumberMaxLength,
-      errMsg = "telephoneNumber.error.incorrectLength"
-    )
-  )
 }

@@ -19,37 +19,37 @@ package forms.constraints
 import forms.constraints.utils.ValidationHelper.{validate, validateNot}
 import play.api.data.validation.Constraint
 
-object TelephoneNumberConstraints {
+object TransactorTelephoneNumberConstraints {
 
-  private val telephoneNumberRegex = """^[+]?[0-9 ]+$"""
-  private val telephoneMinLength = 8
-  private val telephoneMaxLength = 15
+  private val transactorTelephoneNumberRegex = """^[+]?[0-9 ]+$"""
+  private val transactorTelephoneNumberMinLength = 8
+  private val transactorTelephoneNumberMaxLength = 15
 
   def telephoneNumberFormat: Constraint[String] = Constraint("telephone_number.incorrect_format")(
     telephoneNumber => validateNot(
-      constraint = telephoneNumber matches telephoneNumberRegex,
-      errMsg = "capture-telephone-number.error.invalid"
+      constraint = telephoneNumber matches transactorTelephoneNumberRegex,
+      errMsg = "transactorTelephoneNumber.error.invalid"
     )
   )
 
   def telephoneNumberEmpty: Constraint[String] = Constraint("telephone_number.nothing_entered")(
     telephoneNumber => validate(
       constraint = telephoneNumber.isEmpty,
-      errMsg = "capture-telephone-number.error.missing"
+      errMsg = "transactorTelephoneNumber.error.missing"
     )
   )
 
   def telephoneNumberMinLength: Constraint[String] = Constraint("telephone_number.incorrect_min_length")(
     telephoneNumber => validate(
-      constraint = ("""\d+""".r findAllIn telephoneNumber).mkString.length < telephoneMinLength,
-      errMsg = "capture-telephone-number.error.minlength"
+      constraint = ("""\d+""".r findAllIn telephoneNumber).mkString.length < transactorTelephoneNumberMinLength,
+      errMsg = "transactorTelephoneNumber.error.minlength"
     )
   )
 
   def telephoneNumberMaxLength: Constraint[String] = Constraint("telephone_number.incorrect_max_length")(
     telephoneNumber => validate(
-      constraint = ("""\d+""".r findAllIn telephoneNumber).mkString.length > telephoneMaxLength,
-      errMsg = "capture-telephone-number.error.maxlength"
+      constraint = ("""\d+""".r findAllIn telephoneNumber).mkString.length > transactorTelephoneNumberMaxLength,
+      errMsg = "transactorTelephoneNumber.error.maxlength"
     )
   )
 

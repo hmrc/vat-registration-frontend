@@ -26,17 +26,18 @@
 
 @(telephoneNumberForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(telephoneNumberForm, messages("telephoneNumber.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(telephoneNumberForm, messages("transactorTelephoneNumber.heading"))), backLink = true) {
     @errorSummary(telephoneNumberForm.errors)
 
-    @h1("telephoneNumber.heading")
+    @h1("transactorTelephoneNumber.heading")
 
     @form(action = controllers.transactor.routes.TelephoneNumberController.submit) {
         @inputText(
             telephoneNumberForm,
-            id = "telephoneNumber",
-            name = "telephoneNumber",
-            label = messages("telephoneNumber.label"),
+            id = "transactorTelephoneNumber",
+            name = "transactorTelephoneNumber",
+            label = messages("transactorTelephoneNumber.label"),
+            isLabelHidden = true,
             isPageHeading = false
         )
 

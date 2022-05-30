@@ -16,42 +16,62 @@
 
 package forms
 
+import helpers.FormInspectors._
 import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
 class TransactorTelephoneFormSpec extends VatRegSpec {
 
   val telephoneNumberForm: Form[String] = TransactorTelephoneForm.form
-  val testTelephoneNumber: String = "1234"
-  val testTelephoneNumberWithSpaces: String = " 12 34 "
-  val incorrectFormatErrorKey: String = "telephoneNumber.error.incorrectFormat"
-  val nothingEnteredErrorKey: String = "telephoneNumber.error.nothingEntered"
-  val incorrectLengthErrorKey: String = "telephoneNumber.error.incorrectLength"
+  val testTelephoneNumber: String = "0123456789"
+  //LDS ignore - adding exemption rule to ignore line 28 as it is not secret
+  val testTelephoneNumberWithAllowedCharacters: String = "+1234 4589 7987"
+  val testTelephoneNumberWithMultiplePluses = "++1234 4589 7987"
+  val invalidFormatErrorKey: String = "transactorTelephoneNumber.error.invalid"
+  val nothingEnteredErrorKey: String = "transactorTelephoneNumber.error.missing"
+  val incorrectMinLengthErrorKey: String = "transactorTelephoneNumber.error.minlength"
+  val incorrectMaxLengthErrorKey: String = "transactorTelephoneNumber.error.maxlength"
 
   "The TransactorTelephoneForm" must {
-    "remove spaces from telephone number" in {
-      val form = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumberWithSpaces)).value
 
-      form mustBe Some(testTelephoneNumber)
-    }
-
-    "validate that testTelephoneNumber is valid" in {
+    "validate that transactor telephone number is valid" in {
       val form = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumber)).value
 
       form mustBe Some(testTelephoneNumber)
     }
 
-    "validate that incorrect telephone number format fails" in {
-      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> ":::><|"))
+    "validate that transactor telephone number start with + and spaces is valid" in {
+      val expectedPhoneNumber = testTelephoneNumberWithAllowedCharacters.replaceAll(" ", "")
+      //LDS ignore - adding exemption rule to ignore line 46 as it is not secret
+      val form = Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumberWithAllowedCharacters)
 
-      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectFormatErrorKey))
+      telephoneNumberForm.bind(form) shouldContainValue expectedPhoneNumber
     }
 
-    "validate that a telephone number exceeding max length fails" in {
-      val exceedMaxLengthEmail: String = "1" * 25
-      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> exceedMaxLengthEmail))
+    "validate that transactor telephone number containing multiple + signs fails" in {
+      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> testTelephoneNumberWithMultiplePluses))
 
-      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectLengthErrorKey))
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, invalidFormatErrorKey))
+    }
+
+    "validate that incorrect transactor telephone number format fails" in {
+      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> "invalid telephone number"))
+
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, invalidFormatErrorKey))
+    }
+
+    "validate that transactor telephone number exceeding min length fails" in {
+      val exceedMinLengthPhoneNumber: String = "01234"
+      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> exceedMinLengthPhoneNumber))
+
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectMinLengthErrorKey))
+    }
+
+    "validate that transactor telephone number exceeding max length fails" in {
+      val exceedMaxLengthPhoneNumber: String = "01234567890123456789"
+      val formWithError = telephoneNumberForm.bind(Map(TransactorTelephoneForm.telephoneNumberKey -> exceedMaxLengthPhoneNumber))
+
+      formWithError.errors must contain(FormError(TransactorTelephoneForm.telephoneNumberKey, incorrectMaxLengthErrorKey))
     }
 
     "validate that an empty field fails" in {

@@ -16,23 +16,25 @@
 
 package forms
 
+import forms.FormValidation.{ErrorCode, removeSpaces}
 import forms.constraints.TelephoneNumberConstraints
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
-import forms.FormValidation.removeSpaces
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 
 object TelephoneNumberForm {
 
   val telephoneNumberKey = "telephone-number"
+  implicit val errorCode: ErrorCode = telephoneNumberKey
 
   val form =
     Form(
       single(
         telephoneNumberKey -> text.transform(removeSpaces, identity[String]).verifying(
           TelephoneNumberConstraints.telephoneNumberEmpty andThen
-          TelephoneNumberConstraints.telephoneNumberLength andThen
-          TelephoneNumberConstraints.telephoneNumberFormat
+          TelephoneNumberConstraints.telephoneNumberFormat andThen
+          TelephoneNumberConstraints.telephoneNumberMinLength andThen
+          TelephoneNumberConstraints.telephoneNumberMaxLength
         )
       )
     )
