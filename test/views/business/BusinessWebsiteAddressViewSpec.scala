@@ -16,38 +16,33 @@
 
 package views.business
 
-import forms.BusinessTelephoneNumberForm
+import forms.BusinessWebsiteAddressForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.business.BusinessTelephoneNumber
+import views.html.business.BusinessWebsiteAddress
 
-class BusinessTelephoneNumberViewSpec extends VatRegViewSpec {
-  val view: BusinessTelephoneNumber = app.injector.instanceOf[BusinessTelephoneNumber]
+class BusinessWebsiteAddressViewSpec extends VatRegViewSpec {
+
+  val viewInstance: BusinessWebsiteAddress = app.injector.instanceOf[BusinessWebsiteAddress]
 
   object ExpectedContent {
-    val heading = "What is the business’ telephone number?"
-    val title = s"$heading - Register for VAT - GOV.UK"
+    val heading = "What is the business’ website address?"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(BusinessTelephoneNumberForm.form).body)
-
-  "Business Telephone number page" must {
-    "have a back link" in new ViewSetup {
-      doc.hasBackLink mustBe true
-    }
+  "Business Website Address page" should {
+    lazy val form = BusinessWebsiteAddressForm.form
+    lazy val view = viewInstance(testCall, form)
+    implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
-    "have the correct page title" in new ViewSetup {
-      doc.title mustBe ExpectedContent.title
-    }
-
-    "have a primary action" in new ViewSetup {
+    "have the correct continue button" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedContent.continue)
     }
   }
+
 }

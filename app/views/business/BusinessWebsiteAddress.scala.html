@@ -24,40 +24,31 @@
         button: components.button,
         formWithCSRF: FormWithCSRF,
         h1: components.h1,
-        p: components.p,
-        link: components.link,
         inputText: components.inputText,
         errorSummary: errorSummary
 )
 
 @(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(title(form, "businessEmail.heading")), backLink = true) {
+@layout(Some(title(form, "businessWebsiteAddress.heading")), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("businessEmail.heading")
-
-    @p{ @messages("businessEmail.hint") }
+    @h1("businessWebsiteAddress.heading")
 
     @formWithCSRF(action = formAction) {
         @inputText(
-            form = form,
-            id = "businessEmailAddress",
-            name = "businessEmailAddress",
-            label = messages("businessEmail.heading"),
-            isLabelHidden = true,
-            isPageHeading = false,
-            hint = None,
-            classes = Some("govuk-input--width-20")
-        )
+        form = form,
+        id = "businessWebsiteAddress",
+        name = "businessWebsiteAddress",
+        label = messages("businessWebsiteAddress.heading"),
+        isLabelHidden = true,
+        isPageHeading = false,
+        hint = None,
+        classes = Some("govuk-input--width-20")
+    )
 
-        @p{
-            @messages("businessEmail.para")
-            @link(appConfig.privacyNoticeUrl, messages("businessEmail.link"), isExternal = true)
-        }
-
-        @button("app.common.continue")
+    @button("app.common.continue")
 
     }
 

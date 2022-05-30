@@ -12,13 +12,13 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class BusinessEmailControllerISpec extends ControllerISpec {
+class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.business.routes.BusinessEmailController.show.url
-  val businessEmail = "test@test.com"
+  val url: String = controllers.business.routes.BusinessWebsiteAddressController.show.url
+  val businessWebsiteAddress = "https://www.example.com"
 
   val s4lData: BusinessContact = BusinessContact(
-    email = Some(businessEmail)
+    website = Some(businessWebsiteAddress)
   )
 
   s"GET $url" should {
@@ -34,7 +34,6 @@ class BusinessEmailControllerISpec extends ControllerISpec {
 
       val response: WSResponse = await(buildClient(url).get)
       response.status mustBe OK
-
     }
 
     "return OK with prepopulated data" in new Setup {
@@ -48,7 +47,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
         res.status mustBe OK
-        Jsoup.parse(res.body).getElementById("businessEmailAddress").attr("value") mustBe businessEmail
+        Jsoup.parse(res.body).getElementById("businessWebsiteAddress").attr("value") mustBe businessWebsiteAddress
       }
     }
   }
@@ -58,19 +57,20 @@ class BusinessEmailControllerISpec extends ControllerISpec {
       //TODO Update below line and redirect
       "Update S4L and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
+
         given()
           .user.isAuthorised()
           .s4lContainer[BusinessContact].contains(BusinessContact())
           .registrationApi.getSection[BusinessContact](None)
           .s4lContainer[BusinessContact].isUpdatedWith(
-          BusinessContact().copy(email = Some(businessEmail))
+          BusinessContact().copy(website = Some(businessWebsiteAddress))
         )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
-//
+        val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
+
 //        response.status mustBe SEE_OTHER
 //        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
         response.status mustBe NOT_IMPLEMENTED
@@ -78,24 +78,44 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     }
 
     "BusinessContact is complete" should {
-      //TODO Update below line and redirect
+      //TODO update below line and redirect
+
       "Post the block to the backend and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
+
         given()
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(email = None))
-          .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(email = Some(businessEmail)))
+          .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(website = None))
+          .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(website = Some(businessWebsiteAddress)))
           .s4lContainer[BusinessContact].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
-//
+        val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
+
 //        response.status mustBe SEE_OTHER
 //        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
         response.status mustBe NOT_IMPLEMENTED
       }
+    }
+    "return 400 when the user submits and invalid regex" in new Setup {
+      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
+      val invalidUrl: String = businessWebsiteAddress + "@"
+
+      given()
+        .user.isAuthorised()
+        .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(website = None))
+        .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(website = Some(invalidUrl)))
+        .s4lContainer[BusinessContact].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidUrl))))
+
+      response.status mustBe BAD_REQUEST
+//      response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
     }
   }
 

@@ -18,21 +18,21 @@ package controllers.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.BusinessEmailAddressForm
+import forms.BusinessWebsiteAddressForm
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessContactService.Email
+import services.BusinessContactService.Website
 import services.{BusinessContactService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.Inject
-import views.html.business.BusinessEmail
+import views.html.business.BusinessWebsiteAddress
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BusinessEmailController @Inject()(val sessionService: SessionService,
+class BusinessWebsiteAddressController @Inject()(val sessionService: SessionService,
                                         val authConnector: AuthConnector,
                                         val businessContactService: BusinessContactService,
-                                        view: BusinessEmail)
+                                        view: BusinessWebsiteAddress)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
                                         baseControllerComponents: BaseControllerComponents)
@@ -43,8 +43,8 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
       implicit profile =>
         for {
           business <- businessContactService.getBusinessContact
-          form = business.email.fold(BusinessEmailAddressForm.form)(BusinessEmailAddressForm.form.fill)
-        } yield Ok(view(routes.BusinessEmailController.submit, form))
+          form = business.website.fold(BusinessWebsiteAddressForm.form)(BusinessWebsiteAddressForm.form.fill)
+        } yield Ok(view(routes.BusinessWebsiteAddressController.submit, form))
 
 
   }
@@ -52,13 +52,13 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        BusinessEmailAddressForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(view(routes.BusinessEmailController.submit, badForm))),
-          businessEmail =>
-            businessContactService.updateBusinessContact(Email(businessEmail)).flatMap {
+        BusinessWebsiteAddressForm.form.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm))),
+          businessWebsiteAddress =>
+            businessContactService.updateBusinessContact(Website(businessWebsiteAddress)).flatMap {
               _ =>
-                // TODO update
-              Future.successful(NotImplemented)
+                //TODO update
+                Future.successful(NotImplemented)
             }
 
         )
