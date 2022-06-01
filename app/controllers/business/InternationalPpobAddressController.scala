@@ -66,7 +66,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
         submitAction,
         internationalAddress => {
           businessContactService.updateBusinessContact(internationalAddress) map { _ =>
-            Redirect(routes.BusinessContactDetailsController.show)
+            Redirect(routes.BusinessEmailController.show)
           }
         }
       )

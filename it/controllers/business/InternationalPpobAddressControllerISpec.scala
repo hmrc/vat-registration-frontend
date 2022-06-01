@@ -86,7 +86,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessContactDetailsController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessEmailController.show.url)
     }
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       given
@@ -108,7 +108,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessContactDetailsController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessEmailController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given

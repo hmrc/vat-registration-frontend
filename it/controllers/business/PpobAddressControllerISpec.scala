@@ -48,7 +48,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
       val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessContactDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessEmailController.show.url)
       }
 
     }
@@ -66,7 +66,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
       val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessContactDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessEmailController.show.url)
       }
     }
   }

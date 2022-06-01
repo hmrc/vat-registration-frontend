@@ -53,7 +53,6 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           ppobAddress(businessContact, partyType),
           businessEmailAddress(businessContact),
           businessDaytimePhoneNumber(businessContact),
-          businessMobilePhoneNumber(businessContact),
           businessHasWebsite(businessContact),
           businessWebsite(businessContact),
           contactPreference(businessContact),
@@ -95,22 +94,15 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   private def businessEmailAddress(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.emailBusiness",
-      List(businessContact.email, businessContact.companyContactDetails.map(_.email)).flatten.headOption,
-      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
+      businessContact.email,
+      Some(businessContactRoutes.BusinessEmailController.show.url)
     )
 
   private def businessDaytimePhoneNumber(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.daytimePhoneBusiness",
-      List(businessContact.telephoneNumber, businessContact.companyContactDetails.flatMap(_.phoneNumber)).flatten.headOption,
-      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
-    )
-
-  private def businessMobilePhoneNumber(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
-    optSummaryListRowString(
-      s"$sectionId.mobileBusiness",
-      List(businessContact.mobile, businessContact.companyContactDetails.flatMap(_.mobileNumber)).flatten.headOption,
-      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
+      businessContact.telephoneNumber,
+      Some(businessContactRoutes.BusinessTelephoneNumberController.show.url)
     )
 
   private def businessHasWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
@@ -123,8 +115,8 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   private def businessWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.website",
-      List(businessContact.website, businessContact.companyContactDetails.flatMap(_.website)).flatten.headOption,
-      Some(businessContactRoutes.BusinessContactDetailsController.show.url)
+      businessContact.website,
+      Some(businessContactRoutes.BusinessWebsiteAddressController.show.url)
     )
 
   private def contactPreference(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
