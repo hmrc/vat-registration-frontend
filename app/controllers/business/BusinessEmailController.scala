@@ -45,8 +45,6 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
           business <- businessContactService.getBusinessContact
           form = business.email.fold(BusinessEmailAddressForm.form)(BusinessEmailAddressForm.form.fill)
         } yield Ok(view(routes.BusinessEmailController.submit, form))
-
-
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -55,13 +53,10 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
         BusinessEmailAddressForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(routes.BusinessEmailController.submit, badForm))),
           businessEmail =>
-            businessContactService.updateBusinessContact(Email(businessEmail)).flatMap {
-              _ =>
-                // TODO update
-              Future.successful(NotImplemented)
+            businessContactService.updateBusinessContact(Email(businessEmail)).map {
+              _ => Redirect(controllers.business.routes.BusinessTelephoneNumberController.show)
             }
 
         )
   }
-
 }

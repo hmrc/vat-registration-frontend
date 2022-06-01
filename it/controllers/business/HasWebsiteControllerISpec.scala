@@ -62,10 +62,10 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       val res = await(buildClient(url).post(Json.obj("value" -> "true")))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.HasWebsiteController.show.url) //TODO: redirect to correct page
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)
     }
 
-    "redirect to business website capture page if no is chosen" in new Setup {
+    "redirect to contact preference capture page if no is chosen" in new Setup {
       given
         .user.isAuthorised()
         .s4l.isEmpty()
@@ -76,7 +76,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       val res = await(buildClient(url).post(Json.obj("value" -> "false")))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.HasWebsiteController.show.url) //TODO: redirect to correct page
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     }
   }
 }

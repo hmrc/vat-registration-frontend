@@ -52,8 +52,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
           errors =>
             Future.successful(BadRequest(view(errors))),
           telephoneNumber => businessContactService.updateBusinessContact[TelephoneNumber](TelephoneNumber(telephoneNumber)) map {
-            // TODO: change the redirect url after the page is linked
-            _ => Redirect(controllers.business.routes.BusinessTelephoneNumberController.show)
+            _ => Redirect(controllers.business.routes.HasWebsiteController.show)
           }
         )
   }
