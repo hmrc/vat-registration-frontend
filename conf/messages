@@ -124,8 +124,10 @@ addressLookup.applicantAddress.selectPage.heading                 = Choose the a
 addressLookup.applicantAddress.selectPage.editAddressLinkText     = Enter address manually
 addressLookup.applicantAddress.selectPage.submitLabel             = Continue
 
+
 addressLookup.applicantAddress.editPage.title                     = Enter their address
 addressLookup.applicantAddress.editPage.heading                   = Enter their address
+
 addressLookup.applicantAddress.editPage.line1Label                = Address line 1
 addressLookup.applicantAddress.editPage.line2Label                = Address line 2
 addressLookup.applicantAddress.editPage.line3Label                = Address line 3
@@ -138,8 +140,8 @@ addressLookup.applicantAddress.confirmPage.heading                = Confirm the 
 addressLookup.applicantAddress.confirmPage.changeLinkText         = Edit this address
 addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
 
-addressLookup.applicantAddress.countryPicker.title                = Find your home address
-addressLookup.applicantAddress.countryPicker.heading              = Find your home address
+addressLookup.applicantAddress.countryPicker.title                = Find their address
+addressLookup.applicantAddress.countryPicker.heading              = Find their address
 
 ## international.applicantAddress
 international.addressLookup.applicantAddress.editPage.title                     = Enter their address
@@ -233,8 +235,8 @@ addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading              
 addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
-addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Find your home address
-addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Find your home address
+addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Find their previous address
+addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Find their previous address
 
 ## international.applicantAddressThreeYearsOrLess
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter their previous address
@@ -462,7 +464,7 @@ pages.accounting.period.para1                               = VAT Returns are us
 pages.accounting.period.radio.january                       = January, April, July and October
 pages.accounting.period.radio.february                      = February, May, August and November
 pages.accounting.period.radio.march                         = March, June, September and December
-validation.accounting.period.missing                        = Select how often the business will submit its VAT Returns
+validation.accounting.period.missing                        = Select the period the business will submit its VAT returns
 
 ##Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
@@ -869,7 +871,7 @@ pages.frs.costsInclusive.list.bullet10                    = services - that is, 
 pages.frs.costsInclusive.para2                            = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
 pages.frs.costsInclusive.para3                            = Find out more about
 pages.frs.costsInclusive.para3.1                          = VAT Flat Rate Scheme
-validation.frs.costsInclusive.missing                     = Select yes if the business will spend more than £250 over the next 3 months on ?relevant goods?
+validation.frs.costsInclusive.missing                     = Select yes if the business will spend more than £250 over the next 3 months on ‘relevant goods’
 
 ## Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading          = Estimate the business’s total sales, including VAT, for the next 3 months
@@ -917,8 +919,8 @@ pages.frs.startDate.hint                                  = This date must be on
 pages.frs.startDate.hint1                                 = For example, {0}
 pages.frs.startDate.legend                                = Date the business wants to join the Flat Rate Scheme
 validation.frs.startDate.invalid                          = Enter a valid date
-validation.frs.startDate.choice.missing                   = Enter the date when the business wants to join the Flat Rate Scheme
-validation.frs.startDate.missing                          = Enter a date
+validation.frs.startDate.choice.missing                   = Select when the business wants to join the Flat Rate Schem
+validation.frs.startDate.missing                          = Enter the date when the business wants to join the Flat Rate Scheme
 validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business’s registered for VAT
 validation.frs.startDate.range.after.maxDate              = The joining date must be within the first three months of VAT registration
 
@@ -1219,7 +1221,7 @@ pages.CoverSheet.idEvidence.birthCert              = birth certificate
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
 pages.northernIrelandReceiveGoods.hint                   = What is the value of these goods?
-nip.receiveGoods.missing                                 = Select ’yes’ if the business expects to receive goods in Northern Ireland from an EU country
+nip.receiveGoods.missing                                 = Select yes if the business expects to receive goods in Northern Ireland from an EU country
 validation.northernIrelandReceiveGoods.missing           = Enter the value of these goods
 validation.northernIrelandReceiveGoods.invalid           = Enter the value of these goods using characters 0 to 9
 
