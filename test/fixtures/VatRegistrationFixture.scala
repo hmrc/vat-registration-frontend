@@ -199,18 +199,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
-  val validBusinessContactWithCompanyDetails = BusinessContact(
-    companyContactDetails = Some(CompanyContactDetails(
-      email = "test@foo.com",
-      phoneNumber = Some("123"),
-      mobileNumber = Some("987654"),
-      website = Some("/test/url")
-    )),
-    ppobAddress = Some(testAddress),
-    hasWebsite = Some(true),
-    contactPreference = Some(Email)
-  )
-
   val validBusinessContactDetails = BusinessContact(
     email = Some("test@foo.com"),
     telephoneNumber = Some("123"),
@@ -242,7 +230,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
@@ -257,7 +245,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validSoleTraderVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
@@ -270,7 +258,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeNoBank = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
@@ -283,7 +271,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeNoTradingDetails = VatScheme(
     id = testRegId,
     tradingDetails = None,
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
@@ -296,7 +284,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeEmptySicAndCompliance = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithoutDescription),
     flatRateScheme = Some(validFlatRate),
@@ -309,7 +297,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeWithLabour = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactWithCompanyDetails),
+    businessContact = Some(validBusinessContactDetails),
     applicantDetails = Some(completeApplicantDetails),
     sicAndCompliance = Some(s4lVatSicAndComplianceWithLabour),
     flatRateScheme = Some(validFlatRate),

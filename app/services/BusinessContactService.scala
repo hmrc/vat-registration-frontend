@@ -69,14 +69,16 @@ class BusinessContactService @Inject()(val registrationApiConnector: Registratio
       case preference: ContactPreference => businessContact.copy(contactPreference = Some(preference))
       case Email(answer) => businessContact.copy(email = Some(answer))
       case TelephoneNumber(answer) => businessContact.copy(telephoneNumber = Some(answer))
-      case HasWebsiteAnswer(answer) => businessContact.copy(hasWebsite = Some(answer))
+      case HasWebsiteAnswer(answer) =>
+        val contactWithWebsiteCheck = businessContact.copy(hasWebsite = Some(answer))
+        if (!answer) contactWithWebsiteCheck.copy(website = None) else contactWithWebsiteCheck
       case Website(answer) => businessContact.copy(website = Some(answer))
     }
   }
 
   private def isModelComplete: BusinessContact => Completion[BusinessContact] = {
     case businessContact@BusinessContact(Some(_), Some(_), _, _, _, _, _, Some(_)) => Complete(businessContact)
-    case businessContact@BusinessContact(Some(_), _, Some(_), Some(_), Some(_), Some(_), _, Some(_)) => Complete(businessContact)
+    case businessContact@BusinessContact(Some(_), _, Some(_), Some(_), _, Some(_), _, Some(_)) => Complete(businessContact)
     case businessContact => Incomplete(businessContact)
   }
 

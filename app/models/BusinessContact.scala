@@ -52,7 +52,7 @@ object BusinessContact {
         (__ \ "telephoneNumber").writeNullable[String] and
         (__ \ "mobile").writeNullable[String] and
         (__ \ "hasWebsite").writeNullable[Boolean] and
-        (__ \ "website").writeNullable[String] and
+        (__ \ "website").writeOptionWithNull[String] and
         (__ \ "contactPreference").writeNullable[ContactPreference]
       ) (unlift(BusinessContact.unapply))
 

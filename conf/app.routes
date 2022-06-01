@@ -148,10 +148,6 @@ GET         /principal-place-business/acceptFromTxm                             
 GET         /principal-place-business/international                                            controllers.business.InternationalPpobAddressController.show
 POST        /principal-place-business/international                                            controllers.business.InternationalPpobAddressController.submit
 
-## BUSINESS CONTACT DETAILS PAGE
-GET         /business-contact-details                                                          controllers.business.BusinessContactDetailsController.show
-POST        /business-contact-details                                                          controllers.business.BusinessContactDetailsController.submit
-
 ## Applicant ADDRESS PAGE
 GET         /home-address                                                                      controllers.applicant.HomeAddressController.redirectToAlf
 GET         /home-address/acceptFromTxm                                                        controllers.applicant.HomeAddressController.addressLookupCallback(id: String ?= "")

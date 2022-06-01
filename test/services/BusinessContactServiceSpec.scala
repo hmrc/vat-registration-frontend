@@ -496,13 +496,36 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
 
-      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(telephoneNumber = Some(website.answer)))
+      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(website = Some(website.answer)))
 
       when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusinessContact[Website](website))
       result mustBe website
+    }
+
+    "determine that the model is complete and save in the backend - reset website to null when user selects no for hasWebsite" in {
+      val businessContact = BusinessContact(
+        ppobAddress = Some(testAddress),
+        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        email = Some("test@test.com"),
+        telephoneNumber = Some("123456789"),
+        hasWebsite = Some(true),
+        website = Some("test.com"),
+        contactPreference = Some(Email)
+      )
+
+      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(businessContact)))
+
+      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(hasWebsite = Some(false), website = None))
+
+      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result = await(testService.updateBusinessContact[HasWebsiteAnswer](HasWebsiteAnswer(false)))
+      result mustBe HasWebsiteAnswer(false)
     }
 
     "determine that the model is complete and save in the backend - update ppobAddress" in {
