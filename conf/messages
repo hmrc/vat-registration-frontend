@@ -958,9 +958,10 @@ capture-telephone-number.yourHeading                     = What is your telephon
 capture-telephone-number.namedHeading                    = What is {0}’s telephone number?
 capture-telephone-number.paragraph                       = We may need to contact you about the application.
 capture-telephone-number.label                           = UK telephone number
-capture-telephone-number.error.incorrect_format          = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 0808 157 0192
-capture-telephone-number.error.nothing_entered           = Enter a UK telephone number
-capture-telephone-number.error.incorrect_length          = The telephone number must be 24 characters or fewer
+capture-telephone-number.error.invalid                   = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+capture-telephone-number.error.missing                   = Enter the telephone number
+capture-telephone-number.error.minlength                 = The telephone number must be at least 8 characters
+capture-telephone-number.error.maxlength                 = The telephone number must be 15 characters or fewer
 
 ## CONTINUE APPLICATION MESSAGES
 start-new-application.heading                            = Are you starting a new application?
@@ -1281,12 +1282,13 @@ validation.organisationName.missing                      = Enter the name of you
 validation.organisationName.invalid                      = Enter a valid organisation name
 validation.organisationName.maxlen                       = Enter an organisation name that is less than 160 characters
 
-## TELEPHONE NUMBER
-telephoneNumber.heading                                  = What is your telephone number?
-telephoneNumber.label                                    = Enter a telephone number
-telephoneNumber.error.incorrectFormat                    = Enter a telephone number that does not contain special characters
-telephoneNumber.error.nothingEntered                     = Enter your telephone number
-telephoneNumber.error.incorrectLength                    = Enter a telephone number that is between 1 and 24 characters
+## TRANSACTOR TELEPHONE NUMBER
+transactorTelephoneNumber.heading                                  = What is your telephone number?
+transactorTelephoneNumber.label                                    = Enter a telephone number
+transactorTelephoneNumber.error.invalid                            = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+transactorTelephoneNumber.error.missing                            = Enter the telephone number
+transactorTelephoneNumber.error.minlength                          = The telephone number must be at least 8 characters
+transactorTelephoneNumber.error.maxlength                          = The telephone number must be 15 characters or fewer
 
 ## AGENT NAME (TRANSACTOR)
 agentName.heading                                        = What is your name?
