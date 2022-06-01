@@ -16,7 +16,8 @@
 
 package forms
 
-import forms.FormValidation.{ErrorCode, nonEmptyValidText}
+import forms.FormValidation.{ErrorCode, maxLenText, nonEmptyValidText}
+import forms.constraints.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
@@ -28,12 +29,15 @@ object BusinessWebsiteAddressForm {
   val businessWebsiteAddressKey = "businessWebsiteAddress"
   implicit val errorCode: ErrorCode = businessWebsiteAddressKey
   val regex: Regex = """^(?i)(((HTTP|http)(S|s)?\:\/\/((WWW|www)\.)?)|((WWW|www)\.))?[a-zA-Z0-9\[_~\:\/?#\]@!&'()*+,;=% ]+\.[a-zA-Z]{2,5}(\.[a-zA-Z]{2,5})?(\:[0-9]{1,5})?(\/[a-zA-Z0-9_-]+(\/)?)*$""".r
+  val maxLength = 132
 
   val form: Form[String] =
     Form(
       single(
-        businessWebsiteAddressKey -> text.verifying(StopOnFirstFail(
-          nonEmptyValidText(regex)
+        businessWebsiteAddressKey -> text.verifying(
+          StopOnFirstFail(
+            nonEmptyValidText(regex) andThen
+            maxLenText(maxLength)
         )))
     )
 

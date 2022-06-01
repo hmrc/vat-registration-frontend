@@ -1528,3 +1528,4 @@ validation.business.hasWebsite.missing               = Select yes if the busines
 businessWebsiteAddress.heading                       = What is the business’ website address?
 validation.businessWebsiteAddress.invalid            = Enter the website address in the correct format, like https://www.example.com
 validation.businessWebsiteAddress.missing            = Enter the business website address
+validation.businessWebsiteAddress.maxlen             = The business website address must be 132 characters or fewer
