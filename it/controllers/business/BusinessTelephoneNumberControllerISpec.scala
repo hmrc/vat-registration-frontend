@@ -59,7 +59,7 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient("/business-telephone-number").post(Map("daytimePhone" -> Seq(businessTelephoneNumber)))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.HasWebsiteController.show.url)
       }
     }
 

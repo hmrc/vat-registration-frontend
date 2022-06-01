@@ -6,7 +6,7 @@ import itutil.ControllerISpec
 import models.BusinessContact
 import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -16,6 +16,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
 
   val url: String = controllers.business.routes.BusinessEmailController.show.url
   val businessEmail = "test@test.com"
+  val invalidBusinessEmail = "test@@test.com"
 
   val s4lData: BusinessContact = BusinessContact(
     email = Some(businessEmail)
@@ -55,7 +56,6 @@ class BusinessEmailControllerISpec extends ControllerISpec {
 
   s"POST $url" when {
     "BusinessContact is not complete" should {
-      //TODO Update below line and redirect
       "Update S4L and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
         given()
@@ -70,15 +70,13 @@ class BusinessEmailControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
-//
-//        response.status mustBe SEE_OTHER
-//        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
-        response.status mustBe NOT_IMPLEMENTED
+
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
       }
     }
 
     "BusinessContact is complete" should {
-      //TODO Update below line and redirect
       "Post the block to the backend and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
         given()
@@ -91,12 +89,25 @@ class BusinessEmailControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
-//
-//        response.status mustBe SEE_OTHER
-//        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
-        response.status mustBe NOT_IMPLEMENTED
+
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
       }
     }
-  }
 
+    "Return BAD_REQUEST if invalid email provided" in new Setup {
+      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
+      given()
+        .user.isAuthorised()
+        .s4l.cleared()
+        .s4lContainer[BusinessContact].contains(BusinessContact())
+        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(email = Some(invalidBusinessEmail)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(invalidBusinessEmail))))
+
+      response.status mustBe BAD_REQUEST
+    }
+  }
 }

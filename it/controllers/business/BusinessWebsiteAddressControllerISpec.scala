@@ -54,7 +54,6 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
   s"POST $url" when {
     "BusinessContact is not complete" should {
-      //TODO Update below line and redirect
       "Update S4L and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
 
@@ -71,15 +70,12 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
 
-//        response.status mustBe SEE_OTHER
-//        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
-        response.status mustBe NOT_IMPLEMENTED
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
       }
     }
 
     "BusinessContact is complete" should {
-      //TODO update below line and redirect
-
       "Post the block to the backend and redirect to the next page" in new Setup {
         implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
 
@@ -94,11 +90,11 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
 
-//        response.status mustBe SEE_OTHER
-//        response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
-        response.status mustBe NOT_IMPLEMENTED
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
       }
     }
+
     "return 400 when the user submits and invalid regex" in new Setup {
       implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
       val invalidUrl: String = businessWebsiteAddress + "@"
@@ -115,8 +111,6 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
       val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidUrl))))
 
       response.status mustBe BAD_REQUEST
-//      response.header("LOCATION") mustBe Some(controllers.business.routes.nextPage)
     }
   }
-
 }

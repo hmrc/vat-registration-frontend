@@ -55,12 +55,9 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
         BusinessWebsiteAddressForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm))),
           businessWebsiteAddress =>
-            businessContactService.updateBusinessContact(Website(businessWebsiteAddress)).flatMap {
-              _ =>
-                //TODO update
-                Future.successful(NotImplemented)
+            businessContactService.updateBusinessContact(Website(businessWebsiteAddress)).map {
+              _ => Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
             }
-
         )
   }
 

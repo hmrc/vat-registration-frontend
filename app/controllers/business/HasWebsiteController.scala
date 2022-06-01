@@ -52,10 +52,12 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
             Future.successful(BadRequest(view(formWithErrors))),
           hasWebsite =>
             businessContactService.updateBusinessContact(HasWebsiteAnswer(hasWebsite)) map { _ =>
-              //TODO: change redirect to correct page
-              Redirect(controllers.business.routes.HasWebsiteController.show)
+              if (hasWebsite) {
+                Redirect(controllers.business.routes.BusinessWebsiteAddressController.show)
+              } else {
+                Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
+              }
             }
         )
   }
-
 }
