@@ -26,6 +26,7 @@ class BusinessWebsiteAddressFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val testWebsiteAddress: String = "https://www.example.com"
   val incorrectFormatErrorKey: String = "validation.businessWebsiteAddress.invalid"
   val emptyErrorKey: String = "validation.businessWebsiteAddress.missing"
+  val maxLengthErrorKey: String = "validation.businessWebsiteAddress.maxlen"
 
   "The businessWebsiteAddressForm" must {
     "validate that testWebsiteAddress is valid" in {
@@ -38,6 +39,13 @@ class BusinessWebsiteAddressFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       val formWithError = businessWebsiteAddressForm.bind(Map(BusinessWebsiteAddressForm.businessWebsiteAddressKey -> "invalid"))
 
       formWithError.errors must contain(FormError(BusinessWebsiteAddressForm.businessWebsiteAddressKey, incorrectFormatErrorKey))
+    }
+
+    "validate that website address exceeding max length fails" in {
+      val exceedMaxLengthWebsiteAddress: String = ("a" * 132) + "test.com"
+      val formWithError = businessWebsiteAddressForm.bind(Map(BusinessWebsiteAddressForm.businessWebsiteAddressKey -> exceedMaxLengthWebsiteAddress))
+
+      formWithError.errors must contain(FormError(BusinessWebsiteAddressForm.businessWebsiteAddressKey, maxLengthErrorKey))
     }
 
     "validate that an empty field fails" in {
