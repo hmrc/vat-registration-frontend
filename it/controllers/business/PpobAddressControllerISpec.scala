@@ -59,7 +59,6 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .s4lContainer[BusinessContact].isEmpty
         .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
         .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].isUpdatedWith(validBusinessContactDetails.copy(companyContactDetails = None))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

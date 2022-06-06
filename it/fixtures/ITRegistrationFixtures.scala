@@ -103,12 +103,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val validBusinessContactDetails = BusinessContact(
-    companyContactDetails = Some(CompanyContactDetails(
-      email = "test@foo.com",
-      phoneNumber = Some("123"),
-      mobileNumber = Some("987654"),
-      website = Some("/test/url")
-    )),
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("987654"),
+    website = Some("/test/url"),
     ppobAddress = Some(addressWithCountry),
     contactPreference = Some(Email)
   )
