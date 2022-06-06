@@ -202,7 +202,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validBusinessContactDetails = BusinessContact(
     email = Some("test@foo.com"),
     telephoneNumber = Some("123"),
-    mobile = Some("987654"),
     hasWebsite = Some(true),
     website = Some("/test/url"),
     ppobAddress = Some(testAddress),

@@ -21,10 +21,8 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class BusinessContact(ppobAddress: Option[Address] = None,
-                           companyContactDetails: Option[CompanyContactDetails] = None,
                            email: Option[String] = None,
                            telephoneNumber: Option[String] = None,
-                           mobile: Option[String] = None,
                            hasWebsite: Option[Boolean] = None,
                            website: Option[String] = None,
                            contactPreference: Option[ContactPreference] = None)
@@ -36,10 +34,8 @@ object BusinessContact {
 
   val apiReads: Reads[BusinessContact] = (
     (__ \ "ppob").readNullable[Address] and
-      (__).readNullable[CompanyContactDetails](CompanyContactDetails.apiFormat).orElse(Reads.pure(None)) and
       (__ \ "email").readNullable[String] and
       (__ \ "telephoneNumber").readNullable[String] and
-      (__ \ "mobile").readNullable[String] and
       (__ \ "hasWebsite").readNullable[Boolean] and
       (__ \ "website").readNullable[String] and
       (__ \ "contactPreference").readNullable[ContactPreference]
@@ -47,10 +43,8 @@ object BusinessContact {
 
   val apiWrites: Writes[BusinessContact] = (
       (__ \ "ppob").writeNullable[Address] and
-        (__).writeNullable[CompanyContactDetails](CompanyContactDetails.apiFormat) and
         (__ \ "email").writeNullable[String] and
         (__ \ "telephoneNumber").writeNullable[String] and
-        (__ \ "mobile").writeNullable[String] and
         (__ \ "hasWebsite").writeNullable[Boolean] and
         (__ \ "website").writeOptionWithNull[String] and
         (__ \ "contactPreference").writeNullable[ContactPreference]

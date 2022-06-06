@@ -45,7 +45,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       "there is a model in S4L" in {
         val businessContact = BusinessContact(
           ppobAddress = Some(testAddress),
-          companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+          email = Some("test@test.com"),
           contactPreference = Some(Letter)
         )
 
@@ -66,12 +66,9 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
             postcode = Some("TE57 7ET"),
             addressValidated = true
           )),
-          companyContactDetails = Some(CompanyContactDetails(
-            email = "test@test.com",
-            phoneNumber = Some("1234567890"),
-            mobileNumber = Some("9876545678"),
-            website = Some("/test/url")
-          )),
+          email = Some("test@test.com"),
+          telephoneNumber = Some("1234567890"),
+          website = Some("/test/url"),
           contactPreference = Some(Email)
         )
 
@@ -92,7 +89,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       "there is no data in either S4L or the backend" in {
         val businessContact = BusinessContact(
           ppobAddress = None,
-          companyContactDetails = None,
           contactPreference = None
         )
 
@@ -114,7 +110,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is incomplete and save in S4L - nothing pre-populated, update ppobAddress" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -130,31 +125,9 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       result mustBe testAddress
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update companyContactDetails" in {
-      val businessContact = BusinessContact(
-        ppobAddress = None,
-        companyContactDetails = None,
-        contactPreference = None
-      )
-
-      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
-
-      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(businessContact)))
-
-      mockGetSection(testRegId, None)
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
-      result mustBe companyContactDetails
-    }
-
     "determine that the model is incomplete and save in S4L - nothing pre-populated, update contactPreference" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -179,7 +152,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         telephoneNumber = None,
         hasWebsite = None,
         website = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -204,7 +176,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         telephoneNumber = None,
         hasWebsite = None,
         website = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -229,7 +200,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         telephoneNumber = None,
         hasWebsite = None,
         website = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -254,7 +224,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
         telephoneNumber = None,
         hasWebsite = None,
         website = None,
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -273,29 +242,9 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     }
 
 
-    "determine that the model is incomplete and save in S4L - ppobAddress pre-populated, update companyContactDetails" in {
-      val businessContact = BusinessContact(
-        ppobAddress = Some(testAddress),
-        companyContactDetails = None,
-        contactPreference = None
-      )
-
-      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
-
-      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(businessContact)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
-      result mustBe companyContactDetails
-    }
-
     "determine that the model is incomplete and save in S4L - ppobAddress pre-populated, update contactPreference" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = None,
         contactPreference = None
       )
 
@@ -314,7 +263,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update ppobAddress" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        email = Some("test@test.com"),
         contactPreference = None
       )
 
@@ -331,7 +280,7 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update contactPreference" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        email = Some("test@test.com"),
         contactPreference = None
       )
 
@@ -350,7 +299,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is incomplete and save in S4L - contactPreference pre-populated, update ppobAddress" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = None,
         contactPreference = Some(Letter)
       )
 
@@ -364,59 +312,17 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
       result mustBe testAddress
     }
 
-    "determine that the model is incomplete and save in S4L - contactPreference pre-populated, update companyContactDetails" in {
-      val businessContact = BusinessContact(
-        ppobAddress = None,
-        companyContactDetails = None,
-        contactPreference = Some(Email)
-      )
-
-      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
-
-      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(businessContact)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
-      result mustBe companyContactDetails
-    }
-
-
-    "determine that the model is complete and save in the backend - update companyContactDetails" in {
-      val businessContact = BusinessContact(
-        ppobAddress = Some(testAddress),
-        companyContactDetails = None,
-        contactPreference = Some(Email)
-      )
-
-      val companyContactDetails = CompanyContactDetails("test@test.com", None, None, None)
-
-      when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(businessContact)))
-
-      mockReplaceSection[BusinessContact](testRegId, businessContact.copy(companyContactDetails = Some(companyContactDetails)))
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusinessContact[CompanyContactDetails](companyContactDetails))
-      result mustBe companyContactDetails
-    }
-
     "determine that the model is complete and save in the backend - update business contact email" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
-        email = None,
+        email = Some("test@test.com"),
         telephoneNumber = Some("123456789"),
         hasWebsite = Some(true),
         website = Some("test.com"),
         contactPreference = Some(Email)
       )
 
-      val email = BusinessContactEmail("test@test.com")
+      val email = BusinessContactEmail("test1@test.com")
 
       when(mockS4LService.fetchAndGet[BusinessContact](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(businessContact)))
@@ -433,7 +339,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - update business contact telephoneNumber" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
         email = Some("test@test.com"),
         telephoneNumber = None,
         hasWebsite = Some(true),
@@ -458,7 +363,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - update business contact hasWebsite" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
         email = Some("test@test.com"),
         telephoneNumber = Some("123456789"),
         hasWebsite = None,
@@ -483,7 +387,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - update business contact website" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
         email = Some("test@test.com"),
         telephoneNumber = Some("123456789"),
         hasWebsite = Some(true),
@@ -508,7 +411,6 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - reset website to null when user selects no for hasWebsite" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
         email = Some("test@test.com"),
         telephoneNumber = Some("123456789"),
         hasWebsite = Some(true),
@@ -531,7 +433,10 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - update ppobAddress" in {
       val businessContact = BusinessContact(
         ppobAddress = None,
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        email = Some("test@test.com"),
+        telephoneNumber = Some("123456789"),
+        hasWebsite = Some(true),
+        website = Some("test.com"),
         contactPreference = Some(Email)
       )
 
@@ -550,7 +455,10 @@ class BusinessContactServiceSpec extends VatRegSpec with MockRegistrationApiConn
     "determine that the model is complete and save in the backend - update contactPreference" in {
       val businessContact = BusinessContact(
         ppobAddress = Some(testAddress),
-        companyContactDetails = Some(CompanyContactDetails("test@test.com", None, None, None)),
+        email = Some("test@test.com"),
+        telephoneNumber = Some("123456789"),
+        hasWebsite = Some(true),
+        website = Some("test.com"),
         contactPreference = None
       )
 
