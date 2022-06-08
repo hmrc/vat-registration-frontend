@@ -150,10 +150,6 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
     }
   }
 
-  def isVoluntary(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Boolean] = {
-    vatService.getThreshold(profile.registrationId).map(!_.mandatoryRegistration)
-  }
-
   def isEligibleForAAS(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Boolean] = {
     for {
       turnoverEstimates <- vatService.fetchTurnoverEstimates

@@ -21,6 +21,7 @@ import play.api.libs.json._
 sealed trait RegistrationReason {
   val key: String
   val humanReadableKey: String
+  val isVoluntary = false
 }
 
 object RegistrationReason {
@@ -31,7 +32,8 @@ object RegistrationReason {
     NonUk.key -> NonUk,
     TransferOfAGoingConcern.key -> TransferOfAGoingConcern,
     GroupRegistration.key -> GroupRegistration,
-    SuppliesOutsideUk.key -> SuppliesOutsideUk
+    SuppliesOutsideUk.key -> SuppliesOutsideUk,
+    IntendingTrader.key -> IntendingTrader
   )
   val inverseMapping: Map[RegistrationReason, String] = mapping.map(_.swap)
 
@@ -53,6 +55,7 @@ object BackwardLook extends RegistrationReason {
 object Voluntary extends RegistrationReason {
   val key = "0018"
   val humanReadableKey = "Voluntary"
+  override val isVoluntary = true
 }
 
 object NonUk extends RegistrationReason {
@@ -63,6 +66,7 @@ object NonUk extends RegistrationReason {
 object SuppliesOutsideUk extends RegistrationReason {
   val key = "0017"
   val humanReadableKey = "Supplies outside the UK"
+  override val isVoluntary = true
 }
 
 object GroupRegistration extends RegistrationReason {
@@ -73,4 +77,10 @@ object GroupRegistration extends RegistrationReason {
 object TransferOfAGoingConcern extends RegistrationReason {
   val key = "0014"
   val humanReadableKey = "Transfer of a Going Concern"
+}
+
+case object IntendingTrader extends RegistrationReason {
+  val key = "0013"
+  val humanReadableKey = "Intending Trader"
+  override val isVoluntary = true
 }

@@ -263,27 +263,6 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
     }
   }
 
-  "getThreshold" should {
-    "return true when in a voluntary flow" in new Setup {
-      val voluntary: Threshold = generateThreshold()
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(voluntary))
-
-      await(service.isVoluntary) mustBe true
-
-    }
-
-    "return false when in a mandatory flow" in new Setup {
-      val mandatory: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
-
-      when(service.vatService.getThreshold(any())(any()))
-        .thenReturn(Future.successful(mandatory))
-
-      await(service.isVoluntary) mustBe false
-    }
-  }
-
   "retrieveMandatoryDates" should {
     val calculatedDate: LocalDate = LocalDate.of(2017, 12, 25)
 

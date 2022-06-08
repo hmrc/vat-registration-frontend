@@ -307,9 +307,6 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "mandatoryStartPage" should {
     "show the page" when {
       "return OK when not voluntary" in new Setup {
-        when(mockReturnsService.isVoluntary(any(), any()))
-          .thenReturn(Future.successful(!voluntary))
-
         when(mockReturnsService.retrieveMandatoryDates(any(), any()))
           .thenReturn(Future.successful(MandatoryDateModel(testDate, Some(testDate), Some(DateSelection.calculated_date))))
 
