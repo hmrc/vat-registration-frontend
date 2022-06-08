@@ -3,6 +3,7 @@ package controllers.returns
 
 import itutil.ControllerISpec
 import models.api.{Partnership, Trust}
+import models.{GroupRegistration, Voluntary}
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -17,9 +18,9 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           given
             .user.isAuthorised()
             .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
-              eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold.copy(mandatoryRegistration = false))),
-              applicantDetails = Some(validFullApplicantDetails)
-            ))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(registrationReason = Voluntary)),
+            applicantDetails = Some(validFullApplicantDetails)
+          ))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -34,9 +35,9 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           given
             .user.isAuthorised()
             .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
-              eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(threshold = threshold.copy(mandatoryRegistration = false))),
-              applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(dateOfIncorporation = None))))
-            ))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(registrationReason = Voluntary)),
+            applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(dateOfIncorporation = None))))
+          ))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -51,9 +52,9 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           given
             .user.isAuthorised()
             .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
-              eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership, threshold = threshold.copy(mandatoryRegistration = false))),
-              applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(dateOfIncorporation = None))))
-            ))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership, registrationReason = Voluntary)),
+            applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(dateOfIncorporation = None))))
+          ))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,9 +69,9 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           given
             .user.isAuthorised()
             .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
-              eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust, threshold = threshold.copy(mandatoryRegistration = false))),
-              applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))
-            ))
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Trust, registrationReason = Voluntary)),
+            applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))
+          ))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -86,9 +87,9 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
-            applicantDetails = Some(validFullApplicantDetails)
-          ))
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+          applicantDetails = Some(validFullApplicantDetails)
+        ))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,6 +97,23 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.mandatoryStartPage.url)
+      }
+    }
+    "the user is a VAT group" must {
+      "redirect to the voluntary start date page (no date choice)" in new Setup {
+        given
+          .user.isAuthorised()
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(registrationReason = GroupRegistration)),
+          applicantDetails = Some(validFullApplicantDetails)
+        ))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get)
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.VoluntaryStartDateNoChoiceController.show.url)
       }
     }
   }

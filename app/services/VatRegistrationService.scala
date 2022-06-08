@@ -83,9 +83,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
     vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
   }
 
-  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Threshold] =
-    vatRegConnector.getThreshold(regId) map (_.getOrElse(throw new IllegalStateException(s"No threshold block found in the back end for regId: $regId")))
-
   def fetchTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
     vatRegConnector.getTurnoverEstimates
   }

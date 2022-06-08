@@ -178,27 +178,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling getThreshold" should {
-    val vatThreshold = optVoluntaryRegistration
-
-    "return the correct VatResponse when the microservice completes and returns a Threshold model" in new Setup {
-      mockHttpGET[HttpResponse]("tst-url", HttpResponse(200, Json.toJson(vatThreshold).toString))
-      connector.getThreshold("tstID") returns vatThreshold
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedGET("tst-url", forbidden)
-      connector.getThreshold("tstID") failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedGET("tst-url", notFound)
-      connector.getThreshold("tstID") failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedGET("tst-url", internalServiceException)
-      connector.getThreshold("tstID") failedWith internalServiceException
-    }
-  }
-
   "Calling upsertPpob" should {
 
     "return the correct VatResponse when the microservice completes and returns a upsertPpob model" in new Setup {

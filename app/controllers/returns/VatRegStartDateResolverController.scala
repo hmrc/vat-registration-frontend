@@ -18,6 +18,7 @@ package controllers.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import models.GroupRegistration
 import models.external.{IncorporatedEntity, PartnershipIdEntity}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
@@ -31,15 +32,15 @@ class VatRegStartDateResolverController @Inject()(val sessionService: SessionSer
                                                   val authConnector: AuthClientConnector,
                                                   val vatRegistrationService: VatRegistrationService)
                                                  (implicit appConfig: FrontendAppConfig,
-                                                 val executionContext: ExecutionContext,
-                                                 baseControllerComponents: BaseControllerComponents)
+                                                  val executionContext: ExecutionContext,
+                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
       for {
         scheme <- vatRegistrationService.getVatScheme
-        eligibilityData = scheme.eligibilitySubmissionData
+        registrationReason = scheme.eligibilitySubmissionData.map(_.registrationReason)
           .getOrElse(throw new InternalServerException("[ClaimRefundsController] Unable to retrieve eligibility data"))
         incorpDate = scheme.applicantDetails.flatMap {
           _.entity.flatMap {
@@ -48,8 +49,8 @@ class VatRegStartDateResolverController @Inject()(val sessionService: SessionSer
             case _ => None
           }
         }
-        isVoluntary = !eligibilityData.threshold.mandatoryRegistration
-      } yield (isVoluntary, incorpDate) match {
+      } yield (registrationReason.isVoluntary, incorpDate) match {
+        case _ if registrationReason.equals(GroupRegistration) => Redirect(routes.VoluntaryStartDateNoChoiceController.show)
         case (true, None) => Redirect(routes.VoluntaryStartDateNoChoiceController.show)
         case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
         case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage)

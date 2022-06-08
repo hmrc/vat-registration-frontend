@@ -97,14 +97,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getThreshold(regId: String)(implicit hc: HeaderCarrier): Future[Option[Threshold]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/threshold-data").map {
-      result => if (result.status == NO_CONTENT) None else result.json.validateOpt[Threshold].get
-    }.recover {
-      case e => throw logResponse(e, "getThreshold")
-    }
-  }
-
   def upsertPpob(regId: String, address: Address)(implicit hc: HeaderCarrier, rds: HttpReads[Address]): Future[Address] = {
     http.PATCH[Address, Address](s"$vatRegUrl/vatreg/$regId/ppob", address).recover {
       case e: Exception => throw logResponse(e, "upsertPpob")
