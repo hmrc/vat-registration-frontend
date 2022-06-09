@@ -38,13 +38,9 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)
                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
-    val bankAccount = if (hasBankAccount) {
-      fetchBankAccountDetails map {
-        case Some(bankAccountDetails) => bankAccountDetails.copy(isProvided = true)
-        case None => BankAccount(hasBankAccount, None, None, None)
-      }
-    } else {
-      Future.successful(BankAccount(isProvided = false, None, None, None))
+    val bankAccount = fetchBankAccountDetails map {
+      case Some(bankAccountDetails) => bankAccountDetails.copy(isProvided = hasBankAccount)
+      case None => BankAccount(hasBankAccount, None, None, None)
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -52,18 +48,16 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
 
   def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
-    bankAccountRepService.validateBankDetails(accountDetails).flatMap { bankAccountDetailsStatus =>
-      bankAccountDetailsStatus match {
-        case status@(ValidStatus | IndeterminateStatus) =>
-          val bankAccount = BankAccount(
-            isProvided = true,
-            details = Some(accountDetails.copy(status = Some(status))),
-            overseasDetails = None,
-            reason = None
-          )
-          saveBankAccountDetails(bankAccount) map (_ => true)
-        case InvalidStatus => Future.successful(false)
-      }
+    bankAccountRepService.validateBankDetails(accountDetails).flatMap {
+      case status@(ValidStatus | IndeterminateStatus) =>
+        val bankAccount = BankAccount(
+          isProvided = true,
+          details = Some(accountDetails.copy(status = Some(status))),
+          overseasDetails = None,
+          reason = None
+        )
+        saveBankAccountDetails(bankAccount) map (_ => true)
+      case InvalidStatus => Future.successful(false)
     }
   }
 
