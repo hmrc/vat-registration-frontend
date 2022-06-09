@@ -19,6 +19,7 @@ package services
 import models.{BankAccount, BankAccountDetails, BeingSetup, OverseasBankDetails, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
+import org.scalatest.Assertion
 import testHelpers.VatSpec
 import uk.gov.hmrc.http.HttpResponse
 
@@ -37,6 +38,62 @@ class BankAccountDetailsServiceSpec extends VatSpec {
   }
 
   val bankAccountS4LKey: S4LKey[BankAccount] = BankAccount.s4lKey
+
+  "saveHasCompanyBankAccount" should {
+
+    def verifyBankAccountPatch(service: BankAccountDetailsService, hasBankAccount: Boolean, bankAccount: BankAccount): Assertion = {
+      when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockS4LService.clearKey(any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
+        .thenReturn(Future.successful(Some(bankAccount)))
+
+      when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(bankAccount))(any()))
+        .thenReturn(Future.successful(HttpResponse(200)))
+
+      val result: BankAccount = await(service.saveHasCompanyBankAccount(hasBankAccount))
+
+      verify(mockS4LService, never()).save(eqTo(bankAccount))(any(), any(), any(), any())
+      result mustBe bankAccount
+    }
+
+    def verifyIncompleteBankAccount(service: BankAccountDetailsService, hasBankAccount: Boolean) = {
+      val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None, None)
+
+      when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockS4LService.save(eqTo(incompleteBankAccount))(any(), any(), any(), any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
+        .thenReturn(Future.successful(None))
+
+      await(service.saveHasCompanyBankAccount(hasBankAccount)) mustBe incompleteBankAccount
+    }
+
+    "patch and return an already persisted completed ProvidedBankAccount" in new Setup {
+      val existingProvidedBankAccountState: BankAccount =
+        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
+
+      verifyBankAccountPatch(service, hasBankAccount = true, existingProvidedBankAccountState)
+    }
+
+    "patch and return an already persisted completed NoBankAccount with a reason" in new Setup {
+      val existingNoBankAccountState: BankAccount =
+        BankAccount(isProvided = false, None, None, Some(BeingSetup))
+
+      verifyBankAccountPatch(service, hasBankAccount = false, existingNoBankAccountState)
+    }
+
+    "return a new blank BankAccount model if no previous bank account state available" in new Setup {
+      verifyIncompleteBankAccount(service, hasBankAccount = false)
+      verifyIncompleteBankAccount(service, hasBankAccount = true)
+    }
+  }
 
   "fetchBankAccountDetails" should {
 
@@ -94,15 +151,13 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any()))
         .thenReturn(Future.successful(HttpResponse(200)))
 
-      when(mockS4LService.save(eqTo(fullBankAccount))(any(), any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
       val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
       result mustBe fullBankAccount
 
+      verify(mockS4LService, never()).save(eqTo(fullBankAccount))(any(), any(), any(), any())
       verify(mockVatRegistrationConnector, times(1)).patchBankAccount(any(), any())(any())
     }
 
