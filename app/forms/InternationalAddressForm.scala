@@ -17,17 +17,17 @@
 package forms
 
 import connectors.ConfigConnector
-import models.api
 import models.api.{Address, Country}
 import play.api.data.Forms.{mapping, of, optional, text}
 import play.api.data.format.Formatter
 import play.api.data.validation.Constraints.{maxLength, pattern}
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import javax.inject.{Inject, Singleton}
+import scala.util.matching.Regex
 
 @Singleton
 class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
@@ -42,12 +42,12 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
           pattern(lineRegex, line1Key, "internationalAddress.error.line1.invalid")
         )
       ),
-      line2Key -> optional(text.verifying(
+      line2Key -> of[String](stringFormat).verifying(
         StopOnFirstFail(
           maxLength(maxLineLength, "internationalAddress.error.line2.length"),
           pattern(lineRegex, line2Key, "internationalAddress.error.line2.invalid")
         )
-      )),
+      ),
       line3Key -> optional(text.verifying(
         StopOnFirstFail(
           maxLength(maxLineLength, "internationalAddress.error.line3.length"),
@@ -84,15 +84,17 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
           country => country.flatMap(_.name)
             .getOrElse(throw new InternalServerException("Country missing from international address"))
         )
-    )(Address.apply(_, _, _, _, _, _, _))(address => Address.unapply(address).map {
+    )
+    ((ln1, ln2, ln3, ln4, ln5, postcode, country) => Address.apply(ln1, Some(ln2), ln3, ln4, ln5, postcode, country))
+    (address => Address.unapply(address).map {
       case (l1, optL2, optL3, optL4, optL5, optPostcode, optCountry, _) =>
-        (l1, optL2, optL3, optL4, optL5, optPostcode, optCountry)
+        (l1, optL2.getOrElse(""), optL3, optL4, optL5, optPostcode, optCountry)
     })
   )
 
   val stringFormat: Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]) =
-      data.get(key).toRight(Seq(FormError(key, "internationalAddress.error.line1.empty", Nil)))
+    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
+      data.get(key).toRight(Seq(FormError(key, s"internationalAddress.error.$key.empty", Nil)))
 
     def unbind(key: String, value: String) =
       Map(key -> value)
@@ -110,7 +112,6 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
       Invalid("internationalAddress.error.country.invalid")
     }
   }
-
 }
 
 object InternationalAddressForm {
@@ -126,6 +127,6 @@ object InternationalAddressForm {
   val maxLineLength = 35
   val maxPostcodeLength = 10
 
-  val postcodeRegex = "^[A-Za-z0-9 \\-,.&'\\\\/()!]{1,10}$".r
-  val lineRegex = "^[A-Za-z0-9 \\-,.&'\\\\/()!]{1,35}$".r
+  val postcodeRegex: Regex = "^[A-Za-z0-9 \\-,.&'\\\\/()!]{1,10}$".r
+  val lineRegex: Regex = "^[A-Za-z0-9 \\-,.&'\\\\/()!]{1,35}$".r
 }
