@@ -90,6 +90,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
+        "line2" -> "testLine2",
         "country" -> "Norway"
       )))
 

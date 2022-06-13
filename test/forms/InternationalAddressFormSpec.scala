@@ -19,12 +19,13 @@ package forms
 import fixtures.VatRegistrationFixture
 import models.api.{Address, Country}
 import org.mockito.Mockito._
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 
 class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixture {
 
-  val form = new InternationalAddressForm(mockConfigConnector).form()
+  val form: Form[Address] = new InternationalAddressForm(mockConfigConnector).form()
 
   "The International Address form" must {
     "bind successfully" when {
@@ -33,10 +34,11 @@ class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixtur
 
         val res = form.bind(Map(
           "line1" -> testLine1,
+          "line2" -> testLine2,
           "country" -> "Norway"
         )).value
 
-        res mustBe Some(Address(testLine1, country = Some(Country(Some("NO"), Some("Norway")))))
+        res mustBe Some(Address(testLine1, Some(testLine2), country = Some(Country(Some("NO"), Some("Norway")))))
       }
       "all fields are provided and valid" in {
         when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
@@ -96,11 +98,48 @@ class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixtur
             res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line1.invalid")
           }
         }
+        "line 2 isn't provided" in {
+          when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
+
+          val res = form.bind(Map(
+            "line1" -> testLine1,
+            "country" -> "Norway"
+          ))
+
+          res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line2.empty")
+        }
+        "line 2 is too long" in {
+          when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
+
+          val res = form.bind(Map(
+            "line1" -> testLine1,
+            "line2" -> "w" * 36,
+            "country" -> "Norway"
+          ))
+
+          res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line2.length")
+        }
+        "line 2 contains invalid characters" in {
+          when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
+
+          val invalidCharacters = Seq("#", "$", "%", "^", ";", ":", "*")
+
+          invalidCharacters.foreach { character =>
+            val res = form.bind(Map(
+              "line1" -> testLine1,
+              "line2" -> character,
+              "country" -> "Norway"
+            ))
+
+            res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line2.invalid")
+          }
+        }
         "country isn't on the list of allowed countries" in {
           when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("FR"), Some("France"))))
 
           val res = form.bind(Map(
             "line1" -> testLine1,
+            "line2" -> testLine2,
             "country" -> "Norway"
           ))
 
@@ -116,6 +155,7 @@ class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixtur
 
           val res = formWithInvalidCountries.bind(Map(
             "line1" -> testLine1,
+            "line2" -> testLine2,
             "country" -> "Norway"
           ))
 

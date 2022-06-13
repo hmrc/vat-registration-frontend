@@ -33,7 +33,7 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val heading = "Enter your home address"
     val thirdPartyHeading = "Enter " + testTransactorName.get + "’s home address"
     val line1 = "Address line 1"
-    val line2 = "Address line 2 (optional)"
+    val line2 = "Address line 2"
     val line3 = "Address line 3 (optional)"
     val line4 = "Address line 4 (optional)"
     val line5 = "Address line 5 (optional)"
