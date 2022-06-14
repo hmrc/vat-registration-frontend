@@ -60,17 +60,16 @@ class ReceiveGoodsNipController @Inject()(val sessionService: SessionService,
             for {
               returns <- returnsService.getReturns
               updatedReturns = returns.copy(
-                northernIrelandProtocol = Some(NIPCompliance(returns.northernIrelandProtocol.flatMap(_.goodsToEU), Some(ConditionalValue(receiveGoods,amount))))
+                northernIrelandProtocol =
+                  Some(NIPCompliance(
+                    goodsToEU = returns.northernIrelandProtocol.flatMap(_.goodsToEU),
+                    goodsFromEU = Some(ConditionalValue(receiveGoods,amount))
+                  ))
               )
               _ <- returnsService.submitReturns(updatedReturns)
-              regReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
-              partyType <- vatRegistrationService.partyType
-            } yield (partyType, regReason) match {
-                case (NETP | NonUkNonEstablished, _) | (_, TransferOfAGoingConcern) =>
-                  Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
-                case _ =>
-                  Redirect(routes.VatRegStartDateResolverController.resolve)
-              }
+            } yield {
+              Redirect(controllers.returns.routes.ClaimRefundsController.show)
+            }
           }
         )
   }

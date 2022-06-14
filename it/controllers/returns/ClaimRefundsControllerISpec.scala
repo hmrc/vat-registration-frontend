@@ -52,7 +52,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the Northern Ireland Protocol page when the user is non-NETP" in {
+    "redirect to the start date resolver page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
@@ -63,7 +63,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
       }
     }
 

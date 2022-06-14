@@ -106,7 +106,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         }
       }
       "the user submits Storing Overseas" must {
-        "redirect to the Northern Ireland page" in new Setup {
+        "redirect to the returns frequency page" in new Setup {
           given()
             .user.isAuthorised()
             .s4lContainer[Returns].contains(testReturns)
@@ -119,7 +119,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
         }
       }
       "the user submits an invalid answer" must {

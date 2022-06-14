@@ -22,6 +22,7 @@ import controllers.sicandcompliance.{routes => sicAndCompRoutes}
 import models._
 import models.api.returns.{OverseasCompliance, StoringWithinUk}
 import models.api.{Address, NETP, VatScheme}
+import models.view.SummaryListRowUtils.optSummaryListRowBoolean
 import play.api.i18n.{Lang, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
@@ -146,9 +147,9 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(true), Some(controllers.business.routes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
-            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
             optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url))
           ).flatten
         ))))
       }
@@ -179,9 +180,9 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(true), Some(controllers.business.routes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
-            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
             optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url))
           ).flatten
         ))))
       }
@@ -215,9 +216,9 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(true), Some(controllers.business.routes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
-            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
             optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+            optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
+            optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url))
           ).flatten
         ))))
       }
@@ -259,11 +260,10 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
               optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(sicAndCompRoutes.SupplyWorkersController.show.url)),
               optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
               optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
-              optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
-              optSummaryListRowBoolean(s"$sectionId.sendGoodsOverseas", Some(true), Some(returnsRoutes.SendGoodsOverseasController.show.url)),
-              optSummaryListRowBoolean(s"$sectionId.sendGoodsToEu", Some(false), Some(returnsRoutes.SendEUGoodsController.show.url)),
               optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-              optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+              optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.sendGoodsOverseas", Some(true), Some(returnsRoutes.SendGoodsOverseasController.show.url))
             ).flatten
           ))))
         }
@@ -309,15 +309,15 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                 optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(sicAndCompRoutes.SupplyWorkersController.show.url)),
                 optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
                 optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.sendGoodsOverseas", Some(true), Some(returnsRoutes.SendGoodsOverseasController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.sendGoodsToEu", Some(true), Some(returnsRoutes.SendEUGoodsController.show.url)),
                 optSummaryListRowString(s"$sectionId.storingGoods", Some(s"$sectionId.storingGoods.uk"), Some(returnsRoutes.StoringGoodsController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.dispatchFromWarehouse", Some(true), Some(returnsRoutes.DispatchFromWarehouseController.show.url)),
                 optSummaryListRowString(s"$sectionId.warehouseNumber", Some(testWarehouseNumber), Some(returnsRoutes.WarehouseNumberController.show.url)),
-                optSummaryListRowString(s"$sectionId.warehouseName", Some(testWarehouseName), Some(returnsRoutes.WarehouseNameController.show.url)),
-                optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-                optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+                optSummaryListRowString(s"$sectionId.warehouseName", Some(testWarehouseName), Some(returnsRoutes.WarehouseNameController.show.url))
               ).flatten
             ))))
           }
@@ -360,13 +360,13 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                 optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(sicAndCompRoutes.SupplyWorkersController.show.url)),
                 optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
                 optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
+                optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.sendGoodsOverseas", Some(true), Some(returnsRoutes.SendGoodsOverseasController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.sendGoodsToEu", Some(true), Some(returnsRoutes.SendEUGoodsController.show.url)),
                 optSummaryListRowString(s"$sectionId.storingGoods", Some(s"$sectionId.storingGoods.uk"), Some(returnsRoutes.StoringGoodsController.show.url)),
-                optSummaryListRowBoolean(s"$sectionId.dispatchFromWarehouse", Some(false), Some(returnsRoutes.DispatchFromWarehouseController.show.url)),
-                optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-                optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("No")), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+                optSummaryListRowBoolean(s"$sectionId.dispatchFromWarehouse", Some(false), Some(returnsRoutes.DispatchFromWarehouseController.show.url))
               ).flatten
             ))))
           }
@@ -397,9 +397,9 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
         optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(true), Some(controllers.business.routes.ApplyForEoriController.show.url)),
         optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(returnsRoutes.ZeroRatedSuppliesController.show.url)),
-        optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url)),
         optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.SellOrMoveNipController.show.url)),
-        optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url))
+        optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(returnsRoutes.ReceiveGoodsNipController.show.url)),
+        optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(returnsRoutes.ClaimRefundsController.show.url))
       ).flatten
     ))))
   }

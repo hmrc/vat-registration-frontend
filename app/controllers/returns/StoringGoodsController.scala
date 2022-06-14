@@ -73,7 +73,7 @@ class StoringGoodsController @Inject()(val sessionService: SessionService,
             case StoringWithinUk =>
               Redirect(controllers.returns.routes.DispatchFromWarehouseController.show)
             case StoringOverseas =>
-              Redirect(routes.SellOrMoveNipController.show)
+              Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
           }
       )
   }

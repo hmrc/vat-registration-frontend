@@ -93,7 +93,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the Northern Ireland Protocol page when the answer is no" in new Setup {
+    "redirect to the returns frequency page when the answer is no" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(overseasCompliance = Some(testOverseasCompliance)))
@@ -105,7 +105,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
