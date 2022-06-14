@@ -16,7 +16,6 @@
 
 package controllers
 
-import featureswitch.core.config.ShortOrgName
 import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, TradingDetails}
@@ -71,8 +70,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
     s"return SEE_OTHER and redirects to ${controllers.business.routes.ShortOrgNameController.show.url} for a ${UkCompany.toString} with a company name longer than 105" in new Setup {
       val longCompanyName: String = "1" * 106
-
-      enable(ShortOrgName)
 
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
