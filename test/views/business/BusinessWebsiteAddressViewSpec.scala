@@ -27,7 +27,7 @@ class BusinessWebsiteAddressViewSpec extends VatRegViewSpec {
   val viewInstance: BusinessWebsiteAddress = app.injector.instanceOf[BusinessWebsiteAddress]
 
   object ExpectedContent {
-    val heading = "What is the business’ website address?"
+    val heading = "What is the business’s website address?"
     val continue = "Save and continue"
   }
 

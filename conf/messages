@@ -1229,7 +1229,7 @@ validation.businessName.missing                          = Enter the official na
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
 
 # BUSINESS TELEPHONE NUMBER
-business.telephoneNumber.heading                         = What is the business’ telephone number?
+business.telephoneNumber.heading                         = What is the business’s telephone number?
 business.telephoneNumber.hint                            = For international numbers include the country code
 validation.business.telephoneNumber.invalid              = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 validation.business.telephoneNumber.missing              = Enter the business telephone number
@@ -1497,20 +1497,20 @@ fileUpload.error.EntityTooSmall                      = The selected file is empt
 fileUpload.error.InvalidFileType                     = The selected file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT
 
 # BUSINESS EMAIL PAGE
-businessEmail.heading                                = What is the business’ email address?
+businessEmail.heading                                = What is the business’s email address?
 businessEmail.hint                                   = We use this to send business communications and VAT updates.
 businessEmail.para                                   = Full details of how we use contact information are in the
 businessEmail.link                                   = HMRC Privacy Notice
-validation.businessEmail.noEntry                     = Enter the business email address
-validation.businessEmail.incorrectFormat             = Enter the business email address in the correct format, like name@example.com
-validation.businessEmail.tooMany                     = The business email address must be 132 characters or fewer
+validation.businessEmail.noEntry                     = Enter the business’s email address
+validation.businessEmail.incorrectFormat             = Enter the business’s email address in the correct format, like name@example.com
+validation.businessEmail.tooMany                     = The business’s email address must be 132 characters or fewer
 
 # BUSINESS HAS WEBSITE
 pages.business.hasWebsite.heading                    = Does the business have a website?
 validation.business.hasWebsite.missing               = Select yes if the business has a website
 
 # BUSINESS WEBSITE ADDRESS PAGE
-businessWebsiteAddress.heading                       = What is the business’ website address?
+businessWebsiteAddress.heading                       = What is the business’s website address?
 validation.businessWebsiteAddress.invalid            = Enter the website address in the correct format, like https://www.example.com
 validation.businessWebsiteAddress.missing            = Enter the business website address
 validation.businessWebsiteAddress.maxlen             = The business website address must be 132 characters or fewer
