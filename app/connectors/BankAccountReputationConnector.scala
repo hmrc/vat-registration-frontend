@@ -20,8 +20,9 @@ package connectors
 import config.FrontendAppConfig
 import models.BankAccountDetails
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import play.api.http.Status.OK
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,8 +34,14 @@ class BankAccountReputationConnector @Inject()(val http: HttpClient,
 
 
   def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST[BankAccountDetails, JsValue](appConfig.validateBankDetailsUrl, account) recover {
-      case ex => throw logResponse(ex, "validate")
-    }
+    http.POST[BankAccountDetails, HttpResponse](appConfig.validateBankDetailsUrl, account)
+      .map { response =>
+        response.status match {
+          case OK => response.json
+          case status => throw new InternalServerException(s"Unexpected status returned by Bank Account Reputation: $status")
+        }
+      }.recover {
+        case _ => throw new InternalServerException("Something went wrong when calling bank account validation API")
+      }
   }
 }

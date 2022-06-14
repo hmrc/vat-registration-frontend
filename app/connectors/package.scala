@@ -25,10 +25,10 @@ package object connectors extends Logging {
       case e: BadRequestException => logger.warn(s"[$func] received BAD REQUEST")
       case e: Upstream4xxResponse => e.upstreamResponseCode match {
         case Status.FORBIDDEN => logger.error(s"[$func] received FORBIDDEN")
-        case _                => logger.error(s"[$func] received Upstream 4xx: ${e.upstreamResponseCode} ${e.message}")
+        case _                => logger.error(s"[$func] received Upstream 4xx: ${e.upstreamResponseCode}")
       }
       case e: Upstream5xxResponse => logger.error(s"[$func] received Upstream 5xx: ${e.upstreamResponseCode}")
-      case e: Exception           => logger.error(s"[$func] received ERROR: ${e.getMessage}")
+      case e: Exception           => logger.error(s"[$func] received unexpected error")
     }
     e
   }
