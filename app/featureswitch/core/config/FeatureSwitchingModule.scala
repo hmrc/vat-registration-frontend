@@ -38,7 +38,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     TrafficManagementPredicate,
     UseSoleTraderIdentification,
     SaveAndContinueLater,
-    ShortOrgName,
     MultipleRegistrations,
     LandAndProperty,
     FullAgentJourney,
@@ -116,11 +115,6 @@ case object UseSoleTraderIdentification extends FeatureSwitch {
 case object SaveAndContinueLater extends FeatureSwitch {
   val configName = "feature-switch.save-and-continue-later"
   val displayName = "Enable Save and Continue Later"
-}
-
-case object ShortOrgName extends FeatureSwitch {
-  val configName: String = "feature-switch.short-org-name"
-  val displayName: String = "Enable Short Org Name page (use with BE FS)"
 }
 
 case object MultipleRegistrations extends FeatureSwitch {
