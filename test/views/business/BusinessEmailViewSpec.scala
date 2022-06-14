@@ -27,7 +27,7 @@ class BusinessEmailViewSpec extends VatRegViewSpec {
   val viewInstance: BusinessEmail = app.injector.instanceOf[BusinessEmail]
 
   object ExpectedContent {
-    val heading = "What is the business’ email address?"
+    val heading = "What is the business’s email address?"
     val hint = "We use this to send business communications and VAT updates."
     val para = "Full details of how we use contact information are in the HMRC Privacy Notice (opens in new tab)"
     val link = "HMRC Privacy Notice (opens in new tab)"
