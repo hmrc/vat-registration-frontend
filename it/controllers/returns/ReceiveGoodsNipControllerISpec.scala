@@ -59,7 +59,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   }
 
   "submit Receive Goods page" should {
-    "redirect to the returns frequency page when NETP" in new Setup {
+    "redirect to the claim refund page when NETP" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
@@ -71,7 +71,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ClaimRefundsController.show.url)
       }
     }
 
@@ -87,7 +87,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ClaimRefundsController.show.url)
       }
     }
 
@@ -103,11 +103,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ClaimRefundsController.show.url)
       }
     }
 
-    "redirect to the start date resolver in all other cases" in new Setup {
+    "redirect to the Claim VAT Refund page in all other cases" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(northernIrelandProtocol = Some(testNIPCompliance)))
@@ -119,7 +119,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ClaimRefundsController.show.url)
       }
     }
 

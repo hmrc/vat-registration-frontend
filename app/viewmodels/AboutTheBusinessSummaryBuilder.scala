@@ -68,13 +68,15 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           tradingName(tradingDetails, partyType),
           importsOrExports(tradingDetails, partyType),
           applyForEori(tradingDetails, partyType),
-          zeroRatedTurnover(vatScheme),
+          zeroRatedTurnover(vatScheme)
+        ).flatten ++
+        nipSection(returns) ++
+        List(
           claimRefunds(returns),
           sendGoodsOverseas(returns),
           sendGoodsToEu(returns)
         ).flatten ++
-        netpSection(returns, partyType) ++
-        nipSection(returns)
+        netpSection(returns, partyType)
       ))
     ))
   }
@@ -246,19 +248,29 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(returnsRoutes.ClaimRefundsController.show.url)
     )
 
-  private def sendGoodsOverseas(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
-    optSummaryListRowBoolean(
-      s"$sectionId.sendGoodsOverseas",
-      returns.overseasCompliance.flatMap(_.goodsToOverseas),
-      Some(returnsRoutes.SendGoodsOverseasController.show.url)
-    )
+  private def sendGoodsOverseas(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
+    if (returns.overseasCompliance.exists(_.goodsToOverseas == Some(true))) {
+      optSummaryListRowBoolean(
+        s"$sectionId.sendGoodsOverseas",
+        returns.overseasCompliance.flatMap(_.goodsToOverseas),
+        Some(returnsRoutes.SendGoodsOverseasController.show.url)
+      )
+    } else {
+      None
+    }
+  }
 
-  private def sendGoodsToEu(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
-    optSummaryListRowBoolean(
-      s"$sectionId.sendGoodsToEu",
-      returns.overseasCompliance.flatMap(_.goodsToEu),
-      Some(returnsRoutes.SendEUGoodsController.show.url)
-    )
+  private def sendGoodsToEu(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
+    if(returns.overseasCompliance.exists(_.goodsToEu == Some(true))) {
+      optSummaryListRowBoolean(
+        s"$sectionId.sendGoodsToEu",
+        returns.overseasCompliance.flatMap(_.goodsToEu),
+        Some(returnsRoutes.SendEUGoodsController.show.url)
+      )
+    } else {
+      None
+    }
+  }
 
   private def storingGoods(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(

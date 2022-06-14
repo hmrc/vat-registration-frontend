@@ -71,7 +71,7 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                 errors
               ))),
             success => returnsService.saveZeroRatesSupplies(success) map { _ =>
-              Redirect(controllers.returns.routes.ClaimRefundsController.show)
+              Redirect(routes.SellOrMoveNipController.show)
             }
           )
           case None => throw new InternalServerException("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates")

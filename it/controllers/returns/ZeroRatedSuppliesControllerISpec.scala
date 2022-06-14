@@ -76,7 +76,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to charge expectancy if turnoverEstimates exists and form has no errors" in new Setup {
+    "redirect to Sell Or Move Northern Ireland Protocol page if turnoverEstimates exists and form has no errors" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
@@ -91,7 +91,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ClaimRefundsController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
       }
     }
 

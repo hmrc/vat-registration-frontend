@@ -46,7 +46,7 @@ class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionS
       } yield turnover match {
         case Some(NoTurnover) =>
           returnsService.saveZeroRatesSupplies(noZeroRatedSupplies).map{_ =>
-            Redirect(controllers.returns.routes.ClaimRefundsController.show)
+            Redirect(routes.SellOrMoveNipController.show)
           }
         case Some(_) =>
           Future.successful(Redirect(routes.ZeroRatedSuppliesController.show))

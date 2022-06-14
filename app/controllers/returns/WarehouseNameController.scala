@@ -65,7 +65,7 @@ class WarehouseNameController @Inject()(val sessionService: SessionService,
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-                Redirect(routes.SellOrMoveNipController.show)
+                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
             }
           }
         )

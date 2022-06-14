@@ -19,6 +19,7 @@ package controllers.returns
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ChargeExpectancyForm
+import models.TransferOfAGoingConcern
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
@@ -60,8 +61,12 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
               partyType <- vatRegistrationService.partyType
               regReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
             } yield (partyType, regReason) match {
-              case (NETP | NonUkNonEstablished, _) => Redirect(routes.SendGoodsOverseasController.show)
-              case _ => Redirect(routes.SellOrMoveNipController.show)
+              case (_ , TransferOfAGoingConcern) =>
+                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
+              case (NETP | NonUkNonEstablished, _) =>
+                Redirect(routes.SendGoodsOverseasController.show)
+              case _ =>
+                Redirect(routes.VatRegStartDateResolverController.resolve)
             }
           }
         )

@@ -72,10 +72,11 @@ class DispatchFromWarehouseController @Inject()(val sessionService: SessionServi
               )
               _ <- returnsService.submitReturns(updatedReturns)
             } yield {
-              if (success)
+              if (success) {
                 Redirect(routes.WarehouseNumberController.show)
-              else
-                Redirect(routes.SellOrMoveNipController.show)
+              } else {
+                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
+              }
             }
           }
         )
