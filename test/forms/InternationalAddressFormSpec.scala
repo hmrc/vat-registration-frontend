@@ -74,6 +74,16 @@ class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixtur
 
           res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line1.empty")
         }
+        "line 1 isn't provided with form bound value being empty" in {
+          when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
+
+          val res = form.bind(Map(
+            "line1" -> "",
+            "country" -> "Norway"
+          ))
+
+          res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line1.empty")
+        }
         "line 1 is too long" in {
           when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
 
@@ -103,6 +113,17 @@ class InternationalAddressFormSpec extends VatRegSpec with VatRegistrationFixtur
 
           val res = form.bind(Map(
             "line1" -> testLine1,
+            "country" -> "Norway"
+          ))
+
+          res.errors.headOption.map(_.message) mustBe Some("internationalAddress.error.line2.empty")
+        }
+        "line 2 isn't provided with form bound value being empty" in {
+          when(mockConfigConnector.countries).thenReturn(Seq(Country(Some("NO"), Some("Norway"))))
+
+          val res = form.bind(Map(
+            "line1" -> testLine1,
+            "line2" -> "",
             "country" -> "Norway"
           ))
 

@@ -36,13 +36,13 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
   // scalastyle:off
   def form(invalidCountries: Seq[String] = Seq.empty): Form[Address] = Form[Address] (
     mapping(
-      line1Key -> of[String](stringFormat).verifying(
+      line1Key -> of[String](nonEmptyStringFormat).verifying(
         StopOnFirstFail(
           maxLength(maxLineLength, "internationalAddress.error.line1.length"),
           pattern(lineRegex, line1Key, "internationalAddress.error.line1.invalid")
         )
       ),
-      line2Key -> of[String](stringFormat).verifying(
+      line2Key -> of[String](nonEmptyStringFormat).verifying(
         StopOnFirstFail(
           maxLength(maxLineLength, "internationalAddress.error.line2.length"),
           pattern(lineRegex, line2Key, "internationalAddress.error.line2.invalid")
@@ -92,12 +92,15 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
     })
   )
 
-  val stringFormat: Formatter[String] = new Formatter[String] {
-    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
-      data.get(key).toRight(Seq(FormError(key, s"internationalAddress.error.$key.empty", Nil)))
+  val nonEmptyStringFormat: Formatter[String] = new Formatter[String] {
+    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] = {
+      Right(data.getOrElse(key, "")).flatMap {
+        case value if value.nonEmpty => Right(data(key))
+        case _ => Left(Seq(FormError(key, s"internationalAddress.error.$key.empty", Nil)))
+      }
+    }
 
-    def unbind(key: String, value: String) =
-      Map(key -> value)
+    def unbind(key: String, value: String) = Map(key -> value)
   }
 
   def validCountry(invalidCountries: Seq[String]): Constraint[String] = Constraint[String] { countryName: String =>
