@@ -41,8 +41,8 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns flatMap { returns =>
-          vatRegistrationService.fetchTurnoverEstimates map { optEstimates =>
+        returnsService.getReturns.flatMap { returns =>
+          returnsService.getTurnover.map { optEstimates =>
             (returns.zeroRatedSupplies, optEstimates) match {
               case (Some(zeroRatedSupplies), Some(estimates)) =>
                 Ok(zeroRatesSuppliesView(
@@ -63,7 +63,7 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.fetchTurnoverEstimates flatMap {
+        returnsService.getTurnover.flatMap {
           case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest.fold(
             errors => Future.successful(
               BadRequest(zeroRatesSuppliesView(

@@ -76,7 +76,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
   }
 
   s"POST ${routes.ImportsOrExportsController.submit.url}" must {
-    "redirect to the next page" in new Setup {
+    "redirect to EORI when yes is selected" in new Setup {
       given
         .user.isAuthorised()
         .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None))))
@@ -94,6 +94,27 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(HeaderNames.LOCATION) must contain(controllers.business.routes.ApplyForEoriController.show.url)
+      }
+    }
+
+    "redirect to Turnover when no is selected" in new Setup {
+      given
+        .user.isAuthorised()
+        .s4lContainer[TradingDetails].contains(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None))))
+        .s4lContainer[TradingDetails].clearedByKey
+        .vatScheme.doesNotHave("trading-details")
+        .vatScheme.isUpdatedWith(
+        "tradingDetails",
+        Json.toJson(TradingDetails(tradingNameView = Some(TradingNameView(yesNo = false, None)), Some(true)))
+      )
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient("/imports-or-exports").post(Json.obj("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(HeaderNames.LOCATION) must contain(controllers.returns.routes.TurnoverEstimateController.show.url)
       }
     }
   }

@@ -55,7 +55,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show)
-  override val returns: Returns = Returns(Some(10000.5), Some(true), Some(Monthly), None, Some(LocalDate.of(2018, 1, 1)))
+  override val returns: Returns = Returns(Some(testTurnover), None, Some(10000.5), Some(true), Some(Monthly), None, Some(LocalDate.of(2018, 1, 1)))
   val emptyReturns: Returns = Returns()
 
   "Calling summary to show the summary page" when {

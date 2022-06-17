@@ -344,4 +344,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val utrCopyLink = "https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr"
   lazy val upscanTimeout = 20000
   lazy val upscanInterval = 2000
+  lazy val VATRateDifferentGoodsURL = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
 }

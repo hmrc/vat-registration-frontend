@@ -114,13 +114,12 @@ class BusinessContactSpec extends VatRegSpec {
       Json.toJson(modelToTransform)(BusinessContact.apiFormat) mustBe expectedJson
     }
 
-    "transform a BusinessContact with no website into json field being set to null" in {
+    "transform a BusinessContact with no website into json" in {
       val expectedJson = Json.parse(
         """
           |{
           | "email" : "test@test.com",
           | "telephoneNumber" : "0123456",
-          | "website" : null,
           | "contactPreference": "Letter"
           |}
         """.stripMargin
@@ -137,13 +136,7 @@ class BusinessContactSpec extends VatRegSpec {
     }
 
     "transform a minimal BusinessContact into a minimal set of Json" in {
-      val expectedJson = Json.parse(
-        """
-          |{
-          |"website" : null
-          |}
-        """.stripMargin
-      )
+      val expectedJson = Json.obj()
 
       val modelToTransform = BusinessContact()
 

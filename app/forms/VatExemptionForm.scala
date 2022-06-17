@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package fixtures
+package forms
 
-import models.api.returns.{Monthly, Returns}
+import play.api.data.Form
+import play.api.data.Forms.single
 
-import java.time.LocalDate
+object VatExemptionForm extends RequiredBooleanForm {
 
-trait ReturnsFixture {
+  override val errorMsg = "validation.vatExemption.error"
+  val value = "value"
 
-  val date = LocalDate.now()
-
-  val reclaimOnReturns = true
-  val returnsFrequency = Monthly
-  val startDate = date
-  val returns = Returns(Some(100), None, Some(10000.5), Some(reclaimOnReturns), Some(returnsFrequency), None, Some(startDate))
+  val form: Form[Boolean] = Form(
+    single(value -> requiredBoolean)
+  )
 
 }

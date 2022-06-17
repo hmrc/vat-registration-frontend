@@ -2,30 +2,24 @@
 package controllers.returns
 
 import itutil.ControllerISpec
-import models.TurnoverEstimates
 import models.api.returns.Returns
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
-import support.RegistrationsApiStubs
 
-class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with RegistrationsApiStubs {
+class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
 
   val url = "/resolve-zero-rated-turnover"
 
   "GET /resolve-zero-rated-supplies" when {
     "the user has entered £0 as their turnover estimate" must {
       "store £0 as the zero rated estimate and bypass the zero-rated supplies page" in new Setup {
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(estimates = TurnoverEstimates(0))
-        ))
-
         given
           .user.isAuthorised()
-          .s4lContainer[Returns].isUpdatedWith(Returns(zeroRatedSupplies = Some(0)))
+          .vatScheme.doesNotHave("turnover-estimates-data")
+          .s4lContainer[Returns].contains(Returns(turnoverEstimate = Some(0)))
+          .s4lContainer[Returns].isUpdatedWith(Returns(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(scheme)))
 
         val res = await(buildClient(url).get)
 
@@ -35,13 +29,12 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with Regi
     }
     "the user has entered a non-zero value for their turnover estimate" must {
       "redirect to the zero-rated supplies page" in new Setup {
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(estimates = TurnoverEstimates(1))
-          ))
+        given
+          .vatScheme.doesNotHave("turnover-estimates-data")
+          .s4lContainer[Returns].contains(Returns(turnoverEstimate = Some(1)))
+          .user.isAuthorised()
 
-        given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(scheme)))
 
         val res = await(buildClient(url).get)
 
@@ -49,13 +42,14 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec with Regi
         res.header(HeaderNames.LOCATION) mustBe Some(routes.ZeroRatedSuppliesController.show.url)
       }
     }
-    "the vat scheme doesn't contain eligibility data" must {
+    "the vat scheme doesn't contain turnover" must {
       "return INTERNAL_SERVER_ERROR" in new Setup {
-        val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = None)
+        given
+          .vatScheme.doesNotHave("turnover-estimates-data")
+          .s4lContainer[Returns].contains(Returns(turnoverEstimate = None))
+          .user.isAuthorised()
 
-        given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(scheme)))
 
         val res = await(buildClient(url).get)
 

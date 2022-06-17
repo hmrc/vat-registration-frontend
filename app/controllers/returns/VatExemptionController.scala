@@ -18,22 +18,21 @@ package controllers.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.ChargeExpectancyForm
-import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
+import forms.{ChargeExpectancyForm, VatExemptionForm}
+import models.{NonUk, TransferOfAGoingConcern}
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
-import uk.gov.hmrc.http.InternalServerException
-import views.html.returns.claim_refunds_view
+import views.html.returns.{VatExemption, claim_refunds_view}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimRefundsController @Inject()(val sessionService: SessionService,
+class VatExemptionController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val returnsService: ReturnsService,
                                        val vatRegistrationService: VatRegistrationService,
-                                       val claimRefundsView: claim_refunds_view)
+                                       val vatExemptionView: VatExemption)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)
@@ -43,32 +42,23 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         returnsService.getReturns map { returns =>
-          returns.reclaimVatOnMostReturns match {
-            case Some(chargeExpectancy) => Ok(claimRefundsView(ChargeExpectancyForm.form.fill(chargeExpectancy)))
-            case None => Ok(claimRefundsView(ChargeExpectancyForm.form))
+          returns.appliedForExemption match {
+            case Some(appliedForExemption) => Ok(vatExemptionView(VatExemptionForm.form.fill(appliedForExemption)))
+            case None => Ok(vatExemptionView(VatExemptionForm.form))
           }
         }
   }
 
-  //scalastyle:off
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        ChargeExpectancyForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(claimRefundsView(errors))),
+        VatExemptionForm.form.bindFromRequest.fold(
+          errors => Future.successful(BadRequest(vatExemptionView(errors))),
           success => {
             for {
-              returns <- returnsService.saveReclaimVATOnMostReturns(success)
-              turnover <- returnsService.getTurnover.map(_.getOrElse(throw new InternalServerException("[ClaimRefundsController] Missing turnover")))
-              zeroRatedSupplies = returns.zeroRatedSupplies.getOrElse(throw new InternalServerException("[ClaimRefundsController] Missing zero rated turnover"))
-              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
-              canApplyForExemption = success &&
-                (zeroRatedSupplies * 2 > turnover) &&
-                !eligibilityData.appliedForException.contains(true) &&
-                List(ForwardLook, BackwardLook, NonUk, TransferOfAGoingConcern).contains(eligibilityData.registrationReason)
-            } yield eligibilityData.registrationReason match {
-              case _ if canApplyForExemption =>
-                Redirect(routes.VatExemptionController.show)
+              _ <- returnsService.saveVatExemption(success)
+              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
+            } yield registrationReason match {
               case TransferOfAGoingConcern =>
                 Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
               case NonUk =>

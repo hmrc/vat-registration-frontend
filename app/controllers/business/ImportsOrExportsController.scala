@@ -54,7 +54,7 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
             if (success) {
               Redirect(controllers.business.routes.ApplyForEoriController.show)
             } else {
-              Redirect(controllers.returns.routes.ZeroRatedSuppliesResolverController.resolve)
+              Redirect(controllers.returns.routes.TurnoverEstimateController.show)
             }
           }
         )

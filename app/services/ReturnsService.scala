@@ -46,7 +46,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     s4lService.fetchAndGet[Returns].flatMap {
-      case None | Some(Returns(None, None, None, None, None, None, None, None)) => vatRegConnector.getReturns(profile.registrationId)
+      case None | Some(Returns(None, None, None, None, None, None, None, None, None, None)) => vatRegConnector.getReturns(profile.registrationId)
       case Some(returns) => Future.successful(returns)
     } recover {
       case e =>
@@ -63,18 +63,19 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
-    case Returns(_, _, _, _, _, _, _, Some(NIPCompliance(goodsToEU, None))) =>
+    case Returns(_, _, _, _, _, _, _, _, _, Some(NIPCompliance(goodsToEU, None))) =>
       Incomplete(returns)
-    case Returns(Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _, _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _, _, _) =>
       Complete(returns.copy(returnsFrequency = Some(Quarterly), annualAccountingDetails = None))
-    case Returns(Some(zeroRated), Some(true), Some(Monthly), _, _, _, _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(true), Some(Monthly), _, _, _, _, _) =>
       Complete(returns.copy(staggerStart = Some(MonthlyStagger), annualAccountingDetails = None))
-    case Returns(Some(zeroRated), Some(_), Some(Annual), Some(stagger: AnnualStagger), _, Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(_), Some(Annual), Some(stagger: AnnualStagger), _, Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _) =>
       Complete(returns)
     case _ =>
       Incomplete(returns)
   }
 
+  //TODO Refactor save methods to work like ApplicantDetailsService or TransactorDetailsService instead of using defs for all fields
   def submitReturns(returns: Returns)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     handleView(returns).fold(
       incomplete => s4lService.save[Returns](incomplete),
@@ -84,16 +85,46 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
     ).map { _ => returns }
   }
 
+  def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[BigDecimal]] = {
+    for {
+      optTurnoverEstimate <- getReturns.map(_.turnoverEstimate)
+      fallbackTurnoverEstimate <- vatService.fetchTurnoverEstimates.map(_.map(estimate => BigDecimal(estimate.turnoverEstimate.toString)))
+      turnover = optTurnoverEstimate match {
+        case None => fallbackTurnoverEstimate
+        case some => some
+      }
+    } yield turnover  //TODO Replace whole thing with getReturns.map(_.turnoverEstimate) when turnover removed from eligibility
+  }
+
+  def saveTurnover(turnoverEstimate: BigDecimal)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
+    getReturns.flatMap { returns =>
+      submitReturns(returns.copy(turnoverEstimate = Some(turnoverEstimate)))
+    }
+  }
+
+  def saveVatExemption(appliedForExemption: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
+    getReturns.flatMap { returns =>
+      submitReturns(returns.copy(appliedForExemption = Some(appliedForExemption)))
+    }
+  }
+
   def saveZeroRatesSupplies(zeroRatedSupplies: BigDecimal)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
-      submitReturns(returns.copy(zeroRatedSupplies = Some(zeroRatedSupplies)))
+      val ineligibleForExemption = returns.turnoverEstimate.exists(estimate => estimate <= zeroRatedSupplies * 2)
+      val updatedExemptionAnswer = if (ineligibleForExemption) None else returns.appliedForExemption
+      //If user changes zero rated to be less than or equal 50% of turnover, remove old exemption answer
+      submitReturns(returns.copy(zeroRatedSupplies = Some(zeroRatedSupplies),
+        appliedForExemption = updatedExemptionAnswer))
     }
   }
 
   def saveReclaimVATOnMostReturns(reclaimView: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
+      val updatedExemptionAnswer = if (!reclaimView) None else returns.appliedForExemption
+      //If user changes claim vat returns answer to false, remove old exemption answer
       submitReturns(returns.copy(
-        reclaimVatOnMostReturns = Some(reclaimView)
+        reclaimVatOnMostReturns = Some(reclaimView),
+        appliedForExemption = updatedExemptionAnswer
       ))
     }
   }
@@ -152,10 +183,10 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def isEligibleForAAS(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Boolean] = {
     for {
-      turnoverEstimates <- vatService.fetchTurnoverEstimates
+      turnoverEstimates <- getTurnover
       isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
     } yield {
-      turnoverEstimates.exists(_.turnoverEstimate <= 1350000) && !isGroupRegistration
+      turnoverEstimates.exists(_ <= 1350000) && !isGroupRegistration
     }
   }
 

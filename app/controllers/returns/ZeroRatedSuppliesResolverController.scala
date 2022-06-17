@@ -30,29 +30,27 @@ class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionS
                                                     returnsService: ReturnsService,
                                                     vatRegistrationService: VatRegistrationService)
                                                    (implicit val executionContext: ExecutionContext,
-                                                   appConfig: FrontendAppConfig,
-                                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                                    appConfig: FrontendAppConfig,
+                                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   private val logPrefix = "[ZeroRatedSuppliesRoutingController][route]"
 
-  private val NoTurnover = 0
+  private val NoTurnover = BigDecimal("0")
   private val noZeroRatedSupplies = 0
 
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => implicit profile =>
-      (for {
-        vatScheme <- vatRegistrationService.getVatScheme
-        turnover = vatScheme.eligibilitySubmissionData.map(_.estimates.turnoverEstimate)
-      } yield turnover match {
-        case Some(NoTurnover) =>
-          returnsService.saveZeroRatesSupplies(noZeroRatedSupplies).map{_ =>
-            Redirect(routes.SellOrMoveNipController.show)
-          }
-        case Some(_) =>
-          Future.successful(Redirect(routes.ZeroRatedSuppliesController.show))
-        case _ =>
-          Future.failed(throw new InternalServerException(s"$logPrefix Turnover estimate not present so unable to route user"))
-      }).flatten
+    implicit request =>
+      implicit profile =>
+        returnsService.getTurnover.flatMap {
+          case Some(NoTurnover) =>
+            returnsService.saveZeroRatesSupplies(noZeroRatedSupplies).map { _ =>
+              Redirect(routes.SellOrMoveNipController.show)
+            }
+          case Some(_) =>
+            Future.successful(Redirect(routes.ZeroRatedSuppliesController.show))
+          case _ =>
+            Future.failed(throw new InternalServerException(s"$logPrefix Turnover estimate not present so unable to route user"))
+        }
   }
 
 }

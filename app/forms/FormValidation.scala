@@ -109,9 +109,9 @@ object FormValidation {
     Constraint[T] { (t: T) =>
       (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
-        case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above"))
-        case (-1, _) if !args.isEmpty => Invalid(ValidationError(s"validation.$e.range.below"))
-        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below"))
+        case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
+        case (-1, _) if !args.isEmpty => Invalid(ValidationError(s"validation.$e.range.below", args.head))
+        case (-1, _) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
       }
     }
 

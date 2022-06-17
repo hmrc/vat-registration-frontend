@@ -22,7 +22,9 @@ import utils.JsonUtilities
 
 import java.time.LocalDate
 
-case class Returns(zeroRatedSupplies: Option[BigDecimal] = None,
+case class Returns(turnoverEstimate: Option[BigDecimal] = None,
+                   appliedForExemption: Option[Boolean] = None,
+                   zeroRatedSupplies: Option[BigDecimal] = None,
                    reclaimVatOnMostReturns: Option[Boolean] = None,
                    returnsFrequency: Option[ReturnsFrequency] = None,
                    staggerStart: Option[Stagger] = None,

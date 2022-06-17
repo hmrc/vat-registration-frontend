@@ -17,7 +17,6 @@
 package services
 
 import _root_.models._
-import _root_.models.api._
 import featureswitch.core.config.FeatureSwitching
 import models.api.returns._
 import org.mockito.ArgumentMatchers.any
@@ -43,17 +42,17 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
   val mockCacheMap: CacheMap = CacheMap("", Map("" -> JsString("")))
 
   override val date: LocalDate = LocalDate.now
-  override val returns: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date))
+  override val returns: Returns = Returns(Some(testTurnover), None, Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date))
   val returnsFixed: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 25)))
   val returnsAlt: Returns = returns.copy(startDate = Some(LocalDate.of(2017, 12, 12)))
   val testAASDetails: AASDetails = AASDetails(Some(MonthlyPayment), Some(BankGIRO))
-  val testAASReturns: Returns = Returns(Some(10000.5), Some(true), Some(Annual), Some(JanDecStagger), Some(date), Some(testAASDetails))
+  val testAASReturns: Returns = Returns(Some(testTurnover), None, Some(10000.5), Some(true), Some(Annual), Some(JanDecStagger), Some(date), Some(testAASDetails))
 
   def returnsWithVatDate(vd: Option[LocalDate]): Returns = returns.copy(startDate = vd)
 
   val emptyReturns: Returns = Returns(None, None, None, None, None, None)
   val incomplete: Returns = emptyReturns.copy(reclaimVatOnMostReturns = Some(true))
-  val incompleteNIP: Returns = Returns(Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date), None, None, Some(NIPCompliance(Some(ConditionalValue(false, None)), None)))
+  val incompleteNIP: Returns = Returns(Some(testTurnover), None, Some(10000.5), Some(true), Some(Quarterly), Some(FebruaryStagger), Some(date), None, None, Some(NIPCompliance(Some(ConditionalValue(false, None)), None)))
 
   "getReturnsViewModel" should {
     "return a model from Save4Later" in new Setup {
@@ -122,6 +121,78 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
         .thenReturn(Future.successful(mockCacheMap))
 
       await(service.submitReturns(incomplete)) mustBe incomplete
+    }
+  }
+
+  "getTurnover" should {
+    "return turnover from Returns if it exists" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns)))
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(validTurnoverEstimates)))
+
+      await(service.getTurnover) mustBe Some(testTurnover)
+    }
+
+    "fallback to turnover from EligibilitySubmissionData if Returns turnover doesn't exist" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns.copy(turnoverEstimate = None))))
+      when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
+        .thenReturn(Future.successful(Some(validTurnoverEstimates)))
+
+      await(service.getTurnover) mustBe Some(validTurnoverEstimates.turnoverEstimate)
+    }
+  }
+
+  "saveTurnover" should {
+    "save a complete model" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns)))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+
+      await(service.saveTurnover(turnoverEstimate = testTurnover)) mustBe returns
+    }
+
+    "save an incomplete model" in new Setup {
+      val expected: Returns = emptyReturns.copy(
+        turnoverEstimate = Some(testTurnover)
+      )
+
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(emptyReturns)))
+      when(mockS4LService.save(any)(any, any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveTurnover(turnoverEstimate = testTurnover)) mustBe expected
+    }
+  }
+
+  "saveVatExemption" should {
+    "save a complete model" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns)))
+      when(mockVatRegistrationConnector.patchReturns(any(), any[Returns])(any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+      when(mockS4LService.clear(any(), any()))
+        .thenReturn(Future.successful(HttpResponse(200, "{}")))
+
+      await(service.saveVatExemption(appliedForExemption = true)) mustBe returns.copy(appliedForExemption = Some(true))
+    }
+
+    "save an incomplete model" in new Setup {
+      val expected: Returns = emptyReturns.copy(
+        appliedForExemption = Some(true)
+      )
+
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(emptyReturns)))
+      when(mockS4LService.save(any)(any, any, any, any))
+        .thenReturn(Future.successful(mockCacheMap))
+
+      await(service.saveVatExemption(appliedForExemption = true)) mustBe expected
     }
   }
 
@@ -386,31 +457,40 @@ class ReturnsServiceSpec extends VatRegSpec with FeatureSwitching {
     val invalidTurnover = 1350001L
 
     "return false for a turnover that is above 1350000" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns.copy(turnoverEstimate = Some(invalidTurnover)))))
+
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(Some(TurnoverEstimates(invalidTurnover))))
+        .thenReturn(Future.successful(None))
 
       await(service.isEligibleForAAS) mustBe false
     }
 
     "return false for a Groups Registration" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns.copy(turnoverEstimate = Some(validTurnover)))))
+
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
+        .thenReturn(Future.successful(None))
 
       await(service.isEligibleForAAS) mustBe false
     }
 
     "return true when the turnover estimate is valid for AAS" in new Setup {
+      when(mockS4LService.fetchAndGet[Returns](any[S4LKey[Returns]](), any(), any(), any()))
+        .thenReturn(Future.successful(Some(returns.copy(turnoverEstimate = Some(validTurnover)))))
+
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       when(mockVatRegistrationService.fetchTurnoverEstimates(any(), any()))
-        .thenReturn(Future.successful(Some(TurnoverEstimates(validTurnover))))
+        .thenReturn(Future.successful(None))
 
       await(service.isEligibleForAAS) mustBe true
     }

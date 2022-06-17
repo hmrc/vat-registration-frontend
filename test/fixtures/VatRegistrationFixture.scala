@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns.{AASDetails, BACS, Monthly, QuarterlyPayment, Returns}
+import models.api.returns._
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
@@ -191,8 +191,10 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
     goodsFromEU = Some(ConditionalValue(true, Some(BigDecimal(1))))
   )
+
+  val testTurnover = 100
   val validReturns = Returns(
-    Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
+    Some(testTurnover), None, Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
   )
 
   val validAasDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
@@ -212,17 +214,19 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
-    validTurnoverEstimates,
+    Some(validTurnoverEstimates),
     UkCompany,
     isTransactor = false,
+    appliedForException = None,
     registrationReason = ForwardLook
   )
 
   val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
-    validTurnoverEstimates,
+    Some(validTurnoverEstimates),
     Individual,
     isTransactor = false,
+    appliedForException = None,
     registrationReason = ForwardLook
   )
 

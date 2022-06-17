@@ -23,7 +23,7 @@ import featureswitch.core.config.FeatureSwitching
 import models.api._
 import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
 import models.view.SummaryListRowUtils._
-import models.{BusinessContact, SicAndCompliance, TradingDetails}
+import models.{BusinessContact, SicAndCompliance, TradingDetails, TurnoverEstimates}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -68,11 +68,13 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           tradingName(tradingDetails, partyType),
           importsOrExports(tradingDetails, partyType),
           applyForEori(tradingDetails, partyType),
+          turnoverEstimate(returns),
           zeroRatedTurnover(vatScheme)
         ).flatten ++
         nipSection(returns) ++
         List(
           claimRefunds(returns),
+          vatExemption(returns),
           sendGoodsOverseas(returns),
           sendGoodsToEu(returns)
         ).flatten ++
@@ -233,9 +235,16 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       )
     }
 
+  private def turnoverEstimate(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowString(
+      s"$sectionId.turnoverEstimate",
+      returns.turnoverEstimate.map(Formatters.currency),
+      Some(returnsRoutes.TurnoverEstimateController.show.url)
+    )
 
   private def zeroRatedTurnover(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
-    if (vatScheme.eligibilitySubmissionData.map(_.estimates.turnoverEstimate).contains(0)) None else optSummaryListRowString(
+    if (vatScheme.returns.flatMap(_.turnoverEstimate).contains(0) ||
+      (vatScheme.eligibilitySubmissionData.flatMap(_.estimates).contains(TurnoverEstimates(0)) && vatScheme.returns.map(_.turnoverEstimate).isEmpty)) None else optSummaryListRowString(
       s"$sectionId.zeroRated",
       vatScheme.returns.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
       Some(returnsRoutes.ZeroRatedSuppliesController.show.url)
@@ -246,6 +255,13 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       s"$sectionId.claimRefunds",
       returns.reclaimVatOnMostReturns,
       Some(returnsRoutes.ClaimRefundsController.show.url)
+    )
+
+  private def vatExemption(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"$sectionId.vatExemption",
+      returns.appliedForExemption,
+      Some(returnsRoutes.VatExemptionController.show.url)
     )
 
   private def sendGoodsOverseas(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
