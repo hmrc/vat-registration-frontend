@@ -17,7 +17,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, UkCompany}
+import models.api.{EligibilitySubmissionData, NonUkNonEstablished, UkCompany}
 import models.{ApplicantDetails, TradingDetails, TradingNameView}
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
@@ -47,7 +47,7 @@ class TradingNameControllerISpec extends ControllerISpec {
   }
 
   "submit Trading Name page" should {
-    "return SEE_OTHER" in new Setup {
+    "return SEE_OTHER with redirect to Imports or Exports" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
@@ -64,6 +64,60 @@ class TradingNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ImportsOrExportsController.show.url)
+      }
+    }
+
+    "return SEE_OTHER with redirect to Turnover Estimate for non UK registrations" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TradingDetails].contains(tradingDetails)
+        .vatScheme.doesNotHave("trading-details")
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .vatScheme.isUpdatedWith(tradingDetails.copy(tradingNameView = Some(TradingNameView(false))))
+        .s4lContainer[TradingDetails].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/trading-name").post(Map("value" -> Seq("false")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.TurnoverEstimateController.show.url)
+      }
+    }
+
+    "return BAD_REQUEST if true is selected without a name" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TradingDetails].contains(tradingDetails)
+        .vatScheme.doesNotHave("trading-details")
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/trading-name").post(Map("value" -> Seq("true")))
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST if nothing is selected" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TradingDetails].contains(tradingDetails)
+        .vatScheme.doesNotHave("trading-details")
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/trading-name").post("")
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
       }
     }
   }

@@ -16,15 +16,14 @@
 
 package forms
 
-import models.TurnoverEstimates
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.{Form, FormError}
 
 class ZeroRatedSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
 
-  val turnoverEstimates: TurnoverEstimates = TurnoverEstimates(15000)
-  val zeroRatedSuppliesForm: Form[BigDecimal] = ZeroRatedSuppliesForm.form(turnoverEstimates)
+  val turnoverEstimate = 15000
+  val zeroRatedSuppliesForm: Form[BigDecimal] = ZeroRatedSuppliesForm.form(turnoverEstimate)
   val testValidZeroRatedSupplies: String = "14,999.99"
   val validZeroRatedSupplies: BigDecimal = 14999.99
   val testNonNumberZeroRatedSupplies: String = "test"
@@ -58,13 +57,13 @@ class ZeroRatedSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
     "validate that when zeroRatedSupplies > turnoverEstimates the form fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesForm.zeroRatedSuppliesKey -> testInvalidZeroRatedSupplies))
 
-      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, too_big_zero_rated_supplies_error_key))
+      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, too_big_zero_rated_supplies_error_key, List(turnoverEstimate)))
     }
 
     "validate that when zeroRatedSupplies is negative the form fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesForm.zeroRatedSuppliesKey -> testNegativeZeroRatedSupplies))
 
-      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, negative_zero_rated_supplies_error_key))
+      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, negative_zero_rated_supplies_error_key, List(0)))
     }
   }
 }

@@ -62,7 +62,7 @@ class TradingNameController @Inject()(val sessionService: SessionService,
             val (hasName, name) = success
             tradingDetailsService.saveTradingName(profile.registrationId, hasName, name).flatMap { _ =>
               vatRegistrationService.partyType.map {
-                case NonUkNonEstablished => Redirect(controllers.returns.routes.ZeroRatedSuppliesResolverController.resolve)
+                case NonUkNonEstablished => Redirect(controllers.returns.routes.TurnoverEstimateController.show)
                 case _ => Redirect(controllers.business.routes.ImportsOrExportsController.show)
               }
             }

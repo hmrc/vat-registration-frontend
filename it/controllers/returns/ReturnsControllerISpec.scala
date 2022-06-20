@@ -15,7 +15,7 @@ class ReturnsControllerISpec extends ControllerISpec {
     "Return OK when the user is authenticated" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, testApplicantIncorpDate))
+        .s4lContainer[Returns].contains(Returns(None, None, None, None, None, None, testApplicantIncorpDate))
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -46,7 +46,7 @@ class ReturnsControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, Some(java.time.LocalDate.parse(today.toString))))
+        .s4lContainer[Returns].isUpdatedWith(Returns(None, None, None, None, None, None, Some(java.time.LocalDate.parse(today.toString))))
         .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .vatScheme.has("threshold-data", Json.toJson(Threshold(mandatoryRegistration = false)))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)

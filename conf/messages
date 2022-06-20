@@ -424,6 +424,16 @@ pages.start.date.incorp.earlierHead.hint                     = This must be on o
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
 validation.startDateManIncorp.error                          = Enter the registration start date
 
+## Turnover Estimate Page
+pages.turnoverEstimate.heading                              = What do you think the business’s VAT-taxable turnover will be for the next 12 months?
+pages.turnoverEstimate.text                                 = Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate.
+pages.turnoverEstimate.link                                 = Find out more about which goods and services are exempt from VAT
+pages.turnoverEstimate.label                                = Turnover estimate
+pages.turnoverEstimate.hint                                 = For example, £90000
+validation.turnoverEstimate.missing                         = Enter what you think the business’s VAT-taxable turnover will be for the next 12 months
+validation.turnoverEstimate.range.above                     = Give an estimate that is more than or equal to £{0}
+validation.turnoverEstimate.range.below                     = Give an estimate that is less than or equal to £{0}
+
 ## Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
 pages.zeroRatedSupplies.text                                = Enter a value for all of the taxable goods which are zero-rated. For example £12,000.
@@ -441,6 +451,11 @@ pages.vat.charge.expectancy.para1                           = Most businesses do
 pages.pages.vat.charge.expectancy.example                   = Show me an example
 pages.pages.vat.charge.expectancy.example.para1             = If a business sells mainly zero-rated items (the VAT on them is 0%), it may pay more VAT to run its business than it can charge. For example, most books are zero-rated, so a bookshop may find itself in this situation.
 validation.vat.charge.expectancy.missing                    = Select yes if you expect the business to regularly claim VAT refunds from HMRC
+
+## Exemption Page
+pages.vatExemption.heading                                  = Does the business want to apply for a VAT exemption?
+pages.vatExemption.para1                                    = The business may not have to register for VAT if it sells mainly or only zero-rated goods or services.
+validation.vatExemption.missing                             = Select yes if the business wants to apply for a VAT exemption
 
 ## Vat Return Frequency
 pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
@@ -569,8 +584,10 @@ cya.aboutTheBusiness.tradingName                    = Different Trading name
 cya.aboutTheBusiness.mandatoryName                  = Trading name
 cya.aboutTheBusiness.importsOrExports               = Trade VAT-taxable goods outside UK
 cya.aboutTheBusiness.applyForEori                   = Apply for EORI?
+cya.aboutTheBusiness.turnoverEstimate               = What do you think the business’s VAT-taxable turnover will be for the next 12 months?
 cya.aboutTheBusiness.zeroRated                      = Zero rated turnnover for the next 12 months
 cya.aboutTheBusiness.claimRefunds                   = Expect to claim VAT refunds regularly?
+cya.aboutTheBusiness.vatExemption                   = Does the business want to apply for a VAT exemption?
 cya.aboutTheBusiness.sendGoodsOverseas              = Will the business send goods directly to customers from overseas countries?
 cya.aboutTheBusiness.sendGoodsToEu                  = Do you intend to send goods direct to customers from within the EU?
 cya.aboutTheBusiness.storingGoods                   = Where are you storing your goods for dispatch?

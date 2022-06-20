@@ -46,7 +46,7 @@ object BusinessContact {
         (__ \ "email").writeNullable[String] and
         (__ \ "telephoneNumber").writeNullable[String] and
         (__ \ "hasWebsite").writeNullable[Boolean] and
-        (__ \ "website").writeOptionWithNull[String] and
+        (__ \ "website").writeNullable[String] and
         (__ \ "contactPreference").writeNullable[ContactPreference]
       ) (unlift(BusinessContact.unapply))
 

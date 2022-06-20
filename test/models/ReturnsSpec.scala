@@ -27,10 +27,12 @@ class ReturnsSpec extends VatRegSpec {
   override val testDate: LocalDate = LocalDate.now()
   val testZeroRatedSupplies: BigDecimal = 10000.5
 
-  val testMonthlyReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(true), Some(Monthly), Some(MonthlyStagger), Some(testDate))
-  val testAnnualReturns: Returns = Returns(Some(testZeroRatedSupplies), Some(false), Some(Annual), Some(JanDecStagger), Some(testDate), Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
+  val testMonthlyReturns: Returns = Returns(Some(testTurnover), Some(false), Some(testZeroRatedSupplies), Some(true), Some(Monthly), Some(MonthlyStagger), Some(testDate))
+  val testAnnualReturns: Returns = Returns(Some(testTurnover), Some(true), Some(testZeroRatedSupplies), Some(false), Some(Annual), Some(JanDecStagger), Some(testDate), Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))
 
   val validJsonMonthly: JsObject = Json.obj(
+    "turnoverEstimate" -> testTurnover,
+    "appliedForExemption" -> false,
     "zeroRatedSupplies" -> testZeroRatedSupplies,
     "reclaimVatOnMostReturns" -> true,
     "returnsFrequency" -> Json.toJson[ReturnsFrequency](Monthly),
@@ -39,6 +41,8 @@ class ReturnsSpec extends VatRegSpec {
   )
 
   val validJsonAnnual: JsObject = Json.obj(
+    "turnoverEstimate" -> testTurnover,
+    "appliedForExemption" -> true,
     "zeroRatedSupplies" -> testZeroRatedSupplies,
     "reclaimVatOnMostReturns" -> false,
     "returnsFrequency" -> Json.toJson[ReturnsFrequency](Annual),

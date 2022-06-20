@@ -20,21 +20,21 @@ import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
 
-object ZeroRatedSuppliesForm {
+object TurnoverEstimateForm {
 
-  implicit val errorCode: String = "zeroRatedSupplies"
-  val zeroRatedSuppliesKey = "zeroRatedSupplies"
+  implicit val errorCode: String = "turnoverEstimate"
+  val turnoverEstimateKey = "turnoverEstimate"
 
-  def form(turnoverEstimate: BigDecimal): Form[BigDecimal] = Form(
+  val form: Form[BigDecimal] = Form(
     single(
-      zeroRatedSuppliesKey ->
+      turnoverEstimateKey ->
         text
           .verifying(mandatoryFullNumericText)
           .transform[BigDecimal](string =>
             BigDecimal(string.replace(",", "")).setScale(2, BigDecimal.RoundingMode.HALF_UP),
             _.toString
           )
-          .verifying(inRange[BigDecimal](0, turnoverEstimate))
+          .verifying(inRange[BigDecimal](0, BigDecimal("999999999999999")))
     )
   )
 }

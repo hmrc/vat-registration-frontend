@@ -33,7 +33,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an OK if turnoverEstimates are found" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -48,7 +48,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an OK if turnoverEstimates are found and there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(Some(10000), None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, Some(10000), None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -63,7 +63,8 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an INTERNAL_SERVER_ERROR if turnoverEstimates aren't found" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
+        .s4lContainer[Returns].contains(Returns())
+        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,8 +80,8 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "redirect to Sell Or Move Northern Ireland Protocol page if turnoverEstimates exists and form has no errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
-        .s4lContainer[Returns].isUpdatedWith(Returns(Some(10000.54), None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
+        .s4lContainer[Returns].isUpdatedWith(Returns(Some(testTurnover), None, Some(10000.54), None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -98,7 +99,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "update the page with errors if turnoverEstimates exists and form has errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Returns].contains(Returns(None, None, None, None, None))
+        .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
         .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -116,6 +117,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns())
+        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

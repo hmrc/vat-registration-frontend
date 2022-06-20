@@ -22,9 +22,10 @@ import play.api.libs.json.{Format, Json}
 import java.time.LocalDate
 
 case class EligibilitySubmissionData(threshold: Threshold,
-                                     estimates: TurnoverEstimates,
+                                     estimates: Option[TurnoverEstimates],
                                      partyType: PartyType,
                                      isTransactor: Boolean,
+                                     appliedForException: Option[Boolean],
                                      registrationReason: RegistrationReason,
                                      calculatedDate: Option[LocalDate] = None)
 

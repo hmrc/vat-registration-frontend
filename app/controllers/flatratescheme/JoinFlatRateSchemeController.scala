@@ -22,7 +22,7 @@ import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile, SessionService, VatRegistrationService}
+import services.{FlatRateService, ReturnsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.flatratescheme.frs_join
 
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateService,
                                              val vatRegistrationService: VatRegistrationService,
+                                             val returnsService: ReturnsService,
                                              val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
                                              view: frs_join)
@@ -44,10 +45,11 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
     implicit request =>
       implicit profile =>
         for {
-          turnoverEstimates <- vatRegistrationService.fetchTurnoverEstimates.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
+          turnoverEstimates <- returnsService.getTurnover.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
           isGroupRegistration <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
+          _ <- Future.successful(println(turnoverEstimates))
           redirect <-
-            if (turnoverEstimates.turnoverEstimate > 150000L || isGroupRegistration) {
+            if (turnoverEstimates > 150000L || isGroupRegistration) {
               Future.successful(Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve))
             } else {
               flatRateService.getFlatRate.map { flatRateScheme =>

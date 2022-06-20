@@ -55,7 +55,7 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
         ApplyForEoriForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(applyForEoriView(errors))),
           success => tradingDetailsService.saveEuGoods(profile.registrationId, success) map { _ =>
-            Redirect(controllers.returns.routes.ZeroRatedSuppliesResolverController.resolve)
+            Redirect(controllers.returns.routes.TurnoverEstimateController.show)
           }
         )
   }

@@ -61,7 +61,7 @@ class MandatoryTradingNameController @Inject()(val sessionService: SessionServic
             tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) flatMap {
               _ =>
                 vatRegistrationService.partyType.map {
-                  case NETP => Redirect(controllers.returns.routes.ZeroRatedSuppliesResolverController.resolve)
+                  case NETP => Redirect(controllers.returns.routes.TurnoverEstimateController.show)
                   case _ => Redirect(controllers.business.routes.ImportsOrExportsController.show)
                 }
             }

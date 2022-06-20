@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns.{JanuaryStagger, OverseasCompliance, Quarterly, Returns, StoringWithinUk}
+import models.api.returns._
 import models.external._
 import models.view._
 import play.api.libs.json.Json
@@ -65,8 +65,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testIban = "IBAN"
   val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)
   val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
-  val returns = Returns(None, None, Some(Quarterly), Some(JanuaryStagger), None)
-  val fullReturns: Returns = Returns(Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
+  val testTurnover = 30000
+  val returns = Returns(Some(testTurnover), None, None, None, Some(Quarterly), Some(JanuaryStagger), None)
+  val fullReturns: Returns = Returns(Some(testTurnover), None, Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
   val testCalculatedDate: LocalDate = LocalDate.now()
   val testLine1 = "line1"
   val testLine2 = "line2"
@@ -87,18 +88,20 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
-    turnOverEstimates,
+    Some(turnOverEstimates),
     UkCompany,
     isTransactor = false,
+    appliedForException = Some(false),
     registrationReason = ForwardLook,
     calculatedDate = Some(testCalculatedDate)
   )
 
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
-    turnOverEstimates,
+    Some(turnOverEstimates),
     Partnership,
     isTransactor = false,
+    appliedForException = Some(false),
     registrationReason = ForwardLook
   )
 
@@ -276,7 +279,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     emailVerified = Some(EmailVerified(true)),
     telephoneNumber = Some(TelephoneNumber("1234")),
     hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"), Some("Name"),"Cosmo")),
+    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
     formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
     previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
   )

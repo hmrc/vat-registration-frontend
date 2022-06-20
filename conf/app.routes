@@ -72,6 +72,10 @@ POST        /apply-for-eori                                                     
 ## ZERO RATED SUPPLIES RESOLVER
 GET         /resolve-zero-rated-turnover                                                       controllers.returns.ZeroRatedSuppliesResolverController.resolve
 
+## TURNOVER ESTIMATE PAGE
+GET         /turnover-estimate                                                                 controllers.returns.TurnoverEstimateController.show
+POST        /turnover-estimate                                                                 controllers.returns.TurnoverEstimateController.submit
+
 ## ZERO RATED SUPPLIES PAGE
 GET         /zero-rated-turnover                                                               controllers.returns.ZeroRatedSuppliesController.show
 POST        /zero-rated-turnover                                                               controllers.returns.ZeroRatedSuppliesController.submit
@@ -79,6 +83,10 @@ POST        /zero-rated-turnover                                                
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                                                 controllers.returns.ClaimRefundsController.show
 POST        /claim-vat-refunds                                                                 controllers.returns.ClaimRefundsController.submit
+
+## VAT EXEMPTION PAGE
+GET         /vat-exemption                                                                     controllers.returns.VatExemptionController.show
+POST        /vat-exemption                                                                     controllers.returns.VatExemptionController.submit
 
 ## ACCOUNTING PERIOD PAGE
 GET         /submit-vat-returns                                                                controllers.returns.ReturnsController.accountPeriodsPage

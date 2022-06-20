@@ -17,7 +17,6 @@
 package views.returns
 
 import forms.ZeroRatedSuppliesForm
-import models.TurnoverEstimates
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
 import views.html.returns.zero_rated_supplies
@@ -34,7 +33,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
   val buttonText = "Save and continue"
 
   "Zero Rated Supplies Page" must {
-    val form = ZeroRatedSuppliesForm.form(TurnoverEstimates(10000))
+    val form = ZeroRatedSuppliesForm.form(10000)
     val view = app.injector.instanceOf[zero_rated_supplies].apply(testCall, form)
     implicit val doc = Jsoup.parse(view.body)
 
