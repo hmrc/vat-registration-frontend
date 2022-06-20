@@ -47,7 +47,6 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
         for {
           turnoverEstimates <- returnsService.getTurnover.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
           isGroupRegistration <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
-          _ <- Future.successful(println(turnoverEstimates))
           redirect <-
             if (turnoverEstimates > 150000L || isGroupRegistration) {
               Future.successful(Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve))
