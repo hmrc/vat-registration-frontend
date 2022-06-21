@@ -40,11 +40,12 @@ class ObiSummaryControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessInvolvementController.show.url)
       }
     }
+
     "the user has 1 or more OBIs" must {
-      "return OK with the view" in new Setup {
+      "return INTERNAL_SERVER_ERROR if any of the OBI has business name missing" in new Setup {
         given
           .user.isAuthorised()
-          .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis))
+          .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis.map(_.copy(businessName = None))))
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
@@ -52,7 +53,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
         val res = await(buildClient(pageUrl()).get)
 
-        res.status mustBe OK
+        res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

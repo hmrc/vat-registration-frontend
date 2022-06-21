@@ -6,7 +6,7 @@ import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
-import play.api.http.Status.{NOT_IMPLEMENTED, OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, NOT_IMPLEMENTED, OK, SEE_OTHER}
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -31,6 +31,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
       }
     }
   }
+
   "submit Scottish Partnership Name page" should {
     "post to the backend" in new Setup {
       given()
@@ -42,6 +43,26 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.applicant.routes.PartnershipIdController.startPartnerJourney.url)
+    }
+
+    "return BAD_REQUEST for missing partnership name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/scottish-partnership-name").post("")
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST for invalid partnership name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/scottish-partnership-name").post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> "a" * 106))
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
     }
   }
 }

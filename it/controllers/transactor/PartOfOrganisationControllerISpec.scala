@@ -14,23 +14,23 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
 
   val url: String = transactorRoutes.PartOfOrganisationController.show.url
 
-  val testDetails = TransactorDetails(
-    isPartOfOrganisation = Some(true)
-  )
+  val testDetails: TransactorDetails = TransactorDetails(isPartOfOrganisation = Some(true))
 
   s"GET $url" should {
-    "show the view" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
-        .registrationApi.getSection[TransactorDetails](None)
+    List(None, Some(testDetails)).foreach { transactorDetails =>
+      s"show the view with transactor details ${transactorDetails.fold("not set")(_ => "set")}" in new Setup {
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](transactorDetails)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).get()
+        val response: Future[WSResponse] = buildClient(url).get()
 
-      whenReady(response) { res =>
-        res.status mustBe OK
+        whenReady(response) { res =>
+          res.status mustBe OK
+        }
       }
     }
 
@@ -52,6 +52,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.OrganisationNameController.show.url)
         }
       }
+
       "redirect to Declaration Capacity page when no is selected" in new Setup {
         given()
           .user.isAuthorised()
@@ -67,6 +68,17 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.DeclarationCapacityController.show.url)
+        }
+      }
+
+      "return BAD_REQUEST if no option selected" in new Setup {
+        given().user.isAuthorised()
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response: Future[WSResponse] = buildClient(url).post("")
+
+        whenReady(response) { res =>
+          res.status mustBe BAD_REQUEST
         }
       }
     }

@@ -96,6 +96,17 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(controllers.returns.routes.TurnoverEstimateController.show.url)
       }
     }
+
+    "return BAD_REQUEST if no radio option selected" in new Setup {
+      given.user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").post("")
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
+      }
+    }
   }
 
 }

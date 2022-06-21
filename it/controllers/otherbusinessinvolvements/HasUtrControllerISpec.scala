@@ -64,6 +64,44 @@ class HasUtrControllerISpec extends ControllerISpec {
       }
     }
 
+    "redirect to minIdx page if given index is less than configured minIdx" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
+        .registrationApi.getListSection[OtherBusinessInvolvement](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(pageUrl(idx1))
+      }
+    }
+
+    "return OK if data is incomplete" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(hasUtr = None)), idx = Some(idx1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
+
+      whenReady(response) { _.status mustBe OK }
+    }
+
     "return OK with prepop" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()

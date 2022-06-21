@@ -16,7 +16,7 @@
 
 package controllers.business
 
-import forms.ShortOrgNameForm
+import forms.{ScottishPartnershipNameForm, ShortOrgNameForm}
 import itutil.ControllerISpec
 import models.TradingDetails
 import models.api.EligibilitySubmissionData
@@ -81,6 +81,26 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
+      }
+    }
+
+    "return BAD_REQUEST for missing trading name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/short-organisation-name").post("")
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST for invalid trading name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/short-organisation-name").post(Map(ShortOrgNameForm.shortOrgNameKey -> "a" * 161))
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
       }
     }
   }

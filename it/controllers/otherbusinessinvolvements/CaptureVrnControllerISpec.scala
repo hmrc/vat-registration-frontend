@@ -73,6 +73,44 @@ class CaptureVrnControllerISpec extends ControllerISpec {
         Jsoup.parse(res.body).getElementById(CaptureVrnForm.captureVrnKey).attr("value") mustBe testVrn
       }
     }
+
+    "return OK when data incomplete" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(vrn = None)), idx = Some(idx1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
+
+      whenReady(response) { _.status mustBe OK }
+    }
+
+    "redirect to minIdx if given index is less than minIdx" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
+        .registrationApi.getListSection[OtherBusinessInvolvement](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(pageUrl(idx1))
+      }
+    }
   }
 
   s"GET ${pageUrl(idx2)}" must {
@@ -160,6 +198,14 @@ class CaptureVrnControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
       }
+    }
+
+    "return BAD_REQUEST if form has errors" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post("")
+      whenReady(response) { _.status mustBe BAD_REQUEST }
     }
   }
 }

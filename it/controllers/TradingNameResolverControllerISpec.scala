@@ -68,25 +68,27 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       }
     }
 
-    s"return SEE_OTHER and redirects to ${controllers.business.routes.ShortOrgNameController.show.url} for a ${UkCompany.toString} with a company name longer than 105" in new Setup {
-      val longCompanyName: String = "1" * 106
+    List(UkCompany, ScotLtdPartnership).foreach { partyType =>
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.ShortOrgNameController.show.url} for a ${partyType.toString} with a company name longer than 105" in new Setup {
+        val longCompanyName: String = "1" * 106
 
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[TradingDetails].isEmpty
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UkCompany)))
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity =
-        Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
-      )))
-        .vatScheme.doesNotHave("trading-details")
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TradingDetails].isEmpty
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity =
+          Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
+        )))
+          .vatScheme.doesNotHave("trading-details")
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/resolve-party-type").get()
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ShortOrgNameController.show.url)
+        val response = buildClient("/resolve-party-type").get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ShortOrgNameController.show.url)
+        }
       }
     }
 
@@ -107,6 +109,24 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
         }
+      }
+    }
+
+    s"return SEE_OTHER and redirects to ${controllers.business.routes.PartnershipNameController.show.url} for ${ScotLtdPartnership.toString} when no company name" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(ScotLtdPartnership)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TradingDetails].isEmpty
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = ScotLtdPartnership)))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = None)))))
+        .vatScheme.doesNotHave("trading-details")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/resolve-party-type").get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.PartnershipNameController.show.url)
       }
     }
 

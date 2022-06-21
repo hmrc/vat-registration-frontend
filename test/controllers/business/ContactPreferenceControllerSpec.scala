@@ -16,6 +16,7 @@
 
 package controllers.business
 
+import featureswitch.core.config.{FeatureSwitching, LandAndProperty}
 import fixtures.VatRegistrationFixture
 import models.ContactPreference
 import org.mockito.ArgumentMatchers
@@ -26,7 +27,7 @@ import views.html.business.contact_preference
 
 import scala.concurrent.Future
 
-class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions with FeatureSwitching {
 
   val view = app.injector.instanceOf[contact_preference]
 
@@ -52,12 +53,22 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
   "showing the contact preference page" should {
     "return a 200" when {
-      "everything is okay" in new SubmissionSetup {
+      "contract preference is available" in new SubmissionSetup {
+        callAuthorised(controller.showContactPreference) {
+          _ isA 200
+        }
+      }
+
+      "contract preference is unavailable" in new Setup {
+        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(validBusinessContactDetails.copy(contactPreference = None)))
+
         callAuthorised(controller.showContactPreference) {
           _ isA 200
         }
       }
     }
+
     "throw an exception" when {
       "getBusinessContact Fails" in new Setup {
         when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -95,12 +106,17 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
           _ redirectsTo controllers.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
         }
       }
-    }
 
-    "return a 303" when {
       "user selects letter and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
           _ redirectsTo controllers.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
+        }
+      }
+
+      "land and property feature switch is enabled" in new SubmissionSetup {
+        enable(LandAndProperty)
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
+          _ redirectsTo controllers.sicandcompliance.routes.LandAndPropertyController.show.url
         }
       }
     }

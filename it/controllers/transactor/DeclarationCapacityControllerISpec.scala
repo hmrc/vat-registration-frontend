@@ -74,6 +74,21 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(routes.TransactorIdentificationController.startJourney.url)
       }
+
+      "return BAD_REQUEST if role selected as other and not set" in new Setup {
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
+          .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
+          .vatScheme.contains(emptyUkCompanyVatScheme)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).post(""))
+
+        res.status mustBe BAD_REQUEST
+      }
     }
   }
 }

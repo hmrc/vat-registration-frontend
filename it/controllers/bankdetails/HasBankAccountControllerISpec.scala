@@ -3,7 +3,7 @@ package controllers.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -156,6 +156,14 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
+    }
+
+    "return BAD_REQUEST if has_bank_account option not selected" in new Setup {
+      given.user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      val res = await(buildClient(url).post(""))
+
+      res.status mustBe BAD_REQUEST
     }
   }
 

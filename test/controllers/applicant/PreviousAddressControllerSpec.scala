@@ -106,6 +106,15 @@ class PreviousAddressControllerSpec extends ControllerSpec
         status(_) mustBe OK
       }
     }
+
+    "return OK when there's no data and the user is not a transactor" in new Setup {
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
+      mockGetTransactorApplicantName(currentProfile)(None)
+
+      callAuthorised(controller.show) {
+        status(_) mustBe OK
+      }
+    }
   }
 
   "submit" should {

@@ -18,7 +18,7 @@ package controllers.transactor
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
+import models.TransactorDetails
 import models.api.EligibilitySubmissionData
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -121,6 +121,39 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
+      }
+
+      "return BAD_REQUEST for invalid passcode submitted" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].contains(s4lContents)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> "p" * 10)))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      "return INTERNAL_SERVER for valid passcode submitted with no email available" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].contains(s4lContents.copy(email = None))
+          .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
+
+        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

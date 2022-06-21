@@ -169,6 +169,24 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
       }
     }
+
+    "ApplicantDetails with invalid email" should {
+      List("", "e" * 133, "test-email").foreach { email =>
+        s"return BAD_REQUEST for invalid email: '$email'" in new Setup {
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+          disable(StubEmailVerification)
+          given()
+            .user.isAuthorised()
+            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(emailAddress = Some(EmailAddress(testEmail))))
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> email)))
+          res.status mustBe BAD_REQUEST
+        }
+      }
+    }
   }
 
 }

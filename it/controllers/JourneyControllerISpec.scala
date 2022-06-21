@@ -23,7 +23,7 @@ import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.RegistrationsApiStubs
@@ -50,8 +50,8 @@ class JourneyControllerISpec extends ControllerISpec
   def initJourneyUrl(regId: String): String =
     routes.JourneyController.initJourney(regId).url
 
-  val vatSchemeJson = Json.toJson(fullVatScheme)
-  val vatSchemeJson2 = Json.toJson(fullVatScheme.copy(id = "2"))
+  val vatSchemeJson: JsValue = Json.toJson(fullVatScheme)
+  val vatSchemeJson2: JsValue = Json.toJson(fullVatScheme.copy(id = "2"))
 
   s"GET $showUrl" when {
     "SaveAndContinueLater FS is disabled" must {
@@ -137,6 +137,42 @@ class JourneyControllerISpec extends ControllerISpec
         }
       }
     }
+
+    "SaveAndContinueLater and MultipleRegistrations FS are enabled" when {
+      "the registrations API returns in flight registrations" must {
+        "redirect to manage registrations page" in new Setup {
+          enable(SaveAndContinueLater)
+          enable(MultipleRegistrations)
+
+          given()
+            .user.isAuthorised()
+            .vatScheme.regStatus(VatRegStatus.draft)
+
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
+
+          val res: WSResponse = await(buildClient(showUrl).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ManageRegistrationsController.show.url)
+        }
+      }
+
+      "the registrations API returns no registrations" must {
+        s"redirect to new journey page" in new Setup {
+          enable(SaveAndContinueLater)
+          enable(MultipleRegistrations)
+
+          given().user.isAuthorised()
+
+          registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
+
+          val res: WSResponse = await(buildClient(showUrl).get())
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
+        }
+      }
+    }
   }
 
   s"POST $submitUrl" when {
@@ -164,6 +200,16 @@ class JourneyControllerISpec extends ControllerISpec
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.continueJourney(Some(testRegId)).url)
+      }
+    }
+    "the user has not selected journey option" must {
+      "return a BAD_REQUEST" in new Setup {
+        given()
+          .user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        val res: WSResponse = await(buildClient(showUrl).post(""))
+        res.status mustBe BAD_REQUEST
       }
     }
   }
@@ -238,6 +284,26 @@ class JourneyControllerISpec extends ControllerISpec
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+      }
+    }
+    "on failure with missing vat schema details for given reg-id" must {
+      "return INTERNAL_SERVER_ERROR" in new Setup {
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+        res.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "for missing journey id" must {
+      "return BAD_REQUEST" in new Setup {
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(routes.JourneyController.continueJourney(None).url).get())
+        res.status mustBe BAD_REQUEST
       }
     }
     "the channel for traffic management is VatReg" when {

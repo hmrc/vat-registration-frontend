@@ -51,6 +51,27 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
     }
+
+    "redirect to minIdx page if given index is less than minIdx" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageGetUrl(0)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(pageGetUrl(idx1))
+      }
+    }
+
     "return an error when Other Business Name is missing" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()

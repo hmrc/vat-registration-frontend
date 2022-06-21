@@ -77,5 +77,16 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }
+
+    "return BAD_REQUEST if no valid reason selected" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post("")
+
+      whenReady(response) { res =>
+        res.status mustBe 400
+      }
+    }
   }
 }
