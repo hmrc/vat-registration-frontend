@@ -210,11 +210,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     contactPreference = Some(Email)
   )
 
-  val validTurnoverEstimates: TurnoverEstimates = TurnoverEstimates(100L)
-
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
-    Some(validTurnoverEstimates),
     UkCompany,
     isTransactor = false,
     appliedForException = None,
@@ -223,7 +220,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
-    Some(validTurnoverEstimates),
     Individual,
     isTransactor = false,
     appliedForException = None,

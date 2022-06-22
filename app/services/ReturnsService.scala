@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.VatRegistrationConnector
+import connectors.{RegistrationApiConnector, VatRegistrationConnector}
 import featureswitch.core.config.FeatureSwitching
 import models._
 import models.api.returns._
@@ -29,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
+                               registrationApiConnector: RegistrationApiConnector,
                                val vatService: VatRegistrationService,
                                val s4lService: S4LService
                               )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
@@ -86,19 +87,23 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[BigDecimal]] = {
-    for {
-      optTurnoverEstimate <- getReturns.map(_.turnoverEstimate)
-      fallbackTurnoverEstimate <- vatService.fetchTurnoverEstimates.map(_.map(estimate => BigDecimal(estimate.turnoverEstimate.toString)))
-      turnover = optTurnoverEstimate match {
-        case None => fallbackTurnoverEstimate
-        case some => some
-      }
-    } yield turnover  //TODO Replace whole thing with getReturns.map(_.turnoverEstimate) when turnover removed from eligibility
+    getReturns.map(_.turnoverEstimate)
   }
 
   def saveTurnover(turnoverEstimate: BigDecimal)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
-      submitReturns(returns.copy(turnoverEstimate = Some(turnoverEstimate)))
+      val ineligibleForFrs = turnoverEstimate > 150000
+      val ineligibleForAas = turnoverEstimate > 1350000
+      val ineligibleForExemption = returns.zeroRatedSupplies.exists(_ * 2 <= turnoverEstimate)
+      for {
+        returns <- submitReturns(returns.copy(
+          turnoverEstimate = Some(turnoverEstimate),
+          annualAccountingDetails = if (ineligibleForAas) None else returns.annualAccountingDetails,
+          returnsFrequency = if (ineligibleForAas) None else returns.returnsFrequency,
+          appliedForExemption = if (ineligibleForExemption) None else returns.appliedForExemption
+        ))
+        _ <- if (ineligibleForFrs) registrationApiConnector.deleteSection[FlatRateScheme](profile.registrationId) else Future.successful()
+      } yield returns
     }
   }
 
@@ -110,11 +115,13 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def saveZeroRatesSupplies(zeroRatedSupplies: BigDecimal)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     getReturns.flatMap { returns =>
-      val ineligibleForExemption = returns.turnoverEstimate.exists(estimate => estimate <= zeroRatedSupplies * 2)
+      val ineligibleForExemption = returns.turnoverEstimate.exists(estimate => zeroRatedSupplies * 2 <= estimate)
       val updatedExemptionAnswer = if (ineligibleForExemption) None else returns.appliedForExemption
       //If user changes zero rated to be less than or equal 50% of turnover, remove old exemption answer
-      submitReturns(returns.copy(zeroRatedSupplies = Some(zeroRatedSupplies),
-        appliedForExemption = updatedExemptionAnswer))
+      submitReturns(returns.copy(
+        zeroRatedSupplies = Some(zeroRatedSupplies),
+        appliedForExemption = updatedExemptionAnswer
+      ))
     }
   }
 

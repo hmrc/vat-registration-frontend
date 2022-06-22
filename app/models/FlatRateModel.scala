@@ -41,6 +41,7 @@ case class FlatRateScheme(joinFrs : Option[Boolean] = None,
 
 object FlatRateScheme {
   implicit val s4lKey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
+  implicit val apiKey: ApiKey[FlatRateScheme] = ApiKey("flat-rate-scheme")
 
   val reads: Reads[FlatRateScheme] = new Reads[FlatRateScheme] {
     override def reads(json: JsValue): JsResult[FlatRateScheme] = {

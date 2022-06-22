@@ -55,7 +55,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
-  val turnOverEstimates = TurnoverEstimates(turnoverEstimate = 30000)
   val testBankName = "testName"
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
@@ -88,7 +87,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val testEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
-    Some(turnOverEstimates),
     UkCompany,
     isTransactor = false,
     appliedForException = Some(false),
@@ -98,7 +96,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
-    Some(turnOverEstimates),
     Partnership,
     isTransactor = false,
     appliedForException = Some(false),

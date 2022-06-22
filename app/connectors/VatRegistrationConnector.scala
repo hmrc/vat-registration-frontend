@@ -113,14 +113,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/turnover-estimates-data") map { res =>
-      if (res.status.equals(OK)) Some(res.json.as[TurnoverEstimates]) else None
-    } recover {
-      case e: Exception => throw logResponse(e, "getTurnoverEstimates")
-    }
-  }
-
   def submitRegistration(regId: String, userHeaders: Map[String, String])(implicit hc: HeaderCarrier): Future[DESResponse] = {
     val jsonBody = Json.obj("userHeaders" -> userHeaders)
 

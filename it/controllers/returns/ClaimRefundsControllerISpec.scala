@@ -47,7 +47,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to the bank account details page when the user is TOGC/COLE" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testLargeReturns)
           .s4lContainer[Returns].isUpdatedWith(testLargeReturns.copy(reclaimVatOnMostReturns = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
@@ -63,7 +62,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to the bank account details page when the user is non-NETP" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testLargeReturns)
           .s4lContainer[Returns].isUpdatedWith(testLargeReturns.copy(reclaimVatOnMostReturns = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -79,7 +77,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NETP" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testLargeReturns)
           .s4lContainer[Returns].isUpdatedWith(testLargeReturns.copy(reclaimVatOnMostReturns = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
@@ -95,7 +92,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NonUkNoNEstablished" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testLargeReturns)
           .s4lContainer[Returns].isUpdatedWith(testLargeReturns.copy(reclaimVatOnMostReturns = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
@@ -113,7 +109,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to Vat Exemption page when the user answers Yes" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testSmallReturns)
           .s4lContainer[Returns].isUpdatedWith(testSmallReturns.copy(reclaimVatOnMostReturns = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -129,7 +124,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "follow normal logic and clear down stored exemption answer when the user answers No" in {
         given()
           .user.isAuthorised()
-          .vatScheme.doesNotHave("turnover-estimates-data")
           .s4lContainer[Returns].contains(testSmallReturns)
           .s4lContainer[Returns].isUpdatedWith(testSmallReturns.copy(reclaimVatOnMostReturns = Some(true), appliedForExemption = None))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

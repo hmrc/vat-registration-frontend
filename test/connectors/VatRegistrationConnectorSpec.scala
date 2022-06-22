@@ -218,26 +218,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "getTurnoverEstimates" should {
-
-    val jsonBody = Json.obj("turnoverEstimate" -> 1000)
-    val turnoverEstimates = TurnoverEstimates(1000L)
-
-    "return turnover estimates if they are returned from the backend" in new Setup {
-      mockHttpGET[HttpResponse](testUrl, HttpResponse(200, jsonBody.toString))
-
-      val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
-      result mustBe Some(turnoverEstimates)
-    }
-
-    "return None if turnover estimates can't be found in the backend for the supplied regId" in new Setup {
-      mockHttpGET[HttpResponse](testUrl, HttpResponse(204, ""))
-
-      val result: Option[TurnoverEstimates] = await(connector.getTurnoverEstimates)
-      result mustBe None
-    }
-  }
-
   "Calling getSicAndCompliance" should {
     val validJson = Json.parse(
       s"""
