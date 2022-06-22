@@ -57,11 +57,18 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the AlreadySubmitted view" in new Setup {
-      callAuthorised(testErrorController.submissionRetryable, useBasicAuth = true) {
+      callAuthorised(testErrorController.alreadySubmitted, useBasicAuth = true) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
+      }
+    }
+    "return the SignOut view" in new Setup {
+      callAuthorised(testErrorController.alreadySubmittedSignOut, useBasicAuth = true) {
+        result =>
+          status(result) mustBe SEE_OTHER
+          header(LOCATION, result) mustBe Some(controllers.callbacks.routes.SignInOutController.signOut.url)
       }
     }
   }

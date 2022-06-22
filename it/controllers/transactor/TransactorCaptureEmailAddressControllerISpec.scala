@@ -138,6 +138,16 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.transactor.routes.TransactorCaptureEmailPasscodeController.show.url)
 
       }
+
+      "return BAD_REQUEST if any of the validation fails for submitted email address" in new Setup {
+        given().user.isAuthorised()
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = buildClient(url).post("")
+        whenReady(res) { res =>
+          res.status mustBe BAD_REQUEST
+        }
+      }
     }
   }
 

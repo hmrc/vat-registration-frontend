@@ -5,7 +5,7 @@ import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{EligibilitySubmissionData, UkCompany}
+import models.api.{EligibilitySubmissionData, LtdLiabilityPartnership, LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, UkCompany}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -105,6 +105,29 @@ class IndividualIdentificationControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
+      }
+    }
+
+    List(Partnership, ScotPartnership, LtdPartnership, ScotLtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
+      s"redirect to the FormerNameController page for $partyType" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[ApplicantDetails](None)
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
+
+        stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-individual-callback?journeyId=$testJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+        }
       }
     }
   }

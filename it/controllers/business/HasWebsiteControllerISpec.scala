@@ -78,5 +78,14 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     }
+
+    "return BAD_REQUEST if no option is selected" in new Setup {
+      given.user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).post(""))
+
+      res.status mustBe BAD_REQUEST
+    }
   }
 }

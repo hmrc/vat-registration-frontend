@@ -83,6 +83,44 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         Jsoup.parse(res.body).getElementById(CaptureUtrForm.captureUtrKey).attr("value") mustBe testUtr
       }
     }
+
+    "return OK when data is incomplete" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(utr = None)), idx = Some(idx1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
+
+      whenReady(response) { _.status mustBe OK }
+    }
+
+    "redirect to minIdx page if given index is less than configured minIdx" in new Setup {
+      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
+        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
+        .registrationApi.getListSection[OtherBusinessInvolvement](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(pageUrl(idx1))
+      }
+    }
   }
 
   s"GET ${pageUrl(idx2)}" must {

@@ -19,6 +19,7 @@ package controllers.applicant
 import java.time.LocalDate
 import controllers.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
+import models.ApplicantDetails
 import models.api.{NETP, UkCompany}
 import models.external.Name
 import models.view.FormerNameDateView
@@ -98,12 +99,22 @@ class FormerNameDateControllerSpec extends ControllerSpec
       status(res) mustBe OK
     }
 
-    "throw an IllegalStateException when the former name is missing" in new Setup {
+    "throw an IllegalStateException when dob is missing" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
 
-      intercept[IllegalStateException] {
+      val ex: IllegalStateException = intercept[IllegalStateException] {
         await(controller.show(fakeRequest))
       }
+      ex.getMessage mustBe "Missing date of birth"
+    }
+
+    "throw an IllegalStateException when the former name is missing" in new Setup {
+      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails.copy(personalDetails = Some(testPersonalDetails)))
+
+      val ex: IllegalStateException = intercept[IllegalStateException] {
+        await(controller.show(fakeRequest))
+      }
+      ex.getMessage mustBe "Missing applicant former name"
     }
   }
 
@@ -116,6 +127,22 @@ class FormerNameDateControllerSpec extends ControllerSpec
         status(_) mustBe BAD_REQUEST
       }
     }
+
+    "return BAD_REQUEST when Former name Date selected and DOB is not set" in new Setup {
+      mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None))))
+
+      val ex = intercept[IllegalStateException] {
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+          "formerNameDate.day" -> "1",
+          "formerNameDate.month" -> "2",
+          "formerNameDate.year" -> "2020"
+        )) {
+          status(_) mustBe BAD_REQUEST
+        }
+      }
+      ex.getMessage mustBe "Missing date of birth"
+    }
+
     "Redirect to ALF when Former name Date selected" in new Setup {
       mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
       mockPartyType(Future.successful(UkCompany))

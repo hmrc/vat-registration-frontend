@@ -71,5 +71,25 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(routes.DeclarationCapacityController.show.url)
       }
     }
+
+    "return BAD_REQUEST for missing trading name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post("")
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST for invalid trading name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map(organisationNameKey -> "a" * 161))
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
   }
 }

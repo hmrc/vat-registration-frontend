@@ -20,12 +20,13 @@ import _root_.models._
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
-import models.api.{CharitableOrg, RegSociety, UkCompany}
+import models.api.{CharitableOrg, GovOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockVatRegistrationService, TimeServiceMock}
 import testHelpers.{ControllerSpec, FutureAssertions}
+import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.Future
 
@@ -67,37 +68,28 @@ class IncorpIdControllerSpec extends ControllerSpec
   )
 
   "startJourney" should {
-    "redirect to the journeyStartUrl for UkCompany" in new Setup {
-      lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(testJourneyConfig, UkCompany)(Future.successful(testJourneyStartUrl))
-      mockPartyType(Future.successful(UkCompany))
+    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
+      s"redirect to the journeyStartUrl for $partyType" in new Setup {
+        lazy val testJourneyStartUrl = "/test"
+        mockCreateJourney(testJourneyConfig, partyType)(Future.successful(testJourneyStartUrl))
+        mockPartyType(Future.successful(partyType))
 
-      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
+        lazy val res: Future[Result] = testController.startJourney(fakeRequest)
 
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(testJourneyStartUrl)
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(testJourneyStartUrl)
+      }
     }
 
-    "redirect to the journeyStartUrl for RegSociety" in new Setup {
+    "return INTERNAL_SERVER_ERROR for invalid partyType" in new Setup {
       lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(testJourneyConfig, RegSociety)(Future.successful(testJourneyStartUrl))
-      mockPartyType(Future.successful(RegSociety))
+      mockCreateJourney(testJourneyConfig, GovOrg)(Future.successful(testJourneyStartUrl))
+      mockPartyType(Future.successful(GovOrg))
 
-      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
-
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(testJourneyStartUrl)
-    }
-
-    "redirect to the journeyStartUrl for CharitableOrg" in new Setup {
-      lazy val testJourneyStartUrl = "/test"
-      mockCreateJourney(testJourneyConfig, CharitableOrg)(Future.successful(testJourneyStartUrl))
-      mockPartyType(Future.successful(CharitableOrg))
-
-      lazy val res: Future[Result] = testController.startJourney(fakeRequest)
-
-      status(res) mustBe SEE_OTHER
-      redirectLocation(res) mustBe Some(testJourneyStartUrl)
+      val ex = intercept[InternalServerException] {
+        await(testController.startJourney(fakeRequest))
+      }
+      ex.getMessage mustBe "[IncorpIdController][startJourney] attempted to start journey with invalid partyType: GovOrg"
     }
   }
 

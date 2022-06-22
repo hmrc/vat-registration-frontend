@@ -190,6 +190,21 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           result.headers(LOCATION) must contain(testJourneyUrl)
         }
       }
+
+      "fail with INTERNAL_SERVICE_ERROR for invalid party type" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = GovOrg)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(createTrustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
+      }
     }
   }
 

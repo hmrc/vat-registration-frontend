@@ -71,6 +71,36 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }
-  }
 
+    "return BAD_REQUEST if any of the mandatory form fields are missing" in new Setup {
+      given().user.isAuthorised()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map(
+        "bic" -> "123456",
+        "iban" -> "12345678"
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe 400
+      }
+    }
+
+    "return BAD_REQUEST if any of the form fields are invalid" in new Setup {
+      given().user.isAuthorised()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map(
+        "name" -> "testName",
+        "bic" -> "123456",
+        "iban" -> "ABCDEF/"
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe 400
+      }
+    }
+  }
 }

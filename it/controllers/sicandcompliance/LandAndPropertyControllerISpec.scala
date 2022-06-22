@@ -79,6 +79,17 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(routes.BusinessActivityDescriptionController.show.url)
       }
     }
+
+    "return BAD_REQUEST when no option is selected" in new Setup {
+      given.user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(url).post("")
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
+      }
+    }
   }
 
 }

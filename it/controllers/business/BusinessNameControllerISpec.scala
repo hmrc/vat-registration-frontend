@@ -19,6 +19,7 @@ package controllers.business
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{EligibilitySubmissionData, Trust, UkCompany}
+import models.external.{BusinessEntity, MinorEntity}
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -45,30 +46,84 @@ class BusinessNameControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
     }
+
+    "return OK if no company name set in business entity" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/business-name").get()
+      whenReady(response) { res =>
+        res.status mustBe OK
+      }
+    }
   }
 
   "submit Business Name page" should {
-    "return SEE_OTHER" in new Setup {
+    "return SEE_OTHER for valid business entity type" in new Setup {
+
+      private def validateBusinessNameControllerFlow(entity: BusinessEntity, entityWithBusinessName: BusinessEntity) = {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(entity))))
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(entityWithBusinessName)))
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> Seq(businessName)))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
+        }
+      }
+
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
+
+      validateBusinessNameControllerFlow(testMinorEntity, testMinorEntity.copy(companyName = Some(businessName)))
+      validateBusinessNameControllerFlow(testApplicantIncorpDetails, testApplicantIncorpDetails.copy(companyName = Some(businessName)))
+    }
+
+    "return INTERNAL_SERVER_ERROR for invalid business entity type" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
+
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
-        .registrationApi.replaceSection[ApplicantDetails](
-        validFullApplicantDetails.copy(
-          entity = Some(testMinorEntity.copy(
-            companyName = Some(businessName)
-          ))
-        ))
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> Seq(businessName)))
       whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
+        res.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "return BAD_REQUEST for missing business name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/business-name").post("")
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "return BAD_REQUEST for invalid business name" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> "a" * 106))
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
       }
     }
   }

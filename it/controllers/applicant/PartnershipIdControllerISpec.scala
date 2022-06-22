@@ -87,6 +87,21 @@ class PartnershipIdControllerISpec extends ControllerISpec {
           result.headers(LOCATION) must contain(testJourneyUrl)
         }
       }
+
+      "return INTERNAL_SERVER_ERROR for invalid party type" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = GovOrg)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubPost(partnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-partnership-id-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
+      }
     }
   }
 
@@ -175,6 +190,19 @@ class PartnershipIdControllerISpec extends ControllerISpec {
           result.headers(LOCATION) must contain(testJourneyUrl)
         }
       }
+
+      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+        given().user.isAuthorised()
+        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+
+        stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
+      }
     }
   }
 
@@ -234,6 +262,21 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+      }
+    }
+
+    "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+      given()
+        .user.isAuthorised()
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+
+      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+      insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

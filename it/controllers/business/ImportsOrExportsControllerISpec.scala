@@ -117,6 +117,14 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(controllers.returns.routes.TurnoverEstimateController.show.url)
       }
     }
-  }
 
+    "return BAD_REQUEST if no option is selected" in new Setup {
+      given.user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient("/imports-or-exports").post("")
+
+      whenReady(res) { _.status mustBe BAD_REQUEST }
+    }
+  }
 }

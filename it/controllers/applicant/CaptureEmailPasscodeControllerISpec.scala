@@ -46,6 +46,17 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
+
+    "return INTERNAL_SERVER_ERROR if password missing" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(s4lContents.copy(emailAddress = None))(ApplicantDetails.s4LWrites)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient("/email-address-verification").get)
+      res.status mustBe INTERNAL_SERVER_ERROR
+    }
   }
 
   "POST /email-address-verification" when {
@@ -123,7 +134,21 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
       }
+
+      List("", "e" * 7).foreach { password =>
+        s"return BAD_REQUEST for invalid password: '$password'" in new Setup {
+          disable(StubEmailVerification)
+
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          val res: WSResponse = await(buildClient("/email-address-verification").post(Map("email-passcode" -> password)))
+          res.status mustBe BAD_REQUEST
+        }
+      }
     }
   }
-
 }

@@ -5,7 +5,7 @@ import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director}
+import models.{ApplicantDetails, Director, Trustee}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -45,6 +45,24 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
+    "applicant details has invalid role" should {
+      "return BAD_REQUEST" in new Setup {
+        disable(StubEmailVerification)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .registrationApi.getSection[ApplicantDetails](None)
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(roleInTheBusiness = Some(Trustee)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "trustee")))
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
     "the ApplicantDetails model is incomplete" should {
       "update S4L and redirect to former name page" in new Setup {
         disable(StubEmailVerification)

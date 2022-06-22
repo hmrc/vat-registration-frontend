@@ -179,6 +179,21 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
           result.headers(LOCATION) must contain(testJourneyUrl)
         }
       }
+
+      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+        given()
+          .user.isAuthorised()
+          .vatScheme.contains(fullVatScheme)
+
+        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
+
+        whenReady(res) { result =>
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
+      }
     }
   }
 
@@ -274,6 +289,26 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+      }
+    }
+
+    "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
+        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+
+      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+      insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
