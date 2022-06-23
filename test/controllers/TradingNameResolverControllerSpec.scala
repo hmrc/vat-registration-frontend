@@ -20,12 +20,12 @@ import fixtures.VatRegistrationFixture
 import models.api._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.libs.iteratee.Execution.Implicits.defaultExecutionContext
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import uk.gov.hmrc.http.InternalServerException
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TradingNameResolverControllerSpec extends ControllerSpec

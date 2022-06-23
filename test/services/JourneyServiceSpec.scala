@@ -64,25 +64,4 @@ class JourneyServiceSpec extends VatRegSpec {
       }
     }
   }
-
-  "addRejectionFlag" should {
-
-    "return some registration id" when {
-      "current profile successfully updated with flag" in new Setup {
-        when(mockSessionService.addRejectionFlag(any())(any()))
-          .thenReturn(Future.successful(Some("RegId")))
-
-        await(service.addRejectionFlag("transactionID")) mustBe Some("RegId")
-      }
-    }
-
-    "return none" when {
-      "there is no current profile" in new Setup {
-        when(mockSessionService.addRejectionFlag(any())(any()))
-          .thenReturn(Future.successful(None))
-
-        await(service.addRejectionFlag("transactionID")) mustBe None
-      }
-    }
-  }
 }

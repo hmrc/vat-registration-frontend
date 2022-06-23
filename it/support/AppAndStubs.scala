@@ -16,8 +16,6 @@
 
 package support
 
-import java.util.Base64
-
 import common.enums.VatRegStatus
 import itutil.WiremockHelper
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
@@ -35,7 +33,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import java.util.Base64
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -49,17 +47,17 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
     val defaultTimeout: FiniteDuration = 2 seconds
 
     customAwait(repo.ensureIndexes)(defaultTimeout)
-    customAwait(repo.drop)(defaultTimeout)
+    customAwait(repo.collection.countDocuments().head())(defaultTimeout)
 
     def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
-      customAwait(repo.count)(defaultTimeout)
+      customAwait(repo.collection.countDocuments().head())(defaultTimeout)
       val currentProfileMapping: Map[String, JsValue] = Map("CurrentProfile" -> Json.toJson(currentProfile))
       val res = customAwait(repo.upsert(CacheMap(sessionId, currentProfileMapping)))(defaultTimeout)
       res
     }
 
     def insertIntoDb[T](sessionId: String, mapping: Map[String, T])(implicit writes: Writes[T]): Boolean = {
-      customAwait(repo.count)(defaultTimeout)
+      customAwait(repo.collection.countDocuments().head())(defaultTimeout)
       val mappingAsJson = mapping.map { case (id, value) => id -> Json.toJson(value) }
       customAwait(repo.upsert(CacheMap(sessionId, mappingAsJson)))(defaultTimeout)
     }

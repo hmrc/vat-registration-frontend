@@ -20,15 +20,13 @@ import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.CurrentProfile._
 import play.api.libs.json.{JsObject, Json, OWrites}
+import play.api.test.Helpers._
+import services.SessionService
+import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 
 import java.util.UUID
-import play.api.test.Helpers._
-import services.SessionService
-import support.AppAndStubs
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
 
@@ -40,12 +38,12 @@ class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
     val repository = app.injector.instanceOf[SessionRepository]
 
     val connector = app.injector.instanceOf[SessionService]
-    await(repository.drop)
+    await(repository.collection.drop().head())
     await(repository.ensureIndexes)
 
     implicit val jsObjWts: OWrites[JsObject] = OWrites(identity)
 
-    def count = await(repository.count)
+    def count = await(repository.collection.countDocuments().head())
   }
 
   "SessionRepository" should {
@@ -58,13 +56,13 @@ class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
       "given an existing currentProfile" in new Setup() {
         await(connector.cache("CurrentProfile", currentProfile))
         count mustBe 1
-        await(connector.cache("CurrentProfile", models.CurrentProfile("newregId",  VatRegStatus.draft)))
+        await(connector.cache("CurrentProfile", models.CurrentProfile("newregId", VatRegStatus.draft)))
         count mustBe 1
       }
     }
     "fetch" when {
       "given a currentProfile exists" in new Setup() {
-        val currentProfileData: models.CurrentProfile = models.CurrentProfile("regId2",  VatRegStatus.draft)
+        val currentProfileData: models.CurrentProfile = models.CurrentProfile("regId2", VatRegStatus.draft)
         val key: String = "CurrentProfile"
 
         await(connector.cache(key, currentProfileData))
@@ -76,7 +74,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
     }
     "fetchAndGet" when {
       "given a currentProfile and key" in new Setup() {
-        val currentProfileData: models.CurrentProfile = models.CurrentProfile("regId3",  VatRegStatus.draft)
+        val currentProfileData: models.CurrentProfile = models.CurrentProfile("regId3", VatRegStatus.draft)
         val key: String = "CurrentProfile"
 
         await(connector.cache(key, currentProfileData))

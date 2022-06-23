@@ -42,7 +42,4 @@ class JourneyService @Inject()(val vatRegistrationService: VatRegistrationServic
       _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile)
     } yield profile
 
-  def addRejectionFlag(txId: String): Future[Option[String]] =
-    sessionService.addRejectionFlag(txId)
-
 }

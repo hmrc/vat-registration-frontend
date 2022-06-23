@@ -16,10 +16,7 @@
 
 package controllers
 
-import controllers.applicant.{routes => applicantRoutes}
-import controllers.transactor.{routes => transactorRoutes}
 import fixtures.VatRegistrationFixture
-import models.api.{CharitableOrg, RegSociety, UkCompany}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService

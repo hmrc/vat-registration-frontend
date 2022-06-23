@@ -22,7 +22,7 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val simpleReactivemongoVersion = "8.0.0-play-28"
+  private val hmrcMongoVersion = "0.65.0"
   private val bootstrapVersion = "5.20.0"
   private val timeVersion = "3.25.0"
   private val partialsVersion = "8.3.0-play-28"
@@ -37,7 +37,7 @@ private object CompileDependencies {
   private val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
     "uk.gov.hmrc" %% "time" % timeVersion,
-    "uk.gov.hmrc" %% "simple-reactivemongo" % simpleReactivemongoVersion,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % hmrcMongoVersion,
     "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % bootstrapVersion,
     "uk.gov.hmrc" %% "play-partials" % partialsVersion,
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
@@ -58,7 +58,7 @@ private trait TestDependencies {
   val mockitoVersion = "3.3.0"
   val scalaMockVersion = "3.6.0"
   val wireMockVersion = "2.27.2"
-  val reactivemongoTestVersion = "5.0.0-play-28"
+  val hmrcMongoTestVersion = "0.65.0"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]
@@ -85,7 +85,7 @@ private object IntegrationTestDependencies extends TestDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
     "com.github.tomakehurst" % "wiremock-jre8" % wireMockVersion % scope,
     "org.jsoup" % "jsoup" % jsoupVersion % scope,
-    "uk.gov.hmrc" %% "reactivemongo-test" % reactivemongoTestVersion % scope,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % hmrcMongoTestVersion % scope,
     "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % scope
   )
 

@@ -16,30 +16,38 @@
 
 package repositories
 
-import cats.data.OptionT
-import cats.implicits._
-import javax.inject.{Inject, Singleton}
-import models.CurrentProfile
-import org.joda.time.{DateTime, DateTimeZone}
-import play.api.libs.json.{Format, JsValue, Json, OFormat}
+import com.mongodb.client.model.Indexes.ascending
+import org.mongodb.scala.model
+import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.{IndexOptions, ReplaceOptions}
 import play.api.Configuration
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.bson.{BSONDocument, BSONObjectID}
-import reactivemongo.play.json.ImplicitBSONHandlers._
+import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.mongo.json.ReactiveMongoFormats
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SessionRepository @Inject()(config: Configuration,
-                                  mongo: ReactiveMongoComponent)
-  extends ReactiveRepository[DatedCacheMap, BSONObjectID](
-    config.get[String]("appName"),
-    mongo.mongoConnector.db,
-    DatedCacheMap.formats
+                                  mongo: MongoComponent)
+                                 (implicit ec: ExecutionContext)
+  extends PlayMongoRepository[DatedCacheMap](
+    collectionName = config.get[String]("appName"),
+    mongoComponent = mongo,
+    domainFormat = DatedCacheMap.formats,
+    indexes = Seq(
+      model.IndexModel(
+        ascending("lastUpdated"),
+        IndexOptions()
+          .name("userAnswersExpiry")
+          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+      )
+    )
   ) {
 
   val fieldName = "lastUpdated"
@@ -48,46 +56,30 @@ class SessionRepository @Inject()(config: Configuration,
   val timeToLiveInSeconds: Int = config.get[Int]("mongodb.timeToLiveInSeconds")
 
   def upsert(cm: CacheMap): Future[Boolean] = {
-    val selector = BSONDocument("id" -> cm.id)
-    val cmDocument = Json.toJson(DatedCacheMap(cm))
-    val modifier = BSONDocument("$set" -> cmDocument)
-
-    collection.update(ordered = false).one(selector, modifier, upsert = true).map { lastError =>
-      lastError.ok
-    }
+    collection.replaceOne(
+      equal("id", cm.id),
+      DatedCacheMap(cm),
+      ReplaceOptions().upsert(true)
+    ).map(_.wasAcknowledged()).head()
   }
 
   def removeDocument(id: String): Future[Boolean] = {
-    collection.delete().one(BSONDocument("id" -> id)).map(lastError =>
-      lastError.ok
-    )
+    collection.deleteOne(equal("id", id)).map(_.wasAcknowledged()).head()
   }
 
-  def get(id: String): Future[Option[CacheMap]] =
-    collection.find(Json.obj("id" -> id)).one[CacheMap]
-
-  def addRejectionFlag(id: String): Future[Boolean] = {
-    val selector = BSONDocument("data.CurrentProfile.transactionID" -> id)
-    val modifier = BSONDocument("$set" -> BSONDocument("data.CurrentProfile.incorpRejected" -> true))
-
-    collection.update(ordered = false).one(selector, modifier).map { lastError => lastError.ok }
-  }
-
-  def getRegistrationID(transactionID: String): Future[Option[String]] = {
-    OptionT[Future, CacheMap](
-      collection.find(Json.obj("data.CurrentProfile.transactionID" -> transactionID)).one[CacheMap]
-    ).map(
-      _.getEntry[CurrentProfile]("CurrentProfile").map(_.registrationId)
-    ).value map (_.flatten)
+  def get(id: String): Future[Option[CacheMap]] = {
+    collection.find(equal("id", id)).map(_.asCacheMap).headOption()
   }
 }
 
 case class DatedCacheMap(id: String,
                          data: Map[String, JsValue],
-                         lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+                         lastUpdated: LocalDateTime = LocalDateTime.now()) {
+  def asCacheMap: CacheMap = CacheMap(id, data)
+}
 
 object DatedCacheMap {
-  implicit val dateFormat: Format[DateTime] = ReactiveMongoFormats.dateTimeFormats
+  implicit val dateFormat: Format[LocalDateTime] = MongoJavatimeFormats.localDateTimeFormat
   implicit val formats: OFormat[DatedCacheMap] = Json.format[DatedCacheMap]
 
   def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)

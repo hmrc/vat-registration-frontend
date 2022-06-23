@@ -56,13 +56,6 @@ class SessionService @Inject()(sessionRepository: SessionRepository,
       }
     }
   }
-
-  def addRejectionFlag(txId: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
-    for {
-      reject <- sessionRepository.addRejectionFlag(txId)
-      regId <- sessionRepository.getRegistrationID(txId)
-    } yield regId
-  }
 }
 
 object SessionService {
