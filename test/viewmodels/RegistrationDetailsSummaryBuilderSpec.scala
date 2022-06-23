@@ -76,6 +76,14 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       )
 
       val expectedSummaryList = SummaryList(List(
+        optSummaryListRowBoolean(
+          questionId = TestContent.bankAccount,
+          optAnswer = Some(true),
+          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
+        optSummaryListRowSeq(
+          questionId = TestContent.bankAccountDetails,
+          optAnswers = Some(Seq("testName", "12-34-56", "12345678")),
+          optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
@@ -92,14 +100,6 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           questionId = TestContent.paymentMethod,
           optAnswer = Some("BACS or internet banking"),
           optUrl = Some(controllers.returns.routes.PaymentMethodController.show.url)),
-        optSummaryListRowBoolean(
-          questionId = TestContent.bankAccount,
-          optAnswer = Some(true),
-          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
-        optSummaryListRowSeq(
-          questionId = TestContent.bankAccountDetails,
-          optAnswers = Some(Seq("testName", "12-34-56", "12345678")),
-          optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.joinFrs,
           optAnswer = Some(true),
@@ -151,6 +151,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       )
 
       val expectedSummaryList = SummaryList(List(
+        optSummaryListRowBoolean(
+          questionId = TestContent.bankAccount,
+          optAnswer = Some(true),
+          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
@@ -158,11 +162,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("Once a month"),
-          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url)),
-        optSummaryListRowBoolean(
-          questionId = TestContent.bankAccount,
-          optAnswer = Some(true),
-          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url))
+          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url))
       ).flatten)
 
       val res = Builder.build(testVatScheme)

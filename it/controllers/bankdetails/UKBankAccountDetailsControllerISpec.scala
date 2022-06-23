@@ -3,10 +3,10 @@ package controllers.bankdetails
 
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.BankAccount
+import models.api.EligibilitySubmissionData
+import models.{BankAccount, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
-import play.api.test.Helpers.await
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -64,58 +64,66 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
   }
 
-  "POST /account-details" must {
-    "redirect to the Join Flat Rate page if the bank details are valid" in new Setup {
-      given
-        .user.isAuthorised()
-        .bankAccountReputation.passes
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
-        .s4lContainer[BankAccount].cleared
-        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
+  "POST /account-details" when {
+    "bank details are valid and the user is TOGC/COLE" must {
+      "return to the returns frequency page" in new Setup {
+        given
+          .user.isAuthorised()
+          .bankAccountReputation.passes
+          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+          .s4lContainer[BankAccount].clearedByKey
+          .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
+          .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj(
-        "accountName" -> testBankName,
-        "accountNumber" -> testAccountNumber,
-        "sortCode" -> "123456"
-      )))
+        val res = await(buildClient(url).post(Json.obj(
+          "accountName" -> testBankName,
+          "accountNumber" -> testAccountNumber,
+          "sortCode" -> "123456"
+        )))
 
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+      }
     }
-    "return BAD_REQUEST if Bank Account Reputation states the bank details are invalid" in new Setup {
-      given
-        .user.isAuthorised()
-        .bankAccountReputation.fails
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+    "bank details and Bank Account Reputation states are invalid" must {
+      "return BAD_REQUEST" in new Setup {
+        given
+          .user.isAuthorised()
+          .bankAccountReputation.fails
+          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj(
-        "accountName" -> testBankName,
-        "accountNumber" -> testAccountNumber,
-        "sortCode" -> "123456"
-      )))
+        val res = await(buildClient(url).post(Json.obj(
+          "accountName" -> testBankName,
+          "accountNumber" -> testAccountNumber,
+          "sortCode" -> "123456"
+        )))
 
-      res.status mustBe BAD_REQUEST
+        res.status mustBe BAD_REQUEST
+      }
     }
-    "return BAD_REQUEST if the entered bank details are not correct" in new Setup {
-      given
-        .user.isAuthorised()
-        .bankAccountReputation.fails
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+    "bank details are incorrect" must {
+      "return BAD_REQUEST" in new Setup {
+        given
+          .user.isAuthorised()
+          .bankAccountReputation.fails
+          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj(
-        "accountName" -> "",
-        "accountNumber" -> "",
-        "sortCode" -> ""
-      )))
+        val res = await(buildClient(url).post(Json.obj(
+          "accountName" -> "",
+          "accountNumber" -> "",
+          "sortCode" -> ""
+        )))
 
-      res.status mustBe BAD_REQUEST
+        res.status mustBe BAD_REQUEST
+      }
     }
   }
 

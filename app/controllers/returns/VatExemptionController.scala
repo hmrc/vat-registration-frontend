@@ -18,12 +18,11 @@ package controllers.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.{ChargeExpectancyForm, VatExemptionForm}
-import models.{NonUk, TransferOfAGoingConcern}
-import models.api.{NETP, NonUkNonEstablished}
+import forms.VatExemptionForm
+import models.NonUk
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
-import views.html.returns.{VatExemption, claim_refunds_view}
+import views.html.returns.VatExemption
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,12 +58,10 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
               _ <- returnsService.saveVatExemption(success)
               registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
             } yield registrationReason match {
-              case TransferOfAGoingConcern =>
-                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
-              case NonUk =>
-                Redirect(routes.SendGoodsOverseasController.show)
-              case _ =>
-                Redirect(routes.VatRegStartDateResolverController.resolve)
+                case NonUk =>
+                  Redirect(routes.SendGoodsOverseasController.show)
+                case _ =>
+                  Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
             }
           }
         )

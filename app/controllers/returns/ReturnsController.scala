@@ -22,7 +22,7 @@ import forms._
 import models._
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionService, _}
+import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.returns.{AccountingPeriodView, mandatory_start_date_incorp_view, return_frequency_view, start_date_incorp_view}
 
@@ -63,7 +63,7 @@ class ReturnsController @Inject()(val sessionService: SessionService,
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success => returnsService.saveStaggerStart(success) flatMap { _ =>
-            Future.successful(Redirect(controllers.bankdetails.routes.HasBankAccountController.show))
+            Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
           }
         )
   }
@@ -100,7 +100,7 @@ class ReturnsController @Inject()(val sessionService: SessionService,
           },
           success => returnsService.saveFrequency(success) map { _ =>
             success match {
-              case Monthly => Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
+              case Monthly => Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
               case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
               case _ => Redirect(routes.ReturnsController.accountPeriodsPage)
             }
