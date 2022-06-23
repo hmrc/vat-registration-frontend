@@ -53,6 +53,25 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.status mustBe OK
       }
     }
+
+    "return OK when the details are in s4l and missing frs flag" in new Setup {
+      given()
+        .user.isAuthorised()
+        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
+        .s4lContainer[FlatRateScheme].contains(frsS4LData.copy(joinFrs = None))
+        .vatScheme.doesNotHave("flat-rate-scheme")
+        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient("/join-flat-rate").get()
+
+      whenReady(res) { result =>
+        result.status mustBe OK
+      }
+    }
+
     "return OK when the details are in the backend" in new Setup {
       given()
         .user.isAuthorised()
@@ -108,6 +127,22 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
+    "return INTERNAL_SERVER_ERROR if no estimates data available" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[FlatRateScheme].isEmpty
+        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient("/join-flat-rate").get()
+
+      whenReady(res) { result =>
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
   "POST /join-flat-rate" must {
@@ -143,6 +178,16 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(HeaderNames.LOCATION) must contain(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+      }
+    }
+    "return BAD_REQUEST if form binding fails due to missing flat rate condition" in new Setup {
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient("/join-flat-rate").post("")
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
       }
     }
   }

@@ -141,6 +141,16 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           result.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
         }
       }
+
+      "return BAD_REQUEST if no option was selected" in {
+        given().user.isAuthorised()
+
+        val res = buildClient("/claim-vat-refunds").post("")
+
+        whenReady(res) { result =>
+          result.status mustBe BAD_REQUEST
+        }
+      }
     }
   }
 }

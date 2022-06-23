@@ -285,14 +285,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
-    personalDetails = Some(PersonalDetails(
-      firstName = "testFirstName",
-      lastName = "testLastName",
-      nino = Some("AB123456C"),
-      trn = None,
-      identifiersMatch = true,
-      dateOfBirth = Some(LocalDate.of(2020, 1, 1))
-    )),
+    personalDetails = Some(testPersonalDetails),
     isPartOfOrganisation = Some(true),
     organisationName = Some("testCompanyName"),
     telephone = Some("1234"),

@@ -55,7 +55,10 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     "when reading from the backend" must {
       "return OK and pre-populate the page" in new Setup {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        val appDetails = ApplicantDetails(homeAddress = Some(HomeAddressView("", Some(testForeignAddress))))
+        val appDetails = ApplicantDetails(
+          personalDetails = Some(testPersonalDetails),
+          homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))
+        )
         val vatScheme = emptyUkCompanyVatScheme.copy(applicantDetails = Some(appDetails))
         given
           .user.isAuthorised()
@@ -101,12 +104,16 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      val applicantDetails = ApplicantDetails().copy(
+        personalDetails = Some(testPersonalDetails),
+        homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))
+      )
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(homeAddress = Some(HomeAddressView("", Some(testForeignAddress)))))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(applicantDetails)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

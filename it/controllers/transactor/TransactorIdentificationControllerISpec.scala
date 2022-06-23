@@ -4,7 +4,7 @@ package controllers.transactor
 import config.FrontendAppConfig
 import itutil.ControllerISpec
 import models.TransactorDetails
-import models.api.EligibilitySubmissionData
+import models.api.{EligibilitySubmissionData, NETP}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -70,6 +70,26 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorHomeAddressController.redirectToAlf.url)
+      }
+    }
+
+    "redirect to the transactor internation address page if party type is non uk company" in new Setup {
+      given()
+        .user.isAuthorised()
+        .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
+        .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorInternationalAddressController.show.url)
       }
     }
   }

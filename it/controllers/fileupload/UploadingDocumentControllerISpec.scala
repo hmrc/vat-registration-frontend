@@ -63,6 +63,21 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         result.body mustBe "{\"status\":\"READY\"}"
       }
     }
+
+    "return an Ok response with status and failure reason, if any, in the body" in {
+      val detailsWithFailureReason = testUpscanDetails(Ready).copy(failureDetails = Some(FailureDetails(FailureDetails.rejectedKey, "")))
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .upscanApi.fetchUpscanFileDetails(detailsWithFailureReason, reference = testReference)
+
+      val res = buildClient(path = pollUrl, reference = Some(testReference)).get()
+
+      whenReady(res) { result =>
+        result.status mustBe OK
+        result.body mustBe "{\"status\":\"READY\",\"reason\":\"REJECTED\"}"
+      }
+    }
   }
 
   s"POST $submitUrl" when {
