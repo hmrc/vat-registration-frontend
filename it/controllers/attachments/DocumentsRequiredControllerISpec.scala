@@ -103,6 +103,22 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       }
     }
 
+    "return a redirect to multiple documents required page when multiple attachments are required" in {
+      given()
+        .user.isAuthorised()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](VAT5L, VAT2))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.MultipleDocumentsRequiredController.show.url)
+      }
+    }
+
     "return a redirect to Transactor Identity Evidence Required" when {
       "the user is a Transactor and transactor details are unverified" in {
         given()

@@ -149,6 +149,20 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.status mustBe BAD_REQUEST
       }
     }
+
+    "unsupported attachment method selection" must {
+      "return BAD_REQUEST" in new Setup {
+        given
+          .user.isAuthorised()
+          .vatScheme.storesAttachments(Attachments(Some(Other), List()))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).post(Json.obj()))
+
+        res.status mustBe BAD_REQUEST
+      }
+    }
   }
 
 }

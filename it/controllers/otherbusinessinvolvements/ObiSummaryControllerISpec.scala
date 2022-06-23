@@ -42,6 +42,20 @@ class ObiSummaryControllerISpec extends ControllerISpec {
     }
 
     "the user has 1 or more OBIs" must {
+      "return OK with the view" in new Setup {
+        given
+          .user.isAuthorised()
+          .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis))
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(pageUrl()).get)
+
+        res.status mustBe OK
+      }
+
       "return INTERNAL_SERVER_ERROR if any of the OBI has business name missing" in new Setup {
         given
           .user.isAuthorised()
