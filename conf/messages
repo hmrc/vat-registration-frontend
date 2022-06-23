@@ -31,6 +31,18 @@ date.day                                = Day
 date.month                              = Month
 date.year                               = Year
 
+tasklist.heading                        = Register for VAT
+tasklist.button                         = Check answers and submit
+tasklist.applicationIncomplete          = Application incomplete
+tasklist.counter                        = You have completed {0} of {1} sections.
+tasklist.complete                       = Completed
+tasklist.notStarted                     = Not started
+tasklist.cannotStartYet                 = Cannot start yet
+tasklist.inProgress                     = In progress
+tasklist.eligibility.heading            = Check before you start
+tasklist.eligibilty.regReason           = Registration reason
+
+
 # Ordinal numbers
 ordinals.1 = First
 ordinals.2 = Second

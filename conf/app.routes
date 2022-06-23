@@ -21,6 +21,8 @@ GET         /journey-new                                                        
 GET         /journey-continue                                                                  controllers.JourneyController.continueJourney(journey: Option[String] ?= None)
 GET         /journey/:regId                                                                    controllers.JourneyController.initJourney(regId: String)
 
+GET         /application-progress                                                              controllers.TaskListController.show
+
 ## PROGRESS SAVED PAGE
 GET         /progress-saved                                                                    controllers.ApplicationProgressSavedController.show
 

@@ -12,13 +12,15 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
   val showUrl: String = routes.MultipleDocumentsRequiredController.show.url
 
   s"GET $showUrl" must {
-    "return OK" in {
+    "return OK" in new Setup {
       given()
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .vatScheme.has("attachments", Json.toJson(Attachments(Some(Post), List[AttachmentType](IdentityEvidence, VAT2))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(showUrl).get()
 
@@ -27,7 +29,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
       }
     }
 
-    "return OK for a transactor" in {
+    "return OK for a transactor" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
@@ -37,6 +39,8 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(showUrl).get()
 

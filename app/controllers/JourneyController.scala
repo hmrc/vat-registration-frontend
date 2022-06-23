@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TrafficManagementPredicate}
+import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList, TrafficManagementPredicate}
 import forms.StartNewApplicationForm
 import play.api.mvc._
 import services.{SessionService, _}
@@ -123,12 +123,16 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
       isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
       _ <- journeyService.buildCurrentProfile(regId)
     } yield {
-      if (isTransactor && !isAgent)
-        Redirect(transactorRoutes.PartOfOrganisationController.show)
-      else if (isAgent && isEnabled(FullAgentJourney))
-        Redirect(transactorRoutes.AgentNameController.show)
-      else
-        Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
+      if (isEnabled(TaskList)) {
+        Redirect(controllers.routes.TaskListController.show)
+      } else {
+        if (isTransactor && !isAgent)
+          Redirect(transactorRoutes.PartOfOrganisationController.show)
+        else if (isAgent && isEnabled(FullAgentJourney))
+          Redirect(transactorRoutes.AgentNameController.show)
+        else
+          Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
+      }
     }).recover {
       case e: IllegalStateException => Redirect(routes.JourneyController.show)
     }

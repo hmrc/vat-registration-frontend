@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater}
+import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList}
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
@@ -457,8 +457,26 @@ class JourneyControllerISpec extends ControllerISpec
 
               res.header(HeaderNames.LOCATION) mustBe Some(controllers.transactor.routes.AgentNameController.show.url)
             }
-            "redirect to the Business Identification resolver when the FullAgentJourney FS is disnabled" in new Setup {
+            "redirect to the Task List when the Task List FS is enabled" in new Setup {
+              enable(TaskList)
+              given()
+                .user.isAuthorised(arn = Some(testArn))
+                .trafficManagement.passes()
+                .vatScheme.regStatus(VatRegStatus.draft)
+                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
+
+              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
+                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
+
+              insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+
+              res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+            }
+            "redirect to the Business Identification resolver when the FullAgentJourney FS and TaskList FS are disnabled" in new Setup {
               disable(FullAgentJourney)
+              disable(TaskList)
               given()
                 .user.isAuthorised(arn = Some(testArn))
                 .trafficManagement.passes()
