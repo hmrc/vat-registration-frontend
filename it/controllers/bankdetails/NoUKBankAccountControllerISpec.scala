@@ -17,7 +17,8 @@
 package controllers.bankdetails
 
 import itutil.ControllerISpec
-import models.{BankAccount, BeingSetup}
+import models.api.EligibilitySubmissionData
+import models.{BankAccount, BeingSetup, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -61,12 +62,13 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "return a redirect to flatrate scheme" in new Setup {
+    "redirect to returns frequency page when the user is TOGC/COLE" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
         .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
         .s4lContainer[BankAccount].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -74,7 +76,25 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+      }
+    }
+
+    "redirect to the start date resolver page when the user is non-NETP" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .s4lContainer[BankAccount].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
+
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)
       }
     }
 

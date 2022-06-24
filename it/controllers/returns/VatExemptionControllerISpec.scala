@@ -80,7 +80,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to returns frequency page when the user is TOGC/COLE" in {
+    "redirect to the bank account page when the user is TOGC/COLE" in {
       given()
         .user.isAuthorised()
         .vatScheme.doesNotHave("turnover-estimates-data")
@@ -92,11 +92,11 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.returnsFrequencyPage.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
       }
     }
 
-    "redirect to the start date resolver page when the user is non-NETP" in {
+    "redirect to the bank account page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
         .vatScheme.doesNotHave("turnover-estimates-data")
@@ -108,7 +108,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.VatRegStartDateResolverController.resolve.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
       }
     }
 

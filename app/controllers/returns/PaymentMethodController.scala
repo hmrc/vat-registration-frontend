@@ -54,7 +54,7 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
         PaymentMethodForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           paymentMethod => returnsService.savePaymentMethod(paymentMethod).map { _ =>
-            Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
+            Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
           }
         )
   }

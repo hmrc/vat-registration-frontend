@@ -47,6 +47,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val returns = vatScheme.returns.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Returns"))
 
     govukSummaryList(SummaryList(
+      bankAccountSection(vatScheme, partyType) ++
       List(
         startDate(returns),
         accountingPeriod(returns),
@@ -54,7 +55,6 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         paymentFrequency(returns),
         paymentMethod(returns)
       ).flatten ++
-        bankAccountSection(vatScheme, partyType) ++
         flatRateSchemeSection(vatScheme, partyType)
     ))
   }

@@ -20,6 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
+import models.TransferOfAGoingConcern
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
 import views.html.bankdetails.enter_company_bank_account_details
@@ -50,14 +51,18 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors))),
         accountDetails =>
-          bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails) map { accountDetailsValid =>
-          if (accountDetailsValid) {
-            Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
-          } else {
-            val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
-            BadRequest(view(invalidDetails))
+          for {
+            accountDetailsValid <- bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails)
+            eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
+          } yield (accountDetailsValid, eligibilityData.registrationReason) match {
+            case (true, TransferOfAGoingConcern) =>
+              Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
+            case (true, _) =>
+              Redirect(controllers.returns.routes.VatRegStartDateResolverController.resolve)
+            case (false, _) =>
+              val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
+              BadRequest(view(invalidDetails))
           }
-        }
       )
   }
 

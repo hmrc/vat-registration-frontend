@@ -90,7 +90,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitAccountsPeriod" should {
     val fakeRequest = FakeRequest(controllers.returns.routes.ReturnsController.submitAccountPeriods)
 
-    "redirect to the bank account date page when they select the jan apr jul oct option" in new Setup {
+    "redirect to the Join Flat Rate page when they select the jan apr jul oct option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
@@ -102,27 +102,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
+        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
       }
     }
 
-    "redirect to the bank account page when they select the jan apr jul oct option" in new Setup {
-      when(mockReturnsService.saveStaggerStart(any())(any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "value" -> AccountingPeriodForm.janStaggerKey
-      )
-
-      submitAuthorised(testController.submitAccountPeriods, request) { result =>
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
-      }
-    }
-
-    "redirect to the bank account page when they select the feb may aug nov option" in new Setup {
+    "redirect to the Join Flat Rate page when they select the feb may aug nov option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
@@ -134,11 +118,11 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
+        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
       }
     }
 
-    "redirect to the bank account page when they select the mar may sep dec option" in new Setup {
+    "redirect to the Join Flat Rate page when they select the mar may sep dec option" in new Setup {
       when(mockReturnsService.saveStaggerStart(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
@@ -150,7 +134,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitAccountPeriods, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
+        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
       }
     }
 
@@ -224,7 +208,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
   "submitReturnsFrequency" should {
     val fakeRequest = FakeRequest(controllers.returns.routes.ReturnsController.submitReturnsFrequency)
 
-    "redirect to the bank account page when they select the monthly option" in new Setup {
+    "redirect to the Join Flat Rate page when they select the monthly option" in new Setup {
       when(mockReturnsService.saveFrequency(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
       when(mockReturnsService.isEligibleForAAS(any(), any()))
@@ -236,7 +220,7 @@ class ReturnsControllerSpec extends ControllerSpec with VatRegistrationFixture w
 
       submitAuthorised(testController.submitReturnsFrequency, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/companys-bank-account")
+        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
       }
     }
 

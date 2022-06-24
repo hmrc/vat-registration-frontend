@@ -20,7 +20,6 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ChargeExpectancyForm
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
@@ -69,12 +68,10 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
             } yield eligibilityData.registrationReason match {
               case _ if canApplyForExemption =>
                 Redirect(routes.VatExemptionController.show)
-              case TransferOfAGoingConcern =>
-                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
               case NonUk =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
-                Redirect(routes.VatRegStartDateResolverController.resolve)
+                Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
             }
           }
         )

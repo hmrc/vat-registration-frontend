@@ -61,7 +61,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "return a redirect to next page and update S4L" in new Setup {
+    "return a redirect to the Join Flat Rate page and update S4L" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
@@ -73,11 +73,11 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }
 
-    "return a redirect to next page and update backend with full model" in new Setup {
+    "return a redirect to the Join Flat Rate page and update backend with full model" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(testFullReturns)
@@ -90,7 +90,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }
 

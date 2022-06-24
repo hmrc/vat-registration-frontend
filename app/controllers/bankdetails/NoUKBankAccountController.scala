@@ -19,9 +19,9 @@ package controllers.bankdetails
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.NoUKBankAccountForm
-import models.BankAccount
+import models.{BankAccount, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile, SessionService}
+import services.{BankAccountDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.bankdetails.no_uk_bank_account
 
 import javax.inject.{Inject, Singleton}
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_account,
                                           val authConnector: AuthClientConnector,
                                           val bankAccountDetailsService: BankAccountDetailsService,
+                                          val vatRegistrationService: VatRegistrationService,
                                           val sessionService: SessionService)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
@@ -52,10 +53,15 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
         NoUKBankAccountForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
           reason =>
-            bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, overseasDetails = None, reason = Some(reason))).map(_ =>
-              Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
-            )
-
+            for {
+              _ <- bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, overseasDetails = None, reason = Some(reason)))
+              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
+            } yield eligibilityData.registrationReason match {
+              case TransferOfAGoingConcern =>
+                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
+              case _ =>
+                Redirect(controllers.returns.routes.VatRegStartDateResolverController.resolve)
+            }
         )
       }
   }
