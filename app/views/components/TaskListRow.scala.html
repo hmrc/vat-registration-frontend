@@ -1,0 +1,52 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import viewmodels.tasklist.TaskListState
+@import views.html.components.link
+@import viewmodels.tasklist.{TLCannotStart, TLCompleted, TLInProgress, TLNotStarted}
+
+@this(
+        link: link,
+        govukTag: GovukTag
+)
+
+@(message: String, url: String, tagId: String, status: TaskListState)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+<li class="app-task-list__item">
+    <span class="app-task-list__task-name">
+        @{
+            status match {
+                case TLCannotStart => <span>@message</span>
+                case _ => link(url, message, attributes = Map("aria-describedby" -> tagId))
+            }
+        }
+    </span>
+
+    @{
+        status match {
+            case TLCannotStart =>
+                govukTag(Tag(Text(messages("tasklist.cannotStartYet")), classes = "app-task-list__task-completed govuk-tag--grey", attributes = Map("id" -> tagId)))
+            case TLNotStarted =>
+                govukTag(Tag(Text(messages("tasklist.notStarted")), classes = "app-task-list__task-completed govuk-tag--grey", attributes = Map("id" -> tagId)))
+            case TLInProgress =>
+                govukTag(Tag(Text(messages("tasklist.inProgress")), classes = "app-task-list__task-completed govuk-tag--blue", attributes = Map("id" -> tagId)))
+            case TLCompleted =>
+                govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed", attributes = Map("id" -> tagId)))
+        }
+    }
+
+</li>
