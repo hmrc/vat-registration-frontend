@@ -18,8 +18,8 @@ package services
 
 import common.enums.VatRegStatus
 import connectors._
+import models._
 import models.api._
-import models.{TurnoverEstimates, _}
 import play.api.libs.json.{Format, JsObject, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -81,10 +81,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
     vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
-  }
-
-  def fetchTurnoverEstimates(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[TurnoverEstimates]] = {
-    vatRegConnector.getTurnoverEstimates
   }
 
   def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {

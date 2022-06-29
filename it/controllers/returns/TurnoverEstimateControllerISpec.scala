@@ -35,7 +35,6 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns())
-        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,7 +49,6 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(Some(testTurnover)))
-        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

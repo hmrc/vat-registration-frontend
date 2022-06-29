@@ -83,7 +83,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to the bank account page when the user is TOGC/COLE" in {
       given()
         .user.isAuthorised()
-        .vatScheme.doesNotHave("turnover-estimates-data")
         .s4lContainer[Returns].contains(testReturns)
         .s4lContainer[Returns].isUpdatedWith(testReturns.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
@@ -99,7 +98,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to the bank account page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
-        .vatScheme.doesNotHave("turnover-estimates-data")
         .s4lContainer[Returns].contains(testReturns)
         .s4lContainer[Returns].isUpdatedWith(testReturns.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -115,7 +113,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NETP" in {
       given()
         .user.isAuthorised()
-        .vatScheme.doesNotHave("turnover-estimates-data")
         .s4lContainer[Returns].contains(testReturns)
         .s4lContainer[Returns].isUpdatedWith(testReturns.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
@@ -131,7 +128,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NonUkNoNEstablished" in {
       given()
         .user.isAuthorised()
-        .vatScheme.doesNotHave("turnover-estimates-data")
         .s4lContainer[Returns].contains(testReturns)
         .s4lContainer[Returns].isUpdatedWith(testReturns.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))

@@ -16,13 +16,12 @@
 
 package models.api
 
-import models.{ApiKey, RegistrationReason, TurnoverEstimates}
+import models.{ApiKey, RegistrationReason}
 import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
 case class EligibilitySubmissionData(threshold: Threshold,
-                                     estimates: Option[TurnoverEstimates],
                                      partyType: PartyType,
                                      isTransactor: Boolean,
                                      appliedForException: Option[Boolean],

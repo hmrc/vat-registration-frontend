@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ZeroRatedSuppliesForm
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{ReturnsService, SessionProfile, SessionService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.returns.zero_rated_supplies
 
@@ -31,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                                             val authConnector: AuthClientConnector,
                                             returnsService: ReturnsService,
-                                            vatRegistrationService: VatRegistrationService,
                                             zeroRatesSuppliesView: zero_rated_supplies
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
@@ -41,21 +40,19 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        returnsService.getReturns.flatMap { returns =>
-          returnsService.getTurnover.map { optEstimates =>
-            (returns.zeroRatedSupplies, optEstimates) match {
-              case (Some(zeroRatedSupplies), Some(estimates)) =>
-                Ok(zeroRatesSuppliesView(
-                  routes.ZeroRatedSuppliesController.submit,
-                  ZeroRatedSuppliesForm.form(estimates).fill(zeroRatedSupplies)
-                ))
-              case (None, Some(estimates)) =>
-                Ok(zeroRatesSuppliesView(
-                  routes.ZeroRatedSuppliesController.submit,
-                  ZeroRatedSuppliesForm.form(estimates)
-                ))
-              case (_, None) => throw new InternalServerException("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
-            }
+        returnsService.getReturns.map { returns =>
+          (returns.zeroRatedSupplies, returns.turnoverEstimate) match {
+            case (Some(zeroRatedSupplies), Some(estimates)) =>
+              Ok(zeroRatesSuppliesView(
+                routes.ZeroRatedSuppliesController.submit,
+                ZeroRatedSuppliesForm.form(estimates).fill(zeroRatedSupplies)
+              ))
+            case (None, Some(estimates)) =>
+              Ok(zeroRatesSuppliesView(
+                routes.ZeroRatedSuppliesController.submit,
+                ZeroRatedSuppliesForm.form(estimates)
+              ))
+            case (_, None) => throw new InternalServerException("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
           }
         }
   }

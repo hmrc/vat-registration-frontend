@@ -34,7 +34,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
-        .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,7 +48,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, Some(10000), None, None, None, None))
-        .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -64,7 +62,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns())
-        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,7 +79,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
         .s4lContainer[Returns].isUpdatedWith(Returns(Some(testTurnover), None, Some(10000.54), None, None, None, None))
-        .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -100,7 +96,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns(Some(testTurnover), None, None, None, None, None, None))
-        .vatScheme.has("turnover-estimates-data", Json.toJson(turnOverEstimates))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -117,7 +112,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Returns].contains(Returns())
-        .vatScheme.doesNotHave("turnover-estimates-data")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

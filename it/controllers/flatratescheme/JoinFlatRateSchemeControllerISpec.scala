@@ -25,6 +25,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   )
 
   val returnsData: JsValue = Json.toJson[Returns](Returns(
+    turnoverEstimate = Some(testTurnover),
     zeroRatedSupplies = Some(10000),
     reclaimVatOnMostReturns = Some(true),
     returnsFrequency = None,
@@ -32,14 +33,28 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     startDate = None
   ))
 
-  val lowTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 1000L)
-  val highTurnoverEstimate = turnOverEstimates.copy(turnoverEstimate = 150001L)
+  val returnsDataWithBigTurnover: JsValue = Json.toJson[Returns](Returns(
+    turnoverEstimate = Some(150001),
+    zeroRatedSupplies = Some(10000),
+    reclaimVatOnMostReturns = Some(true),
+    returnsFrequency = None,
+    staggerStart = None,
+    startDate = None
+  ))
+
+  val returnsDataWithoutTurnover: JsValue = Json.toJson[Returns](Returns(
+    turnoverEstimate = None,
+    zeroRatedSupplies = Some(10000),
+    reclaimVatOnMostReturns = Some(true),
+    returnsFrequency = None,
+    staggerStart = None,
+    startDate = None
+  ))
 
   "GET /join-flat-rate" must {
     "return OK when the details are in s4l" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns", returnsData)
@@ -57,7 +72,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "return OK when the details are in s4l and missing frs flag" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].contains(frsS4LData.copy(joinFrs = None))
         .vatScheme.doesNotHave("flat-rate-scheme")
         .vatScheme.has("returns", returnsData)
@@ -75,7 +89,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "return OK when the details are in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
         .vatScheme.has("returns", returnsData)
@@ -92,10 +105,9 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the Attachments Resolver when the turnover is too high" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("turnover-estimates-data", Json.toJson(highTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsData)
+        .vatScheme.has("returns", returnsDataWithBigTurnover)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -110,7 +122,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the Attachments Resolver for a Group Registration" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("turnover-estimates-data", Json.toJson(lowTurnoverEstimate))
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
         .vatScheme.has("returns", returnsData)
@@ -132,7 +143,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsData)
+        .vatScheme.has("returns", returnsDataWithoutTurnover)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

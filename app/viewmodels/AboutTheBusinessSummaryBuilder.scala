@@ -23,7 +23,7 @@ import featureswitch.core.config.FeatureSwitching
 import models.api._
 import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
 import models.view.SummaryListRowUtils._
-import models.{BusinessContact, SicAndCompliance, TradingDetails, TurnoverEstimates}
+import models.{BusinessContact, SicAndCompliance, TradingDetails}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -63,22 +63,22 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           otherBusinessInvolvements(sicAndCompliance),
           supplyWorkers(sicAndCompliance)
         ).flatten ++
-        complianceSection(sicAndCompliance) ++
-        List(
-          tradingName(tradingDetails, partyType),
-          importsOrExports(tradingDetails, partyType),
-          applyForEori(tradingDetails, partyType),
-          turnoverEstimate(returns),
-          zeroRatedTurnover(vatScheme)
-        ).flatten ++
-        nipSection(returns) ++
-        List(
-          claimRefunds(returns),
-          vatExemption(returns),
-          sendGoodsOverseas(returns),
-          sendGoodsToEu(returns)
-        ).flatten ++
-        netpSection(returns, partyType)
+          complianceSection(sicAndCompliance) ++
+          List(
+            tradingName(tradingDetails, partyType),
+            importsOrExports(tradingDetails, partyType),
+            applyForEori(tradingDetails, partyType),
+            turnoverEstimate(returns),
+            zeroRatedTurnover(vatScheme)
+          ).flatten ++
+          nipSection(returns) ++
+          List(
+            claimRefunds(returns),
+            vatExemption(returns),
+            sendGoodsOverseas(returns),
+            sendGoodsToEu(returns)
+          ).flatten ++
+          netpSection(returns, partyType)
       ))
     ))
   }
@@ -243,8 +243,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     )
 
   private def zeroRatedTurnover(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
-    if (vatScheme.returns.flatMap(_.turnoverEstimate).contains(0) ||
-      (vatScheme.eligibilitySubmissionData.flatMap(_.estimates).contains(TurnoverEstimates(0)) && vatScheme.returns.map(_.turnoverEstimate).isEmpty)) None else optSummaryListRowString(
+    if (vatScheme.returns.flatMap(_.turnoverEstimate).contains(0)) None else optSummaryListRowString(
       s"$sectionId.zeroRated",
       vatScheme.returns.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
       Some(returnsRoutes.ZeroRatedSuppliesController.show.url)
@@ -277,7 +276,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   }
 
   private def sendGoodsToEu(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
-    if(returns.overseasCompliance.exists(_.goodsToEu == Some(true))) {
+    if (returns.overseasCompliance.exists(_.goodsToEu == Some(true))) {
       optSummaryListRowBoolean(
         s"$sectionId.sendGoodsToEu",
         returns.overseasCompliance.flatMap(_.goodsToEu),
@@ -375,8 +374,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         }
       }
     }
-    else
-    {
+    else {
       Nil
     }
 

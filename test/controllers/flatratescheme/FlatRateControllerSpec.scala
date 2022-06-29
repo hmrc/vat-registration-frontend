@@ -17,7 +17,7 @@
 package controllers.flatratescheme
 
 import fixtures.VatRegistrationFixture
-import models.{FlatRateScheme, TurnoverEstimates}
+import models.FlatRateScheme
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -114,8 +114,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
   }
-
-  val estimateVatTurnover = TurnoverEstimates(1000000L)
 
   s"GET ${routes.FlatRateController.annualCostsLimitedPage}" should {
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
