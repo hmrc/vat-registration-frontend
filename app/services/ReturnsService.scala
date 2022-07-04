@@ -47,7 +47,7 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
 
   def getReturns(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Returns] = {
     s4lService.fetchAndGet[Returns].flatMap {
-      case None | Some(Returns(None, None, None, None, None, None, None, None, None, None)) => vatRegConnector.getReturns(profile.registrationId)
+      case None | Some(Returns(None, None, None, None, None, None, None, None, None, None, None)) => vatRegConnector.getReturns(profile.registrationId)
       case Some(returns) => Future.successful(returns)
     } recover {
       case e =>
@@ -64,13 +64,13 @@ class ReturnsService @Inject()(val vatRegConnector: VatRegistrationConnector,
   }
 
   def handleView(returns: Returns): Completion[Returns] = returns match {
-    case Returns(_, _, _, _, _, _, _, _, _, Some(NIPCompliance(goodsToEU, None))) =>
+    case Returns(_, _, _, _, _, _, _, _, _, Some(NIPCompliance(goodsToEU, None)), _) =>
       Incomplete(returns)
-    case Returns(Some(turnover), _, Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _, _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(_), _, Some(stagger: QuarterlyStagger), _, _, _, _, _) =>
       Complete(returns.copy(returnsFrequency = Some(Quarterly), annualAccountingDetails = None))
-    case Returns(Some(turnover), _, Some(zeroRated), Some(true), Some(Monthly), _, _, _, _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(true), Some(Monthly), _, _, _, _, _, _) =>
       Complete(returns.copy(staggerStart = Some(MonthlyStagger), annualAccountingDetails = None))
-    case Returns(Some(turnover), _, Some(zeroRated), Some(_), Some(Annual), Some(stagger: AnnualStagger), _, Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _) =>
+    case Returns(Some(turnover), _, Some(zeroRated), Some(_), Some(Annual), Some(stagger: AnnualStagger), _, Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _, _) =>
       Complete(returns)
     case _ =>
       Incomplete(returns)

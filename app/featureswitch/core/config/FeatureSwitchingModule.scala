@@ -43,7 +43,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     FullAgentJourney,
     OtherBusinessInvolvement,
     UploadDocuments,
-    TaskList
+    TaskList,
+    TaxRepPage
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -146,4 +147,9 @@ case object UploadDocuments extends FeatureSwitch {
 case object TaskList extends FeatureSwitch {
   override val configName: String = "feature-switch.task-list"
   override val displayName: String = "Enable Task List"
+}
+
+case object TaxRepPage extends FeatureSwitch {
+  override val configName: String = "feature-switch.tax-rep"
+  override val displayName: String = "Enable Tax Rep Page"
 }

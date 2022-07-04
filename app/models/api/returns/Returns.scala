@@ -31,7 +31,8 @@ case class Returns(turnoverEstimate: Option[BigDecimal] = None,
                    startDate: Option[LocalDate] = None,
                    annualAccountingDetails: Option[AASDetails] = None,
                    overseasCompliance: Option[OverseasCompliance] = None,
-                   northernIrelandProtocol: Option[NIPCompliance] = None)
+                   northernIrelandProtocol: Option[NIPCompliance] = None,
+                   hasTaxRepresentative: Option[Boolean] = None)
 
 object Returns extends JsonUtilities {
   implicit val s4lKey: S4LKey[Returns] = S4LKey("returns")

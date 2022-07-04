@@ -53,7 +53,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         accountingPeriod(returns),
         lastMonthOfAccountingYear(returns),
         paymentFrequency(returns),
-        paymentMethod(returns)
+        paymentMethod(returns),
+        taxRep(returns)
       ).flatten ++
         flatRateSchemeSection(vatScheme, partyType)
     ))
@@ -110,6 +111,13 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         s"$sectionId.paymentMethod.${paymentMethod.toString}"
       },
       Some(returnsRoutes.PaymentMethodController.show.url)
+    )
+
+  private def taxRep(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"$sectionId.taxRep",
+      returns.hasTaxRepresentative,
+      Some(controllers.returns.routes.TaxRepController.show.url)
     )
 
   private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {

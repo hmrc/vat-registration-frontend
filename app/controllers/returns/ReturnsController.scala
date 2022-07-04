@@ -18,6 +18,7 @@ package controllers.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaxRepPage
 import forms._
 import models._
 import models.api.returns.{Annual, Monthly, QuarterlyStagger}
@@ -63,7 +64,11 @@ class ReturnsController @Inject()(val sessionService: SessionService,
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success => returnsService.saveStaggerStart(success) flatMap { _ =>
-            Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+            if (isEnabled(TaxRepPage)) {
+              Future.successful(Redirect(controllers.returns.routes.TaxRepController.show))
+            } else {
+              Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+            }
           }
         )
   }
@@ -100,7 +105,11 @@ class ReturnsController @Inject()(val sessionService: SessionService,
           },
           success => returnsService.saveFrequency(success) map { _ =>
             success match {
-              case Monthly => Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+              case Monthly => if (isEnabled(TaxRepPage)) {
+                Redirect(controllers.returns.routes.TaxRepController.show)
+              } else {
+                Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+              }
               case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
               case _ => Redirect(routes.ReturnsController.accountPeriodsPage)
             }
