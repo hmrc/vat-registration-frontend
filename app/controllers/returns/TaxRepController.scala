@@ -32,7 +32,7 @@ class TaxRepController @Inject()(val authConnector: AuthConnector,
                                  val sessionService: SessionService,
                                  val returnsService: ReturnsService,
                                  val vatRegistrationService: VatRegistrationService,
-                                 val taxRepPage: TaxRepresentative,
+                                 val taxRepPage: TaxRepresentative
                                 )(implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   val baseControllerComponents: BaseControllerComponents)
