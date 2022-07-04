@@ -18,6 +18,7 @@ package controllers.returns
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaxRepPage
 import forms.PaymentMethodForm
 import models.api.returns.AASDetails
 import play.api.mvc.{Action, AnyContent}
@@ -54,7 +55,11 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
         PaymentMethodForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           paymentMethod => returnsService.savePaymentMethod(paymentMethod).map { _ =>
-            Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+            if (isEnabled(TaxRepPage)) {
+              Redirect(controllers.returns.routes.TaxRepController.show)
+            } else {
+              Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+            }
           }
         )
   }

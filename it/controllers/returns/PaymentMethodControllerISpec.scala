@@ -16,6 +16,7 @@
 
 package controllers.returns
 
+import featureswitch.core.config.TaxRepPage
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
 import models.api.returns._
@@ -91,6 +92,25 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      }
+    }
+
+    "return a redirect to the Tax Representative page if the feature switch is on" in new Setup {
+      enable(TaxRepPage)
+
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Returns].contains(testFullReturns)
+        .s4lContainer[Returns].clearedByKey
+        .vatRegistration.storesReturns(testRegId, testFullReturns)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> bacs))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.TaxRepController.show.url)
       }
     }
 

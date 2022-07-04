@@ -1543,3 +1543,9 @@ businessWebsiteAddress.heading                       = What is the business’s 
 validation.businessWebsiteAddress.invalid            = Enter the website address in the correct format, like https://www.example.com
 validation.businessWebsiteAddress.missing            = Enter the business website address
 validation.businessWebsiteAddress.maxlen             = The business website address must be 132 characters or fewer
+
+## TAX REP PAGE
+taxRep.heading                                       = Do you want to appoint a UK tax representative for the business?
+taxRep.para1                                          = You can appoint a tax representative to deal with VAT matters on behalf of the business.
+taxRep.para2                                         = They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts.
+validation.taxRep.error                              = Select yes if you would like to appoint a UK Tax Representative for the business

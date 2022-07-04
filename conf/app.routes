@@ -523,3 +523,7 @@ POST        /business-has-website                                               
 ## Business Website Address page
 GET         /business-website                                                                  controllers.business.BusinessWebsiteAddressController.show
 POST        /business-website                                                                  controllers.business.BusinessWebsiteAddressController.submit
+
+## Tax Rep page
+GET         /tax-representative                                                                controllers.returns.TaxRepController.show
+POST        /tax-representative                                                                controllers.returns.TaxRepController.submit
