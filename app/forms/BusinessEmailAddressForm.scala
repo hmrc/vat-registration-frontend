@@ -18,7 +18,6 @@ package forms
 
 import forms.constraints.EmailAddressConstraints
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
-import models.BusinessContact
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 

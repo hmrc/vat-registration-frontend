@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.LandAndPropertyForm
 import play.api.mvc.{Action, AnyContent}
-import services.{LandAndPropertyAnswer, SessionProfile, SessionService, SicAndComplianceService}
+import services.BusinessService.LandAndPropertyAnswer
+import services.{BusinessService, SessionProfile, SessionService}
 import views.html.sicandcompliance.LandAndProperty
 
 import javax.inject.{Inject, Singleton}
@@ -29,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class LandAndPropertyController @Inject()(val sessionService: SessionService,
                                           val authConnector: AuthClientConnector,
-                                          sicAndComplianceService: SicAndComplianceService,
+                                          businessService: BusinessService,
                                           view: LandAndProperty)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
@@ -39,7 +40,7 @@ class LandAndPropertyController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        sicAndComplianceService.getSicAndCompliance.map {
+        businessService.getBusiness.map {
           _.hasLandAndProperty match {
             case Some(answer) => Ok(view(LandAndPropertyForm.form.fill(answer)))
             case None => Ok(view(LandAndPropertyForm.form))
@@ -52,7 +53,7 @@ class LandAndPropertyController @Inject()(val sessionService: SessionService,
       implicit profile =>
         LandAndPropertyForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(view(errors))),
-          success => sicAndComplianceService.updateSicAndCompliance(LandAndPropertyAnswer(success)).map { _ =>
+          success => businessService.updateBusiness(LandAndPropertyAnswer(success)).map { _ =>
             Redirect(routes.BusinessActivityDescriptionController.show)
           }
         )

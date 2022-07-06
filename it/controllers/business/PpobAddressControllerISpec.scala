@@ -2,7 +2,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.Business
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -39,9 +39,9 @@ class PpobAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails)
-        .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails, testRegId)(BusinessContact.apiKey, BusinessContact.apiFormat)
-        .s4lContainer[BusinessContact].clearedByKey
+        .s4lContainer[Business].contains(businessDetails)
+        .registrationApi.replaceSection[Business](businessDetails, testRegId)(Business.apiKey, Business.format)
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -56,9 +56,9 @@ class PpobAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
-        .s4lContainer[BusinessContact].isEmpty
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact())
-        .registrationApi.getSection[BusinessContact](None, testRegId)
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business())
+        .registrationApi.getSection[Business](None, testRegId)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

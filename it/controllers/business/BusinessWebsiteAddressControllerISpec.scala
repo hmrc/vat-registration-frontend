@@ -3,7 +3,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.Business
 import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
@@ -17,17 +17,14 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
   val url: String = controllers.business.routes.BusinessWebsiteAddressController.show.url
   val businessWebsiteAddress = "https://www.example.com"
 
-  val s4lData: BusinessContact = BusinessContact(
-    website = Some(businessWebsiteAddress)
-  )
+  val s4lData: Business = Business(website = Some(businessWebsiteAddress))
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
-      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
       given()
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].isEmpty
-        .registrationApi.getSection[BusinessContact](Some(validBusinessContactDetails))
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](Some(businessDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -39,7 +36,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
     "return OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].contains(s4lData)
+        .s4lContainer[Business].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -55,15 +52,14 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
   s"POST $url" when {
     "BusinessContact is not complete" should {
       "Update S4L and redirect to the next page" in new Setup {
-        implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
 
         given()
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(BusinessContact())
-          .registrationApi.getSection[BusinessContact](None)
-          .s4lContainer[BusinessContact].isUpdatedWith(
-          BusinessContact().copy(website = Some(businessWebsiteAddress))
-        )
+          .s4lContainer[Business].contains(businessDetails.copy(website = None))
+          .registrationApi.getSection[Business](None)
+          .s4lContainer[Business].isUpdatedWith(
+            businessDetails.copy(website = Some(businessWebsiteAddress))
+          )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -77,13 +73,12 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
     "BusinessContact is complete" should {
       "Post the block to the backend and redirect to the next page" in new Setup {
-        implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
 
         given()
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(website = None))
-          .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(website = Some(businessWebsiteAddress)))
-          .s4lContainer[BusinessContact].clearedByKey
+          .s4lContainer[Business].contains(businessDetails.copy(website = None))
+          .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
+          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -96,14 +91,13 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
     }
 
     "return 400 when the user submits and invalid regex" in new Setup {
-      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
       val invalidUrl: String = businessWebsiteAddress + "@"
 
       given()
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(website = None))
-        .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(website = Some(invalidUrl)))
-        .s4lContainer[BusinessContact].clearedByKey
+        .s4lContainer[Business].contains(businessDetails.copy(website = None))
+        .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(invalidUrl)))
+        .s4lContainer[Business].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

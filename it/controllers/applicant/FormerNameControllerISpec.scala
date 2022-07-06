@@ -3,13 +3,13 @@ package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.api.{Address, EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
+import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view._
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.{Format, JsBoolean, JsObject, JsString, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 

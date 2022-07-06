@@ -29,7 +29,6 @@ import views.html.otherbusinessinvolvements.ObiSummary
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import controllers.business.{routes => businessRoutes}
 
 @Singleton
 class ObiSummaryController @Inject()(val authConnector: AuthConnector,

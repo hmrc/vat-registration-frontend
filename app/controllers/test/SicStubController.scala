@@ -24,7 +24,7 @@ import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
 import models.test._
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, SessionService, SicAndComplianceService}
+import services.{BusinessService, S4LService, SessionProfile, SessionService}
 import views.html.test._
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val sessionService: SessionService,
                                   val s4LService: S4LService,
-                                  val sicAndCompService: SicAndComplianceService,
+                                  val businessService: BusinessService,
                                   val authConnector: AuthClientConnector,
                                   view: SicStubPage)
                                  (implicit appConfig: FrontendAppConfig,
@@ -70,11 +70,11 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
               codes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
             }
             _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
-            _ <- sicAndCompService.submitSicCodes(sicCodesList)
+            _ <- businessService.submitSicCodes(sicCodesList)
           } yield {
             if (sicCodesList.size == 1) {
-              if (sicAndCompService.needComplianceQuestions(sicCodesList)) {
-                Redirect(controllers.sicandcompliance.routes.ComplianceIntroductionController.show)
+              if (businessService.needComplianceQuestions(sicCodesList)) {
+                Redirect(controllers.business.routes.ComplianceIntroductionController.show)
               } else {
                 if (isEnabled(OtherBusinessInvolvement)) {
                   Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
@@ -83,7 +83,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                 }
               }
             } else {
-              Redirect(controllers.sicandcompliance.routes.SicAndComplianceController.showMainBusinessActivity)
+              Redirect(controllers.business.routes.SicController.showMainBusinessActivity)
             }
           }
         )

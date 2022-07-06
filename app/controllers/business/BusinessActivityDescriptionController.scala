@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessActivityDescriptionForm
-
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, SicAndComplianceService}
+import services.BusinessService.BusinessActivityDescription
+import services.{BusinessService, SessionProfile, SessionService}
 import views.html.sicandcompliance.business_activity_description
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessActivityDescriptionController @Inject()(val authConnector: AuthClientConnector,
                                                       val sessionService: SessionService,
-                                                      val sicAndCompService: SicAndComplianceService,
+                                                      val businessService: BusinessService,
                                                       view: business_activity_description)
                                                      (implicit appConfig: FrontendAppConfig,
                                                       val executionContext: ExecutionContext,
@@ -40,8 +40,8 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
     implicit request =>
       implicit profile =>
         for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.description.fold(BusinessActivityDescriptionForm.form)(BusinessActivityDescriptionForm.form.fill)
+          businessDetails <- businessService.getBusiness
+          formFilled = businessDetails.businessDescription.fold(BusinessActivityDescriptionForm.form)(BusinessActivityDescriptionForm.form.fill)
         } yield Ok(view(formFilled))
   }
 
@@ -50,8 +50,8 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
       implicit profile =>
         BusinessActivityDescriptionForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
-          data => sicAndCompService.updateSicAndCompliance(data).map {
-            _ => Redirect(controllers.sicandcompliance.routes.SicAndComplianceController.showSicHalt)
+          data => businessService.updateBusiness(BusinessActivityDescription(data)).map {
+            _ => Redirect(controllers.business.routes.SicController.showSicHalt)
           }
         )
   }

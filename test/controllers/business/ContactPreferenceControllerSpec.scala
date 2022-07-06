@@ -29,13 +29,13 @@ import scala.concurrent.Future
 
 class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions with FeatureSwitching {
 
-  val view = app.injector.instanceOf[contact_preference]
+  val view: contact_preference = app.injector.instanceOf[contact_preference]
 
   class Setup {
     val controller: ContactPreferenceController = new ContactPreferenceController(
       mockAuthClientConnector,
       mockSessionService,
-      mockBusinessContactService,
+      mockBusinessService,
       view
     )
     mockAuthenticated()
@@ -43,11 +43,11 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
   }
 
   class SubmissionSetup extends Setup {
-    when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future(validBusinessContactDetails))
+    when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future(validBusiness))
 
-    when(mockBusinessContactService.updateBusinessContact[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future(validBusinessContactDetails.contactPreference.get))
+    when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future(validBusiness))
 
   }
 
@@ -60,8 +60,8 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
       }
 
       "contract preference is unavailable" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-          .thenReturn(Future(validBusinessContactDetails.copy(contactPreference = None)))
+        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(Future(validBusiness.copy(contactPreference = None)))
 
         callAuthorised(controller.showContactPreference) {
           _ isA 200
@@ -71,7 +71,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "throw an exception" when {
       "getBusinessContact Fails" in new Setup {
-        when(mockBusinessContactService.getBusinessContact(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
         callAuthorised(controller.showContactPreference) {
@@ -103,27 +103,27 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     "return a 303" when {
       "user selects email and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {
-          _ redirectsTo controllers.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
+          _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
         }
       }
 
       "user selects letter and redirect to the business activity description" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.sicandcompliance.routes.BusinessActivityDescriptionController.show.url
+          _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
         }
       }
 
       "land and property feature switch is enabled" in new SubmissionSetup {
         enable(LandAndProperty)
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.sicandcompliance.routes.LandAndPropertyController.show.url
+          _ redirectsTo controllers.business.routes.LandAndPropertyController.show.url
         }
       }
     }
 
     "return an exception" when {
       "updateBusinessContact fails" in new SubmissionSetup {
-        when(mockBusinessContactService.updateBusinessContact[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
         submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {

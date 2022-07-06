@@ -1,9 +1,9 @@
 
 package controllers.transactor
 
-import forms.DeclarationCapacityForm.{accountant, declarationCapacity, other, otherRole}
+import forms.DeclarationCapacityForm.{accountant, declarationCapacity, otherRole}
 import itutil.ControllerISpec
-import models.{ApplicantDetails, DeclarationCapacityAnswer, Other, TransactorDetails}
+import models.{DeclarationCapacityAnswer, Other, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._

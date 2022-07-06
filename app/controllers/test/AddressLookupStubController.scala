@@ -21,7 +21,7 @@ import connectors.ConfigConnector
 import controllers.BaseController
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent}
-import services.{S4LService, SessionProfile, SessionService, SicAndComplianceService}
+import services.{BusinessService, S4LService, SessionProfile, SessionService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AddressLookupStubController @Inject()(val configConnect: ConfigConnector,
                                             val sessionService: SessionService,
                                             val s4LService: S4LService,
-                                            val sicAndCompService: SicAndComplianceService,
+                                            val businessService: BusinessService,
                                             val authConnector: AuthClientConnector)
                                            (implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,

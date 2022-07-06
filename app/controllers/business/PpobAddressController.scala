@@ -19,18 +19,17 @@ package controllers.business
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-
-import javax.inject.{Inject, Singleton}
 import models.api.Address
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, BusinessContactService, SessionProfile, SessionService}
+import services.{AddressLookupService, BusinessService, SessionProfile, SessionService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
                                       val sessionService: SessionService,
-                                      val businessContactService: BusinessContactService,
+                                      val businessService: BusinessService,
                                       val addressLookupService: AddressLookupService)
                                      (implicit appConfig: FrontendAppConfig,
                                       val executionContext: ExecutionContext,
@@ -50,7 +49,7 @@ class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           address <- addressLookupService.getAddressById(id)
-          _ <- businessContactService.updateBusinessContact[Address](address)
+          _ <- businessService.updateBusiness[Address](address)
         } yield Redirect(controllers.business.routes.BusinessEmailController.show)
   }
 

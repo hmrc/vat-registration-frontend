@@ -20,7 +20,6 @@ import com.google.inject.Inject
 import connectors.{ConfigConnector, VatRegistrationConnector}
 import models.api.SicCode
 import models.{FRSDateChoice, Start, _}
-import play.api.Logger
 import services.FlatRateService._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FlatRateService @Inject()(val s4LService: S4LService,
-                                val sicAndComplianceService: SicAndComplianceService,
+                                val businessService: BusinessService,
                                 val configConnector: ConfigConnector,
                                 val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
 
@@ -118,10 +117,10 @@ class FlatRateService @Inject()(val s4LService: S4LService,
         val (label, pct) = configConnector.getBusinessTypeDetails(sector)
         Future.successful((sector, label, pct))
       case _ =>
-        sicAndComplianceService.getSicAndCompliance map { sicAndCompliance =>
-          sicAndCompliance.mainBusinessActivity match {
+        businessService.getBusiness map { businessDetails =>
+          businessDetails.mainBusinessActivity match {
             case Some(mainBusinessActivity) =>
-              val frsId = configConnector.getSicCodeFRSCategory(mainBusinessActivity.id)
+              val frsId = configConnector.getSicCodeFRSCategory(mainBusinessActivity.code)
               val (label, percent) = configConnector.getBusinessTypeDetails(frsId)
               (frsId, label, percent)
             case None => throw new IllegalStateException("[FlatRateService] [retrieveSectorPercent] Can't determine main business activity")
@@ -158,8 +157,8 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
     for {
-      mainSic <- sicAndComplianceService.getSicAndCompliance.map(_.mainBusinessActivity)
-      selectionChanged = mainSic.exists(_.id != sicCode.code)
+      mainSic <- businessService.getBusiness.map(_.mainBusinessActivity)
+      selectionChanged = mainSic.exists(_.code != sicCode.code)
       _ <- if (selectionChanged) clearFrs else Future.successful(true)
     } yield sicCode
   }

@@ -2,7 +2,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.Business
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -15,7 +15,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].isEmpty
+        .s4lContainer[Business].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -27,7 +27,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(hasWebsite = Some(true)))
+        .s4lContainer[Business].contains(businessDetails.copy(hasWebsite = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,7 +39,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(hasWebsite = Some(false)))
+        .s4lContainer[Business].contains(businessDetails.copy(hasWebsite = Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -55,7 +55,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4l.isEmpty()
-        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(hasWebsite = Some(true)))))
+        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(hasWebsite = Some(true)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -69,7 +69,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4l.isEmpty()
-        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(hasWebsite = Some(false)))))
+        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(hasWebsite = Some(false)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

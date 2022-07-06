@@ -16,27 +16,27 @@
 
 package services.mocks
 
-import models.{CurrentProfile, SicAndCompliance}
+import models.{Business, CurrentProfile}
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
-import org.scalatestplus.mockito.MockitoSugar
-import services.SicAndComplianceService
-import uk.gov.hmrc.http.HeaderCarrier
 import org.mockito.{ArgumentMatchers => Matchers}
+import org.scalatestplus.mockito.MockitoSugar
+import services.BusinessService
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait SicAndComplianceServiceMock {
+trait BusinessServiceMock {
   this: MockitoSugar =>
 
-  lazy val mockSicAndComplianceService = mock[SicAndComplianceService]
+  lazy val mockBusinessService = mock[BusinessService]
 
-  def mockGetSicAndCompliance(res: Future[SicAndCompliance]): OngoingStubbing[Future[SicAndCompliance]] = {
-    when(mockSicAndComplianceService.getSicAndCompliance(Matchers.any[HeaderCarrier], Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockGetBusiness(res: Future[Business]): OngoingStubbing[Future[Business]] = {
+    when(mockBusinessService.getBusiness(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])).thenReturn(res)
   }
 
-  def mockUpdateSicAndCompliance(res: Future[SicAndCompliance]): OngoingStubbing[Future[SicAndCompliance]] = {
-    when(mockSicAndComplianceService.updateSicAndCompliance(Matchers.any)(Matchers.any[HeaderCarrier], Matchers.any[CurrentProfile])).thenReturn(res)
+  def mockUpdateBusiness(res: Future[Business]): OngoingStubbing[Future[Business]] = {
+    when(mockBusinessService.updateBusiness(Matchers.any)(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])).thenReturn(res)
   }
 
 }

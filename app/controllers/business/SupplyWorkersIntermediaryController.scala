@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.IntermediarySupplyForm
-import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SessionService, SicAndComplianceService}
-import views.html.sicandcompliance.intermediary_supply
 import featureswitch.core.config.OtherBusinessInvolvement
+import forms.IntermediarySupplyForm
+import models.LabourCompliance
+import play.api.mvc.{Action, AnyContent}
+import services.{ApplicantDetailsService, BusinessService, SessionProfile, SessionService}
+import views.html.sicandcompliance.intermediary_supply
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClientConnector,
                                                     val sessionService: SessionService,
-                                                    val sicAndCompService: SicAndComplianceService,
+                                                    val businessService: BusinessService,
                                                     val applicantDetailsService: ApplicantDetailsService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,
@@ -41,10 +42,11 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
     implicit request =>
       implicit profile =>
         for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
+          businessDetails <- businessService.getBusiness
           name <- applicantDetailsService.getTransactorApplicantName
+          intermediarySupply = businessDetails.labourCompliance.flatMap(_.intermediaryArrangement)
           intermediarySupplyForm = IntermediarySupplyForm(name)
-          formFilled = sicCompliance.intermediarySupply.fold(intermediarySupplyForm.form)(intermediarySupplyForm.form.fill)
+          formFilled = intermediarySupply.fold(intermediarySupplyForm.form)(intermediarySupplyForm.form.fill)
         } yield Ok(view(formFilled, name))
   }
 
@@ -53,19 +55,24 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
       implicit profile =>
         for {
           name <- applicantDetailsService.getTransactorApplicantName
+          businessDetails <- businessService.getBusiness
           intermediarySupplyForm = IntermediarySupplyForm(name)
           result <- {
             intermediarySupplyForm.form.bindFromRequest().fold(
-              badForm =>
-                Future.successful(BadRequest(view(badForm, name))),
-              data =>
-                sicAndCompService.updateSicAndCompliance(data) map { _ =>
+              badForm => Future.successful(BadRequest(view(badForm, name))),
+              data => {
+                val updatedLabourCompliance = businessDetails.labourCompliance
+                  .getOrElse(LabourCompliance())
+                  .copy(intermediaryArrangement = Some(data))
+
+                businessService.updateBusiness(updatedLabourCompliance) map { _ =>
                   if (isEnabled(OtherBusinessInvolvement)) {
                     Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                   } else {
                     Redirect(controllers.routes.TradingNameResolverController.resolve)
                   }
                 }
+              }
             )
           }
         } yield result

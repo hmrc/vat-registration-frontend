@@ -20,7 +20,6 @@ import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api.VatSchemeHeader
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import views.html.ManageRegistrations
 
 class ManageRegistrationsViewSpec extends VatRegViewSpec with VatRegistrationFixture {

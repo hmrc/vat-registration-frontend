@@ -17,16 +17,15 @@
 package controllers
 
 import itutil.ControllerISpec
-import models.{Director, Email, SicAndCompliance}
+import models.Business
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import support.RegistrationsApiStubs
 
-import scala.collection.JavaConverters._
 import scala.concurrent.Future
-import play.api.libs.json.Json
 
 class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs {
 
@@ -34,7 +33,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
     "display the summary page correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].cleared
+        .s4lContainer[Business].cleared
         .vatRegistration.storesNrsPayload(testRegId)
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 
@@ -54,7 +53,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
     "display the summary page correctly for a NETP" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].cleared
+        .s4lContainer[Business].cleared
         .vatRegistration.storesNrsPayload(testRegId)
         .vatScheme.has("eligibility-data", fullEligibilityDataJson)
 

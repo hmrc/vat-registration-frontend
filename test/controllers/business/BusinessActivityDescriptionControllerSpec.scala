@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import fixtures.VatRegistrationFixture
-import models.SicAndCompliance
 import models.api.SicCode
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -32,7 +31,7 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
     val controller = new BusinessActivityDescriptionController(
       mockAuthClientConnector,
       mockSessionService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       view
     )
 
@@ -45,14 +44,14 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
 
   "show" should {
     "return OK" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetBusiness(Future.successful(validBusiness))
 
       callAuthorised(controller.show) {
         status(_) mustBe OK
       }
     }
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetSicAndCompliance(Future.successful(SicAndCompliance()))
+      mockGetBusiness(Future.successful(validBusiness))
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -66,7 +65,7 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
       ))(result => result isA BAD_REQUEST)
     }
     "Redirect to ICL when a valid description is posted" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusinessWithNoDescription))
 
       submitAuthorised(controller.submit, FakeRequest().withFormUrlEncodedBody("description" -> "Testing")) {
         _ redirectsTo s"$contextRoot/choose-standard-industry-classification-codes"

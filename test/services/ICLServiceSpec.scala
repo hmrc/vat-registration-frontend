@@ -16,12 +16,11 @@
 
 package services
 
-import connectors.ICLConnector
 import models.api.SicCode
-import models.{BusinessActivities, SicAndCompliance}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import play.api.libs.json.{JsObject, Json}
+import services.BusinessService.BusinessActivities
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -40,7 +39,7 @@ class ICLServiceSpec extends VatRegSpec {
       mockICLConnector,
       mockServicesConfig,
       mockSessionService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       mockVatRegistrationConnector
     ) {
       override lazy val vatRedirectUrl: String = "dummy-url"
@@ -51,8 +50,8 @@ class ICLServiceSpec extends VatRegSpec {
 
   "journeySetup" should {
     "return the ICL start url when neither VR or II are prepopped" in new Setup {
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance()))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
@@ -61,9 +60,9 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe "example.url"
     }
     "return the ICL start url when VR codes are prepopped" in new Setup {
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(
-          SicAndCompliance(businessActivities = Some(BusinessActivities(List(SicCode("43220", "Plumbing", "")))))
+          validBusiness.copy(businessActivities = Some(List(SicCode("43220", "Plumbing", ""))))
         ))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
@@ -73,7 +72,7 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe "example.url"
     }
     "return the ICL start url when VR call fails" in new Setup {
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.failed(new InternalServerException("VR call failed")))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
@@ -104,29 +103,29 @@ class ICLServiceSpec extends VatRegSpec {
   "getICLSICCodes" should {
     "return list of sic codes when a successful response is returned from the connector with more than 1 SIC code and keystore returns a String" in new Setup {
       val listOfSicCodes = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
-      val sicAndCompUpdated = s4lVatSicAndComplianceWithoutLabour.copy(businessActivities = Some(BusinessActivities(listOfSicCodes)))
+      val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOfSicCodes))
 
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclMultipleResults))
       when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
-      when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
-        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndCompUpdated))
+      when(mockBusinessService.updateBusiness[BusinessActivities]
+        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOfSicCodes
     }
     "return list of sic code containing 1 sic code when a successful response is returned from the connector with only 1 SIC code and keystore returns a String" in new Setup {
       val listOf1SicCode = iclMultipleResultsSicCode1 :: Nil
-      val sicAndComplianceUpdated = s4lVatSicAndComplianceWithoutLabour.copy(businessActivities = Some(BusinessActivities(listOf1SicCode)))
+      val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOf1SicCode))
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(iclSingleResult))
       when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
 
-      when(mockSicAndComplianceService.updateSicAndCompliance[BusinessActivities]
-        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(sicAndComplianceUpdated))
+      when(mockBusinessService.updateBusiness[BusinessActivities]
+        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOf1SicCode

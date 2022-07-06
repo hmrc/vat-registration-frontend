@@ -17,21 +17,20 @@
 package forms
 
 import forms.FormValidation._
-import models.{IntermediarySupply, SupplyWorkers, Workers}
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{single, text}
 
 object SupplyWorkersForm {
   val RADIO_YES_NO: String = "value"
   val defaultErrorCode: String = "labourCompliance.supplyWorkers"
   val thirdPartyErrorCode: String = "labourCompliance.supplyWorkers.3pt"
 
-  def form(isTransactor: Boolean): Form[SupplyWorkers] = {
+  def form(isTransactor: Boolean): Form[Boolean] = {
     implicit val errorCode: ErrorCode = if(isTransactor) thirdPartyErrorCode else defaultErrorCode
     Form(
-      mapping(
+      single(
         RADIO_YES_NO -> missingBooleanFieldMapping()
-      )(SupplyWorkers.apply)(SupplyWorkers.unapply)
+      )
     )
   }
 }
@@ -41,15 +40,15 @@ object WorkersForm {
   val defaultErrorCode: String = "labourCompliance.numberOfWorkers"
   val thirdPartyErrorCode: String = "labourCompliance.numberOfWorkers.3pt"
 
-  def form(isTransactor: Boolean): Form[Workers] = {
+  def form(isTransactor: Boolean): Form[Int] = {
     implicit val errorCode: ErrorCode = if(isTransactor) thirdPartyErrorCode else defaultErrorCode
     Form(
-      mapping(
+      single(
         NUMBER_OF_WORKERS -> text
           .verifying(mandatoryNumericText)
           .transform[Int](strVal => strVal.toInt, intVal => intVal.toString)
           .verifying(_ > 0)
-      )(Workers.apply)(Workers.unapply)
+      )
     )
   }
 }
@@ -60,8 +59,8 @@ case class IntermediarySupplyForm(name: Option[String]) extends RequiredBooleanF
   override lazy val errorMsgArgs: Seq[Any] = if(name.isDefined) Array(name.get) else Nil
 
   val form = Form(
-    mapping(
+    single(
       RADIO_YES_NO -> requiredBoolean
-    )(IntermediarySupply.apply)(IntermediarySupply.unapply)
+    )
   )
 }

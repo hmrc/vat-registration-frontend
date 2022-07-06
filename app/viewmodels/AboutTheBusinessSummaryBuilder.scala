@@ -16,14 +16,12 @@
 
 package viewmodels
 
-import controllers.business.{routes => businessContactRoutes}
 import controllers.returns.{routes => returnsRoutes}
-import controllers.sicandcompliance.{routes => sicAndCompRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models.api._
 import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
 import models.view.SummaryListRowUtils._
-import models.{BusinessContact, SicAndCompliance, TradingDetails}
+import models.{Business, TradingDetails}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -41,8 +39,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     new InternalServerException(s"[AboutTheBusinessCheckYourAnswersBuilder] Couldn't construct CYA due to missing section: $section")
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
-    val businessContact = vatScheme.businessContact.getOrElse(throw missingSection("Business Contact"))
-    val sicAndCompliance = vatScheme.sicAndCompliance.getOrElse(throw missingSection("Sic And Compliance"))
+    val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
     val tradingDetails = vatScheme.tradingDetails
     val returns = vatScheme.returns.getOrElse(throw missingSection("Returns"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
@@ -50,20 +47,20 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     HtmlFormat.fill(List(
       govukSummaryList(SummaryList(
         rows = List(
-          ppobAddress(businessContact, partyType),
-          businessEmailAddress(businessContact),
-          businessDaytimePhoneNumber(businessContact),
-          businessHasWebsite(businessContact),
-          businessWebsite(businessContact),
-          contactPreference(businessContact),
-          buySellLandOrProperty(sicAndCompliance),
-          businessDescription(sicAndCompliance),
-          otherBusinessActivities(sicAndCompliance),
-          mainBusinessActivity(sicAndCompliance),
-          otherBusinessInvolvements(sicAndCompliance),
-          supplyWorkers(sicAndCompliance)
+          ppobAddress(business, partyType),
+          businessEmailAddress(business),
+          businessDaytimePhoneNumber(business),
+          businessHasWebsite(business),
+          businessWebsite(business),
+          contactPreference(business),
+          buySellLandOrProperty(business),
+          businessDescription(business),
+          otherBusinessActivities(business),
+          mainBusinessActivity(business),
+          otherBusinessInvolvements(business),
+          supplyWorkers(business)
         ).flatten ++
-          complianceSection(sicAndCompliance) ++
+          complianceSection(business) ++
           List(
             tradingName(tradingDetails, partyType),
             importsOrExports(tradingDetails, partyType),
@@ -83,113 +80,113 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     ))
   }
 
-  private def ppobAddress(businessContact: BusinessContact, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+  private def ppobAddress(business: Business, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
       s"$sectionId.homeAddress",
-      businessContact.ppobAddress.map(Address.normalisedSeq),
+      business.ppobAddress.map(Address.normalisedSeq),
       partyType match {
         case NETP =>
-          Some(businessContactRoutes.InternationalPpobAddressController.show.url)
+          Some(controllers.business.routes.InternationalPpobAddressController.show.url)
         case _ =>
-          Some(businessContactRoutes.PpobAddressController.startJourney.url)
+          Some(controllers.business.routes.PpobAddressController.startJourney.url)
       }
     )
 
-  private def businessEmailAddress(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+  private def businessEmailAddress(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.emailBusiness",
-      businessContact.email,
-      Some(businessContactRoutes.BusinessEmailController.show.url)
+      business.email,
+      Some(controllers.business.routes.BusinessEmailController.show.url)
     )
 
-  private def businessDaytimePhoneNumber(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+  private def businessDaytimePhoneNumber(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.daytimePhoneBusiness",
-      businessContact.telephoneNumber,
-      Some(businessContactRoutes.BusinessTelephoneNumberController.show.url)
+      business.telephoneNumber,
+      Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
     )
 
-  private def businessHasWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+  private def businessHasWebsite(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.hasWebsite",
-      businessContact.hasWebsite,
-      Some(businessContactRoutes.HasWebsiteController.show.url)
+      business.hasWebsite,
+      Some(controllers.business.routes.HasWebsiteController.show.url)
     )
 
-  private def businessWebsite(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+  private def businessWebsite(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.website",
-      businessContact.website,
-      Some(businessContactRoutes.BusinessWebsiteAddressController.show.url)
+      business.website,
+      Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)
     )
 
-  private def contactPreference(businessContact: BusinessContact)(implicit messages: Messages): Option[SummaryListRow] =
+  private def contactPreference(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.contactPreference",
-      businessContact.contactPreference.map(_.toString),
+      business.contactPreference.map(_.toString),
       Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     )
 
-  private def buySellLandOrProperty(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def buySellLandOrProperty(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.buySellLandAndProperty",
-      sicAndCompliance.hasLandAndProperty,
+      business.hasLandAndProperty,
       Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
     )
 
-  private def businessDescription(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def businessDescription(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.businessDescription",
-      sicAndCompliance.description.map(_.description),
-      Some(sicAndCompRoutes.BusinessActivityDescriptionController.show.url)
+      business.businessDescription,
+      Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)
     )
 
-  private def mainBusinessActivity(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def mainBusinessActivity(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.mainSicCode",
-      sicAndCompliance.mainBusinessActivity.flatMap(_.mainBusinessActivity.map(_.description)),
-      Some(sicAndCompRoutes.SicAndComplianceController.showMainBusinessActivity.url)
+      business.mainBusinessActivity.map(_.description),
+      Some(controllers.business.routes.SicController.showMainBusinessActivity.url)
     )
 
-  private def otherBusinessInvolvements(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def otherBusinessInvolvements(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.obi",
-      sicAndCompliance.otherBusinessInvolvement,
+      business.otherBusinessInvolvement,
       Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
     )
 
-  private def otherBusinessActivities(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
-    if (sicAndCompliance.businessActivities.exists(_.sicCodes.nonEmpty == true)) {
+  private def otherBusinessActivities(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
+    if (business.businessActivities.exists(_.nonEmpty == true)) {
       optSummaryListRowSeq(
         s"$sectionId.sicCodes",
-        sicAndCompliance.businessActivities.map(codes => codes.sicCodes.map(
+        business.businessActivities.map(codes => codes.map(
           sicCode => sicCode.code + " - " + sicCode.description
         )),
-        Some(sicAndCompRoutes.SicAndComplianceController.returnToICL.url)
+        Some(controllers.business.routes.SicController.returnToICL.url)
       )
     } else {
       None
     }
 
-  private def supplyWorkers(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def supplyWorkers(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.supplyWorkers",
-      sicAndCompliance.supplyWorkers.map(_.yesNo),
-      Some(sicAndCompRoutes.SupplyWorkersController.show.url)
+      business.labourCompliance.flatMap(_.supplyWorkers),
+      Some(controllers.business.routes.SupplyWorkersController.show.url)
     )
 
-  private def numberOfWorkers(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def numberOfWorkers(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.numberOfWorkers",
-      sicAndCompliance.workers.map(_.numberOfWorkers.toString),
-      Some(sicAndCompRoutes.WorkersController.show.url)
+      business.labourCompliance.flatMap(_.numOfWorkersSupplied.map(_.toString)),
+      Some(controllers.business.routes.WorkersController.show.url)
     )
 
-  private def intermediaryArrangingSupplyOfWorkers(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): Option[SummaryListRow] =
+  private def intermediaryArrangingSupplyOfWorkers(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.intermediarySupply",
-      sicAndCompliance.intermediarySupply.map(_.yesNo),
-      Some(sicAndCompRoutes.SupplyWorkersIntermediaryController.show.url)
+      business.labourCompliance.flatMap(_.intermediaryArrangement),
+      Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)
     )
 
   private def tradingName(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] = {
@@ -264,7 +261,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     )
 
   private def sendGoodsOverseas(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
-    if (returns.overseasCompliance.exists(_.goodsToOverseas == Some(true))) {
+    if (returns.overseasCompliance.exists(_.goodsToOverseas.contains(true))) {
       optSummaryListRowBoolean(
         s"$sectionId.sendGoodsOverseas",
         returns.overseasCompliance.flatMap(_.goodsToOverseas),
@@ -276,7 +273,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   }
 
   private def sendGoodsToEu(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
-    if (returns.overseasCompliance.exists(_.goodsToEu == Some(true))) {
+    if (returns.overseasCompliance.exists(_.goodsToEu.contains(true))) {
       optSummaryListRowBoolean(
         s"$sectionId.sendGoodsToEu",
         returns.overseasCompliance.flatMap(_.goodsToEu),
@@ -348,11 +345,11 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(returnsRoutes.ReceiveGoodsNipController.show.url)
     )
 
-  private def complianceSection(sicAndCompliance: SicAndCompliance)(implicit messages: Messages): List[SummaryListRow] =
-    if (sicAndCompliance.supplyWorkers.exists(_.yesNo == true)) {
+  private def complianceSection(business: Business)(implicit messages: Messages): List[SummaryListRow] =
+    if (business.labourCompliance.exists(_.supplyWorkers.contains(true))) {
       List(
-        numberOfWorkers(sicAndCompliance),
-        intermediaryArrangingSupplyOfWorkers(sicAndCompliance)
+        numberOfWorkers(business),
+        intermediaryArrangingSupplyOfWorkers(business)
       ).flatten
     } else {
       Nil

@@ -19,7 +19,6 @@ package controllers.attachments
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import play.api.libs.json.JsString
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future

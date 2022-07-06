@@ -21,7 +21,7 @@ import controllers.BaseController
 import featureswitch.core.config.LandAndProperty
 import forms.ContactPreferenceForm
 import play.api.mvc.{Action, AnyContent}
-import services.{BusinessContactService, SessionProfile, SessionService}
+import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.business.contact_preference
 
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
                                             val sessionService: SessionService,
-                                            val businessContactService: BusinessContactService,
+                                            val businessService: BusinessService,
                                             view: contact_preference)
                                            (implicit val appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
@@ -42,7 +42,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         for {
-          contactPreference <- businessContactService.getBusinessContact
+          contactPreference <- businessService.getBusiness
           form = contactPreference.contactPreference.fold(ContactPreferenceForm())(ContactPreferenceForm().fill)
         } yield Ok(view(form, routes.ContactPreferenceController.submitContactPreference))
 
@@ -54,12 +54,12 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
         ContactPreferenceForm().bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm, routes.ContactPreferenceController.submitContactPreference))),
           contactPreference =>
-            businessContactService.updateBusinessContact(contactPreference).flatMap {
+            businessService.updateBusiness(contactPreference).flatMap {
               _ =>
                 if (isEnabled(LandAndProperty)) {
-                  Future.successful(Redirect(controllers.sicandcompliance.routes.LandAndPropertyController.show))
+                  Future.successful(Redirect(controllers.business.routes.LandAndPropertyController.show))
                 } else {
-                  Future.successful(Redirect(controllers.sicandcompliance.routes.BusinessActivityDescriptionController.show))
+                  Future.successful(Redirect(controllers.business.routes.BusinessActivityDescriptionController.show))
                 }
             }
         )

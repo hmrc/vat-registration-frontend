@@ -20,8 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.HasWebsiteForm.{form => hasWebsiteForm}
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessContactService.HasWebsiteAnswer
-import services.{BusinessContactService, SessionService}
+import services.BusinessService.HasWebsiteAnswer
+import services.{BusinessService, SessionService}
 import views.html.business.HasWebsite
 
 import javax.inject.Inject
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
                                      val sessionService: SessionService,
-                                     val businessContactService: BusinessContactService,
+                                     val businessService: BusinessService,
                                      view: HasWebsite)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
@@ -39,7 +39,7 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
     implicit request =>
       implicit profile =>
         for {
-          businessDetails <- businessContactService.getBusinessContact
+          businessDetails <- businessService.getBusiness
           filledForm = businessDetails.hasWebsite.fold(hasWebsiteForm)(hasWebsiteForm.fill)
         } yield Ok(view(filledForm))
   }
@@ -51,7 +51,7 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           hasWebsite =>
-            businessContactService.updateBusinessContact(HasWebsiteAnswer(hasWebsite)) map { _ =>
+            businessService.updateBusiness(HasWebsiteAnswer(hasWebsite)) map { _ =>
               if (hasWebsite) {
                 Redirect(controllers.business.routes.BusinessWebsiteAddressController.show)
               } else {

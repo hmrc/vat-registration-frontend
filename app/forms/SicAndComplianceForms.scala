@@ -17,9 +17,8 @@
 package forms
 
 import forms.FormValidation.{maxLenText, regexPattern, removeNewlineAndTrim, textMapping}
-import models.{BusinessActivityDescription, MainBusinessActivityView}
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{mapping, single, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object BusinessActivityDescriptionForm {
@@ -28,12 +27,12 @@ object BusinessActivityDescriptionForm {
   val PartPattern = """^[A-Za-z0-9 \-,.&'/()!]+$""".r
 
   val form = Form(
-    mapping(
+    single(
       INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
         regexPattern(PartPattern)("businessActivity.description"),
         maxLenText(DESC_MAX_LENGTH)("businessActivity.description")
       ))
-    )(BusinessActivityDescription.apply)(BusinessActivityDescription.unapply)
+    )
   )
 }
 
@@ -41,9 +40,9 @@ object MainBusinessActivityForm {
   val NAME_ID: String = "value"
 
   val form = Form(
-    mapping(
+    single(
       NAME_ID -> textMapping()("mainBusinessActivity")
-    )(MainBusinessActivityView(_))(view => Option(view.id))
+    )
   )
 }
 

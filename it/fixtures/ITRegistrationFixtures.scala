@@ -36,14 +36,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     tradeVatGoodsOutsideUk = Some(false)
   )
 
-  val sicAndCompliance = SicAndCompliance(
-    description = Some(BusinessActivityDescription("test company desc")),
-    mainBusinessActivity = Some(MainBusinessActivityView(SicCode("AB123", "super business", "super business by super people"))),
-    businessActivities = Some(BusinessActivities(List(
-      SicCode("AB123", "super business", "super business by super people")))
-    )
-  )
-
   val voluntaryThreshold = Threshold(
     mandatoryRegistration = false
   )
@@ -102,12 +94,15 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     registrationReason = ForwardLook
   )
 
-  val validBusinessContactDetails = BusinessContact(
+  val businessDetails = Business(
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
     website = Some("/test/url"),
     ppobAddress = Some(addressWithCountry),
-    contactPreference = Some(Email)
+    contactPreference = Some(Email),
+    businessDescription = Some("test company desc"),
+    mainBusinessActivity = Some(SicCode("AB123", "super business", "super business by super people")),
+    businessActivities = Some(List(SicCode("AB123", "super business", "super business by super people")))
   )
 
   val validBusinessContactDetailsJson = Json.parse(
@@ -157,8 +152,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
     applicantDetails = None,
-    sicAndCompliance = Some(sicAndCompliance),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),
     bankAccount = Some(bankAccount),
     returns = Some(returns),
@@ -170,8 +164,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
     applicantDetails = Some(validFullApplicantDetails),
-    sicAndCompliance = Some(sicAndCompliance),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),
     bankAccount = Some(bankAccount),
     returns = Some(fullReturns),
@@ -191,8 +184,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     status = VatRegStatus.draft,
     tradingDetails = Some(tradingDetails),
     applicantDetails = None,
-    sicAndCompliance = Some(sicAndCompliance),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),
     bankAccount = Some(bankAccount),
     eligibilitySubmissionData = Some(testEligibilitySubmissionData)
