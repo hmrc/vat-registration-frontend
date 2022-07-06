@@ -4,7 +4,7 @@ package fixtures
 import models._
 import models.api.SicCode
 
-trait SicAndComplianceFixture {
+trait SicAndComplianceFixture extends ITRegistrationFixtures {
 
   val sicCodeId = "81300003"
   val sicCodeDesc = "test2 desc"
@@ -32,20 +32,27 @@ trait SicAndComplianceFixture {
        |  ]
         """.stripMargin
 
-  val mainBusinessActivityView = MainBusinessActivityView(sicCodeId, Some(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)))
+  val mainBusinessActivity = SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)
 
-  val fullModel = SicAndCompliance(
-    description = Some(BusinessActivityDescription(businessActivityDescription)),
-    mainBusinessActivity = Some(mainBusinessActivityView),
-    supplyWorkers = Some(SupplyWorkers(true)),
-    workers = Some(Workers(200)),
-    intermediarySupply = Some(IntermediarySupply(true)),
-    businessActivities = Some(BusinessActivities(List(SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay))))
+  val fullModel = Business(
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("987654"),
+    hasWebsite = Some(true),
+    website = Some("/test/url"),
+    ppobAddress = Some(addressWithCountry),
+    contactPreference = Some(Email),
+    businessDescription = Some(businessActivityDescription),
+    mainBusinessActivity = Some(mainBusinessActivity),
+    businessActivities = Some(List(mainBusinessActivity)),
+    labourCompliance = Some(LabourCompliance(
+        supplyWorkers = Some(true),
+        numOfWorkersSupplied = Some(200),
+        intermediaryArrangement = Some(true),
+    ))
   )
 
-  val modelWithoutCompliance = SicAndCompliance(
-    description = Some(BusinessActivityDescription(businessActivityDescription)),
-    mainBusinessActivity = Some(mainBusinessActivityView)
+  val modelWithoutCompliance = Business(
+    businessDescription = Some(businessActivityDescription),
+    mainBusinessActivity = Some(mainBusinessActivity)
   )
-
 }

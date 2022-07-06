@@ -20,18 +20,17 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessWebsiteAddressForm
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessContactService.Website
-import services.{BusinessContactService, SessionProfile, SessionService}
+import services.BusinessService.Website
+import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-
-import javax.inject.Inject
 import views.html.business.BusinessWebsiteAddress
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessWebsiteAddressController @Inject()(val sessionService: SessionService,
                                         val authConnector: AuthConnector,
-                                        val businessContactService: BusinessContactService,
+                                        val businessService: BusinessService,
                                         view: BusinessWebsiteAddress)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
@@ -42,7 +41,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
     implicit request =>
       implicit profile =>
         for {
-          business <- businessContactService.getBusinessContact
+          business <- businessService.getBusiness
           form = business.website.fold(BusinessWebsiteAddressForm.form)(BusinessWebsiteAddressForm.form.fill)
         } yield Ok(view(routes.BusinessWebsiteAddressController.submit, form))
 
@@ -55,7 +54,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
         BusinessWebsiteAddressForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm))),
           businessWebsiteAddress =>
-            businessContactService.updateBusinessContact(Website(businessWebsiteAddress)).map {
+            businessService.updateBusiness(Website(businessWebsiteAddress)).map {
               _ => Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
             }
         )

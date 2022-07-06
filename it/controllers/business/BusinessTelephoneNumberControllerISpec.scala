@@ -18,7 +18,7 @@ package controllers.business
 
 import itutil.ControllerISpec
 import models.api.{Trust, UkCompany}
-import models.{ApplicantDetails, BusinessContact}
+import models.{ApplicantDetails, Business}
 import play.api.http.HeaderNames
 import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
@@ -49,10 +49,10 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
-        .registrationApi.replaceSection[BusinessContact](BusinessContact(telephoneNumber = Some("123456789")))
+        .registrationApi.replaceSection[Business](Business(telephoneNumber = Some("123456789")))
         .s4l.cleared()
-        .s4l.contains(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact())))
-        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(telephoneNumber = Some("123456789")))))
+        .s4l.contains(Business.s4lKey.key, Json.stringify(Json.toJson(Business())))
+        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(telephoneNumber = Some("123456789")))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,8 +68,8 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4l.cleared()
-        .s4l.contains(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact())))
-        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(telephoneNumber = Some("123456789")))))
+        .s4l.contains(Business.s4lKey.key, Json.stringify(Json.toJson(Business())))
+        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(telephoneNumber = Some("123456789")))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

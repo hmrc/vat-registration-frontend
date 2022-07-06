@@ -20,8 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessTelephoneNumberForm
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessContactService.TelephoneNumber
-import services.{BusinessContactService, SessionProfile, SessionService}
+import services.BusinessService.TelephoneNumber
+import services.{BusinessService, SessionProfile, SessionService}
 import views.html.business.BusinessTelephoneNumber
 
 import javax.inject.Inject
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessTelephoneNumberController @Inject()(val sessionService: SessionService,
                                                   val authConnector: AuthClientConnector,
-                                                  val businessContactService: BusinessContactService,
+                                                  val businessService: BusinessService,
                                                   view: BusinessTelephoneNumber)
                                                  (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
@@ -40,7 +40,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
     implicit request =>
       implicit profile =>
         for {
-          businessContact <- businessContactService.getBusinessContact
+          businessContact <- businessService.getBusiness
           form = businessContact.telephoneNumber.fold(BusinessTelephoneNumberForm.form)(x => BusinessTelephoneNumberForm.form.fill(x))
         } yield Ok(view(form))
   }
@@ -51,7 +51,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
         BusinessTelephoneNumberForm.form.bindFromRequest.fold(
           errors =>
             Future.successful(BadRequest(view(errors))),
-          telephoneNumber => businessContactService.updateBusinessContact[TelephoneNumber](TelephoneNumber(telephoneNumber)) map {
+          telephoneNumber => businessService.updateBusiness[TelephoneNumber](TelephoneNumber(telephoneNumber)) map {
             _ => Redirect(controllers.business.routes.HasWebsiteController.show)
           }
         )

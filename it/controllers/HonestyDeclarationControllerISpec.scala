@@ -19,10 +19,8 @@ import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import play.api.Application
 import play.api.http.HeaderNames
 import play.api.http.Status.SEE_OTHER
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 

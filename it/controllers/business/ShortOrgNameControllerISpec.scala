@@ -16,7 +16,7 @@
 
 package controllers.business
 
-import forms.{ScottishPartnershipNameForm, ShortOrgNameForm}
+import forms.ShortOrgNameForm
 import itutil.ControllerISpec
 import models.TradingDetails
 import models.api.EligibilitySubmissionData

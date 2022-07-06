@@ -174,12 +174,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def updateSicAndCompliance(sac: SicAndCompliance)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[JsValue] = {
-    http.PATCH[JsValue, JsValue](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp", Json.toJson(sac)(SicAndCompliance.toApiWrites)).recover {
-      case e: Exception => throw logResponse(e, "updateSicAndCompliance")
-    }
-  }
-
   def getReturns(regId: String)
                 (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
     http.GET[Returns](s"$vatRegUrl/vatreg/$regId/returns") recover {

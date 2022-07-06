@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package fixtures
+package models
 
-import models.{BusinessActivityDescription, MainBusinessActivityView, SicAndCompliance}
+import play.api.libs.json.{Format, Json}
 
-trait SicAndComplianceFixtures {
-  self: VatRegistrationFixture =>
+case class LabourCompliance(numOfWorkersSupplied: Option[Int] = None,
+                            intermediaryArrangement: Option[Boolean] = None,
+                            supplyWorkers: Option[Boolean] = None)
 
-  val s4LVatSicAndCompliance = SicAndCompliance(
-    description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    supplyWorkers = None,
-    workers = None,
-    intermediarySupply = None
-  )
+object LabourCompliance {
+  implicit val formats: Format[LabourCompliance] = Json.format[LabourCompliance]
 }

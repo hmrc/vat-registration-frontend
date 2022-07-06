@@ -21,8 +21,8 @@ import connectors.mocks.MockS4lConnector
 import play.api.libs.json.{JsValue, Json}
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{BadRequestException, InternalServerException}
 
 import scala.concurrent.Future
 

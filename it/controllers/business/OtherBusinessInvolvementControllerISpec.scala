@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import itutil.ControllerISpec
-import models.SicAndCompliance
+import models.{Business, OtherBusinessInvolvement}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -26,14 +26,15 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class LandAndPropertyControllerISpec extends ControllerISpec {
+class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
 
-  val url: String = routes.LandAndPropertyController.show.url
+  val url: String = controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+
   s"GET $url" must {
     "return OK" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].isEmpty
+        .s4lContainer[Business].isEmpty
         .vatScheme.doesNotHave("sicAndComp")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -49,7 +50,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     "return OK when there is an answer to prepop" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].contains(SicAndCompliance(hasLandAndProperty = Some(true)))
+        .s4lContainer[Business].contains(Business(otherBusinessInvolvement = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -63,11 +64,31 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the next page" in new Setup {
+    "redirect to next stage in process if no other business involvement" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].isEmpty
-        .s4lContainer[SicAndCompliance].isUpdatedWith(SicAndCompliance(hasLandAndProperty = Some(true)))
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
+        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.deleteSection[OtherBusinessInvolvement]()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(url).post(Json.obj("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TradingNameResolverController.resolve.url)
+      }
+    }
+  }
+
+  s"POST $url" must {
+    "redirect to other business involvement workflow" in new Setup {
+      given
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .vatScheme.doesNotHave("sicAndComp")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -76,20 +97,24 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(routes.BusinessActivityDescriptionController.show.url)
-      }
-    }
-
-    "return BAD_REQUEST when no option is selected" in new Setup {
-      given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(url).post("")
-
-      whenReady(res) { result =>
-        result.status mustBe BAD_REQUEST
+        result.headers(HeaderNames.LOCATION) must contain(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1).url)
       }
     }
   }
 
+  s"POST $url" must {
+    "fail with bad request for submission without a selection" in new Setup {
+      given
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
+        .vatScheme.doesNotHave("sicAndComp")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(url).post(Json.obj())
+
+      whenReady(res) { _.status mustBe BAD_REQUEST }
+    }
+  }
 }

@@ -22,7 +22,6 @@ import models.api._
 import models.{ConditionalValue, NIPCompliance, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class ReceiveGoodsNipControllerISpec extends ControllerISpec {

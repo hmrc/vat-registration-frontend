@@ -16,7 +16,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.OtherBusinessInvolvement
 import fixtures.VatRegistrationFixture
 import models.api.UkCompany
 import models.{CurrentProfile, TradingDetails, TradingNameView}

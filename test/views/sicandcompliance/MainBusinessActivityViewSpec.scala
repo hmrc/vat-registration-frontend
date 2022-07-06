@@ -17,7 +17,6 @@
 package views.sicandcompliance
 
 import forms.MainBusinessActivityForm
-import models.MainBusinessActivityView
 import models.api.SicCode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -61,8 +60,8 @@ class MainBusinessActivityViewSpec extends VatRegViewSpec {
     }
 
     "display a list of Sic Code description pre selected" in {
-      val mainBusiness = MainBusinessActivityView("id2", None)
-      lazy val document = Jsoup.parse(view(form.fill(mainBusiness), sicCodeList).body)
+      val mainBusiness = SicCode("id2", "test desc", "")
+      lazy val document = Jsoup.parse(view(form.fill(mainBusiness.code), sicCodeList).body)
 
       document.getElementsByAttributeValue("name", "value").size mustBe 3
 

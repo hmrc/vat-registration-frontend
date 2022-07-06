@@ -32,7 +32,7 @@ class FlatRateServiceSpec extends VatSpec {
   class Setup {
     val service = new FlatRateService(
       mockS4LService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       mockConfigConnector,
       mockVatRegistrationConnector
     )
@@ -224,7 +224,7 @@ class FlatRateServiceSpec extends VatSpec {
   }
 
   "saveRegister" should {
-    val testSicCode = "testSicCode"
+    val testSicCode = SicCode("testSicCode", "test description", "")
     val testCategory = "testCategory"
     val testType = "testType"
     val testPercent: BigDecimal = 10.5
@@ -236,8 +236,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(data)))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
@@ -251,8 +251,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(data)))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
@@ -271,8 +271,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(HttpResponse(200, "")))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = testSicCode)))))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
@@ -282,7 +282,7 @@ class FlatRateServiceSpec extends VatSpec {
   }
 
   "retrieveSectorPercent" should {
-    val s4LVatSicAndComplianceNoMainBusinessActivity = s4lVatSicAndComplianceWithLabour.copy(mainBusinessActivity = None)
+    val s4LVatBusinessWithNoMainBusinessActivity = validBusiness.copy(mainBusinessActivity = None)
 
     "retrieve a retrieveSectorPercent if one is saved" in new Setup {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
@@ -297,8 +297,8 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4l)))
 
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(s4lVatSicAndComplianceWithLabour))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(validBusiness))
 
       when(mockConfigConnector.getSicCodeFRSCategory(any()))
         .thenReturn("frsId")
@@ -313,8 +313,8 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4l)))
 
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(s4LVatSicAndComplianceNoMainBusinessActivity))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(s4LVatBusinessWithNoMainBusinessActivity))
 
       when(mockConfigConnector.getBusinessTypeDetails(any()))
         .thenReturn(validBusinessSectorView)
@@ -403,8 +403,8 @@ class FlatRateServiceSpec extends VatSpec {
           .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = None, percent = None))))
         when(mockS4LService.save(any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(dummyCacheMap))
-        when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-          .thenReturn(Future.successful(SicAndCompliance(mainBusinessActivity = Some(MainBusinessActivityView(id = "sic123")))))
+        when(mockBusinessService.getBusiness(any(), any()))
+          .thenReturn(Future.successful(Business(mainBusinessActivity = Some(SicCode("sic123", "test description", "")))))
         when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn("test321")
         when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("test321", BigDecimal(1.00)))
 
@@ -501,8 +501,8 @@ class FlatRateServiceSpec extends VatSpec {
     "reset Flat Rate Scheme if the Main Business Activity Sic Code has changed" in new Setup {
       val newSicCode = SicCode("newId", "new Desc", "new Details")
 
-      when(mockSicAndComplianceService.getSicAndCompliance(any(), any()))
-        .thenReturn(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      when(mockBusinessService.getBusiness(any(), any()))
+        .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
       when(mockVatRegistrationConnector.clearFlatRate(any())(any()))

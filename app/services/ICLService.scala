@@ -20,7 +20,6 @@ import connectors.{ICLConnector, VatRegistrationConnector}
 import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import models.api.SicCode
-import play.api.Logger
 import play.api.libs.json.{JsObject, Json, OWrites}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ICLService @Inject()(val iclConnector: ICLConnector,
                            config: ServicesConfig,
                            val keystore: SessionService,
-                           val sicAndCompliance: SicAndComplianceService,
+                           val businessService: BusinessService,
                            val registrationConnector: VatRegistrationConnector
                           )(implicit ec: ExecutionContext) {
   lazy val vatFeUrl: String = config.getConfString("vat-registration-frontend.www.url",
@@ -44,9 +43,9 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
   lazy val vatRedirectUrl: String = vatFeUrl + vatFeUri + iclReturnUrl
 
   def prepopulateSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[List[String]] = {
-    sicAndCompliance.getSicAndCompliance flatMap { sac =>
-      sac.businessActivities match {
-        case Some(res) => Future.successful(res.sicCodes map (_.code))
+    businessService.getBusiness flatMap { businessDetails =>
+      businessDetails.businessActivities match {
+        case Some(sicCodes) => Future.successful(sicCodes map (_.code))
       }
     } recover {
       case e =>
@@ -67,7 +66,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
       codes <- prepopulateSicCodes
       jsonSetup <- iclConnector.iclSetup(constructJsonForJourneySetup(codes, customICLMessages))
       fetchResultsUri = extractFromJsonSetup(jsonSetup, "fetchResultsUri")
-      storeFetch <- keystore.cache[String]("ICLFetchResultsUri", fetchResultsUri)
+      _ <- keystore.cache[String]("ICLFetchResultsUri", fetchResultsUri)
     } yield {
       extractFromJsonSetup(jsonSetup, "journeyStartUri")
     }

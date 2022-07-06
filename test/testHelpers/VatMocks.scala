@@ -24,7 +24,7 @@ import play.api.cache.SyncCacheApi
 import play.api.i18n.MessagesApi
 import repositories.SessionRepository
 import services._
-import services.mocks.{IncorpIdServiceMock, PersonalDetailsValidationServiceMock, SicAndComplianceServiceMock}
+import services.mocks.{BusinessServiceMock, IncorpIdServiceMock, PersonalDetailsValidationServiceMock}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
@@ -36,7 +36,7 @@ trait VatMocks
     with AuthMock
     with SessionServiceMock
     with HttpClientMock
-    with SicAndComplianceServiceMock
+    with BusinessServiceMock
     with IncorpIdServiceMock
     with PersonalDetailsValidationServiceMock {
   this: MockitoSugar =>
@@ -67,7 +67,7 @@ trait VatMocks
   implicit lazy val mockAttachmentsService = mock[AttachmentsService]
   lazy val mockTradingDetailsService = mock[TradingDetailsService]
   lazy val mockSummaryService: SummaryService = mock[SummaryService]
-  lazy val mockBusinessContactService = mock[BusinessContactService]
+
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
@@ -94,10 +94,8 @@ trait VatMocks
       mockAttachmentsService,
       mockApplicantDetailsServiceOld,
       mockFlatRateService,
-      mockSicAndComplianceService,
       mockMessagesAPI,
       mockSummaryService,
-      mockBusinessContactService,
       mockAuthClientConnector,
       mockTimeService,
       mockTrafficManagementService,

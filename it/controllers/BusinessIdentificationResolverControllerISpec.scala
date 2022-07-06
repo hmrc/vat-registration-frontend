@@ -3,16 +3,15 @@
 package controllers
 
 import controllers.applicant.{routes => applicantRoutes}
-import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
-import play.api.test.Helpers._
 
 class BusinessIdentificationResolverControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 

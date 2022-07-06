@@ -3,7 +3,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.Business
 import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
 import play.api.libs.json.{Format, Json}
@@ -18,30 +18,26 @@ class BusinessEmailControllerISpec extends ControllerISpec {
   val businessEmail = "test@test.com"
   val invalidBusinessEmail = "test@@test.com"
 
-  val s4lData: BusinessContact = BusinessContact(
-    email = Some(businessEmail)
-  )
+  val s4lData: Business = Business(email = Some(businessEmail))
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
-      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
       given()
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].isEmpty
-        .registrationApi.getSection[BusinessContact](Some(validBusinessContactDetails))
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](Some(businessDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: WSResponse = await(buildClient(url).get)
       response.status mustBe OK
-
     }
 
     "return OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BusinessContact].contains(s4lData)
+        .s4lContainer[Business].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -57,14 +53,11 @@ class BusinessEmailControllerISpec extends ControllerISpec {
   s"POST $url" when {
     "BusinessContact is not complete" should {
       "Update S4L and redirect to the next page" in new Setup {
-        implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
         given()
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(BusinessContact())
-          .registrationApi.getSection[BusinessContact](None)
-          .s4lContainer[BusinessContact].isUpdatedWith(
-          BusinessContact().copy(email = Some(businessEmail))
-        )
+          .s4lContainer[Business].contains(businessDetails.copy(email = None))
+          .registrationApi.getSection[Business](None)
+          .s4lContainer[Business].isUpdatedWith(businessDetails.copy(email = Some(businessEmail)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -78,12 +71,11 @@ class BusinessEmailControllerISpec extends ControllerISpec {
 
     "BusinessContact is complete" should {
       "Post the block to the backend and redirect to the next page" in new Setup {
-        implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
         given()
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(validBusinessContactDetails.copy(email = None))
-          .registrationApi.replaceSection[BusinessContact](validBusinessContactDetails.copy(email = Some(businessEmail)))
-          .s4lContainer[BusinessContact].clearedByKey
+          .s4lContainer[Business].contains(businessDetails.copy(email = None))
+          .registrationApi.replaceSection[Business](businessDetails.copy(email = Some(businessEmail)))
+          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -96,12 +88,11 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     }
 
     "Return BAD_REQUEST if invalid email provided" in new Setup {
-      implicit val format: Format[BusinessContact] = BusinessContact.apiFormat
       given()
         .user.isAuthorised()
         .s4l.cleared()
-        .s4lContainer[BusinessContact].contains(BusinessContact())
-        .s4l.isUpdatedWith(BusinessContact.s4lKey.key, Json.stringify(Json.toJson(BusinessContact(email = Some(invalidBusinessEmail)))))
+        .s4lContainer[Business].contains(businessDetails.copy(email = None))
+        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(businessDetails.copy(email = Some(invalidBusinessEmail)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

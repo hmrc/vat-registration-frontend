@@ -22,7 +22,7 @@ import controllers.BaseController
 import forms.ChooseBusinessTypeForm
 import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile, SessionService, SicAndComplianceService, VatRegistrationService}
+import services.{FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.flatratescheme.choose_business_type
 

@@ -17,7 +17,6 @@
 package forms
 
 import helpers.FormInspectors._
-import models.BusinessActivityDescription
 import testHelpers.VatRegSpec
 
 class SicAndComplianceFormsSpec extends VatRegSpec {
@@ -29,11 +28,11 @@ class SicAndComplianceFormsSpec extends VatRegSpec {
     "be valid" when {
       "a valid description is provided with just text" in {
         val data = Map("description" -> Seq(desc))
-        testForm.bindFromRequest(data) shouldContainValue BusinessActivityDescription(desc)
+        testForm.bindFromRequest(data) shouldContainValue desc
       }
       "a valid description is provided that includes special characters" in {
         val data = Map("description" -> Seq(specDesc))
-        testForm.bindFromRequest(data) shouldContainValue BusinessActivityDescription(specDesc)
+        testForm.bindFromRequest(data) shouldContainValue specDesc
       }
     }
 

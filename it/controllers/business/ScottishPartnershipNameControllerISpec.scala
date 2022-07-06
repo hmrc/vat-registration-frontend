@@ -6,8 +6,7 @@ import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
-import play.api.http.Status.{BAD_REQUEST, NOT_IMPLEMENTED, OK, SEE_OTHER}
-import play.api.libs.json.Json
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 

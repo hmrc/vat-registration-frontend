@@ -1,5 +1,5 @@
 
-package controllers.sicandcompliance
+package controllers.business
 
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
@@ -14,7 +14,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
     "return OK on Show AND users answer is pre-popped on page" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].contains(fullModel)
+        .s4lContainer[Business].contains(fullModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -34,26 +34,22 @@ class SupplyWorkersControllerISpec extends ControllerISpec with SicAndCompliance
       }
     }
     "redirect on submit to populate S4l not vat as model is incomplete" in new Setup {
-      val incompleteModel = fullModel.copy(
-        description = None
-      )
-      val toBeUpdatedModel = incompleteModel.copy(
-        supplyWorkers = Some(SupplyWorkers(true)))
+      val incompleteModel = fullModel.copy(businessDescription = None)
+      val toBeUpdatedModel = incompleteModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
 
       given()
         .user.isAuthorised()
-        .s4lContainer[SicAndCompliance].contains(incompleteModel)
-        .s4lContainer[SicAndCompliance].isUpdatedWith(toBeUpdatedModel)
+        .s4lContainer[Business].contains(incompleteModel)
+        .s4lContainer[Business].isUpdatedWith(toBeUpdatedModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/supply-of-workers").post(
-        Map("value" -> Seq("true")))
+      val response = buildClient("/supply-of-workers").post(Map("value" -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.WorkersController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.WorkersController.show.url)
       }
     }
   }

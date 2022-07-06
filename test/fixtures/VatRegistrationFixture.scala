@@ -122,30 +122,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val indeterminateBankCheckJsonResponse = Json.parse(indeterminateBankCheckJsonResponseString)
 
-
-  val s4lVatSicAndComplianceWithoutLabour = SicAndCompliance(
-    description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    businessActivities = Some(BusinessActivities(List(sicCode))),
-    supplyWorkers = None,
-    workers = None,
-    intermediarySupply = None)
-
-  val s4lVatSicAndComplianceWithLabour = SicAndCompliance(
-    description = Some(BusinessActivityDescription(testBusinessActivityDescription)),
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    supplyWorkers = Some(SupplyWorkers(true)),
-    workers = Some(Workers(12)),
-    intermediarySupply = Some(IntermediarySupply(true))
-  )
-
-  val s4lVatSicAndComplianceWithoutDescription = SicAndCompliance(
-    description = None,
-    mainBusinessActivity = Some(MainBusinessActivityView(sicCode.code, Some(sicCode))),
-    supplyWorkers = None,
-    workers = None,
-    intermediarySupply = None
-  )
+  val complianceWithoutLabour = LabourCompliance(None, None, None)
+  val complianceWithLabour = LabourCompliance(Some(12), Some(true), Some(true))
 
   lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
     personalDetails = Some(PersonalDetails(
@@ -201,15 +179,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
-  val validBusinessContactDetails = BusinessContact(
-    email = Some("test@foo.com"),
-    telephoneNumber = Some("123"),
-    hasWebsite = Some(true),
-    website = Some("/test/url"),
-    ppobAddress = Some(testAddress),
-    contactPreference = Some(Email)
-  )
-
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
     UkCompany,
@@ -226,12 +195,44 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     registrationReason = ForwardLook
   )
 
+  val validBusiness = Business(
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("123"),
+    hasWebsite = Some(true),
+    website = Some("/test/url"),
+    ppobAddress = Some(testAddress),
+    contactPreference = Some(Email),
+    labourCompliance = Some(complianceWithoutLabour),
+    businessDescription = Some(testBusinessActivityDescription),
+    mainBusinessActivity = Some(sicCode)
+  )
+
+  val validBusinessWithNoDescription = Business(
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("123"),
+    hasWebsite = Some(true),
+    website = Some("/test/url"),
+    ppobAddress = Some(testAddress),
+    contactPreference = Some(Email),
+    labourCompliance = Some(complianceWithoutLabour)
+  )
+
+  val validBusinessWithNoDescriptionAndLabour = Business(
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("123"),
+    hasWebsite = Some(true),
+    website = Some("/test/url"),
+    ppobAddress = Some(testAddress),
+    contactPreference = Some(Email),
+    mainBusinessActivity = Some(sicCode),
+    businessActivities = Some(List(sicCode))
+  )
+
   val validVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
@@ -244,9 +245,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validSoleTraderVatScheme = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
@@ -257,9 +257,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeNoBank = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = None,
     returns = Some(validReturns),
@@ -270,9 +269,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeNoTradingDetails = VatScheme(
     id = testRegId,
     tradingDetails = None,
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
@@ -283,9 +281,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeEmptySicAndCompliance = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusinessWithNoDescription),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithoutDescription),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),
@@ -296,9 +293,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   val validVatSchemeWithLabour = VatScheme(
     id = testRegId,
     tradingDetails = Some(generateTradingDetails()),
-    businessContact = Some(validBusinessContactDetails),
+    business = Some(validBusiness.copy(labourCompliance = Some(complianceWithLabour))),
     applicantDetails = Some(completeApplicantDetails),
-    sicAndCompliance = Some(s4lVatSicAndComplianceWithLabour),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
     returns = Some(validReturns),

@@ -47,7 +47,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
     url = testUrl,
     tagId = rowAriaLabel,
     checks = scheme => Seq(
-      scheme.businessContact.isDefined,
+      scheme.business.isDefined,
       scheme.applicantDetails.map(_.personalDetails).isDefined
     ),
     prerequisites = _ => Seq(testPrerequisite(prerequisitesMet))
@@ -57,7 +57,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
     "all prerequisites have been met" when {
       "all required rows are complete" must {
         "return COMPLETED" in {
-          val testVatScheme = emptyVatScheme.copy(businessContact = Some(validBusinessContactDetails), applicantDetails = Some(completeApplicantDetails))
+          val testVatScheme = emptyVatScheme.copy(business = Some(validBusiness), applicantDetails = Some(completeApplicantDetails))
 
           val res = testRow(prerequisitesMet = true).build(testVatScheme)
 
@@ -66,7 +66,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
       }
       "some required rows are incomplete" must {
         "return IN PROGRESS" in {
-          val testVatScheme = emptyVatScheme.copy(businessContact = Some(validBusinessContactDetails), applicantDetails = None)
+          val testVatScheme = emptyVatScheme.copy(business = Some(validBusiness), applicantDetails = None)
 
           val res = testRow(prerequisitesMet = true).build(testVatScheme)
 

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.SupplyWorkersForm
+import models.LabourCompliance
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, SicAndComplianceService, VatRegistrationService}
+import services.{BusinessService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.sicandcompliance.supply_workers
 
 import javax.inject.Inject
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext
 
 class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
-                                        val sicAndCompService: SicAndComplianceService,
+                                        val businessService: BusinessService,
                                         val vatRegistrationService: VatRegistrationService,
                                         view: supply_workers)
                                        (implicit val appConfig: FrontendAppConfig,
@@ -39,9 +40,10 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
     implicit request =>
       implicit profile =>
         for {
-          sicCompliance <- sicAndCompService.getSicAndCompliance
+          businessDetails <- businessService.getBusiness
           isTransactor <- vatRegistrationService.isTransactor
-          formFilled = sicCompliance.supplyWorkers.fold(SupplyWorkersForm.form(isTransactor))(SupplyWorkersForm.form(isTransactor).fill)
+          supplyWorkers = businessDetails.labourCompliance.flatMap(_.supplyWorkers)
+          formFilled = supplyWorkers.fold(SupplyWorkersForm.form(isTransactor))(SupplyWorkersForm.form(isTransactor).fill)
         } yield Ok(view(formFilled, isTransactor))
   }
 
@@ -50,20 +52,30 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           isTransactor <- vatRegistrationService.isTransactor
+          businessDetails <- businessService.getBusiness
           result <- {
             SupplyWorkersForm.form(isTransactor).bindFromRequest().fold(
             badForm =>
               vatRegistrationService.isTransactor.map { _ =>
                 BadRequest(view(badForm, isTransactor))
               },
-            view =>
-              sicAndCompService.updateSicAndCompliance(view).map { _ =>
-                if (view.yesNo) {
-                  controllers.sicandcompliance.routes.WorkersController.show
-                } else {
-                  controllers.sicandcompliance.routes.SupplyWorkersIntermediaryController.show
-                }
-              } map Redirect
+              data => {
+                val withSupplyWorkers = businessDetails.labourCompliance.getOrElse(LabourCompliance()).copy(supplyWorkers = Some(data))
+                val updatedLabourCompliance =
+                  if (data) {
+                    withSupplyWorkers.copy(intermediaryArrangement = None)
+                  } else {
+                    withSupplyWorkers.copy(numOfWorkersSupplied = None)
+                  }
+
+                businessService.updateBusiness(updatedLabourCompliance).map { _ =>
+                  if (data) {
+                    controllers.business.routes.WorkersController.show
+                  } else {
+                    controllers.business.routes.SupplyWorkersIntermediaryController.show
+                  }
+                } map Redirect
+              }
           )}
         } yield result
   }

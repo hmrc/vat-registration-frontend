@@ -20,18 +20,17 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessEmailAddressForm
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessContactService.Email
-import services.{BusinessContactService, SessionProfile, SessionService}
+import services.BusinessService.Email
+import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-
-import javax.inject.Inject
 import views.html.business.BusinessEmail
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessEmailController @Inject()(val sessionService: SessionService,
                                         val authConnector: AuthConnector,
-                                        val businessContactService: BusinessContactService,
+                                        val businessService: BusinessService,
                                         view: BusinessEmail)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
@@ -42,7 +41,7 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         for {
-          business <- businessContactService.getBusinessContact
+          business <- businessService.getBusiness
           form = business.email.fold(BusinessEmailAddressForm.form)(BusinessEmailAddressForm.form.fill)
         } yield Ok(view(routes.BusinessEmailController.submit, form))
   }
@@ -53,7 +52,7 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
         BusinessEmailAddressForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(routes.BusinessEmailController.submit, badForm))),
           businessEmail =>
-            businessContactService.updateBusinessContact(Email(businessEmail)).map {
+            businessService.updateBusiness(Email(businessEmail)).map {
               _ => Redirect(controllers.business.routes.BusinessTelephoneNumberController.show)
             }
 

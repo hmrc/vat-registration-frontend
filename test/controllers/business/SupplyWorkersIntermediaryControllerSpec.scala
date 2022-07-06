@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
@@ -24,21 +24,21 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.{MockApplicantDetailsService, SicAndComplianceServiceMock}
+import services.mocks.{BusinessServiceMock, MockApplicantDetailsService}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.sicandcompliance.intermediary_supply
 
 import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock with MockApplicantDetailsService with FeatureSwitching {
+  with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with FeatureSwitching {
 
   trait Setup {
     val view = app.injector.instanceOf[intermediary_supply]
     val controller: SupplyWorkersIntermediaryController = new SupplyWorkersIntermediaryController(
       mockAuthClientConnector,
       mockSessionService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       mockApplicantDetailsService,
       view
     )
@@ -47,9 +47,9 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.sicandcompliance.routes.SupplyWorkersIntermediaryController.show}" should {
+  s"GET ${controllers.business.routes.SupplyWorkersIntermediaryController.show}" should {
     "return OK when there's a Temporary Contracts model in S4L" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
 
@@ -62,7 +62,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      mockGetBusiness(Future.successful(validBusinessWithNoDescriptionAndLabour))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
 
@@ -72,8 +72,8 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
   }
 
-  s"POST ${controllers.sicandcompliance.routes.SupplyWorkersIntermediaryController.submit}" should {
-    val fakeRequest = FakeRequest(controllers.sicandcompliance.routes.SupplyWorkersIntermediaryController.show)
+  s"POST ${controllers.business.routes.SupplyWorkersIntermediaryController.submit}" should {
+    val fakeRequest = FakeRequest(controllers.business.routes.SupplyWorkersIntermediaryController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
@@ -86,7 +86,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     "redirect to PartyType resolver with Yes selected for UkCompany" in new Setup {
       enable(OtherBusinessInvolvement)
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
@@ -95,7 +95,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "redirect to PartyType resolver with No selected for UkCompany" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
@@ -104,7 +104,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "redirect to PartyType resolver with Yes selected for Sole Trader" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
@@ -113,7 +113,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "redirect to PartyType resolver with No selected for Sole Trader" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))

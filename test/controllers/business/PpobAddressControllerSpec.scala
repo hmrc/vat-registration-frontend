@@ -17,6 +17,7 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
+import models.Business
 import models.api.Address
 import org.mockito.ArgumentMatchers
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -32,15 +33,15 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
     val testController = new PpobAddressController(
       mockAuthClientConnector,
       mockSessionService,
-      mockBusinessContactService,
+      mockBusinessService,
       mockAddressLookupService
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
-    when(mockBusinessContactService.getBusinessContact(any(), any(), any()))
-      .thenReturn(Future(validBusinessContactDetails))
+    when(mockBusinessService.getBusiness(any(), any()))
+      .thenReturn(Future(validBusiness))
   }
 
   "startJourney" should {
@@ -60,8 +61,8 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
         when(mockAddressLookupService.getAddressById(any())(any()))
           .thenReturn(Future(testAddress))
 
-        when(mockBusinessContactService.updateBusinessContact[Address](any())(any(), any(), any()))
-          .thenReturn(Future(testAddress))
+        when(mockBusinessService.updateBusiness[Business](any())(any(), any()))
+          .thenReturn(Future(validBusiness))
 
         callAuthorised(testController.callback(testAddress.id)) { res =>
           redirectLocation(res) mustBe Some(controllers.business.routes.BusinessEmailController.show.url)
@@ -78,7 +79,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
       }
       "updateBusinessContact fails" in new Setup {
         when(mockAddressLookupService.getAddressById(any())(any())).thenReturn(Future(testAddress))
-        when(mockBusinessContactService.updateBusinessContact[Address](any())(any(), any(), any())).thenReturn(Future(throw exception))
+        when(mockBusinessService.updateBusiness[Address](any())(any(), any())).thenReturn(Future(throw exception))
 
         callAuthorised(testController.callback(testAddress.id)) {
           _ failedWith exception

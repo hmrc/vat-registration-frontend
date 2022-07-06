@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
@@ -24,21 +24,21 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.{MockVatRegistrationService, SicAndComplianceServiceMock}
+import services.mocks.{BusinessServiceMock, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.sicandcompliance.workers
 
 import scala.concurrent.Future
 
 class WorkersControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with SicAndComplianceServiceMock with MockVatRegistrationService with FeatureSwitching {
+  with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService with FeatureSwitching {
 
   trait Setup {
     val view = app.injector.instanceOf[workers]
     val controller: WorkersController = new WorkersController(
       mockAuthClientConnector,
       mockSessionService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       vatRegistrationServiceMock,
       view
     )
@@ -47,9 +47,9 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  s"GET ${controllers.sicandcompliance.routes.WorkersController.show}" should {
+  s"GET ${controllers.business.routes.WorkersController.show}" should {
     "return OK when there's a Workers model in S4L" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
 
       callAuthorised(controller.show) {
@@ -60,7 +60,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       }
     }
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      mockGetBusiness(Future.successful(validBusinessWithNoDescriptionAndLabour))
       mockIsTransactor(Future.successful(true))
 
       callAuthorised(controller.show) { result =>
@@ -69,8 +69,8 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     }
   }
 
-  s"POST ${controllers.sicandcompliance.routes.WorkersController.submit}" should {
-    val fakeRequest = FakeRequest(controllers.sicandcompliance.routes.WorkersController.show)
+  s"POST ${controllers.business.routes.WorkersController.submit}" should {
+    val fakeRequest = FakeRequest(controllers.business.routes.WorkersController.show)
 
     "return BAD_REQUEST with Empty data" in new Setup {
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
@@ -79,14 +79,14 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       }
     }
     "redirect to the Party type resolver for UkCompany" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
       verifyFeatureSwitchFlow(controller, fakeRequest)
     }
 
     "redirect to the party type resolver for sole trader" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
       when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
       verifyFeatureSwitchFlow(controller, fakeRequest)

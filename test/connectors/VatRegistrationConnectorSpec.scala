@@ -267,64 +267,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
-  "Calling updateSicAndCompliance" should {
-    val sicAndCompliance = SicAndCompliance(
-      description = Some(BusinessActivityDescription("test Bus Desc")),
-      mainBusinessActivity = Some(MainBusinessActivityView(SicCode("testId", "test Desc", "test Details"))),
-      businessActivities = Some(BusinessActivities(List(SicCode("99889", "otherBusiness", "otherBusiness1")))),
-      supplyWorkers = Some(SupplyWorkers(true)),
-      workers = Some(Workers(8)),
-      intermediarySupply = Some(IntermediarySupply(true))
-    )
-
-    val json = Json.parse(
-      s"""
-         |{
-         |  "businessDescription": "test Bus Desc",
-         |  "labourCompliance": {
-         |    "numOfWorkersSupplied": 8,
-         |    "intermediaryArrangement": true
-         |  },
-         |"businessActivities": [
-         |  {
-         |     "id": "99889",
-         |     "description": "otherBusiness",
-         |     "displayDetails": "otherBusiness1"
-         |  }
-         |  ],
-         |  "mainBusinessActivity": {
-         |    "id": "testId",
-         |    "description": "test Desc",
-         |    "displayDetails": "test Details"
-         |  }
-         |}""".stripMargin)
-
-    "return a JsValue with a Sic and Compliance view model" in new Setup {
-      mockHttpPATCH[JsValue, JsValue]("tst-url", json)
-      connector.updateSicAndCompliance(sicAndCompliance) returns json
-    }
-
-    "throw a NotFoundException if the registration does not exist" in new Setup {
-      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", notFound)
-      connector.updateSicAndCompliance(sicAndCompliance) failedWith notFound
-    }
-
-    "throw an Upstream4xxResponse with Forbidden status" in new Setup {
-      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", forbidden)
-      connector.updateSicAndCompliance(sicAndCompliance) failedWith forbidden
-    }
-
-    "throw an Upstream5xxResponse with Internal Server Error status" in new Setup {
-      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", internalServerError)
-      connector.updateSicAndCompliance(sicAndCompliance) failedWith internalServerError
-    }
-
-    "throw an Exception if the call failed" in new Setup {
-      mockHttpFailedPATCH[JsValue, JsValue]("tst-url", exception)
-      connector.updateSicAndCompliance(sicAndCompliance) failedWith exception
-    }
-  }
-
   "Calling getReturns" should {
     "return the correct response when the microservice completes and returns a Returns model" in new Setup {
       mockHttpGET[Returns]("tst-url", returns)

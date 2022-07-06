@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
@@ -38,6 +38,6 @@ class ComplianceIntroductionController @Inject() (val authConnector: AuthClientC
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ => Future.successful(Redirect(controllers.sicandcompliance.routes.SupplyWorkersController.show))
+    _ => _ => Future.successful(Redirect(controllers.business.routes.SupplyWorkersController.show))
   }
 }

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import fixtures.VatRegistrationFixture
-import models.SupplyWorkers
 import play.api.test.FakeRequest
 import services.mocks.{MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -31,14 +30,14 @@ class SupplyWorkersControllerSpec extends ControllerSpec
   with MockVatRegistrationService
   with MockSoleTraderIdService {
 
-  val fakeRequest = FakeRequest(controllers.sicandcompliance.routes.SupplyWorkersController.show)
   val view = app.injector.instanceOf[supply_workers]
+  val fakeRequest = FakeRequest(controllers.business.routes.SupplyWorkersController.show)
 
   class Setup {
     object Controller extends SupplyWorkersController(
       mockAuthClientConnector,
       mockSessionService,
-      mockSicAndComplianceService,
+      mockBusinessService,
       vatRegistrationServiceMock,
       view
     )
@@ -49,7 +48,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
 
   "show" must {
     "return HTML where getSicAndCompliance returns the view models wih labour already entered" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour))
+      mockGetBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
 
       callAuthorised(Controller.show) { result =>
@@ -57,7 +56,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
       }
     }
     "return HTML where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithoutLabour))
+      mockGetBusiness(Future.successful(validBusinessWithNoDescriptionAndLabour))
       mockIsTransactor(Future.successful(true))
 
       callAuthorised(Controller.show) { result =>
@@ -73,20 +72,20 @@ class SupplyWorkersControllerSpec extends ControllerSpec
       )
     }
     "redirect with company provide workers Yes selected" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(supplyWorkers = Some(SupplyWorkers(true)))))
+      mockUpdateBusiness(Future.successful(validBusiness.copy(labourCompliance = Some(complianceWithLabour))))
       mockIsTransactor(Future.successful(true))
 
       submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
-      ))(_ redirectsTo controllers.sicandcompliance.routes.WorkersController.show.url)
+      ))(_ redirectsTo controllers.business.routes.WorkersController.show.url)
     }
     "redirect with company provide workers No selected" in new Setup {
-      mockUpdateSicAndCompliance(Future.successful(s4lVatSicAndComplianceWithLabour.copy(supplyWorkers = Some(SupplyWorkers(false)))))
+      mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
 
       submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
-      ))(_ redirectsTo controllers.sicandcompliance.routes.SupplyWorkersIntermediaryController.show.url)
+      ))(_ redirectsTo controllers.business.routes.SupplyWorkersIntermediaryController.show.url)
     }
   }
 

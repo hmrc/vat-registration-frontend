@@ -20,17 +20,15 @@ import common.enums.VatRegStatus
 import fixtures.SicAndComplianceFixture
 import helpers.RequestsFinder
 import itutil.ControllerISpec
-import models.SicAndCompliance.{s4lKey => sicAndCompKey}
+import models.Business.s4lKey
 import models._
 import models.api.{EligibilitySubmissionData, Individual, SicCode, VatScheme}
-import models.test.SicStub
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
-import controllers.sicandcompliance.{routes => sicRoutes}
 
-class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinder with SicAndComplianceFixture {
+class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAndComplianceFixture {
 
   val sicCodeMapping: Map[String, JsValue] = Map(
     "CurrentProfile" -> Json.toJson(currentProfile),
@@ -45,7 +43,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
   "SicHalt on show returns OK" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
 
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -69,7 +67,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
       .vatScheme.has("sicAndComp", Json.parse(simplifiedSicJson))
       .icl.setup()
 
@@ -85,7 +83,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
       .vatScheme.doesNotHave("sicAndComp")
       .icl.setup()
 
@@ -101,16 +99,23 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
   "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
     val sicCode = SicCode("23456", "This is a fake description", "")
 
+    val expectedUpdateToBusiness: Business = fullModel.copy(
+      businessActivities = Some(List(sicCode)),
+      mainBusinessActivity = Some(sicCode),
+      labourCompliance = None
+    )
+
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
         )
       )
-      .vatScheme.isUpdatedWith[SicAndCompliance](fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode)))))
+      .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
+      .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
       .s4lContainer.clearedByKey
       .icl.fetchResults(List(sicCode))
 
@@ -128,8 +133,8 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
+      .s4lContainer[Business].contains(fullModel)
+      .s4lContainer[Business].isUpdatedWith(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2))))
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
@@ -152,8 +157,8 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(fullModel.copy(businessActivities = Some(BusinessActivities(List(sicCode1, sicCode2)))))
+      .s4lContainer[Business].contains(fullModel)
+      .s4lContainer[Business].isUpdatedWith(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2))))
       .vatScheme.contains(
       VatScheme(id = currentProfile.registrationId,
         status = VatRegStatus.draft,
@@ -175,8 +180,8 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
 
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(modelWithoutCompliance)
-      .s4lContainer[SicAndCompliance].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(BusinessActivities(List(sicCode1))), mainBusinessActivity = Some(MainBusinessActivityView(sicCode1))))
+      .s4lContainer[Business].contains(modelWithoutCompliance)
+      .s4lContainer[Business].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(List(sicCode1)), mainBusinessActivity = Some(sicCode1)))
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
@@ -190,97 +195,78 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(sicRoutes.ComplianceIntroductionController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(business.routes.ComplianceIntroductionController.show.url)
     }
   }
 
   "MainBusinessActivity on show returns OK" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(sicRoutes.SicAndComplianceController.showMainBusinessActivity.url).get()
+    val response = buildClient(business.routes.SicController.showMainBusinessActivity.url).get()
     whenReady(response) { res =>
       res.status mustBe OK
     }
   }
 
   "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new Setup {
-
-    val incompleteModelWithoutSicCode = fullModel.copy(
-      mainBusinessActivity = None,
-      supplyWorkers = None,
-      workers = None,
-      intermediarySupply = None
-    )
+    val incompleteModelWithoutSicCode = fullModel.copy(mainBusinessActivity = None)
+    val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
+      .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
       .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
           eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
-      .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
-      .s4lContainer[SicAndCompliance].clearedByKey
+      .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
+      .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
+      .s4lContainer[Business].clearedByKey
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(sicRoutes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+    val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
-      val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
-
-      (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
-      (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
-      (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
-      (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
     }
   }
 
   "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete for SoleTrader" in new Setup {
 
-    val incompleteModelWithoutSicCode = fullModel.copy(
-      mainBusinessActivity = None,
-      supplyWorkers = None,
-      workers = None,
-      intermediarySupply = None
-    )
+    val incompleteModelWithoutSicCode: Business = fullModel.copy(mainBusinessActivity = None)
+    val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(incompleteModelWithoutSicCode)
+      .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
       .vatScheme.contains(
-      VatScheme(id = currentProfile.registrationId,
-        status = VatRegStatus.draft,
-        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
+        )
       )
-    )
-      .vatScheme.isUpdatedWith[SicAndCompliance](incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivityView)))
-      .s4lContainer[SicAndCompliance].clearedByKey
+      .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
+      .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
+      .s4lContainer[Business].clearedByKey
 
     insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(sicRoutes.SicAndComplianceController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+    val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
-      val json = getPATCHRequestJsonBody(s"/vatreg/1/sicAndComp")
-
-      (json \ "businessDescription").as[JsString].value mustBe businessActivityDescription
-      (json \ "mainBusinessActivity" \ "code").as[JsString].value mustBe sicCodeId
-      (json \ "mainBusinessActivity" \ "desc").as[JsString].value mustBe sicCodeDesc
-      (json \ "mainBusinessActivity" \ "indexes").as[JsString].value mustBe sicCodeDisplay
     }
   }
 
   "Workers should return OK on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel)
+      .s4lContainer[Business].contains(fullModel)
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -289,8 +275,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     whenReady(response) { res =>
       res.status mustBe OK
       val document = Jsoup.parse(res.body)
-      document.getElementById("numberOfWorkers").attr("value") mustBe fullModel.workers.get.numberOfWorkers.toString
-
+      document.getElementById("numberOfWorkers").attr("value") mustBe fullModel.labourCompliance.flatMap(_.numOfWorkersSupplied).get.toString
     }
   }
 
@@ -310,9 +295,9 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val labourSicCode = "42110123"
     given()
       .user.isAuthorised()
-      .s4lContainer[SicAndCompliance].contains(fullModel.copy(
-        mainBusinessActivity = Some(MainBusinessActivityView(labourSicCode, Some(SicCode(labourSicCode, "", "")))),
-        businessActivities = Some(BusinessActivities(List(SicCode(labourSicCode, "", ""))))
+      .s4lContainer[Business].contains(fullModel.copy(
+        mainBusinessActivity = Some(SicCode(labourSicCode, "", "")),
+        businessActivities = Some(List(SicCode(labourSicCode, "", "")))
       ))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -320,7 +305,7 @@ class SicAndComplianceControllerISpec extends ControllerISpec with RequestsFinde
     val response = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.SupplyWorkersController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.SupplyWorkersController.show.url)
     }
   }
 

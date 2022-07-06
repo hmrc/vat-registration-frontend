@@ -16,9 +16,8 @@
 
 package viewmodels
 
-import models.{BusinessActivities, ContactPreference, OtherBusinessInvolvement}
-import models.api.Address
-import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowIndexed, optSummaryListRowSeq, optSummaryListRowString}
+import models.OtherBusinessInvolvement
+import models.view.SummaryListRowUtils.optSummaryListRowIndexed
 import play.api.i18n.{Lang, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec

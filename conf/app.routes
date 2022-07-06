@@ -119,36 +119,36 @@ GET         /contact-preference                                                 
 POST        /contact-preference                                                                controllers.business.ContactPreferenceController.submitContactPreference
 
 ## BUSINESS ACTIVITY DESCRIPTION
-GET         /business-description                                                               controllers.sicandcompliance.BusinessActivityDescriptionController.show
-POST        /business-description                                                               controllers.sicandcompliance.BusinessActivityDescriptionController.submit
+GET         /business-description                                                               controllers.business.BusinessActivityDescriptionController.show
+POST        /business-description                                                               controllers.business.BusinessActivityDescriptionController.submit
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-business-income                                                       controllers.sicandcompliance.SicAndComplianceController.showMainBusinessActivity
-POST        /main-source-business-income                                                       controllers.sicandcompliance.SicAndComplianceController.submitMainBusinessActivity
+GET         /main-source-business-income                                                       controllers.business.SicController.showMainBusinessActivity
+POST        /main-source-business-income                                                       controllers.business.SicController.submitMainBusinessActivity
 
 ## CONFIRM SIC CODES
-GET         /choose-standard-industry-classification-codes                                     controllers.sicandcompliance.SicAndComplianceController.showSicHalt
-POST        /choose-standard-industry-classification-codes                                     controllers.sicandcompliance.SicAndComplianceController.submitSicHalt
+GET         /choose-standard-industry-classification-codes                                     controllers.business.SicController.showSicHalt
+POST        /choose-standard-industry-classification-codes                                     controllers.business.SicController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
-GET         /tell-us-more-about-the-business                                                   controllers.sicandcompliance.ComplianceIntroductionController.show
-POST        /tell-us-more-about-the-business                                                   controllers.sicandcompliance.ComplianceIntroductionController.submit
+GET         /tell-us-more-about-the-business                                                   controllers.business.ComplianceIntroductionController.show
+POST        /tell-us-more-about-the-business                                                   controllers.business.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
-GET         /save-sic-codes                                                                    controllers.sicandcompliance.SicAndComplianceController.saveIclCodes
+GET         /save-sic-codes                                                                    controllers.business.SicController.saveIclCodes
 
 ## SHOW ICL CONFIRM
-GET         /show-icl-confirmation                                                             controllers.sicandcompliance.SicAndComplianceController.returnToICL
+GET         /show-icl-confirmation                                                             controllers.business.SicController.returnToICL
 
 ## LABOUR COMPLIANCE QUESTIONS
-GET         /supply-of-workers                                                                 controllers.sicandcompliance.SupplyWorkersController.show
-POST        /supply-of-workers                                                                 controllers.sicandcompliance.SupplyWorkersController.submit
+GET         /supply-of-workers                                                                 controllers.business.SupplyWorkersController.show
+POST        /supply-of-workers                                                                 controllers.business.SupplyWorkersController.submit
 
-GET         /number-of-workers-supplied                                                        controllers.sicandcompliance.WorkersController.show
-POST        /number-of-workers-supplied                                                        controllers.sicandcompliance.WorkersController.submit
+GET         /number-of-workers-supplied                                                        controllers.business.WorkersController.show
+POST        /number-of-workers-supplied                                                        controllers.business.WorkersController.submit
 
-GET         /arrange-supply-of-workers                                                         controllers.sicandcompliance.SupplyWorkersIntermediaryController.show
-POST        /arrange-supply-of-workers                                                         controllers.sicandcompliance.SupplyWorkersIntermediaryController.submit
+GET         /arrange-supply-of-workers                                                         controllers.business.SupplyWorkersIntermediaryController.show
+POST        /arrange-supply-of-workers                                                         controllers.business.SupplyWorkersIntermediaryController.submit
 
 ## PPOB ADDRESS
 GET         /principal-place-business                                                          controllers.business.PpobAddressController.startJourney
@@ -444,8 +444,8 @@ GET         /submission-in-progress                                             
 POST        /submission-in-progress                                                            controllers.SubmissionInProgressController.submit
 
 ## Land And Property
-GET         /land-and-property                                                                 controllers.sicandcompliance.LandAndPropertyController.show
-POST        /land-and-property                                                                 controllers.sicandcompliance.LandAndPropertyController.submit
+GET         /land-and-property                                                                 controllers.business.LandAndPropertyController.show
+POST        /land-and-property                                                                 controllers.business.LandAndPropertyController.submit
 
 ## Imports Or Exports
 GET         /imports-or-exports                                                                controllers.business.ImportsOrExportsController.show

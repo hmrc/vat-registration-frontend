@@ -23,7 +23,7 @@ import controllers.BaseController
 import forms.InternationalAddressForm
 import models.api.Country
 import play.api.mvc.{Action, AnyContent}
-import services.{BusinessContactService, SessionProfile, SessionService}
+import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
 
 class InternationalPpobAddressController  @Inject()(val authConnector: AuthConnector,
                                                     val sessionService: SessionService,
-                                                    businessContactService: BusinessContactService,
+                                                    businessService: BusinessService,
                                                     configConnector: ConfigConnector,
                                                     view: CaptureInternationalAddress,
                                                     formProvider: InternationalAddressForm,
@@ -52,7 +52,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
       for {
-        contactDetails <- businessContactService.getBusinessContact
+        contactDetails <- businessService.getBusiness
         filledForm = contactDetails.ppobAddress.fold(formProvider.form(invalidCountries))(formProvider.form(invalidCountries).fill)
       } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey))
   }
@@ -65,7 +65,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
         formProvider.form(invalidCountries).bindFromRequest,
         submitAction,
         internationalAddress => {
-          businessContactService.updateBusinessContact(internationalAddress) map { _ =>
+          businessService.updateBusiness(internationalAddress) map { _ =>
             Redirect(routes.BusinessEmailController.show)
           }
         }

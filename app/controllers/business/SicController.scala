@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.sicandcompliance
+package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
 import forms.MainBusinessActivityForm
+import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.SicCode
-import models.{CurrentProfile, MainBusinessActivityView}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Call, Result}
-import services.{SessionService, _}
+import services.BusinessService.MainBusinessActivity
+import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.sicandcompliance._
 
@@ -33,14 +34,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SicAndComplianceController @Inject()(val authConnector: AuthClientConnector,
-                                           val sessionService: SessionService,
-                                           val sicAndCompService: SicAndComplianceService,
-                                           val frsService: FlatRateService,
-                                           val iclService: ICLService,
-                                           val aboutToConfirmSicPage: about_to_confirm_sic,
-                                           val mainBusinessActivityPage: main_business_activity)
-                                          (implicit appConfig: FrontendAppConfig,
+class SicController @Inject()(val authConnector: AuthClientConnector,
+                              val sessionService: SessionService,
+                              val businessService: BusinessService,
+                              val frsService: FlatRateService,
+                              val iclService: ICLService,
+                              val aboutToConfirmSicPage: about_to_confirm_sic,
+                              val mainBusinessActivityPage: main_business_activity)
+                             (implicit appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext,
                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
@@ -55,8 +56,8 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
       implicit profile =>
         for {
           sicCodeList <- fetchSicCodeList
-          sicCompliance <- sicAndCompService.getSicAndCompliance
-          formFilled = sicCompliance.mainBusinessActivity.fold(MainBusinessActivityForm.form)(MainBusinessActivityForm.form.fill)
+          businessDetails <- businessService.getBusiness
+          formFilled = businessDetails.mainBusinessActivity.fold(MainBusinessActivityForm.form)(sicCode => MainBusinessActivityForm.form.fill(sicCode.code))
         } yield Ok(mainBusinessActivityPage(formFilled, sicCodeList))
   }
 
@@ -66,10 +67,10 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
         fetchSicCodeList flatMap { sicCodeList =>
           MainBusinessActivityForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(mainBusinessActivityPage(badForm, sicCodeList))),
-            data => sicCodeList.find(_.code == data.id).fold(
+            data => sicCodeList.find(_.code == data).fold(
               Future.successful(BadRequest(mainBusinessActivityPage(MainBusinessActivityForm.form.fill(data), sicCodeList)))
             )(selected => for {
-              _ <- sicAndCompService.updateSicAndCompliance(MainBusinessActivityView(selected))
+              _ <- businessService.updateBusiness(MainBusinessActivity(selected))
               _ <- frsService.resetFRSForSAC(selected)
             } yield {
               Redirect(resolveRoute(sicCodeList))
@@ -79,8 +80,8 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
   }
 
   private def resolveRoute(sicCodeList: List[SicCode]): Call = {
-    if (sicAndCompService.needComplianceQuestions(sicCodeList)) {
-      routes.ComplianceIntroductionController.show
+    if (businessService.needComplianceQuestions(sicCodeList)) {
+      controllers.business.routes.ComplianceIntroductionController.show
     } else {
       if (isEnabled(OtherBusinessInvolvement)) {
         controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
@@ -127,11 +128,11 @@ class SicAndComplianceController @Inject()(val authConnector: AuthClientConnecto
         for {
           iclCodes <- iclService.getICLSICCodes()
           _ <- sessionService.cache(SIC_CODES_KEY, iclCodes)
-          _ <- sicAndCompService.submitSicCodes(iclCodes)
+          _ <- businessService.submitSicCodes(iclCodes)
         } yield {
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
-              routes.SicAndComplianceController.showMainBusinessActivity
+              routes.SicController.showMainBusinessActivity
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
             case codes => resolveRoute(codes)

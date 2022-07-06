@@ -2,7 +2,7 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.BusinessContact
+import models.Business
 import models.api.{Address, Country}
 import org.jsoup.Jsoup
 import org.scalatest.Assertion
@@ -21,8 +21,8 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK when the ApplicantDetails block is empty" in new Setup {
         given
           .user.isAuthorised()
-          .registrationApi.getSection[BusinessContact](None, testRegId)
-          .s4lContainer[BusinessContact].contains(BusinessContact())
+          .registrationApi.getSection[Business](None, testRegId)
+          .s4lContainer[Business].contains(Business())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,8 +33,8 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate when the ApplicantDetails block contains an address" in new Setup {
         given
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].contains(BusinessContact(ppobAddress = Some(testForeignAddress)))
-          .registrationApi.getSection[BusinessContact](None, testRegId)
+          .s4lContainer[Business].contains(Business(ppobAddress = Some(testForeignAddress)))
+          .registrationApi.getSection[Business](None, testRegId)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,11 +50,12 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     }
     "when reading from the backend" must {
       "return OK and pre-populate the page" in new Setup {
-        val businessContact = BusinessContact(ppobAddress = Some(testForeignAddress))
         given
           .user.isAuthorised()
-          .s4lContainer[BusinessContact].isEmpty
-          .registrationApi.getSection[BusinessContact](Some(businessContact))(BusinessContact.apiKey, BusinessContact.apiFormat)
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](
+            Some(businessDetails.copy(ppobAddress = Some(testForeignAddress)))
+          )(Business.apiKey, Business.format)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -74,9 +75,9 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the previous address page if a minimal address is provided" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].isEmpty
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testShortForeignAddress)))
+        .registrationApi.getSection[Business](None, testRegId)
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testShortForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -92,9 +93,9 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].contains(BusinessContact())
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
+        .registrationApi.getSection[Business](None, testRegId)
+        .s4lContainer[Business].contains(Business())
+        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -114,9 +115,9 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].contains(BusinessContact())
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
+        .registrationApi.getSection[Business](None, testRegId)
+        .s4lContainer[Business].contains(Business())
+        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -134,9 +135,9 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is missing" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].contains(BusinessContact())
-        .s4lContainer[BusinessContact].isUpdatedWith(BusinessContact(ppobAddress = Some(testForeignAddress)))
+        .registrationApi.getSection[Business](None, testRegId)
+        .s4lContainer[Business].contains(Business())
+        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -154,8 +155,8 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is UK" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BusinessContact](None, testRegId)
-        .s4lContainer[BusinessContact].contains(BusinessContact())
+        .registrationApi.getSection[Business](None, testRegId)
+        .s4lContainer[Business].contains(Business())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -178,8 +179,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .vatScheme.contains(emptyVatSchemeNetp)
-          .registrationApi.getSection[BusinessContact](None, testRegId)
-          .s4lContainer[BusinessContact].contains(BusinessContact())
+          .registrationApi.getSection[Business](None, testRegId)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

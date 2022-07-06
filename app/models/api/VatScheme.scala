@@ -28,8 +28,6 @@ case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
                      transactorDetails: Option[TransactorDetails] = None,
                      tradingDetails: Option[TradingDetails] = None,
-                     sicAndCompliance: Option[SicAndCompliance] = None,
-                     businessContact: Option[BusinessContact] = None,
                      returns: Option[Returns] = None,
                      bankAccount: Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
@@ -38,8 +36,8 @@ case class VatScheme(id: String,
                      partners: Option[List[PartnerEntity]] = None,
                      createdDate: Option[LocalDate] = None,
                      applicationReference: Option[String] = None,
-                     otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None
-                    )
+                     otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
+                     business: Option[Business] = None)
 
 object VatScheme {
 
@@ -50,8 +48,6 @@ object VatScheme {
           (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
           (__ \ "transactorDetails").readNullable[TransactorDetails] and
           (__ \ "tradingDetails").readNullable[TradingDetails](TradingDetails.apiFormat) and
-          (__ \ "sicAndCompliance").readNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
-          (__ \ "businessContact").readNullable[BusinessContact](BusinessContact.apiFormat) and
           (__ \ "returns").readNullable[Returns] and
           (__ \ "bankAccount").readNullable[BankAccount] and
           (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
@@ -60,7 +56,8 @@ object VatScheme {
           (__ \ "partners").readNullable[List[PartnerEntity]] and
           (__ \ "createdDate").readNullable[LocalDate] and
           (__ \ "applicationReference").readNullable[String] and
-          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]]
+          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
+          (__ \ "business").readNullable[Business]
         ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
@@ -70,14 +67,13 @@ object VatScheme {
           Reads.pure(None) and
           Reads.pure(None) and
           Reads.pure(None) and
-          Reads.pure(None) and
-          Reads.pure(None) and
           (__ \ "status").read[VatRegStatus.Value] and
           Reads.pure(None) and
           Reads.pure(None) and
           (__ \ "createdDate").readNullable[LocalDate] and
           (__ \ "applicationReference").readNullable[String] and
-          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]]
+          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
+          Reads.pure(None)
         ) (VatScheme.apply _)
     }
 
@@ -86,8 +82,6 @@ object VatScheme {
       (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
       (__ \ "transactorDetails").writeNullable[TransactorDetails] and
       (__ \ "tradingDetails").writeNullable[TradingDetails](TradingDetails.apiFormat) and
-      (__ \ "sicAndCompliance").writeNullable[SicAndCompliance](SicAndCompliance.apiFormat) and
-      (__ \ "businessContact").writeNullable[BusinessContact](BusinessContact.apiFormat) and
       (__ \ "returns").writeNullable[Returns] and
       (__ \ "bankAccount").writeNullable[BankAccount] and
       (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
@@ -96,7 +90,8 @@ object VatScheme {
       (__ \ "partners").writeNullable[List[PartnerEntity]] and
       (__ \ "createdDate").writeNullable[LocalDate] and
       (__ \ "applicationReference").writeNullable[String] and
-      (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]]
+      (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
+      (__ \ "business").writeNullable[Business]
     ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)
