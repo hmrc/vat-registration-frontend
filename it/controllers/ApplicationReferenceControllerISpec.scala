@@ -64,6 +64,8 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           .user.isAuthorised()
           .vatScheme.contains(emptyUkCompanyVatScheme)
 
+        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(emptyUkCompanyVatScheme)))
+
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val vatScheme: VatScheme = emptyUkCompanyVatScheme.copy(applicationReference = Some(testAppRef))
@@ -88,6 +90,8 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
         given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
+        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(emptyUkCompanyVatScheme)))
+
         val response: Future[WSResponse] = buildClient(url).post("")
         whenReady(response) { res =>
           res.status mustBe BAD_REQUEST
@@ -100,6 +104,8 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
         given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
+        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(emptyUkCompanyVatScheme)))
+
         val response: Future[WSResponse] = buildClient(url).post("w" * 101)
         whenReady(response) { res =>
           res.status mustBe BAD_REQUEST
@@ -111,6 +117,8 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
       "return a BAD_REQUEST" in new Setup {
         given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(emptyUkCompanyVatScheme)))
 
         val response: Future[WSResponse] = buildClient(url).post("«test»")
         whenReady(response) { res =>

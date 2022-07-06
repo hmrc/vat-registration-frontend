@@ -16,10 +16,8 @@
 
 package controllers
 
-import common.enums.VatRegStatus
 import config.{BaseControllerComponents, FrontendAppConfig}
 import forms.ApplicationReferenceForm
-import models.api.VatScheme
 import play.api.mvc.{Action, AnyContent}
 import services.{SaveAndRetrieveService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -56,11 +54,8 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
         Future.successful(BadRequest(view(formWithErrors))),
       appRef =>
         for {
-          _ <- vatRegistrationService.upsertVatScheme(VatScheme(
-            id = profile.registrationId,
-            status = VatRegStatus.draft,
-            applicationReference = Some(appRef)
-          ))
+          vatScheme <- vatRegistrationService.getVatScheme
+          _ <- vatRegistrationService.upsertVatScheme(vatScheme.copy(applicationReference = Some(appRef)))
           _ <- saveAndRetrieveService.savePartialVatScheme(profile.registrationId)
         } yield Redirect(routes.HonestyDeclarationController.show)
     )
