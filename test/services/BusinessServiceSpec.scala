@@ -20,9 +20,10 @@ import _root_.models.api.Address
 import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import models._
+import org.mockito.ArgumentMatchers.matches
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -73,6 +74,8 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
         when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+          .thenReturn(Future.successful(None))
 
         mockGetSection[Business](testRegId, Some(business))
 
@@ -89,6 +92,8 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
         val business = Business(ppobAddress = None, contactPreference = None)
 
         when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
           .thenReturn(Future.successful(None))
 
         mockGetSection[Business](testRegId, None)
@@ -108,6 +113,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
@@ -125,6 +134,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
@@ -149,6 +162,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
@@ -173,6 +190,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
@@ -197,6 +218,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
@@ -221,6 +246,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(Some(business)))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("SicAndCompliance"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4LService.fetchAndGet[JsValue](matchers.eq("business-contact"))(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(None))
 
       mockGetSection(testRegId, None)
 
