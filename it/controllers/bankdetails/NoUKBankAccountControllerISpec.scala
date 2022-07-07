@@ -76,7 +76,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.ReturnsController.returnsFrequencyPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url)
       }
     }
 
@@ -94,7 +94,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
       }
     }
 

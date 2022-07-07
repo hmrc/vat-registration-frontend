@@ -18,14 +18,14 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
-import services.{ReturnsService, SessionProfile, SessionService}
+import services.{VatApplicationService, SessionProfile, SessionService}
 import views.html.application_progress_saved
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationProgressSavedController @Inject()(val returnsService: ReturnsService,
+class ApplicationProgressSavedController @Inject()(val vatApplicationService: VatApplicationService,
                                                    val authConnector: AuthClientConnector,
                                                    val sessionService: SessionService,
                                                    val applicationProgressSavedView: application_progress_saved)

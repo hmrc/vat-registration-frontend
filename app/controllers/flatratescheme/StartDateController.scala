@@ -21,7 +21,7 @@ import controllers.BaseController
 import forms.FRSStartDateForm
 import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, ReturnsService, SessionService, TimeService}
+import services.{FlatRateService, VatApplicationService, SessionService, TimeService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class StartDateController @Inject()(val authConnector: AuthConnector,
                                     val sessionService: SessionService,
                                     flatRateService: FlatRateService,
-                                    returnsService: ReturnsService,
+                                    vatApplicationService: VatApplicationService,
                                     timeService: TimeService,
                                     view: frs_start_date)
                                    (implicit appConfig: FrontendAppConfig,
@@ -78,7 +78,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
   }
 
   private def calculateEarliestDate(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[LocalDate] = {
-    returnsService.retrieveCalculatedStartDate.recoverWith {
+    vatApplicationService.retrieveCalculatedStartDate.recoverWith {
       case _ => flatRateService.fetchVatStartDate.map(_.getOrElse(
         throw new InternalServerException("[StartDateController] Unable to calculate earliest date due to missing VatStartDate")
       ))

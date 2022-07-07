@@ -19,7 +19,7 @@ package forms
 import forms.FormValidation._
 import models.DateSelection
 import models.DateSelection.specific_date
-import models.api.returns._
+import models.api.vatapplication._
 import play.api.data.Forms.{single, tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}

@@ -28,25 +28,19 @@ class TradingDetailsModelSpec extends VatRegSpec with Inspectors with VatRegistr
 
     "construct valid json" in {
       Json.toJson(TradingDetails(
-        Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(true)
-      )) mustBe Json.parse(
+        Some(TradingNameView(yesNo = true, Some("test"))))) mustBe Json.parse(
         """{
-          |"tradingName":"test",
-          |"eoriRequested":true
+          |"tradingName":"test"
           |}""".stripMargin)
     }
 
     "construct valid model" in {
       Json.parse(
         """{
-          |"tradingName":"test",
-          |"eoriRequested":true
+          |"tradingName":"test"
           |}"""
           .stripMargin).as[TradingDetails] mustBe TradingDetails(
-        Some(TradingNameView(yesNo = true, Some("test"))),
-        Some(true)
-      )
+        Some(TradingNameView(yesNo = true, Some("test"))))
     }
   }
 }

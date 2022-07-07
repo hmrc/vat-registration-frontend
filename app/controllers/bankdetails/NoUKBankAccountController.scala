@@ -58,9 +58,9 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
               eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
             } yield eligibilityData.registrationReason match {
               case TransferOfAGoingConcern =>
-                Redirect(controllers.returns.routes.ReturnsController.returnsFrequencyPage)
+                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
               case _ =>
-                Redirect(controllers.returns.routes.VatRegStartDateResolverController.resolve)
+                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
             }
         )
       }

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns.{StoringOverseas, StoringWithinUk}
+import models.api.vatapplication.{StoringOverseas, StoringWithinUk}
 import testHelpers.VatRegSpec
 
 class StoringGoodsFormSpec extends VatRegSpec {

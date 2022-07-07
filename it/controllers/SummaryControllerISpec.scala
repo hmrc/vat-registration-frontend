@@ -76,8 +76,8 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
       "the submission succeeds" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(vatReg)
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", OK)
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -93,8 +93,8 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
       "the submission is already submitted" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(vatReg)
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", CONFLICT)
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", CONFLICT)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -110,8 +110,8 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
       "the submission is already in progress" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(vatReg)
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", TOO_MANY_REQUESTS)
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", TOO_MANY_REQUESTS)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -127,8 +127,8 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
       "the submission failed with a bad request" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(vatReg)
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", BAD_REQUEST)
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", BAD_REQUEST)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -144,8 +144,8 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
       "the submission fails with a 500 series status" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(vatReg)
-          .vatRegistration.submit(s"/vatreg/${vatReg.id}/submit-registration", INTERNAL_SERVER_ERROR)
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", INTERNAL_SERVER_ERROR)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 

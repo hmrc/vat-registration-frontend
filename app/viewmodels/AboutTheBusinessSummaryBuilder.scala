@@ -16,10 +16,10 @@
 
 package viewmodels
 
-import controllers.returns.{routes => returnsRoutes}
+import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models.api._
-import models.api.returns.{Returns, StoringOverseas, StoringWithinUk}
+import models.api.vatapplication.{StoringOverseas, StoringWithinUk, VatApplication}
 import models.view.SummaryListRowUtils._
 import models.{Business, TradingDetails}
 import play.api.i18n.Messages
@@ -41,7 +41,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
     val tradingDetails = vatScheme.tradingDetails
-    val returns = vatScheme.returns.getOrElse(throw missingSection("Returns"))
+    val vatApplication = vatScheme.vatApplication.getOrElse(throw missingSection("Vat Application"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
 
     HtmlFormat.fill(List(
@@ -63,19 +63,19 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           complianceSection(business) ++
           List(
             tradingName(tradingDetails, partyType),
-            importsOrExports(tradingDetails, partyType),
-            applyForEori(tradingDetails, partyType),
-            turnoverEstimate(returns),
+            importsOrExports(vatApplication, partyType),
+            applyForEori(vatApplication, partyType),
+            turnoverEstimate(vatApplication),
             zeroRatedTurnover(vatScheme)
           ).flatten ++
-          nipSection(returns) ++
+          nipSection(vatApplication) ++
           List(
-            claimRefunds(returns),
-            vatExemption(returns),
-            sendGoodsOverseas(returns),
-            sendGoodsToEu(returns)
+            claimRefunds(vatApplication),
+            vatExemption(vatApplication),
+            sendGoodsOverseas(vatApplication),
+            sendGoodsToEu(vatApplication)
           ).flatten ++
-          netpSection(returns, partyType)
+          netpSection(vatApplication, partyType)
       ))
     ))
   }
@@ -210,139 +210,139 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     )
   }
 
-  private def importsOrExports(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+  private def importsOrExports(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     if (partyType == NETP || partyType == NonUkNonEstablished) {
       None
     } else {
       optSummaryListRowBoolean(
         s"$sectionId.importsOrExports",
-        tradingDetails.flatMap(_.tradeVatGoodsOutsideUk),
-        Some(controllers.business.routes.ImportsOrExportsController.show.url)
+        vatApplication.tradeVatGoodsOutsideUk,
+        Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
       )
     }
 
-  private def applyForEori(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+  private def applyForEori(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
     if (partyType == NETP || partyType == NonUkNonEstablished) {
       None
     } else {
       optSummaryListRowBoolean(
         s"$sectionId.applyForEori",
-        tradingDetails.flatMap(_.euGoods),
-        Some(controllers.business.routes.ApplyForEoriController.show.url)
+        vatApplication.eoriRequested,
+        Some(controllers.vatapplication.routes.ApplyForEoriController.show.url)
       )
     }
 
-  private def turnoverEstimate(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def turnoverEstimate(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.turnoverEstimate",
-      returns.turnoverEstimate.map(Formatters.currency),
-      Some(returnsRoutes.TurnoverEstimateController.show.url)
+      vatApplication.turnoverEstimate.map(Formatters.currency),
+      Some(vatApplicationRoutes.TurnoverEstimateController.show.url)
     )
 
   private def zeroRatedTurnover(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
-    if (vatScheme.returns.flatMap(_.turnoverEstimate).contains(0)) None else optSummaryListRowString(
+    if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(0)) None else optSummaryListRowString(
       s"$sectionId.zeroRated",
-      vatScheme.returns.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
-      Some(returnsRoutes.ZeroRatedSuppliesController.show.url)
+      vatScheme.vatApplication.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
+      Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)
     )
 
-  private def claimRefunds(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def claimRefunds(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.claimRefunds",
-      returns.reclaimVatOnMostReturns,
-      Some(returnsRoutes.ClaimRefundsController.show.url)
+      vatApplication.claimVatRefunds,
+      Some(vatApplicationRoutes.ClaimRefundsController.show.url)
     )
 
-  private def vatExemption(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def vatExemption(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.vatExemption",
-      returns.appliedForExemption,
-      Some(returnsRoutes.VatExemptionController.show.url)
+      vatApplication.appliedForExemption,
+      Some(vatApplicationRoutes.VatExemptionController.show.url)
     )
 
-  private def sendGoodsOverseas(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
-    if (returns.overseasCompliance.exists(_.goodsToOverseas.contains(true))) {
+  private def sendGoodsOverseas(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] = {
+    if (vatApplication.overseasCompliance.exists(_.goodsToOverseas.contains(true))) {
       optSummaryListRowBoolean(
         s"$sectionId.sendGoodsOverseas",
-        returns.overseasCompliance.flatMap(_.goodsToOverseas),
-        Some(returnsRoutes.SendGoodsOverseasController.show.url)
+        vatApplication.overseasCompliance.flatMap(_.goodsToOverseas),
+        Some(vatApplicationRoutes.SendGoodsOverseasController.show.url)
       )
     } else {
       None
     }
   }
 
-  private def sendGoodsToEu(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] = {
-    if (returns.overseasCompliance.exists(_.goodsToEu.contains(true))) {
+  private def sendGoodsToEu(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] = {
+    if (vatApplication.overseasCompliance.exists(_.goodsToEu.contains(true))) {
       optSummaryListRowBoolean(
         s"$sectionId.sendGoodsToEu",
-        returns.overseasCompliance.flatMap(_.goodsToEu),
-        Some(returnsRoutes.SendEUGoodsController.show.url)
+        vatApplication.overseasCompliance.flatMap(_.goodsToEu),
+        Some(vatApplicationRoutes.SendEUGoodsController.show.url)
       )
     } else {
       None
     }
   }
 
-  private def storingGoods(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def storingGoods(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.storingGoods",
-      returns.overseasCompliance.flatMap(_.storingGoodsForDispatch).map {
+      vatApplication.overseasCompliance.flatMap(_.storingGoodsForDispatch).map {
         case StoringWithinUk => s"$sectionId.storingGoods.uk"
         case StoringOverseas => s"$sectionId.storingGoods.overseas"
       },
-      Some(returnsRoutes.StoringGoodsController.show.url)
+      Some(vatApplicationRoutes.StoringGoodsController.show.url)
     )
 
-  private def dispatchFromWarehouse(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def dispatchFromWarehouse(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.dispatchFromWarehouse",
-      returns.overseasCompliance.flatMap(_.usingWarehouse),
-      Some(returnsRoutes.DispatchFromWarehouseController.show.url)
+      vatApplication.overseasCompliance.flatMap(_.usingWarehouse),
+      Some(vatApplicationRoutes.DispatchFromWarehouseController.show.url)
     )
 
-  private def warehouseNumber(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def warehouseNumber(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.warehouseNumber",
-      returns.overseasCompliance.flatMap(_.fulfilmentWarehouseNumber),
-      Some(returnsRoutes.WarehouseNumberController.show.url)
+      vatApplication.overseasCompliance.flatMap(_.fulfilmentWarehouseNumber),
+      Some(vatApplicationRoutes.WarehouseNumberController.show.url)
     )
 
-  private def warehouseName(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def warehouseName(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.warehouseName",
-      returns.overseasCompliance.flatMap(_.fulfilmentWarehouseName),
-      Some(returnsRoutes.WarehouseNameController.show.url)
+      vatApplication.overseasCompliance.flatMap(_.fulfilmentWarehouseName),
+      Some(vatApplicationRoutes.WarehouseNameController.show.url)
     )
 
-  private def sellOrMoveNip(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def sellOrMoveNip(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
       s"$sectionId.sellOrMoveNip",
       Some(Seq(
-        returns.northernIrelandProtocol.flatMap(_.goodsToEU).map(answer =>
+        vatApplication.northernIrelandProtocol.flatMap(_.goodsToEU).map(answer =>
           if (answer.answer) messages("app.common.yes")
           else messages("app.common.no")
         ),
-        returns.northernIrelandProtocol.flatMap(_.goodsToEU).flatMap(_.value.map { value =>
+        vatApplication.northernIrelandProtocol.flatMap(_.goodsToEU).flatMap(_.value.map { value =>
           s"${messages("cya.aboutTheBusiness.valueOfGoods")} ${Formatters.currency(value)}"
         })
       ).flatten),
-      Some(returnsRoutes.SellOrMoveNipController.show.url)
+      Some(vatApplicationRoutes.SellOrMoveNipController.show.url)
     )
 
-  private def receiveGoodsNip(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def receiveGoodsNip(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
       s"$sectionId.receiveGoodsNip",
       Some(Seq(
-        returns.northernIrelandProtocol.flatMap(_.goodsFromEU).map(answer =>
+        vatApplication.northernIrelandProtocol.flatMap(_.goodsFromEU).map(answer =>
           if (answer.answer) messages("app.common.yes")
           else messages("app.common.no")
         ),
-        returns.northernIrelandProtocol.flatMap(_.goodsFromEU).flatMap(_.value.map { value =>
+        vatApplication.northernIrelandProtocol.flatMap(_.goodsFromEU).flatMap(_.value.map { value =>
           s"${messages("cya.aboutTheBusiness.valueOfGoods")} ${Formatters.currency(value)}"
         })
       ).flatten),
-      Some(returnsRoutes.ReceiveGoodsNipController.show.url)
+      Some(vatApplicationRoutes.ReceiveGoodsNipController.show.url)
     )
 
   private def complianceSection(business: Business)(implicit messages: Messages): List[SummaryListRow] =
@@ -355,16 +355,16 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Nil
     }
 
-  private def netpSection(returns: Returns, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] =
+  private def netpSection(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] =
     if (partyType == NETP || partyType == NonUkNonEstablished) {
       List(
-        storingGoods(returns),
-        dispatchFromWarehouse(returns)
+        storingGoods(vatApplication),
+        dispatchFromWarehouse(vatApplication)
       ).flatten ++ {
-        if (returns.overseasCompliance.exists(_.usingWarehouse.contains(true))) {
+        if (vatApplication.overseasCompliance.exists(_.usingWarehouse.contains(true))) {
           List(
-            warehouseNumber(returns),
-            warehouseName(returns)
+            warehouseNumber(vatApplication),
+            warehouseName(vatApplication)
           ).flatten
         } else {
           Nil
@@ -375,11 +375,11 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Nil
     }
 
-  private def nipSection(returns: Returns)(implicit messages: Messages): List[SummaryListRow] = {
-    if (returns.northernIrelandProtocol.isDefined) {
+  private def nipSection(vatApplication: VatApplication)(implicit messages: Messages): List[SummaryListRow] = {
+    if (vatApplication.northernIrelandProtocol.isDefined) {
       List(
-        sellOrMoveNip(returns),
-        receiveGoodsNip(returns)
+        sellOrMoveNip(vatApplication),
+        receiveGoodsNip(vatApplication)
       ).flatten
     } else {
       Nil

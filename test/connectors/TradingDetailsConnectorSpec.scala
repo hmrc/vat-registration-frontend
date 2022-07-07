@@ -41,8 +41,7 @@ class TradingDetailsConnectorSpec extends VatRegSpec with VatRegistrationFixture
 
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
   val fullS4L = TradingDetails(
-    Some(tradingNameViewNo),
-    Some(false)
+    Some(tradingNameViewNo)
   )
 
   "Calling upsertTradingDetails" should {

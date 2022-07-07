@@ -17,7 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import models.api.returns.{Annual, Monthly}
+import models.api.vatapplication.{Annual, Monthly}
 import models.api.{NETP, UkCompany}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import org.mockito.ArgumentMatchers.any
@@ -64,9 +64,9 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = UkCompany
         )),
-        returns = Some(validReturns.copy(
+        vatApplication = Some(validVatApplication.copy(
           zeroRatedSupplies = None,
-          reclaimVatOnMostReturns = Some(true),
+          claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
           annualAccountingDetails = Some(validAasDetails),
           startDate = frsDate.flatMap(_.date)
@@ -87,19 +87,19 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
-          optUrl = Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)),
+          optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("I would like to join the Annual Accounting Scheme"),
-          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url)),
+          optUrl = Some(controllers.vatapplication.routes.ReturnsController.accountPeriodsPage.url)),
         optSummaryListRowString(
           questionId = TestContent.paymentFrequency,
           optAnswer = Some("Quarterly"),
-          optUrl = Some(controllers.returns.routes.PaymentFrequencyController.show.url)),
+          optUrl = Some(controllers.vatapplication.routes.PaymentFrequencyController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.paymentMethod,
           optAnswer = Some("BACS or internet banking"),
-          optUrl = Some(controllers.returns.routes.PaymentMethodController.show.url)),
+          optUrl = Some(controllers.vatapplication.routes.PaymentMethodController.show.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.joinFrs,
           optAnswer = Some(true),
@@ -142,9 +142,9 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = NETP
         )),
-        returns = Some(validReturns.copy(
+        vatApplication = Some(validVatApplication.copy(
           zeroRatedSupplies = None,
-          reclaimVatOnMostReturns = Some(true),
+          claimVatRefunds = Some(true),
           returnsFrequency = Some(Monthly))
         ),
         bankAccount = Some(validUkBankAccount)
@@ -158,11 +158,11 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
-          optUrl = Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)),
+          optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("Once a month"),
-          optUrl = Some(controllers.returns.routes.ReturnsController.accountPeriodsPage.url))
+          optUrl = Some(controllers.vatapplication.routes.ReturnsController.accountPeriodsPage.url))
       ).flatten)
 
       val res = Builder.build(testVatScheme)

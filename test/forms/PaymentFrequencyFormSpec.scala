@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns._
+import models.api.vatapplication._
 import play.api.data.{Form, FormError}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec

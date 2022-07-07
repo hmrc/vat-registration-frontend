@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns.{StoringGoodsForDispatch, StoringOverseas, StoringWithinUk}
+import models.api.vatapplication.{StoringGoodsForDispatch, StoringOverseas, StoringWithinUk}
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}

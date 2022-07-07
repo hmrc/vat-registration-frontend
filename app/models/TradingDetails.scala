@@ -16,8 +16,8 @@
 
 package models
 
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class TradingNameView(yesNo: Boolean,
                            tradingName: Option[String] = None)
@@ -27,26 +27,20 @@ object TradingNameView {
 }
 
 case class TradingDetails(tradingNameView: Option[TradingNameView] = None,
-                          euGoods: Option[Boolean] = None,
-                          shortOrgName: Option[String] = None,
-                          tradeVatGoodsOutsideUk: Option[Boolean] = None)
+                          shortOrgName: Option[String] = None)
 
 object TradingDetails {
   implicit val s4lKey: S4LKey[TradingDetails] = S4LKey("tradingDetails")
 
   val reads: Reads[TradingDetails] = (
     (__ \ "tradingName").readNullable[String].map[Option[TradingNameView]](tradingName => Some(TradingNameView(tradingName.isDefined, tradingName))) and
-      (__ \ "eoriRequested").readNullable[Boolean] and
-      (__ \ "shortOrgName").readNullable[String] and
-      (__ \ "tradeVatGoodsOutsideUk").readNullable[Boolean]
+      (__ \ "shortOrgName").readNullable[String]
     ) (TradingDetails.apply _)
 
   val writes: Writes[TradingDetails] = (
     (__ \ "tradingName").writeNullable[String].contramap[Option[TradingNameView]](_.flatMap(_.tradingName)) and
-      (__ \ "eoriRequested").writeNullable[Boolean] and
-      (__ \ "shortOrgName").writeNullable[String] and
-      (__ \ "tradeVatGoodsOutsideUk").writeNullable[Boolean]
-  ) (unlift(TradingDetails.unapply))
+      (__ \ "shortOrgName").writeNullable[String]
+    ) (unlift(TradingDetails.unapply))
 
   val apiFormat = Format[TradingDetails](reads, writes)
   implicit val format = Json.format[TradingDetails]

@@ -22,7 +22,7 @@ import connectors._
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
-import models.api.returns.{Monthly, Returns}
+import models.api.vatapplication.VatApplication
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -34,7 +34,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.cache.client.CacheMap
 import views.html.Summary
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureSwitching {
@@ -55,8 +54,6 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show)
-  override val returns: Returns = Returns(Some(testTurnover), None, Some(10000.5), Some(true), Some(Monthly), None, Some(LocalDate.of(2018, 1, 1)))
-  val emptyReturns: Returns = Returns()
 
   "Calling summary to show the summary page" when {
     "the StoreAnswersForNrs feature switch is enabled" should {

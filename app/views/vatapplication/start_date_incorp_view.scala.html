@@ -1,0 +1,103 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.api.data.Form
+@import play.api.mvc.Request
+@import play.api.i18n.Messages
+@import java.time.LocalDate
+@import models.DateSelection._
+
+@import config.FrontendAppConfig
+
+@this(
+        layout: views.html.layouts.layout,
+        errorSummary: components.errorSummary,
+        h1: components.h1,
+        p: components.p,
+        formWithCSRF: FormWithCSRF,
+        panelIndent: components.panelIndent,
+        inputDate: components.inputDate,
+        button: components.button,
+        bullets: components.bullets,
+        inputRadio: components.inputRadio
+)
+
+@(startDateForm: Form[(DateSelection.Value, Option[LocalDate])], registeredDate: String, incorpDateAfter: Boolean, dateExample: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+
+@layout(pageTitle = Some(title(startDateForm, messages("pages.startDate.heading")))) {
+
+    @errorSummary(startDateForm.errors)
+
+    @h1("pages.startDate.heading")
+
+    @p{ @messages("pages.startDate.para1.post") }
+
+    @panelIndent {
+        @messages("pages.startDate.warning")
+    }
+
+    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsController.submitVoluntaryStart) {
+
+        @inputRadio(
+            form = startDateForm,
+            legend = messages("pages.startDate.heading"),
+            items = radioItems,
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            inline = false
+            )
+
+        @button(messages("app.common.continue"))
+
+        }
+}
+
+@hiddenContent = {
+
+    @p{ @messages("pages.startDate.panels.specificDate.para1") }
+
+    @bullets(
+        messages("pages.startDate.panels.specificDate.bullet.onafter"),
+        messages("pages.startDate.panels.specificDate.bullet.3monthsf"),
+        messages("pages.startDate.panels.specificDate.bullet.4yearspa")
+        )
+
+    @inputDate(
+        form = startDateForm,
+        id = "startDate",
+        legendContent = "",
+        hintText = Some(messages("pages.startDate.panels.specificDate.hint", dateExample)),
+        legendAsPageHeading = false
+        )
+}
+
+@optIncorpDateAfter = @{
+    if(incorpDateAfter) Seq(RadioItem(
+        content = Text(messages("pages.startDate.radio.wasRegistered", registeredDate)),
+        value = Some(DateSelection.company_registration_date.toString),
+        checked = startDateForm("value").value.contains(DateSelection.company_registration_date.toString)
+    )) else Seq()
+}
+
+@radioItems = @{
+    optIncorpDateAfter ++ Seq(RadioItem(
+        content = Text(messages("pages.startDate.radio.specificDate")),
+        value = Some(DateSelection.specific_date.toString),
+        checked = startDateForm("value").value.contains(DateSelection.specific_date.toString),
+        conditionalHtml = Some(hiddenContent))
+        )
+}

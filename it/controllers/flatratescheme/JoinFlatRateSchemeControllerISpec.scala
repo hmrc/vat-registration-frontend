@@ -3,10 +3,10 @@ package controllers.flatratescheme
 
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
-import models.api.returns.Returns
+import models.api.vatapplication.VatApplication
 import models.{FlatRateScheme, GroupRegistration}
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
@@ -24,32 +24,32 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     percent = None
   )
 
-  val returnsData: JsValue = Json.toJson[Returns](Returns(
+  val vatApplication: VatApplication = VatApplication(
     turnoverEstimate = Some(testTurnover),
     zeroRatedSupplies = Some(10000),
-    reclaimVatOnMostReturns = Some(true),
+    claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
     startDate = None
-  ))
+  )
 
-  val returnsDataWithBigTurnover: JsValue = Json.toJson[Returns](Returns(
+  val vatApplicationWithBigTurnover: VatApplication = VatApplication(
     turnoverEstimate = Some(150001),
     zeroRatedSupplies = Some(10000),
-    reclaimVatOnMostReturns = Some(true),
+    claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
     startDate = None
-  ))
+  )
 
-  val returnsDataWithoutTurnover: JsValue = Json.toJson[Returns](Returns(
+  val vatApplicationWithoutTurnover: VatApplication = VatApplication(
     turnoverEstimate = None,
     zeroRatedSupplies = Some(10000),
-    reclaimVatOnMostReturns = Some(true),
+    claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
     startDate = None
-  ))
+  )
 
   "GET /join-flat-rate" must {
     "return OK when the details are in s4l" in new Setup {
@@ -57,7 +57,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -74,7 +74,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData.copy(joinFrs = None))
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -91,7 +91,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -107,7 +107,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsDataWithBigTurnover)
+        .registrationApi.getSection(Some(vatApplicationWithBigTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -124,7 +124,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
         registrationReason = GroupRegistration
       )))
@@ -143,7 +143,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
-        .vatScheme.has("returns", returnsDataWithoutTurnover)
+        .registrationApi.getSection(Some(vatApplicationWithoutTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -163,7 +163,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
         .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData)
         .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(true))))
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -180,7 +180,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .vatScheme.doesNotHave("flat-rate-scheme")
         .s4lContainer[FlatRateScheme].clearedByKey
         .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(false))))
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

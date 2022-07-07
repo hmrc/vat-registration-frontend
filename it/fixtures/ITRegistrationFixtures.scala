@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns._
+import models.api.vatapplication._
 import models.external._
 import models.view._
 import play.api.libs.json.Json
@@ -31,9 +31,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testArn = "testArn"
   val testCreatedDate = LocalDate.of(2021, 1, 1)
   val tradingDetails = TradingDetails(
-    tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None)),
-    euGoods = Some(false),
-    tradeVatGoodsOutsideUk = Some(false)
+    tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None))
   )
 
   val voluntaryThreshold = Threshold(
@@ -57,8 +55,21 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)
   val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
   val testTurnover = 30000
-  val returns = Returns(Some(testTurnover), None, None, None, Some(Quarterly), Some(JanuaryStagger), None)
-  val fullReturns: Returns = Returns(Some(testTurnover), None, Some(1234), Some(true), Some(Quarterly), Some(JanuaryStagger), None, None)
+  val fullVatApplication: VatApplication = VatApplication(
+    tradeVatGoodsOutsideUk = Some(false),
+    eoriRequested = Some(false),
+    turnoverEstimate = Some(testTurnover),
+    zeroRatedSupplies = Some(1234),
+    northernIrelandProtocol = None,
+    claimVatRefunds = Some(true),
+    appliedForExemption = None,
+    overseasCompliance = None,
+    startDate = None,
+    returnsFrequency = Some(Quarterly),
+    staggerStart = Some(JanuaryStagger),
+    annualAccountingDetails = None,
+    hasTaxRepresentative = None
+  )
   val testCalculatedDate: LocalDate = LocalDate.now()
   val testLine1 = "line1"
   val testLine2 = "line2"
@@ -147,18 +158,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
   )
 
-  val vatReg = VatScheme(
-    id = "1",
-    status = VatRegStatus.draft,
-    tradingDetails = Some(tradingDetails),
-    applicantDetails = None,
-    business = Some(businessDetails),
-    flatRateScheme = Some(flatRateScheme),
-    bankAccount = Some(bankAccount),
-    returns = Some(returns),
-    eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-  )
-
   val fullVatScheme = VatScheme(
     id = "1",
     status = VatRegStatus.draft,
@@ -167,15 +166,15 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),
     bankAccount = Some(bankAccount),
-    returns = Some(fullReturns),
+    vatApplication = Some(fullVatApplication),
     eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
 
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
-    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None, None, None)),
-    returns = Some(fullReturns.copy(overseasCompliance = Some(testFullOverseasCompliance))),
+    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None)),
+    vatApplication = Some(fullVatApplication.copy(overseasCompliance = Some(testFullOverseasCompliance))),
     bankAccount = Some(testOverseasBankAccount)
   )
 

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns.{BACS, CHAPS, BankGIRO, StandingOrder}
+import models.api.vatapplication.{BACS, CHAPS, BankGIRO, StandingOrder}
 import play.api.data.FormError
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec

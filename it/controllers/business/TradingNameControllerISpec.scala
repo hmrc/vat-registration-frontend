@@ -63,7 +63,7 @@ class TradingNameControllerISpec extends ControllerISpec {
       val response = buildClient("/trading-name").post(Map("value" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ImportsOrExportsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
       }
     }
 
@@ -83,7 +83,7 @@ class TradingNameControllerISpec extends ControllerISpec {
       val response = buildClient("/trading-name").post(Map("value" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.returns.routes.TurnoverEstimateController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
       }
     }
 

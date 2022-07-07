@@ -24,11 +24,9 @@ import testHelpers.VatRegSpec
 class FlatRateSchemeSpec extends VatRegSpec {
 
   val validDate: LocalDate = LocalDate.now
-  override val startDate: LocalDate = validDate
-
   implicit val frmt: Format[FlatRateScheme] = FlatRateScheme.apiFormat
 
-  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(startDate))), Some("test"), Some(15.00), Some(false))
+  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(validDate))), Some("test"), Some(15.00), Some(false))
 
   val validFlateRateJoinFrsFalse = FlatRateScheme(Some(false), None, None, None, None, None, None, None, None)
 

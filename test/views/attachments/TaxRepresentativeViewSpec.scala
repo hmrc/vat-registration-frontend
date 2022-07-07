@@ -20,7 +20,7 @@ import forms.TaxRepForm
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.returns.TaxRepresentative
+import views.html.vatapplication.TaxRepresentative
 
 class TaxRepresentativeViewSpec extends VatRegViewSpec {
 

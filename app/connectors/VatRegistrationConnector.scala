@@ -20,7 +20,7 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models._
 import models.api._
-import models.api.returns.Returns
+import models.api.vatapplication.VatApplication
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
@@ -171,20 +171,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       if (res.status.equals(OK)) Some(res.json) else None
     }.recover {
       case e: Exception => throw logResponse(e, "getSicAndCompliance")
-    }
-  }
-
-  def getReturns(regId: String)
-                (implicit hc: HeaderCarrier, rds: HttpReads[Returns]): Future[Returns] = {
-    http.GET[Returns](s"$vatRegUrl/vatreg/$regId/returns") recover {
-      case e: Exception => throw logResponse(e, "getReturns")
-    }
-  }
-
-  def patchReturns(regId: String, returns: Returns)
-                  (implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.PATCH[Returns, HttpResponse](s"$vatRegUrl/vatreg/$regId/returns", returns) recover {
-      case e: Exception => throw logResponse(e, "patchReturns")
     }
   }
 
