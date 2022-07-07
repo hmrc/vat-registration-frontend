@@ -18,6 +18,7 @@ package controllers.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.AgentNameForm
 import models.{AccountantAgent, DeclarationCapacityAnswer, FinancialController, PersonalDetails}
 import play.api.mvc.{Action, AnyContent}
@@ -61,7 +62,11 @@ class AgentNameController @Inject()(val authConnector: AuthConnector,
         for {
           _ <- transactorDetailsService.saveTransactorDetails(personalDetails)
           _ <- transactorDetailsService.saveTransactorDetails(DeclarationCapacityAnswer(AccountantAgent))
-        } yield Redirect(routes.TelephoneNumberController.show)
+        } yield if(isEnabled(TaskList)) {
+          Redirect(controllers.routes.TaskListController.show)
+        } else {
+          Redirect(routes.TelephoneNumberController.show)
+        }
       }
     )
   }

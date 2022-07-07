@@ -1,6 +1,7 @@
 
 package controllers.transactor
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.{AccountantAgent, DeclarationCapacityAnswer, PersonalDetails, TransactorDetails}
 import org.jsoup.Jsoup
@@ -49,31 +50,62 @@ class AgentNameControllerISpec extends ControllerISpec {
   }
 
   "POST /agent-name" when {
-    "the name is valid" must {
-      "store the name in S4L, ARN and declaration capacity, then redirect to the transactor telephone number page" in new Setup {
-        val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
-          firstName = testFirstName,
-          lastName = testLastName,
-          identifiersMatch = true,
-          arn = Some(testArn)
-        )))
+    "the name is valid" when {
+      "the task list is enabled" must {
+        "redirect to the task list" in new Setup {
+          enable(TaskList)
+          val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
+            firstName = testFirstName,
+            lastName = testLastName,
+            identifiersMatch = true,
+            arn = Some(testArn)
+          )))
 
-        val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
+          val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
 
-        given()
-          .user.isAuthorised(arn = Some(testArn))
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
-          .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
-          .registrationApi.getSection[TransactorDetails](None)
-          .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+          given()
+            .user.isAuthorised(arn = Some(testArn))
+            .s4lContainer[TransactorDetails].isEmpty
+            .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
+            .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
+            .registrationApi.getSection[TransactorDetails](None)
+            .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
+          val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
 
-        res.status mustBe SEE_OTHER
-        res.headers(LOCATION) must contain(routes.TelephoneNumberController.show.url)
+          res.status mustBe SEE_OTHER
+          res.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+        }
+      }
+      "the task list is disabled" must {
+        "store the name in S4L, ARN and declaration capacity, then redirect to the transactor telephone number page" in new Setup {
+          disable(TaskList)
+          val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
+            firstName = testFirstName,
+            lastName = testLastName,
+            identifiersMatch = true,
+            arn = Some(testArn)
+          )))
+
+          val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
+
+          given()
+            .user.isAuthorised(arn = Some(testArn))
+            .s4lContainer[TransactorDetails].isEmpty
+            .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
+            .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
+            .registrationApi.getSection[TransactorDetails](None)
+            .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
+
+          res.status mustBe SEE_OTHER
+          res.headers(LOCATION) must contain(routes.TelephoneNumberController.show.url)
+        }
       }
     }
     "the name is invalid" must {

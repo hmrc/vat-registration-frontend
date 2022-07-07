@@ -17,6 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -25,21 +26,26 @@ import services.S4LService
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) {
+class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList,
+                                       aboutYouTransactorTaskList: AboutYouTransactorTaskList) {
 
-  val businessInfoRow = TaskListRowBuilder(
-    messageKey = "tasklist.verifyBusiness.businessInfo",
+  def businessInfoRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
+    messageKey = _ => "tasklist.verifyBusiness.businessInfo",
     url =
       _ => controllers.routes.BusinessIdentificationResolverController.resolve.url,
     tagId = "verifyBusinessRow",
     checks =
       scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),
-    prerequisites =
-      scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.id))
+    prerequisites = scheme =>
+      Seq(
+        Some(registrationReasonTaskList.registrationReasonRow(scheme.id)),
+        if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None
+      ).flatten
   )
 
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
+            profile: CurrentProfile,
             messages: Messages,
             appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(

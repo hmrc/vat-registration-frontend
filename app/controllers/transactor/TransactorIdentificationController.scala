@@ -18,6 +18,7 @@ package controllers.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import models.api.{NETP, NonUkNonEstablished}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
@@ -63,11 +64,15 @@ class TransactorIdentificationController @Inject()(val sessionService: SessionSe
           _ <- transactorDetailsService.saveTransactorDetails(personalDetails)
           partyType <- vatRegistrationService.partyType
         } yield {
-          partyType match {
-            case NETP | NonUkNonEstablished =>
-              Redirect(routes.TransactorInternationalAddressController.show)
-            case _ =>
-              Redirect(routes.TransactorHomeAddressController.redirectToAlf)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            partyType match {
+              case NETP | NonUkNonEstablished =>
+                Redirect(routes.TransactorInternationalAddressController.show)
+              case _ =>
+                Redirect(routes.TransactorHomeAddressController.redirectToAlf)
+            }
           }
         }
     }

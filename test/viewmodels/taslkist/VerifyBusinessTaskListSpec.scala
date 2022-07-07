@@ -17,6 +17,7 @@
 package viewmodels.taslkist
 
 import fixtures.VatRegistrationFixture
+import models.CurrentProfile
 import testHelpers.VatRegSpec
 import viewmodels.tasklist.VerifyBusinessTaskList
 
@@ -53,6 +54,17 @@ class VerifyBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture 
       "return false" in {
         val scheme = emptyVatScheme
         section.businessInfoRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+    "the user is an agent or transactor" must {
+      "return true when the transactor and business rows are complete" in {
+
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
+          transactorDetails = Some(validTransactorDetails)
+        )
+
+        section.businessInfoRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
       }
     }
   }

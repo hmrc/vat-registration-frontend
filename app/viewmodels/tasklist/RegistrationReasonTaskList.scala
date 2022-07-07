@@ -27,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
 
   val registrationReasonRow = (regId: String) => TaskListRowBuilder(
-    messageKey = "tasklist.eligibilty.regReason",
+    messageKey = _ => "tasklist.eligibilty.regReason",
     url = _ => appConfig.eligibilityStartUrl(regId),
     tagId = "regReasonRow",
     checks = scheme => Seq(

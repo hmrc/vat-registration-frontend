@@ -3,8 +3,8 @@ package controllers
 
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.{ApplicantDetails, PartnerEntity}
 import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany}
+import models.{ApplicantDetails, PartnerEntity, TransactorDetails}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
@@ -22,15 +22,26 @@ class TaskListControllerISpec extends ControllerISpec {
       val row1 = "Registration reason Completed"
     }
 
+    val section1a = new {
+      val heading = "2. About you"
+      val row1 = "Personal details Completed"
+    }
+
     val section2 = new {
       val heading = "2. Verify the business"
+      val heading2 = "3. Verify the business"
       val row1 = "Business information Completed"
     }
 
     val section3 = new {
       val heading = "3. About you"
+
       val leadPartnerCompletedRow = "Lead partner details Completed"
       val leadPartnerNotStartedRow = "Lead partner details Not started"
+
+      val heading2 = "4. About the business contact"
+      val row1 = "Personal details Completed"
+
     }
   }
 
@@ -45,7 +56,7 @@ class TaskListControllerISpec extends ControllerISpec {
 
   "GET /application-progress" when {
     "the TaskList feature switch is enabled" must {
-      "return OK and render all relevant rows when all data is present in the BE" in new Setup {
+      "return OK and render all relevant rows when all data is present" in new Setup {
         enable(TaskList)
 
         val scheme = emptyUkCompanyVatScheme.copy(
@@ -70,7 +81,10 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List(ExpectedMessages.section3.leadPartnerCompletedRow))
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+          ExpectedMessages.section3.leadPartnerCompletedRow,
+          ExpectedMessages.section3.row1
+        ))
       }
 
       "return OK and not render lead partner details row for non-partnership party type even when all data is present in the BE" in new Setup {
@@ -89,6 +103,7 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+          .registrationApi.getSection[TransactorDetails](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -98,22 +113,52 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List())
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(ExpectedMessages.section3.row1))
       }
-
-      "return OK and render all relevant rows when Applicant Details is partially complete in S4L" in new Setup {
+      "show the transactor section when all data is present" in new Setup {
         enable(TaskList)
 
         val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+          applicantDetails = Some(validFullApplicantDetails)
         )
+
+        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](None)
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get)
+        implicit val doc = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+        sectionMustExist(2)(ExpectedMessages.section1a.heading, List(ExpectedMessages.section1a.row1))
+        sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
+        sectionMustExist(4)(ExpectedMessages.section3.heading2, List(ExpectedMessages.section3.row1))
+      }
+      "show the lead partner section when the user is a partnership" in new Setup {
+        enable(TaskList)
+
+        val scheme = emptyUkCompanyVatScheme.copy(
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
+          applicantDetails = Some(validFullApplicantDetails)
+        )
+
+        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
+
+        given
+          .user.isAuthorised()
+          .registrationApi.getRegistration(scheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership), personalDetails = None)))
+          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -123,12 +168,15 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List(ExpectedMessages.section3.leadPartnerNotStartedRow))
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+          ExpectedMessages.section3.leadPartnerNotStartedRow,
+          "Personal details Cannot start yet"
+        ))
       }
     }
 
     "the TaskList feature switch is disabled" must {
-      "return OK and render all relevant sections" in new Setup {
+      "return NOT FOUND" in new Setup {
         disable(TaskList)
 
         given

@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import forms.FormerNameDateForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
@@ -27,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.former_name_date
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
@@ -66,11 +67,15 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
               } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
               data => {
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
-                  vatRegistrationService.partyType map {
-                    case NETP | NonUkNonEstablished =>
-                      Redirect(applicantRoutes.InternationalHomeAddressController.show)
-                    case _ =>
-                      Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
+                  if (isEnabled(TaskList)) {
+                    Future.successful(Redirect(controllers.routes.TaskListController.show))
+                  } else {
+                    vatRegistrationService.partyType map {
+                      case NETP | NonUkNonEstablished =>
+                        Redirect(applicantRoutes.InternationalHomeAddressController.show)
+                      case _ =>
+                        Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
+                    }
                   }
                 }
               }

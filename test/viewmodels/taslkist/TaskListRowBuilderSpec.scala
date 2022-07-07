@@ -35,7 +35,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
   val testUrl = "testUrl"
 
   def testPrerequisite(checksPass: Boolean) = TaskListRowBuilder(
-    messageKey = prereqMessageKey,
+    messageKey = _ => prereqMessageKey,
     url = _ => testUrl,
     tagId = prereqAriaLabel,
     checks = _ => Seq(checksPass),
@@ -43,7 +43,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
   )
 
   def testRow(prerequisitesMet: Boolean) = TaskListRowBuilder(
-    messageKey = rowMessageKey,
+    messageKey = _ => rowMessageKey,
     url = _ => testUrl,
     tagId = rowAriaLabel,
     checks = scheme => Seq(

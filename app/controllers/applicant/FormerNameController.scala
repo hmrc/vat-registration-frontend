@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import forms.FormerNameForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
@@ -64,11 +65,15 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
               Future.successful(Redirect(applicantRoutes.FormerNameCaptureController.show))
             }
             else {
-              vatRegistrationService.partyType map {
-                case NETP | NonUkNonEstablished =>
-                  Redirect(applicantRoutes.InternationalHomeAddressController.show)
-                case _ =>
-                  Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
+              if (isEnabled(TaskList)) {
+                Future.successful(Redirect(controllers.routes.TaskListController.show))
+              } else {
+                vatRegistrationService.partyType map {
+                  case NETP | NonUkNonEstablished =>
+                    Redirect(applicantRoutes.InternationalHomeAddressController.show)
+                  case _ =>
+                    Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
+                }
               }
             }
           }

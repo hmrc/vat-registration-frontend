@@ -18,11 +18,10 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
-import models.ApplicantDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionService, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionService, TransactorDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.tasklist.{AboutYouTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
+import viewmodels.tasklist.{AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -33,9 +32,11 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    val authConnector: AuthConnector,
                                    val sessionService: SessionService,
                                    registrationReasonSection: RegistrationReasonTaskList,
+                                   aboutYouTransactorTaskList: AboutYouTransactorTaskList,
                                    verifyBusinessTaskList: VerifyBusinessTaskList,
                                    aboutYouTaskList: AboutYouTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
+                                   transactorDetailsService: TransactorDetailsService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -47,13 +48,15 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
       for {
         vatScheme <- vatRegistrationService.getVatScheme
         applicantDetails <- applicantDetailsService.getApplicantDetails // This is temporary, until we've removed S4L
-          .recover { case _ => ApplicantDetails() }
-        scheme = vatScheme.copy(applicantDetails = Some(applicantDetails))
-      } yield Ok(view(
-        registrationReasonSection.build(scheme),
-        verifyBusinessTaskList.build(scheme),
-        aboutYouTaskList.build(scheme)
-      ))
+        transactorDetails <- transactorDetailsService.getTransactorDetails
+        scheme = vatScheme.copy(applicantDetails = Some(applicantDetails), transactorDetails = Some(transactorDetails))
+        sections = List(
+          Some(registrationReasonSection.build(scheme)),
+          if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
+          Some(verifyBusinessTaskList.build(scheme)),
+          Some(aboutYouTaskList.build(scheme))
+        ).flatten
+      } yield Ok(view(sections: _*))
     } else {
       Future.successful(NotFound)
     }

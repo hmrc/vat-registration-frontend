@@ -45,6 +45,8 @@ tasklist.verifyBusiness.heading         = Verify the business
 tasklist.verifyBusiness.businessInfo    = Business information
 tasklist.aboutYou.heading               = About you
 tasklist.aboutYou.leadPartnerDetails    = Lead partner details
+tasklist.aboutYou.personalDetails       = Personal details
+tasklist.aboutBusinessContact.heading   = About the business contact
 
 # Ordinal numbers
 ordinals.1 = First
