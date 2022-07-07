@@ -19,8 +19,7 @@ package services
 import _root_.models.api.{Address, SicCode}
 import _root_.models.{Business, ContactPreference, CurrentProfile, LabourCompliance}
 import connectors.RegistrationApiConnector
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.Format
 import services.BusinessService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -34,28 +33,11 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
   def getBusiness(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
     s4lService.fetchAndGet[Business].flatMap {
       case None | Some(Business(None, None, None, None, None, None, None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[Business](cp.registrationId).flatMap {
-          case None | Some(Business(None, None, None, None, None, None, None, None, None, None, None, None)) =>
-            mergeMissingPropertiesFroms4lService("business-contact", Business(), contactReads)
-          case Some(business) =>
-            business match {
-              case Business(_, _, _, _, _, _, None, None, None, None, None, None) =>
-                mergeMissingPropertiesFroms4lService("SicAndCompliance", business, complianceReads)
-              case _ =>
-                Future.successful(business)
-            }
+        registrationApiConnector.getSection[Business](cp.registrationId).map {
+          case Some(business) => business
+          case None => Business()
         }
       case Some(business) => Future.successful(business)
-    }
-  }
-
-  private def mergeMissingPropertiesFroms4lService(formId: String, business: Business, patchReads: Business => Reads[Business])
-                                                 (implicit cp: CurrentProfile, hc: HeaderCarrier)= {
-    s4lService.fetchAndGet[JsValue](formId).map {
-      case Some(state) =>
-        implicit val reads: Reads[Business] = patchReads(business)
-        Json.fromJson[Business](state).get
-      case None => business
     }
   }
 
@@ -139,38 +121,4 @@ object BusinessService {
   case class BusinessActivityDescription(answer: String)
   case class BusinessActivities(sicCodes: List[SicCode])
   case class MainBusinessActivity(sicCode: SicCode)
-
-  val complianceReads: Business => Reads[Business] = (business: Business) => (
-    (__ \ "hasLandAndProperty").readNullable[Boolean] and
-      (__ \ "businessDescription").readNullable[String] and
-      (__ \ "businessActivities").readNullable[List[SicCode]] and
-      (__ \ "mainBusinessActivity").readNullable[SicCode] and
-      (__ \ "otherBusinessInvolvement").readNullable[Boolean] and
-      (__ \ "labourCompliance" \ "supplyWorkers").readNullable[Boolean] and
-      (__ \ "labourCompliance" \ "numOfWorkersSupplied").readNullable[Int] and
-      (__ \ "labourCompliance" \ "intermediaryArrangement").readNullable[Boolean]
-    )(
-    (hasLandAndProperty, businessDescription, businessActivities, mainBusinessActivity, otherBusinessInvolvement, supplyWorkers, noOfWorkers, intermediaryArrangement) =>
-
-      business.copy(
-        hasLandAndProperty = hasLandAndProperty,
-        businessDescription = businessDescription,
-        mainBusinessActivity = mainBusinessActivity,
-        businessActivities = businessActivities,
-        otherBusinessInvolvement = otherBusinessInvolvement,
-        labourCompliance = Some(LabourCompliance(noOfWorkers, intermediaryArrangement, supplyWorkers))
-      )
-  )
-
-  val contactReads: Business => Reads[Business] = (business: Business) => (
-    (__ \ "ppob").readNullable[Address] and
-      (__ \ "email").readNullable[String] and
-      (__ \ "telephoneNumber").readNullable[String] and
-      (__ \ "hasWebsite").readNullable[Boolean] and
-      (__ \ "website").readNullable[String] and
-      (__ \ "contactPreference").readNullable[ContactPreference])(
-    (ppobAddress, email, telephoneNumber, hasWebsite, website, contactPreference) =>
-
-      business.copy(ppobAddress, email, telephoneNumber, hasWebsite, website, contactPreference)
-  )
 }

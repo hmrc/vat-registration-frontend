@@ -37,11 +37,6 @@ class S4LService @Inject()(val s4LConnector: S4LConnector)
       case _: JsResultException => None
     }
 
-  def fetchAndGet[T](formId: String)(implicit profile: CurrentProfile, hc: HeaderCarrier, reads: Reads[T]): Future[Option[T]] =
-    s4LConnector.fetchAndGet[T](profile.registrationId, formId).recover {
-      case _: JsResultException => None
-    }
-
   def clear(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[HttpResponse] =
     s4LConnector.clear(profile.registrationId)
 
