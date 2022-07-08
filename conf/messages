@@ -1143,6 +1143,9 @@ attachments.multipleDocumentsRequired.VAT51.link                    = VAT 50/51 
 attachments.multipleDocumentsRequired.VAT51.para2                   = to provide us with details of the VAT group, including details of each subsidiary.
 attachments.multipleDocumentsRequired.VAT5L.para1                   = a completed
 attachments.multipleDocumentsRequired.VAT5L.link                    = VAT5L form
+attachments.multipleDocumentsRequired.VAT1TR.para1                  = a completed
+attachments.multipleDocumentsRequired.VAT1TR.link                   = VAT1TR form
+attachments.multipleDocumentsRequired.VAT1TR.para2                  = with details of your chosen UK tax representative.
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1228,6 +1231,8 @@ pages.CoverSheet.idEvidence.workPermit             = work permit or visa
 pages.CoverSheet.idEvidence.dwpLetter              = letter from the Department for Work and Pensions for confirming entitlement to benefits
 pages.CoverSheet.idEvidence.utilityBill            = utility bill
 pages.CoverSheet.idEvidence.birthCert              = birth certificate
+pages.CoverSheet.vat1TRStart                       = a completed
+pages.CoverSheet.vat1TRLink                        = VAT1TR form
 
 
 ## Northern Ireland Protocol
@@ -1329,7 +1334,7 @@ transactorName.optFullNamePageLabel                      = Who are you registeri
 pages.vat2Required.heading                               = You must complete a VAT 2 form
 pages.vat2Required.para.1                                = You must now
 pages.vat2Required.para.link                             = download the VAT 2 form
-pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to HMRC.
+pages.vat2Required.para.2                                = to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to us.
 
 ## PARTNERSHIP NAME
 partnershipName.heading                                  = What is the name of the partnership?
@@ -1357,7 +1362,13 @@ pages.vat51Required.para2                                = to provide us with de
 pages.vat5LRequired.heading                              = You must send us a completed VAT5L form in order for us to process this application
 pages.vat5LRequired.para1                                = We need a completed
 pages.vat5LRequired.link                                 = VAT5L form
-pages.vat5LRequired.para2                                = to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to HRMC.
+pages.vat5LRequired.para2                                = to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to us.
+
+## VAT1TR REQUIRED
+pages.vat1TRRequired.heading                             = You must send us a completed VAT1TR form in order for us to process this application
+pages.vat1TRRequired.para1                               = Because you have chosen to appoint a UK tax representative, you need to complete
+pages.vat1TRRequired.link                                = form VAT1TR
+pages.vat1TRRequired.para2                               = Once you have completed the form, you must either upload, email or post a copy to us.
 
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Choose an application reference
@@ -1514,6 +1525,7 @@ supplementary.uploadDocument.start                   = Upload a completed
 supplementary.uploadDocument.vat5LLink               = VAT5L form
 supplementary.uploadDocument.vat51Link               = VAT 50/51 form
 supplementary.uploadDocument.vat2Link                = VAT2 form
+supplementary.uploadDocument.vat1trLink              = VAT1TR form
 
 # UPLOAD FORM ERROR MESSAGES
 fileUpload.async.error.page.heading                  = There is a problem with the selected file

@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51, TransactorIdentityEvidence, VAT5L}
+@import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
 
 @this(
         layout: layouts.layout,
@@ -44,6 +44,7 @@
             case IdentityEvidence => Html(applicantName.fold(messages("attachments.multipleDocumentsRequired.identityEvidence"))(name => messages("attachments.multipleDocumentsRequired.identityEvidence.name", name)))
             case TransactorIdentityEvidence => Html(transactorName.map(name => messages("attachments.multipleDocumentsRequired.identityEvidence.name", name)))
             case VAT5L => vat5LBlock
+            case TaxRepresentativeAuthorisation => vat1TRBlock
             case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
         }: _*
     )
@@ -100,4 +101,15 @@
         messageKey = messages("attachments.multipleDocumentsRequired.VAT5L.link"),
         isExternal = true
     )
+}
+
+@vat1TRBlock = {
+    @messages("attachments.multipleDocumentsRequired.VAT1TR.para1")
+    @link(
+        link = appConfig.vat1trLink,
+        messageKey = messages("attachments.multipleDocumentsRequired.VAT1TR.link"),
+        isExternal = true,
+        isButton = false
+    )
+    @messages("attachments.multipleDocumentsRequired.VAT1TR.para2")
 }

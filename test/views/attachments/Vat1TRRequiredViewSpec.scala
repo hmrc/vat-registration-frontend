@@ -19,26 +19,26 @@ package views.attachments
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.attachments.Vat2Required
+import views.html.attachments.Vat1TRRequired
 
-class Vat2RequiredViewSpec extends VatRegViewSpec {
+class Vat1TRRequiredViewSpec extends VatRegViewSpec {
 
-  val vat2RequiredPage: Vat2Required = app.injector.instanceOf[Vat2Required]
+  val vat1TRRequiredPage: Vat1TRRequired = app.injector.instanceOf[Vat1TRRequired]
 
 
-  lazy val view: Html = vat2RequiredPage()
+  lazy val view: Html = vat1TRRequiredPage()
   implicit val doc = Jsoup.parse(view.body)
 
   object ExpectedContent {
-    val heading = "You must complete a VAT 2 form"
+    val heading = "You must send us a completed VAT1TR form in order for us to process this application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "You must now download the VAT 2 form (opens in new tab) to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to us."
-    val link = "download the VAT 2 form (opens in new tab)"
+    val para = "Because you have chosen to appoint a UK tax representative, you need to complete form VAT1TR (opens in new tab). Once you have completed the form, you must either upload, email or post a copy to us."
+    val link = "form VAT1TR (opens in new tab)"
     val continue = "Save and continue"
-    val url = "https://www.gov.uk/government/publications/vat-partnership-details-vat2"
+    val url = "https://www.gov.uk/government/publications/vat-appointment-of-tax-representative-vat1tr"
   }
 
-  "The VAT 2 Required page" must {
+  "The VAT1TR Required page" must {
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }

@@ -18,7 +18,7 @@
 @import views.html.components._
 @import views.html.layouts.layout
 @import models.api.AttachmentType
-@import models.api.{VAT2, VAT51, IdentityEvidence, TransactorIdentityEvidence, VAT5L}
+@import models.api.{VAT2, VAT51, IdentityEvidence, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
 
 @this(
         layout: layout,
@@ -62,6 +62,7 @@
             case IdentityEvidence => Html(applicantName.fold(messages("pages.CoverSheet.identityEvidence"))(name => messages("pages.CoverSheet.identityEvidence.name", name)))
             case TransactorIdentityEvidence => Html(transactorName.map(name => messages("pages.CoverSheet.identityEvidence.name", name)))
             case VAT5L => vat5LBlock
+            case TaxRepresentativeAuthorisation => vat1TRBlock
         }: _*
     )
 
@@ -136,4 +137,9 @@
 @vat5LBlock = {
     @messages("pages.CoverSheet.vat5LStart")
     @link(appConfig.vat5LLink, "pages.CoverSheet.vat5LLink", isExternal = true)
+}
+
+@vat1TRBlock = {
+    @messages("pages.CoverSheet.vat1TRStart")
+    @link(appConfig.vat1trLink, "pages.CoverSheet.vat1TRLink", isExternal = true)
 }

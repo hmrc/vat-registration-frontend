@@ -16,7 +16,7 @@
 
 package views.attachments
 
-import models.api.{AttachmentType, IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
+import models.api.{AttachmentType, IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -25,7 +25,7 @@ import views.html.attachments.PostalCoverSheet
 class PostalCoverSheetViewSpec extends VatRegViewSpec {
 
   val testRef = "VRN12345689"
-  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L)
+  val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L, TaxRepresentativeAuthorisation)
   val testVat2: List[AttachmentType] = List[AttachmentType](VAT2)
   val testVat5L: List[AttachmentType] = List[AttachmentType](VAT5L)
 
@@ -51,6 +51,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val print = "Print this page"
     val transactorName = "Transactor Name"
     val applicantName = "Applicant Name"
+    val vat1TRBullet = "a completed VAT1TR form (opens in new tab)"
   }
 
   object IdentityEvidenceBlock {
@@ -136,7 +137,8 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
         ExpectedContent.vat2Bullet,
         ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence,
-        ExpectedContent.vat5LBullet
+        ExpectedContent.vat5LBullet,
+        ExpectedContent.vat1TRBullet
       )
     }
 
