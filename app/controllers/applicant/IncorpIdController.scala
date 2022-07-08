@@ -19,7 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.UseSoleTraderIdentification
+import featureswitch.core.config.{TaskList, UseSoleTraderIdentification}
 import models.PartnerEntity
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
@@ -75,11 +75,15 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           isTransactor <- vatRegistrationService.isTransactor
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
         } yield {
-          if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
-            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
-          }
-          else {
-            Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
+              Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+            }
+            else {
+              Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+            }
           }
         }
   }
@@ -117,7 +121,11 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           )
           _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(incorpDetails, partyType, isLeadPartner = true))
         } yield {
-          Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          }
         }
   }
 }

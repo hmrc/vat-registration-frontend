@@ -286,8 +286,27 @@ class JourneyControllerISpec extends ControllerISpec
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
+    "the Task List feature is enabled" must {
+      "redirect to the documents required page" in new Setup {
+        enable(MultipleRegistrations)
+        enable(TaskList)
+        given()
+          .user.isAuthorised()
+          .vatScheme.regStatus(VatRegStatus.draft)
+          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
+          .trafficManagement.passes(VatReg)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+      }
+    }
     "on failure with missing vat schema details for given reg-id" must {
       "return INTERNAL_SERVER_ERROR" in new Setup {
+        disable(TaskList)
         given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

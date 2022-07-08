@@ -19,7 +19,7 @@ package viewmodels.tasklist
 import models.api.VatScheme
 
 case class TaskListRowBuilder(messageKey: String,
-                              url: String,
+                              url: VatScheme => String,
                               tagId: String,
                               checks: VatScheme => Seq[Boolean],
                               prerequisites: VatScheme => Seq[TaskListRowBuilder]) {
@@ -46,7 +46,7 @@ case class TaskListRowBuilder(messageKey: String,
       }
     }
 
-    TaskListSectionRow(messageKey, url, tagId, status)
+    TaskListSectionRow(messageKey, url(vatScheme), tagId, status)
   }
 
 }

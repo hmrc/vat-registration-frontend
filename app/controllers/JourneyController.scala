@@ -109,6 +109,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
           case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
           case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
           case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+          case _ if isEnabled(TaskList) => Redirect(controllers.routes.TaskListController.show)
           case _ if isEnabled(MultipleRegistrations) => Redirect(routes.ApplicationReferenceController.show)
           case _ => Redirect(routes.HonestyDeclarationController.show)
         }

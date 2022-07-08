@@ -25,6 +25,7 @@ import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, _}
 
+
 class PersonalDetailsValidationControllerISpec extends ControllerISpec {
   "GET /start-personal-details-validation-journey" should {
     "redirect to the personal details validation service" in new Setup {
@@ -44,28 +45,28 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /personal-details-validation-callback" should {
-    "retrieve the captured transactor details and redirect" in new Setup {
-      disable(StubPersonalDetailsValidation)
+  "GET /personal-details-validation-callback" when {
+      "retrieve the captured transactor details and redirect" in new Setup {
+        disable(StubPersonalDetailsValidation)
 
-      val testValidationId: String = "testValidationId"
+        val testValidationId: String = "testValidationId"
 
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(personalDetails = Some(testPersonalDetails)))
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].isEmpty
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(personalDetails = Some(testPersonalDetails)))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testPersonalDetails)(PersonalDetails.pdvFormat)).toString)
+        stubGet(s"/personal-details-validation/$testValidationId", OK, Json.obj("personalDetails" -> Json.toJson(testPersonalDetails)(PersonalDetails.pdvFormat)).toString)
 
-      val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
+        val res: WSResponse = await(buildClient(applicantRoutes.PersonalDetailsValidationController.personalDetailsValidationCallback(testValidationId).url).get)
 
-      res.status mustBe SEE_OTHER
+        res.status mustBe SEE_OTHER
     }
   }
 }

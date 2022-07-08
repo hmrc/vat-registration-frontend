@@ -18,6 +18,7 @@ package controllers.applicant
 
 import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api._
@@ -209,8 +210,150 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
   }
 
   "GET /minor-entity-id-callback" must {
+    "redirect to the Task List" when {
+      "the entity is Trust" when {
+        "S4L model is not full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
+          given()
+            .user.isAuthorised()
+            .registrationApi.getSection[ApplicantDetails](None)
+            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testTrust)))
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
+
+          stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testTrustJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+
+        "the model in S4l is full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(trustApplicantDetails)(ApplicantDetails.s4LWrites)
+            .s4lContainer[ApplicantDetails].clearedByKey
+            .registrationApi.replaceSection[ApplicantDetails](trustApplicantDetails)
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
+
+          stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testTrustJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+      }
+
+      "the entity is Unincorporated Association" when {
+        "S4L model is not full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
+          given()
+            .user.isAuthorised()
+            .registrationApi.getSection[ApplicantDetails](None)
+            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testUnincorpAssoc)))
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
+
+          stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+
+        "the model in S4l is full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(unincorpAssocApplicantDetails)(ApplicantDetails.s4LWrites)
+            .s4lContainer[ApplicantDetails].clearedByKey
+            .registrationApi.replaceSection[ApplicantDetails](unincorpAssocApplicantDetails)
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
+
+          stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+      }
+
+      "the entity is Non UK Company" when {
+        "S4L model is not full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
+          given()
+            .user.isAuthorised()
+            .registrationApi.getSection[ApplicantDetails](None)
+            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testNonUkCompany)))
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+          stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testNonUkCompanyJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+
+        "the model in S4l is full" in new Setup {
+          enable(TaskList)
+
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(nonUkCompanyApplicantDetails)(ApplicantDetails.s4LWrites)
+            .s4lContainer[ApplicantDetails].clearedByKey
+            .registrationApi.replaceSection[ApplicantDetails](nonUkCompanyApplicantDetails)
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+          stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testNonUkCompanyJourneyId").get()
+
+          whenReady(res) { result =>
+            result.status mustBe SEE_OTHER
+            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+          }
+        }
+      }
+    }
+
     "redirect to the lead business entity type page for Trust" when {
       "S4L model is not full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
         given()
           .user.isAuthorised()
@@ -231,6 +374,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
         given()
           .user.isAuthorised()
@@ -253,6 +398,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
     "redirect to the lead business entity type page for Unincorporated Association" when {
       "S4L model is not full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
         given()
           .user.isAuthorised()
@@ -273,6 +420,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
         given()
           .user.isAuthorised()
@@ -295,6 +444,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
     "redirect to the lead business entity type page for Non UK Company" when {
       "S4L model is not full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
         given()
           .user.isAuthorised()
@@ -315,6 +466,8 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       }
 
       "the model in S4l is full" in new Setup {
+        disable(TaskList)
+
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
         given()
           .user.isAuthorised()
@@ -334,6 +487,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
         }
       }
     }
+
   }
 
 }
