@@ -18,7 +18,7 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.api.{IdentityEvidence, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
+import models.api.{IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
 
@@ -56,6 +56,8 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
               Redirect(routes.Vat51RequiredController.show)
             case List(VAT5L) =>
               Redirect(routes.Vat5LRequiredController.show)
+            case List(TaxRepresentativeAuthorisation) =>
+              Redirect(routes.Vat1TRRequiredController.show)
           }
         } yield redirect
   }

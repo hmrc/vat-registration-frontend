@@ -23,16 +23,16 @@ import views.html.attachments.Vat5LRequired
 
 class Vat5LRequiredViewSpec extends VatRegViewSpec {
 
-  val vat2RequiredPage: Vat5LRequired = app.injector.instanceOf[Vat5LRequired]
+  val vat5LRequiredPage: Vat5LRequired = app.injector.instanceOf[Vat5LRequired]
 
 
-  lazy val view: Html = vat2RequiredPage()
+  lazy val view: Html = vat5LRequiredPage()
   implicit val doc = Jsoup.parse(view.body)
 
   object ExpectedContent {
     val heading = "You must send us a completed VAT5L form in order for us to process this application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "We need a completed VAT5L form (opens in new tab) to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to HRMC."
+    val para = "We need a completed VAT5L form (opens in new tab) to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to us."
     val link = "VAT5L form (opens in new tab)"
     val continue = "Save and continue"
     val url = "https://www.gov.uk/government/publications/vat-vat-registration-land-and-property-vat-5l"

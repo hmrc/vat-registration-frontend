@@ -191,6 +191,7 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
         await(Builder.build(VAT5L)) mustBe expectedHtml(appConfig.vat5LLink, "vat5LLink")
         await(Builder.build(VAT51)) mustBe expectedHtml(appConfig.vat51Link, "vat51Link")
         await(Builder.build(VAT2)) mustBe expectedHtml(appConfig.vat2Link, "vat2Link")
+        await(Builder.build(TaxRepresentativeAuthorisation)) mustBe expectedHtml(appConfig.vat1trLink, "vat1trLink")
       }
     }
   }

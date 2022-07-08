@@ -103,6 +103,22 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       }
     }
 
+    "return a redirect to VAT1TR required page when VAT1TR is required" in {
+      given()
+        .user.isAuthorised()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .vatScheme.has("attachments", Json.toJson(Attachments(None, List[AttachmentType](TaxRepresentativeAuthorisation))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.Vat1TRRequiredController.show.url)
+      }
+    }
+
     "return a redirect to multiple documents required page when multiple attachments are required" in {
       given()
         .user.isAuthorised()

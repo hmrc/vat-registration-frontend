@@ -78,6 +78,8 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
         Future.successful(supplementDocumentUploadHint(appConfig.vat5LLink, "vat5LLink"))
       case VAT2 =>
         Future.successful(supplementDocumentUploadHint(appConfig.vat2Link, "vat2Link"))
+      case TaxRepresentativeAuthorisation =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat1trLink, "vat1trLink"))
       case _ =>
         throw new InternalServerException("Attachment Type not recognised")
     }
