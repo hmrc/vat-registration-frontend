@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
-import play.api.libs.json.{JsString, Reads, Writes}
+import play.api.libs.json.{JsString, JsValue, Reads, Writes}
 import services.VatApplicationService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
@@ -42,6 +42,11 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       vatRegistrationServiceMock,
       mockS4LService
     )
+
+    when(mockS4LService.fetchAndGetByKey[JsValue](ArgumentMatchers.eq("tradingDetails"))(any(), any(), any()))
+      .thenReturn(Future.successful(None))
+    when(mockS4LService.fetchAndGetByKey[JsValue](ArgumentMatchers.eq("returns"))(any(), any(), any()))
+      .thenReturn(Future.successful(None))
   }
 
   override def beforeEach(): Unit = {

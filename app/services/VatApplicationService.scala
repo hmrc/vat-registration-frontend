@@ -20,6 +20,8 @@ import connectors.RegistrationApiConnector
 import featureswitch.core.config.FeatureSwitching
 import models._
 import models.api.vatapplication._
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsValue, Json, Reads, __}
 import services.VatApplicationService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -36,12 +38,31 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
     s4lService.fetchAndGet[VatApplication].flatMap {
       case None | Some(VatApplication(None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[VatApplication](profile.registrationId).map {
-          case Some(vatApplication) => vatApplication
-          case None => VatApplication()
+        registrationApiConnector.getSection[VatApplication](profile.registrationId).flatMap {
+          case None | Some(VatApplication(None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
+            mergeMissingPropertiesFroms4lService("tradingDetails", VatApplication(), tradingDetailsReads).flatMap { vatApplication =>
+              mergeMissingPropertiesFroms4lService("returns", vatApplication, returnsReads)
+            }
+          case Some(vatApplication) =>
+            vatApplication match {
+              case VatApplication(_, _, None, None, None, None, None, None, None, None, None, None, None) =>
+                mergeMissingPropertiesFroms4lService("returns", vatApplication, returnsReads)
+              case vatApplication =>
+                Future.successful(vatApplication)
+            }
         }
       case Some(vatApplication) =>
         Future.successful(vatApplication)
+    }
+  }
+
+  private def mergeMissingPropertiesFroms4lService(formId: String, vatApplication: VatApplication, patchReads: VatApplication => Reads[VatApplication])
+                                                  (implicit cp: CurrentProfile, hc: HeaderCarrier) = {
+    s4lService.fetchAndGetByKey[JsValue](formId).map {
+      case Some(state) =>
+        implicit val reads: Reads[VatApplication] = patchReads(vatApplication)
+        Json.fromJson[VatApplication](state).get
+      case None => vatApplication
     }
   }
 
@@ -285,4 +306,41 @@ object VatApplicationService {
   trait OverseasComplianceAnswer
 
   trait NipAnswer
+
+  val tradingDetailsReads: VatApplication => Reads[VatApplication] = (vatApplication: VatApplication) => (
+    (__ \ "euGoods").readNullable[Boolean] and
+      (__ \ "tradeVatGoodsOutsideUk").readNullable[Boolean]
+    ) ((eoriRequested, tradeVatGoodsOutsideUk) =>
+    vatApplication.copy(tradeVatGoodsOutsideUk, eoriRequested)
+  )
+
+  val returnsReads: VatApplication => Reads[VatApplication] = (vatApplication: VatApplication) => (
+    (__ \ "turnoverEstimate").readNullable[BigDecimal] and
+      (__ \ "appliedForExemption").readNullable[Boolean] and
+      (__ \ "zeroRatedSupplies").readNullable[BigDecimal] and
+      (__ \ "reclaimVatOnMostReturns").readNullable[Boolean] and
+      (__ \ "returnsFrequency").readNullable[ReturnsFrequency] and
+      (__ \ "staggerStart").readNullable[Stagger] and
+      (__ \ "startDate").readNullable[LocalDate] and
+      (__ \ "annualAccountingDetails").readNullable[AASDetails] and
+      (__ \ "overseasCompliance").readNullable[OverseasCompliance] and
+      (__ \ "northernIrelandProtocol").readNullable[NIPTurnover] and
+      (__ \ "hasTaxRepresentative").readNullable[Boolean]
+    ) ((turnoverEstimate, appliedForExemption, zeroRatedSupplies, reclaimVatOnMostReturns,
+        returnsFrequency, staggerStart, startDate, annualAccountingDetails, overseasCompliance,
+        northernIrelandProtocol, hasTaxRepresentative) =>
+    vatApplication.copy(
+      turnoverEstimate = turnoverEstimate,
+      appliedForExemption = appliedForExemption,
+      zeroRatedSupplies = zeroRatedSupplies,
+      claimVatRefunds = reclaimVatOnMostReturns,
+      returnsFrequency = returnsFrequency,
+      staggerStart = staggerStart,
+      startDate = startDate,
+      annualAccountingDetails = annualAccountingDetails,
+      overseasCompliance = overseasCompliance,
+      northernIrelandProtocol = northernIrelandProtocol,
+      hasTaxRepresentative = hasTaxRepresentative
+    )
+  )
 }
