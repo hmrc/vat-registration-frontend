@@ -16,6 +16,8 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
   val url: String = controllers.business.routes.BusinessWebsiteAddressController.show.url
   val businessWebsiteAddress = "https://www.example.com"
+  val invalidWebsiteAddress = "https://www.example.com/"
+  val validWebsiteAddress = "https://www.example.com/photos/"
 
   val s4lData: Business = Business(website = Some(businessWebsiteAddress))
 
@@ -58,8 +60,8 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.getSection[Business](None)
           .s4lContainer[Business].isUpdatedWith(
-            businessDetails.copy(website = Some(businessWebsiteAddress))
-          )
+          businessDetails.copy(website = Some(businessWebsiteAddress))
+        )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -84,6 +86,40 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
+
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+      }
+
+      "Post the block to the backend and redirect to the next page and remove trailing slashes when necessary" in new Setup {
+
+        given()
+          .user.isAuthorised()
+          .s4lContainer[Business].contains(businessDetails.copy(website = None))
+          .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
+          .s4lContainer[Business].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidWebsiteAddress))))
+
+        response.status mustBe SEE_OTHER
+        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+      }
+
+      "Post the block to the backend and redirect to the next page and not remove trailing slashes when not necessary" in new Setup {
+
+        given()
+          .user.isAuthorised()
+          .s4lContainer[Business].contains(businessDetails.copy(website = None))
+          .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(validWebsiteAddress)))
+          .s4lContainer[Business].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(validWebsiteAddress))))
 
         response.status mustBe SEE_OTHER
         response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)

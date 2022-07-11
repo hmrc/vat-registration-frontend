@@ -19,22 +19,24 @@ package controllers.business
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessWebsiteAddressForm
-import play.api.mvc.{Action, AnyContent}
+import models.CurrentProfile
+import play.api.mvc.{Action, AnyContent, Result}
 import services.BusinessService.Website
 import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.business.BusinessWebsiteAddress
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BusinessWebsiteAddressController @Inject()(val sessionService: SessionService,
-                                        val authConnector: AuthConnector,
-                                        val businessService: BusinessService,
-                                        view: BusinessWebsiteAddress)
-                                       (implicit appConfig: FrontendAppConfig,
-                                        val executionContext: ExecutionContext,
-                                        baseControllerComponents: BaseControllerComponents)
+                                                 val authConnector: AuthConnector,
+                                                 val businessService: BusinessService,
+                                                 view: BusinessWebsiteAddress)
+                                                (implicit appConfig: FrontendAppConfig,
+                                                 val executionContext: ExecutionContext,
+                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -52,12 +54,26 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
     implicit request =>
       implicit profile =>
         BusinessWebsiteAddressForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm))),
-          businessWebsiteAddress =>
-            businessService.updateBusiness(Website(businessWebsiteAddress)).map {
-              _ => Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
+          badForm => {
+            val invalidWebsite = badForm.data.get(BusinessWebsiteAddressForm.businessWebsiteAddressKey)
+
+            if (invalidWebsite.exists(value => value.endsWith("/"))) {
+              val stripped = invalidWebsite.map(_.dropRight(1)).getOrElse("")
+              BusinessWebsiteAddressForm.form.bind(Map(BusinessWebsiteAddressForm.businessWebsiteAddressKey -> stripped)).fold(
+                badForm => Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm))),
+                businessWebsiteAddress => formSuccess(businessWebsiteAddress)
+              )
+            } else {
+              Future.successful(BadRequest(view(routes.BusinessWebsiteAddressController.submit, badForm)))
             }
+          },
+          businessWebsiteAddress => formSuccess(businessWebsiteAddress)
         )
   }
+
+  private def formSuccess(businessWebsiteAddress: String)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Result] =
+    businessService.updateBusiness(Website(businessWebsiteAddress)).map {
+      _ => Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
+    }
 
 }
