@@ -37,7 +37,11 @@ case class VatScheme(id: String,
                      createdDate: Option[LocalDate] = None,
                      applicationReference: Option[String] = None,
                      otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
-                     business: Option[Business] = None)
+                     business: Option[Business] = None) {
+
+  def partyType: Option[PartyType] = eligibilitySubmissionData.map(_.partyType)
+
+}
 
 object VatScheme {
 

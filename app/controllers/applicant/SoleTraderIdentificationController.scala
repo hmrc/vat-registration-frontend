@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import models.PartnerEntity
 import models.api._
 import models.external.soletraderid.SoleTraderIdJourneyConfig
@@ -83,7 +84,11 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
           _ <- applicantDetailsService.saveApplicantDetails(soleTrader)
         } yield {
-          Redirect(applicantRoutes.FormerNameController.show)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            Redirect(applicantRoutes.FormerNameController.show)
+          }
         }
     }
 
@@ -126,7 +131,11 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
             _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
             _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, partyType, isLeadPartner = true))
           } yield {
-            Redirect(applicantRoutes.FormerNameController.show)
+            if (isEnabled(TaskList)) {
+              Redirect(controllers.routes.TaskListController.show)
+            } else {
+              Redirect(applicantRoutes.FormerNameController.show)
+            }
           }
     }
 }

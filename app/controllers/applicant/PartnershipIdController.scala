@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import models.api._
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.{Partner, PartnerEntity}
@@ -76,9 +77,13 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           _ <- applicantDetailsService.saveApplicantDetails(Partner)
           partyType <- vatRegistrationService.partyType
         } yield {
-          partyType match {
-            case LtdLiabilityPartnership => Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
-            case _ => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            partyType match {
+              case LtdLiabilityPartnership => Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+              case _ => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
+            }
           }
         }
   }

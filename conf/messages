@@ -41,6 +41,8 @@ tasklist.cannotStartYet                 = Cannot start yet
 tasklist.inProgress                     = In progress
 tasklist.eligibility.heading            = Check before you start
 tasklist.eligibilty.regReason           = Registration reason
+tasklist.verifyBusiness.heading         = Verify the business
+tasklist.verifyBusiness.businessInfo    = Business information
 
 
 # Ordinal numbers

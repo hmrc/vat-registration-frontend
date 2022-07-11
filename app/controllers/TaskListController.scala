@@ -16,12 +16,16 @@
 
 package controllers
 
+import cats.instances.future
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
-import play.api.mvc.{Action, AnyContent}
-import services.{SessionService, VatRegistrationService}
+import models.{ApplicantDetails, CurrentProfile}
+import models.api.VatScheme
+import play.api.mvc.{Action, AnyContent, Request}
+import services.{ApplicantDetailsService, S4LService, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.tasklist.{RegistrationReasonTaskList, TaskListBuilder}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import viewmodels.tasklist.{RegistrationReasonTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -32,16 +36,25 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    val authConnector: AuthConnector,
                                    val sessionService: SessionService,
                                    registrationReasonSection: RegistrationReasonTaskList,
+                                   verifyBusinessTaskList: VerifyBusinessTaskList,
+                                   applicantDetailsService: ApplicantDetailsService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
                                    appConfig: FrontendAppConfig) extends BaseController {
 
-  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>implicit profile =>
+
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
     if (isEnabled(TaskList)) {
-      vatRegistrationService.getVatScheme.map { scheme =>
-        Ok(view(registrationReasonSection.build(scheme)))
-      }
+      for {
+        vatScheme <- vatRegistrationService.getVatScheme
+        applicantDetails <- applicantDetailsService.getApplicantDetails // This is temporary, until we've removed S4L
+          .recover { case _ => ApplicantDetails() }
+        scheme = vatScheme.copy(applicantDetails = Some(applicantDetails))
+      } yield Ok(view(
+        registrationReasonSection.build(scheme),
+        verifyBusinessTaskList.build(scheme)
+      ))
     } else {
       Future.successful(NotFound)
     }

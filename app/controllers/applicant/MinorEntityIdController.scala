@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.mvc.{Action, AnyContent}
@@ -70,7 +71,11 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
           businessDetails <- minorEntityIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(businessDetails)
         } yield {
-          Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          }
         }
   }
 

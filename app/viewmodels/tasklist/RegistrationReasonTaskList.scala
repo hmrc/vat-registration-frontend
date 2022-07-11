@@ -28,7 +28,7 @@ class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
 
   val registrationReasonRow = (regId: String) => TaskListRowBuilder(
     messageKey = "tasklist.eligibilty.regReason",
-    url = appConfig.eligibilityStartUrl(regId),
+    url = _ => appConfig.eligibilityStartUrl(regId),
     tagId = "regReasonRow",
     checks = scheme => Seq(
       scheme.eligibilitySubmissionData.isDefined

@@ -30,7 +30,7 @@
     <span class="app-task-list__task-name">
         @{
             status match {
-                case TLCannotStart => <span>@message</span>
+                case TLCannotStart => <span>{message}</span>
                 case _ => link(url, message, attributes = Map("aria-describedby" -> tagId))
             }
         }

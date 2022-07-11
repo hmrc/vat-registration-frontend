@@ -20,17 +20,31 @@ import config.FrontendAppConfig
 import models.api.VatScheme
 import play.api.i18n.Messages
 import play.api.mvc.Request
-import play.twirl.api.HtmlFormat
-import views.html.components.TaskListComponent
+import services.S4LService
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class TaskListBuilder @Inject()(taskList: TaskListComponent,
-                                registrationReasonSection: RegistrationReasonTaskList) {
+class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) {
+
+  val businessInfoRow = TaskListRowBuilder(
+    messageKey = "tasklist.verifyBusiness.businessInfo",
+    url =
+      _ => controllers.routes.BusinessIdentificationResolverController.resolve.url,
+    tagId = "verifyBusinessRow",
+    checks =
+      scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),
+    prerequisites =
+      scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.id))
+  )
 
   def build(vatScheme: VatScheme)
-           (implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig): HtmlFormat.Appendable =
-    taskList(registrationReasonSection.build(vatScheme))
+           (implicit request: Request[_],
+            messages: Messages,
+            appConfig: FrontendAppConfig): TaskListSection =
+    TaskListSection(
+      heading = messages("tasklist.verifyBusiness.heading"),
+      rows = Seq(businessInfoRow.build(vatScheme))
+    )
 
 }
