@@ -22,7 +22,7 @@ import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, ReturnsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{FlatRateService, VatApplicationService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.flatratescheme.frs_join
 
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateService,
                                              val vatRegistrationService: VatRegistrationService,
-                                             val returnsService: ReturnsService,
+                                             val vatApplicationService: VatApplicationService,
                                              val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
                                              view: frs_join)
@@ -45,7 +45,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
     implicit request =>
       implicit profile =>
         for {
-          turnoverEstimates <- returnsService.getTurnover.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
+          turnoverEstimates <- vatApplicationService.getTurnover.map(_.getOrElse(throw new InternalServerException("[JoinFRSController][show] Missing turnover estimates")))
           isGroupRegistration <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
           redirect <-
             if (turnoverEstimates > 150000L || isGroupRegistration) {

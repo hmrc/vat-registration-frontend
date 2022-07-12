@@ -51,8 +51,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
   val tradingName = "Test Trader"
   val tradingNameViewNo = TradingNameView(yesNo = false, None)
   val fullS4L = TradingDetails(
-    Some(tradingNameViewNo),
-    Some(true)
+    Some(tradingNameViewNo)
   )
 
   "show" should {

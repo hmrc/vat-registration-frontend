@@ -19,8 +19,8 @@ package models
 import play.api.libs.json._
 
 
-case class NIPCompliance(goodsToEU: Option[ConditionalValue],
-                         goodsFromEU: Option[ConditionalValue])
+case class NIPTurnover(goodsToEU: Option[ConditionalValue] = None,
+                       goodsFromEU: Option[ConditionalValue] = None)
 
 
 case class ConditionalValue(answer: Boolean,
@@ -30,6 +30,6 @@ object ConditionalValue {
   implicit val format = Json.format[ConditionalValue]
 }
 
-object NIPCompliance {
-  implicit val format = Json.format[NIPCompliance]
+object NIPTurnover {
+  implicit val format = Json.format[NIPTurnover]
 }

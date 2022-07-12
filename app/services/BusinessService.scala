@@ -16,10 +16,9 @@
 
 package services
 
-import _root_.models.api.{Address, SicCode}
-import _root_.models.{Business, ContactPreference, CurrentProfile, LabourCompliance}
 import connectors.RegistrationApiConnector
-import play.api.libs.json.Format
+import models.api.{Address, SicCode}
+import models.{Business, ContactPreference, CurrentProfile, LabourCompliance}
 import services.BusinessService._
 import uk.gov.hmrc.http.HeaderCarrier
 

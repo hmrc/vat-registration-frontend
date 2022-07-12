@@ -34,7 +34,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
-        .vatScheme.contains(vatReg.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
+        .vatScheme.contains(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

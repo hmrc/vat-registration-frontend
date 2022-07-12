@@ -17,10 +17,10 @@
 package viewmodels
 
 import connectors.ConfigConnector
-import controllers.returns.{routes => returnsRoutes}
+import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models._
-import models.api.returns._
+import models.api.vatapplication._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
@@ -43,37 +43,37 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
   val sectionId = "cya.registrationDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
-    val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("Eligibility"))
-    val returns = vatScheme.returns.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Returns"))
+    val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Eligibility"))
+    val vatApplication = vatScheme.vatApplication.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Returns"))
 
     govukSummaryList(SummaryList(
       bankAccountSection(vatScheme, partyType) ++
-      List(
-        startDate(returns),
-        accountingPeriod(returns),
-        lastMonthOfAccountingYear(returns),
-        paymentFrequency(returns),
-        paymentMethod(returns),
-        taxRep(returns)
-      ).flatten ++
+        List(
+          startDate(vatApplication),
+          accountingPeriod(vatApplication),
+          lastMonthOfAccountingYear(vatApplication),
+          paymentFrequency(vatApplication),
+          paymentMethod(vatApplication),
+          taxRep(vatApplication)
+        ).flatten ++
         flatRateSchemeSection(vatScheme, partyType)
     ))
   }
 
-  private def startDate(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def startDate(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.startDate",
-      returns.startDate match {
+      vatApplication.startDate match {
         case Some(date) => Some(date.format(presentationFormatter))
         case _ => None
       },
-      Some(controllers.returns.routes.VatRegStartDateResolverController.resolve.url)
+      Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
     )
 
-  private def accountingPeriod(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def accountingPeriod(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.accountingPeriod",
-      (returns.returnsFrequency, returns.staggerStart) match {
+      (vatApplication.returnsFrequency, vatApplication.staggerStart) match {
         case (Some(Monthly), _) =>
           Some(s"$sectionId.accountingPeriod.monthly")
         case (Some(Quarterly), Some(period)) =>
@@ -82,42 +82,42 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
           Some(s"$sectionId.accountingPeriod.annual")
         case _ => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Invalid accounting period")
       },
-      Some(returnsRoutes.ReturnsController.accountPeriodsPage.url)
+      Some(vatApplicationRoutes.ReturnsController.accountPeriodsPage.url)
     )
 
-  private def lastMonthOfAccountingYear(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def lastMonthOfAccountingYear(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.lastMonthOfAccountingYear",
-      returns.staggerStart match {
+      vatApplication.staggerStart match {
         case Some(period: AnnualStagger) => Some(s"$sectionId.lastMonthOfAccountingYear.${period.toString}")
         case _ => None
       },
-      Some(returnsRoutes.LastMonthOfAccountingYearController.show.url)
+      Some(vatApplicationRoutes.LastMonthOfAccountingYearController.show.url)
     )
 
-  private def paymentFrequency(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def paymentFrequency(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.paymentFrequency",
-      returns.annualAccountingDetails.flatMap(_.paymentFrequency).map { paymentFrequency =>
+      vatApplication.annualAccountingDetails.flatMap(_.paymentFrequency).map { paymentFrequency =>
         s"$sectionId.paymentFrequency.${paymentFrequency.toString}"
       },
-      Some(returnsRoutes.PaymentFrequencyController.show.url)
+      Some(vatApplicationRoutes.PaymentFrequencyController.show.url)
     )
 
-  private def paymentMethod(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def paymentMethod(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.paymentMethod",
-      returns.annualAccountingDetails.flatMap(_.paymentMethod).map { paymentMethod =>
+      vatApplication.annualAccountingDetails.flatMap(_.paymentMethod).map { paymentMethod =>
         s"$sectionId.paymentMethod.${paymentMethod.toString}"
       },
-      Some(returnsRoutes.PaymentMethodController.show.url)
+      Some(vatApplicationRoutes.PaymentMethodController.show.url)
     )
 
-  private def taxRep(returns: Returns)(implicit messages: Messages): Option[SummaryListRow] =
+  private def taxRep(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.taxRep",
-      returns.hasTaxRepresentative,
-      Some(controllers.returns.routes.TaxRepController.show.url)
+      vatApplication.hasTaxRepresentative,
+      Some(controllers.vatapplication.routes.TaxRepController.show.url)
     )
 
   private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
@@ -209,7 +209,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val frsStartDate = optSummaryListRowString(
       s"$sectionId.frsStartDate",
-      (vatScheme.returns.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart.flatMap(_.date))) match {
+      (vatScheme.vatApplication.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart.flatMap(_.date))) match {
         case (Some(startDate), Some(date)) if startDate.isEqual(date) => Some(s"$sectionId.dateOfRegistration")
         case (_, Some(date)) => Some(date.format(presentationFormatter))
         case _ => None

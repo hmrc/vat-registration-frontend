@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
-import models.api.returns.Returns
+import models.api.vatapplication.VatApplication
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api.{AttachmentType, Attachments, SicCode, VatScheme}
 import models.external.upscan.UpscanDetails
@@ -245,21 +245,6 @@ trait StubUtils {
   }
 
   case class VatRegistrationStub()(implicit builder: PreconditionBuilder) {
-    def threshold(url: String, threshold: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(url))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "taxable-threshold":"$threshold",
-               |  "since":"2018-1-1"
-               |}
-             """.stripMargin
-          ))
-      )
-      builder
-    }
-
     def status(url: String, status: String): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(url))
@@ -310,14 +295,6 @@ trait StubUtils {
       stubFor(
         post(urlPathEqualTo("/vatreg/insert-s4l-scheme"))
           .willReturn(ok().withBody(body))
-      )
-      builder
-    }
-
-    def storesReturns(regId: String, returns: Returns): PreconditionBuilder = {
-      stubFor(
-        patch(urlPathEqualTo(s"/vatreg/$regId/returns"))
-          .willReturn(ok().withBody(Json.toJson(returns).toString()))
       )
       builder
     }

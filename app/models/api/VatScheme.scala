@@ -17,8 +17,8 @@
 package models.api
 
 import common.enums.VatRegStatus
-import models.api.returns.Returns
-import models.{ApplicantDetails, _}
+import models._
+import models.api.vatapplication.VatApplication
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -28,7 +28,7 @@ case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
                      transactorDetails: Option[TransactorDetails] = None,
                      tradingDetails: Option[TradingDetails] = None,
-                     returns: Option[Returns] = None,
+                     vatApplication: Option[VatApplication] = None,
                      bankAccount: Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
                      status: VatRegStatus.Value,
@@ -52,7 +52,7 @@ object VatScheme {
           (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
           (__ \ "transactorDetails").readNullable[TransactorDetails] and
           (__ \ "tradingDetails").readNullable[TradingDetails](TradingDetails.apiFormat) and
-          (__ \ "returns").readNullable[Returns] and
+          (__ \ "vatApplication").readNullable[VatApplication] and
           (__ \ "bankAccount").readNullable[BankAccount] and
           (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
           (__ \ "status").read[VatRegStatus.Value] and
@@ -86,7 +86,7 @@ object VatScheme {
       (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
       (__ \ "transactorDetails").writeNullable[TransactorDetails] and
       (__ \ "tradingDetails").writeNullable[TradingDetails](TradingDetails.apiFormat) and
-      (__ \ "returns").writeNullable[Returns] and
+      (__ \ "vatApplication").writeNullable[VatApplication] and
       (__ \ "bankAccount").writeNullable[BankAccount] and
       (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
       (__ \ "status").write[VatRegStatus.Value] and

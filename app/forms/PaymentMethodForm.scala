@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns.{PaymentMethod, BACS, CHAPS, BankGIRO, StandingOrder}
+import models.api.vatapplication.{PaymentMethod, BACS, CHAPS, BankGIRO, StandingOrder}
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}

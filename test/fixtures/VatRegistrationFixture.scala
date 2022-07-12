@@ -19,7 +19,7 @@ package fixtures
 import common.enums.VatRegStatus
 import models._
 import models.api._
-import models.api.returns._
+import models.api.vatapplication._
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
@@ -56,7 +56,7 @@ trait BaseFixture {
 }
 
 trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
-  with ApplicantDetailsFixtures with ReturnsFixture {
+  with ApplicantDetailsFixtures {
 
   val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None, None)
 
@@ -165,14 +165,23 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
 
-  val validNipCompliance = NIPCompliance(
+  val validNipCompliance = NIPTurnover(
     goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
     goodsFromEU = Some(ConditionalValue(true, Some(BigDecimal(1))))
   )
 
   val testTurnover = 100
-  val validReturns = Returns(
-    Some(testTurnover), None, Some(10000.5), Some(false), Some(Monthly), None, Some(LocalDate.of(2017, 10, 10))
+  val testZeroRatedSupplies = 10000.5
+  val validVatApplication: VatApplication = VatApplication(
+    tradeVatGoodsOutsideUk = Some(false),
+    eoriRequested = Some(false),
+    turnoverEstimate = Some(testTurnover),
+    zeroRatedSupplies = Some(testZeroRatedSupplies),
+    claimVatRefunds = Some(false),
+    appliedForExemption = None,
+    startDate = Some(LocalDate.of(2017, 10, 10)),
+    returnsFrequency = Some(Monthly),
+    staggerStart = Some(MonthlyStagger)
   )
 
   val validAasDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
@@ -235,7 +244,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
@@ -249,7 +258,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validSoleTraderEligibilitySubmissionData)
   )
@@ -261,7 +270,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = None,
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
@@ -273,7 +282,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
@@ -285,7 +294,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
@@ -297,7 +306,7 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
     bankAccount = Some(validUkBankAccount),
-    returns = Some(validReturns),
+    vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )

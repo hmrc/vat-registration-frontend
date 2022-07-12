@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.returns._
+import models.api.vatapplication._
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}

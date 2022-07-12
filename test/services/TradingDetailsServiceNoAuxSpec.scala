@@ -40,37 +40,26 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
   val tradingNameViewYes = TradingNameView(yesNo = true, tradingName)
 
   val emptyS4L = TradingDetails()
-  val incompleteS4L = TradingDetails(
-    Some(tradingNameViewYes)
-  )
 
   val fullS4L = TradingDetails(
-    Some(tradingNameViewNo),
-    Some(true)
+    Some(tradingNameViewNo)
   )
 
   val fullS4LWithTradingName = TradingDetails(
-    Some(tradingNameViewYes),
-    Some(true)
-  )
-
-  val twoPageS4LNo = TradingDetails(
-    Some(tradingNameViewNo),
-    Some(false)
+    Some(tradingNameViewYes)
   )
 
   "getTradingDetailsViewModel" should {
     "return the S4L model if it is there" in new Setup() {
       when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some(incompleteS4L)))
+        .thenReturn(Future.successful(Some(fullS4L)))
 
-      await(service.getTradingDetailsViewModel(regId)) mustBe incompleteS4L
+      await(service.getTradingDetailsViewModel(regId)) mustBe fullS4L
     }
 
     "return the converted backend model if the S4L is not there" in new Setup() {
       val tradingNameNoEu = TradingDetails(
-        Some(TradingNameView(yesNo = true, tradingName)),
-        Some(false)
+        Some(TradingNameView(yesNo = true, tradingName))
       )
 
       when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
@@ -96,10 +85,6 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
       service.getS4LCompletion(fullS4L) mustBe Complete(fullS4L)
     }
 
-    "convert a S4L model to the backend where there are no eu goods" in new Setup() {
-      service.getS4LCompletion(twoPageS4LNo) mustBe Complete(twoPageS4LNo)
-    }
-
     "return back the S4L model if it is incomplete" in new Setup() {
       service.getS4LCompletion(emptyS4L) mustBe Incomplete(emptyS4L)
     }
@@ -118,28 +103,15 @@ class TradingDetailsServiceNoAuxSpec extends VatRegSpec with S4LMockSugar {
   }
 
   "saveTradingName" should {
-    "save a complete model without EORI flag to the backend and clear S4L" in new Setup() {
+    "save a complete model to the backend and clear S4L" in new Setup() {
       when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some(incompleteS4L)))
+        .thenReturn(Future.successful(Some(fullS4LWithTradingName)))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
       when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
         .thenReturn(Future.successful(HttpResponse(200, "{}")))
 
       await(service.saveTradingName(regId, tradingNameViewNo.yesNo, tradingNameViewNo.tradingName)) mustBe TradingDetails(Some(tradingNameViewNo))
-    }
-  }
-
-  "saveEuGoods" should {
-    "save a complete model to the backend and clear S4L" in new Setup() {
-      when(mockS4LService.fetchAndGet[TradingDetails](any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some(incompleteS4L)))
-      when(mockS4LService.clearKey(any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-      when(mockVatRegistrationConnector.upsertTradingDetails(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "{}")))
-
-      await(service.saveEuGoods(regId, euGoods = true)) mustBe incompleteS4L.copy(euGoods = Some(true))
     }
   }
 }

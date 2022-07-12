@@ -1,0 +1,115 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import models.api.vatapplication.ReturnsFrequency
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import forms.ReturnFrequencyForm._
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        button: button,
+        formWithCSRF: FormWithCSRF,
+        h1: h1,
+        p: p,
+        details: details,
+        bullets: bullets,
+        link: link,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary
+)
+
+@(form: Form[ReturnsFrequency], showAAS: Boolean, showMonthly: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(form, messages("pages.vat.return.frequency.heading"))), backLink = true) {
+
+    @errorSummary(form.errors)
+
+    @h1(messages("pages.vat.return.frequency.heading"))
+
+    @p {
+        @messages("pages.vat.return.frequency.para")
+    }
+
+    @if(showAAS) {
+        @details(
+            summary = messages("pages.vat.return.frequency.details.summary"),
+            content = detailsBlock
+        )
+    }
+
+    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsController.submitReturnsFrequency) {
+        @inputRadio(
+            form = form,
+            legend = messages("pages.vat.return.frequency.heading"),
+            items = radioItems,
+            legendAsHeading = false,
+            classes = "govuk-visually-hidden",
+            inline = false
+        )
+
+        @button("app.common.continue", showSaveProgressButton = true)
+    }
+}
+
+@optMonthly = @{
+    if(showMonthly) Seq(RadioItem(
+        content = Text(messages("pages.vat.return.frequency.radio.monthly")),
+        value = Some(monthlyKey),
+        checked = form("value").value.contains(monthlyKey)
+    )) else Seq()
+}
+
+@optAnnual = @{
+    if(showAAS) Seq(
+        RadioItem(
+            divider = Some("or")
+        ),
+        RadioItem(
+            content = Text(messages("pages.vat.return.frequency.radio.annually")),
+            value = Some(annualKey),
+            checked = form("value").value.contains(annualKey)
+        )
+    ) else Seq()
+}
+
+@radioItems = @{
+    optMonthly ++ Seq(RadioItem(
+        content = Text(messages("pages.vat.return.frequency.radio.quarterly")),
+        value = Some(quarterlyKey),
+        checked = form("value").value.contains(quarterlyKey)
+    )) ++ optAnnual
+}
+
+@detailsBlock = {
+@p {
+    @messages("pages.vat.return.frequency.details.para1")
+    @bullets(
+        messages("pages.vat.return.frequency.details.para1.bullet1"),
+        messages("pages.vat.return.frequency.details.para1.bullet2")
+    )
+    @messages("pages.vat.return.frequency.details.para2")
+    @bullets(
+        messages("pages.vat.return.frequency.details.para2.bullet1"),
+        messages("pages.vat.return.frequency.details.para2.bullet2")
+    )
+}
+@link(appConfig.vatAasUrl, "pages.vat.return.frequency.aas.link", isExternal = true)
+}

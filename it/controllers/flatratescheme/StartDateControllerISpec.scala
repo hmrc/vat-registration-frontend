@@ -3,7 +3,7 @@ package controllers.flatratescheme
 
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
-import models.api.returns.Returns
+import models.api.vatapplication.VatApplication
 import models.{FRSDateChoice, FlatRateScheme, Start}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -36,21 +36,21 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
     percent = None
   )
 
-  val returnsData: JsValue = Json.toJson[Returns](Returns(
+  val vatApplication: VatApplication = VatApplication(
     zeroRatedSupplies = Some(10000),
-    reclaimVatOnMostReturns = Some(true),
+    claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
     startDate = None
-  ))
+  )
 
-  val returnsDataWithStartDate: JsValue = Json.toJson[Returns](Returns(
+  val vatApplicationWithStartDate: VatApplication = VatApplication(
     zeroRatedSupplies = Some(10000),
-    reclaimVatOnMostReturns = Some(true),
+    claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
     startDate = Some(LocalDate.of(2017, 1, 2))
-  ))
+  )
 
   implicit val s4lFrsKey = FlatRateScheme.s4lKey
 
@@ -68,9 +68,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
     "return OK and text based on no vat start date provided" in new Setup {
       given()
         .user.isAuthorised()
+        .s4lContainer[VatApplication].isEmpty
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("returns", returnsData)
+        .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -85,9 +86,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
     "return OK and text based on the vat start date already provided by the user" in new Setup {
       given()
         .user.isAuthorised()
+        .s4lContainer[VatApplication].isEmpty
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
         .vatScheme.doesNotHave("flat-rate-scheme")
-        .vatScheme.has("returns", returnsDataWithStartDate)
+        .registrationApi.getSection(Some(vatApplicationWithStartDate))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -106,9 +108,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "use the EDR date over the Vat Start Date and redirect when valid data is posted" in new Setup {
         given()
           .user.isAuthorised()
+          .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("returns", returnsDataWithStartDate)
+          .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -125,9 +128,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "use the EDR and redirect when valid data is posted" in new Setup {
         given()
           .user.isAuthorised()
+          .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("returns", returnsData)
+          .registrationApi.getSection(Some(vatApplication))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -144,9 +148,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "return BAD_REQUEST when an invalid form is posted when the date provided is before the EDR" in new Setup {
         given()
           .user.isAuthorised()
+          .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("returns", returnsDataWithStartDate)
+          .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -167,9 +172,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
 
         given()
           .user.isAuthorised()
+          .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.has("returns", returnsDataWithStartDate)
+          .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(oneDayBeforeEdrDate)))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
           threshold = voluntaryThreshold,
@@ -189,9 +195,10 @@ class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStub
       "return INTERNAL_SERVER_ERROR when no returns or threshold data exists" in new Setup {
         given()
           .user.isAuthorised()
+          .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
           .vatScheme.doesNotHave("flat-rate-scheme")
-          .vatScheme.doesNotHave("returns")
+          .registrationApi.getSection[VatApplication](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
           threshold = voluntaryThreshold,
           calculatedDate = None

@@ -16,8 +16,8 @@
 
 package fixtures
 
-import models.{TradingDetails, TradingNameView}
 import models.api._
+import models.{TradingDetails, TradingNameView}
 
 trait TradingDetailsFixtures extends BaseFixture {
 
@@ -26,16 +26,12 @@ trait TradingDetailsFixtures extends BaseFixture {
   val validEuTrading = VatEuTrading(selection = false, eoriApplication = None)
   val validTradingName = TradingName(selection = true, tradingName = Some(testTradingName))
 
-  def generateTradingDetails(
-                      tradingNameSelection: Boolean = true,
-                      tradingName: Option[String] = Some("ACME Ltd."),
-                      euGoodsSelection: Boolean = true
-                    ): TradingDetails =
+  def generateTradingDetails(tradingNameSelection: Boolean = true,
+                             tradingName: Option[String] = Some("ACME Ltd.")): TradingDetails =
     TradingDetails(
       tradingNameView = Some(TradingNameView(
         yesNo = tradingNameSelection,
         tradingName = tradingName
-      )),
-      euGoods = Some(euGoodsSelection)
+      ))
     )
 }

@@ -20,9 +20,6 @@ import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
-import models.api.returns.Returns
-import models.external.{EmailAddress, EmailVerified}
-import models.view.{_}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import play.api.http.Status.{NOT_FOUND, NO_CONTENT, OK}
@@ -30,6 +27,7 @@ import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -101,7 +99,7 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling upsertRegistration" should {
     "store a valid VatScheme and return the updated scheme" in new Setup {
       mockHttpPUT[VatScheme, VatScheme]("tst-url", validVatScheme)
-      connector.upsertRegistration( "tstID", validVatScheme) returns validVatScheme
+      connector.upsertRegistration("tstID", validVatScheme) returns validVatScheme
     }
     "return NOT_FOUND if the registration doesn't exist" in new Setup {
       mockHttpFailedPUT[VatScheme, VatScheme]("tst-url", notFound)
@@ -156,12 +154,12 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return a turnover threshold model" in new Setup {
       val taxableThreshold = TaxableThreshold("100000", "2018-01-01")
       mockHttpGET[TaxableThreshold]("tst-url", taxableThreshold)
-      connector.getTaxableThreshold(date) returns taxableThreshold
+      connector.getTaxableThreshold(LocalDate.now) returns taxableThreshold
     }
 
     "fail when an exception is returned" in new Setup {
       mockHttpFailedGET("tst-url", exception)
-      connector.getTaxableThreshold(date) failedWith exception
+      connector.getTaxableThreshold(LocalDate.now) failedWith exception
     }
   }
 
@@ -264,44 +262,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "throw an Exception if the call failed" in new Setup {
       mockHttpFailedGET[HttpResponse]("tst-url", exception)
       connector.getSicAndCompliance failedWith exception
-    }
-  }
-
-  "Calling getReturns" should {
-    "return the correct response when the microservice completes and returns a Returns model" in new Setup {
-      mockHttpGET[Returns]("tst-url", returns)
-      connector.getReturns("tstID") returns returns
-    }
-    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[Returns]("tst-url", forbidden)
-      connector.getReturns("tstID") failedWith forbidden
-    }
-    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedGET[Returns]("tst-url", notFound)
-      connector.getReturns("tstID") failedWith notFound
-    }
-    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[Returns]("tst-url", internalServiceException)
-      connector.getReturns("tstID") failedWith internalServiceException
-    }
-  }
-
-  "Calling patchReturns" should {
-    "return the correct response when the microservice completes and returns a Returns model" in new Setup {
-      mockHttpPATCH[Returns, Returns]("tst-url", returns)
-      connector.patchReturns("tstID", returns) returns returns
-    }
-    "return the correct response when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[Returns, Returns]("tst-url", forbidden)
-      connector.patchReturns("tstID", returns) failedWith forbidden
-    }
-    "return a Not Found response when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[Returns, Returns]("tst-url", notFound)
-      connector.patchReturns("tstID", returns) failedWith notFound
-    }
-    "return the correct response when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[Returns, Returns]("tst-url", internalServiceException)
-      connector.patchReturns("tstID", returns) failedWith internalServiceException
     }
   }
 

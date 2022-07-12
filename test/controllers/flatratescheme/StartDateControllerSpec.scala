@@ -37,7 +37,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
       mockAuthClientConnector,
       mockSessionService,
       mockFlatRateService,
-      mockReturnsService,
+      movkVatApplicationService,
       mockTimeService,
       view,
     )
@@ -54,7 +54,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
         when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
           .thenReturn(Future.successful((Some(FRSDateChoice.VATDate), None)))
 
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
           .thenReturn(Future.successful(LocalDate.of(2017, 3, 18).plusMonths(2)))
 
         when(mockFlatRateService.fetchVatStartDate(any(), any()))
@@ -69,7 +69,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
         when(mockFlatRateService.getPrepopulatedStartDate(any())(any(), any()))
           .thenReturn(Future.successful((None, None)))
 
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
           .thenReturn(Future.successful(LocalDate.of(2017,3,18).plusMonths(2)))
 
         when(mockFlatRateService.fetchVatStartDate(any(), any()))
@@ -87,7 +87,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
       "no data posted" in new Setup {
         when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
         when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.now))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.now))
         when(mockFlatRateService.retrieveSectorPercent(any(), any())).thenReturn(Future.successful(testsector))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody()
@@ -99,7 +99,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
       "when partial data is posted" in new Setup {
         when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(Some(LocalDate.of(2017, 3, 1))))
         when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.now))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.now))
         when(mockFlatRateService.retrieveSectorPercent(any(), any())).thenReturn(Future.successful(testsector))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
@@ -116,7 +116,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
       "'different date' is selected and the date is before the earliest allowed date" in new Setup {
         when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
         when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.of(2017,3,18)))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.of(2017,3,18)))
         when(mockFlatRateService.retrieveSectorPercent(any(), any())).thenReturn(Future.successful(testsector))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
@@ -133,7 +133,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
       "'different date' is selected and the date is after the latest allowed date" in new Setup {
         when(mockFlatRateService.fetchVatStartDate(any(), any())).thenReturn(Future.successful(None))
         when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.of(2017,3,18)))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any())).thenReturn(Future.successful(LocalDate.of(2017,3,18)))
         when(mockFlatRateService.retrieveSectorPercent(any(), any())).thenReturn(Future.successful(testsector))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
@@ -154,7 +154,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
         when(mockFlatRateService.fetchVatStartDate(any(), any()))
           .thenReturn(Future.successful(None))
 
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
           .thenReturn(Future.successful(LocalDate.of(2017, 3, 18).plusMonths(2)))
 
         when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
@@ -177,7 +177,7 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
         when(mockFlatRateService.fetchVatStartDate(any(), any()))
           .thenReturn(Future.successful(Some(minDate)))
 
-        when(mockReturnsService.retrieveCalculatedStartDate(any(), any()))
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
           .thenReturn(Future.successful(maxDate))
 
         when(mockFlatRateService.retrieveSectorPercent(any(), any()))

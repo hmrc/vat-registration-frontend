@@ -18,11 +18,10 @@ package services
 
 import com.google.inject.Inject
 import connectors.{ConfigConnector, VatRegistrationConnector}
+import models._
 import models.api.SicCode
-import models.{FRSDateChoice, Start, _}
 import services.FlatRateService._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 
 import java.time.LocalDate
 import javax.inject.Singleton
@@ -31,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class FlatRateService @Inject()(val s4LService: S4LService,
                                 val businessService: BusinessService,
+                                vatApplicationService: VatApplicationService,
                                 val configConnector: ConfigConnector,
                                 val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
 
@@ -182,11 +182,11 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[Option[LocalDate]] = {
-    vatRegConnector.getReturns(currentProfile.registrationId) map { returns =>
-      returns.startDate
+    vatApplicationService.getVatApplication.map { vatApplication =>
+      vatApplication.startDate
     } recover {
       case e =>
-        logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the Returns block with exception: ${e.getMessage}")
+        logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the VatApplication block with exception: ${e.getMessage}")
         throw e
     }
   }

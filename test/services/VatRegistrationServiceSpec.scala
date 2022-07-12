@@ -138,7 +138,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
     "return a taxable threshold" in new Setup {
       when(mockVatRegistrationConnector.getTaxableThreshold(any())(any())) thenReturn Future.successful(taxableThreshold)
-      await(service.getTaxableThreshold(date)) mustBe formattedThreshold
+      await(service.getTaxableThreshold(LocalDate.now)) mustBe formattedThreshold
     }
   }
   "getEligibilityData" should {
