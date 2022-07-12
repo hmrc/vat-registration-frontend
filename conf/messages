@@ -666,6 +666,7 @@ cya.registrationDetails.paymentMethod.BACS                      = BACS or intern
 cya.registrationDetails.paymentMethod.BankGIRO                  = Bank Giro Transfer
 cya.registrationDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
 cya.registrationDetails.paymentMethod.StandingOrder             = Standing order
+cya.registrationDetails.taxRep                                  = Do you want to appoint a UK tax representative for the business?
 
 ## Summary Headings
 cya.heading.eligibility                              = Registration reason
