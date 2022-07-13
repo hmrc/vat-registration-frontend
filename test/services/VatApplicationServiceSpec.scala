@@ -42,11 +42,6 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       vatRegistrationServiceMock,
       mockS4LService
     )
-
-    when(mockS4LService.fetchAndGetByKey[JsValue](ArgumentMatchers.eq("tradingDetails"))(any(), any(), any()))
-      .thenReturn(Future.successful(None))
-    when(mockS4LService.fetchAndGetByKey[JsValue](ArgumentMatchers.eq("returns"))(any(), any(), any()))
-      .thenReturn(Future.successful(None))
   }
 
   override def beforeEach(): Unit = {
