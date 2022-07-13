@@ -28,7 +28,7 @@ object BusinessWebsiteAddressForm {
 
   val businessWebsiteAddressKey = "businessWebsiteAddress"
   implicit val errorCode: ErrorCode = businessWebsiteAddressKey
-  val regex: Regex = """^(?i)(((HTTP|http)(S|s)?\:\/\/((WWW|www)\.)?)|((WWW|www)\.))?[a-zA-Z0-9\[_~\:\/?#\]@!&'()*+,;=% ]+\.[a-zA-Z]{2,5}(\.[a-zA-Z]{2,5})?(\:[0-9]{1,5})?(\/[a-zA-Z0-9_-]+(\/)?)*$""".r
+  val regex: Regex = """^(((HTTP|http)(S|s)?\:\/\/((WWW|www)\.)?)|((WWW|www)\.))?[a-zA-Z0-9\[_~\:\/?#\]@!&'()*+,;=% ]+\.[a-zA-Z]{2,5}(\.[a-zA-Z]{2,5})?(\:[0-9]{1,5})?(\/[a-zA-Z0-9_-]+(\/)?)*$""".r
   val maxLength = 132
 
   val form: Form[String] =
