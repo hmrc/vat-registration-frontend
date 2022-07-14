@@ -15,37 +15,64 @@
  *@
 
 @import config.FrontendAppConfig
+@import controllers.applicant.{routes => applicantRoutes}
+@import controllers.transactor.{routes => transactorRoutes}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
 
-
-@this(layout: layout,
+@this(
+        layout: layout,
         button: button,
         govukDetails: GovukDetails,
         formWithCSRF: FormWithCSRF,
         h1: h1,
         inputText: inputText,
         govukInsetText: GovukInsetText,
-        errorSummary: errorSummary)
+        errorSummary: errorSummary,
+        details: details,
+        link: link,
+        p: p,
+        strong: strong
+)
 
-@(email: String, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(email: String, form: Form[String], isTransactor: Boolean, isNewPasscode: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(title(form, "capture-email-passcode.heading")), backLink = true) {
+@heading = @{
+    if(isNewPasscode) {
+        "capture-email-passcode.heading.new"
+    } else {
+        "capture-email-passcode.heading"
+    }
+}
+
+@layout(Some(title(form, heading)), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("capture-email-passcode.heading")
+    @h1(heading)
 
-    <div class="govuk-body">
-        <p id="sent-email">@Html(messages("capture-email-passcode.paragraph", email))</p>
-    </div>
+    @p {
+        @if(isNewPasscode) {
+            @messages("capture-email-passcode.paragraph.new")
+            @strong(Html(email + '.'))
+        } else {
+            @messages("capture-email-passcode.paragraph")
+            @strong(Html(email + '.'))
+        }
+    }
 
     @govukInsetText(InsetText(
         content = Text(messages("capture-email-passcode.inset-text"))
     ))
 
-    @formWithCSRF(action = formAction) {
+    @formWithCSRF(
+        action = if(isTransactor) {
+            transactorRoutes.TransactorCaptureEmailPasscodeController.submit(isNewPasscode)
+        } else {
+            applicantRoutes.CaptureEmailPasscodeController.submit(isNewPasscode)
+        }
+    ) {
         @inputText(
             form = form,
             id = "email-passcode",
@@ -57,7 +84,36 @@
         )
 
         @button("app.common.continue")
-
     }
 
+    @details(
+        summary = messages("capture-email-passcode.details.summary"),
+        content = detailsContent
+    )
+}
+
+@detailsContent = {
+    @p {
+        @messages("capture-email-passcode.details.para1")
+    }
+    @p {
+        @messages("capture-email-passcode.details.para2.start")
+        @link(
+            if(isTransactor) {
+                transactorRoutes.TransactorCaptureEmailPasscodeController.requestNew.url
+            } else {
+                applicantRoutes.CaptureEmailPasscodeController.requestNew.url
+            },
+            "capture-email-passcode.details.para2.requestPasscode"
+        )
+        @messages("capture-email-passcode.details.para2.or")
+        @link(
+            if(isTransactor) {
+                transactorRoutes.TransactorCaptureEmailAddressController.show.url
+            } else {
+                applicantRoutes.CaptureEmailAddressController.show.url
+            },
+            "capture-email-passcode.details.para2.provideEmail"
+        ).
+    }
 }

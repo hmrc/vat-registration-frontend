@@ -20,3 +20,4 @@ sealed trait RequestEmailPasscodeResult
 
 case object RequestEmailPasscodeSuccessful extends RequestEmailPasscodeResult
 case object AlreadyVerifiedEmailAddress extends RequestEmailPasscodeResult
+case object MaxEmailsExceeded extends RequestEmailPasscodeResult

@@ -46,17 +46,32 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
     implicit request =>
       implicit profile =>
         getEmailAddress.map { email =>
-          Ok(view(email, routes.CaptureEmailPasscodeController.submit, EmailPasscodeForm.form))
+          Ok(view(email, EmailPasscodeForm.form, isTransactor = false, isNewPasscode = false))
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val requestNew: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        getEmailAddress.flatMap { email =>
+          emailVerificationService.requestEmailVerificationPasscode(email).flatMap {
+            case AlreadyVerifiedEmailAddress =>
+              applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)).map { _ =>
+                Redirect(routes.EmailAddressVerifiedController.show)
+              }
+            case RequestEmailPasscodeSuccessful =>
+              Future.successful(Ok(view(email, EmailPasscodeForm.form, isTransactor = false, isNewPasscode = true)))
+          }
+        }
+  }
+
+  def submit(isNewPasscode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         EmailPasscodeForm.form.bindFromRequest().fold(
           formWithErrors =>
             getEmailAddress map { email =>
-              BadRequest(view(email, routes.CaptureEmailPasscodeController.submit, formWithErrors))
+              BadRequest(view(email, formWithErrors, isTransactor = false, isNewPasscode = isNewPasscode))
             },
           emailPasscode =>
             getEmailAddress flatMap { email =>
@@ -73,7 +88,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                     key = EmailPasscodeForm.passcodeKey,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
-                  Future.successful(BadRequest(view(email, routes.CaptureEmailPasscodeController.submit, incorrectPasscodeForm)))
+                  Future.successful(BadRequest(view(email, incorrectPasscodeForm, isTransactor = false, isNewPasscode = isNewPasscode)))
                 case PasscodeNotFound =>
                   Future.successful(Redirect(errorRoutes.EmailPasscodeNotFoundController.show(
                     controllers.applicant.routes.CaptureEmailAddressController.show.url

@@ -231,7 +231,8 @@ GET         /email-address                                            controller
 POST        /email-address                                            controllers.applicant.CaptureEmailAddressController.submit
 
 GET         /email-address-verification                               controllers.applicant.CaptureEmailPasscodeController.show
-POST        /email-address-verification                               controllers.applicant.CaptureEmailPasscodeController.submit
+GET         /email-address-verification-retry                         controllers.applicant.CaptureEmailPasscodeController.requestNew
+POST        /email-address-verification                               controllers.applicant.CaptureEmailPasscodeController.submit(isNewPasscode: Boolean)
 
 GET         /email-address-verified                                   controllers.applicant.EmailAddressVerifiedController.show
 POST        /email-address-verified                                   controllers.applicant.EmailAddressVerifiedController.submit
@@ -423,7 +424,8 @@ POST        /your-email-address                                       controller
 
 ## Transactor Capture Email Passcode
 GET         /enter-the-verification-code                              controllers.transactor.TransactorCaptureEmailPasscodeController.show
-POST        /enter-the-verification-code                              controllers.transactor.TransactorCaptureEmailPasscodeController.submit
+GET         /enter-the-verification-code-retry                        controllers.transactor.TransactorCaptureEmailPasscodeController.requestNew
+POST        /enter-the-verification-code                              controllers.transactor.TransactorCaptureEmailPasscodeController.submit(isNewPasscode: Boolean)
 
 ## Transactor Email Verified
 GET         /your-email-address-verified                              controllers.transactor.TransactorEmailAddressVerifiedController.show

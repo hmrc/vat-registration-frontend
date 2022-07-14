@@ -959,10 +959,19 @@ capture-email-address.error.incorrect_length            = The email address must
 
 ## CAPTURE EMAIL PASSCODE MESSAGES
 capture-email-passcode.heading                          = Enter the code to confirm your email address
-capture-email-passcode.paragraph                        = We have sent a code to: <strong>{0}.</strong>
+capture-email-passcode.heading.new                      = Enter the new code
+capture-email-passcode.paragraph                        = We have sent a code to:
+capture-email-passcode.paragraph.new                    = We have sent a new code to:
 capture-email-passcode.inset-text                       = If you use a browser to access your email, you may need to open a new window or tab to see the code.
 capture-email-passcode.label                            = Confirmation code
 capture-email-passcode.hint                             = For example, DNCLRK
+capture-email-passcode.details.summary                  = I have not received the email
+capture-email-passcode.details.para1                    = The email may take a few minutes to arrive. Its subject line is: ‘Your email confirmation code’.
+capture-email-passcode.details.para2.start              = Check your spam or junk folder – if it still has not arrived, you can
+capture-email-passcode.details.para2.requestPasscode    = request a new code
+capture-email-passcode.details.para2.or                 = or
+capture-email-passcode.details.para2.provideEmail       = provide another email address
+
 capture-email-passcode.error.incorrect_passcode         = Enter the correct confirmation code
 capture-email-passcode.error.incorrect_length           = Enter the 6 digit confirmation code
 

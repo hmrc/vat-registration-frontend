@@ -17,8 +17,8 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
-import play.api.http.Status.{CONFLICT, CREATED}
+import models.external.{AlreadyVerifiedEmailAddress, MaxEmailsExceeded, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
+import play.api.http.Status.{CONFLICT, CREATED, FORBIDDEN}
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, Upstream4xxResponse}
 
@@ -40,6 +40,7 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
       case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
     }.recover {
       case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
+      case Upstream4xxResponse(_, FORBIDDEN, _, _) => MaxEmailsExceeded
     }
   }
 
