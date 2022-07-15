@@ -283,62 +283,83 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   }
 
   "GET /partnership-id-partner-callback" must {
-    "redirect to the individual identification for Scottish Partnership" in new Setup {
-      given()
-        .user.isAuthorised()
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
+    "redirect to the correct controller for Scottish Partnership" in new Setup {
+      private def verifyCallbackHandler(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
 
-      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
-        scottishPartnershipNameKey -> JsString(testOtherCompanyName),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
+          scottishPartnershipNameKey -> JsString(testOtherCompanyName),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
     }
 
-    "redirect to the individual identification for Scottish Limited Partnership" in new Setup {
-      given()
-        .user.isAuthorised()
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
+    "redirect to correct controller for Scottish Limited Partnership" in new Setup {
+      private def verifyCallbackHandler(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
 
-      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
     }
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
-      given()
-        .user.isAuthorised()
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+      private def verifyCallbackHandler(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
 
-      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+        insertIntoDb(sessionId, Map(
+          leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
+          "CurrentProfile" -> Json.toJson(currentProfile)
+        ))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
     }
 
     "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {

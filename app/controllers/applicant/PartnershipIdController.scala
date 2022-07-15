@@ -129,7 +129,11 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           )
           _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(updatedPartnerDetails, partyType, isLeadPartner = true))
         } yield {
-          Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+          }
         }
   }
 }

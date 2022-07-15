@@ -3,8 +3,8 @@ package controllers
 
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.ApplicantDetails
-import models.api.{EligibilitySubmissionData, UkCompany}
+import models.{ApplicantDetails, PartnerEntity}
+import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
@@ -26,6 +26,12 @@ class TaskListControllerISpec extends ControllerISpec {
       val heading = "2. Verify the business"
       val row1 = "Business information Completed"
     }
+
+    val section3 = new {
+      val heading = "3. About you"
+      val leadPartnerCompletedRow = "Lead partner details Completed"
+      val leadPartnerNotStartedRow = "Lead partner details Not started"
+    }
   }
 
   def sectionMustExist(n: Int)(heading: String, rows: List[String])(implicit doc: Document) = {
@@ -43,8 +49,9 @@ class TaskListControllerISpec extends ControllerISpec {
         enable(TaskList)
 
         val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData),
-          applicantDetails = Some(validFullApplicantDetails)
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
+          applicantDetails = Some(validFullApplicantDetails),
+          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
         )
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
@@ -63,11 +70,43 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(ExpectedMessages.section3.leadPartnerCompletedRow))
       }
+
+      "return OK and not render lead partner details row for non-partnership party type even when all data is present in the BE" in new Setup {
+        enable(TaskList)
+
+        val scheme = emptyUkCompanyVatScheme.copy(
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+          applicantDetails = Some(validFullApplicantDetails),
+          partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+        )
+
+        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+        given
+          .user.isAuthorised()
+          .registrationApi.getRegistration(scheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get)
+        implicit val doc = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+        sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List())
+      }
+
       "return OK and render all relevant rows when Applicant Details is partially complete in S4L" in new Setup {
         enable(TaskList)
 
-        val scheme = emptyUkCompanyVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData))
+        val scheme = emptyUkCompanyVatScheme.copy(
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership))
+        )
 
         given
           .user.isAuthorised()
@@ -84,8 +123,10 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(ExpectedMessages.section3.leadPartnerNotStartedRow))
       }
     }
+
     "the TaskList feature switch is disabled" must {
       "return OK and render all relevant sections" in new Setup {
         disable(TaskList)
