@@ -16,16 +16,13 @@
 
 package controllers
 
-import cats.instances.future
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
-import models.{ApplicantDetails, CurrentProfile}
-import models.api.VatScheme
-import play.api.mvc.{Action, AnyContent, Request}
-import services.{ApplicantDetailsService, S4LService, SessionService, VatRegistrationService}
+import models.ApplicantDetails
+import play.api.mvc.{Action, AnyContent}
+import services.{ApplicantDetailsService, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import viewmodels.tasklist.{RegistrationReasonTaskList, VerifyBusinessTaskList}
+import viewmodels.tasklist.{AboutYouTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -37,6 +34,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    val sessionService: SessionService,
                                    registrationReasonSection: RegistrationReasonTaskList,
                                    verifyBusinessTaskList: VerifyBusinessTaskList,
+                                   aboutYouTaskList: AboutYouTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
@@ -53,7 +51,8 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
         scheme = vatScheme.copy(applicantDetails = Some(applicantDetails))
       } yield Ok(view(
         registrationReasonSection.build(scheme),
-        verifyBusinessTaskList.build(scheme)
+        verifyBusinessTaskList.build(scheme),
+        aboutYouTaskList.build(scheme)
       ))
     } else {
       Future.successful(NotFound)
