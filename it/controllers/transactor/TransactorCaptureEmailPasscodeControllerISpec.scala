@@ -41,9 +41,56 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/enter-the-verification-code").get)
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get)
 
       res.status mustBe OK
+    }
+  }
+
+
+  "GET /email-address-verification-retry" should {
+    "show the view after requesting a passcode successfully" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TransactorDetails].contains(s4lContents)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+
+      res.status mustBe OK
+    }
+
+    "redirect to email verified after requesting a passcode and getting an email verified response" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TransactorDetails].contains(s4lContents)
+        .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+
+      res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
+      res.status mustBe SEE_OTHER
+    }
+
+    "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TransactorDetails].contains(s4lContents)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+
+      res.status mustBe INTERNAL_SERVER_ERROR
     }
   }
 
@@ -62,10 +109,10 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.transactor.routes.TransactorEmailAddressVerifiedController.show.url)
+        res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
       }
 
       "return BAD_REQUEST for an incorrect passcode" in new Setup {
@@ -80,7 +127,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe BAD_REQUEST
       }
@@ -97,11 +144,11 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodeNotFoundController.show(
-          controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url
+          routes.TransactorCaptureEmailAddressController.show.url
         ).url)
       }
 
@@ -117,7 +164,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_PASSCODE_ATTEMPTS_EXCEEDED").toString)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
@@ -133,7 +180,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> "p" * 10)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> "p" * 10)))
 
         res.status mustBe BAD_REQUEST
       }
@@ -151,7 +198,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
-        val res: WSResponse = await(buildClient("/enter-the-verification-code").post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe INTERNAL_SERVER_ERROR
       }
