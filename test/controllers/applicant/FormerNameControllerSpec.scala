@@ -17,6 +17,7 @@
 package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.{FeatureSwitching, TaskList}
 import fixtures.{ApplicantDetailsFixtures, VatRegistrationFixture}
 import models.api.{NETP, UkCompany}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
@@ -34,7 +35,8 @@ class FormerNameControllerSpec extends ControllerSpec
   with MockApplicantDetailsService
   with ApplicantDetailsFixtures
   with VatRegistrationFixture
-  with MockVatRegistrationService {
+  with MockVatRegistrationService
+  with FeatureSwitching {
 
   trait Setup {
     val controller: FormerNameController = new FormerNameController(
@@ -93,41 +95,59 @@ class FormerNameControllerSpec extends ControllerSpec
     }
   }
 
-  "submit" should {
-    "return BAD_REQUEST with Empty data" in new Setup {
-      mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
-        status(result) mustBe BAD_REQUEST
+  "submit" when {
+    "the task list is enabled" must {
+      "redirect to the Task List" in new Setup {
+        enable(TaskList)
+        mockPartyType(Future.successful(UkCompany))
+        mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
+
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+          redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
+        }
+      }
+    }
+    "the task list is disabled" must {
+      "return BAD_REQUEST with Empty data" in new Setup {
+        disable(TaskList)
+        mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+          status(result) mustBe BAD_REQUEST
+        }
+      }
+
+      "Redirect to ALF if no former name" in new Setup {
+        disable(TaskList)
+        mockPartyType(Future.successful(UkCompany))
+        mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
+
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+          redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
+        }
+      }
+
+      "Redirect to International Address capture if no former name and NETP" in new Setup {
+        disable(TaskList)
+        mockPartyType(Future.successful(NETP))
+        mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
+
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+          redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
+        }
+      }
+
+      "Redirect to FormerNameCapture with valid data with has former name" in new Setup {
+        disable(TaskList)
+        mockSaveApplicantDetails(HasFormerName(true))(emptyApplicantDetails)
+
+        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+          "value" -> "true"
+        )) { result =>
+          redirectLocation(result) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
+        }
       }
     }
 
-    "Redirect to ALF if no former name" in new Setup {
-      mockPartyType(Future.successful(UkCompany))
-      mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
-
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
-      }
-    }
-
-    "Redirect to International Address capture if no former name and NETP" in new Setup {
-      mockPartyType(Future.successful(NETP))
-      mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
-
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
-      }
-    }
-
-    "Redirect to FormerNameCapture with valid data with has former name" in new Setup {
-      mockSaveApplicantDetails(HasFormerName(true))(emptyApplicantDetails)
-
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> "true"
-      )) { result =>
-        redirectLocation(result) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
-      }
-    }
   }
 
 }

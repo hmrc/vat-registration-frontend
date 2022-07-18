@@ -2,6 +2,7 @@
 package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
@@ -71,89 +72,116 @@ class FormerNameControllerISpec extends ControllerISpec {
     }
   }
 
-  "POST Former Name page" should {
-    "patch Applicant Details in backend without former name" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+  "POST Former Name page" when {
+    "the task list is enabled" must {
+      "redirect to the task list" in new Setup {
+        enable(TaskList)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
+        val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        }
+      }
+    }
+    "the task list is disabled" must {
+      "patch Applicant Details in backend without former name" in new Setup {
+        disable(TaskList)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
+        }
+      }
+
+      "Update backend with formerName and redirect to the Former Name Capture page" in new Setup {
+        disable(TaskList)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+          .s4lContainer[ApplicantDetails].contains(s4lData.copy(hasFormerName = None))(ApplicantDetails.s4LWrites)
+          .s4lContainer[ApplicantDetails].clearedByKey(ApplicantDetails.s4lKey)
+          .registrationApi.replaceSection[ApplicantDetails](s4lData)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/changed-name").post(Map(
+          "value" -> "true"
+        ))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
+        }
+      }
+
+      "Update S4L with no formerName and redirect to the International Home Address page for NETP" in new Setup {
+        disable(TaskList)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = None, formerName = None))
+          .registrationApi.getSection[ApplicantDetails](None)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/changed-name").post(Map(
+          "value" -> "false"
+        ))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
+        }
+      }
+
+      "Update S4L with no formerName and redirect to the International Home Address page for Non UK Company" in new Setup {
+        disable(TaskList)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = Some(false), formerName = None))
+          .registrationApi.getSection[ApplicantDetails](None)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/changed-name").post(Map(
+          "value" -> "false"
+        ))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
+        }
       }
     }
 
-    "Update backend with formerName and redirect to the Former Name Capture page" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].contains(s4lData.copy(hasFormerName = None))(ApplicantDetails.s4LWrites)
-        .s4lContainer[ApplicantDetails].clearedByKey(ApplicantDetails.s4lKey)
-        .registrationApi.replaceSection[ApplicantDetails](s4lData)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/changed-name").post(Map(
-        "value" -> "true"
-      ))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)
-      }
-    }
-
-    "Update S4L with no formerName and redirect to the International Home Address page for NETP" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = None, formerName = None))
-        .registrationApi.getSection[ApplicantDetails](None)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/changed-name").post(Map(
-        "value" -> "false"
-      ))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
-      }
-    }
-
-    "Update S4L with no formerName and redirect to the International Home Address page for Non UK Company" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(hasFormerName = Some(false), formerName = None))
-        .registrationApi.getSection[ApplicantDetails](None)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response = buildClient("/changed-name").post(Map(
-        "value" -> "false"
-      ))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
-      }
-    }
   }
 
 }

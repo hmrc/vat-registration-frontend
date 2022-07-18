@@ -16,15 +16,416 @@
 
 package viewmodels.taslkist
 
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
-import models.PartnerEntity
-import models.api.{Individual, Partnership, Trust}
+import models.{ApplicantDetails, PartnerEntity}
+import models.api._
+import models.external.Name
+import models.view.FormerNameDateView
 import testHelpers.VatRegSpec
-import viewmodels.tasklist.AboutYouTaskList
+import viewmodels.tasklist._
 
-class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
-  val section: AboutYouTaskList = app.injector.instanceOf[AboutYouTaskList]
+  val section = app.injector.instanceOf[AboutYouTaskList]
+  implicit val profile = currentProfile
+
+  val testPhoneNumber = "012345678"
+  val testEmail = "test@test.com"
+
+  "the personal details row" when {
+    "the user is a NETP" must {
+      "be not started if no required answers are present" in {
+        val scheme = emptyVatScheme.copy(
+          applicantDetails = Some(ApplicantDetails(entity = Some(testNetpSoleTrader))),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = false
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLNotStarted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be complete if the user anssers No to former name" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testNetpSoleTrader),
+            hasFormerName = Some(false)
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be incomplete if the user answers Yes to former name and hasn't provided other answers" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testNetpSoleTrader),
+            hasFormerName = Some(true)
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLInProgress
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be complete if the user answers Yes to former name and has provided other answers" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testNetpSoleTrader),
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate))
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+    }
+    "the user is a sole trader" must {
+      "be not started if no required answers are present" in {
+        val scheme = emptyVatScheme.copy(
+          applicantDetails = Some(ApplicantDetails(entity = Some(testSoleTrader))),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = Individual,
+            isTransactor = false
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLNotStarted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be complete if the user answers No to former name" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = Individual,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            hasFormerName = Some(false)))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be incomplete if the user answers Yes to former name and hasn't provided other answers" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = Individual,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            hasFormerName = Some(true)
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLInProgress
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+      "be complete if the user answers Yes to former name and has provided other answers" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = Individual,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate))
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+      }
+    }
+    "the user is a partnership" when {
+      "the lead partner is an 'individual' type, i.e. Sole Trader or NETP" must {
+        "be complete when the former name answers are set" in {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = Partnership,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate))
+            )),
+            partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+          )
+
+          val res = section.personalDetailsRow.build(scheme)
+
+          res.status mustBe TLCompleted
+          res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+        }
+        "be not started when the former name answers are missing" in {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = Partnership,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails)
+            )),
+            partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+          )
+
+          val res = section.personalDetailsRow.build(scheme)
+
+          res.status mustBe TLNotStarted
+          res.url mustBe controllers.applicant.routes.FormerNameController.show.url
+        }
+      }
+      "the lead partner is anything else" must {
+        "be complete when the former name answers are set" in {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = Partnership,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate))
+            )),
+            partners = Some(List(PartnerEntity(testSoleTrader, UkCompany, isLeadPartner = true)))
+          )
+
+          val res = section.personalDetailsRow.build(scheme)
+
+          res.status mustBe TLCompleted
+          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        }
+        "be not started when the former name answers are missing" in {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = Partnership,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              hasFormerName = Some(false),
+              roleInTheBusiness = testRole
+            )),
+            partners = Some(List(PartnerEntity(testSoleTrader, UkCompany, isLeadPartner = true)))
+          )
+
+          val res = section.personalDetailsRow.build(scheme)
+
+          res.status mustBe TLCompleted
+          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        }
+      }
+    }
+    "the user is an LLP" must {
+      "be complete when personal details and former name are set" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = LtdLiabilityPartnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate))
+          ))
+        )
+        val res = section.personalDetailsRow.build(scheme)
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+      "be not started when personal details is missing" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = LtdLiabilityPartnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = None
+          ))
+        )
+        val res = section.personalDetailsRow.build(scheme)
+        res.status mustBe TLNotStarted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+    }
+    "the user is a Uk Company" when {
+      "the UseSoleTraderIdentification feature switch is enabled" must {
+        "use the Sole Trader journey url" in {
+          enable(UseSoleTraderIdentification)
+
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = UkCompany,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate))
+            ))
+          )
+          val res = section.personalDetailsRow.build(scheme)
+          res.status mustBe TLCompleted
+          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        }
+      }
+      "the UseSoleTraderIdentification feature switch is disabled" must {
+        "use the PDV url" in {
+          disable(UseSoleTraderIdentification)
+
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = UkCompany,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate))
+            ))
+          )
+          val res = section.personalDetailsRow.build(scheme)
+          res.status mustBe TLCompleted
+          res.url mustBe controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+        }
+      }
+    }
+    "the user is anything else" when {
+      "must be completed if all answers have been provided" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate))
+          ))
+        )
+        val res = section.personalDetailsRow.build(scheme)
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+      "must be complete if the user doesn't have a former name and everything else has been provided" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(false)
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+      "must be in progress if some required answers are missing" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole
+          ))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLInProgress
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+      "must be not started if some all answers are missing" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(entity = Some(testSoleTrader)))
+        )
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLNotStarted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
+    }
+    "some or all pre-requisites are not met" must {
+      "have the status Cannot Start Yet" in {
+        val scheme = emptyVatScheme
+
+        val res = section.personalDetailsRow.build(scheme)
+
+        res.status mustBe TLCannotStart
+
+      }
+    }
+  }
 
   "checks for the lead partner details row" when {
     "lead partner entity is not available" must {
@@ -65,5 +466,4 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
   }
-
 }

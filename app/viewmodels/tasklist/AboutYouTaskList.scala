@@ -17,18 +17,80 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+
 import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, VatScheme}
+
+import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import models.CurrentProfile
+import models.api._
+
 import play.api.i18n.Messages
 import play.api.mvc.Request
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList) {
+class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
+                                 aboutYouTransactorTaskList: AboutYouTransactorTaskList) extends FeatureSwitching {
 
-  val leadPartnerDetailsRow: TaskListRowBuilder = {
+  private def isIndividualType(scheme: VatScheme): Boolean =
+    Seq(Individual, NETP).exists(scheme.partyType.contains)
+
+  private def isPartnershipWithIndLeadPartner(scheme: VatScheme): Boolean =
+    Seq(Partnership, LtdPartnership, ScotPartnership, ScotLtdPartnership).exists(scheme.partyType.contains) &&
+      scheme.partners.exists(_.filter(_.isLeadPartner)
+        .exists(partner => partner.partyType == Individual || partner.partyType == NETP))
+
+  // scalastyle:off
+  def personalDetailsRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
+    messageKey = _ => "tasklist.aboutYou.personalDetails",
+    url = scheme => {
+      if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
+        controllers.applicant.routes.FormerNameController.show.url
+      } else {
+        if (scheme.partyType.contains(UkCompany) && !isEnabled(UseSoleTraderIdentification)) {
+          controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+        } else {
+          controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        }
+      }
+    },
+    tagId = "applicantPersonalDetailsRow",
+    checks = scheme => {
+      Seq(scheme.applicantDetails.exists(_.hasFormerName.isDefined))
+      .++ {
+        if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
+          Nil
+        } else if (scheme.partyType.contains(LtdLiabilityPartnership)) {
+          Seq(scheme.applicantDetails.exists(_.personalDetails.isDefined))
+        } else {
+          Seq(
+            scheme.applicantDetails.exists(_.personalDetails.isDefined),
+            scheme.applicantDetails.exists(_.roleInTheBusiness.isDefined)
+          )
+        }
+      }
+      .++ {
+        if (scheme.applicantDetails.exists(_.hasFormerName.contains(true))) {
+          Seq(
+            scheme.applicantDetails.exists(_.formerName.isDefined),
+            scheme.applicantDetails.exists(_.formerNameDate.isDefined)
+          )
+        } else {
+          Nil
+        }
+      }
+    },
+    prerequisites = scheme => Seq(
+      if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None,
+      if (Seq(Partnership, LtdPartnership, ScotLtdPartnership, ScotPartnership).exists(scheme.partyType.contains)) Some(leadPartnerDetailsRow) else None,
+      Some(verifyBusinessTaskList.businessInfoRow)
+    ).flatten
+  )
+
+  def leadPartnerDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = "tasklist.aboutYou.leadPartnerDetails",
+      messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
       url =
         _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
       tagId = "leadPartnerDetailsRow",
@@ -39,16 +101,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList)
     )
   }
 
-  def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection =
-    TaskListSection(
-      heading = messages("tasklist.aboutYou.heading"),
-      rows = Seq(buildLeadPartnerRow(vatScheme)).flatten
-    )
-
-  def buildLeadPartnerRow(vatScheme: VatScheme): Option[TaskListSectionRow] = {
+  def buildLeadPartnerRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListSectionRow] = {
     vatScheme.partyType match {
       case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) =>
         Some(leadPartnerDetailsRow.build(vatScheme))
@@ -56,4 +109,18 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList)
         None
     }
   }
+
+  def build(vatScheme: VatScheme)
+           (implicit request: Request[_],
+            profile: CurrentProfile,
+            messages: Messages,
+            appConfig: FrontendAppConfig): TaskListSection =
+    TaskListSection(
+      heading = if(vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) messages("tasklist.aboutBusinessContact.heading") else messages("tasklist.aboutYou.heading"),
+      rows = Seq(
+        buildLeadPartnerRow(vatScheme),
+        Some(personalDetailsRow.build(vatScheme))
+      ).flatten
+    )
+
 }

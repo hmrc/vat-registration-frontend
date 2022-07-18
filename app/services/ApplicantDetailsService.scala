@@ -39,11 +39,9 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
   def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
     vatRegistrationService.partyType.flatMap { partyType =>
       implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.s4LReads(partyType)
-
       s4LService.fetchAndGet[ApplicantDetails].flatMap {
         case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None, None)) =>
           implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
-
           registrationApiConnector.getSection[ApplicantDetails](cp.registrationId).flatMap {
             case Some(applicantDetails) => Future.successful(applicantDetails)
             case None => Future.successful(ApplicantDetails())

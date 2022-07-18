@@ -2,6 +2,7 @@
 package controllers.transactor
 
 import config.FrontendAppConfig
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.TransactorDetails
 import models.api.{EligibilitySubmissionData, NETP}
@@ -52,45 +53,72 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /sti-transactor-callback" must {
-    "redirect to the HomeAddress page" in new Setup {
-      given()
-        .user.isAuthorised()
-        .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
-        .s4lContainer[TransactorDetails].isEmpty
-        .registrationApi.getSection[TransactorDetails](None)
-        .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+  "GET /sti-transactor-callback" when {
+    "the task list is enabled" must {
+      "redirect to the task list" in new Setup {
+        enable(TaskList)
+        given()
+          .user.isAuthorised()
+          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
+          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorHomeAddressController.redirectToAlf.url)
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        }
+      }
+    }
+    "the task list is disabled" must {
+      "redirect to the HomeAddress page" in new Setup {
+        disable(TaskList)
+        given()
+          .user.isAuthorised()
+          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
+          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorHomeAddressController.redirectToAlf.url)
+        }
+      }
+
+      "redirect to the transactor internation address page if party type is non uk company" in new Setup {
+        disable(TaskList)
+        given()
+          .user.isAuthorised()
+          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](None)
+          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+        stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorInternationalAddressController.show.url)
+        }
       }
     }
 
-    "redirect to the transactor internation address page if party type is non uk company" in new Setup {
-      given()
-        .user.isAuthorised()
-        .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
-        .s4lContainer[TransactorDetails].isEmpty
-        .registrationApi.getSection[TransactorDetails](None)
-        .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorInternationalAddressController.show.url)
-      }
-    }
   }
 }

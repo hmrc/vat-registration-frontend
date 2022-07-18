@@ -18,7 +18,7 @@ package viewmodels.tasklist
 
 import models.api.VatScheme
 
-case class TaskListRowBuilder(messageKey: String,
+case class TaskListRowBuilder(messageKey: VatScheme => String,
                               url: VatScheme => String,
                               tagId: String,
                               checks: VatScheme => Seq[Boolean],
@@ -30,23 +30,21 @@ case class TaskListRowBuilder(messageKey: String,
     def prerequisitesMet: Boolean = prerequisites(vatScheme).forall(_.isComplete(vatScheme))
     def partiallyCompleted: Boolean = !isComplete(vatScheme) && checks(vatScheme).contains(true)
 
-    val status = if (isComplete(vatScheme)) {
-      TLCompleted
-    } else {
-      if (prerequisitesMet) {
+    val status = if (prerequisitesMet) {
+      if (isComplete(vatScheme)) {
+        TLCompleted
+      } else {
         if (partiallyCompleted) {
           TLInProgress
-        }
-        else {
+        } else {
           TLNotStarted
         }
       }
-      else {
-        TLCannotStart
-      }
+    } else {
+      TLCannotStart
     }
 
-    TaskListSectionRow(messageKey, url(vatScheme), tagId, status)
+    TaskListSectionRow(messageKey(vatScheme), url(vatScheme), tagId, status)
   }
 
 }
