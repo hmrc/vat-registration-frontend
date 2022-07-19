@@ -19,9 +19,9 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionService, TransactorDetailsService, VatRegistrationService}
+import services.{ApplicantDetailsService, BusinessService, SessionService, TransactorDetailsService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.tasklist.{AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
+import viewmodels.tasklist.{AboutTheBusinessTaskList, AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -35,8 +35,10 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    aboutYouTransactorTaskList: AboutYouTransactorTaskList,
                                    verifyBusinessTaskList: VerifyBusinessTaskList,
                                    aboutYouTaskList: AboutYouTaskList,
+                                   aboutTheBusinessTaskList: AboutTheBusinessTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
                                    transactorDetailsService: TransactorDetailsService,
+                                   businessService: BusinessService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -47,14 +49,20 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
     if (isEnabled(TaskList)) {
       for {
         vatScheme <- vatRegistrationService.getVatScheme
-        applicantDetails <- applicantDetailsService.getApplicantDetails // This is temporary, until we've removed S4L
+        applicantDetails <- applicantDetailsService.getApplicantDetails
         transactorDetails <- transactorDetailsService.getTransactorDetails
-        scheme = vatScheme.copy(applicantDetails = Some(applicantDetails), transactorDetails = Some(transactorDetails))
+        business <- businessService.getBusiness
+        scheme = vatScheme.copy(
+          applicantDetails = Some(applicantDetails),
+          transactorDetails = Some(transactorDetails),
+          business = Some(business)
+        ) // Grabbing the data from two sources is temporary, until we've removed S4L
         sections = List(
           Some(registrationReasonSection.build(scheme)),
           if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
           Some(verifyBusinessTaskList.build(scheme)),
-          Some(aboutYouTaskList.build(scheme))
+          Some(aboutYouTaskList.build(scheme)),
+          Some(aboutTheBusinessTaskList.build(scheme))
         ).flatten
       } yield Ok(view(sections: _*))
     } else {

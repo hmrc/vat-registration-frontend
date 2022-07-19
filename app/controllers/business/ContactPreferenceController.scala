@@ -18,7 +18,7 @@ package controllers.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.LandAndProperty
+import featureswitch.core.config.{LandAndProperty, TaskList}
 import forms.ContactPreferenceForm
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessService, SessionProfile, SessionService}
@@ -54,12 +54,16 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
         ContactPreferenceForm().bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm, routes.ContactPreferenceController.submitContactPreference))),
           contactPreference =>
-            businessService.updateBusiness(contactPreference).flatMap {
+            businessService.updateBusiness(contactPreference).map {
               _ =>
-                if (isEnabled(LandAndProperty)) {
-                  Future.successful(Redirect(controllers.business.routes.LandAndPropertyController.show))
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show)
                 } else {
-                  Future.successful(Redirect(controllers.business.routes.BusinessActivityDescriptionController.show))
+                  if (isEnabled(LandAndProperty)) {
+                    Redirect(routes.LandAndPropertyController.show)
+                  } else {
+                    Redirect(routes.BusinessActivityDescriptionController.show)
+                  }
                 }
             }
         )
