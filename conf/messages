@@ -49,6 +49,8 @@ tasklist.aboutYou.addressDetails        = Addresses
 tasklist.aboutYou.personalDetails       = Personal details
 tasklist.aboutBusinessContact.heading   = About the business contact
 tasklist.aboutYou.contactDetails        = Contact details
+tasklist.aboutTheBusiness.heading       = About the business
+tasklist.aboutTheBusiness.businessDetails = Business Details
 
 # Ordinal numbers
 ordinals.1 = First
