@@ -144,4 +144,57 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
     }
   }
 
+  "prerequisites for address details" when {
+    "complete" must {
+      "return true" in {
+        val scheme = validVatScheme.copy(
+          transactorDetails = Some(TransactorDetails(
+            personalDetails = Some(testPersonalDetails),
+            isPartOfOrganisation = Some(true),
+            organisationName = Some("org-name")
+          ))
+        )
+        section.transactorAddressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+      }
+    }
+    "not complete" must {
+      "return false" in {
+        val scheme = emptyVatScheme
+        section.transactorAddressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+  }
+
+  "checks for the transactor address details row" when {
+    "user is logged in as agent" must {
+      "return true even if address missing in transactor details" in {
+        section.transactorAddressDetailsRow.checks(
+          validVatScheme.copy(
+            transactorDetails = Some(TransactorDetails(
+              address = None,
+              personalDetails = Some(testPersonalDetails.copy(arn = Some("arn")))
+            ))
+          )
+        ) mustBe Seq(true)
+      }
+    }
+    "logged in user is not an agent" must {
+      "return true on address available" in {
+        section.transactorAddressDetailsRow.checks(
+          validVatScheme.copy(
+            transactorDetails = Some(TransactorDetails(
+              address = Some(testAddress), personalDetails = Some(testPersonalDetails)
+            ))
+          )
+        ) mustBe Seq(true)
+      }
+    }
+    "logged in user is not an agent" must {
+      "return false when no address available" in {
+        section.transactorAddressDetailsRow.checks(
+          validVatScheme.copy(transactorDetails = Some(TransactorDetails(address = None)))
+        ) mustBe Seq(false)
+      }
+    }
+  }
 }

@@ -17,15 +17,12 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-
-import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, VatScheme}
-
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models.CurrentProfile
 import models.api._
-
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -91,13 +88,29 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
   def leadPartnerDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
-      url =
-        _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
+      url = _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
       tagId = "leadPartnerDetailsRow",
-      checks =
-        scheme => Seq(scheme.partners.exists(_.exists(_.isLeadPartner))),
-      prerequisites =
-        _ => Seq(verifyBusinessTaskList.businessInfoRow)
+      checks = scheme => Seq(scheme.partners.exists(_.exists(_.isLeadPartner))),
+      prerequisites = _ => Seq(verifyBusinessTaskList.businessInfoRow)
+    )
+  }
+
+  def addressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+    TaskListRowBuilder(
+      messageKey = _ => "tasklist.aboutYou.addressDetails",
+      url = vatScheme => resolveAddressRowUrl(vatScheme),
+      tagId = "addressDetailsRow",
+      checks = scheme => {
+        Seq(
+          Some(scheme.applicantDetails.exists(_.homeAddress.isDefined)),
+          if (scheme.applicantDetails.flatMap(_.previousAddress).exists(_.yesNo)) {
+            None
+          } else {
+            Some(scheme.applicantDetails.exists(_.previousAddress.exists(_.address.isDefined)))
+          }
+        ).flatten
+      },
+      prerequisites = _ => Seq(personalDetailsRow)
     )
   }
 
@@ -110,6 +123,17 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     }
   }
 
+  def resolveAddressRowUrl(vatScheme: VatScheme): String = {
+    vatScheme.partyType match {
+      case Some(NETP) | Some(NonUkNonEstablished) =>
+        controllers.applicant.routes.InternationalHomeAddressController.show.url
+      case Some(_) =>
+        controllers.applicant.routes.HomeAddressController.redirectToAlf.url
+      case None =>
+        throw new InternalServerException("[AboutYouTaskList][resolveAddressRowUrl] Failed to initiate address details task list due to missing party type")
+    }
+  }
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -119,8 +143,8 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       heading = if(vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) messages("tasklist.aboutBusinessContact.heading") else messages("tasklist.aboutYou.heading"),
       rows = Seq(
         buildLeadPartnerRow(vatScheme),
-        Some(personalDetailsRow.build(vatScheme))
+        Some(personalDetailsRow.build(vatScheme)),
+        Some(addressDetailsRow.build(vatScheme))
       ).flatten
     )
-
 }

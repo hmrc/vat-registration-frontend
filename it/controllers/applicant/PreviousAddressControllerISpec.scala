@@ -2,6 +2,7 @@
 package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
@@ -42,37 +43,6 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       roleInTheBusiness = Some(Director)
     )
 
-    val validJson = Json.parse(
-      s"""
-         |{
-         |  "name": {
-         |    "first": "First",
-         |    "middle": "Middle",
-         |    "last": "Last"
-         |  },
-         |  "role": "$role",
-         |  "dob": "$dob",
-         |  "nino": "$nino",
-         |  "currentAddress": {
-         |    "line1": "$addrLine1",
-         |    "line2": "$addrLine2",
-         |    "postcode": "$postcode"
-         |  },
-         |  "contact": {
-         |    "email": "$email",
-         |    "emailVerified": true,
-         |    "telephone": "1234"
-         |  },
-         |  "changeOfName": {
-         |    "name": {
-         |      "first": "New",
-         |      "middle": "Name",
-         |      "last": "Cosmo"
-         |    },
-         |    "change": "2000-07-12"
-         |  }
-         |}""".stripMargin)
-
     "redirect to International Address capture if the user is a NETP" in new Setup {
       given()
         .user.isAuthorised()
@@ -103,22 +73,29 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
     }
 
-    "patch Applicant Details in backend" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "patch Applicant Details in backend when no previous address" in new Setup {
+      def verifyRedirect(redirectUrl: String) = {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.applicant.routes.CaptureEmailAddressController.show.url)
+        val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.applicant.routes.CaptureEmailAddressController.show.url)
     }
   }
 

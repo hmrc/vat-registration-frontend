@@ -21,8 +21,9 @@ import fixtures.VatRegistrationFixture
 import models.{ApplicantDetails, PartnerEntity}
 import models.api._
 import models.external.Name
-import models.view.FormerNameDateView
+import models.view.{FormerNameDateView, PreviousAddressView}
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.InternalServerException
 import viewmodels.tasklist._
 
 class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
@@ -449,7 +450,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
     }
   }
 
-  "the prerequisites for the business" when {
+  "prerequisites for lead partner details" when {
     "complete" must {
       "return true" in {
         val scheme = emptyVatScheme.copy(
@@ -463,6 +464,69 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
       "return false" in {
         val scheme = emptyVatScheme
         section.leadPartnerDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+  }
+
+  "address details task list row" when {
+    "built" must {
+      "throw INTERNAL_SERVER_ERROR if party type is missing" in {
+        intercept[InternalServerException] {
+          section.addressDetailsRow.build(emptyVatScheme)
+        }
+      }
+    }
+  }
+
+  "prerequisites for address details" when {
+    "complete" must {
+      "return true" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          applicantDetails = Some(completeApplicantDetails)
+        )
+        section.addressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+      }
+    }
+    "not complete" must {
+      "return false" in {
+        val scheme = emptyVatScheme
+        section.addressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+  }
+
+  "checks for the address details row" when {
+    "home address available and has been there for more than 3 years" must {
+      "return true" in {
+        section.addressDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(true, None))))
+          )
+        ) mustBe Seq(true)
+      }
+    }
+    "home address less than 3 years and previous address available" must {
+      "return true" in {
+        section.addressDetailsRow.checks(validVatScheme) mustBe Seq(true, true)
+      }
+    }
+    "home address less than 3 years and previous address not available" must {
+      "return false" in {
+        section.addressDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(false, None))))
+          )
+        ) mustBe Seq(true, false)
+      }
+    }
+    "home address not available" must {
+      "return false" in {
+        section.addressDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = Some(completeApplicantDetails.copy(homeAddress = None))
+          )
+        ) mustBe Seq(false, true)
       }
     }
   }
