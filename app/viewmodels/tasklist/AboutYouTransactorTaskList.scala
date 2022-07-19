@@ -73,6 +73,22 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     )
   }
 
+  def transactorContactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+    TaskListRowBuilder(
+      messageKey = _ => "tasklist.aboutYou.contactDetails",
+      url = _ => controllers.transactor.routes.TelephoneNumberController.show.url,
+      tagId = "contactDetailsRow",
+      checks = scheme => {
+        Seq(
+          scheme.transactorDetails.exists(_.email.isDefined),
+          scheme.transactorDetails.exists(_.emailVerified.getOrElse(false)),
+          scheme.transactorDetails.exists(_.telephone.isDefined)
+        )
+      },
+      prerequisites = _ => Seq(transactorAddressDetailsRow)
+    )
+  }
+
   def resolveAddressRowUrl(vatScheme: VatScheme): String = {
     vatScheme.partyType match {
       case Some(NETP) | Some(NonUkNonEstablished) =>
@@ -93,7 +109,8 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
       heading = messages("tasklist.aboutYou.heading"),
       rows = Seq(
         transactorPersonalDetailsRow.build(vatScheme),
-        transactorAddressDetailsRow.build(vatScheme)
+        transactorAddressDetailsRow.build(vatScheme),
+        transactorContactDetailsRow.build(vatScheme)
       )
     )
 }

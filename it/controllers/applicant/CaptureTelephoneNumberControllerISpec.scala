@@ -16,13 +16,13 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.StubEmailVerification
+import featureswitch.core.config.{StubEmailVerification, TaskList}
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
+import models.{ApplicantDetails, Director, TelephoneNumber}
 import org.jsoup.Jsoup
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -79,85 +79,36 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       "update S4L and redirect to ALF to capture the PPOB address" in new Setup {
         disable(StubEmailVerification)
 
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        private def verifyRedirect(redirectUrl: String) = {
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
+          res.status mustBe SEE_OTHER
+          res.header("LOCATION") mustBe Some(redirectUrl)
+        }
+
+        enable(TaskList)
+        verifyRedirect(controllers.routes.TaskListController.show.url)
+        disable(TaskList)
+        verifyRedirect(controllers.business.routes.PpobAddressController.startJourney.url)
       }
     }
 
     "update S4L and redirect to International Address for a NETP" in new Setup {
       disable(StubEmailVerification)
 
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-      res.status mustBe SEE_OTHER
-      res.header("LOCATION") mustBe Some(controllers.business.routes.InternationalPpobAddressController.show.url)
-    }
-
-    "update S4L and redirect to International Address for a Non UK Company" in new Setup {
-      disable(StubEmailVerification)
-
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-      res.status mustBe SEE_OTHER
-      res.header("LOCATION") mustBe Some(controllers.business.routes.InternationalPpobAddressController.show.url)
-    }
-
-    "the ApplicantDetails model is complete" should {
-      "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
-        disable(StubEmailVerification)
-
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      private def verifyRedirect(redirectUrl: String) = {
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
-          telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
-        ))
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
-      }
-      "post to the backend and redirect to International Address for a NETP" in new Setup {
-        disable(StubEmailVerification)
-
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
-          .s4lContainer[ApplicantDetails].clearedByKey
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -165,7 +116,92 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.business.routes.InternationalPpobAddressController.show.url)
+        res.header("LOCATION") mustBe Some(redirectUrl)
+      }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
+    }
+
+    "update S4L and redirect to International Address for a Non UK Company" in new Setup {
+      disable(StubEmailVerification)
+
+      private def verifyRedirect(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(redirectUrl)
+      }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
+    }
+
+    "the ApplicantDetails model is complete" should {
+      "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
+        disable(StubEmailVerification)
+
+        private def verifyRedirect(redirectUrl: String) = {
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
+            telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
+          ))
+            .s4lContainer[ApplicantDetails].clearedByKey
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+          res.status mustBe SEE_OTHER
+          res.header("LOCATION") mustBe Some(redirectUrl)
+        }
+
+        enable(TaskList)
+        verifyRedirect(controllers.routes.TaskListController.show.url)
+        disable(TaskList)
+        verifyRedirect(controllers.business.routes.PpobAddressController.startJourney.url)
+      }
+
+      "post to the backend and redirect to International Address for a NETP" in new Setup {
+        disable(StubEmailVerification)
+
+        private def verifyRedirect(redirectUrl: String) = {
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
+          given()
+            .user.isAuthorised()
+            .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
+            .s4lContainer[ApplicantDetails].clearedByKey
+            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+          res.status mustBe SEE_OTHER
+          res.header("LOCATION") mustBe Some(redirectUrl)
+        }
+
+        enable(TaskList)
+        verifyRedirect(controllers.routes.TaskListController.show.url)
+        disable(TaskList)
+        verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
       }
     }
   }

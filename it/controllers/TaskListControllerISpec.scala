@@ -41,6 +41,8 @@ class TaskListControllerISpec extends ControllerISpec {
       val leadPartnerNotStartedRow = "Lead partner details Not started"
       val addressesCompletedRow = "Addresses Completed"
       val addressesCannotStartRow = "Addresses Cannot start yet"
+      val contactDetailsCompletedRow = "Contact details Completed"
+      val contactDetailsCannotStartRow = "Contact details Cannot start yet"
 
       val heading2 = "4. About the business contact"
       val row1 = "Personal details Completed"
@@ -86,7 +88,8 @@ class TaskListControllerISpec extends ControllerISpec {
         sectionMustExist(3)(ExpectedMessages.section3.heading, List(
           ExpectedMessages.section3.leadPartnerCompletedRow,
           ExpectedMessages.section3.row1,
-          ExpectedMessages.section3.addressesCompletedRow
+          ExpectedMessages.section3.addressesCompletedRow,
+          ExpectedMessages.section3.contactDetailsCompletedRow
         ))
       }
 
@@ -116,10 +119,11 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(
-          ExpectedMessages.section3.heading,
-          List(ExpectedMessages.section3.row1, ExpectedMessages.section3.addressesCompletedRow)
-        )
+        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+          ExpectedMessages.section3.row1,
+          ExpectedMessages.section3.addressesCompletedRow,
+          ExpectedMessages.section3.contactDetailsCompletedRow
+        ))
       }
 
       "show the transactor section when all data is present" in new Setup {
@@ -146,13 +150,17 @@ class TaskListControllerISpec extends ControllerISpec {
 
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(
-          ExpectedMessages.section1a.heading, List(ExpectedMessages.section1a.row1, ExpectedMessages.section3.addressesCompletedRow)
-        )
+        sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
+          ExpectedMessages.section1a.row1,
+          ExpectedMessages.section3.addressesCompletedRow,
+          ExpectedMessages.section3.contactDetailsCompletedRow
+        ))
         sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
-        sectionMustExist(4)(
-          ExpectedMessages.section3.heading2, List(ExpectedMessages.section3.row1, ExpectedMessages.section3.addressesCompletedRow)
-        )
+        sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
+          ExpectedMessages.section3.row1,
+          ExpectedMessages.section3.addressesCompletedRow,
+          ExpectedMessages.section3.contactDetailsCompletedRow
+        ))
       }
 
       "show the lead partner section when the user is a partnership" in new Setup {
@@ -172,10 +180,11 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getSection[ApplicantDetails](
             Some(validFullApplicantDetails.copy(
               entity = Some(testPartnership), personalDetails = None,
-              previousAddress = Some(PreviousAddressView(false, None))
+              homeAddress = None,
+              previousAddress = Some(PreviousAddressView(false, None)),
+              emailAddress = None, emailVerified = None, telephoneNumber = None
             ))
           )
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -188,7 +197,8 @@ class TaskListControllerISpec extends ControllerISpec {
         sectionMustExist(3)(ExpectedMessages.section3.heading, List(
           ExpectedMessages.section3.leadPartnerNotStartedRow,
           "Personal details Cannot start yet",
-          ExpectedMessages.section3.addressesCannotStartRow
+          ExpectedMessages.section3.addressesCannotStartRow,
+          ExpectedMessages.section3.contactDetailsCannotStartRow
         ))
       }
     }

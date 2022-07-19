@@ -48,6 +48,7 @@ tasklist.aboutYou.leadPartnerDetails    = Lead partner details
 tasklist.aboutYou.addressDetails        = Addresses
 tasklist.aboutYou.personalDetails       = Personal details
 tasklist.aboutBusinessContact.heading   = About the business contact
+tasklist.aboutYou.contactDetails        = Contact details
 
 # Ordinal numbers
 ordinals.1 = First
