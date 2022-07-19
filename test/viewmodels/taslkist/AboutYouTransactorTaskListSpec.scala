@@ -197,4 +197,47 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
       }
     }
   }
+
+  "prerequisites for contact details" when {
+    "complete" must {
+      "return true" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          transactorDetails = Some(validTransactorDetails)
+        )
+        section.transactorContactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+      }
+    }
+    "not complete" must {
+      "return false" in {
+        val scheme = emptyVatScheme
+        section.transactorContactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+  }
+
+  "checks for applicant contact details row" when {
+    "a verified email and telephone number are available" must {
+      "return true" in {
+        section.transactorContactDetailsRow.checks(
+          validVatScheme.copy(applicantDetails = None, transactorDetails = Some(validTransactorDetails))
+        ).reduce(_ && _) mustBe true
+      }
+    }
+    "telephone number and an unverified email available" must {
+      "return false" in {
+        section.transactorContactDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = None,
+            transactorDetails = Some(validTransactorDetails.copy(emailVerified = Some(false)))
+          )
+        ).reduce(_ && _) mustBe false
+      }
+    }
+    "no contact details available" must {
+      "return false" in {
+        section.transactorContactDetailsRow.checks(emptyVatScheme).reduce(_ && _) mustBe false
+      }
+    }
+  }
 }

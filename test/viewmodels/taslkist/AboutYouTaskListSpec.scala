@@ -18,18 +18,18 @@ package viewmodels.taslkist
 
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
-import models.{ApplicantDetails, PartnerEntity}
 import models.api._
-import models.external.Name
+import models.external.{EmailVerified, Name}
 import models.view.{FormerNameDateView, PreviousAddressView}
+import models.{ApplicantDetails, CurrentProfile, PartnerEntity}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.tasklist._
 
 class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
-  val section = app.injector.instanceOf[AboutYouTaskList]
-  implicit val profile = currentProfile
+  val section: AboutYouTaskList = app.injector.instanceOf[AboutYouTaskList]
+  implicit val profile: CurrentProfile = currentProfile
 
   val testPhoneNumber = "012345678"
   val testEmail = "test@test.com"
@@ -501,7 +501,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
       "return true" in {
         section.addressDetailsRow.checks(
           validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(true, None))))
+            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = true, None))))
           )
         ) mustBe Seq(true)
       }
@@ -515,7 +515,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
       "return false" in {
         section.addressDetailsRow.checks(
           validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(false, None))))
+            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
           )
         ) mustBe Seq(true, false)
       }
@@ -527,6 +527,62 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             applicantDetails = Some(completeApplicantDetails.copy(homeAddress = None))
           )
         ) mustBe Seq(false, true)
+      }
+    }
+  }
+
+  "prerequisites for contact details" when {
+    "complete" must {
+      "return true" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          applicantDetails = Some(completeApplicantDetails)
+        )
+        section.contactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+      }
+    }
+    "not complete" must {
+      "return false" in {
+        val scheme = emptyVatScheme
+        section.contactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+      }
+    }
+  }
+
+  "checks for applicant contact details row" when {
+    "a verified email and telephone number are available" must {
+      "return true" in {
+        section.contactDetailsRow.checks(validVatScheme).reduce(_ && _) mustBe true
+      }
+    }
+    "an unverified email available during a transactor flow" must {
+      "return true" in {
+        section.contactDetailsRow.checks(
+          validVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
+            applicantDetails = Some(completeApplicantDetails.copy(emailVerified = Some(EmailVerified(false))))
+          )
+        ).reduce(_ && _) mustBe true
+      }
+    }
+    "telephone number and an unverified email available" must {
+      "return false" in {
+        section.contactDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = Some(completeApplicantDetails.copy(emailVerified = Some(EmailVerified(false))))
+          )
+        ).reduce(_ && _) mustBe false
+      }
+    }
+    "no contact details available" must {
+      "return false" in {
+        section.contactDetailsRow.checks(
+          validVatScheme.copy(
+            applicantDetails = Some(completeApplicantDetails.copy(
+              emailAddress = None, emailVerified = Some(EmailVerified(false)), telephoneNumber = None
+            ))
+          )
+        ).reduce(_ && _) mustBe false
       }
     }
   }

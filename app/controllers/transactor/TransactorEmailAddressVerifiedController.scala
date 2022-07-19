@@ -18,6 +18,7 @@ package controllers.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
@@ -41,8 +42,12 @@ class TransactorEmailAddressVerifiedController @Inject()(view: email_verified,
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    _ => _ =>
-      Future.successful(Redirect(controllers.routes.BusinessIdentificationResolverController.resolve))
+    _ => _ => {
+      if (isEnabled(TaskList)) {
+        Future.successful(Redirect(controllers.routes.TaskListController.show))
+      } else {
+        Future.successful(Redirect(controllers.routes.BusinessIdentificationResolverController.resolve))
+      }
+    }
   }
-
 }

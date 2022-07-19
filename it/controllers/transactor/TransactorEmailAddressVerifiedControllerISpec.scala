@@ -16,7 +16,7 @@
 
 package controllers.transactor
 
-import featureswitch.core.config.StubEmailVerification
+import featureswitch.core.config.{StubEmailVerification, TaskList}
 import itutil.ControllerISpec
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -41,15 +41,22 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
     "redirect to Business Identification Resolver" in new Setup {
       disable(StubEmailVerification)
 
-      given()
-        .user.isAuthorised()
+      private def verifyRedirect(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient("/your-email-address-verified").post(""))
+        val res: WSResponse = await(buildClient("/your-email-address-verified").post(""))
 
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.routes.BusinessIdentificationResolverController.resolve.url)
     }
   }
 

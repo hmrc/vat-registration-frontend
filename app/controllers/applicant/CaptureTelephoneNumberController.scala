@@ -18,6 +18,7 @@ package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.TelephoneNumberForm
 import models.TelephoneNumber
 import models.api.{NETP, NonUkNonEstablished}
@@ -27,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.capture_telephone_number
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
@@ -60,11 +61,15 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
             },
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).flatMap { _ =>
-              vatRegistrationService.partyType map {
-                case NETP | NonUkNonEstablished =>
-                  Redirect(controllers.business.routes.InternationalPpobAddressController.show)
-                case _ =>
-                  Redirect(controllers.business.routes.PpobAddressController.startJourney)
+              if (isEnabled(TaskList)) {
+                Future.successful(Redirect(controllers.routes.TaskListController.show))
+              } else {
+                vatRegistrationService.partyType map {
+                  case NETP | NonUkNonEstablished =>
+                    Redirect(controllers.business.routes.InternationalPpobAddressController.show)
+                  case _ =>
+                    Redirect(controllers.business.routes.PpobAddressController.startJourney)
+                }
               }
             }
         )
