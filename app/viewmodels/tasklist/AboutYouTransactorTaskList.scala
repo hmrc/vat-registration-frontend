@@ -17,11 +17,12 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, FullAgentJourney, UseSoleTraderIdentification}
+import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
 import models.CurrentProfile
-import models.api.{UkCompany, VatScheme}
+import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.Inject
 
@@ -56,6 +57,33 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     prerequisites = scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.id))
   )
 
+  def transactorAddressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+    TaskListRowBuilder(
+      messageKey = _ => "tasklist.aboutYou.addressDetails",
+      url = vatScheme => resolveAddressRowUrl(vatScheme),
+      tagId = "addressDetailsRow",
+      checks = scheme => {
+        if (scheme.transactorDetails.flatMap(_.personalDetails).exists(_.arn.isDefined)) {
+          Seq(true)
+        } else {
+          Seq(scheme.transactorDetails.exists(_.address.isDefined))
+        }
+      },
+      prerequisites = _ => Seq(transactorPersonalDetailsRow)
+    )
+  }
+
+  def resolveAddressRowUrl(vatScheme: VatScheme): String = {
+    vatScheme.partyType match {
+      case Some(NETP) | Some(NonUkNonEstablished) =>
+        controllers.transactor.routes.TransactorInternationalAddressController.show.url
+      case Some(_) =>
+        controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url
+      case None =>
+        throw new InternalServerException("[AboutYouTaskList][resolveAddressRowUrl] Failed to initiate address details task list due to missing party type")
+    }
+  }
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -64,8 +92,8 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     TaskListSection(
       heading = messages("tasklist.aboutYou.heading"),
       rows = Seq(
-        transactorPersonalDetailsRow.build(vatScheme)
+        transactorPersonalDetailsRow.build(vatScheme),
+        transactorAddressDetailsRow.build(vatScheme)
       )
     )
-
 }

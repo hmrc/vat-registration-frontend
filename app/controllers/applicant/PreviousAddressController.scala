@@ -20,6 +20,7 @@ import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, app
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
+import featureswitch.core.config.TaskList
 import forms.PreviousAddressForm
 import models.api.{NETP, NonUkNonEstablished}
 import models.view.PreviousAddressView
@@ -67,7 +68,12 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
               data =>
                 if (data.yesNo) {
                   applicantDetailsService.saveApplicantDetails(data) map {
-                    _ => Redirect(routes.CaptureEmailAddressController.show)
+                    _ =>
+                      if (isEnabled(TaskList)) {
+                        Redirect(controllers.routes.TaskListController.show)
+                      } else {
+                        Redirect(routes.CaptureEmailAddressController.show)
+                      }
                   }
                 } else {
                   vatRegistrationService.partyType flatMap {
@@ -87,7 +93,13 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
-        } yield Redirect(routes.CaptureEmailAddressController.show)
+        } yield {
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show)
+          } else {
+            Redirect(routes.CaptureEmailAddressController.show)
+          }
+        }
   }
 
   def previousAddress: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -102,5 +114,4 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           addressLookupService.getJourneyUrl(journeyId, applicantRoutes.PreviousAddressController.addressLookupCallback()) map Redirect
         }
   }
-
 }

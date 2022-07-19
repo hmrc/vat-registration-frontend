@@ -1,6 +1,7 @@
 
 package controllers.transactor
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.{Address, Country, EligibilitySubmissionData}
 import models.{DeclarationCapacityAnswer, Director, TransactorDetails}
@@ -65,29 +66,37 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
     )
 
     "patch Transactor Details with ALF address in backend" in new Setup {
-      val addressId = "addressId"
-      val addressLine1 = "16 Coniston court"
-      val addressLine2 = "Holland road"
-      val addressCountry = "GB"
-      val addressPostcode = "BN3 1JU"
 
-      given()
-        .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lData)
-        .s4lContainer[TransactorDetails].clearedByKey
-        .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
-        .registrationApi.replaceSection(
-        TransactorDetails(address = Some(Address(addressLine1, Some(addressLine2), None, None, None, Some(addressPostcode), Some(Country(Some("GB"), Some("United Kingdom"))))))
-      )
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+      private def verifyRedirect(redirectUrl: String) = {
+        val addressId = "addressId"
+        val addressLine1 = "16 Coniston court"
+        val addressLine2 = "Holland road"
+        val addressCountry = "GB"
+        val addressPostcode = "BN3 1JU"
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].contains(s4lData)
+          .s4lContainer[TransactorDetails].clearedByKey
+          .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
+          .registrationApi.replaceSection(
+          TransactorDetails(address = Some(Address(addressLine1, Some(addressLine2), None, None, None, Some(addressPostcode), Some(Country(Some("GB"), Some("United Kingdom"))))))
+        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.TelephoneNumberController.show.url)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(routes.TelephoneNumberController.show.url)
     }
   }
 

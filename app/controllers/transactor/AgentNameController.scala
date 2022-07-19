@@ -20,7 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.AgentNameForm
-import models.{AccountantAgent, DeclarationCapacityAnswer, FinancialController, PersonalDetails}
+import models.{AccountantAgent, DeclarationCapacityAnswer, PersonalDetails}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}

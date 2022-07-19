@@ -19,6 +19,7 @@ package controllers.transactor
 import common.enums.AddressLookupJourneyIdentifier.{homeAddress, transactorAddress}
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
 import services.{AddressLookupService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -48,6 +49,12 @@ class TransactorHomeAddressController @Inject()(val authConnector: AuthConnector
         for {
           address <- addressLookupService.getAddressById(id)
           _ <- transactorDetailsService.saveTransactorDetails(address)
-        } yield Redirect(routes.TelephoneNumberController.show.url)
+        } yield {
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show.url)
+          } else {
+            Redirect(routes.TelephoneNumberController.show.url)
+          }
+        }
   }
 }

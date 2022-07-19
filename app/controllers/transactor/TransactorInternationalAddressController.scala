@@ -19,6 +19,7 @@ package controllers.transactor
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.InternationalAddressForm
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, TransactorDetailsService}
@@ -81,7 +82,11 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
               )))
             } else {
               transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>
-                Redirect(routes.TelephoneNumberController.show.url)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(routes.TelephoneNumberController.show.url)
+                }
               }
             }
           }
