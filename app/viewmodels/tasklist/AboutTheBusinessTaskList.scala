@@ -21,11 +21,12 @@ import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import services.BusinessService
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList) {
+class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService) {
 
   def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
@@ -47,8 +48,28 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList) {
         }
       }
     },
-    prerequisites = _ =>
-      Seq(aboutYouTaskList.contactDetailsRow)
+    prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
+  )
+
+  def businessActivitiesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.aboutTheBusiness.businessActivities",
+    url = _ => controllers.business.routes.LandAndPropertyController.show.url,
+    tagId = "businessActivitiesRow",
+    checks = scheme => Seq(
+      scheme.business.exists(_.hasLandAndProperty.isDefined),
+      scheme.business.exists(_.businessDescription.isDefined),
+      scheme.business.exists(_.mainBusinessActivity.isDefined)
+    ).++ {
+      val needsCompliance = scheme.business.flatMap(_.businessActivities).fold(false) { sicCodes =>
+        businessService.needComplianceQuestions(sicCodes)
+      }
+      if (needsCompliance) {
+        Seq(scheme.business.exists(_.labourCompliance.exists(businessService.isLabourComplianceModelComplete)))
+      } else {
+        Nil
+      }
+    },
+    prerequisites = _ => Seq(businessDetailsRow)
   )
 
   def build(vatScheme: VatScheme)
@@ -58,7 +79,9 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList) {
             appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.aboutTheBusiness.heading"),
-      rows = Seq(businessDetailsRow.build(vatScheme))
+      rows = Seq(
+        businessDetailsRow.build(vatScheme),
+        businessActivitiesRow.build(vatScheme)
+      )
     )
-
 }

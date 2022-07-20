@@ -19,7 +19,7 @@ package viewmodels.taslkist
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.external.{EmailVerified, Name}
+import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, PreviousAddressView}
 import models.{ApplicantDetails, CurrentProfile, PartnerEntity}
 import testHelpers.VatRegSpec
@@ -429,160 +429,252 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
   }
 
   "checks for the lead partner details row" when {
-    "lead partner entity is not available" must {
-      "return false" in {
-        section.leadPartnerDetailsRow.checks(emptyVatScheme) mustBe Seq(false)
-      }
-    }
-    "lead partner entity is available and applicable for lead partner section" must {
-      "return true" in {
-        section.leadPartnerDetailsRow.checks(
-          emptyVatScheme.copy(partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true))))
-        ) mustBe Seq(true)
-      }
-    }
-    "lead partner entity is available and not a lead partner" must {
-      "return true" in {
-        section.leadPartnerDetailsRow.checks(
-          emptyVatScheme.copy(partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = false))))
-        ) mustBe Seq(false)
-      }
-    }
-  }
-
-  "prerequisites for lead partner details" when {
-    "complete" must {
-      "return true" in {
+    "party type is available and applicable for lead partner section" must {
+      "return TLCompleted  state if prerequisites met" in {
         val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership)),
+          applicantDetails = Some(completeApplicantDetails),
+          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
+        )
+        val sectionRow = section.buildLeadPartnerRow(scheme).get
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
+      }
+    }
+
+    "party type is available and applicable for lead partner section" must {
+      "return TLNotStarted state if prerequisites met but lead partner not selected" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership)),
           applicantDetails = Some(completeApplicantDetails)
         )
-        section.leadPartnerDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+        val sectionRow = section.buildLeadPartnerRow(scheme).get
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
       }
     }
-    "not complete" must {
+
+    "party type is available and applicable for lead partner section" must {
+      "return not TLCannotStart state if prerequisites not met" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership))
+        )
+        val sectionRow = section.buildLeadPartnerRow(scheme).get
+        sectionRow.status mustBe TLCannotStart
+        sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
+      }
+    }
+
+    "party type is not available" must {
       "return false" in {
-        val scheme = emptyVatScheme
-        section.leadPartnerDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+        section.buildLeadPartnerRow(emptyVatScheme) mustBe None
+      }
+    }
+
+    "party type is available and not a lead partner" must {
+      "return true" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+        )
+        section.buildLeadPartnerRow(scheme) mustBe None
       }
     }
   }
 
-  "address details task list row" when {
-    "built" must {
+  "checks for address details task list row" when {
+
+    "party type not available" must {
       "throw INTERNAL_SERVER_ERROR if party type is missing" in {
         intercept[InternalServerException] {
           section.addressDetailsRow.build(emptyVatScheme)
         }
       }
     }
-  }
 
-  "prerequisites for address details" when {
-    "complete" must {
-      "return true" in {
+    "person details not available or incomplete from prerequisite" must {
+      "return TLCannotStart" in {
         val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          applicantDetails = Some(completeApplicantDetails)
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          ))
         )
-        section.addressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
-      }
-    }
-    "not complete" must {
-      "return false" in {
-        val scheme = emptyVatScheme
-        section.addressDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
-      }
-    }
-  }
 
-  "checks for the address details row" when {
-    "home address available and has been there for more than 3 years" must {
-      "return true" in {
-        section.addressDetailsRow.checks(
-          validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = true, None))))
-          )
-        ) mustBe Seq(true)
+        val sectionRow = section.addressDetailsRow.build(scheme)
+        sectionRow.status mustBe TLCannotStart
       }
     }
-    "home address less than 3 years and previous address available" must {
-      "return true" in {
-        section.addressDetailsRow.checks(validVatScheme) mustBe Seq(true, true)
-      }
-    }
-    "home address less than 3 years and previous address not available" must {
-      "return false" in {
-        section.addressDetailsRow.checks(
-          validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
-          )
-        ) mustBe Seq(true, false)
-      }
-    }
-    "home address not available" must {
-      "return false" in {
-        section.addressDetailsRow.checks(
-          validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(homeAddress = None))
-          )
-        ) mustBe Seq(false, true)
-      }
-    }
-  }
 
-  "prerequisites for contact details" when {
-    "complete" must {
-      "return true" in {
-        val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          applicantDetails = Some(completeApplicantDetails)
-        )
-        section.contactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
-      }
-    }
-    "not complete" must {
-      "return false" in {
-        val scheme = emptyVatScheme
-        section.contactDetailsRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
-      }
-    }
-  }
+    "all person details are available from prerequisite but address capture hasn't started" must {
+      "return TLNotStarted" in {
 
-  "checks for applicant contact details row" when {
-    "a verified email and telephone number are available" must {
-      "return true" in {
-        section.contactDetailsRow.checks(validVatScheme).reduce(_ && _) mustBe true
-      }
-    }
-    "an unverified email available during a transactor flow" must {
-      "return true" in {
-        section.contactDetailsRow.checks(
-          validVatScheme.copy(
-            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
-            applicantDetails = Some(completeApplicantDetails.copy(emailVerified = Some(EmailVerified(false))))
-          )
-        ).reduce(_ && _) mustBe true
-      }
-    }
-    "telephone number and an unverified email available" must {
-      "return false" in {
-        section.contactDetailsRow.checks(
-          validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(emailVerified = Some(EmailVerified(false))))
-          )
-        ).reduce(_ && _) mustBe false
-      }
-    }
-    "no contact details available" must {
-      "return false" in {
-        section.contactDetailsRow.checks(
-          validVatScheme.copy(
-            applicantDetails = Some(completeApplicantDetails.copy(
-              emailAddress = None, emailVerified = Some(EmailVerified(false)), telephoneNumber = None
+        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = partyType,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate))
             ))
           )
-        ).reduce(_ && _) mustBe false
+
+          val sectionRow = section.addressDetailsRow.build(scheme)
+          sectionRow.status mustBe TLNotStarted
+          sectionRow.url mustBe url
+        }
+        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+      }
+    }
+
+    "all person details are available from prerequisite with partial address details captured" must {
+      "return TLInProgress" in {
+
+        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = partyType,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate)),
+              homeAddress = completeApplicantDetails.homeAddress
+            ))
+          )
+
+          val sectionRow = section.addressDetailsRow.build(scheme)
+          sectionRow.status mustBe TLInProgress
+          sectionRow.url mustBe url
+        }
+
+        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+      }
+    }
+
+    "all person details are available from prerequisite and all address details captured" must {
+      "return TLCompleted" in {
+
+        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+          val scheme = emptyVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+              partyType = partyType,
+              isTransactor = false
+            )),
+            applicantDetails = Some(ApplicantDetails(
+              entity = Some(testSoleTrader),
+              personalDetails = Some(testPersonalDetails),
+              roleInTheBusiness = testRole,
+              hasFormerName = Some(true),
+              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+              formerNameDate = Some(FormerNameDateView(testDate)),
+              homeAddress = completeApplicantDetails.homeAddress,
+              previousAddress = Some(PreviousAddressView(true, None))
+            ))
+          )
+
+          val sectionRow = section.addressDetailsRow.build(scheme)
+          sectionRow.status mustBe TLCompleted
+          sectionRow.url mustBe url
+        }
+
+        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+      }
+    }
+  }
+
+  "checks for contact details task list row" when {
+    "address details not available or incomplete from prerequisite" must {
+      "return TLCannotStart" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = RegSociety,
+            isTransactor = false
+          ))
+        )
+
+        val sectionRow = section.contactDetailsRow.build(scheme)
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "address details available from prerequisite but contact details capture hasn't started" must {
+      "return TLNotStarted" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = LtdPartnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate)),
+            homeAddress = completeApplicantDetails.homeAddress,
+            previousAddress = Some(PreviousAddressView(true, None))
+          ))
+        )
+
+        val sectionRow = section.contactDetailsRow.build(scheme)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.applicant.routes.CaptureEmailAddressController.show.url
+      }
+    }
+
+    "address details available from prerequisite but contact details still in progress" must {
+      "return TLInProgress" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = Partnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate)),
+            homeAddress = completeApplicantDetails.homeAddress,
+            previousAddress = Some(PreviousAddressView(true, None)),
+            emailAddress = Some(EmailAddress("email"))
+          ))
+        )
+
+        val sectionRow = section.contactDetailsRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.applicant.routes.CaptureEmailAddressController.show.url
+      }
+    }
+
+    "address details are available from prerequisite and contact details captured" must {
+      "return TLCompleted" in {
+
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = LtdPartnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(completeApplicantDetails)
+        )
+
+        val sectionRow = section.contactDetailsRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.applicant.routes.CaptureEmailAddressController.show.url
       }
     }
   }

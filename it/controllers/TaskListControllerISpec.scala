@@ -3,9 +3,9 @@ package controllers
 
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany}
+import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany, VatScheme}
 import models.view.PreviousAddressView
-import models.{ApplicantDetails, PartnerEntity, TransactorDetails}
+import models.{ApplicantDetails, Business, PartnerEntity, TransactorDetails}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
@@ -46,6 +46,16 @@ class TaskListControllerISpec extends ControllerISpec {
 
       val heading2 = "4. About the business contact"
       val row1 = "Personal details Completed"
+    }
+
+    val aboutTheBusinessSection = new {
+      val heading = "About the business"
+
+      val businessDetailsNotStartedRow = "Business details Not started"
+      val businessDetailsCompletedRow = "Business details Completed"
+      val businessActivitiesCannotStartYetRow = "Business activities Cannot start yet"
+      val businessActivitiesNotStartedRow = "Business activities Not started"
+      val businessActivitiesCompletedRow = "Business activities Completed"
     }
   }
 
@@ -200,6 +210,84 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.section3.addressesCannotStartRow,
           ExpectedMessages.section3.contactDetailsCannotStartRow
         ))
+      }
+
+      "show business activities section with correct states" in new Setup {
+        enable(TaskList)
+
+        private def verifyAboutTheBusinessTaskListSection(position: Int, scheme: VatScheme, heading: String, expectedRows: List[String]) = {
+          implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+          given
+            .user.isAuthorised()
+            .registrationApi.getRegistration(scheme)
+            .registrationApi.getSection[Business](scheme.business)
+            .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+            .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+            .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(url).get)
+          implicit val doc = Jsoup.parse(res.body)
+
+          res.status mustBe OK
+          sectionMustExist(position)(s"$position. $heading", expectedRows)
+        }
+
+        verifyAboutTheBusinessTaskListSection(
+          5,
+          emptyUkCompanyVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            applicantDetails = Some(validFullApplicantDetails)
+          ),
+          ExpectedMessages.aboutTheBusinessSection.heading, List(
+            ExpectedMessages.aboutTheBusinessSection.businessDetailsNotStartedRow,
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow
+          )
+        )
+
+        verifyAboutTheBusinessTaskListSection(
+          5,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), businessActivities = None, mainBusinessActivity = None, businessDescription = None
+            ))
+          ),
+          ExpectedMessages.aboutTheBusinessSection.heading, List(
+            ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow
+          )
+        )
+
+        verifyAboutTheBusinessTaskListSection(
+          5,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false)
+            ))
+          ),
+          ExpectedMessages.aboutTheBusinessSection.heading, List(
+            ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow
+          )
+        )
+
+        verifyAboutTheBusinessTaskListSection(
+          4,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false)
+            ))
+          ),
+          ExpectedMessages.aboutTheBusinessSection.heading, List(
+            ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow
+          )
+        )
       }
     }
 
