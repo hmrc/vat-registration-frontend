@@ -1121,7 +1121,6 @@ internationalAddress.line5                               = Address line 5 (optio
 internationalAddress.postcode                            = Postcode (optional)
 internationalAddress.country                             = Country
 internationalAddress.country.default                     = Select a country
-internationalAddress.submit                              = Continue
 internationalAddress.error.line1.empty                   = Enter address line 1
 internationalAddress.error.line1.length                  = Enter line 1 using 35 characters or less
 internationalAddress.error.line1.invalid                 = Enter line 1 without special characters
