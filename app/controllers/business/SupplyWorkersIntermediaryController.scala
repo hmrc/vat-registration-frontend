@@ -18,7 +18,7 @@ package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.OtherBusinessInvolvement
+import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.IntermediarySupplyForm
 import models.LabourCompliance
 import play.api.mvc.{Action, AnyContent}
@@ -66,10 +66,14 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                   .copy(intermediaryArrangement = Some(data))
 
                 businessService.updateBusiness(updatedLabourCompliance) map { _ =>
-                  if (isEnabled(OtherBusinessInvolvement)) {
-                    Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                  if (isEnabled(TaskList)) {
+                    Redirect(controllers.routes.TaskListController.show.url)
                   } else {
-                    Redirect(controllers.routes.TradingNameResolverController.resolve)
+                    if (isEnabled(OtherBusinessInvolvement)) {
+                      Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                    } else {
+                      Redirect(controllers.routes.TradingNameResolverController.resolve)
+                    }
                   }
                 }
               }

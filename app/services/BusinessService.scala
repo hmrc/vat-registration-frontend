@@ -92,7 +92,7 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
     case business@_ => Incomplete(business)
   }
 
-  private def isLabourComplianceModelComplete(labourCompliance: LabourCompliance): Boolean = {
+  def isLabourComplianceModelComplete(labourCompliance: LabourCompliance): Boolean = {
     labourCompliance match {
       case LabourCompliance(_, Some(_), Some(false)) => true
       case LabourCompliance(Some(_), _, Some(true)) => true

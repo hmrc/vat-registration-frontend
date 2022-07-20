@@ -2,7 +2,7 @@
 package controllers.business
 
 import common.enums.VatRegStatus
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
 import featureswitch.core.models.FeatureSwitch
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
@@ -71,6 +71,9 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
       }
     }
 
+    enable(TaskList)
+    verifyRedirectLocation(disable, controllers.routes.TaskListController.show)
+    disable(TaskList)
     verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
     verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
   }

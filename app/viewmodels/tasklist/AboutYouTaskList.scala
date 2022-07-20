@@ -101,7 +101,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       url = vatScheme => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = addressDetailsChecks,
-      prerequisites = scheme => Seq(personalDetailsRow)
+      prerequisites = _ => Seq(personalDetailsRow)
     )
   }
 
@@ -121,7 +121,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     )
   }
 
-  private def buildLeadPartnerRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListSectionRow] = {
+  def buildLeadPartnerRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListSectionRow] = {
     vatScheme.partyType match {
       case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) =>
         Some(leadPartnerDetailsRow.build(vatScheme))

@@ -17,7 +17,8 @@
 package viewmodels.taslkist
 
 import fixtures.VatRegistrationFixture
-import models.Business
+import models.{Business, LabourCompliance}
+import models.api.SicCode
 import testHelpers.VatRegSpec
 import viewmodels.tasklist._
 
@@ -75,4 +76,81 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
   }
 
+  "checks for business activities row" when {
+    val complianceSicCode = SicCode("42110", "code with compliance", "")
+    val nonComplianceSicCode = SicCode("88888", "code with no compliance", "")
+
+    "business details not available" must {
+      "return TLCannotStart" in {
+        val sectionRow = section.businessActivitiesRow.build(emptyVatScheme)
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "business details available but no activity details captured" must {
+      "return TLNotStarted" in {
+        val schema = validVatScheme.copy(business = Some(validBusiness.copy(
+          mainBusinessActivity = None, businessDescription = None
+        )))
+        val sectionRow = section.businessActivitiesRow.build(schema)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
+      }
+    }
+
+    "business details available but activity details partially captured" must {
+      "return TLInProgress" in {
+        val schema = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(true), mainBusinessActivity = None, businessDescription = None
+          ))
+        )
+        val sectionRow = section.businessActivitiesRow.build(schema)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
+      }
+
+      "return TLInProgress if compliance siccode chosen but compliance details not complete" in {
+        val schema = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            mainBusinessActivity = Some(complianceSicCode),
+            labourCompliance = Some(LabourCompliance(None, Some(false), Some(true))),
+            businessActivities = Some(List(complianceSicCode))
+          ))
+        )
+        val sectionRow = section.businessActivitiesRow.build(schema)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
+      }
+    }
+
+    "business details available and activity details captured" must {
+      "return TLCompleted for siccode with no compliance details needed" in {
+        val schema = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            mainBusinessActivity = Some(nonComplianceSicCode),
+            businessActivities = Some(List(nonComplianceSicCode))
+          ))
+        )
+        val sectionRow = section.businessActivitiesRow.build(schema)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
+      }
+
+      "return TLCompleted for compliance siccode with required compliance details" in {
+        val schema = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            mainBusinessActivity = Some(complianceSicCode),
+            businessActivities = Some(List(complianceSicCode)),
+            labourCompliance = Some(complianceWithLabour)
+          ))
+        )
+        val sectionRow = section.businessActivitiesRow.build(schema)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
+      }
+    }
+  }
 }
