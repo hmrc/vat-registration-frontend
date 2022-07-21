@@ -39,7 +39,7 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val line5 = "Address line 5 (optional)"
     val postcode = "Postcode (optional)"
     val country = "Country"
-    val continue = "Continue"
+    val saveAndContinue = "Save and continue"
   }
 
   val transactorDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName).body)
@@ -77,7 +77,7 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
       doc.select("label[for=country]").toList.headOption.map(_.text) mustBe Some(ExpectedMessages.country)
     }
     "have a submit button" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedMessages.continue)
+      doc.submitButton mustBe Some(ExpectedMessages.saveAndContinue)
     }
   }
 
