@@ -17,6 +17,7 @@
 package controllers
 
 import common.enums.VatRegStatus
+import featureswitch.core.config.TaskList
 import fixtures.SicAndComplianceFixture
 import helpers.RequestsFinder
 import itutil.ControllerISpec
@@ -213,54 +214,68 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAnd
   }
 
   "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new Setup {
-    val incompleteModelWithoutSicCode = fullModel.copy(mainBusinessActivity = None)
-    val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
-    given()
-      .user.isAuthorised()
-      .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
-      .vatScheme.contains(
+
+    private def verifyRedirect(redirectUrl: String) = {
+      val incompleteModelWithoutSicCode = fullModel.copy(mainBusinessActivity = None)
+      val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
+        .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
           eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
       )
-      .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
-      .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
-      .s4lContainer[Business].clearedByKey
+        .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
+        .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
+        .s4lContainer[Business].clearedByKey
 
-    insertIntoDb(sessionId, sicCodeMapping)
-
-    val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
+      insertIntoDb(sessionId, sicCodeMapping)
+      val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      }
     }
+
+    enable(TaskList)
+    verifyRedirect(controllers.routes.TaskListController.show.url)
+    disable(TaskList)
+    verifyRedirect(controllers.routes.TradingNameResolverController.resolve(false).url)
   }
 
   "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete for SoleTrader" in new Setup {
 
-    val incompleteModelWithoutSicCode: Business = fullModel.copy(mainBusinessActivity = None)
-    val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
-    given()
-      .user.isAuthorised()
-      .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
-      .vatScheme.contains(
+    private def verifyRedirect(redirectUrl: String) = {
+      val incompleteModelWithoutSicCode: Business = fullModel.copy(mainBusinessActivity = None)
+      val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
+        .vatScheme.contains(
         VatScheme(id = currentProfile.registrationId,
           status = VatRegStatus.draft,
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
         )
       )
-      .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
-      .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
-      .s4lContainer[Business].clearedByKey
+        .vatScheme.isUpdatedWith[Business](expectedUpdateToBusiness)
+        .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
+        .s4lContainer[Business].clearedByKey
 
-    insertIntoDb(sessionId, sicCodeMapping)
+      insertIntoDb(sessionId, sicCodeMapping)
 
-    val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
+      val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      }
     }
+
+    enable(TaskList)
+    verifyRedirect(controllers.routes.TaskListController.show.url)
+    disable(TaskList)
+    verifyRedirect(controllers.routes.TradingNameResolverController.resolve(false).url)
   }
 
   "Workers should return OK on show and users answer is pre-popped on page" in new Setup {

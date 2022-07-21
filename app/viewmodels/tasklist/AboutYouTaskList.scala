@@ -113,9 +113,14 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       checks = scheme => {
         Seq(
           scheme.applicantDetails.exists(_.emailAddress.isDefined),
-          scheme.eligibilitySubmissionData.exists(_.isTransactor) || scheme.applicantDetails.exists(_.emailVerified.exists(_.emailVerified)),
           scheme.applicantDetails.exists(_.telephoneNumber.isDefined)
         )
+      }.++ {
+        if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) {
+          Nil
+        } else {
+          Seq(scheme.applicantDetails.exists(_.emailVerified.exists(_.emailVerified)))
+        }
       },
       prerequisites = _ => Seq(addressDetailsRow)
     )
