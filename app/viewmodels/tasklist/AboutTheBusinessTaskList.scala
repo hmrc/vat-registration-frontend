@@ -17,11 +17,12 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import models.CurrentProfile
 import models.api.VatScheme
+import models.{Business, CurrentProfile}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import services.BusinessService
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -30,11 +31,10 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
 
   def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
-    url = _ => controllers.routes.TradingNameResolverController.resolve.url,
+    url = _ => controllers.routes.TradingNameResolverController.resolve(true).url,
     tagId = "businessDetailsRow",
     checks = scheme => {
       Seq(
-        scheme.tradingDetails.exists(_.tradingNameView.isDefined),
         scheme.business.exists(_.ppobAddress.isDefined),
         scheme.business.exists(_.telephoneNumber.isDefined),
         scheme.business.exists(_.email.isDefined),
@@ -43,6 +43,13 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       ).++ {
         if (scheme.business.exists(_.hasWebsite.contains(true))) {
           Seq(scheme.business.exists(_.website.isDefined))
+        } else {
+          Nil
+        }
+      }.++ {
+        if (scheme.business.exists(_.hasTradingName.contains(true)) ||
+          !scheme.partyType.exists(Business.tradingNameOptional)) {
+          Seq(scheme.business.exists(_.tradingName.isDefined))
         } else {
           Nil
         }

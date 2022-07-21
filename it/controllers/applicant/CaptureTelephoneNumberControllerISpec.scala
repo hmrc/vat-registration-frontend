@@ -34,7 +34,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   val url: String = controllers.applicant.routes.CaptureTelephoneNumberController.show.url
 
-  val s4lData = ApplicantDetails(
+  val s4lData: ApplicantDetails = ApplicantDetails(
     entity = Some(testIncorpDetails),
     personalDetails = Some(testPersonalDetails),
     emailAddress = Some(EmailAddress("test@t.test")),
@@ -45,8 +45,11 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -66,9 +69,9 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
+
       whenReady(response) { res =>
         res.status mustBe OK
-
         Jsoup.parse(res.body).getElementById("telephone-number").attr("value") mustBe testPhoneNumber
       }
     }
@@ -76,7 +79,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   s"POST $url" when {
     "the ApplicantDetails model is incomplete" should {
-      "update S4L and redirect to ALF to capture the PPOB address" in new Setup {
+      "update S4L and redirect to trading name resolver" in new Setup {
         disable(StubEmailVerification)
 
         private def verifyRedirect(redirectUrl: String) = {
@@ -97,11 +100,11 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.business.routes.PpobAddressController.startJourney.url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
       }
     }
 
-    "update S4L and redirect to International Address for a NETP" in new Setup {
+    "update S4L and redirect to trading name resolver for a NETP" in new Setup {
       disable(StubEmailVerification)
 
       private def verifyRedirect(redirectUrl: String) = {
@@ -122,10 +125,10 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       enable(TaskList)
       verifyRedirect(controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
+      verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
     }
 
-    "update S4L and redirect to International Address for a Non UK Company" in new Setup {
+    "update S4L and redirect to trading name resolver for a Non UK Company" in new Setup {
       disable(StubEmailVerification)
 
       private def verifyRedirect(redirectUrl: String) = {
@@ -146,11 +149,11 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       enable(TaskList)
       verifyRedirect(controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
+      verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
     }
 
     "the ApplicantDetails model is complete" should {
-      "post to the backend and redirect to ALF to capture the PPOB address" in new Setup {
+      "post to the backend and redirect to trading name resolver" in new Setup {
         disable(StubEmailVerification)
 
         private def verifyRedirect(redirectUrl: String) = {
@@ -175,10 +178,10 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.business.routes.PpobAddressController.startJourney.url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
       }
 
-      "post to the backend and redirect to International Address for a NETP" in new Setup {
+      "post to the backend and redirect to trading name resolver for a NETP" in new Setup {
         disable(StubEmailVerification)
 
         private def verifyRedirect(redirectUrl: String) = {
@@ -201,7 +204,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.business.routes.InternationalPpobAddressController.show.url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
       }
     }
   }

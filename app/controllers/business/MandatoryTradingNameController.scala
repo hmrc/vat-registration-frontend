@@ -19,20 +19,21 @@ package controllers.business
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.SoleTraderNameForm
-import models.api.NETP
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
+import services.BusinessService.TradingName
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.business.soletrader_name
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class MandatoryTradingNameController @Inject()(val sessionService: SessionService,
                                                val authConnector: AuthConnector,
                                                val applicantDetailsService: ApplicantDetailsService,
-                                               val tradingDetailsService: TradingDetailsService,
+                                               val businessService: BusinessService,
                                                val vatRegistrationService: VatRegistrationService,
                                                view: soletrader_name
                                               )(implicit val appConfig: FrontendAppConfig,
@@ -43,8 +44,8 @@ class MandatoryTradingNameController @Inject()(val sessionService: SessionServic
     implicit request =>
       implicit profile =>
         for {
-          tradingDetails <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
-          form = tradingDetails.tradingNameView.fold(SoleTraderNameForm.form)(tradingName => SoleTraderNameForm.form.fill(tradingName.tradingName.get))
+          optTradingName <- businessService.getBusiness.map(_.tradingName)
+          form = optTradingName.fold(SoleTraderNameForm.form)(SoleTraderNameForm.form.fill)
         } yield Ok(view(form))
   }
 
@@ -53,16 +54,13 @@ class MandatoryTradingNameController @Inject()(val sessionService: SessionServic
       implicit profile =>
         SoleTraderNameForm.form.bindFromRequest().fold(
           errors =>
-            for {
-              _ <- tradingDetailsService.getTradingDetailsViewModel(profile.registrationId)
-            } yield BadRequest(view(errors)),
+            Future.successful(BadRequest(view(errors))),
           success => {
-            val name = success
-            tradingDetailsService.saveTradingName(profile.registrationId, true, Some(name)) flatMap {
+            businessService.updateBusiness(TradingName(success)) flatMap {
               _ =>
                 vatRegistrationService.partyType.map {
-                  case NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                  case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                  case NETP | NonUkNonEstablished => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
+                  case _ => Redirect(controllers.business.routes.PpobAddressController.startJourney)
                 }
             }
           }

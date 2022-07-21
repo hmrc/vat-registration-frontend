@@ -16,8 +16,8 @@
 
 package forms
 
-import models.TradingNameView
 import forms.FormValidation._
+import models.Business
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -72,11 +72,13 @@ object TradingNameForm extends RequiredBooleanForm {
 
   }
 
-  def fillWithPrePop(optTradingNameFormData: Option[TradingNameView]): Form[(Boolean, Option[String])] = {
-    optTradingNameFormData match {
-      case Some(tradingNameFormData) =>
-        form.fill(tradingNameFormData.yesNo, tradingNameFormData.tradingName)
-      case None =>
+  def fillWithPrePop(business: Business): Form[(Boolean, Option[String])] = {
+    (business.hasTradingName, business.tradingName) match {
+      case (Some(hasTradingName), optTradingName) =>
+        form.fill(hasTradingName, optTradingName)
+      case (None, optTradingName) if optTradingName.isDefined =>
+        form.fill(true, optTradingName)
+      case _ =>
         form
     }
   }

@@ -72,7 +72,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                     if (isEnabled(OtherBusinessInvolvement)) {
                       Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                     } else {
-                      Redirect(controllers.routes.TradingNameResolverController.resolve)
+                      Redirect(controllers.routes.TradingNameResolverController.resolve(false))
                     }
                   }
                 }

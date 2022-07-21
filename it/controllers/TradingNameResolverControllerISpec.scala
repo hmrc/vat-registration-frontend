@@ -18,12 +18,17 @@ package controllers
 
 import itutil.ControllerISpec
 import models.api._
-import models.{ApplicantDetails, TradingDetails}
+import models.{ApplicantDetails, Business}
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class TradingNameResolverControllerISpec extends ControllerISpec {
+
+  val url: String = controllers.routes.TradingNameResolverController.resolve(true).url
 
   "Trading name page resolver" should {
     List(Individual, NETP).foreach { partyType =>
@@ -31,14 +36,15 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/resolve-party-type").get()
+        val response: Future[WSResponse] = buildClient(url).get()
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.MandatoryTradingNameController.show.url)
@@ -51,16 +57,15 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/resolve-party-type").get()
+        val response: Future[WSResponse] = buildClient(url).get()
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.PartnershipNameController.show.url)
@@ -75,16 +80,17 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity =
           Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
         )))
-          .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/resolve-party-type").get()
+        val response: Future[WSResponse] = buildClient(url).get()
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ShortOrgNameController.show.url)
@@ -97,14 +103,15 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/resolve-party-type").get()
+        val response: Future[WSResponse] = buildClient(url).get()
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
@@ -116,14 +123,15 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(ScotLtdPartnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[TradingDetails].isEmpty
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = ScotLtdPartnership)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = None)))))
-        .vatScheme.doesNotHave("trading-details")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient("/resolve-party-type").get()
+      val response: Future[WSResponse] = buildClient(url).get()
+
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.PartnershipNameController.show.url)
@@ -135,14 +143,15 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[TradingDetails].isEmpty
+          .s4lContainer[Business].isEmpty
+          .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
-          .vatScheme.doesNotHave("trading-details")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient("/resolve-party-type").get()
+        val response: Future[WSResponse] = buildClient(url).get()
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessNameController.show.url)

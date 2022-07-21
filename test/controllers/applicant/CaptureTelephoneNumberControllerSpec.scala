@@ -112,7 +112,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
+        redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve(true).url)
       }
     }
    "return SEE_OTHER with valid Contact Details entered for a NETP" in new Setup {
@@ -123,7 +123,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
 
      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
          status(res) mustBe SEE_OTHER
-         redirectLocation(res) mustBe Some(controllers.business.routes.InternationalPpobAddressController.show.url)
+         redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve(true).url)
      }
    }
   }

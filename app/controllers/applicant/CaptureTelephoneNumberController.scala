@@ -60,16 +60,11 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
               BadRequest(view(routes.CaptureTelephoneNumberController.submit, formWithErrors, name))
             },
           telephone =>
-            applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).flatMap { _ =>
+            applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).map { _ =>
               if (isEnabled(TaskList)) {
-                Future.successful(Redirect(controllers.routes.TaskListController.show))
+                Redirect(controllers.routes.TaskListController.show)
               } else {
-                vatRegistrationService.partyType map {
-                  case NETP | NonUkNonEstablished =>
-                    Redirect(controllers.business.routes.InternationalPpobAddressController.show)
-                  case _ =>
-                    Redirect(controllers.business.routes.PpobAddressController.startJourney)
-                }
+                Redirect(controllers.routes.TradingNameResolverController.resolve(true))
               }
             }
         )

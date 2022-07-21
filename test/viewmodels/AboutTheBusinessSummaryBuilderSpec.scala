@@ -46,7 +46,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
   val testNipAmount = "Value of goods: £1.00"
   val testWarehouseNumber = "testWarehouseName"
   val testWarehouseName = "testWarehouseNumber"
-  val testTradingDetails = TradingDetails(tradingNameView = Some(TradingNameView(true, Some(testTradingName))))
   val testVrn = "testVrn"
 
   import models.view.SummaryListRowUtils._
@@ -62,8 +61,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             businessActivities = Some(List(sicCode))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false))),
-          tradingDetails = Some(testTradingDetails)
+          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false)))
         )
 
         verifySummaryPageContents(scheme)
@@ -78,8 +76,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             businessActivities = Some(List(sicCode))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false))),
-          tradingDetails = Some(testTradingDetails)
+          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false)))
         )
 
         verifySummaryPageContents(scheme)
@@ -93,8 +90,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             businessActivities = Some(List(sicCode))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          vatApplication = Some(validVatApplication.copy(turnoverEstimate = Some(0))),
-          tradingDetails = Some(testTradingDetails)
+          vatApplication = Some(validVatApplication.copy(turnoverEstimate = Some(0)))
         )
 
         val res = builder.build(scheme)
@@ -130,8 +126,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             labourCompliance = Some(complianceWithLabour)
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance))),
-          tradingDetails = Some(testTradingDetails)
+          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance)))
         )
 
         val res = builder.build(scheme)
@@ -169,8 +164,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance))),
-          tradingDetails = Some(testTradingDetails)
+          vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance)))
         )
 
         val res = builder.build(scheme)
@@ -209,8 +203,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
           vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance.copy(
             goodsToEU = Some(ConditionalValue(false, None)),
             goodsFromEU = Some(ConditionalValue(false, None))
-          )))),
-          tradingDetails = Some(testTradingDetails)
+          ))))
         )
 
         val res = builder.build(scheme)
@@ -258,8 +251,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                 goodsToOverseas = Some(true),
                 goodsToEu = Some(false)
               ))
-            )),
-            tradingDetails = Some(testTradingDetails)
+            ))
           )
 
           val res = builder.build(scheme)
@@ -310,8 +302,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                   fulfilmentWarehouseNumber = Some(testWarehouseNumber),
                   fulfilmentWarehouseName = Some(testWarehouseName)
                 ))
-              )),
-              tradingDetails = Some(testTradingDetails)
+              ))
             )
 
             val res = builder.build(scheme)
@@ -364,8 +355,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                   storingGoodsForDispatch = Some(StoringWithinUk),
                   usingWarehouse = Some(false)
                 ))
-              )),
-              tradingDetails = Some(testTradingDetails)
+              ))
             )
 
             val res = builder.build(scheme)

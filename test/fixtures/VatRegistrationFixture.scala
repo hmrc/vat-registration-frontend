@@ -55,8 +55,7 @@ trait BaseFixture {
   val optMandatoryRegistrationTwelve = Some(validMandatoryRegistrationTwelve)
 }
 
-trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixtures
-  with ApplicantDetailsFixtures {
+trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with ApplicantDetailsFixtures {
 
   val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None, None)
 
@@ -205,6 +204,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   val validBusiness = Business(
+    hasTradingName = Some(true),
+    tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
     telephoneNumber = Some("123"),
     hasWebsite = Some(true),
@@ -217,6 +218,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   val validBusinessWithNoDescription = Business(
+    hasTradingName = Some(true),
+    tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
     telephoneNumber = Some("123"),
     hasWebsite = Some(true),
@@ -227,6 +230,8 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
   )
 
   val validBusinessWithNoDescriptionAndLabour = Business(
+    hasTradingName = Some(true),
+    tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
     telephoneNumber = Some("123"),
     hasWebsite = Some(true),
@@ -239,7 +244,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validVatScheme = VatScheme(
     id = testRegId,
-    tradingDetails = Some(generateTradingDetails()),
     business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
@@ -253,7 +257,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
 
   val validSoleTraderVatScheme = VatScheme(
     id = testRegId,
-    tradingDetails = Some(generateTradingDetails()),
     business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
@@ -261,54 +264,6 @@ trait VatRegistrationFixture extends FlatRateFixtures with TradingDetailsFixture
     vatApplication = Some(validVatApplication),
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(validSoleTraderEligibilitySubmissionData)
-  )
-
-  val validVatSchemeNoBank = VatScheme(
-    id = testRegId,
-    tradingDetails = Some(generateTradingDetails()),
-    business = Some(validBusiness),
-    applicantDetails = Some(completeApplicantDetails),
-    flatRateScheme = Some(validFlatRate),
-    bankAccount = None,
-    vatApplication = Some(validVatApplication),
-    status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
-  )
-
-  val validVatSchemeNoTradingDetails = VatScheme(
-    id = testRegId,
-    tradingDetails = None,
-    business = Some(validBusiness),
-    applicantDetails = Some(completeApplicantDetails),
-    flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validUkBankAccount),
-    vatApplication = Some(validVatApplication),
-    status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
-  )
-
-  val validVatSchemeEmptySicAndCompliance = VatScheme(
-    id = testRegId,
-    tradingDetails = Some(generateTradingDetails()),
-    business = Some(validBusinessWithNoDescription),
-    applicantDetails = Some(completeApplicantDetails),
-    flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validUkBankAccount),
-    vatApplication = Some(validVatApplication),
-    status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
-  )
-
-  val validVatSchemeWithLabour = VatScheme(
-    id = testRegId,
-    tradingDetails = Some(generateTradingDetails()),
-    business = Some(validBusiness.copy(labourCompliance = Some(complianceWithLabour))),
-    applicantDetails = Some(completeApplicantDetails),
-    flatRateScheme = Some(validFlatRate),
-    bankAccount = Some(validUkBankAccount),
-    vatApplication = Some(validVatApplication),
-    status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
   // ICL

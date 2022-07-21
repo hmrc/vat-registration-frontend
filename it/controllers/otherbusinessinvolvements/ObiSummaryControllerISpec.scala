@@ -136,7 +136,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
         }
       }
     }

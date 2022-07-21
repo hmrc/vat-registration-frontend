@@ -78,7 +78,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TradingNameResolverController.resolve.url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TradingNameResolverController.resolve(false).url)
       }
     }
   }

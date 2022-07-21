@@ -79,7 +79,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                 if (isEnabled(OtherBusinessInvolvement)) {
                   Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                 } else {
-                  Redirect(controllers.routes.TradingNameResolverController.resolve)
+                  Redirect(controllers.routes.TradingNameResolverController.resolve(false))
                 }
               }
             } else {

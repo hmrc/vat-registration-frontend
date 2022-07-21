@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.taslkist
+package viewmodels.tasklist
 
 import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
 import fixtures.VatRegistrationFixture

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.taslkist
+package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
 import play.api.i18n.{Lang, Messages}

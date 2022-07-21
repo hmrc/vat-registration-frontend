@@ -328,7 +328,7 @@ GET         /lead-partner-entity                                      controller
 POST        /lead-partner-entity                                      controllers.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
 
 ## PartyTypeResolverController
-GET         /resolve-party-type                                       controllers.TradingNameResolverController.resolve
+GET         /resolve-party-type                                       controllers.TradingNameResolverController.resolve(isNewPosititon: Boolean)
 
 ## Send Goods Overseas page
 GET         /send-goods-overseas                                      controllers.vatapplication.SendGoodsOverseasController.show

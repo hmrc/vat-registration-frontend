@@ -5,7 +5,7 @@ import common.enums.VatRegStatus
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, Individual, PartyType, UkCompany, VatScheme}
+import models.api._
 import models.{Business, LabourCompliance}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -34,7 +34,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       enable(TaskList)
       verifyRedirectForGivenPartyType(_, controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirectForGivenPartyType(UkCompany, controllers.routes.TradingNameResolverController.resolve.url)
+      verifyRedirectForGivenPartyType(UkCompany, controllers.routes.TradingNameResolverController.resolve(false).url)
     }
 
     "return SEE_OTHER on submit redirecting to party  type resolver for sole trader" in new Setup {
@@ -43,7 +43,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicA
       enable(TaskList)
       verifyRedirectForGivenPartyType(_, controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirectForGivenPartyType(Individual, controllers.routes.TradingNameResolverController.resolve.url)
+      verifyRedirectForGivenPartyType(Individual, controllers.routes.TradingNameResolverController.resolve(false).url)
     }
   }
 

@@ -23,11 +23,11 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
         .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.contains(
-          VatScheme(id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData)
-          )
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )
+      )
         .vatScheme.isUpdatedWith[Business](expectedModel)
         .registrationApi.replaceSection[Business](expectedModel)
         .s4lContainer[Business].clearedByKey
@@ -45,11 +45,11 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
         .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .vatScheme.contains(
-          VatScheme(id = currentProfile.registrationId,
-            status = VatRegStatus.draft,
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
-          )
+        VatScheme(id = currentProfile.registrationId,
+          status = VatRegStatus.draft,
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Individual))
         )
+      )
         .vatScheme.isUpdatedWith[Business](expectedModel)
         .registrationApi.replaceSection[Business](expectedModel)
         .s4lContainer[Business].clearedByKey
@@ -74,7 +74,7 @@ class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixtur
     enable(TaskList)
     verifyRedirectLocation(disable, controllers.routes.TaskListController.show)
     disable(TaskList)
-    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve)
+    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve(false))
     verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
   }
 }
