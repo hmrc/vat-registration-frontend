@@ -16,10 +16,13 @@
 
 package models
 
-import models.api.{Address, SicCode}
+import models.api.{Address, CharitableOrg, NonUkNonEstablished, PartyType, RegSociety, SicCode, Trust, UkCompany, UnincorpAssoc}
 import play.api.libs.json.{Json, OFormat}
 
-case class Business(ppobAddress: Option[Address] = None,
+case class Business(hasTradingName: Option[Boolean] = None,
+                    tradingName: Option[String] = None,
+                    shortOrgName: Option[String] = None,
+                    ppobAddress: Option[Address] = None,
                     email: Option[String] = None,
                     telephoneNumber: Option[String] = None,
                     hasWebsite: Option[Boolean] = None,
@@ -40,4 +43,7 @@ object Business {
   implicit val format: OFormat[Business] = Json.format[Business]
   implicit val apiKey: ApiKey[Business] = ApiKey("business")
   implicit val s4lKey: S4LKey[Business] = S4LKey("business")
+
+  def tradingNameOptional(partyType: PartyType): Boolean =
+    Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc).contains(partyType)
 }

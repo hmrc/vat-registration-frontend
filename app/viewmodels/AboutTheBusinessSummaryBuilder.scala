@@ -18,10 +18,10 @@ package viewmodels
 
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
+import models.Business
 import models.api._
 import models.api.vatapplication.{StoringOverseas, StoringWithinUk, VatApplication}
 import models.view.SummaryListRowUtils._
-import models.{Business, TradingDetails}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -40,7 +40,6 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
-    val tradingDetails = vatScheme.tradingDetails
     val vatApplication = vatScheme.vatApplication.getOrElse(throw missingSection("Vat Application"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
 
@@ -62,7 +61,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         ).flatten ++
           complianceSection(business) ++
           List(
-            tradingName(tradingDetails, partyType),
+            tradingName(business, partyType),
             importsOrExports(vatApplication, partyType),
             applyForEori(vatApplication, partyType),
             turnoverEstimate(vatApplication),
@@ -85,7 +84,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       s"$sectionId.homeAddress",
       business.ppobAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP =>
+        case NETP | NonUkNonEstablished =>
           Some(controllers.business.routes.InternationalPpobAddressController.show.url)
         case _ =>
           Some(controllers.business.routes.PpobAddressController.startJourney.url)
@@ -189,8 +188,8 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)
     )
 
-  private def tradingName(tradingDetails: Option[TradingDetails], partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] = {
-    val tradingNameOptional: Boolean = Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc).contains(partyType)
+  private def tradingName(business: Business, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] = {
+    val tradingNameOptional = Business.tradingNameOptional(partyType)
 
     optSummaryListRowString(
       if (tradingNameOptional) {
@@ -198,7 +197,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       } else {
         s"$sectionId.mandatoryName"
       },
-      tradingDetails.flatMap(_.tradingNameView.flatMap(_.tradingName)) match {
+      business.tradingName match {
         case None => Some("app.common.no")
         case optTradingName => optTradingName
       },

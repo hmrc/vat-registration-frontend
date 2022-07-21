@@ -17,36 +17,36 @@
 package forms
 
 import helpers.FormInspectors._
-import models.TradingNameView
+import models.Business
 import testHelpers.VatRegSpec
 
 class TradingNameFormSpec extends VatRegSpec {
   val testForm = TradingNameForm.form
 
   "fillWithPrePop" should {
-    "return a form populated with the model as the model = Some and answer is true" in {
+    "return a form populated with 'Yes' and the trading name if it is present" in {
       val mappingOfForm = Map(
         "value" -> "true",
         "tradingName" -> "testName"
       )
-      val tradingNameModel = Some(TradingNameView(true, Some("testName")))
+      val businessWithTradingName = Business(hasTradingName = Some(true), tradingName = Some("testName"))
 
-      val res = TradingNameForm.fillWithPrePop(tradingNameModel)
+      val res = TradingNameForm.fillWithPrePop(businessWithTradingName)
       res.errors mustBe Seq.empty
       res mustBe testForm.bind(mappingOfForm).discardingErrors
     }
-    "return a form populated with the model as the model = Some and answer is false" in {
+    "return a form populated with 'No' if the answer is false" in {
       val mappingOfForm = Map(
         "value" -> "false"
       )
-      val tradingNameModel = Some(TradingNameView(false, None))
+      val businessWithTradingName = Business(hasTradingName = Some(false), tradingName = None)
 
-      val res = TradingNameForm.fillWithPrePop(tradingNameModel)
+      val res = TradingNameForm.fillWithPrePop(businessWithTradingName)
       res.errors mustBe Seq.empty
       res mustBe testForm.bind(mappingOfForm).discardingErrors
     }
-    "return a form with nothing populated as there is no model" in {
-      val res = TradingNameForm.fillWithPrePop(None)
+    "return a form with nothing populated if there is no answer" in {
+      val res = TradingNameForm.fillWithPrePop(Business())
       res.errors mustBe Seq.empty
       res mustBe testForm
     }
@@ -72,7 +72,7 @@ class TradingNameFormSpec extends VatRegSpec {
       }
 
       "yes is selected and a correct trading name is provided including an invalid word" in {
-        TradingNameForm.invalidNameSet.foreach{
+        TradingNameForm.invalidNameSet.foreach {
           invalidName =>
             testForm.bind(Map("value" -> "true", "tradingName" -> tradingName(invalidName))) shouldContainValue(true, Some(tradingName(invalidName)))
         }
@@ -106,7 +106,7 @@ class TradingNameFormSpec extends VatRegSpec {
       }
 
       "yes selected but trading name contains an invalid word" in {
-        TradingNameForm.invalidNameSet.foreach{
+        TradingNameForm.invalidNameSet.foreach {
           invalidName =>
             testForm.bind(Map("value" -> "true", "tradingName" -> invalidName)) shouldHaveErrors Seq("tradingName" -> "validation.tradingName.invalid")
         }

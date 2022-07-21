@@ -65,7 +65,6 @@ trait VatMocks
   implicit lazy val mockFlatRateService = mock[FlatRateService]
   implicit lazy val mockTrafficManagementService = mock[TrafficManagementService]
   implicit lazy val mockAttachmentsService = mock[AttachmentsService]
-  lazy val mockTradingDetailsService = mock[TradingDetailsService]
   lazy val mockSummaryService: SummaryService = mock[SummaryService]
 
   val mockTimeService = mock[TimeService]

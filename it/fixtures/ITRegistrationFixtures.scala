@@ -30,9 +30,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testRegId = "1"
   val testArn = "testArn"
   val testCreatedDate = LocalDate.of(2021, 1, 1)
-  val tradingDetails = TradingDetails(
-    tradingNameView = Some(TradingNameView(yesNo = false, tradingName = None))
-  )
 
   val voluntaryThreshold = Threshold(
     mandatoryRegistration = false
@@ -105,7 +102,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     registrationReason = ForwardLook
   )
 
-  val businessDetails = Business(
+  val businessDetails: Business = Business(
+    hasTradingName = Some(false),
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
     website = Some("/test/url"),
@@ -161,7 +159,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val fullVatScheme = VatScheme(
     id = "1",
     status = VatRegStatus.draft,
-    tradingDetails = Some(tradingDetails),
     applicantDetails = Some(validFullApplicantDetails),
     business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),
@@ -173,7 +170,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
-    tradingDetails = Some(tradingDetails.copy(tradingNameView = Some(TradingNameView(yesNo = true, Some(testCompanyName))), None)),
+    business = Some(businessDetails.copy(hasTradingName = Some(true), tradingName = Some(testCompanyName))),
     vatApplication = Some(fullVatApplication.copy(overseasCompliance = Some(testFullOverseasCompliance))),
     bankAccount = Some(testOverseasBankAccount)
   )
@@ -181,7 +178,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val vatRegIncorporated = VatScheme(
     id = "1",
     status = VatRegStatus.draft,
-    tradingDetails = Some(tradingDetails),
     applicantDetails = None,
     business = Some(businessDetails),
     flatRateScheme = Some(flatRateScheme),

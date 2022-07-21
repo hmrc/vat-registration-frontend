@@ -27,7 +27,6 @@ import java.time.LocalDate
 case class VatScheme(id: String,
                      applicantDetails: Option[ApplicantDetails] = None,
                      transactorDetails: Option[TransactorDetails] = None,
-                     tradingDetails: Option[TradingDetails] = None,
                      vatApplication: Option[VatApplication] = None,
                      bankAccount: Option[BankAccount] = None,
                      flatRateScheme: Option[FlatRateScheme] = None,
@@ -51,7 +50,6 @@ object VatScheme {
         (__ \ "registrationId").read[String] and
           (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
           (__ \ "transactorDetails").readNullable[TransactorDetails] and
-          (__ \ "tradingDetails").readNullable[TradingDetails](TradingDetails.apiFormat) and
           (__ \ "vatApplication").readNullable[VatApplication] and
           (__ \ "bankAccount").readNullable[BankAccount] and
           (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
@@ -65,7 +63,6 @@ object VatScheme {
         ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
-          Reads.pure(None) and
           Reads.pure(None) and
           Reads.pure(None) and
           Reads.pure(None) and
@@ -85,7 +82,6 @@ object VatScheme {
     (__ \ "registrationId").write[String] and
       (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
       (__ \ "transactorDetails").writeNullable[TransactorDetails] and
-      (__ \ "tradingDetails").writeNullable[TradingDetails](TradingDetails.apiFormat) and
       (__ \ "vatApplication").writeNullable[VatApplication] and
       (__ \ "bankAccount").writeNullable[BankAccount] and
       (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and

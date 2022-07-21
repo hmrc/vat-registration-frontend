@@ -233,7 +233,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAnd
     val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
     }
   }
 
@@ -259,7 +259,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAnd
     val response = buildClient(business.routes.SicController.submitMainBusinessActivity.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
     }
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.taslkist
+package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
 import models.{Business, LabourCompliance}
@@ -33,7 +33,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLCannotStart
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
     }
 
     "be not started if the prerequesites are complete but there are no answers" in {
@@ -45,7 +45,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLNotStarted
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
     }
 
     "be in progress if the prerequesites are complete and there are some answers" in {
@@ -58,21 +58,20 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLInProgress
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
     }
 
     "be complete if the prerequesites are complete and there are all answers" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),
-        business = Some(validBusiness),
-        tradingDetails = Some(generateTradingDetails())
+        business = Some(validBusiness)
       )
 
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
     }
   }
 

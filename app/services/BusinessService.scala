@@ -31,7 +31,7 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
 
   def getBusiness(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
     s4lService.fetchAndGet[Business].flatMap {
-      case None | Some(Business(None, None, None, None, None, None, None, None, None, None, None, None)) =>
+      case None | Some(Business(None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
         registrationApiConnector.getSection[Business](cp.registrationId).map {
           case Some(business) => business
           case None => Business()
@@ -65,8 +65,12 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
     }
   }
 
+  // scalastyle:off
   private def updateBusinessModel[T](data: T, business: Business): Business = {
     data match {
+      case HasTradingName(answer) => business.copy(hasTradingName = Some(answer))
+      case TradingName(answer) => business.copy(tradingName = Some(answer))
+      case ShortOrgNameAnswer(answer) => business.copy(shortOrgName = Some(answer))
       case address: Address => business.copy(ppobAddress = Some(address))
       case preference: ContactPreference => business.copy(contactPreference = Some(preference))
       case Email(answer) => business.copy(email = Some(answer))
@@ -85,10 +89,11 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
       case _ => business
     }
   }
+  // scalastyle:on
 
   private def isModelComplete: Business => Completion[Business] = {
-    case business@Business(Some(_), Some(_), Some(_), Some(_), _, Some(_), _, Some(_), Some(_), Some(sicCodes), None, _) if !needComplianceQuestions(sicCodes) => Complete(business)
-    case business@Business(Some(_), Some(_), Some(_), Some(_), _, Some(_), _, Some(_), Some(_), Some(_), Some(labourCompliance), _) if isLabourComplianceModelComplete(labourCompliance) => Complete(business)
+    case business@Business(_, _, _, Some(_), Some(_), Some(_), Some(_), _, Some(_), _, Some(_), Some(_), Some(sicCodes), None, _) if !needComplianceQuestions(sicCodes) => Complete(business)
+    case business@Business(_, _, _, Some(_), Some(_), Some(_), Some(_), _, Some(_), _, Some(_), Some(_), Some(_), Some(labourCompliance), _) if isLabourComplianceModelComplete(labourCompliance) => Complete(business)
     case business@_ => Incomplete(business)
   }
 
@@ -111,6 +116,9 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
 }
 
 object BusinessService {
+  case class HasTradingName(answer: Boolean)
+  case class TradingName(answer: String)
+  case class ShortOrgNameAnswer(answer: String)
   case class Email(answer: String)
   case class TelephoneNumber(answer: String)
   case class HasWebsiteAnswer(answer: Boolean)

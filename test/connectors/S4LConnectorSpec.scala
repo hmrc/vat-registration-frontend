@@ -16,14 +16,14 @@
 
 package connectors
 
-import models.TradingNameView
+import models.Business
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
@@ -35,29 +35,26 @@ class S4LConnectorSpec extends VatRegSpec {
     mockShortLivedCache
   )
 
-  val sTradingModel = TradingNameView(true, Some("test"))
-  val cacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(validBusiness)))
 
   "Fetching from save4later" should {
     "return the correct model" in {
 
-      when(mockShortLivedCache.fetchAndGetEntry[TradingNameView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(Option(sTradingModel)))
+      when(mockShortLivedCache.fetchAndGetEntry[Business](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Some(validBusiness)))
 
-      val result = S4LConnectorTest.fetchAndGet[TradingNameView]("", "")
-      await(result) mustBe Some(sTradingModel)
+      val result = S4LConnectorTest.fetchAndGet[Business]("", "")
+      await(result) mustBe Some(validBusiness)
     }
   }
 
   "Saving a model into save4later" should {
     "save the model" in {
-      val returnCacheMap = CacheMap("", Map("" -> Json.toJson(sTradingModel)))
+      when(mockShortLivedCache.cache[Business](ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(cacheMap))
 
-      when(mockShortLivedCache.cache[TradingNameView](ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.successful(returnCacheMap))
-
-      val result = S4LConnectorTest.save[TradingNameView]("", "", sTradingModel)
-      await(result) mustBe returnCacheMap
+      val result = S4LConnectorTest.save[Business]("", "", validBusiness)
+      await(result) mustBe cacheMap
     }
   }
 

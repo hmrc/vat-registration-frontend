@@ -86,7 +86,7 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
       if (isEnabled(OtherBusinessInvolvement)) {
         controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
       } else {
-        controllers.routes.TradingNameResolverController.resolve
+        controllers.routes.TradingNameResolverController.resolve(false)
       }
     }
   }

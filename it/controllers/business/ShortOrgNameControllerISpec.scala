@@ -18,7 +18,7 @@ package controllers.business
 
 import forms.ShortOrgNameForm
 import itutil.ControllerISpec
-import models.TradingDetails
+import models.Business
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -33,8 +33,8 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TradingDetails].isEmpty
-        .vatScheme.doesNotHave("trading-details")
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -49,8 +49,8 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return OK with prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TradingDetails].contains(TradingDetails(shortOrgName = Some(testShortOrgName)))
-        .vatScheme.doesNotHave("trading-details")
+        .s4lContainer[Business].contains(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
+        .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -68,10 +68,10 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return SEE_OTHER" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TradingDetails].contains(tradingDetails)
-        .vatScheme.doesNotHave("trading-details")
-        .vatScheme.isUpdatedWith(tradingDetails.copy(shortOrgName = Some(testShortOrgName)))
-        .s4lContainer[TradingDetails].clearedByKey
+        .s4lContainer[Business].contains(businessDetails)
+        .registrationApi.getSection[Business](None)
+        .vatScheme.isUpdatedWith(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
+        .s4lContainer[Business].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -20,7 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ShortOrgNameForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, TradingDetailsService}
+import services.BusinessService.ShortOrgNameAnswer
+import services.{BusinessService, SessionProfile, SessionService}
 import views.html.business.ShortOrgName
 
 import javax.inject.Inject
@@ -28,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ShortOrgNameController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
-                                       val tradingDetailsService: TradingDetailsService,
+                                       val businessService: BusinessService,
                                        view: ShortOrgName)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
@@ -38,8 +39,8 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        tradingDetailsService.getTradingDetailsViewModel(profile.registrationId).map { tradingDetails =>
-          val prepoppedForm = tradingDetails.shortOrgName.fold(ShortOrgNameForm())(ShortOrgNameForm().fill(_))
+        businessService.getBusiness.map { business =>
+          val prepoppedForm = business.shortOrgName.fold(ShortOrgNameForm())(ShortOrgNameForm().fill(_))
 
           Ok(view(prepoppedForm))
         }
@@ -53,7 +54,7 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
             Future.successful(BadRequest(view(errors))),
           success => {
             for {
-              _ <- tradingDetailsService.saveShortOrgName(success)
+              _ <- businessService.updateBusiness(ShortOrgNameAnswer(success))
             } yield {
               Redirect(routes.TradingNameController.show)
             }

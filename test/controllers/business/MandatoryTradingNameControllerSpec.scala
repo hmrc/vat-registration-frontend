@@ -17,8 +17,8 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
+import models.CurrentProfile
 import models.api.UkCompany
-import models.{CurrentProfile, TradingDetails, TradingNameView}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -39,7 +39,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
       mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
-      mockTradingDetailsService,
+      mockBusinessService,
       mockVatRegistrationService,
       view
     )
@@ -48,16 +48,9 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val tradingName = "Test Trader"
-  val tradingNameViewNo = TradingNameView(yesNo = false, None)
-  val fullS4L = TradingDetails(
-    Some(tradingNameViewNo)
-  )
-
   "show" should {
-    "return an Ok when there is trading details present" in new Setup {
-      when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-        .thenReturn(Future.successful(TradingDetails(Some(TradingNameView(yesNo = true, Some("tradingName"))))))
+    "return an Ok when there is a trading name answer" in new Setup {
+      mockGetBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
 
       callAuthorised(testController.show) {
         result => {
@@ -67,18 +60,9 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
   }
 
-  "return an Ok when there is no trading details present" in new Setup {
-    when(mockTradingDetailsService.getTradingDetailsViewModel(any())(any(), any()))
-      .thenReturn(Future.successful(TradingDetails()))
+  "return an Ok when there is no trading name answer" in new Setup {
+    mockGetBusiness(Future.successful(validBusiness.copy(tradingName = None)))
 
-    callAuthorised(testController.show) {
-      result => {
-        status(result) mustBe OK
-      }
-    }
-  }
-
-  "return an Ok when there is a company name present" in new Setup {
     callAuthorised(testController.show) {
       result => {
         status(result) mustBe OK
@@ -88,18 +72,17 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
 
   "submit" should {
     "return 303 with a provided trading name" in new Setup {
-      when(mockTradingDetailsService.saveTradingName(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(fullS4L))
+      mockUpdateBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
-        "trading-name" -> "Test Trader"
+        "trading-name" -> testTradingName
       )
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/imports-or-exports")
+        redirectLocation(result) mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
       }
     }
 

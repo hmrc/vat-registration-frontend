@@ -20,7 +20,6 @@ import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models._
 import models.api._
-import models.api.vatapplication.VatApplication
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
@@ -125,22 +124,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       case UpstreamErrorResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
       case ex: BadRequestException => SubmissionFailed
       case ex => SubmissionFailedRetryable
-    }
-  }
-
-  def getTradingDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[TradingDetails]] = {
-    implicit val frmt: Format[TradingDetails] = TradingDetails.apiFormat
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details") map { res =>
-      if (res.status.equals(OK)) Some(res.json.as[TradingDetails]) else None
-    } recover {
-      case e: Exception => throw logResponse(e, "getTradingDetails")
-    }
-  }
-
-  def upsertTradingDetails(regId: String, tradingDetails: TradingDetails)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    implicit val frmt: Format[TradingDetails] = TradingDetails.apiFormat
-    http.PATCH[TradingDetails, HttpResponse](s"$vatRegUrl/vatreg/$regId/trading-details", tradingDetails) recover {
-      case e: Exception => throw logResponse(e, "upsertTradingDetails")
     }
   }
 
