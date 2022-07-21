@@ -18,13 +18,10 @@ package viewmodels.tasklist
 
 import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
 import fixtures.VatRegistrationFixture
-import models.api.{LtdPartnership, NonUkNonEstablished, Partnership, PartyType, RegSociety}
-import models.external.{EmailAddress, Name}
-import models.view.{FormerNameDateView, PreviousAddressView}
-import models.{AccountantAgent, ApplicantDetails, CurrentProfile, DeclarationCapacityAnswer, TransactorDetails}
+import models.api._
+import models._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
-import viewmodels.tasklist.{AboutYouTransactorTaskList, TLCannotStart, TLCompleted, TLInProgress, TLNotStarted}
 
 class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 

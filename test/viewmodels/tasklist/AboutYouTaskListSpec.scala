@@ -19,12 +19,11 @@ package viewmodels.tasklist
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.external.{EmailAddress, EmailVerified, Name}
+import models.external.{EmailAddress, Name}
 import models.view.{FormerNameDateView, PreviousAddressView}
 import models.{ApplicantDetails, CurrentProfile, PartnerEntity}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
-import viewmodels.tasklist._
 
 class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 

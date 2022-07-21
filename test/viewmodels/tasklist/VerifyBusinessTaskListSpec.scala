@@ -17,9 +17,7 @@
 package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
-import models.CurrentProfile
 import testHelpers.VatRegSpec
-import viewmodels.tasklist.VerifyBusinessTaskList
 
 class VerifyBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
 

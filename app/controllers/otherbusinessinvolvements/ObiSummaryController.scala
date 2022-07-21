@@ -18,11 +18,11 @@ package controllers.otherbusinessinvolvements
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.otherbusinessinvolvements.ObiSummaryForm
 import models.OtherBusinessInvolvement
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.ObiSummaryRow
@@ -35,7 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                                      val sessionService: SessionService,
                                      otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
-                                     vatRegistrationService: VatRegistrationService,
                                      view: ObiSummary)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
@@ -71,7 +70,11 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                 Redirect(routes.OtherBusinessNameController.show(nextIndex))
               }
             } else {
-              Future.successful(Redirect(controllers.routes.TradingNameResolverController.resolve(false)))
+              if(isEnabled(TaskList)) {
+                Future.successful(Redirect(controllers.routes.TaskListController.show))
+              } else {
+                Future.successful(Redirect(controllers.routes.TradingNameResolverController.resolve(false)))
+              }
             }
         )
   }

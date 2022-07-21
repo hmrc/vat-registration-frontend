@@ -1,6 +1,7 @@
 
 package controllers.otherbusinessinvolvements
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.OtherBusinessInvolvement
 import play.api.http.HeaderNames
@@ -137,6 +138,22 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TradingNameResolverController.resolve(false).url)
+        }
+        "redirect to the task list page if TaskList FS is on" in new Setup {
+          enable(TaskList)
+          given
+            .user.isAuthorised()
+            .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis))
+            .audit.writesAudit()
+            .audit.writesAuditMerged()
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+          disable(TaskList)
         }
       }
     }

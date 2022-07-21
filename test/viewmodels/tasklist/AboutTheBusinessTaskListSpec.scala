@@ -17,8 +17,8 @@
 package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
-import models.{Business, LabourCompliance}
 import models.api.SicCode
+import models.{Business, LabourCompliance}
 import testHelpers.VatRegSpec
 import viewmodels.tasklist._
 
@@ -27,7 +27,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
   val section: AboutTheBusinessTaskList = app.injector.instanceOf[AboutTheBusinessTaskList]
 
   "The business details row" must {
-    "be cannot started if the prerequesites are not complete" in {
+    "be cannot start if the prerequesites are not complete" in {
       val scheme = emptyVatScheme
 
       val row = section.businessDetailsRow.build(scheme)
@@ -61,7 +61,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
     }
 
-    "be complete if the prerequesites are complete and there are all answers" in {
+    "be completed if the prerequesites are complete and there are all answers" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),
@@ -150,6 +150,90 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
+    }
+  }
+
+  "The other business involvements row" must {
+    "be cannot start if the prerequesites are not complete" in {
+      val scheme = emptyVatScheme
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLCannotStart
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be not started if the prerequesites are complete but 'Is involved in other business' question is not answered" in {
+      val scheme = emptyVatScheme.copy(business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = None)))
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLNotStarted
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be completed if the prerequesites are complete and 'Is involved in other business' question is answered as 'No'" in {
+      val scheme = emptyVatScheme.copy(business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false))))
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLCompleted
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be in progress if the prerequesites are complete and the other business involvements list is empty" in {
+      val scheme = emptyVatScheme.copy(
+        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+        otherBusinessInvolvements = Some(List.empty)
+      )
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLInProgress
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be in progress if the prerequesites are complete and the other business involvements list is None" in {
+      val scheme = emptyVatScheme.copy(
+        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+        otherBusinessInvolvements = None
+      )
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLInProgress
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be in progress if the prerequesites are complete and the other business involvements list has items with partial details" in {
+      val scheme = emptyVatScheme.copy(
+        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+        otherBusinessInvolvements = Some(List(
+          otherBusinessInvolvementWithPartialData,
+          otherBusinessInvolvementWithVrn
+        ))
+      )
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLInProgress
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+    }
+
+    "be completed if the prerequesites are complete and the other business involvements list has items with required data" in {
+      val scheme = emptyVatScheme.copy(
+        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+        otherBusinessInvolvements = Some(List(
+          otherBusinessInvolvementWithVrn,
+          otherBusinessInvolvementWithUtr,
+          otherBusinessInvolvementWithoutVrnUtr
+        ))
+      )
+
+      val row = section.otherBusinessInvolvementsRow.build(scheme)
+
+      row.status mustBe TLCompleted
+      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
   }
 }
