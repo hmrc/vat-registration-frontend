@@ -17,6 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import models.{CurrentProfile, OtherBusinessInvolvement}
 import models.api.VatScheme
 import models.{Business, CurrentProfile}
 import play.api.i18n.Messages
@@ -79,6 +80,30 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
     prerequisites = _ => Seq(businessDetailsRow)
   )
 
+  def otherBusinessInvolvementsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.aboutTheBusiness.otherBusinessInvolvements",
+    url = _ => controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url,
+    tagId = "otherBusinessInvolvementsRow",
+    checks = scheme => {
+      val firstQuestionAnswered = Seq(scheme.business.exists(_.otherBusinessInvolvement.isDefined))
+      if (scheme.business.exists(_.otherBusinessInvolvement.contains(true))) {
+        firstQuestionAnswered :+
+          (scheme.otherBusinessInvolvements match {
+            case Some(Nil) | None => List(false)
+            case Some(list) => list.map(obi => obi match {
+                case OtherBusinessInvolvement(Some(_), Some(true), Some(_), _, _, Some(_)) => true
+                case OtherBusinessInvolvement(Some(_), _, _, Some(true), Some(_), Some(_)) => true
+                case OtherBusinessInvolvement(Some(_), Some(false), _, Some(false), _, Some(_)) => true
+                case _ => false
+            })
+          }).filter(_ == false).isEmpty
+      } else {
+        firstQuestionAnswered
+      }
+    },
+    prerequisites = _ => Seq(businessActivitiesRow)
+  )
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -88,7 +113,8 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       heading = messages("tasklist.aboutTheBusiness.heading"),
       rows = Seq(
         businessDetailsRow.build(vatScheme),
-        businessActivitiesRow.build(vatScheme)
+        businessActivitiesRow.build(vatScheme),
+        otherBusinessInvolvementsRow.build(vatScheme)
       )
     )
 }

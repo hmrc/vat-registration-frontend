@@ -52,6 +52,7 @@ tasklist.aboutYou.contactDetails        = Contact details
 tasklist.aboutTheBusiness.heading       = About the business
 tasklist.aboutTheBusiness.businessDetails = Business details
 tasklist.aboutTheBusiness.businessActivities = Business activities
+tasklist.aboutTheBusiness.otherBusinessInvolvements = Other business involvements
 
 # Ordinal numbers
 ordinals.1 = First

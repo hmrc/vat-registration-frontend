@@ -16,6 +16,7 @@
 
 package controllers.business
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.{Business, OtherBusinessInvolvement}
 import org.jsoup.Jsoup
@@ -80,6 +81,25 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         result.status mustBe SEE_OTHER
         result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TradingNameResolverController.resolve(false).url)
       }
+    }
+    "redirect to the task list page if TaskList FS is on" in new Setup {
+      enable(TaskList)
+      given
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
+        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.deleteSection[OtherBusinessInvolvement]()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(url).post(Json.obj("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TaskListController.show.url)
+      }
+      disable(TaskList)
     }
   }
 

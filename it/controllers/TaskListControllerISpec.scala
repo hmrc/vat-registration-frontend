@@ -56,6 +56,8 @@ class TaskListControllerISpec extends ControllerISpec {
       val businessActivitiesCannotStartYetRow = "Business activities Cannot start yet"
       val businessActivitiesNotStartedRow = "Business activities Not started"
       val businessActivitiesCompletedRow = "Business activities Completed"
+      val otherBusinessInvolvementsCannotStartYetRow = "Other business involvements Cannot start yet"
+      val otherBusinessInvolvementsNotStartedRow = "Other business involvements Not started"
     }
   }
 
@@ -243,7 +245,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.aboutTheBusinessSection.heading, List(
             ExpectedMessages.aboutTheBusinessSection.businessDetailsNotStartedRow,
-            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow,
+            ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
           )
         )
 
@@ -257,7 +260,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.aboutTheBusinessSection.heading, List(
             ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
-            ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow,
+            ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
           )
         )
 
@@ -271,7 +275,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.aboutTheBusinessSection.heading, List(
             ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
-            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
+            ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
           )
         )
 
@@ -285,7 +290,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.aboutTheBusinessSection.heading, List(
             ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
-            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow
+            ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
+            ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
           )
         )
       }

@@ -18,6 +18,7 @@ package controllers.otherbusinessinvolvements
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.OtherBusinessInvolvementForm
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.OtherBusinessInvolvementAnswer
@@ -58,8 +59,12 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
               if (success) {
                 Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)))
               } else {
-                otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.map { _ =>
-                  Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                if (isEnabled(TaskList)) {
+                  Future.successful(Redirect(controllers.routes.TaskListController.show))
+                } else {
+                  otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.map { _ =>
+                    Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                  }
                 }
               }
           }

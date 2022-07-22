@@ -242,6 +242,35 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     businessActivities = Some(List(sicCode))
   )
 
+  val otherBusinessInvolvementWithVrn = OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = Some(true),
+    vrn = Some("123456782"),
+    hasUtr = None,
+    utr = None,
+    stillTrading = Some(false))
+  val otherBusinessInvolvementWithUtr = OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = None,
+    vrn = None,
+    hasUtr = Some(true),
+    utr = Some("123456782"),
+    stillTrading = Some(false))
+  val otherBusinessInvolvementWithoutVrnUtr = OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = Some(false),
+    vrn = None,
+    hasUtr = Some(false),
+    utr = None,
+    stillTrading = Some(false))
+  val otherBusinessInvolvementWithPartialData = OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = None,
+    vrn = None,
+    hasUtr = None,
+    utr = None,
+    stillTrading = None)
+
   val validVatScheme = VatScheme(
     id = testRegId,
     business = Some(validBusiness),
