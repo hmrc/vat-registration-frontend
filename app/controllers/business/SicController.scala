@@ -18,7 +18,7 @@ package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl, TaskList}
 import forms.MainBusinessActivityForm
 import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
@@ -83,10 +83,14 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
     if (businessService.needComplianceQuestions(sicCodeList)) {
       controllers.business.routes.ComplianceIntroductionController.show
     } else {
-      if (isEnabled(OtherBusinessInvolvement)) {
-        controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
+      if (isEnabled(TaskList)) {
+        controllers.routes.TaskListController.show
       } else {
-        controllers.routes.TradingNameResolverController.resolve(false)
+        if (isEnabled(OtherBusinessInvolvement)) {
+          controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
+        } else {
+          controllers.routes.TradingNameResolverController.resolve(false)
+        }
       }
     }
   }

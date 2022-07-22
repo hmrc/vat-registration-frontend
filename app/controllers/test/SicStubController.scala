@@ -19,7 +19,7 @@ package controllers.test
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
-import featureswitch.core.config.OtherBusinessInvolvement
+import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
 import models.test._
@@ -53,6 +53,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
         Future.successful(Ok(view(SicStubForm.form)))
   }
 
+  // scalastyle:off
   def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
       implicit profile =>
@@ -76,10 +77,14 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
               if (businessService.needComplianceQuestions(sicCodesList)) {
                 Redirect(controllers.business.routes.ComplianceIntroductionController.show)
               } else {
-                if (isEnabled(OtherBusinessInvolvement)) {
-                  Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
                 } else {
-                  Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                  if (isEnabled(OtherBusinessInvolvement)) {
+                    Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                  } else {
+                    Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                  }
                 }
               }
             } else {
