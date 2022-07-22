@@ -22,7 +22,7 @@ import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, St
 import forms.MainBusinessActivityForm
 import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.SicCode
+import models.api.{NETP, NonUkNonEstablished, PartyType, SicCode}
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, Call, Result}
 import services.BusinessService.MainBusinessActivity
@@ -39,11 +39,12 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
                               val businessService: BusinessService,
                               val frsService: FlatRateService,
                               val iclService: ICLService,
+                              vatRegistrationService: VatRegistrationService,
                               val aboutToConfirmSicPage: about_to_confirm_sic,
                               val mainBusinessActivityPage: main_business_activity)
                              (implicit appConfig: FrontendAppConfig,
-                                           val executionContext: ExecutionContext,
-                                           baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
+                              val executionContext: ExecutionContext,
+                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
@@ -72,14 +73,15 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
             )(selected => for {
               _ <- businessService.updateBusiness(MainBusinessActivity(selected))
               _ <- frsService.resetFRSForSAC(selected)
+              partyType <- vatRegistrationService.partyType
             } yield {
-              Redirect(resolveRoute(sicCodeList))
+              Redirect(resolveRoute(sicCodeList, partyType))
             })
           )
         }
   }
 
-  private def resolveRoute(sicCodeList: List[SicCode]): Call = {
+  private def resolveRoute(sicCodeList: List[SicCode], partyType: PartyType): Call = {
     if (businessService.needComplianceQuestions(sicCodeList)) {
       controllers.business.routes.ComplianceIntroductionController.show
     } else {
@@ -89,15 +91,19 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
         if (isEnabled(OtherBusinessInvolvement)) {
           controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
         } else {
-          controllers.routes.TradingNameResolverController.resolve(false)
+          partyType match {
+            case NonUkNonEstablished | NETP => controllers.vatapplication.routes.TurnoverEstimateController.show
+            case _ => controllers.vatapplication.routes.ImportsOrExportsController.show
+          }
         }
       }
     }
   }
 
   def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => _ =>
-      Future.successful(Ok(aboutToConfirmSicPage()))
+    implicit request =>
+      _ =>
+        Future.successful(Ok(aboutToConfirmSicPage()))
   }
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
@@ -133,13 +139,14 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
           iclCodes <- iclService.getICLSICCodes()
           _ <- sessionService.cache(SIC_CODES_KEY, iclCodes)
           _ <- businessService.submitSicCodes(iclCodes)
+          partyType <- vatRegistrationService.partyType
         } yield {
           Redirect(iclCodes match {
             case codes if codes.size > 1 =>
               routes.SicController.showMainBusinessActivity
             case List() =>
               throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
-            case codes => resolveRoute(codes)
+            case codes => resolveRoute(codes, partyType)
           })
         }
   }

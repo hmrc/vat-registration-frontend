@@ -30,66 +30,34 @@ import scala.concurrent.{ExecutionContext, Future}
 class TradingNameResolverController @Inject()(val sessionService: SessionService,
                                               val authConnector: AuthConnector,
                                               vatRegistrationService: VatRegistrationService,
-                                              applicantDetailsService: ApplicantDetailsService,
-                                              businessService: BusinessService
+                                              applicantDetailsService: ApplicantDetailsService
                                              )(implicit val appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   //scalastyle:off
-  def resolve(isNewPosition: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        if (isNewPosition) {
-          vatRegistrationService.partyType.flatMap {
-            case Individual | NETP =>
-              Future.successful(Redirect(controllers.business.routes.MandatoryTradingNameController.show))
-            case Partnership | ScotPartnership =>
-              Future.successful(Redirect(controllers.business.routes.PartnershipNameController.show))
-            case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
-              applicantDetailsService.getCompanyName.map {
-                case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-                case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
-                case None => Redirect(controllers.business.routes.BusinessNameController.show)
-              }
-            case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
-              applicantDetailsService.getCompanyName.map {
-                case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-                case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
-                case None => Redirect(controllers.business.routes.PartnershipNameController.show)
-              }
-            case pt => throw new InternalServerException(s"PartyType: $pt not supported")
-          }
-        } else {
-          businessService.getBusiness.map(business => business.hasTradingName.isDefined || business.tradingName.isDefined).flatMap { alreadyCompleted =>
-            if (alreadyCompleted) {
-              vatRegistrationService.partyType.map {
-                case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-              }
-            } else {
-              vatRegistrationService.partyType.flatMap {
-                case Individual | NETP =>
-                  Future.successful(Redirect(controllers.business.routes.MandatoryTradingNameController.show))
-                case Partnership | ScotPartnership =>
-                  Future.successful(Redirect(controllers.business.routes.PartnershipNameController.show))
-                case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
-                  applicantDetailsService.getCompanyName.map {
-                    case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-                    case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
-                    case None => Redirect(controllers.business.routes.BusinessNameController.show)
-                  }
-                case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
-                  applicantDetailsService.getCompanyName.map {
-                    case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-                    case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
-                    case None => Redirect(controllers.business.routes.PartnershipNameController.show)
-                  }
-                case pt => throw new InternalServerException(s"PartyType: $pt not supported")
-              }
+        vatRegistrationService.partyType.flatMap {
+          case Individual | NETP =>
+            Future.successful(Redirect(controllers.business.routes.MandatoryTradingNameController.show))
+          case Partnership | ScotPartnership =>
+            Future.successful(Redirect(controllers.business.routes.PartnershipNameController.show))
+          case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
+            applicantDetailsService.getCompanyName.map {
+              case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.business.routes.BusinessNameController.show)
             }
-          }
+          case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
+            applicantDetailsService.getCompanyName.map {
+              case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case None => Redirect(controllers.business.routes.PartnershipNameController.show)
+            }
+          case pt => throw new InternalServerException(s"PartyType: $pt not supported")
         }
   }
 }

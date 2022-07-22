@@ -22,9 +22,10 @@ import controllers.BaseController
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
+import models.api.{NETP, NonUkNonEstablished}
 import models.test._
 import play.api.mvc.{Action, AnyContent}
-import services.{BusinessService, S4LService, SessionProfile, SessionService}
+import services._
 import views.html.test._
 
 import javax.inject.{Inject, Singleton}
@@ -35,6 +36,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val sessionService: SessionService,
                                   val s4LService: S4LService,
                                   val businessService: BusinessService,
+                                  vatRegistrationService: VatRegistrationService,
                                   val authConnector: AuthClientConnector,
                                   view: SicStubPage)
                                  (implicit appConfig: FrontendAppConfig,
@@ -72,6 +74,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
             }
             _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
             _ <- businessService.submitSicCodes(sicCodesList)
+            partyType <- vatRegistrationService.partyType
           } yield {
             if (sicCodesList.size == 1) {
               if (businessService.needComplianceQuestions(sicCodesList)) {
@@ -83,7 +86,10 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                   if (isEnabled(OtherBusinessInvolvement)) {
                     Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
                   } else {
-                    Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                    partyType match {
+                      case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+                      case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                    }
                   }
                 }
               }

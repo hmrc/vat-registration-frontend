@@ -21,6 +21,7 @@ import controllers.BaseController
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.WorkersForm
 import models.LabourCompliance
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessService, SessionProfile, SessionService, VatRegistrationService}
 import views.html.sicandcompliance.workers
@@ -61,14 +62,17 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
                   .getOrElse(LabourCompliance())
                   .copy(numOfWorkersSupplied = Some(data))
 
-                businessService.updateBusiness(updatedLabourCompliance) map { _ =>
+                businessService.updateBusiness(updatedLabourCompliance).flatMap { _ =>
                   if (isEnabled(TaskList)) {
-                    Redirect(controllers.routes.TaskListController.show.url)
+                    Future.successful(Redirect(controllers.routes.TaskListController.show.url))
                   } else {
                     if (isEnabled(OtherBusinessInvolvement)) {
-                      Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                      Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show))
                     } else {
-                      Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                      vatRegistrationService.partyType.map {
+                        case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+                        case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                      }
                     }
                   }
                 }

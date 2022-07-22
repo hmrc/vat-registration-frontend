@@ -20,9 +20,10 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.OtherBusinessInvolvementForm
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.OtherBusinessInvolvementAnswer
-import services.{BusinessService, OtherBusinessInvolvementsService, SessionProfile, SessionService}
+import services._
 import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 
 import javax.inject.Inject
@@ -32,6 +33,7 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
                                                    val authConnector: AuthClientConnector,
                                                    businessService: BusinessService,
                                                    otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
+                                                   vatRegistrationService: VatRegistrationService,
                                                    view: OtherBusinessInvolvement)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
@@ -62,8 +64,11 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
                 if (isEnabled(TaskList)) {
                   Future.successful(Redirect(controllers.routes.TaskListController.show))
                 } else {
-                  otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.map { _ =>
-                    Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                  otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.flatMap { _ =>
+                    vatRegistrationService.partyType.map {
+                      case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+                      case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                    }
                   }
                 }
               }

@@ -21,8 +21,9 @@ import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.otherbusinessinvolvements.ObiSummaryForm
 import models.OtherBusinessInvolvement
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService}
+import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.ObiSummaryRow
@@ -35,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                                      val sessionService: SessionService,
                                      otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
+                                     vatRegistrationService: VatRegistrationService,
                                      view: ObiSummary)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
@@ -53,10 +55,10 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
   }
 
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile () {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        ObiSummaryForm ().bindFromRequest.fold (
+        ObiSummaryForm().bindFromRequest.fold(
           errors =>
             otherBusinessInvolvementsService.getOtherBusinessInvolvements.map {
               case Nil =>
@@ -70,18 +72,21 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                 Redirect(routes.OtherBusinessNameController.show(nextIndex))
               }
             } else {
-              if(isEnabled(TaskList)) {
+              if (isEnabled(TaskList)) {
                 Future.successful(Redirect(controllers.routes.TaskListController.show))
               } else {
-                Future.successful(Redirect(controllers.routes.TradingNameResolverController.resolve(false)))
+                vatRegistrationService.partyType.map {
+                  case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+                  case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                }
               }
             }
         )
   }
 
-  private def buildRows (otherBusinessInvolvements: List[OtherBusinessInvolvement] ): List[ObiSummaryRow] =
+  private def buildRows(otherBusinessInvolvements: List[OtherBusinessInvolvement]): List[ObiSummaryRow] =
     otherBusinessInvolvements.zipWithIndex.map { case (obi, idx) =>
-      val businessName = obi.businessName.getOrElse (throw new InternalServerException (s"Couldn't render OBI summary due to missing business name for index: $idx"))
+      val businessName = obi.businessName.getOrElse(throw new InternalServerException(s"Couldn't render OBI summary due to missing business name for index: $idx"))
       val indexFrom1 = idx + 1
 
       ObiSummaryRow(
@@ -91,4 +96,4 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
       )
     }
 
-  }
+}

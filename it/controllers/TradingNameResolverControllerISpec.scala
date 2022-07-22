@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class TradingNameResolverControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.routes.TradingNameResolverController.resolve(true).url
+  val url: String = controllers.routes.TradingNameResolverController.resolve.url
 
   "Trading name page resolver" should {
     List(Individual, NETP).foreach { partyType =>
