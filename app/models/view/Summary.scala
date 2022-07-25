@@ -19,6 +19,7 @@ package models.view
 import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Reads, _}
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 
@@ -30,7 +31,7 @@ object SummaryListRowUtils {
                              )(implicit messages: Messages): Option[SummaryListRow] = {
     optSummaryListRow(
       questionId,
-      optAnswer.map(answer => HtmlContent(messages(answer))),
+      optAnswer.map(answer => HtmlContent(HtmlFormat.escape(messages(answer)))),
       optUrl,
       questionArgs
     )
@@ -58,12 +59,12 @@ object SummaryListRowUtils {
                           )(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRow(
       questionId,
-      optAnswers.map(answers => HtmlContent(answers.map(messages(_)).mkString("<br>"))),
+      optAnswers.map(answers => HtmlContent(answers.map(answer => HtmlFormat.escape(messages(answer))).mkString("<br>"))),
       optUrl,
       questionArgs
     )
 
-  private def optSummaryListRow(questionId: String,
+  def optSummaryListRow(questionId: String,
                                 optAnswer: Option[HtmlContent],
                                 optUrl: Option[String],
                                 questionArgs: Seq[String] = Nil

@@ -50,7 +50,7 @@ class OtherBusinessInvolvementSummaryBuilder @Inject()(govukSummaryList: GovukSu
                 rows = List(
                   optSummaryListRowIndexed(
                     questionId = "obi.cya.businessName",
-                    optAnswer = obi.businessName.map(HtmlContent(_)),
+                    optAnswer = obi.businessName.map(name => HtmlContent(HtmlFormat.escape(name))),
                     optUrl = Some(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(n).url),
                     index = n
                   ),
